@@ -1,0 +1,1620 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>13. Fault Tree Uncertainties &#8212; Intermediate Quantitative Economics with Python</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=f77998adf44a3f900caaca31caf410c810f6f245" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=eed9c059a3ee152aae2353ec732f0a6d12e6aa07"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'hoist_failure';</script>
+    <link rel="canonical" href="https://python.quantecon.org/hoist_failure.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="14. Introduction to Artificial Neural Networks" href="back_prop.html" />
+    <link rel="prev" title="12. Multivariate Normal Distribution" href="multivariate_normal.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=This website presents a set of lectures on quantitative economic modeling, designed and written by Thomas J. Sargent and John Stachurski. />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="Fault Tree Uncertainties"/>
+<meta name="twitter:description" content="This website presents a set of lectures on quantitative economic modeling, designed and written by Thomas J. Sargent and John Stachurski.">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="Fault Tree Uncertainties" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon.org/hoist_failure.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="This website presents a set of lectures on quantitative economic modeling, designed and written by Thomas J. Sargent and John Stachurski." />
+<meta property="og:site_name" content="Intermediate Quantitative Economics with Python" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=hoist_failure>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">13.1. Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#log-normal-distribution">13.2. Log normal distribution</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-convolution-property">13.3. The Convolution Property</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-distributions">13.4. Approximating Distributions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convolving-probability-mass-functions">13.5. Convolving Probability Mass Functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#failure-tree-analysis">13.6. Failure Tree Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#application">13.7. Application</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#failure-rates-unknown">13.8. Failure Rates Unknown</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#waste-hoist-failure-rate">13.9. Waste Hoist Failure Rate</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Intermediate Quantitative Economics with Python</a></p>
+
+                        <p class="qe-page__header-subheading">Fault Tree Uncertainties</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>Thomas J. Sargent</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>John Stachurski</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="fault-tree-uncertainties">
+<h1><span class="section-number">13. </span>Fault Tree Uncertainties<a class="headerlink" href="#fault-tree-uncertainties" title="Permalink to this heading">#</a></h1>
+<section id="overview">
+<h2><span class="section-number">13.1. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<p>This lecture puts elementary tools to work to approximate probability distributions of the annual failure rates of a system consisting of
+a number of critical parts.</p>
+<p>We’ll use log normal distributions to approximate probability distributions of critical  component parts.</p>
+<p>To  approximate the probability distribution of the <strong>sum</strong> of <span class="math notranslate nohighlight">\(n\)</span> log normal probability distributions that describes the failure rate of the
+entire system, we’ll compute the convolution of those <span class="math notranslate nohighlight">\(n\)</span> log normal probability distributions.</p>
+<p>We’ll use the following concepts and tools:</p>
+<ul class="simple">
+<li><p>log normal distributions</p></li>
+<li><p>the convolution theorem that describes the probability distribution of the sum independent random variables</p></li>
+<li><p>fault tree analysis for approximating a failure rate of a multi-component system</p></li>
+<li><p>a hierarchical probability model for describing uncertain probabilities</p></li>
+<li><p>Fourier transforms and inverse Fourier tranforms as efficient ways of computing convolutions of sequences</p></li>
+</ul>
+<p>For more about Fourier transforms see this quantecon lecture <a class="reference external" href="https://python.quantecon.org/eig_circulant.html">Circulant Matrices</a>
+as well as these  lecture  <a class="reference external" href="https://python-advanced.quantecon.org/arma.html">Covariance Stationary Processes</a> and <a class="reference external" href="https://python-advanced.quantecon.org/estspec.html">Estimation of Spectra</a>.</p>
+<p>El-Shanawany, Ardron,  and Walker <span id="id1">[<a class="reference internal" href="zreferences.html#id22" title="Ashraf Ben El-Shanawany, Keith H Ardron, and Simon P Walker. Lognormal approximations of fault tree uncertainty distributions. Risk Analysis, 38(8):1576–1584, 2018.">El-Shanawany <em>et al.</em>, 2018</a>]</span> and Greenfield and Sargent <span id="id2">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span>  used some of the methods described here  to approximate probabilities of failures of safety systems in nuclear facilities.</p>
+<p>These methods respond to some of the recommendations made by Apostolakis  <span id="id3">[<a class="reference internal" href="zreferences.html#id20" title="George Apostolakis. The concept of probability in safety assessments of technological systems. Science, 250(4986):1359–1364, 1990.">Apostolakis, 1990</a>]</span> for constructing procedures for quantifying
+uncertainty about the reliability of a safety system.</p>
+<p>We’ll start by bringing in some Python machinery.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>tabulate
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: tabulate in /home/humphrey/anaconda3/envs/quantecon/lib/python3.10/site-packages (0.8.10)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">fftconvolve</span>
+<span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<!-- #region -->
+</section>
+<section id="log-normal-distribution">
+<h2><span class="section-number">13.2. </span>Log normal distribution<a class="headerlink" href="#log-normal-distribution" title="Permalink to this heading">#</a></h2>
+<p>If a random variable <span class="math notranslate nohighlight">\(x\)</span> follows a normal distribution with mean <span class="math notranslate nohighlight">\(\mu\)</span> and variance <span class="math notranslate nohighlight">\(\sigma^2\)</span>,
+then the natural logarithm of <span class="math notranslate nohighlight">\(x\)</span>, say <span class="math notranslate nohighlight">\(y = \log(x)\)</span>, follows a <strong>log normal distribution</strong> with parameters <span class="math notranslate nohighlight">\(\mu, \sigma^2\)</span>.</p>
+<p>Notice that we said <strong>parameters</strong> and not <strong>mean and variance</strong> <span class="math notranslate nohighlight">\(\mu,\sigma^2\)</span>.</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(\sigma^2\)</span> are the mean and variance of <span class="math notranslate nohighlight">\(x = \exp (y)\)</span></p></li>
+<li><p>they are <strong>not</strong> the mean and variance of <span class="math notranslate nohighlight">\(y\)</span></p></li>
+<li><p>instead, the  mean of <span class="math notranslate nohighlight">\(y\)</span> is <span class="math notranslate nohighlight">\(e ^{\mu + \frac{1}{2} \sigma^2}\)</span> and the variance of <span class="math notranslate nohighlight">\(y\)</span> is <span class="math notranslate nohighlight">\((e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} \)</span></p></li>
+</ul>
+<p>A log normal  random variable <span class="math notranslate nohighlight">\(y\)</span> is nonnegative.</p>
+<p>The density for a log normal random variate <span class="math notranslate nohighlight">\(y\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[ f(y) = \frac{1}{y \sigma \sqrt{2 \pi}} \exp \left(  \frac{- (\log y - \mu)^2 }{2 \sigma^2} \right) \]</div>
+<p>for <span class="math notranslate nohighlight">\(y \geq 0\)</span>.</p>
+<p>Important features of a log normal random variable are</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{aligned}
+ \textrm{mean:} &amp; \quad e ^{\mu + \frac{1}{2} \sigma^2} \cr
+ \textrm{variance:}  &amp; \quad (e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} \cr
+  \textrm{median:} &amp; \quad e^\mu \cr
+ \textrm{mode:} &amp; \quad e^{\mu - \sigma^2} \cr
+ \textrm{.95 quantile:} &amp; \quad e^{\mu + 1.645 \sigma} \cr
+ \textrm{.95-.05 quantile ratio:}  &amp; \quad e^{1.645 \sigma} \cr
+ \end{aligned}
+\]</div>
+<p>Recall the following <em>stability</em> property of two independent normally distributed random variables:</p>
+<p>If <span class="math notranslate nohighlight">\(x_1\)</span> is normal with mean <span class="math notranslate nohighlight">\(\mu_1\)</span> and variance <span class="math notranslate nohighlight">\(\sigma_1^2\)</span> and <span class="math notranslate nohighlight">\(x_2\)</span> is independent of <span class="math notranslate nohighlight">\(x_1\)</span> and normal with mean <span class="math notranslate nohighlight">\(\mu_2\)</span> and variance <span class="math notranslate nohighlight">\(\sigma_2^2\)</span>, then <span class="math notranslate nohighlight">\(x_1 + x_2\)</span> is normally distributed with
+mean <span class="math notranslate nohighlight">\(\mu_1 + \mu_2\)</span> and variance <span class="math notranslate nohighlight">\(\sigma_1^2 + \sigma_2^2\)</span>.</p>
+<p>Independent log normal distributions have a different <em>stability</em> property.</p>
+<p>The <strong>product</strong> of  independent log normal random variables is also log normal.</p>
+<p>In particular, if <span class="math notranslate nohighlight">\(y_1\)</span> is log normal with parameters <span class="math notranslate nohighlight">\((\mu_1, \sigma_1^2)\)</span> and
+<span class="math notranslate nohighlight">\(y_2\)</span> is log normal with parameters <span class="math notranslate nohighlight">\((\mu_2, \sigma_2^2)\)</span>, then the product <span class="math notranslate nohighlight">\(y_1 y_2\)</span> is log normal
+with parameters <span class="math notranslate nohighlight">\((\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)\)</span>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While the product of two log normal distributions is log normal, the <strong>sum</strong> of two log normal distributions is <strong>not</strong> log normal.</p>
+</div>
+<p>This observation sets the stage for challenge that confronts us in this lecture, namely, to approximate probability distributions of <strong>sums</strong> of independent log normal random variables.</p>
+<p>To compute the probability distribution of the sum of two log normal distributions, we can use the following convolution property of a probability distribution that is a sum of independent random variables.</p>
+</section>
+<section id="the-convolution-property">
+<h2><span class="section-number">13.3. </span>The Convolution Property<a class="headerlink" href="#the-convolution-property" title="Permalink to this heading">#</a></h2>
+<p>Let <span class="math notranslate nohighlight">\(x\)</span> be a random variable with probability density <span class="math notranslate nohighlight">\(f(x)\)</span>, where <span class="math notranslate nohighlight">\(x \in {\bf R}\)</span>.</p>
+<p>Let <span class="math notranslate nohighlight">\(y\)</span> be a random variable with probability density <span class="math notranslate nohighlight">\(g(y)\)</span>, where <span class="math notranslate nohighlight">\(y \in {\bf R}\)</span>.</p>
+<p>Let <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> be independent random variables and let <span class="math notranslate nohighlight">\(z = x + y \in {\bf R}\)</span>.</p>
+<p>Then the probability distribution of <span class="math notranslate nohighlight">\(z\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[ h(z) = (f * g)(z) \equiv \int_{-\infty}^\infty f (z) g(z - \tau) d \tau \]</div>
+<p>where  <span class="math notranslate nohighlight">\((f*g)\)</span> denotes the <strong>convolution</strong> of the two functions <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(g\)</span>.</p>
+<p>If the random variables are both nonnegative, then the above formula specializes to</p>
+<div class="math notranslate nohighlight">
+\[ h(z) = (f * g)(z) \equiv \int_{0}^\infty f (z) g(z - \tau) d \tau \]</div>
+<p>Below, we’ll use a discretized version of the preceding formula.</p>
+<p>In particular, we’ll replace both <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(g\)</span> with discretized counterparts, normalized to sum to <span class="math notranslate nohighlight">\(1\)</span> so that they are probability distributions.</p>
+<ul class="simple">
+<li><p>by <strong>discretized</strong> we mean an equally spaced sampled version</p></li>
+</ul>
+<p>Then we’ll use the following version of the above formula</p>
+<div class="math notranslate nohighlight">
+\[ h_n = (f*g)_n = \sum_{m=0}^\infty f_m g_{n-m} , n \geq 0 \]</div>
+<p>to compute a discretized version of the probability distribution of the sum of two random variables,
+one with probability mass function <span class="math notranslate nohighlight">\(f\)</span>, the other with probability mass function <span class="math notranslate nohighlight">\(g\)</span>.</p>
+<!-- #endregion -->
+<p>Before applying the convolution property to sums of log normal distributions, let’s practice on some simple discrete distributions.</p>
+<p>To take one  example, let’s consider the following two probability distributions</p>
+<div class="math notranslate nohighlight">
+\[ f_j = \textrm{Prob} (X = j), j = 0, 1 \]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[ g_j = \textrm{Prob} (Y = j ) , j = 0, 1, 2, 3 \]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[ h_j = \textrm{Prob} (Z \equiv X + Y = j) , j=0, 1, 2, 3, 4 \]</div>
+<p>The convolution property tells us that</p>
+<div class="math notranslate nohighlight">
+\[ h = f* g = g* f \]</div>
+<p>Let’s compute  an example using the <code class="docutils literal notranslate"><span class="pre">numpy.convolve</span></code> and <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="p">[</span><span class="mf">.75</span><span class="p">,</span> <span class="mf">.25</span><span class="p">]</span>
+<span class="n">g</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">.6</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span> <span class="mf">.4</span><span class="p">]</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">)</span>
+<span class="n">hf</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;f = &quot;</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>  <span class="s2">&quot;, np.sum(f) = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;g = &quot;</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="s2">&quot;, np.sum(g) = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;h = &quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="s2">&quot;, np.sum(h) = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">h</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hf = &quot;</span><span class="p">,</span> <span class="n">hf</span><span class="p">,</span> <span class="s2">&quot;,np.sum(hf) = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">hf</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>f =  [0.75, 0.25] , np.sum(f) =  1.0
+g =  [0.0, 0.6, 0.0, 0.4] , np.sum(g) =  1.0
+h =  [0.   0.45 0.15 0.3  0.1 ] , np.sum(h) =  1.0
+hf =  [0.   0.45 0.15 0.3  0.1 ] ,np.sum(hf) =  1.0000000000000002
+</pre></div>
+</div>
+</div>
+</div>
+<p>A little later we’ll explain some advantages that come from using <code class="docutils literal notranslate"><span class="pre">scipy.signal.ftconvolve</span></code> rather than <code class="docutils literal notranslate"><span class="pre">numpy.convolve</span></code>.numpy program convolve.</p>
+<p>They provide the same answers but <code class="docutils literal notranslate"><span class="pre">scipy.signal.ftconvolve</span></code> is much faster.</p>
+<p>That’s why we rely on it later in this lecture.</p>
+</section>
+<section id="approximating-distributions">
+<h2><span class="section-number">13.4. </span>Approximating Distributions<a class="headerlink" href="#approximating-distributions" title="Permalink to this heading">#</a></h2>
+<p>We’ll construct an example to verify that  discretized distributions can do a good job of approximating  samples drawn from underlying
+continuous distributions.</p>
+<p>We’ll start by generating samples of size 25000 of three independent  log normal random variates as well as pairwise and triple-wise sums.</p>
+<p>Then we’ll plot  histograms and compare them with convolutions of appropriate discretized log normal distributions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## create sums of two and three log normal random variates ssum2 = s1 + s2 and ssum3 = s1 + s2 + s3</span>
+
+
+<span class="n">mu1</span><span class="p">,</span> <span class="n">sigma1</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">1.</span> <span class="c1"># mean and standard deviation</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span> <span class="n">sigma1</span><span class="p">,</span> <span class="mi">25000</span><span class="p">)</span>
+
+<span class="n">mu2</span><span class="p">,</span> <span class="n">sigma2</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">1.</span> <span class="c1"># mean and standard deviation</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="n">mu2</span><span class="p">,</span> <span class="n">sigma2</span><span class="p">,</span> <span class="mi">25000</span><span class="p">)</span>
+
+<span class="n">mu3</span><span class="p">,</span> <span class="n">sigma3</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">1.</span> <span class="c1"># mean and standard deviation</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="n">mu3</span><span class="p">,</span> <span class="n">sigma3</span><span class="p">,</span> <span class="mi">25000</span><span class="p">)</span>
+
+<span class="n">ssum2</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">+</span> <span class="n">s2</span>
+
+<span class="n">ssum3</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">+</span> <span class="n">s2</span> <span class="o">+</span> <span class="n">s3</span>
+
+<span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/62f41bff32ccfcb7834b9326ccd22c7fed259549b91ccad3e8ad0e667d3362fd.png" src="_images/62f41bff32ccfcb7834b9326ccd22c7fed259549b91ccad3e8ad0e667d3362fd.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ssum2</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/37abde1ed00dbc7575bf98ca78cbc0231f6db80371d913beb62dfa71df919ad1.png" src="_images/37abde1ed00dbc7575bf98ca78cbc0231f6db80371d913beb62dfa71df919ad1.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ssum3</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/5652a70ba0ef7a10c71bd02610fe1706064cea5d0a78120d72a234b5b538c136.png" src="_images/5652a70ba0ef7a10c71bd02610fe1706064cea5d0a78120d72a234b5b538c136.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">samp_mean2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+<span class="n">pop_mean2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">mu2</span><span class="o">+</span> <span class="p">(</span><span class="n">sigma2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">pop_mean2</span><span class="p">,</span> <span class="n">samp_mean2</span><span class="p">,</span> <span class="n">mu2</span><span class="p">,</span> <span class="n">sigma2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(244.69193226422038, 246.3253190283196, 5.0, 1.0)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here are helper functions that create a discretized version of a log normal
+probability density function.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">p_log_normal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">μ</span><span class="p">,</span><span class="n">σ</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">σ</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">μ</span><span class="p">)</span><span class="o">/</span><span class="n">σ</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span>
+
+<span class="k">def</span> <span class="nf">pdf_seq</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span><span class="n">σ</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">1e-7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">p_array</span> <span class="o">=</span> <span class="n">p_log_normal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">μ</span><span class="p">,</span><span class="n">σ</span><span class="p">)</span>
+    <span class="n">p_array_norm</span> <span class="o">=</span> <span class="n">p_array</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">p_array</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p_array</span><span class="p">,</span><span class="n">p_array_norm</span><span class="p">,</span><span class="n">x</span>
+</pre></div>
+</div>
+</div>
+</div>
+<!-- #region -->
+<p>Now we shall set a grid length <span class="math notranslate nohighlight">\(I\)</span> and a grid increment size <span class="math notranslate nohighlight">\(m =1\)</span> for our discretizations.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We set <span class="math notranslate nohighlight">\(I\)</span> equal to a power of two because we want to be free to use a Fast Fourier Transform
+to compute a convolution of two sequences (discrete distributions).</p>
+</div>
+<p>We recommend experimenting with different values of the power <span class="math notranslate nohighlight">\(p\)</span> of 2.</p>
+<p>Setting it to 15 rather than 12, for example, improves how well the discretized probability mass function approximates the original continuous probability density function being studied.</p>
+<!-- #endregion --><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">=</span><span class="mi">15</span>
+<span class="n">I</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">p</span> <span class="c1"># Truncation value</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mf">.1</span> <span class="c1"># increment size</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Cell to check -- note what happens when don&#39;t normalize!</span>
+<span class="c1">## things match up without adjustment. Compare with above</span>
+
+<span class="n">p1</span><span class="p">,</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span><span class="n">sigma1</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="c1">## compute number of points to evaluate the probability mass function</span>
+<span class="n">NT</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)],</span><span class="n">p1</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)],</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2500</span><span class="p">)</span>
+<span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/d209e8f8bce7acd71e2fa68f857749252ad5e5987b43abf4f50c94cae445e2b1.png" src="_images/d209e8f8bce7acd71e2fa68f857749252ad5e5987b43abf4f50c94cae445e2b1.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute mean from discretized pdf and compare with the theoretical value</span>
+
+<span class="n">mean</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="n">NT</span><span class="p">],</span><span class="n">p1_norm</span><span class="p">[:</span><span class="n">NT</span><span class="p">]))</span>
+<span class="n">meantheory</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">mu1</span><span class="o">+</span><span class="mf">.5</span><span class="o">*</span><span class="n">sigma1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">mean</span><span class="p">,</span> <span class="n">meantheory</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(244.69059898302908, 244.69193226422038)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="convolving-probability-mass-functions">
+<h2><span class="section-number">13.5. </span>Convolving Probability Mass Functions<a class="headerlink" href="#convolving-probability-mass-functions" title="Permalink to this heading">#</a></h2>
+<p>Now let’s use the convolution theorem to compute the probability distribution of a sum of the two log normal random variables we have parameterized above.</p>
+<p>We’ll also compute the probability of a sum of three log normal distributions constructed above.</p>
+<p>Before we do these things, we shall explain our choice of Python algorithm to compute a convolution
+of two sequences.</p>
+<p>Because the sequences that we convolve are long, we use the <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code> function
+rather than the numpy.convove function.</p>
+<p>These two functions give virtually equivalent answers but for long sequences <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>
+is much faster.</p>
+<p>The program <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code> uses fast Fourier transforms and their inverses to calculate convolutions.</p>
+<p>Let’s define the Fourier transform and the inverse Fourier transform.</p>
+<p>The <strong>Fourier transform</strong> of a sequence <span class="math notranslate nohighlight">\(\{x_t\}_{t=0}^{T-1}\)</span> is  a sequence of complex numbers
+<span class="math notranslate nohighlight">\(\{x(\omega_j)\}_{j=0}^{T-1}\)</span> given by</p>
+<div class="math notranslate nohighlight" id="equation-eq-ft1">
+<span class="eqno">(13.1)<a class="headerlink" href="#equation-eq-ft1" title="Permalink to this equation">#</a></span>\[
+ x(\omega_j) = \sum_{t=0}^{T-1} x_t \exp(- i \omega_j t)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\omega_j = \frac{2 \pi j}{T}\)</span> for <span class="math notranslate nohighlight">\(j=0, 1, \ldots, T-1\)</span>.</p>
+<p>The <strong>inverse Fourier transform</strong> of the sequence <span class="math notranslate nohighlight">\(\{x(\omega_j)\}_{j=0}^{T-1}\)</span> is</p>
+<div class="math notranslate nohighlight" id="equation-eq-ift1">
+<span class="eqno">(13.2)<a class="headerlink" href="#equation-eq-ift1" title="Permalink to this equation">#</a></span>\[
+ x_t = T^{-1} \sum_{j=0}^{T-1} x(\omega_j) \exp (i \omega_j t)
+\]</div>
+<p>The sequences <span class="math notranslate nohighlight">\(\{x_t\}_{t=0}^{T-1}\)</span> and <span class="math notranslate nohighlight">\(\{x(\omega_j)\}_{j=0}^{T-1}\)</span> contain the same information.</p>
+<p>The pair of equations <a class="reference internal" href="#equation-eq-ft1">(13.1)</a> and <a class="reference internal" href="#equation-eq-ift1">(13.2)</a> tell how to recover one series from its Fourier partner.</p>
+<p>The program <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code> deploys  the theorem that  a convolution of two sequences <span class="math notranslate nohighlight">\(\{f_k\}, \{g_k\}\)</span> can be computed in the following way:</p>
+<ul class="simple">
+<li><p>Compute Fourier transforms <span class="math notranslate nohighlight">\(F(\omega), G(\omega)\)</span> of the <span class="math notranslate nohighlight">\(\{f_k\}\)</span> and <span class="math notranslate nohighlight">\(\{g_k\}\)</span> sequences, respectively</p></li>
+<li><p>Form the product <span class="math notranslate nohighlight">\(H (\omega) = F(\omega) G (\omega)\)</span></p></li>
+<li><p>The convolution of <span class="math notranslate nohighlight">\(f * g\)</span> is the inverse Fourier transform of <span class="math notranslate nohighlight">\(H(\omega)\)</span></p></li>
+</ul>
+<p>The <strong>fast Fourier transform</strong> and the associated <strong>inverse fast Fourier transform</strong> execute these
+calculations very quickly.</p>
+<p>This is the algorithm that   <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code> uses.</p>
+<p>Let’s do a warmup calculation that compares the times taken by <code class="docutils literal notranslate"><span class="pre">numpy.convove</span></code> and <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p1</span><span class="p">,</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span><span class="n">sigma1</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p2</span><span class="p">,</span><span class="n">p2_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu2</span><span class="p">,</span><span class="n">sigma2</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p3</span><span class="p">,</span><span class="n">p3_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu3</span><span class="p">,</span><span class="n">sigma3</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+
+<span class="n">tic</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">p2_norm</span><span class="p">)</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span><span class="n">p3_norm</span><span class="p">)</span>
+
+
+<span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">tdiff1</span> <span class="o">=</span> <span class="n">toc</span> <span class="o">-</span> <span class="n">tic</span>
+
+<span class="n">tic</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">c1f</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">p2_norm</span><span class="p">)</span>
+<span class="n">c2f</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c1f</span><span class="p">,</span><span class="n">p3_norm</span><span class="p">)</span>
+<span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">tdiff2</span> <span class="o">=</span> <span class="n">toc</span> <span class="o">-</span> <span class="n">tic</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time with np.convolve = &quot;</span><span class="p">,</span> <span class="n">tdiff1</span><span class="p">,</span>  <span class="s2">&quot;; time with fftconvolve = &quot;</span><span class="p">,</span>  <span class="n">tdiff2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time with np.convolve =  88.34194680399378 ; time with fftconvolve =  0.11116881501220632
+</pre></div>
+</div>
+</div>
+</div>
+<p>The fast Fourier transform is two orders of magnitude faster than <code class="docutils literal notranslate"><span class="pre">numpy.convolve</span></code></p>
+<p>Now let’s plot our computed probability mass function approximation  for the sum of two log normal random variables against the histogram of the sample that we formed above.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">NT</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)],</span><span class="n">c1f</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)]</span><span class="o">/</span><span class="n">m</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5000</span><span class="p">)</span>
+
+<span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ssum2</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+<span class="c1"># plt.plot(P2P3[:10000],label = &#39;FFT method&#39;,linestyle = &#39;--&#39;)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/1d99126c9310e8d0bd8d1569c40a1ddfd68355622ec85dbee95f93f983e1f1d3.png" src="_images/1d99126c9310e8d0bd8d1569c40a1ddfd68355622ec85dbee95f93f983e1f1d3.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">NT</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)],</span><span class="n">c2f</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)]</span><span class="o">/</span><span class="n">m</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5000</span><span class="p">)</span>
+
+<span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ssum3</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+<span class="c1"># plt.plot(P2P3[:10000],label = &#39;FFT method&#39;,linestyle = &#39;--&#39;)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/9a94d3f3fae793febb9e4ee21e63bbd979564fb7e72616e14f08254ff08aff27.png" src="_images/9a94d3f3fae793febb9e4ee21e63bbd979564fb7e72616e14f08254ff08aff27.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Let&#39;s compute the mean of the discretized pdf</span>
+<span class="n">mean</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="n">NT</span><span class="p">],</span><span class="n">c1f</span><span class="p">[:</span><span class="n">NT</span><span class="p">]))</span>
+<span class="c1"># meantheory = np.exp(mu1+.5*sigma1**2)</span>
+<span class="n">mean</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">meantheory</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(489.3810974093853, 489.38386452844077)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Let&#39;s compute the mean of the discretized pdf</span>
+<span class="n">mean</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="n">NT</span><span class="p">],</span><span class="n">c2f</span><span class="p">[:</span><span class="n">NT</span><span class="p">]))</span>
+<span class="c1"># meantheory = np.exp(mu1+.5*sigma1**2)</span>
+<span class="n">mean</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">meantheory</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(734.0714863312277, 734.0757967926611)
+</pre></div>
+</div>
+</div>
+</div>
+<!-- #region -->
+</section>
+<section id="failure-tree-analysis">
+<h2><span class="section-number">13.6. </span>Failure Tree Analysis<a class="headerlink" href="#failure-tree-analysis" title="Permalink to this heading">#</a></h2>
+<p>We shall soon apply the convolution theorem to compute the probability of a <strong>top event</strong> in a failure tree analysis.</p>
+<p>Before applying the convolution theorem, we first describe the model that connects constituent events to the <strong>top</strong> end whose
+failure rate we seek to quantify.</p>
+<p>The model is an example of the widely used  <strong>failure tree analysis</strong> described by  El-Shanawany, Ardron,  and Walker <span id="id4">[<a class="reference internal" href="zreferences.html#id22" title="Ashraf Ben El-Shanawany, Keith H Ardron, and Simon P Walker. Lognormal approximations of fault tree uncertainty distributions. Risk Analysis, 38(8):1576–1584, 2018.">El-Shanawany <em>et al.</em>, 2018</a>]</span>.</p>
+<p>To construct the statistical model, we repeatedly use  what is called the <strong>rare event approximation</strong>.</p>
+<p>We want to compute the probabilty of an event <span class="math notranslate nohighlight">\(A \cup B\)</span>.</p>
+<ul class="simple">
+<li><p>the union <span class="math notranslate nohighlight">\(A \cup B\)</span> is the event that <span class="math notranslate nohighlight">\(A\)</span> OR <span class="math notranslate nohighlight">\(B\)</span> occurs</p></li>
+</ul>
+<p>A law of probability tells us that  <span class="math notranslate nohighlight">\(A\)</span> OR <span class="math notranslate nohighlight">\(B\)</span> occurs with probability</p>
+<div class="math notranslate nohighlight">
+\[ P(A \cup B) = P(A) + P(B) - P(A \cap B) \]</div>
+<p>where the intersection <span class="math notranslate nohighlight">\(A \cap B\)</span> is the event that <span class="math notranslate nohighlight">\(A\)</span> <strong>AND</strong> <span class="math notranslate nohighlight">\(B\)</span> both occur and the union <span class="math notranslate nohighlight">\(A \cup B\)</span> is
+the event that <span class="math notranslate nohighlight">\(A\)</span> <strong>OR</strong> <span class="math notranslate nohighlight">\(B\)</span> occurs.</p>
+<p>If <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> are independent, then</p>
+<div class="math notranslate nohighlight">
+\[ P(A \cap B) = P(A) P(B)  \]</div>
+<p>If <span class="math notranslate nohighlight">\(P(A)\)</span> and <span class="math notranslate nohighlight">\(P(B)\)</span> are both small, then <span class="math notranslate nohighlight">\(P(A) P(B)\)</span> is even smaller.</p>
+<p>The <strong>rare event approximation</strong> is</p>
+<div class="math notranslate nohighlight">
+\[ P(A \cup B) \approx P(A) + P(B)  \]</div>
+<p>This approximation is widely used in evaluating system failures.</p>
+</section>
+<section id="application">
+<h2><span class="section-number">13.7. </span>Application<a class="headerlink" href="#application" title="Permalink to this heading">#</a></h2>
+<p>A system has been designed with the feature a system  failure occurs when <strong>any</strong> of  <span class="math notranslate nohighlight">\(n\)</span> critical  components  fails.</p>
+<p>The failure probability <span class="math notranslate nohighlight">\(P(A_i)\)</span>  of each event <span class="math notranslate nohighlight">\(A_i\)</span>  is small.</p>
+<p>We assume that failures of the components are statistically independent random variables.</p>
+<p>We repeatedly apply a <strong>rare event approximation</strong> to obtain the following formula for the problem
+of a system failure:</p>
+<div class="math notranslate nohighlight">
+\[ P(F) \approx P(A_1) + P (A_2) + \cdots + P (A_n) \]</div>
+<p>or</p>
+<div class="math notranslate nohighlight" id="equation-eq-probtop">
+<span class="eqno">(13.3)<a class="headerlink" href="#equation-eq-probtop" title="Permalink to this equation">#</a></span>\[
+P(F) \approx \sum_{i=1}^n P (A_i)
+\]</div>
+<p>Probabilities for each event are recorded as failure rates per year.</p>
+</section>
+<section id="failure-rates-unknown">
+<h2><span class="section-number">13.8. </span>Failure Rates Unknown<a class="headerlink" href="#failure-rates-unknown" title="Permalink to this heading">#</a></h2>
+<p>Now we come to the problem that really interests us, following  <span id="id5">[<a class="reference internal" href="zreferences.html#id22" title="Ashraf Ben El-Shanawany, Keith H Ardron, and Simon P Walker. Lognormal approximations of fault tree uncertainty distributions. Risk Analysis, 38(8):1576–1584, 2018.">El-Shanawany <em>et al.</em>, 2018</a>]</span> and Greenfield and Sargent
+<span id="id6">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span>  in the spirit of Apostolakis  <span id="id7">[<a class="reference internal" href="zreferences.html#id20" title="George Apostolakis. The concept of probability in safety assessments of technological systems. Science, 250(4986):1359–1364, 1990.">Apostolakis, 1990</a>]</span>.</p>
+<p>The constituent probabilities or failure rates <span class="math notranslate nohighlight">\(P(A_i)\)</span> are not known a priori and have to be estimated.</p>
+<p>We address this problem by specifying <strong>probabilities of probabilities</strong> that  capture one  notion of not knowing the constituent probabilities that are inputs into a failure tree analysis.</p>
+<p>Thus, we assume that a system analyst is uncertain about  the failure rates <span class="math notranslate nohighlight">\(P(A_i), i =1, \ldots, n\)</span> for components of a system.</p>
+<p>The analyst copes with this situation by regarding the systems failure probability <span class="math notranslate nohighlight">\(P(F)\)</span> and each of the component probabilities <span class="math notranslate nohighlight">\(P(A_i)\)</span> as  random variables.</p>
+<ul class="simple">
+<li><p>dispersions of the probability distribution of <span class="math notranslate nohighlight">\(P(A_i)\)</span> characterizes the analyst’s uncertainty about the failure probability <span class="math notranslate nohighlight">\(P(A_i)\)</span></p></li>
+<li><p>the dispersion of the implied probability distribution of <span class="math notranslate nohighlight">\(P(F)\)</span> characterizes his uncertainty about the probability of a system’s failure.</p></li>
+</ul>
+<p>This leads to what is sometimes called a <strong>hierarchical</strong> model in which the analyst has  probabilities about the probabilities <span class="math notranslate nohighlight">\(P(A_i)\)</span>.</p>
+<p>The analyst formalizes his uncertainty by assuming that</p>
+<ul class="simple">
+<li><p>the failure probability <span class="math notranslate nohighlight">\(P(A_i)\)</span> is itself a log normal random variable with parameters <span class="math notranslate nohighlight">\((\mu_i, \sigma_i)\)</span>.</p></li>
+<li><p>failure rates <span class="math notranslate nohighlight">\(P(A_i)\)</span> and <span class="math notranslate nohighlight">\(P(A_j)\)</span> are statistically independent for all pairs with <span class="math notranslate nohighlight">\(i \neq j\)</span>.</p></li>
+</ul>
+<p>The analyst  calibrates the parameters  <span class="math notranslate nohighlight">\((\mu_i, \sigma_i)\)</span> for the failure events <span class="math notranslate nohighlight">\(i = 1, \ldots, n\)</span> by reading reliability studies in engineering papers that have studied historical failure rates of components that are as similar as possible to the components being used in the system under study.</p>
+<p>The analyst assumes that such  information about the observed dispersion of annual failure rates, or times to failure, can inform him of what to expect about parts’ performances in his system.</p>
+<p>The analyst  assumes that the random variables <span class="math notranslate nohighlight">\(P(A_i)\)</span>   are  statistically mutually independent.</p>
+<p>The analyst wants to approximate a probability mass function and cumulative distribution function
+of the systems failure probability <span class="math notranslate nohighlight">\(P(F)\)</span>.</p>
+<ul class="simple">
+<li><p>We say probability mass function because of how we discretize each random variable, as described earlier.</p></li>
+</ul>
+<p>The analyst calculates the probability mass function for the <strong>top event</strong> <span class="math notranslate nohighlight">\(F\)</span>, i.e., a <strong>system failure</strong>,  by repeatedly applying the convolution theorem to compute the probability distribution of a sum of independent log normal random variables, as described in equation
+<a class="reference internal" href="#equation-eq-probtop">(13.3)</a>.</p>
+<!-- #endregion -->
+</section>
+<section id="waste-hoist-failure-rate">
+<h2><span class="section-number">13.9. </span>Waste Hoist Failure Rate<a class="headerlink" href="#waste-hoist-failure-rate" title="Permalink to this heading">#</a></h2>
+<p>We’ll take close to a real world example by assuming that <span class="math notranslate nohighlight">\(n = 14\)</span>.</p>
+<p>The example estimates the annual failure rate of a critical  hoist at a nuclear waste facility.</p>
+<p>A regulatory agency wants the sytem to be designed in a way that makes the failure rate of the top event small with high probability.</p>
+<p>This example is Design Option B-2 (Case I) described in Table 10 on page 27 of <span id="id8">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span>.</p>
+<p>The table describes parameters <span class="math notranslate nohighlight">\(\mu_i, \sigma_i\)</span> for  fourteen log normal random variables that consist of  <strong>seven pairs</strong> of random variables that are identically and independently distributed.</p>
+<ul class="simple">
+<li><p>Within a pair, parameters <span class="math notranslate nohighlight">\(\mu_i, \sigma_i\)</span> are the same</p></li>
+<li><p>As described in table 10 of <span id="id9">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span>  p. 27, parameters of log normal distributions for  the seven unique probabilities <span class="math notranslate nohighlight">\(P(A_i)\)</span> have been calibrated to be the values in the following Python code:</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mu1</span><span class="p">,</span> <span class="n">sigma1</span> <span class="o">=</span> <span class="mf">4.28</span><span class="p">,</span> <span class="mf">1.1947</span>
+<span class="n">mu2</span><span class="p">,</span> <span class="n">sigma2</span> <span class="o">=</span> <span class="mf">3.39</span><span class="p">,</span> <span class="mf">1.1947</span>
+<span class="n">mu3</span><span class="p">,</span> <span class="n">sigma3</span> <span class="o">=</span> <span class="mf">2.795</span><span class="p">,</span> <span class="mf">1.1947</span>
+<span class="n">mu4</span><span class="p">,</span> <span class="n">sigma4</span> <span class="o">=</span> <span class="mf">2.717</span><span class="p">,</span> <span class="mf">1.1947</span>
+<span class="n">mu5</span><span class="p">,</span> <span class="n">sigma5</span> <span class="o">=</span> <span class="mf">2.717</span><span class="p">,</span> <span class="mf">1.1947</span>
+<span class="n">mu6</span><span class="p">,</span> <span class="n">sigma6</span> <span class="o">=</span> <span class="mf">1.444</span><span class="p">,</span> <span class="mf">1.4632</span>
+<span class="n">mu7</span><span class="p">,</span> <span class="n">sigma7</span> <span class="o">=</span> <span class="o">-</span><span class="mf">.040</span><span class="p">,</span> <span class="mf">1.4632</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Because the failure rates are all very small,  log normal distributions with the
+above parameter values actually describe <span class="math notranslate nohighlight">\(P(A_i)\)</span> times <span class="math notranslate nohighlight">\(10^{-09}\)</span>.</p>
+</div>
+<p>So the probabilities that we’ll put on the <span class="math notranslate nohighlight">\(x\)</span> axis of the probability mass function and associated cumulative distribution function should be multiplied by <span class="math notranslate nohighlight">\(10^{-09}\)</span></p>
+<p>To extract a table that summarizes computed quantiles, we’ll use a helper function</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">find_nearest</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">array</span> <span class="o">-</span> <span class="n">value</span><span class="p">))</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">idx</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We compute the required thirteen convolutions in the following code.</p>
+<p>(Please feel free to try different values of the power parameter <span class="math notranslate nohighlight">\(p\)</span> that we use to set the number of points in our grid for constructing
+the probability mass functions that discretize the continuous log normal distributions.)</p>
+<p>We’ll plot a counterpart to the cumulative distribution function (CDF) in  figure 5 on page 29 of <span id="id10">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span>
+and we’ll also present a counterpart to their Table 11 on page 28.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">=</span><span class="mi">15</span>
+<span class="n">I</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">p</span> <span class="c1"># Truncation value</span>
+<span class="n">m</span> <span class="o">=</span>  <span class="mf">.05</span> <span class="c1"># increment size</span>
+
+
+
+
+<span class="n">p1</span><span class="p">,</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span><span class="n">sigma1</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p2</span><span class="p">,</span><span class="n">p2_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu2</span><span class="p">,</span><span class="n">sigma2</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p3</span><span class="p">,</span><span class="n">p3_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu3</span><span class="p">,</span><span class="n">sigma3</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p4</span><span class="p">,</span><span class="n">p4_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu4</span><span class="p">,</span><span class="n">sigma4</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p5</span><span class="p">,</span><span class="n">p5_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu5</span><span class="p">,</span><span class="n">sigma5</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p6</span><span class="p">,</span><span class="n">p6_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu6</span><span class="p">,</span><span class="n">sigma6</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p7</span><span class="p">,</span><span class="n">p7_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p8</span><span class="p">,</span><span class="n">p8_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p9</span><span class="p">,</span><span class="n">p9_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p10</span><span class="p">,</span><span class="n">p10_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p11</span><span class="p">,</span><span class="n">p11_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p12</span><span class="p">,</span><span class="n">p12_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p13</span><span class="p">,</span><span class="n">p13_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p14</span><span class="p">,</span><span class="n">p14_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+
+<span class="n">tic</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">c1</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">p2_norm</span><span class="p">)</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span><span class="n">p3_norm</span><span class="p">)</span>
+<span class="n">c3</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span><span class="n">p4_norm</span><span class="p">)</span>
+<span class="n">c4</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c3</span><span class="p">,</span><span class="n">p5_norm</span><span class="p">)</span>
+<span class="n">c5</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c4</span><span class="p">,</span><span class="n">p6_norm</span><span class="p">)</span>
+<span class="n">c6</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c5</span><span class="p">,</span><span class="n">p7_norm</span><span class="p">)</span>
+<span class="n">c7</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c6</span><span class="p">,</span><span class="n">p8_norm</span><span class="p">)</span>
+<span class="n">c8</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c7</span><span class="p">,</span><span class="n">p9_norm</span><span class="p">)</span>
+<span class="n">c9</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c8</span><span class="p">,</span><span class="n">p10_norm</span><span class="p">)</span>
+<span class="n">c10</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c9</span><span class="p">,</span><span class="n">p11_norm</span><span class="p">)</span>
+<span class="n">c11</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c10</span><span class="p">,</span><span class="n">p12_norm</span><span class="p">)</span>
+<span class="n">c12</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c11</span><span class="p">,</span><span class="n">p13_norm</span><span class="p">)</span>
+<span class="n">c13</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c12</span><span class="p">,</span><span class="n">p14_norm</span><span class="p">)</span>
+
+<span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">tdiff13</span> <span class="o">=</span> <span class="n">toc</span> <span class="o">-</span> <span class="n">tic</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time for 13 convolutions = &quot;</span><span class="p">,</span> <span class="n">tdiff13</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time for 13 convolutions =  5.031110722004087
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d13</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">c13</span><span class="p">)</span>
+<span class="n">Nx</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mi">1400</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">Nx</span><span class="o">/</span><span class="n">m</span><span class="p">)],</span><span class="n">d13</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">Nx</span><span class="o">/</span><span class="n">m</span><span class="p">)])</span>  <span class="c1"># show Yad this -- I multiplied by m -- step size</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">Nx</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;black&#39;</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">Nx</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;black&#39;</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">Nx</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;black&#39;</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">Nx</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;black&#39;</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">Nx</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;black&#39;</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">Nx</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$x10^{-9}$&quot;</span><span class="p">,</span><span class="n">loc</span> <span class="o">=</span> <span class="s2">&quot;right&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">x_1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.01</span><span class="p">)]</span>
+<span class="n">x_5</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.05</span><span class="p">)]</span>
+<span class="n">x_10</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)]</span>
+<span class="n">x_50</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.50</span><span class="p">)]</span>
+<span class="n">x_66</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.665</span><span class="p">)]</span>
+<span class="n">x_85</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.85</span><span class="p">)]</span>
+<span class="n">x_90</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.90</span><span class="p">)]</span>
+<span class="n">x_95</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.95</span><span class="p">)]</span>
+<span class="n">x_99</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.99</span><span class="p">)]</span>
+<span class="n">x_9978</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.9978</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([</span>
+    <span class="p">[</span><span class="s1">&#39;1%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;5%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_5</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;10%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;50%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_50</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;66.5%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_66</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;85%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_85</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;90%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_90</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;95%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_95</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;99%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_99</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;99.78%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_9978</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]],</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Percentile&#39;</span><span class="p">,</span> <span class="s1">&#39;x * 1e-9&#39;</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/3960e9ad195b9308ea362532d6c9985878fa7c0e73e1255882873467a6b0efd8.png" src="_images/3960e9ad195b9308ea362532d6c9985878fa7c0e73e1255882873467a6b0efd8.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Percentile      x * 1e-9
+------------  ----------
+1%                 76.15
+5%                106.5
+10%               128.2
+50%               260.55
+66.5%             338.55
+85%               509.4
+90%               608.8
+95%               807.6
+99%              1470.2
+99.78%           2474.85
+</pre></div>
+</div>
+</div>
+</div>
+<p>The above table agrees closely with column 2 of  Table 11 on p. 28 of  of <span id="id11">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span>.</p>
+<p>Discrepancies are probably due to slight differences in the number of digits retained in inputting <span class="math notranslate nohighlight">\(\mu_i, \sigma_i, i = 1, \ldots, 14\)</span>
+and in the number of points deployed in the discretizations.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Tools and Techniques
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. Modeling COVID 19
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. Linear Algebra
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR Decomposition
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. Circulant Matrices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. Singular Value Decomposition (SVD)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. VARs and DMDs
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. Using Newton’s Method to Solve Economic Models
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Elementary Statistics
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. Elementary Probability with Matrices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. LLN and CLT
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. Two Meanings of Probability
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. Multivariate Hypergeometric Distribution
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. Multivariate Normal Distribution
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   13. Fault Tree Uncertainties
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. Introduction to Artificial Neural Networks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. Randomized Response Surveys
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Linear Programming
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. Optimal Transport
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. Von Neumann Growth Model (and a Generalization)
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Dynamics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. Finite Markov Chains
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. Inventory Dynamics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. Linear State Space Models
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. Samuelson Multiplier-Accelerator
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten Processes and Firm Dynamics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. Wealth Distribution Dynamics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. A First Look at the Kalman Filter
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. Another Look at the Kalman Filter
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Search
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. Job Search I: The McCall Search Model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. Job Search II: Search and Separation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. Job Search III: Fitted Value Function Iteration
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. Job Search IV: Correlated Wage Offers
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. Job Search V: Modeling Career Choice
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. Job Search VI: On-the-Job Search
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. Job Search VII: A McCall Worker Q-Learns
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Consumption, Savings and Capital
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans Model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans Competitive Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   36. Transitions in an Overlapping Generations Model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   37. Cake Eating I: Introduction to Optimal Saving
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   38. Cake Eating II: Numerical Methods
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   39. Optimal Growth I: The Stochastic Optimal Growth Model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   40. Optimal Growth II: Accelerating the Code with Numba
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   41. Optimal Growth III: Time Iteration
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   42. Optimal Growth IV: The Endogenous Grid Method
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   43. The Income Fluctuation Problem I: Basic Model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   44. The Income Fluctuation Problem II: Stochastic Returns on Assets
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bayes Law
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   45. Non-Conjugate Priors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   46. Posterior Distributions for  AR(1) Parameters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   47. Forecasting  an AR(1) Process
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Information
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   48. Job Search VII: Search with Learning
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   49. Likelihood Ratio Processes
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   50. Computing Mean of a Likelihood Ratio Process
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   51. A Problem that Stumped Milton Friedman
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   52. Exchangeability and Bayesian Updating
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   53. Likelihood Ratio Processes and Bayesian Learning
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   54. Incorrect Models
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   55. Bayesian versus Frequentist Decision Rules
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   56. LQ Control: Foundations
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   57. Lagrangian for LQ Control
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   58. Eliminating Cross Products
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   59. The Permanent Income Model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   60. Permanent Income II: LQ Techniques
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   61. Production Smoothing via Inventories
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   62. A Lake Model of Employment and Unemployment
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   63. Rational Expectations Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   64. Stability in Linear Rational Expectations Models
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   65. Markov Perfect Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   66. Uncertainty Traps
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   67. The Aiyagari Model
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Asset Pricing and Finance
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   68. Asset Pricing: Finite State Models
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   69. Competitive Equilibria with Arrow Securities
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   70. Heterogeneous Beliefs and Bubbles
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Data and Empirics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   71. Pandas for Panel Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   72. Linear Regression in Python
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   73. Maximum Likelihood Estimation
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Auctions
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   74. First-Price and Second-Price Auctions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   75. Multiple Good Allocation Mechanisms
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   76. Troubleshooting
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   77. References
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   78. Execution Statistics
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/blob/main/lectures/hoist_failure.md" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.notebooks/blob/main/hoist_failure.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.notebooks" data-urlpath="tree/lecture-python.notebooks/hoist_failure.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.notebooks/blob/main/hoist_failure.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "hoist_failure";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.notebooks";
+                const urlPath = "tree/lecture-python.notebooks/hoist_failure.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/jupyter/hub/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>
