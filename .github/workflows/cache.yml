@@ -1,0 +1,35 @@
+name: Build Cache [using jupyter-book]
+on:
+  schedule:
+    # Execute cache weekly at 3am on Monday
+    - cron:  '0 3 * * 1'
+jobs:
+  cache:
+    runs-on: quantecon-gpu
+    container:
+      image: ghcr.io/quantecon/lecture-python-container:cuda-12.6.0-anaconda-2024-10-py312-b
+      options: --gpus all
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Check nvidia drivers
+        shell: bash -l {0}
+        run: |
+          nvidia-smi
+      - name: Build HTML
+        shell: bash -l {0}
+        run: |
+          jb build lectures --path-output ./ -W --keep-going
+      - name: Upload Execution Reports
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: execution-reports
+          path: _build/html/reports
+      - name: Upload "_build" folder (cache)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-cache
+          path: _build
+          include-hidden-files: true
