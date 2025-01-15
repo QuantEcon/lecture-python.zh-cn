@@ -1,27 +1,44 @@
 name: Build Cache [using jupyter-book]
 on:
-  schedule:
-    # Execute cache weekly at 3am on Monday
-    - cron:  '0 3 * * 1'
+  push:
+    branches:
+      - main
 jobs:
-  cache:
-    runs-on: quantecon-gpu
-    container:
-      image: ghcr.io/quantecon/lecture-python-container:cuda-12.6.0-anaconda-2024-10-py312-b
-      options: --gpus all
+  tests:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Anaconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Check nvidia drivers
-        shell: bash -l {0}
+          auto-update-conda: true
+          auto-activate-base: true
+          miniconda-version: 'latest'
+          python-version: "3.11"
+          environment-file: environment.yml
+          activate-environment: quantecon
+      - name: graphviz Support # TODO: required?
         run: |
-          nvidia-smi
+          sudo apt-get -qq update && sudo apt-get install -y graphviz
+      - name: Install latex dependencies
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get install -y     \
+            texlive-latex-recommended \
+            texlive-latex-extra       \
+            texlive-fonts-recommended \
+            texlive-fonts-extra       \
+            texlive-xetex             \
+            latexmk                   \
+            xindy                     \
+            dvipng                    \
+            cm-super
       - name: Build HTML
         shell: bash -l {0}
         run: |
           jb build lectures --path-output ./ -W --keep-going
-      - name: Upload Execution Reports
+      - name: Upload Execution Reports (HTML)
         uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -32,4 +49,3 @@ jobs:
         with:
           name: build-cache
           path: _build
-          include-hidden-files: true

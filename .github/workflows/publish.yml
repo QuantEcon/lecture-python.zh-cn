@@ -1,4 +1,4 @@
-name: Build & Publish to GH Pages
+name: Build & Publish to GH-PAGES
 on:
   push:
     tags:
@@ -6,88 +6,109 @@ on:
 jobs:
   publish:
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-    runs-on: quantecon-gpu
-    container:
-      image: ghcr.io/quantecon/lecture-python-container:cuda-12.6.0-anaconda-2024-10-py312-b
-      options: --gpus all
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Git (required to commit notebooks)
-        shell: bash -l {0}
-        run: apt-get install -y git
-      - name: Check nvidia drivers
-        shell: bash -l {0}
+      - name: Setup Anaconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          auto-activate-base: true
+          miniconda-version: 'latest'
+          python-version: "3.11"
+          environment-file: environment.yml
+          activate-environment: quantecon
+      - name: Install latex dependencies
         run: |
-          nvidia-smi
+          sudo apt-get -qq update
+          sudo apt-get install -y     \
+            texlive-latex-recommended \
+            texlive-latex-extra       \
+            texlive-fonts-recommended \
+            texlive-fonts-extra       \
+            texlive-xetex             \
+            latexmk                   \
+            xindy                     \
+            dvipng                    \
+            cm-super
       - name: Display Conda Environment Versions
         shell: bash -l {0}
         run: conda list
       - name: Display Pip Versions
         shell: bash -l {0}
         run: pip list
-      # Download Build Cache from cache.yml
       - name: Download "build" folder (cache)
-        uses: dawidd6/action-download-artifact@v7
+        uses: dawidd6/action-download-artifact@v6
         with:
           workflow: cache.yml
           branch: main
           name: build-cache
           path: _build
-      # Build Assets (Download Notebooks, PDF via LaTeX)
-      - name: Build PDF from LaTeX
-        shell: bash -l {0}
-        run: |
-          jb build lectures --builder pdflatex --path-output ./ -n -W --keep-going
-      - name: Copy LaTeX PDF for GH-PAGES
-        shell: bash -l {0}
-        run: |
-          mkdir -p _build/html/_pdf
-          cp -u _build/latex/*.pdf _build/html/_pdf
-      - name: Build Download Notebooks (sphinx-tojupyter)
-        shell: bash -l {0}
-        run: |
-          jb build lectures --path-output ./ --builder=custom --custom-builder=jupyter -n -W --keep-going
-          zip -r download-notebooks.zip _build/jupyter
-      - uses: actions/upload-artifact@v4
-        with:
-          name: download-notebooks
-          path: download-notebooks.zip
-      - name: Copy Download Notebooks for GH-PAGES
-        shell: bash -l {0}
-        run: |
-          mkdir -p _build/html/_notebooks
-          cp -u _build/jupyter/*.ipynb _build/html/_notebooks
-      # Final Build of HTML (with assets)
+      # # Build Assets (Download Notebooks and PDF via LaTeX)
+      # - name: Build PDF from LaTeX
+      #   shell: bash -l {0}
+      #   run: |
+      #     jb build lectures --builder pdflatex --path-output ./ -n --keep-going
+      # - name: Copy LaTeX PDF for GH-PAGES
+      #   shell: bash -l {0}
+      #   run: |
+      #     mkdir -p _build/html/_pdf
+      #     cp -u _build/latex/*.pdf _build/html/_pdf
+      # - name: Build Download Notebooks (sphinx-tojupyter)
+      #   shell: bash -l {0}
+      #   run: |
+      #     jb build lectures --path-output ./ --builder=custom --custom-builder=jupyter
+      # - name: Copy Download Notebooks for GH-PAGES
+      #   shell: bash -l {0}
+      #   run: |
+      #     mkdir -p _build/html/_notebooks
+      #     cp -u _build/jupyter/*.ipynb _build/html/_notebooks
+      # Build HTML (Website)
+      # BUG: rm .doctress to remove `sphinx` rendering issues for ipywidget mimetypes
+      # and clear the sphinx cache for building final HTML documents.
+      #    # rm -r _build/.doctrees
       - name: Build HTML
         shell: bash -l {0}
         run: |
-          jb build lectures --path-output ./ -n -W --keep-going
+          jb build lectures --path-output ./
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: '_build/html/'
+          production-branch: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       - name: Deploy website to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: _build/html/
-          cname: python.quantecon.org
-      - name: Prepare lecture-python.notebooks sync
-        shell: bash -l {0}
-        run: |
-          mkdir -p _build/lecture-python.notebooks
-          cp -a _notebook_repo/. _build/lecture-python.notebooks
-          cp _build/jupyter/*.ipynb _build/lecture-python.notebooks
-          ls -a _build/lecture-python.notebooks
-      - name: Commit notebooks to lecture-python.notebooks
-        shell: bash -l {0}
-        env:
-          QE_SERVICES_PAT: ${{ secrets.QUANTECON_SERVICES_PAT }}
-        run: |
-          git clone https://quantecon-services:$QE_SERVICES_PAT@github.com/quantecon/lecture-python.notebooks
-
-          cp _build/lecture-python.notebooks/*.ipynb lecture-python.notebooks
-
-          cd lecture-python.notebooks
-          git config user.name "QuantEcon Services"
-          git config user.email "admin@quantecon.org"
-          git add *.ipynb
-          git commit -m "auto publishing updates to notebooks"
-          git push origin main
+          # cname: intro-cn.quantecon.org
+      - name: Upload "_build" folder (publish)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-publish
+          path: _build
+      # # Sync notebooks
+      # - name: Prepare lecture-python-intro.notebooks sync
+      #   shell: bash -l {0}
+      #   run: |
+      #     mkdir -p _build/lecture-python-intro.notebooks
+      #     cp -a _notebook_repo/. _build/lecture-python-intro.notebooks
+      #     cp _build/jupyter/*.ipynb _build/lecture-python-intro.notebooks
+      #     ls -a _build/lecture-python-intro.notebooks
+      # - name: Commit latest notebooks to lecture-python-intro.notebooks
+      #   uses: cpina/github-action-push-to-another-repository@main
+      #   env:
+      #     API_TOKEN_GITHUB: ${{ secrets.QUANTECON_SERVICES_PAT }}
+      #   with:
+      #     source-directory: '_build/lecture-python-intro.notebooks/'
+      #     destination-repository-username: 'QuantEcon'
+      #     destination-repository-name: 'lecture-python-intro.notebooks'
+      #     commit-message: 'auto publishing updates to notebooks'
+      #     destination-github-username: 'quantecon-services'
+      #     user-email: services@quantecon.org
