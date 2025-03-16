@@ -1,23 +1,20 @@
 """
-Before running the file, config the environment by adding the OpenAI API key:
+Before running the file, config the environment by adding the Anthropic API key:
 
-
-echo "export OPENAI_API_KEY='yourkey'" >> ~/.zshrc
+echo "export ANTHROPIC_API_KEY='yourkey'" >> ~/.zshrc
 source ~/.zshrc
-echo $OPENAI_API_KEY # Test to see if it is added
+echo $ANTHROPIC_API_KEY # Test to see if it is added
 """
 
-
-import openai
+import anthropic
 import os
 from concurrent.futures import ThreadPoolExecutor
 
-def process_file(filename, function, assistant_cn_id):
+def process_file(filename, function):
     input_file = os.path.join(directory, filename)
     print(f'processing {input_file}')
     if os.path.isfile(input_file):
-        function(input_file, assistant_cn_id)
-
+        function(input_file)
 
 def split_text(content, chunk_size=3000):
     chunks = []
@@ -50,59 +47,72 @@ def split_text(content, chunk_size=3000):
 
     return chunks
 
-def translate_cn(input_file, assistant_id):
-    # Initialize the OpenAI client
-    client = openai.OpenAI()
+def translate_cn(input_file):
+    # Initialize the Anthropic client
+    client = anthropic.Anthropic()
 
     # Read the content of the input markdown file
     with open(input_file, 'r', encoding='utf-8') as file:
         content = file.read()
 
     # Split the content into chunks
-    chunks = split_text(content, chunk_size=1000)
-
-    # Initialize the OpenAI client and thread
-    thread = client.beta.threads.create()
-
-    translated_content = ""
-    header = ''
-    for chunk in chunks:
-        # Create and poll the run for each chunk
-        run = client.beta.threads.runs.create_and_poll(
-            thread_id=thread.id,
-            assistant_id=assistant_id,
-            instructions="Give a direct translation into simplified Chinese. Maintain all the markdown syntax and directives unchanged. Give the results directly without system messages: " + chunk
-        )
-        
-        if run.status == 'completed': 
-            messages = client.beta.threads.messages.list(
-                thread_id=thread.id
-            )
-            translated_content += header + messages.data[0].content[0].text.value
-        else:
-            print(f"Translation failed for chunk: {chunk[:50]}... Status: {run.status}")
-            continue
-        header = '\n'
+    chunks = split_text(content, chunk_size=1000)  # Using smaller chunks for better reliability
+    print(f"Split content into {len(chunks)} chunks")
 
     # Create the output file name
     output_file = input_file.replace('.md', '_cn.md')
-
-    # Write the translated content to the new markdown file
+    
+    # Create or clear the output file
     with open(output_file, 'w', encoding='utf-8') as file:
-        file.write(translated_content)
+        file.write("")
+    
+    for i, chunk in enumerate(chunks):
+        print(f"\nProcessing chunk {i+1}/{len(chunks)} (length: {len(chunk)} chars)")
+        print(f"Chunk preview: {chunk[:100]}...")
+        
+        try:
+            print(f"Sending request to Claude API...")
+            # Create message with Claude
+            message = client.messages.create(
+                model="claude-3-opus-20240229",
+                max_tokens=4000,
+                temperature=0,
+                system="You are a professional translator. Translate the given text into simplified Chinese. Maintain all markdown syntax, code blocks, and directives exactly as they are. Only output the direct translation without any explanations or system messages.",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": chunk
+                    }
+                ]
+            )
+            
+            response_text = message.content[0].text
+            print(f"Received response (length: {len(response_text)} chars)")
+            print(f"Response preview: {response_text[:100]}...")
+            
+            # Append this chunk's translation to the output file immediately
+            with open(output_file, 'a', encoding='utf-8') as file:
+                file.write(response_text + "\n")
+                
+            print(f"Wrote chunk {i+1} translation to {output_file}")
+                
+        except Exception as e:
+            print(f"Translation failed for chunk: {chunk[:50]}... Error: {str(e)}")
+            print(f"Full error details: {e}")
+            continue
 
-    print(f"Translated content has been saved to {output_file}")
-
+    print(f"All chunks translated and saved to {output_file}")
 
 if __name__ == "__main__":
     directory = "lectures"
-    assistant_cn_id = 'asst_zjzyGwEZ1rVuJYWNQk6nzQTA'
-
-    files = [f for f in os.listdir(directory) if f.endswith('.md') and os.path.isfile(os.path.join(directory, f))]
-    print(openai.beta.assistants.list())
     
+    files = [f for f in os.listdir(directory) if f.endswith('.md') and os.path.isfile(os.path.join(directory, f))]
     print(f'files to translate: {files}')
     
-    file_handler = lambda file: process_file(file, translate_cn, assistant_cn_id)
-    with ThreadPoolExecutor() as executor:
-        executor.map(file_handler, files[1:])
+    # Process all files, not just files[1:]
+    for file in files:
+        print(f"\nStarting translation of {file}...")
+        process_file(file, translate_cn)
+        print(f"Completed translation of {file}")
+
+    print("\nAll translations completed!")

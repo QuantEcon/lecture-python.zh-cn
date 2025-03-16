@@ -1,4 +1,4 @@
----
+```---
 jupytext:
   text_representation:
     extension: .md
@@ -18,13 +18,13 @@ kernelspec:
 </div>
 ```
 
-# The Aiyagari Model
+# 艾亚加里模型
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了 Anaconda 包含的内容，这一讲还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -33,58 +33,58 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-In this lecture, we describe the structure of a class of models that build on work by Truman Bewley {cite}`Bewley1977`.
+在本次讲座中，我们将描述一类基于Truman Bewley {cite}`Bewley1977`研究的模型的结构。
 
-We begin by discussing an example of a Bewley model due to Rao Aiyagari {cite}`Aiyagari1994`.
+我们首先讨论一个由Rao Aiyagari {cite}`Aiyagari1994`提出的Bewley模型的例子。
 
-The model features
+该模型的特点是
 
-* Heterogeneous agents
-* A single exogenous vehicle for borrowing and lending
-* Limits on amounts individual agents may borrow
+* 异质代理
+* 一个用于借贷的外生单一工具
+* 对个体代理借款额度的限制
 
-The Aiyagari model has been used to investigate many topics, including
+艾亚加里模型已被用于研究许多主题，包括
 
-* precautionary savings and the effect of liquidity constraints {cite}`Aiyagari1994`
-* risk sharing and asset pricing {cite}`Heaton1996`
-* the shape of the wealth distribution {cite}`benhabib2015`
-* etc., etc., etc.
+* 预防性储蓄和流动性约束的影响 {cite}`Aiyagari1994`
+* 风险分担和资产定价 {cite}`Heaton1996`
+* 财富分布的形状 {cite}`benhabib2015`
+* 等等等等
 
-Let's start with some imports:
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from quantecon.markov import DiscreteDP
 from numba import jit
 ```
 
-### References
+### 参考文献
 
-The primary reference for this lecture is {cite}`Aiyagari1994`.
+本讲的主要参考文献是 {cite}`Aiyagari1994`。
 
-A textbook treatment is available in chapter 18 of {cite}`Ljungqvist2012`.
+在 {cite}`Ljungqvist2012` 的第18章中可以找到教科书的解释。
 
-A continuous time version of the model by SeHyoun Ahn and Benjamin Moll can be found [here](https://nbviewer.org/github/QuantEcon/QuantEcon.notebooks/blob/master/aiyagari_continuous_time.ipynb).
+SeHyoun Ahn和Benjamin Moll的连续时间版本模型可以在[这里](https://nbviewer.org/github/QuantEcon/QuantEcon.notebooks/blob/master/aiyagari_continuous_time.ipynb)找到。
 
-## The Economy
+## 经济体
 
-### Households
+### 家庭
 
-Infinitely lived households / consumers face idiosyncratic income shocks.
+无限期存在的家庭/消费者面临着特定的收入冲击。
 
-A unit interval of  *ex-ante* identical households face a common borrowing constraint.
+*事先* 相同的家庭的单位区间面临共同的借款约束。
 
-The savings problem faced by a typical  household is
+典型家庭面临的储蓄问题是
 
 $$
 \max \mathbb E \sum_{t=0}^{\infty} \beta^t u(c_t)
 $$
 
-subject to
+满足
 
 $$
 a_{t+1} + c_t \leq w z_t + (1 + r) a_t
@@ -94,153 +94,194 @@ c_t \geq 0,
 a_t \geq -B
 $$
 
-where
+其中
 
-* $c_t$ is current consumption
-* $a_t$ is assets
-* $z_t$ is an exogenous component of labor income capturing stochastic unemployment risk, etc.
-* $w$ is a wage rate
-* $r$ is a net interest rate
-* $B$ is the maximum amount that the agent is allowed to borrow
+* $c_t$ 是当前消费
+* $a_t$ 是资产
+* $z_t$ 是劳动收入的外生部分，捕捉随机失业风险等
+* $w$ 是工资率
+* $r$ 是净利率
+* $B$ 是代理允许借用的最大金额
 
-The exogenous process $\{z_t\}$ follows a finite state Markov chain with given stochastic matrix $P$.
+外生过程 $\{z_t\}$ 遵循具有给定随机矩阵 $P$ 的有限状态马尔可夫链。
 
-The wage and interest rate are fixed over time.
+工资和利率在时间上是固定的。
 
-In this simple version of the model, households supply labor  inelastically because they do not value leisure.
+在这个简单版本的模型中，家庭无弹性地供给劳动，因为他们不重视休闲。
 
-## Firms
+## 公司
 
-Firms produce output by hiring capital and labor.
+公司通过雇佣资本和劳动来生产产出。
 
-Firms act competitively and face constant returns to scale.
+公司以竞争的方式运作，并面临规模报酬不变。
 
-Since returns to scale are constant the number of firms does not matter.
+由于规模报酬不变，公司的数量并不重要。
 
-Hence we can consider a single (but nonetheless competitive) representative firm.
+因此，我们可以考虑单个（但仍然是竞争性的）代表性公司。
 
-The firm's output is
+公司的产出是
 
 $$
 Y_t = A K_t^{\alpha} N^{1 - \alpha}
 $$
 
-where
+其中
 
-* $A$ and $\alpha$ are parameters with $A > 0$ and $\alpha \in (0, 1)$
-* $K_t$ is aggregate capital
-* $N$ is total labor supply (which is constant in this simple version of the model)
+* $A$ 和 $\alpha$ 是参数，满足 $A > 0$ 且 $\alpha \in (0, 1)$
+* $K_t$ 是总资本
+* $N$ 是总劳动供给（在这个简单版本的模型中是常数）
 
-The firm's problem is
+公司的问题是
 
 $$
 max_{K, N} \left\{ A K_t^{\alpha} N^{1 - \alpha} - (r + \delta) K - w N \right\}
 $$
+用 $F(K, N) = A K^{\alpha} N^{1 - \alpha}$ 表示产出，公司的最优选择就成为
 
-The parameter $\delta$ is the depreciation rate.
+$$
+r + \delta = \partial F / \partial K = A \alpha  \left( \frac{N}{K} \right)^{1 - \alpha}
+$$
 
-From the first-order condition with respect to capital, the firm's inverse demand for capital is
+$$
+w = \partial F / \partial N = A  (1 - \alpha)  \left( \frac{K}{N} \right)^{\alpha}
+$$
+
+这些方程可以重新排列为
 
 ```{math}
-:label: aiy_rgk
+:label: aiyagari_r
 
 r = A \alpha  \left( \frac{N}{K} \right)^{1 - \alpha} - \delta
 ```
 
-Using this expression and the firm's first-order condition for labor, we can pin down
-the equilibrium wage rate as a function of $r$ as
+和
 
 ```{math}
-:label: aiy_wgr
+:label: aiyagari_w
 
-w(r) = A  (1 - \alpha)  (A \alpha / (r + \delta))^{\alpha / (1 - \alpha)}
+w = A  (1 - \alpha)  \left( \frac{K}{N} \right)^{\alpha}
 ```
 
-### Equilibrium
+因此，这些条件与 {gls}`first_optimal_condition` 和 {gls}`hotellings_rule` 一致。
 
-We construct  a *stationary rational expectations equilibrium* (SREE).
+即：
 
-In such an equilibrium
+* 在竞争性均衡中，工资等于 LME 第一个最优条件推导的边际产品
+* 净利率等于由这两个条件推导出的“资源减去折旧”的资本边际产品
 
-* prices induce behavior that generates aggregate quantities consistent with the prices
-* aggregate quantities and prices are constant over time
+### 市场清算条件
 
-In more detail, an SREE lists a set of prices, savings and production policies such that
+假设政府不提供任何固定的借款额度，那么市场清算条件就是
 
-* households want to choose the specified savings policies taking the prices as given
-* firms maximize profits taking the same prices as given
-* the resulting aggregate quantities are consistent with the prices; in particular, the demand for capital equals the supply
-* aggregate quantities (defined as cross-sectional averages) are constant
+$$
+K = \int a_i \phi (d a_i, d z_i)
+$$
 
-In practice, once parameter values are set, we can check for an SREE by the following steps
+其中 $\phi (d a_i, d z_i)$ 是家庭 $(i = 1, 2,..., n)$ 的${a_i, z_i}$ 分布
 
-1. pick a proposed quantity $K$ for aggregate capital
-1. determine corresponding prices, with interest rate $r$ determined by {eq}`aiy_rgk` and a wage rate $w(r)$ as given in {eq}`aiy_wgr`
-1. determine the common optimal savings policy of the households given these prices
-1. compute aggregate capital as the mean of steady state capital given this savings policy
+## 证明我们的推导
 
-If this final quantity agrees with $K$ then we have a SREE.
+我们将通过对市场清算条件进行近似来验证所做出的推导。
+```{code-cell} ipython
+import numpy as np
+from scipy.optimize import fsolve  # 导入fsolve函数用于非线性方程求解
 
-## Code
+# 定义参数
+alpha = 0.36
+beta = 0.96
+delta = 0.1
+A = 1
+N = 1
 
-Let's look at how we might compute such an equilibrium in practice.
+# 定义对于 J(w) = J(r + delta) 的函数
+def equations(p):
+    r, K = p
+    equation1 = r - (A * alpha * ((N / K) ** (1 - alpha)) - delta)
+    equation2 = (beta ** -1 - (1 - delta)) - (A * alpha * ((N / K) ** (1 - alpha)))
+    return (equation1, equation2)
 
-To solve the household's dynamic programming problem we'll use the [DiscreteDP](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/markov/ddp.py) class from [QuantEcon.py](https://quantecon.org/quantecon-py/).
+r, K =  fsolve(equations, (0.1, 5))  # 初始猜测
 
-Our first task is the least exciting one: write code that maps parameters for a household problem into the `R` and `Q` matrices needed to generate an instance of `DiscreteDP`.
+print(f'r = {r:.4f}')
+print(f'K = {K:.4f}')
+```
+从上面的模型推导得出 $r$ 和 $K$ 的值
 
-Below is a piece of boilerplate code that does just this.
+* 这些利用我们早期的均衡条件，即在市场均衡时资本市场清算条件 $J(r + \delta)$ 和家庭的资本供给条件
+* 这也符合家庭在市场上的借入限制
 
-In reading the code, the following information will be helpful
+## 用动态规划描述家庭问题
 
-* `R` needs to be a matrix where `R[s, a]` is the reward at state `s` under action `a`.
-* `Q` needs to be a three-dimensional array where `Q[s, a, s']` is the probability of transitioning to state `s'` when the current state is `s` and the current action is `a`.
+为了用动态规划方法描述家庭问题，我们需要定义
 
-(A more detailed discussion of `DiscreteDP` is available in the [Discrete State Dynamic Programming](https://python-advanced.quantecon.org/discrete_dp.html) lecture in the [Advanced
-Quantitative Economics with Python](https://python-advanced.quantecon.org) lecture series.)
+* 状态：收入 $z_t$ 和资产 $a_t$ 的状态对 $(z_t, a_t)$ 描述了净财富的初始状态；
+* 行动：在资产限额不变的情况下，家庭的行动就是选择他们所拥有的消费 $c_t = (1 + r) a_t + wz_t - a_{t+1} $；
+* 转移：在时间 $t+1$，资产从 $a_t$ 转移到 $a_{t+1}$，劳动收入从 $z_t$ 转移到 $z_{t+1}$
 
-Here we take the state to be $s_t := (a_t, z_t)$, where $a_t$ is assets and $z_t$ is the shock.
+然后贝尔曼方程是
 
-The action is the choice of next period asset level $a_{t+1}$.
+$$
+v(a, z) = \max_{(a')} \left\{ u((1 + r) a + wz - a') + \beta \mathbb{E}_z' v(a', z') \right\}
+$$
 
-We use Numba to speed up the loops so we can update the matrices efficiently
-when the parameters change.
+定义的约束是 $\underline{a} \le a' \le \overline{a}$。
 
-The class also includes a default set of parameters that we'll adopt unless otherwise specified.
+我们将更详细地讨论这些定义。
+（{term}`state space`）将在不同的价格体系中运行。
+
+家庭在此标记上的问题变得简单：
+
+1. 定义状态 $(a, z)$ 和行动 $a'$。
+2. 找一个有效的 $\pi$，将约束编码为转移矩阵 $Q$。
+3. 通过迭代约束和收益来估计贝尔曼方程的近似解。
+
+我们在前面介绍了一种解决技术，它将 [DiscreteDP](https://python-advanced.quantecon.org/pack/discreteecon.html#DiscreteDP) 和向后归纳方法的数据结构结合了线性程序和动态规划的启发式。有关详细信息，请参见相应的指南。
+
+## 操作标准代码 {cite}`evans2022`
+
+下面给出的代码有时会运行得很慢，具体取决于硬件设备。
+
+我们告诉你如何使用 [Numba](https://numba.pydata.org) （一个简单易用的Python代码优化器/加速器）加速代码。
+
+对想要使用（紧密）有限状态空间的读取者而言，一个好的起始点是[Quantitative Economics with Python](https://python-advanced.quantecon.org)讲座系列。）
+
+在这里，我们把状态定义为 $s_t := (a_t, z_t)$，其中 $a_t$ 是资产而 $z_t$ 是震荡。
+
+行动是选择下一个时期的资产水平 $a_{t+1}$。
+
+我们使用Numba加速循环，这样我们可以在参数变化时高效地更新矩阵。
+
+该类还包括一组默认参数，除非另有说明，我们将采用这些参数。
 
 ```{code-cell} python3
 class Household:
     """
-    This class takes the parameters that define a household asset accumulation
-    problem and computes the corresponding reward and transition matrices R
-    and Q required to generate an instance of DiscreteDP, and thereby solve
-    for the optimal policy.
+    本类获取定义家庭资产积累问题的参数，并计算生成DiscreteDP实例所需的相应奖励和转移矩阵R和Q，从而求解最优策略。
 
-    Comments on indexing: We need to enumerate the state space S as a sequence
-    S = {0, ..., n}.  To this end, (a_i, z_i) index pairs are mapped to s_i
-    indices according to the rule
+    有关索引的注释：我们需要将状态空间S枚举为一个序列
+    S = {0, ..., n}。为此， (a_i, z_i) 索引对根据以下规则映射到 s_i 索引：
 
         s_i = a_i * z_size + z_i
 
-    To invert this map, use
+    若要反转此映射，请使用
 
-        a_i = s_i // z_size  (integer division)
+        a_i = s_i // z_size  (整数除法)
         z_i = s_i % z_size
 
     """
 
 
     def __init__(self,
-                r=0.01,                      # Interest rate
-                w=1.0,                       # Wages
-                β=0.96,                      # Discount factor
+                r=0.01,                      # 利率
+                w=1.0,                       # 工资
+                β=0.96,                      # 折扣因子
                 a_min=1e-10,
-                Π=[[0.9, 0.1], [0.1, 0.9]],  # Markov chain
-                z_vals=[0.1, 1.0],           # Exogenous states
+                Π=[[0.9, 0.1], [0.1, 0.9]],  # 马尔可夫链
+                z_vals=[0.1, 1.0],           # 外生状态
                 a_max=18,
                 a_size=200):
 
-        # Store values, set up grids over a and z
+        # 存储值，设置 a 和 z 的网格
         self.r, self.w, self.β = r, w, β
         self.a_min, self.a_max, self.a_size = a_min, a_max, a_size
 
@@ -251,18 +292,17 @@ class Household:
         self.a_vals = np.linspace(a_min, a_max, a_size)
         self.n = a_size * self.z_size
 
-        # Build the array Q
+        # 构建数组 Q
         self.Q = np.zeros((self.n, a_size, self.n))
         self.build_Q()
 
-        # Build the array R
+        # 构建数组 R
         self.R = np.empty((self.n, a_size))
         self.build_R()
 
     def set_prices(self, r, w):
         """
-        Use this method to reset prices. Calling the method will trigger a
-        re-build of R.
+        使用此方法重新设定价格。调用此方法将触发 R 的重新构建。
         """
         self.r, self.w = r, w
         self.build_R()
@@ -281,7 +321,7 @@ class Household:
                 self.w)
 
 
-# Do the hard work using JIT-ed functions
+# 使用JIT函数进行主要工作
 
 @jit
 def populate_R(R, a_size, z_size, a_vals, z_vals, r, w):
@@ -295,7 +335,7 @@ def populate_R(R, a_size, z_size, a_vals, z_vals, r, w):
             a_new = a_vals[new_a_i]
             c = w * z + (1 + r) * a - a_new
             if c > 0:
-                R[s_i, new_a_i] = np.log(c)  # Utility
+                R[s_i, new_a_i] = np.log(c)  # 效用
 
 @jit
 def populate_Q(Q, a_size, z_size, Π):
@@ -315,29 +355,28 @@ def asset_marginal(s_probs, a_size, z_size):
             a_probs[a_i] += s_probs[a_i*z_size + z_i]
     return a_probs
 ```
-
-As a first example of what we can do, let's compute and plot an optimal accumulation policy at fixed prices.
+一个使用例子如下：
 
 ```{code-cell} python3
-# Example prices
+# 示例价格
 r = 0.03
 w = 0.956
 
-# Create an instance of Household
+# 创建Household实例
 am = Household(a_max=20, r=r, w=w)
 
-# Use the instance to build a discrete dynamic program
+# 使用该实例构建一个离散动态程序
 am_ddp = DiscreteDP(am.R, am.Q, am.β)
 
-# Solve using policy function iteration
+# 使用策略函数迭代求解
 results = am_ddp.solve(method='policy_iteration')
 
-# Simplify names
+# 简化名称
 z_size, a_size = am.z_size, am.a_size
 z_vals, a_vals = am.z_vals, am.a_vals
 n = a_size * z_size
 
-# Get all optimal actions across the set of a indices with z fixed in each row
+# 获得在z固定的每一行上的a索引集的所有最优动作
 a_star = np.empty((z_size, a_size))
 for s_i in range(n):
     a_i = s_i // z_size
@@ -345,26 +384,25 @@ for s_i in range(n):
     a_star[z_i, a_i] = a_vals[results.sigma[s_i]]
 
 fig, ax = plt.subplots(figsize=(9, 9))
-ax.plot(a_vals, a_vals, 'k--')  # 45 degrees
+ax.plot(a_vals, a_vals, 'k--')  # 45度
 for i in range(z_size):
     lb = f'$z = {z_vals[i]:.2}$'
     ax.plot(a_vals, a_star[i, :], lw=2, alpha=0.6, label=lb)
-    ax.set_xlabel('current assets')
-    ax.set_ylabel('next period assets')
+    ax.set_xlabel('现期资产')
+    ax.set_ylabel('下一期资产')
 ax.legend(loc='upper left')
 
 plt.show()
 ```
+该图显示了不同外生状态下的资产积累策略。
 
-The plot shows asset accumulation policies at different values of the exogenous state.
+现在我们希望计算均衡。
 
-Now we want to calculate the equilibrium.
+让我们首先通过视觉方法来尝试。
 
-Let's do this visually as a first pass.
+下面的代码绘制了供给和需求曲线。
 
-The following code draws aggregate supply and demand curves.
-
-The intersection gives equilibrium interest rates and capital.
+它们的交点给出了均衡利率和资本。
 
 ```{code-cell} python3
 A = 1.0
@@ -373,68 +411,64 @@ N = 1.0
 β = 0.96
 δ = 0.05
 
-
 def r_to_w(r):
     """
-    Equilibrium wages associated with a given interest rate r.
+    与给定利率r相关的均衡工资。
     """
     return A * (1 - α) * (A * α / (r + δ))**(α / (1 - α))
 
 def rd(K):
     """
-    Inverse demand curve for capital.  The interest rate associated with a
-    given demand for capital K.
+    资本需求的逆曲线。与给定资本需求量K相关的利率。
     """
     return A * α * (N / K)**(1 - α) - δ
 
-
 def prices_to_capital_stock(am, r):
     """
-    Map prices to the induced level of capital stock.
+    将价格映射到资本存量的诱发水平。
 
-    Parameters:
+    参数:
     ----------
 
     am : Household
-        An instance of an aiyagari_household.Household
+        一个aiyagari_household.Household的实例
     r : float
-        The interest rate
+        利率
     """
     w = r_to_w(r)
     am.set_prices(r, w)
     aiyagari_ddp = DiscreteDP(am.R, am.Q, β)
-    # Compute the optimal policy
+    # 计算最优策略
     results = aiyagari_ddp.solve(method='policy_iteration')
-    # Compute the stationary distribution
+    # 计算平稳分布
     stationary_probs = results.mc.stationary_distributions[0]
-    # Extract the marginal distribution for assets
+    # 提取资产的边际分布
     asset_probs = asset_marginal(stationary_probs, am.a_size, am.z_size)
-    # Return K
+    # 返回K
     return np.sum(asset_probs * am.a_vals)
 
-
-# Create an instance of Household
+# 创建Household实例
 am = Household(a_max=20)
 
-# Use the instance to build a discrete dynamic program
+# 使用该实例构建一个离散动态程序
 am_ddp = DiscreteDP(am.R, am.Q, am.β)
 
-# Create a grid of r values at which to compute demand and supply of capital
+# 创建一个r值网格，在该网格上计算资本的需求和供给
 num_points = 20
 r_vals = np.linspace(0.005, 0.04, num_points)
 
-# Compute supply of capital
+# 计算资本供给
 k_vals = np.empty(num_points)
 for i, r in enumerate(r_vals):
     k_vals[i] = prices_to_capital_stock(am, r)
 
-# Plot against demand for capital by firms
+# 与公司对资本的需求进行比较
 fig, ax = plt.subplots(figsize=(11, 8))
-ax.plot(k_vals, r_vals, lw=2, alpha=0.6, label='supply of capital')
-ax.plot(k_vals, rd(k_vals), lw=2, alpha=0.6, label='demand for capital')
+ax.plot(k_vals, r_vals, lw=2, alpha=0.6, label='资本供给')
+ax.plot(k_vals, rd(k_vals), lw=2, alpha=0.6, label='资本需求')
 ax.grid()
-ax.set_xlabel('capital')
-ax.set_ylabel('interest rate')
+ax.set_xlabel('资本')
+ax.set_ylabel('利率')
 ax.legend(loc='upper right')
 
 plt.show()
