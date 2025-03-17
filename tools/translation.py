@@ -8,13 +8,31 @@ echo $ANTHROPIC_API_KEY # Test to see if it is added
 
 import anthropic
 import os
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
+import logging
 
-def process_file(filename, function):
-    input_file = os.path.join(directory, filename)
-    print(f'processing {input_file}')
-    if os.path.isfile(input_file):
-        function(input_file)
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('translation.log')
+    ]
+)
+
+def process_file(filename):
+    try:
+        input_file = os.path.join(directory, filename)
+        logging.info(f'Processing {input_file}')
+        if os.path.isfile(input_file):
+            translate_cn(input_file)
+            return f"Successfully processed {filename}"
+        return f"Skipped {filename} - not a file"
+    except Exception as e:
+        logging.error(f"Error processing {filename}: {str(e)}")
+        return f"Failed to process {filename}: {str(e)}"
 
 def split_text(content, chunk_size=3000):
     chunks = []
@@ -57,7 +75,7 @@ def translate_cn(input_file):
 
     # Split the content into chunks
     chunks = split_text(content, chunk_size=1000)  # Using smaller chunks for better reliability
-    print(f"Split content into {len(chunks)} chunks")
+    logging.info(f"Split {input_file} into {len(chunks)} chunks")
 
     # Create the output file name
     output_file = input_file.replace('.md', '_cn.md')
@@ -67,52 +85,66 @@ def translate_cn(input_file):
         file.write("")
     
     for i, chunk in enumerate(chunks):
-        print(f"\nProcessing chunk {i+1}/{len(chunks)} (length: {len(chunk)} chars)")
-        print(f"Chunk preview: {chunk[:100]}...")
+        max_retries = 1
+        retry_count = 0
         
-        try:
-            print(f"Sending request to Claude API...")
-            # Create message with Claude
-            message = client.messages.create(
-                model="claude-3-opus-20240229",
-                max_tokens=4000,
-                temperature=0,
-                system="You are a professional translator. Translate the given text into simplified Chinese. Maintain all markdown syntax, code blocks, and directives exactly as they are. Only output the direct translation without any explanations or system messages.",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": chunk
-                    }
-                ]
-            )
-            
-            response_text = message.content[0].text
-            print(f"Received response (length: {len(response_text)} chars)")
-            print(f"Response preview: {response_text[:100]}...")
-            
-            # Append this chunk's translation to the output file immediately
-            with open(output_file, 'a', encoding='utf-8') as file:
-                file.write(response_text + "\n")
+        while retry_count < max_retries:
+            try:
+                logging.info(f"\nProcessing chunk {i+1}/{len(chunks)} of {input_file} (length: {len(chunk)} chars)")
+                logging.debug(f"Chunk preview: {chunk[:100]}...")
                 
-            print(f"Wrote chunk {i+1} translation to {output_file}")
+                # Create message with Claude
+                message = client.messages.create(
+                    model="claude-3-5-sonnet-latest",
+                    max_tokens=4000,
+                    temperature=0,
+                    system="You are a professional translator. Translate the given text into simplified Chinese. Maintain all markdown syntax, code blocks, and directives exactly as they are. Only output the direct translation without any explanations or system messages.",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": chunk
+                        }
+                    ]
+                )
                 
-        except Exception as e:
-            print(f"Translation failed for chunk: {chunk[:50]}... Error: {str(e)}")
-            print(f"Full error details: {e}")
-            continue
+                response_text = message.content[0].text
+                logging.info(f"Received response for chunk {i+1} (length: {len(response_text)} chars)")
+                logging.debug(f"Response preview: {response_text[:100]}...")
+                
+                # Append this chunk's translation to the output file immediately
+                with open(output_file, 'a', encoding='utf-8') as file:
+                    file.write(response_text + "\n")
+                    
+                logging.info(f"Wrote chunk {i+1} translation to {output_file}")
+                break  # Success, exit retry loop
+                
+            except Exception as e:
+                retry_count += 1
+                logging.error(f"Attempt {retry_count} failed for chunk {i+1} in {input_file}: {str(e)}")
+                if retry_count < max_retries:
+                    time.sleep(5)  # Wait 5 seconds before retrying
+                else:
+                    logging.error(f"Failed to translate chunk after {max_retries} attempts")
+                    raise
 
-    print(f"All chunks translated and saved to {output_file}")
+    logging.info(f"All chunks translated and saved to {output_file}")
 
 if __name__ == "__main__":
     directory = "lectures"
+    max_workers = 3  # Adjust this based on your API rate limits and system capabilities
     
     files = [f for f in os.listdir(directory) if f.endswith('.md') and os.path.isfile(os.path.join(directory, f))]
-    print(f'files to translate: {files}')
+    logging.info(f'Files to translate: {files}')
     
-    # Process all files, not just files[1:]
-    for file in files:
-        print(f"\nStarting translation of {file}...")
-        process_file(file, translate_cn)
-        print(f"Completed translation of {file}")
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_file = {executor.submit(process_file, file): file for file in files}
+        
+        for future in as_completed(future_to_file):
+            file = future_to_file[future]
+            try:
+                result = future.result()
+                logging.info(f"Result for {file}: {result}")
+            except Exception as e:
+                logging.error(f"Exception occurred while processing {file}: {str(e)}")
 
-    print("\nAll translations completed!")
+    logging.info("\nAll translations completed!")
