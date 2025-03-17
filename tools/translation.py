@@ -85,7 +85,7 @@ def translate_cn(input_file):
         file.write("")
     
     for i, chunk in enumerate(chunks):
-        max_retries = 1
+        max_retries = 2
         retry_count = 0
         
         while retry_count < max_retries:
@@ -113,7 +113,7 @@ def translate_cn(input_file):
                 
                 # Append this chunk's translation to the output file immediately
                 with open(output_file, 'a', encoding='utf-8') as file:
-                    file.write(response_text + "\n")
+                    file.write(response_text + "\n\n")  # Add an extra newline for spacing between chunks
                     
                 logging.info(f"Wrote chunk {i+1} translation to {output_file}")
                 break  # Success, exit retry loop
@@ -131,7 +131,7 @@ def translate_cn(input_file):
 
 if __name__ == "__main__":
     directory = "lectures"
-    max_workers = 3  # Adjust this based on your API rate limits and system capabilities
+    max_workers = 2  # Adjust this based on your API rate limits and system capabilities
     
     files = [f for f in os.listdir(directory) if f.endswith('.md') and os.path.isfile(os.path.join(directory, f))]
     logging.info(f'Files to translate: {files}')
