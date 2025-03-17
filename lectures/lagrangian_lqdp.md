@@ -11,7 +11,7 @@ kernelspec:
   name: python3
 ---
 
-# Lagrangian for LQ Control
+# LQ控制的拉格朗日方法
 
 ```{code-cell} ipython3
 :tags: [hide-output]
@@ -26,147 +26,135 @@ from scipy.linalg import schur
 
 +++
 
-## Overview
+## 概述
 
-This is a sequel to this lecture {doc}`linear quadratic dynamic programming <lqcontrol>`
+本讲是 {doc}`线性二次动态规划 <lqcontrol>` 的续篇
 
-It can also be regarded as presenting **invariant subspace** techniques that extend ones that 
-we encountered earlier in this lecture {doc}`stability in linear rational expectations models<re_with_feedback>`
+也可以视为对我们在 {doc}`线性理性预期模型中的稳定性<re_with_feedback>` 一讲中遇到的**不变子空间**技术的扩展
 
-We present a Lagrangian formulation of an infinite horizon linear quadratic undiscounted dynamic programming problem.
+我们将介绍一个无限期线性二次无贴现动态规划问题的拉格朗日形式。
 
-Such a problem is  also sometimes called an  optimal linear regulator problem.
+这类问题有时也被称为最优线性调节器问题。
 
-A Lagrangian formulation 
+拉格朗日形式
 
-* carries insights about connections between stability and optimality
- 
-* is the basis for fast algorithms for solving Riccati equations
-  
-* opens the way to constructing solutions of dynamic systems that don't come directly from an  intertemporal optimization problem
+* 能够揭示稳定性和最优性之间的联系
 
-A key tool in this lecture is the concept of an $n \times n$ **symplectic** matrix.
+* 是求解黎卡提方程的快速算法的基础
 
-A symplectic matrix has eigenvalues that occur in **reciprocal pairs**, meaning that if $\lambda_i \in (-1,1)$ is an eigenvalue, then so is $\lambda_i^{-1}$.  
+* 为构建不直接来自跨期优化问题的动态系统的解决方案开辟了道路
 
-This reciprocal pairs property of the eigenvalues of a matrix  is a tell-tale sign that the matrix describes the joint dynamics of a system of 
-equations describing the **states** and **costates** that constitute   first-order necessary  conditions for solving an undiscounted linear-quadratic  infinite-horizon optimization problem. 
+本讲中的一个关键工具是 $n \times n$ **辛矩阵**的概念。
 
-The symplectic matrix that will interest us describes the first-order dynamics of **state** and **co-state** vectors of an optimally controlled system.
+辛矩阵的特征值以**倒数对**的形式出现，这意味着如果$\lambda_i \in (-1,1)$是一个特征值，那么$\lambda_i^{-1}$也是特征值。
 
-In focusing on eigenvalues and eigenvectors of this matrix, we capitalize on an analysis of 
-**invariant subspaces.** 
+矩阵特征值具有这种倒数对的性质，这是一个明显的标志，表明该矩阵描述了一个系统方程的联合动态，这些方程描述了构成求解无折扣线性二次无限期优化问题的一阶必要条件的**状态**和**协态**。
 
-These invariant subspace formulations of LQ dynamic programming problems provide a bridge between recursive
-(i.e., dynamic programming) formulations and classical formulations of linear control and linear filtering problems that make use of related matrix decompositions (see for example [this lecture](https://python-advanced.quantecon.org/lu_tricks.html) and [this lecture](https://python-advanced.quantecon.org/classical_filtering.html)).
+我们感兴趣的辛矩阵描述了最优控制系统中**状态**和**协态**向量的一阶动态。
 
-While most of this lecture focuses on undiscounted problems, later sections describe handy ways of transforming discounted problems to undiscounted ones.
+在研究这个矩阵的特征值和特征向量时，我们着重分析**不变子空间**。
 
-The techniques in this lecture will prove useful when we study Stackelberg and Ramsey problem in
-[this lecture](https://python-advanced.quantecon.org/dyn_stack.html). 
+这些线性二次动态规划问题的不变子空间表述提供了一个桥梁，连接了递归
 
+（即动态规划）公式和线性控制与线性滤波问题的经典公式，这些公式使用相关的矩阵分解（参见[这节课](https://python-advanced.quantecon.org/lu_tricks.html)和[这节课](https://python-advanced.quantecon.org/classical_filtering.html)）。
 
-  
-## Undiscounted LQ DP Problem
+虽然本课程大部分内容关注非贴现问题，但后面的章节会描述将贴现问题转换为非贴现问题的便捷方法。
 
+本课程中的这些技术在我们学习[这节课](https://python-advanced.quantecon.org/dyn_stack.html)中的斯塔克伯格和拉姆齐问题时将会很有用。
 
-The problem is to choose a sequence of controls  $\{u_t\}_{t=0}^\infty$ to maximize the criterion
+## 非贴现LQ动态规划问题
+
+该问题是要选择一个控制序列 $\{u_t\}_{t=0}^\infty$ 来最大化以下准则
 
 $$ 
 - \sum_{t=0}^\infty \{x'_t Rx_t+u'_tQu_t\} 
 $$
 
-subject to $x_{t+1}=Ax_t+Bu_t$, where  $x_0$ is a  given initial state vector. 
+约束条件为 $x_{t+1}=Ax_t+Bu_t$，其中 $x_0$ 是给定的初始状态向量。
 
-Here $x_t$ is an $(n\times 1)$ vector of state variables, $u_t$ is a $(k\times 1)$
-vector of controls, $R$ is a positive semidefinite symmetric matrix,
-$Q$ is a positive definite symmetric matrix, $A$ is an $(n\times n)$
-matrix, and $B$ is an $(n\times k)$ matrix.
+这里 $x_t$ 是一个 $(n\times 1)$ 的状态变量向量，$u_t$ 是一个 $(k\times 1)$ 的控制向量，$R$ 是一个半正定对称矩阵，$Q$ 是一个正定对称矩阵，$A$ 是一个 $(n\times n)$ 的矩阵，而 $B$ 是一个 $(n\times k)$ 的矩阵。
 
-The optimal 
-value function  turns out to be  quadratic, $V(x)= - x'Px$, where $P$ is a positive
-semidefinite symmetric matrix.
+最优值函数被证明是二次型的，$V(x)= - x'Px$，其中 $P$ 是一个半正定对称矩阵。
 
-Using the transition law to eliminate next period's state, the Bellman
-equation becomes
+使用转移规律消除下一期的状态，贝尔曼方程变为
 
 $$ 
 - x'Px=\max_u \{- x' Rx-u'Qu-(Ax+Bu)' P(Ax+Bu)\}
 $$ (bellman0)
 
-The first-order necessary conditions for the maximum problem on the
-right side of equation {eq}`bellman0` are
+方程 {eq}`bellman0` 右侧最大化问题的一阶必要条件是
 
 ```{note} 
-We use the following rules for differentiating quadratic and bilinear matrix forms: 
+我们使用以下规则来对二次型和双线性矩阵形式求导：
 ${\partial x' A x \over \partial x} = (A + A') x; {\partial y' B z \over \partial y} = B z, {\partial
-y' B z \over \partial z} = B' y$.
+y' B z \over \partial z} = B' y$。
 ```
 
 $$
 (Q+B'PB)u=-B'PAx,
 $$
 
-which implies that an optimal decision rule for $u$ is 
+这意味着 $u$ 的最优决策规则是
+
+$$
 
 $$
 u=-(Q+B'PB)^{-1} B'PAx
 $$ 
 
-or 
+或
 
 $$
 u=-Fx,
 $$
 
-where 
+其中
 
 $$ 
 F=(Q+B'PB)^{-1}B'PA.
 $$
 
-Substituting $u = - (Q+B'PB)^{-1}B'PAx$  into
-the right side of equation {eq}`bellman0` and rearranging gives
+将 $u = - (Q+B'PB)^{-1}B'PAx$ 代入方程 {eq}`bellman0` 的右侧并重新整理得到
 
 $$
 P=R+A'PA-A'PB(Q+B'PB)^{-1} B'PA.
 $$ (riccati)
 
-Equation {eq}`riccati` is called an **algebraic matrix Riccati** equation.
+方程 {eq}`riccati` 被称为**代数矩阵黎卡提**方程。
 
-There are multiple solutions of equation {eq}`riccati`.
+方程 {eq}`riccati` 有多个解。
 
-But only one of them is positive definite.  
+但只有一个解是正定的。
 
-The positive define solution is associated with the maximum of our problem.
+这个正定解与我们问题的最大值相关。
 
-It expresses the matrix $P$ as an implicit function of the matrices
-$R,Q,A,B$. 
+它将矩阵 $P$ 表示为矩阵 $R,Q,A,B$ 的隐函数。
 
-Notice that the **gradient of the value function** is
+注意**值函数的梯度**为
 
 $$
 \frac{\partial V(x)}{\partial x} = - 2 P x 
 $$ (eqn:valgrad)
 
-We shall use fact {eq}`eqn:valgrad` later.
+我们稍后将使用公式 {eq}`eqn:valgrad`。
 
 +++
 
-## Lagrangian
+## 拉格朗日量
 
-For the undiscounted optimal linear regulator problem, form the Lagrangian
+对于无折扣最优线性调节器问题，构造拉格朗日量
 
 $$
 {\cal L} = - \sum^\infty_{t=0} \biggl\{ x^\prime_t R x_t + u_t^\prime Q u_t +
-                                 2 \mu^\prime_{t+1} [A x_t + B u_t - x_{t+1}]\biggr\}
+
+2 \mu^\prime_{t+1} [A x_t + B u_t - x_{t+1}]\biggr\}
 $$ (lag-lqdp-eq1)
 
-where $2 \mu_{t+1}$ is a vector of Lagrange multipliers on the time $t$ transition law $x_{t+1} = A x_t + B u_t$.
+其中 $2 \mu_{t+1}$ 是时间 $t$ 转移方程 $x_{t+1} = A x_t + B u_t$ 的拉格朗日乘子向量。
 
-(We put the $2$ in front of $\mu_{t+1}$ to make things match up nicely with equation {eq}`eqn:valgrad`.)
+（我们在 $\mu_{t+1}$ 前面加上 $2$ 是为了使其与方程 {eq}`eqn:valgrad` 很好地对应。）
 
-First-order conditions for maximization with respect to $\{u_t,x_{t+1}\}_{t=0}^\infty$ are
+关于 $\{u_t,x_{t+1}\}_{t=0}^\infty$ 的最大化一阶条件是
 
 $$
 \begin{aligned}
@@ -174,57 +162,54 @@ $$
 \end{aligned}
 $$ (lag-lqdp-eq2)
 
-Define $\mu_0$ to be  a vector of shadow prices of $x_0$ and apply an envelope condition to {eq}`lag-lqdp-eq1`
- to deduce that
+定义 $\mu_0$ 为 $x_0$ 的影子价格向量，并对 {eq}`lag-lqdp-eq1` 应用包络条件可推导出
 
 $$
 \mu_0 = R x_0 + A' \mu_1,
 $$
 
-which is a time $t=0 $ counterpart to the second equation of system {eq}`lag-lqdp-eq2`.
+这是系统 {eq}`lag-lqdp-eq2` 中第二个方程在时间 $t=0$ 时的对应形式。
 
-An important fact is  that  
+一个重要的事实是
 
 $$ 
 \mu_{t+1} = P x_{t+1}
 $$ (eqn:muPx)
 
-where $P$ is a positive define  matrix that solves  the algebraic Riccati equation {eq}`riccati`. 
+其中 $P$ 是一个正定矩阵，它是代数黎卡提方程 {eq}`riccati` 的解。
 
-Thus, from equations {eq}`eqn:valgrad` and  {eq}`eqn:muPx`,  $- 2 \mu_{t}$ is
-the gradient of the value function with respect to $x_t$. 
+因此，根据方程 {eq}`eqn:valgrad` 和 {eq}`eqn:muPx`，$- 2 \mu_{t}$ 是值函数对 $x_t$ 的梯度。
 
-The Lagrange multiplier vector $\mu_{t}$ is often called the **costate** vector that 
-corresponds to the **state** vector $x_t$.
+Lagrange乘子向量 $\mu_{t}$ 通常被称为与**状态**向量 $x_t$ 对应的**协状态**向量。
 
-It is useful to proceed with the following steps:
+按照以下步骤进行是很有用的：
 
-* solve the first equation of {eq}`lag-lqdp-eq2`  for $u_t$ in terms of $\mu_{t+1}$.
+* 从 {eq}`lag-lqdp-eq2` 的第一个方程解出关于 $\mu_{t+1}$ 的 $u_t$。
 
-* substitute the result into the law of motion $x_{t+1} = A x_t + B u_t$.
+* 将结果代入运动方程 $x_{t+1} = A x_t + B u_t$。
 
-* arrange the resulting equation and the second equation of {eq}`lag-lqdp-eq2`  into the form
+* 将得到的方程和 {eq}`lag-lqdp-eq2` 的第二个方程整理成如下形式
 
 $$
 L\ \begin{pmatrix}x_{t+1}\cr \mu_{t+1}\cr\end{pmatrix}\ = \ N\ \begin{pmatrix}x_t\cr \mu_t\cr\end{pmatrix}\
 ,\ t \geq 0,
 $$ (eq:systosolve)
 
-where
+其中
 
 $$
 L = \ \begin{pmatrix}I & BQ^{-1} B^\prime \cr 0 & A^\prime\cr\end{pmatrix}, \quad N = \
 \begin{pmatrix}A & 0\cr -R & I\cr\end{pmatrix}.
 $$
 
-When $L$ is of full rank (i.e., when $A$ is of full rank), we can write
-system {eq}`eq:systosolve` as
+当 $L$ 满秩时（即当 $A$ 满秩时），我们可以将系统 {eq}`eq:systosolve` 写作
 
 $$
+
 \begin{pmatrix}x_{t+1}\cr \mu_{t+1}\cr\end{pmatrix}\ = M\ \begin{pmatrix}x_t\cr\mu_t\cr\end{pmatrix}
 $$ (eq4orig)
 
-where
+其中
 
 $$
 M\equiv L^{-1} N = \begin{pmatrix}A+B Q^{-1} B^\prime A^{\prime-1}R &
@@ -233,124 +218,117 @@ $$ (Mdefn)
 
 +++
 
-## State-Costate Dynamics
+## 状态-协状态动态
 
+我们寻求解差分方程系统{eq}`eq4orig`，以得到满足以下条件的序列$\{x_t\}_{t=0}^\infty$：
 
-We seek to solve the difference equation system  {eq}`eq4orig` for a sequence $\{x_t\}_{t=0}^\infty$
-that satisfies 
+* $x_0$的初始条件
+* 终端条件$\lim_{t \rightarrow +\infty} x_t =0$
 
-* an initial condition for $x_0$
-* a terminal condition $\lim_{t \rightarrow +\infty} x_t =0$ 
+这个终端条件反映了我们对**稳定**解的需求，即当$t \rightarrow \infty$时不会发散的解。
 
-This  terminal condition reflects our desire for a **stable** solution, one that does not diverge as $t \rightarrow \infty$.
-
-
-We inherit our wish for stability of the $\{x_t\}$ sequence from a desire to maximize
+我们对$\{x_t\}$序列稳定性的要求源于最大化以下表达式的愿望：
 
 $$ 
 -\sum_{t=0}^\infty \bigl[ x_t ' R x_t + u_t' Q u_t \bigr],
 $$
 
-which requires that $x_t' R x_t$ converge to zero as $t \rightarrow + \infty$.
+这要求当$t \rightarrow + \infty$时，$x_t' R x_t$收敛于零。
 
 +++
 
-## Reciprocal Pairs Property
+## 互反对特性
 
-To proceed, we study properties of the $(2n \times 2n)$ matrix $M$ defined in {eq}`Mdefn`. 
+为了继续，我们研究在{eq}`Mdefn`中定义的$(2n \times 2n)$矩阵$M$的性质。
 
-It helps to introduce a $(2n \times 2n)$ matrix
+引入一个$(2n \times 2n)$矩阵会有帮助：
 
 $$
 J = \begin{pmatrix}0 & -I_n\cr I_n & 0\cr\end{pmatrix}.
 $$
 
-The rank of $J$ is $2n$.
+矩阵$J$的秩为$2n$。
 
-**Definition:**  A matrix $M$ is called **symplectic** if
+**定义：** 如果矩阵$M$满足
 
 $$
 MJM^\prime = J.
 $$ (lag-lqdp-eq3)
 
-Salient properties of symplectic matrices that are readily verified include:
+则称其为**辛矩阵**。
 
-  * If $M$ is symplectic, then $M^2$ is symplectic
-  * The determinant of a symplectic, then $\textrm{det}(M) = 1$
+辛矩阵的显著性质包括（容易验证）：
 
-It can be verified directly that $M$ in equation {eq}`Mdefn` is symplectic.
+  * 如果$M$是辛矩阵，那么$M^2$也是辛矩阵
+  * 如果$M$是辛矩阵，那么$\textrm{det}(M) = 1$
 
-It follows from equation {eq}`lag-lqdp-eq3` and from the fact $J^{-1} = J^\prime = -J$ that for any symplectic
-matrix $M$,
+可以直接验证方程{eq}`Mdefn`中的$M$是辛矩阵。
+
+从方程{eq}`lag-lqdp-eq3`和$J^{-1} = J^\prime = -J$可以推导出，对任意辛矩阵$M$，有
 
 $$
 M^\prime = J^{-1} M^{-1} J.
 $$ (lag-lqdp-eq4)
 
-Equation {eq}`lag-lqdp-eq4` states that $M^\prime$ is related to the inverse of $M$
-by a **similarity transformation**.
+方程{eq}`lag-lqdp-eq4`表明$M^\prime$与$M$的逆矩阵通过**相似变换**相关。
 
-For square matrices, recall that  
-  
-* similar matrices share eigenvalues
+对于方阵，请记住：
 
-*  eigenvalues of the inverse of a matrix are  inverses of  eigenvalues of the matrix
+* 相似矩阵具有相同的特征值
 
-* a matrix and its transpose share eigenvalues
+* 矩阵的逆的特征值是该矩阵特征值的倒数
 
-It then follows from equation {eq}`lag-lqdp-eq4`  that
-the eigenvalues of $M$ occur in reciprocal pairs: if $\lambda$ is an
-eigenvalue of $M$, so is $\lambda^{-1}$.
+* 矩阵和它的转置矩阵具有相同的特征值
 
-Write equation {eq}`eq4orig` as 
+从方程{eq}`lag-lqdp-eq4`可以得出，$M$的特征值成倒数对：如果$\lambda$是$M$的特征值，那么$\lambda^{-1}$也是。
+
+将方程{eq}`eq4orig`写作
 
 $$
 y_{t+1} = M y_t
 $$ (eq658)
 
-where $y_t = \begin{pmatrix}x_t\cr \mu_t\cr\end{pmatrix}$. 
+其中$y_t = \begin{pmatrix}x_t\cr \mu_t\cr\end{pmatrix}$。
 
-Consider a **triangularization** of $M$
+考虑$M$的**三角化**
 
 $$
 V^{-1} M V= \begin{pmatrix}W_{11} & W_{12} \cr 0 & W_{22}\cr\end{pmatrix}
 $$ (eqn:triangledecomp)
 
-where 
+其中
 
-* each block on the right side is $(n\times n)$
-* $V$ is nonsingular
-* all eigenvalues of $W_{22}$ exceed $1$ in modulus
-* all  eigenvalues of $W_{11}$ are  less than $1$ in modulus 
+* 右侧的每个块都是$(n\times n)$维的
+* $V$是非奇异的
+* $W_{22}$的所有特征值的模都大于1
+* $W_{11}$的所有特征值的模都小于1
 
-## Schur decomposition
+## 舒尔分解
 
-The **Schur decomposition** and the **eigenvalue decomposition**
-are two  decompositions of the form {eq}`eqn:triangledecomp`. 
+**舒尔分解**和**特征值分解**是两种形如{eq}`eqn:triangledecomp`的分解。
 
-Write equation {eq}`eq658`  as
+将方程{eq}`eq658`写作
 
 $$
 y_{t+1} = V W V^{-1} y_t.
 $$ (eq659)
 
-A solution of equation {eq}`eq659`  for arbitrary initial condition $y_0$ is
-evidently
+方程{eq}`eq659`对任意初始条件$y_0$的解显然为
 
 $$
 y_{t} = V \left[\begin{matrix}W^t_{11} & W_{12,t}\cr 0 & W^t_{22}\cr\end{matrix}\right]
 \ V^{-1} y_0
 $$ (eq6510)
 
-where $W_{12,t} = W_{12}$ for $t=1$ and  for $t \geq 2$ obeys the recursion
+其中当$t=1$时$W_{12,t} = W_{12}$，对于$t \geq 2$遵循递归关系
 
 $$
 W_{12, t} = W^{t-1}_{11} W_{12,t-1} + W_{12,t-1} W^{t-1}_{22}
-$$ 
+$$
 
-and where $W^t_{ii}$ is $W_{ii}$ raised to the $t$th  power.
+这里$W^t_{ii}$是$W_{ii}$的$t$次幂。
 
-Write equation {eq}`eq6510` as
+将方程{eq}`eq6510`写作
 
 $$
 \begin{pmatrix}y^\ast_{1t}\cr y^\ast_{2t}\cr\end{pmatrix}\ =\ \left[\begin{matrix} W^t_{11} &
@@ -358,108 +336,93 @@ W_{12, t}\cr 0 & W^t_{22}\cr\end{matrix}\right]\quad \begin{pmatrix}y^\ast_{10}\
 y^\ast_{20}\cr\end{pmatrix}
 $$
 
-where $y^\ast_t = V^{-1} y_t$, and in particular where
+其中$y^\ast_t = V^{-1} y_t$，特别地
 
 $$
 y^\ast_{2t} = V^{21} x_t + V^{22} \mu_t,
 $$ (eq6511)
 
-and where $V^{ij}$ denotes the $(i,j)$ piece of
-the partitioned $V^{-1}$ matrix.
+这里$V^{ij}$表示分块矩阵$V^{-1}$的$(i,j)$部分。
 
-Because $W_{22}$ is an unstable matrix, $y^\ast_t$ will diverge unless $y^\ast_{20} = 0$.
+由于$W_{22}$是一个不稳定矩阵，除非$y^\ast_{20} = 0$，否则$y^\ast_t$将发散。
 
-Let $V^{ij}$ denote the $(i,j)$ piece of the partitioned $V^{-1}$ matrix.
+令 $V^{ij}$ 表示分块矩阵 $V^{-1}$ 的第 $(i,j)$ 块。
 
-To attain stability, we must impose $y^\ast_{20} =0$, which from equation {eq}`eq6511`  implies
+为了获得稳定性，我们必须设定 $y^\ast_{20} =0$，根据方程 {eq}`eq6511` 可得
 
 $$
 V^{21} x_0 + V^{22} \mu_0 = 0
 $$
 
-or
+或
 
 $$
 \mu_0 = - (V^{22})^{-1} V^{21} x_0.
 $$
 
-This equation replicates itself over
-time in the sense that it implies
+这个方程在时间上会重复出现，即意味着
 
 $$
 \mu_t = - (V^{22})^{-1} V^{21} x_t.
 $$
 
-But notice that because $(V^{21}\ V^{22})$ is the second row block of
-the inverse of $V,$ it follows that
+但注意，由于 $(V^{21}\ V^{22})$ 是 $V$ 的逆矩阵的第二行块，因此
 
 $$
 (V^{21} \ V^{22})\quad \begin{pmatrix}V_{11}\cr V_{21}\cr\end{pmatrix} = 0
 $$
 
-which implies
+这意味着
 
 $$
 V^{21} V_{11} + V^{22} V_{21} = 0.
 $$
 
-Therefore,
+因此，
 
 $$
 -(V^{22})^{-1} V^{21} = V_{21} V^{-1}_{11}.
 $$
 
-So we can write
+所以我们可以写成
 
 $$
 \mu_0 = V_{21} V_{11}^{-1} x_0
 $$
 
-and
+和
 
 $$
 \mu_t = V_{21} V^{-1}_{11} x_t.
 $$
 
-However, we know  that $\mu_t = P x_t$,
-where $P$ occurs in the matrix that solves the Riccati equation.
+然而，我们知道 $\mu_t = P x_t$，其中 $P$ 出现在求解黎卡提方程的矩阵中。
 
-
-Thus, the preceding argument establishes that
+因此，前面的论证确立了
 
 $$
 P = V_{21} V_{11}^{-1}.
 $$ (eqn:Pvaughn)
 
-Remarkably, formula {eq}`eqn:Pvaughn` provides us with a computationally 
-efficient way of computing the positive definite  matrix $P$ that solves the algebraic Riccati equation {eq}`riccati` that emerges
-from dynamic programming.
+值得注意的是，公式{eq}`eqn:Pvaughn`为我们提供了一种计算效率高的方法来计算正定矩阵$P$，该矩阵可以解决动态规划中出现的代数黎卡提方程{eq}`riccati`。
 
-This same method can be applied to compute the solution of
-any system of the form {eq}`eq4orig` if a solution exists, even
-if eigenvalues of $M$ fail to occur in reciprocal pairs.
+即使$M$的特征值不以互反对的形式出现，这种方法也可以用来计算任何形如{eq}`eq4orig`的系统的解（如果解存在的话）。
 
-The method
-will typically work so long as the eigenvalues of $M$ split   half
-inside and half outside the unit circle.
+只要$M$的特征值在单位圆内外各半分布，这种方法通常就能奏效。
 
-Systems in which  eigenvalues (properly adjusted for discounting) fail
-to occur in reciprocal pairs arise when the system being solved
-is an equilibrium of a model in which there are distortions that
-prevent there being any optimum problem that the equilibrium
-solves. See {cite}`Ljungqvist2012`,  ch 12.  
+当系统是一个存在扭曲的模型的均衡时，特征值（经适当贴现调整后）可能不会以互反对的形式出现，这种扭曲使得均衡无法求解任何最优化问题。参见{cite}`Ljungqvist2012`第12章。
 
-## Application
+## 应用
 
-Here we demonstrate the computation with an example which is the deterministic version of an example borrowed from this [quantecon lecture](https://python.quantecon.org/lqcontrol.html).
+这里我们通过一个示例来演示计算过程，这个示例是从[quantecon讲座](https://python.quantecon.org/lqcontrol.html)中借鉴的确定性版本。
 
 ```{code-cell} ipython3
-# Model parameters
+# 模型参数
 r = 0.05
 c_bar = 2
 μ = 1
 
-# Formulate as an LQ problem
+# 构建为LQ问题
 Q = np.array([[1]])
 R = np.zeros((2, 2))
 A = [[1 + r, -c_bar + μ],
@@ -467,18 +430,18 @@ A = [[1 + r, -c_bar + μ],
 B = [[-1],
      [0]]
 
-# Construct an LQ instance
+# 构造一个LQ实例
 lq = LQ(Q, R, A, B)
 ```
 
-Given matrices $A$, $B$, $Q$, $R$, we can then compute $L$, $N$, and $M=L^{-1}N$.
+给定矩阵 $A$、$B$、$Q$、$R$，我们可以计算 $L$、$N$ 和 $M=L^{-1}N$。
 
 ```{code-cell} ipython3
 def construct_LNM(A, B, Q, R):
 
     n, k = lq.n, lq.k
 
-    # construct L and N
+    # 构造 L 和 N
     L = np.zeros((2*n, 2*n))
     L[:n, :n] = np.eye(n)
     L[:n, n:] = B @ np.linalg.inv(Q) @ B.T
@@ -489,7 +452,7 @@ def construct_LNM(A, B, Q, R):
     N[n:, :n] = -R
     N[n:, n:] = np.eye(n)
 
-    # compute M
+    # 计算 M
     M = np.linalg.inv(L) @ N
 
     return L, N, M
@@ -503,7 +466,7 @@ L, N, M = construct_LNM(lq.A, lq.B, lq.Q, lq.R)
 M
 ```
 
-Let's verify that $M$ is symplectic.
+让我们验证 $M$ 是辛矩阵。
 
 ```{code-cell} ipython3
 n = lq.n
@@ -514,25 +477,25 @@ J[:n, n:] = -np.eye(n)
 M @ J @ M.T - J
 ```
 
-We can compute the eigenvalues of $M$ using `np.linalg.eigvals`, arranged in ascending order.
+我们可以使用`np.linalg.eigvals`计算矩阵$M$的特征值，并按升序排列。
 
 ```{code-cell} ipython3
 eigvals = sorted(np.linalg.eigvals(M))
 eigvals
 ```
 
-When we apply Schur decomposition such that $M=V W V^{-1}$, we want 
+当我们应用舒尔分解使得$M=V W V^{-1}$时，我们希望
 
-* the upper left block of $W$, $W_{11}$, to have all of its eigenvalues   less than 1 in modulus, and 
-* the lower right block $W_{22}$ to have  eigenvalues that  exceed 1 in modulus. 
+* $W$的左上块$W_{11}$的所有特征值的模小于1，并且
+* 右下块$W_{22}$的特征值的模大于1。
 
-To get what we want, let's define a sorting function that tells `scipy.schur` to sort the corresponding eigenvalues with modulus smaller than 1 to the upper left.
+为了得到我们想要的结果，让我们定义一个排序函数，告诉`scipy.schur`将模小于1的对应特征值排序到左上角。
 
 ```{code-cell} ipython3
 stable_eigvals = eigvals[:n]
 
 def sort_fun(x):
-    "Sort the eigenvalues with modules smaller than 1 to the top-left."
+    "将模小于1的特征值排序到左上角。"
 
     if x in stable_eigvals:
         stable_eigvals.pop(stable_eigvals.index(x))
@@ -551,9 +514,9 @@ W
 V
 ```
 
-We can check the modulus of eigenvalues of $W_{11}$ and $W_{22}$. 
+我们可以检查 $W_{11}$ 和 $W_{22}$ 的特征值的模。
 
-Since they are both triangular matrices,  eigenvalues are the  diagonal elements. 
+由于它们都是三角矩阵，特征值就是对角线元素。
 
 ```{code-cell} ipython3
 # W11
@@ -565,29 +528,28 @@ np.diag(W[:n, :n])
 np.diag(W[n:, n:])
 ```
 
-The following functions wrap  $M$ matrix construction, Schur decomposition, and stability-imposing computation of $P$.
+以下函数封装了 $M$ 矩阵构建、舒尔分解以及稳定性约束下的 $P$ 计算。
 
 ```{code-cell} ipython3
 def stable_solution(M, verbose=True):
     """
-    Given a system of linear difference equations
+    给定一个线性差分方程系统
 
         y' = |a b| y
         x' = |c d| x
 
-    which is potentially unstable, find the solution
-    by imposing stability.
+    该系统可能不稳定，通过施加稳定性约束来求解。
 
-    Parameter
+    参数
     ---------
     M : np.ndarray(float)
-        The matrix represents the linear difference equations system.
+        表示线性差分方程系统的矩阵。
     """
     n = M.shape[0] // 2
     stable_eigvals = list(sorted(np.linalg.eigvals(M))[:n])
 
     def sort_fun(x):
-        "Sort the eigenvalues with modules smaller than 1 to the top-left."
+        "将模小于1的特征值排序到左上角。"
 
         if x in stable_eigvals:
             stable_eigvals.pop(stable_eigvals.index(x))
@@ -597,34 +559,34 @@ def stable_solution(M, verbose=True):
 
     W, V, _ = schur(M, sort=sort_fun)
     if verbose:
-        print('eigenvalues:\n')
+        print('特征值：\n')
         print('    W11: {}'.format(np.diag(W[:n, :n])))
         print('    W22: {}'.format(np.diag(W[n:, n:])))
 
-    # compute V21 V11^{-1}
+    # 计算 V21 V11^{-1}
     P = V[n:, :n] @ np.linalg.inv(V[:n, :n])
 
     return W, V, P
 
 def stationary_P(lq, verbose=True):
     """
-    Computes the matrix :math:`P` that represent the value function
+    计算表示值函数的矩阵 :math:`P`
 
          V(x) = x' P x
 
-    in the infinite horizon case. Computation is via imposing stability
-    on the solution path and using Schur decomposition.
+    在无限时域情况下。通过在解路径上施加稳定性约束
+    并使用舒尔分解来进行计算。
 
-    Parameters
+    参数
     ----------
     lq : qe.LQ
-        QuantEcon class for analyzing linear quadratic optimal control
-        problems of infinite horizon form.
+        用于分析无限时域形式的线性二次最优控制问题的
+        QuantEcon类。
 
-    Returns
+    返回值
     -------
     P : array_like(float)
-        P matrix in the value function representation.
+        值函数表示中的P矩阵。
     """
 
     Q = lq.Q
@@ -641,19 +603,19 @@ def stationary_P(lq, verbose=True):
 ```
 
 ```{code-cell} ipython3
-# compute P
+# 计算P
 stationary_P(lq)
 ```
 
-Note that the matrix $P$ computed in this way is close to what we get from the routine in quantecon that solves an algebraic  Riccati equation by iterating to convergence on a Riccati difference equation. 
+请注意，以这种方式计算得到的矩阵 $P$ 与 quantecon 中通过迭代 Riccati 差分方程直至收敛来求解代数 Riccati 方程的程序得到的结果非常接近。
 
-The small difference comes from computational errors and will decrease as we increase the maximum number of iterations or decrease the tolerance for convergence.
+这种微小的差异来自计算误差，可以通过增加最大迭代次数或降低收敛容差来减小。
 
 ```{code-cell} ipython3
 lq.stationary_values()
 ```
 
-Using a Schur decomposition is much more efficient.
+使用舒尔分解效率要高得多。
 
 ```{code-cell} ipython3
 %%timeit
@@ -665,19 +627,17 @@ stationary_P(lq, verbose=False)
 lq.stationary_values()
 ```
 
+## 其他应用
 
-## Other Applications
+上述用于稳定潜在不稳定线性差分方程系统的方法并不仅限于线性二次动态优化问题。
 
-The preceding approach to imposing stability on a system  of potentially unstable linear difference equations is not limited to  linear quadratic dynamic optimization problems. 
+例如，在我们的[线性理性预期模型中的稳定性](https://python.quantecon.org/re_with_feedback.html#another-perspective)讲座中也使用了相同的方法。
 
-For example, the same method is used in our [Stability in Linear Rational Expectations Models](https://python.quantecon.org/re_with_feedback.html#another-perspective) lecture.
-
-
-Let's try to solve the model described in that lecture by applying the `stable_solution` function defined in this lecture above.
+让我们尝试使用本讲座上文定义的`stable_solution`函数来求解该讲座中描述的模型。
 
 ```{code-cell} ipython3
 def construct_H(ρ, λ, δ):
-    "contruct matrix H given parameters."
+    "根据参数构建矩阵H。"
 
     H = np.empty((2, 2))
     H[0, :] = ρ,δ
@@ -693,73 +653,63 @@ W, V, P = stable_solution(H)
 P
 ```
 
-## Discounted Problems 
+## 贴现问题
 
 +++
 
+### 转换状态和控制以消除贴现
 
+一对有用的转换允许我们将贴现问题转换为非贴现问题。
 
-### Transforming States and Controls to Eliminate Discounting
-
-A pair of useful transformations allows us to convert a discounted problem into an undiscounted one.
-
-Thus, suppose that we have a discounted problem with objective 
-
+假设我们有一个贴现问题，其目标函数为
 
 $$
  - \sum^\infty_{t=0} \beta^t \biggl\{ x^\prime_t R x_t + u_t^\prime Q u_t \biggr\}
 $$ 
 
+且状态转移方程仍为 $x_{t +1 }=Ax_t+Bu_t$。
 
-and that the state transition equation 
-is again $x_{t +1 }=Ax_t+Bu_t$.
-
-Define the transformed state and control variables
+定义转换后的状态和控制变量
 
 * $\hat x_t = \beta^{\frac{t}{2}} x_t $
 * $\hat u_t = \beta^{\frac{t}{2}} u_t$
-  
-and the transformed transition equation
-matrices
+
+以及转换后的转移方程矩阵
+
 * $\hat A = \beta^{\frac{1}{2}} A$
 * $\hat B =  \beta^{\frac{1}{2}} B  $
-  
-so that the adjusted state and control variables
-obey the transition law
+
+使得调整后的状态和控制变量遵循转移规律
 
 $$
 \hat x_{t+1} = \hat A \hat x_t + \hat B \hat u_t. 
 $$ 
 
-Then a discounted optimal control problem
-defined by $A, B, R, Q, \beta$ having  optimal policy characterized by $P, F$ is associated with an equivalent
-undiscounted problem defined by $\hat A, \hat B, Q, R$ having  optimal policy characterized by $\hat F, \hat P$ that satisfy
-the following   equations:
+那么由 $A, B, R, Q, \beta$ 定义的贴现最优控制问题，其最优策略由 $P, F$ 表征，与一个等价的
+
+由 $\hat A, \hat B, Q, R$ 定义的非贴现问题具有最优策略，其特征由满足以下方程的 $\hat F, \hat P$ 表示：
 
 $$
 \hat F=(Q+B'\hat PB)^{-1}\hat B'P \hat A
 $$
 
-and
+和
 
 $$
 \hat P=R+\hat A'P \hat A-\hat A'P \hat B(Q+B'\hat P \hat B)^{-1} \hat B'P \hat A
 $$
 
-It follows immediately from the definitions of $\hat A, \hat B$ that $\hat F = F$ and $\hat P = P$.
+从 $\hat A, \hat B$ 的定义可以直接得出 $\hat F = F$ 和 $\hat P = P$。
 
-By exploiting these transformations,  we can solve a discounted problem by solving an associated undiscounted problem.
+通过利用这些转换，我们可以通过求解相关的非贴现问题来解决贴现问题。
 
-
-
-
-In particular, we can first transform a discounted LQ problem to an undiscounted one and then solve that  discounted optimal regulator problem using the Lagrangian and invariant subspace methods described above.
+特别地，我们可以先将贴现线性二次问题转换为非贴现问题，然后使用上述拉格朗日和不变子空间方法求解该贴现最优调节器问题。
 
 +++
 
-For example, when $\beta=\frac{1}{1+r}$, we can solve for $P$ with $\hat{A}=\beta^{1/2} A$ and $\hat{B}=\beta^{1/2} B$. 
+例如，当 $\beta=\frac{1}{1+r}$ 时，我们可以用 $\hat{A}=\beta^{1/2} A$ 和 $\hat{B}=\beta^{1/2} B$ 求解 $P$。
 
-These settings are adopted by default in the function `stationary_P` defined above.
+这些设置在上面定义的 `stationary_P` 函数中是默认采用的。
 
 ```{code-cell} ipython3
 β = 1 / (1 + r)
@@ -770,30 +720,26 @@ lq.beta = β
 stationary_P(lq)
 ```
 
-We can verify that the solution agrees with one that comes from applying the  routine `LQ.stationary_values` in the  quantecon package.
+我们可以验证该解与使用 quantecon 包中的 `LQ.stationary_values` 例程得到的解是一致的。
 
 ```{code-cell} ipython3
 lq.stationary_values()
 ```
 
+### 贴现问题的拉格朗日量
 
-### Lagrangian for Discounted Problem
+出于多种目的，有必要简要地明确描述贴现问题的拉格朗日量。
 
-For several purposes, it is useful  explicitly briefly to describe
-a Lagrangian for a discounted problem. 
-
-Thus, for the discounted optimal linear regulator problem,
-form the Lagrangian
+因此，对于贴现最优线性调节器问题，构建拉格朗日量：
 
 $$
 {\cal{L}} = - \sum^\infty_{t=0} \beta^t \biggl\{ x^\prime_t R x_t + u_t^\prime Q u_t
 + 2 \beta \mu^\prime_{t+1} [A x_t + B u_t - x_{t+1}]\biggr\}
 $$ (eq661)
 
-where $2 \mu_{t+1}$ is a vector of Lagrange multipliers on the state vector $x_{t+1}$.
+其中$2 \mu_{t+1}$是状态向量$x_{t+1}$的拉格朗日乘子向量。
 
-First-order conditions for maximization with respect
-to $\{u_t,x_{t+1}\}_{t=0}^\infty$ are
+对于$\{u_t,x_{t+1}\}_{t=0}^\infty$的最大化一阶条件是：
 
 $$
 \begin{aligned}
@@ -801,17 +747,15 @@ $$
 \end{aligned}
 $$ (eq662)
 
-Define $2 \mu_0$ to be the vector of shadow prices of $x_0$ and apply an envelope condition to
-{eq}`eq661` to  deduce that
+定义$2 \mu_0$为$x_0$的影子价格向量，并对{eq}`eq661`应用包络条件可得：
 
 $$
 \mu_0 = R x_0 + \beta A' \mu_1 ,
 $$
 
-which is a time $t=0 $ counterpart to the second equation of system {eq}`eq662`. 
+这是系统{eq}`eq662`中第二个方程在$t=0$时刻的对应形式。
 
-Proceeding as we did above with  the undiscounted system  {eq}`lag-lqdp-eq2`, we can rearrange the first-order conditions into the
-system
+按照上述未贴现系统{eq}`lag-lqdp-eq2`的处理方法,我们可以将一阶条件重新整理为如下系统:
 
 $$
 \left[\begin{matrix} I & \beta B Q^{-1} B' \cr
@@ -822,83 +766,82 @@ $$
 \left[\begin{matrix} x_t \cr \mu_t \end{matrix}\right]
 $$ (eq663)
 
-which in the special case that $\beta = 1$ agrees with equation {eq}`lag-lqdp-eq2`, as expected.
+在特殊情况$\beta = 1$时,该式与方程{eq}`lag-lqdp-eq2`一致,这是符合预期的。
 
 +++
 
-By staring at system {eq}`eq663`, we can infer  identities that shed light on the structure of optimal linear regulator problems, some of which will be useful in [this lecture](https://python-advanced.quantecon.org/dyn_stack.html) when we apply and  extend the methods of this lecture to study Stackelberg and Ramsey problems.
+通过观察系统{eq}`eq663`,我们可以推断出一些揭示最优线性调节器问题结构的恒等式。其中一些在[这篇讲座](https://python-advanced.quantecon.org/dyn_stack.html)中会很有用,当我们应用和扩展本讲座的方法来研究斯塔克尔伯格和拉姆齐问题时。
 
-First, note that the first block of equation system {eq}`eq663` asserts that when  $\mu_{t+1} = P x_{t+1}$, then   
+首先,注意方程系统{eq}`eq663`的第一个区块表明,当$\mu_{t+1} = P x_{t+1}$时,
 
-$$ 
+$$
+
 (I + \beta Q^{-1} B' P B P ) x_{t+1} = A x_t, 
 $$
  
-which  can be rearranged to sbe
+可以重新整理为
 
 $$
 x_{t+1} = (I + \beta B Q^{-1} B' P)^{-1}  A x_t .
 $$
 
-This expression for the optimal closed loop dynamics of the state  must agree with an alternative expression that we had derived with dynamic programming, namely,
+状态最优闭环动态的这个表达式必须与我们之前通过动态规划得到的另一个表达式一致,即:
 
 $$
 x_{t+1} = (A - BF) x_t .
 $$
 
-But using  
+但使用
 
 $$
 F=\beta (Q+\beta B'PB)^{-1} B'PA 
 $$ (eqn:optimalFformula)
 
-it follows that 
+可以推导出
 
 $$ 
 A- B F = (I - \beta B (Q+ \beta B' P B)^{-1} B' P) A .
 $$ 
 
-Thus, our two expressions for the
-closed loop dynamics  agree if and only if
+因此,我们的两个闭环动态表达式当且仅当满足以下条件时才相等:
 
 $$ 
 (I + \beta B Q^{-1} B' P )^{-1} =    (I - \beta B (Q+\beta  B' P B)^{-1} B' P) .
 $$ (eqn:twofeedbackloops)
 
-Matrix  equation {eq}`eqn:twofeedbackloops` can be verified by applying a partitioned inverse formula. 
+矩阵方程{eq}`eqn:twofeedbackloops`可以通过应用分块矩阵求逆公式来验证。
 
 ```{note}
-Just use the formula $(a - b d^{-1} c)^{-1} = a^{-1} + a^{-1} b (d - c a^{-1} b)^{-1} c a^{-1}$ for appropriate choices of the matrices $a, b, c, d$.
+只需对适当选择的矩阵$a, b, c, d$使用公式$(a - b d^{-1} c)^{-1} = a^{-1} + a^{-1} b (d - c a^{-1} b)^{-1} c a^{-1}$即可。
 ```
 
-
-
-Next, note that for *any*  fixed $F$ for which eigenvalues of $A- BF$ are less than $\frac{1}{\beta}$ in modulus, the value function associated with using this rule forever is $- x_0 \tilde P x_0$ where  $\tilde P$ obeys the following  matrix  equation:
+接下来，注意对于*任何*固定的$F$，只要$A-BF$的特征值的模小于$\frac{1}{\beta}$，使用这个规则的值函数永远是$-x_0 \tilde P x_0$，其中$\tilde P$满足以下矩阵方程：
 
 $$
 \tilde P = (R + F' Q F) + \beta (A - B F)' P (A - BF) .
 $$ (eq666)
 
-Evidently, $\tilde P = P $ only when $F $ obeys formula {eq}`eqn:optimalFformula`. 
+显然，只有当$F$满足公式{eq}`eqn:optimalFformula`时，$\tilde P = P$才成立。
 
-Next, note that  the second equation of system {eq}`eq663` implies the "forward looking" equation for the Lagrange multiplier
+接下来，注意系统{eq}`eq663`的第二个方程暗示了拉格朗日乘数的"前瞻"方程
 
 $$ 
 \mu_t = R x_t + \beta A' \mu_{t+1}
 $$
 
-whose solution is 
+其解为
 
 $$
 \mu_t = P x_t ,
 $$
 
-where
+其中
 
 $$
 P = R + \beta A' P (A - BF)  
 $$ (eq667)
 
-where we must require that $F$ obeys equation {eq}`eqn:optimalFformula`.
+这里我们必须要求$F$满足方程{eq}`eqn:optimalFformula`。
 
-Equations {eq}`eq666` and {eq}`eq667` provide different perspectives on the optimal value function.
+方程{eq}`eq666`和{eq}`eq667`为最优值函数提供了不同的视角。
+

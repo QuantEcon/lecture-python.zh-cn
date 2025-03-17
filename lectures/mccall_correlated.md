@@ -17,13 +17,13 @@ kernelspec:
 </div>
 ```
 
-# Job Search IV: Correlated Wage Offers
+# 工作搜寻 IV：相关工资报价
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中的内容外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -32,18 +32,17 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-In this lecture we solve a {doc}`McCall style job search model <mccall_model>` with persistent and
-transitory components to wages.
+在本讲座中，我们求解一个具有持久性和暂时性工资成分的{doc}`McCall工作搜寻模型 <mccall_model>`。
 
-In other words, we relax the unrealistic assumption that randomness in wages is independent over time.
+换句话说，我们放宽了工资随机性在时间上相互独立的假设。
 
-At the same time, we will go back to assuming that jobs are permanent and no separation occurs.
+同时，我们将回到假设工作是永久性的，不会发生离职。
 
-This is to keep the model relatively simple as we study the impact of correlation.
+这是为了在研究相关性影响时保持模型相对简单。
 
-We will use the following imports:
+我们将使用以下导入：
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
@@ -54,32 +53,32 @@ from numba import jit, prange, float64
 from numba.experimental import jitclass
 ```
 
-## The Model
+## 模型
 
-Wages at each point in time are given by
+每个时间点的工资由下式给出：
 
 $$
 w_t = \exp(z_t) + y_t
 $$
 
-where
+其中
 
 $$
 y_t \sim \exp(\mu + s \zeta_t)
-\quad \text{and} \quad
+\quad \text{且} \quad
 z_{t+1} = d + \rho z_t + \sigma \epsilon_{t+1}
 $$
 
-Here $\{ \zeta_t \}$ and $\{ \epsilon_t \}$ are both IID and standard normal.
+这里 $\{ \zeta_t \}$ 和 $\{ \epsilon_t \}$ 都是独立同分布的标准正态分布。
 
-Here $\{y_t\}$ is a transitory component and $\{z_t\}$ is persistent.
+这里 $\{y_t\}$ 是暂时性成分，$\{z_t\}$ 是持久性成分。
 
-As before, the worker can either
+如前所述，工人可以：
 
-1. accept an offer and work permanently at that wage, or
-1. take unemployment compensation $c$ and wait till next period.
+1. 接受报价并在该工资水平永久工作，或
+1. 领取失业补偿金 $c$ 并等待下一期。
 
-The value function satisfies the Bellman equation
+价值函数满足贝尔曼方程：
 
 $$
 v^*(w, z) =
@@ -89,59 +88,55 @@ v^*(w, z) =
     \right\}
 $$
 
-In this express, $u$ is a utility function and $\mathbb E_z$ is expectation of next period variables given current $z$.
+在这个表达式中，$u$ 是效用函数，$\mathbb E_z$ 是给定当前 $z$ 时下一期变量的期望。
 
-The variable $z$ enters as a state in the Bellman equation because its current value helps predict future wages.
+变量 $z$ 作为状态进入贝尔曼方程，因为它的当前值有助于预测未来工资。
 
-### A Simplification
+### 简化
 
-There is a way that we can reduce dimensionality in this problem, which greatly accelerates computation.
+有一种方法可以减少这个问题的维度，这大大加快了计算速度。
 
-To start, let $f^*$ be the continuation value function, defined
-by
+首先，让 $f^*$ 为继续价值函数，定义为：
 
 $$
 f^*(z) := u(c) + \beta \, \mathbb E_z v^*(w', z')
 $$
 
-The Bellman equation can now be written
+贝尔曼方程现在可以写成：
 
 $$
 v^*(w, z) = \max \left\{ \frac{u(w)}{1-\beta}, \, f^*(z) \right\}
 $$
 
-Combining the last two expressions, we see that the continuation value
-function satisfies
+结合最后两个表达式，我们看到继续价值函数满足：
 
 $$
 f^*(z) = u(c) + \beta \, \mathbb E_z \max \left\{ \frac{u(w')}{1-\beta}, f^*(z') \right\}
 $$
 
-We’ll solve this functional equation for $f^*$ by introducing the
-operator
+我们将通过引入算子来求解这个函数方程：
 
 $$
 Qf(z) = u(c) + \beta \, \mathbb E_z \max \left\{ \frac{u(w')}{1-\beta}, f(z') \right\}
 $$
 
-By construction, $f^*$ is a fixed point of $Q$, in the sense that
-$Q f^* = f^*$.
+根据构造，$f^*$ 是 $Q$ 的不动点，即 $Q f^* = f^*$。
 
-Under mild assumptions, it can be shown that $Q$ is a [contraction mapping](https://en.wikipedia.org/wiki/Contraction_mapping) over a suitable space of continuous functions on $\mathbb R$.
+在温和的假设下，可以证明 $Q$ 是 $\mathbb R$ 上连续函数空间上的[压缩映射](https://en.wikipedia.org/wiki/Contraction_mapping)。
 
-By Banach's contraction mapping theorem, this means that $f^*$ is the unique fixed point and we can calculate it by iterating with $Q$ from any reasonable initial condition.
+根据巴拿赫压缩映射定理，这意味着 $f^*$ 是唯一的不动点，我们可以从任何合理的初始条件开始通过迭代 $Q$ 来计算它。
 
-Once we have $f^*$, we can solve the search problem by stopping when the reward for accepting exceeds the continuation value, or
+一旦我们有 $f^*$，我们就可以通过在接受报酬超过继续价值时停止来求解搜寻问题，即：
 
 $$
 \frac{u(w)}{1-\beta} \geq f^*(z)
 $$
 
-For utility we take $u(c) = \ln(c)$.
+对于效用函数，我们取 $u(c) = \ln(c)$。
 
-The reservation wage is the wage where equality holds in the last expression.
+保留工资是最后一个表达式中等式成立的工资。
 
-That is,
+即：
 
 ```{math}
 :label: corr_mcm_barw
@@ -149,87 +144,87 @@ That is,
 \bar w (z) := \exp(f^*(z) (1-\beta))
 ```
 
-Our main aim is to solve for the reservation rule and study its properties and implications.
+我们的主要目标是求解保留规则并研究其性质和含义。
 
-## Implementation
+## 实现
 
-Let $f$ be our initial guess of $f^*$.
+让 $f$ 作为我们对 $f^*$ 的初始猜测。
 
-When we iterate, we use the {doc}`fitted value function iteration <mccall_fitted_vfi>` algorithm.
+在迭代时，我们使用{doc}`拟合价值函数迭代 <mccall_fitted_vfi>`算法。
 
-In particular, $f$ and all subsequent iterates are stored as a vector of values on a grid.
+特别地，$f$ 和所有后续迭代都存储为网格上的值向量。
 
-These points are interpolated into a function as required, using piecewise linear interpolation.
+这些点根据需要通过分段线性插值插值成函数。
 
-The integral in the definition of $Qf$ is calculated by Monte Carlo.
+$Qf$ 定义中的积分通过蒙特卡洛计算。
 
-The following list helps Numba by providing some type information about the data we will work with.
+以下列表通过提供我们将使用的数据类型信息来帮助Numba：
 
-```{code-cell} ipython3
+```{code-cell} python3
 job_search_data = [
-     ('μ', float64),             # transient shock log mean
-     ('s', float64),             # transient shock log variance
-     ('d', float64),             # shift coefficient of persistent state
-     ('ρ', float64),             # correlation coefficient of persistent state
-     ('σ', float64),             # state volatility
-     ('β', float64),             # discount factor
-     ('c', float64),             # unemployment compensation
-     ('z_grid', float64[:]),     # grid over the state space
-     ('e_draws', float64[:,:])   # Monte Carlo draws for integration
+     ('μ', float64),             # 暂时性冲击对数均值
+     ('s', float64),             # 暂时性冲击对数方差
+     ('d', float64),             # 持久性状态位移系数
+     ('ρ', float64),             # 持久性状态相关系数
+     ('σ', float64),             # 状态波动率
+     ('β', float64),             # 贴现因子
+     ('c', float64),             # 失业补偿金
+     ('z_grid', float64[:]),     # 状态空间网格
+     ('e_draws', float64[:,:])   # 积分用的蒙特卡洛抽取
 ]
 ```
 
-Here's a class that stores the data and the right hand side of the Bellman equation.
+这是一个存储数据和贝尔曼方程右侧的类。
 
-Default parameter values are embedded in the class.
+默认参数值嵌入在类中。
 
 ```{code-cell} ipython3
 @jitclass(job_search_data)
 class JobSearch:
 
     def __init__(self,
-                 μ=0.0,       # transient shock log mean
-                 s=1.0,       # transient shock log variance
-                 d=0.0,       # shift coefficient of persistent state
-                 ρ=0.9,       # correlation coefficient of persistent state
-                 σ=0.1,       # state volatility
-                 β=0.98,      # discount factor
-                 c=5,         # unemployment compensation
+                 μ=0.0,       # 暂时性冲击对数均值
+                 s=1.0,       # 暂时性冲击对数方差
+                 d=0.0,       # 持久性状态位移系数
+                 ρ=0.9,       # 持久性状态相关系数
+                 σ=0.1,       # 状态波动率
+                 β=0.98,      # 贴现因子
+                 c=5,         # 失业补偿金
                  mc_size=1000,
                  grid_size=100):
 
         self.μ, self.s, self.d,  = μ, s, d,
         self.ρ, self.σ, self.β, self.c = ρ, σ, β, c
 
-        # Set up grid
+        # 设置网格
         z_mean = d / (1 - ρ)
         z_sd = σ / np.sqrt(1 - ρ**2)
-        k = 3  # std devs from mean
+        k = 3  # 标准差倍数
         a, b = z_mean - k * z_sd, z_mean + k * z_sd
         self.z_grid = np.linspace(a, b, grid_size)
 
-        # Draw and store shocks
+        # 抽取并存储冲击
         np.random.seed(1234)
         self.e_draws = randn(2, mc_size)
 
     def parameters(self):
         """
-        Return all parameters as a tuple.
+        返回所有参数作为元组。
         """
         return self.μ, self.s, self.d, \
                 self.ρ, self.σ, self.β, self.c
 ```
 
-Next we implement the $Q$ operator.
+接下来我们实现 $Q$ 算子。
 
 ```{code-cell} ipython3
 @jit(parallel=True)
 def Q(js, f_in, f_out):
     """
-    Apply the operator Q.
+    应用算子Q。
 
-        * js is an instance of JobSearch
-        * f_in and f_out are arrays that represent f and Qf respectively
+        * js 是 JobSearch 的实例
+        * f_in 和 f_out 是表示 f 和 Qf 的数组
 
     """
 
@@ -243,15 +238,15 @@ def Q(js, f_in, f_out):
             e1, e2 = js.e_draws[:, m]
             z_next = d + ρ * z + σ * e1
             go_val = np.interp(z_next, js.z_grid, f_in)  # f(z')
-            y_next = np.exp(μ + s * e2)                  # y' draw
-            w_next = np.exp(z_next) + y_next             # w' draw
+            y_next = np.exp(μ + s * e2)                  # y' 抽取
+            w_next = np.exp(z_next) + y_next             # w' 抽取
             stop_val = np.log(w_next) / (1 - β)
             expectation += max(stop_val, go_val)
         expectation = expectation / M
         f_out[i] = np.log(c) + β * expectation
 ```
 
-Here's a function to compute an approximation to the fixed point of $Q$.
+这是一个计算 $Q$ 不动点近似值的函数。
 
 ```{code-cell} ipython3
 def compute_fixed_point(js,
@@ -264,7 +259,7 @@ def compute_fixed_point(js,
     f_init = np.full(len(js.z_grid), np.log(js.c))
     f_out = np.empty_like(f_init)
 
-    # Set up loop
+    # 设置循环
     f_in = f_init
     i = 0
     error = tol + 1
@@ -274,18 +269,18 @@ def compute_fixed_point(js,
         error = np.max(np.abs(f_in - f_out))
         i += 1
         if verbose and i % print_skip == 0:
-            print(f"Error at iteration {i} is {error}.")
+            print(f"第 {i} 次迭代的误差为 {error}。")
         f_in[:] = f_out
 
     if error > tol:
-        print("Failed to converge!")
+        print("未能收敛！")
     elif verbose:
-        print(f"\nConverged in {i} iterations.")
+        print(f"\n在第 {i} 次迭代时收敛。")
 
     return f_out
 ```
 
-Let's try generating an instance and solving the model.
+让我们尝试生成一个实例并求解模型。
 
 ```{code-cell} ipython3
 js = JobSearch()
@@ -295,25 +290,23 @@ f_star = compute_fixed_point(js, verbose=True)
 qe.toc()
 ```
 
-Next we will compute and plot the reservation wage function defined in {eq}`corr_mcm_barw`.
+接下来我们将计算并绘制在{eq}`corr_mcm_barw`中定义的保留工资函数。
 
 ```{code-cell} ipython3
 res_wage_function = np.exp(f_star * (1 - js.β))
 
 fig, ax = plt.subplots()
-ax.plot(js.z_grid, res_wage_function, label="reservation wage given $z$")
-ax.set(xlabel="$z$", ylabel="wage")
+ax.plot(js.z_grid, res_wage_function, label="给定 $z$ 的保留工资")
+ax.set(xlabel="$z$", ylabel="工资")
 ax.legend()
 plt.show()
 ```
 
-Notice that the reservation wage is increasing in the current state $z$.
+注意保留工资随当前状态 $z$ 增加。
 
-This is because a higher state leads the agent to predict higher future wages,
-increasing the option value of waiting.
+这是因为更高的状态导致代理人预测更高的未来工资，增加了等待的期权价值。
 
-Let's try changing unemployment compensation and look at its impact on the
-reservation wage:
+让我们尝试改变失业补偿金并观察其对保留工资的影响：
 
 ```{code-cell} ipython3
 c_vals = 1, 2, 3
@@ -324,21 +317,20 @@ for c in c_vals:
     js = JobSearch(c=c)
     f_star = compute_fixed_point(js, verbose=False)
     res_wage_function = np.exp(f_star * (1 - js.β))
-    ax.plot(js.z_grid, res_wage_function, label=rf"$\bar w$ at $c = {c}$")
+    ax.plot(js.z_grid, res_wage_function, label=rf"$c = {c}$ 时的 $\bar w$")
 
-ax.set(xlabel="$z$", ylabel="wage")
+ax.set(xlabel="$z$", ylabel="工资")
 ax.legend()
 plt.show()
 ```
 
-As expected, higher unemployment compensation shifts the reservation wage up
-at all state values.
+正如预期的那样，更高的失业补偿金在所有状态值下都提高了保留工资。
 
-## Unemployment Duration
+## 失业持续时间
 
-Next we study how mean unemployment duration varies with unemployment compensation.
+接下来我们研究平均失业持续时间如何随失业补偿金变化。
 
-For simplicity we’ll fix the initial state at $z_t = 0$.
+为简单起见，我们将初始状态固定在 $z_t = 0$。
 
 ```{code-cell} ipython3
 def compute_unemployment_duration(js, seed=1234):
@@ -359,15 +351,15 @@ def compute_unemployment_duration(js, seed=1234):
 
         unemployed = True
         while unemployed and t < t_max:
-            # draw current wage
+            # 抽取当前工资
             y = np.exp(μ + s * np.random.randn())
             w = np.exp(z) + y
             res_wage = np.exp(f_star_function(z) * (1 - β))
-            # if optimal to stop, record t
+            # 如果最优选择是停止，记录t
             if w >= res_wage:
                 unemployed = False
                 τ = t
-            # else increment data and state
+            # 否则增加数据和状态
             else:
                 z = ρ * z + d + σ * np.random.randn()
                 t += 1
@@ -383,7 +375,7 @@ def compute_unemployment_duration(js, seed=1234):
     return compute_expected_tau()
 ```
 
-Let's test this out with some possible values for unemployment compensation.
+让我们用一些可能的失业补偿金值来测试这个：
 
 ```{code-cell} ipython3
 c_vals = np.linspace(1.0, 10.0, 8)
@@ -394,36 +386,36 @@ for i, c in enumerate(c_vals):
     durations[i] = τ
 ```
 
-Here is a plot of the results.
+这是结果图：
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
 ax.plot(c_vals, durations)
-ax.set_xlabel("unemployment compensation")
-ax.set_ylabel("mean unemployment duration")
+ax.set_xlabel("失业补偿金")
+ax.set_ylabel("平均失业持续时间")
 plt.show()
 ```
 
-Not surprisingly, unemployment duration increases when unemployment compensation is higher.
+不出所料，当失业补偿金更高时，失业持续时间增加。
 
-This is because the value of waiting increases with unemployment compensation.
+这是因为等待的价值随失业补偿金增加。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: mc_ex1
 
-Investigate how mean unemployment duration varies with the discount factor $\beta$.
+研究平均失业持续时间如何随贴现因子 $\beta$ 变化。
 
-* What is your prior expectation?
-* Do your results match up?
+* 你的先验预期是什么？
+* 结果是否符合预期？
 ```
 
 ```{solution-start} mc_ex1
 :class: dropdown
 ```
 
-Here is one solution
+这是一个解决方案
 
 ```{code-cell} ipython3
 beta_vals = np.linspace(0.94, 0.99, 8)
@@ -438,11 +430,10 @@ for i, β in enumerate(beta_vals):
 fig, ax = plt.subplots()
 ax.plot(beta_vals, durations)
 ax.set_xlabel(r"$\beta$")
-ax.set_ylabel("mean unemployment duration")
+ax.set_ylabel("平均失业持续时间")
 plt.show()
 ```
 
-The figure shows that more patient individuals tend to wait longer before accepting an offer.
+该图显示，更有耐心的个人倾向于等待更长时间才接受报价。
 
 ```{solution-end}
-```
