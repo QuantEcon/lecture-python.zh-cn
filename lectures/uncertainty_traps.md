@@ -227,7 +227,7 @@ $$
 
 __init__ 方法将我们在下面模拟中使用的参数编码为默认值
 
-```{code-cell} python3
+```{code-cell} ipython3
 class UncertaintyTrapEcon:
 
     def __init__(self,
@@ -387,7 +387,7 @@ $$
 
 这里的 $M$ 是活跃企业的数量。下图在45度图上绘制了不同 $M$ 值下 $\gamma_{t+1}$ 对 $\gamma_t$ 的关系
 
-```{code-cell} python3
+```{code-cell} ipython3
 econ = UncertaintyTrapEcon()
 ρ, σ_θ, γ_x = econ.ρ, econ.σ_θ, econ.γ_x    # 简化名称
 γ = np.linspace(1e-10, 3, 200)              # γ 网格
@@ -409,7 +409,7 @@ plt.show()
 
 接下来让我们生成信念和总量的时间序列数据——即活跃企业数量和平均产出
 
-```{code-cell} python3
+```{code-cell} ipython3
 sim_length=2000
 
 μ_vec = np.empty(sim_length)
@@ -444,7 +444,7 @@ M_vec[-1] = M
 
 首先，让我们看看在这些模拟中 $\mu$ 是如何跟踪 $\theta$ 的
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(9, 6))
 ax.plot(range(sim_length), θ_vec, alpha=0.6, lw=2, label=r"$\theta$")
 ax.plot(range(sim_length), μ_vec, alpha=0.6, lw=2, label=r"$\mu$")
@@ -455,7 +455,7 @@ plt.show()
 
 现在让我们把所有内容一起绘制出来
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axes = plt.subplots(4, 1, figsize=(12, 20))
 # 添加一些间距
 fig.subplots_adjust(hspace=0.3)

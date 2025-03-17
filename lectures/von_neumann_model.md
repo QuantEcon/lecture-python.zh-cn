@@ -50,7 +50,7 @@ np.set_printoptions(precision=2)
 
 以下代码提供了`Neumann`类
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [collapse-20]
 ---
@@ -381,7 +381,7 @@ $\exists T\subset \{1,2,\dots,m\}$（活动的一个子集），使得
 
 我们研究两个例子，都来自Gale的著作第9.6章 {cite}`gale1989theory`
 
-```{code-cell} python3
+```{code-cell} ipython3
 # (1) 不可约的(A, B)例子：α_0 = β_0
 A1 = np.array([[0, 1, 0, 0],
                [1, 0, 0, 1],
@@ -407,14 +407,14 @@ B2 = np.array([[1, 0, 0, 1, 0, 0],
 
 以下代码设置我们的第一个诺伊曼经济或`Neumann`实例
 
-```{code-cell} python3
+```{code-cell} ipython3
 n1 = Neumann(A1, B1)
 n1
 ```
 
 这是第二个诺伊曼经济的实例
 
-```{code-cell} python3
+```{code-cell} ipython3
 n2 = Neumann(A2, B2)
 n2
 ```
@@ -726,7 +726,7 @@ Hamburger、Thompson和Weil {cite}`hamburger1967computation`提出了一个简�
 
 *bounds* 方法为我们计算这些基本边界
 
-```{code-cell} python3
+```{code-cell} ipython3
 n1.bounds()
 ```
 
@@ -754,7 +754,7 @@ n1.bounds()
 
 *zerosum* 方法计算与给定 $\gamma$ 相关的值和最优策略。
 
-```{code-cell} python3
+```{code-cell} ipython3
 γ = 2
 
 print(f'游戏在 γ = {γ} 时的值')
@@ -765,7 +765,7 @@ print('价格向量（来自对偶问题）')
 print(n1.zerosum(γ=γ, dual=True)[1])
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 numb_grid = 100
 γ_grid = np.linspace(0.4, 2.1, numb_grid)
 
@@ -790,7 +790,7 @@ plt.show()
 
 *扩展*方法实现了对$\alpha_0$的二分法算法（并使用原始LP问题求解$x_0$）
 
-```{code-cell} python3
+```{code-cell} ipython3
 α_0, x, p = n1.expansion()
 print(f'α_0 = {α_0}')
 print(f'x_0 = {x}')
@@ -799,7 +799,7 @@ print(f'对偶问题得到的相应p值 = {p}')
 
 *interest* 方法使用二分法算法求解 $\beta_0$ (并使用对偶线性规划问题求解 $p_0$)
 
-```{code-cell} python3
+```{code-cell} ipython3
 β_0, x, p = n1.interest()
 print(f'β_0 = {β_0}')
 print(f'p_0 = {p}')
@@ -814,14 +814,14 @@ print(f'The corresponding x from the primal = {x}')
 
 作为说明，让我们首先计算例2中可约输入输出对 $(A, B)$ 的 $V(M(\cdot))$ 的最大根和最小根
 
-```{code-cell} python3
+```{code-cell} ipython3
 α_0, x, p = n2.expansion()
 print(f'α_0 = {α_0}')
 print(f'x_0 = {x}')
 print(f'The corresponding p from the dual = {p}')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 β_0, x, p = n2.interest()
 print(f'β_0 = {β_0}')
 print(f'p_0 = {p}')

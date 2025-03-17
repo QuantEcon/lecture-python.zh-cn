@@ -327,7 +327,7 @@ $$
 
 首先，我们为最优线性调节器创建对象
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 设置参数
 α, β, ρ1, ρ2, σ = 10.0, 0.95, 0.9, 0.0, 1.0
 
@@ -361,7 +361,7 @@ sxbewley = sxo
 
 下一步是创建LQ系统的矩阵
 
-```{code-cell} python3
+```{code-cell} ipython3
 A12 = np.zeros((3,1))
 ALQ_l = np.hstack([A, A12])
 ALQ_r = np.array([[0, -R, 0, R]])
@@ -380,7 +380,7 @@ CLQ = np.array([0., σ, 0., 0.]).reshape(4,1)
 
 让我们把这些打印出来看看
 
-```{code-cell} python3
+```{code-cell} ipython3
 print(f"A = \n {ALQ}")
 print(f"B = \n {BLQ}")
 print(f"R = \n {RLQ}")
@@ -389,13 +389,13 @@ print(f"Q = \n {QLQ}")
 
 现在创建一个适当的LQ模型实例
 
-```{code-cell} python3
+```{code-cell} ipython3
 lqpi = qe.LQ(QLQ, RLQ, ALQ, BLQ, C=CLQ, beta=β_LQ)
 ```
 
 我们很快会保存隐含的最优策略函数，并将其与使用其他求解方法得到的结果进行比较
 
-```{code-cell} python3
+```{code-cell} ipython3
 P, F, d = lqpi.stationary_values()  # 计算值函数和决策规则
 ABF = ALQ - BLQ @ F  # 构建闭环系统
 ```
@@ -423,7 +423,7 @@ $$
 
 现在我们将应用这个系统中的公式
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 使用上述公式创建b_{t+1}和c_t的最优策略
 b_pol = G @ la.inv(np.eye(3, 3) - β * A) @ (A - np.eye(3, 3))
 c_pol = (1 - β) * G @ la.inv(np.eye(3, 3) - β * A)
@@ -448,13 +448,13 @@ G_LSS = np.hstack([G_LSS1, G_LSS2])
 
 使用这里的方法计算的`A_LSS`应该等于上面用LQ模型计算的`ABF`
 
-```{code-cell} python3
+```{code-cell} ipython3
 ABF - A_LSS
 ```
 
 现在比较 `c_pol` 和 `F` 的相关元素
 
-```{code-cell} python3
+```{code-cell} ipython3
 print(c_pol, "\n", -F)
 ```
 
@@ -497,7 +497,7 @@ print(c_pol, "\n", -F)
 
 在每个时间点$t$比较样本路径与总体分布是一个有用的练习——参见{ref}`我们关于大数定律的讨论<lln_mr>`
 
-```{code-cell} python3
+```{code-cell} ipython3
 lss = qe.LinearStateSpace(A_LSS, C_LSS, G_LSS, mu_0=μ_0, Sigma_0=Σ_0)
 ```
 
@@ -508,7 +508,7 @@ lss = qe.LinearStateSpace(A_LSS, C_LSS, G_LSS, mu_0=μ_0, Sigma_0=Σ_0)
 - 计算并绘制一群消费者的消费和债务分布的总体分位数。
 - 模拟25个消费者的群体，并在同一图表上绘制样本路径和总体分布。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def income_consumption_debt_series(A, C, G, μ_0, Σ_0, T=150, npaths=25):
     """
     该函数接收初始条件(μ_0, Σ_0)，并使用QuantEcon的LinearStateSpace类
@@ -614,7 +614,7 @@ def consumption_debt_fanchart(csim, cons_mean, cons_var,
 
 现在让我们创建 $y_0$ 和 $b_0$ 的初始条件为零的图表
 
-```{code-cell} python3
+```{code-cell} ipython3
 out = income_consumption_debt_series(A_LSS, C_LSS, G_LSS, μ_0, Σ_0)
 bsim0, csim0, ysim0 = out[:3]
 cons_mean0, cons_var0, debt_mean0, debt_var0 = out[3:]
@@ -624,7 +624,7 @@ consumption_income_debt_figure(bsim0, csim0, ysim0)
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 consumption_debt_fanchart(csim0, cons_mean0, cons_var0,
                           bsim0, debt_mean0, debt_var0)
 
@@ -681,7 +681,7 @@ $E_t \sum_{j=0}^\infty \beta^j y_{t+j}$。
 
 通过改变初始条件，我们将在下面要展示的第二个例子中消除这种暂时性成分。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def cointegration_figure(bsim, csim):
     """
     绘制协整图
@@ -696,7 +696,7 @@ def cointegration_figure(bsim, csim):
     return fig
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 cointegration_figure(bsim0, csim0)
 plt.show()
 ```
@@ -732,7 +732,7 @@ $\{y_t\}$ 过程的不变分布。
 
 让我们看看相应的图表
 
-```{code-cell} python3
+```{code-cell} ipython3
 out = income_consumption_debt_series(A_LSS, C_LSS, G_LSS, mxbewley, sxbewley)
 bsimb, csimb, ysimb = out[:3]
 cons_meanb, cons_varb, debt_meanb, debt_varb = out[3:]
@@ -742,7 +742,7 @@ consumption_income_debt_figure(bsimb, csimb, ysimb)
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 consumption_debt_fanchart(csimb, cons_meanb, cons_varb,
                           bsimb, debt_meanb, debt_varb)
 
@@ -761,7 +761,7 @@ plt.show()
 
 让我们看看协整图
 
-```{code-cell} python3
+```{code-cell} ipython3
 cointegration_figure(bsimb, csimb)
 plt.show()
 ```

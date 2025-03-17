@@ -76,7 +76,7 @@ $$
 
 协方差矩阵 $\Sigma$ 是对称且正定的。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def f(z, μ, Σ):
     """
@@ -162,7 +162,7 @@ $$
 - `partition`方法计算 $\beta$，以 $k$ 作为输入
 - `cond_dist`方法计算 $z_1$ 在给定 $z_2$ 条件下的分布，或 $z_2$ 在给定 $z_1$ 条件下的分布
 
-```{code-cell} python3
+```{code-cell} ipython3
 class MultivariateNormal:
     """
     多元正态分布类。
@@ -253,7 +253,7 @@ $$
 \end{array}\right]
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 μ = np.array([.5, 1.])
 Σ = np.array([[1., .5], [.5 ,1.]])
 
@@ -261,7 +261,7 @@ $$
 multi_normal = MultivariateNormal(μ, Σ)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 k = 1 # 选择分区
 
 # 分区并计算回归系数
@@ -299,7 +299,7 @@ $$
 
 让我们计算$a_1, a_2, b_1, b_2$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 
 beta = multi_normal.βs
 
@@ -314,14 +314,14 @@ b2 = beta[1]
 
 对于 $z_1$ 对 $z_2$ 的回归，我们有
 
-```{code-cell} python3
+```{code-cell} ipython3
 print ("a1 = ", a1)
 print ("b1 = ", b1)
 ```
 
 对于 $z_2$ 对 $z_1$ 的回归，我们有
 
-```{code-cell} python3
+```{code-cell} ipython3
 print ("a2 = ", a2)
 print ("b2 = ", b2)
 ```
@@ -329,7 +329,7 @@ print ("b2 = ", b2)
 现在让我们绘制这两条回归线并仔细观察。
 
 
-```{code-cell} python3
+```{code-cell} ipython3
 
 z2 = np.linspace(-4,4,100)
 
@@ -368,7 +368,7 @@ plt.show()
 
 红线的截距和斜率是
 
-```{code-cell} python3
+```{code-cell} ipython3
 print("a1 = ", a1)
 print("b1 = ", b1)
 ```
@@ -377,7 +377,7 @@ print("b1 = ", b1)
 
 蓝线的截距和斜率是
 
-```{code-cell} python3
+```{code-cell} ipython3
 print("-a2/b2 = ", - a2/b2)
 print("1/b2 = ", 1/b2)
 ```
@@ -395,7 +395,7 @@ print("1/b2 = ", 1/b2)
 
 
 
-```{code-cell} python3
+```{code-cell} ipython3
 # compute the cond. dist. of z1
 ind = 1
 z1 = np.array([5.]) # given z1
@@ -406,7 +406,7 @@ print('μ2_hat, Σ2_hat = ', μ2_hat, Σ2_hat)
 
 现在让我们计算在 $z_2=5$ 的条件下 $z_1$ 的分布的均值和方差。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 计算 z1 的条件分布
 ind = 0
 z2 = np.array([5.]) # 给定 z2
@@ -431,7 +431,7 @@ $$
 
 我们预计，随着样本量越来越大，估计的OLS系数将收敛到$\beta$，$\epsilon$的估计方差将收敛到$\hat{\Sigma}_1$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 1_000_000 # 样本量
 
 # 模拟多元正态随机向量
@@ -446,19 +446,19 @@ results = sm.OLS(z1_data - μ1, z2_data - μ2).fit()
 
 让我们比较前面的总体 $\beta$ 与 $z_2 - \mu_2$ 的 OLS 样本估计值
 
-```{code-cell} python3
+```{code-cell} ipython3
 multi_normal.βs[0], results.params
 ```
 
 让我们将我们的总体 $\hat{\Sigma}_1$ 与 $\epsilon$ 的自由度调整后的方差估计进行比较
 
-```{code-cell} python3
+```{code-cell} ipython3
 Σ1_hat, results.resid @ results.resid.T / (n - 1)
 ```
 
 最后，让我们计算$\hat{E z_1 | z_2}$的估计值并将其与$\hat{\mu}_1$进行比较
 
-```{code-cell} python3
+```{code-cell} ipython3
 μ1_hat, results.predict(z2 - μ2) + μ1
 ```
 
@@ -472,7 +472,7 @@ multi_normal.βs[0], results.params
 
 我们将按如下方式指定均值向量和协方差矩阵。
 
-```{code-cell} python3
+```{code-cell} ipython3
 μ = np.random.random(3)
 C = np.random.random((3, 3))
 Σ = C @ C.T # positive semi-definite
@@ -480,47 +480,47 @@ C = np.random.random((3, 3))
 multi_normal = MultivariateNormal(μ, Σ)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 μ, Σ
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 k = 1
 multi_normal.partition(k)
 ```
 
 让我们计算在给定 $z_{2}=\left[\begin{array}{c} 2\\ 5 \end{array}\right]$ 条件下 $z_1$ 的分布。
 
-```{code-cell} python3
+```{code-cell} ipython3
 ind = 0
 z2 = np.array([2., 5.])
 
 μ1_hat, Σ1_hat = multi_normal.cond_dist(ind, z2)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 1_000_000
 data = np.random.multivariate_normal(μ, Σ, size=n)
 z1_data = data[:, :k]
 z2_data = data[:, k:]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 μ1, μ2 = multi_normal.μs
 results = sm.OLS(z1_data - μ1, z2_data - μ2).fit()
 ```
 
 如上所述，我们依次比较总体和样本回归系数、条件协方差矩阵和条件均值向量。
 
-```{code-cell} python3
+```{code-cell} ipython3
 multi_normal.βs[0], results.params
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 Σ1_hat, results.resid @ results.resid.T / (n - 1)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 μ1_hat, results.predict(z2 - μ2) + μ1
 ```
 
@@ -602,7 +602,7 @@ $\boldsymbol{1}_{n+1}$ 是一个大小为 $n+1$ 的全1向量，
 
 作为参数，该函数接收测试次数 $n$、IQ分布的均值 $\mu_{\theta}$ 和标准差 $\sigma_\theta$，以及测试分数中随机性的标准差 $\sigma_{y}$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def construct_moments_IQ(n, μθ, σθ, σy):
 
     μ_IQ = np.full(n+1, μθ)
@@ -624,7 +624,7 @@ $\sigma_{y}=10$。
 
 我们可以使用`construct_moments_IQ`函数轻松计算$X$的均值向量和协方差矩阵，如下所示。
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 50
 μθ, σθ, σy = 100., 10., 10.
 
@@ -638,7 +638,7 @@ n = 50
 
 我们选择`k=n`，这样$z_{1} = y$且$z_{2} = \theta$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 multi_normal_IQ = MultivariateNormal(μ_IQ, Σ_IQ)
 
 k = n
@@ -649,13 +649,13 @@ multi_normal_IQ.partition(k)
 
 让我们来做这个，然后打印出一些相关的数值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 x = np.random.multivariate_normal(μ_IQ, Σ_IQ)
 y = x[:-1] # 测试分数
 θ = x[-1]  # 智商
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 真实值
 θ
 ```
@@ -666,7 +666,7 @@ y = x[:-1] # 测试分数
 
 根据我们定义向量 $X$ 的方式，我们需要设置 `ind=1` 以使 $\theta$ 成为总体回归中的左侧变量。
 
-```{code-cell} python3
+```{code-cell} ipython3
 ind = 1
 multi_normal_IQ.cond_dist(ind, y)
 ```
@@ -679,7 +679,7 @@ multi_normal_IQ.cond_dist(ind, y)
 
 我们将制作一个漂亮的图表，展示随着更多测试结果的出现，我们对这个人的智商判断是如何变化的。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 存放矩的数组
 μθ_hat_arr = np.empty(n)
 Σθ_hat_arr = np.empty(n)
@@ -703,7 +703,7 @@ for i in range(1, n+1):
 σθ_hat_arr = np.sqrt(Σθ_hat_arr)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 μθ_hat_lower = μθ_hat_arr - 1.96 * σθ_hat_arr
 μθ_hat_higher = μθ_hat_arr + 1.96 * σθ_hat_arr
 
@@ -810,14 +810,14 @@ $$
 Var\left(\theta \mid y_1, \dots, y_k\right) = c^2_{k+1} + c^2_{k+2} + \dots + c^2_{n+1}.
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 C = np.linalg.cholesky(Σ_IQ)
 G = np.linalg.inv(C)
 
 ε = G @ (x - μθ)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 cε = C[n, :] * ε
 
 # 计算基于 y1, y2, ..., yk 的条件μθ和Σθ序列
@@ -827,12 +827,12 @@ cε = C[n, :] * ε
 
 为了确认这些公式给出的答案与我们之前计算的结果相同，我们可以将基于$\{y_i\}_{i=1}^k$条件下的$\theta$的均值和方差，与我们之前使用`MultivariateNormal`类（基于我们对多元正态分布条件分布的原始表示）实现的公式所得到的结果进行比较。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 条件均值
 np.max(np.abs(μθ_hat_arr - μθ_hat_arr_C)) < 1e-10
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 条件方差
 np.max(np.abs(Σθ_hat_arr - Σθ_hat_arr_C)) < 1e-10
 ```
@@ -905,7 +905,7 @@ $w \begin{bmatrix} w_1 \cr w_2 \cr \vdots \cr w_6 \end{bmatrix}$
 
 我们构建一个Python函数`construct_moments_IQ2d`来构造联合正态分布的均值向量和协方差矩阵。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def construct_moments_IQ2d(n, μθ, σθ, μη, ση, σy):
 
     μ_IQ2d = np.empty(2*(n+1))
@@ -929,7 +929,7 @@ def construct_moments_IQ2d(n, μθ, σθ, μη, ση, σy):
 
 让我们让函数开始工作。
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 2
 # θ、η和y的均值和方差
 μθ, σθ, μη, ση, σy = 100., 10., 100., 10, 10
@@ -938,7 +938,7 @@ n = 2
 μ_IQ2d, Σ_IQ2d, D_IQ2d
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 进行一次抽样
 x = np.random.multivariate_normal(μ_IQ2d, Σ_IQ2d)
 y1 = x[:n]
@@ -952,7 +952,7 @@ y2 = x[n:2*n]
 
 我们首先计算$\left(\theta, \eta\right)$的联合正态分布。
 
-```{code-cell} python3
+```{code-cell} ipython3
 multi_normal_IQ2d = MultivariateNormal(μ_IQ2d, Σ_IQ2d)
 
 k = 2*n # 数据向量的长度
@@ -965,7 +965,7 @@ multi_normal_IQ2d.cond_dist(1, [*y1, *y2])
 
 通过构建一个辅助函数 `cond_dist_IQ2d`，我们可以有趣地比较各种结果。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def cond_dist_IQ2d(μ, Σ, data):
 
     n = len(μ)
@@ -979,7 +979,7 @@ def cond_dist_IQ2d(μ, Σ, data):
 
 让我们看看这个例子是如何运行的。
 
-```{code-cell} python3
+```{code-cell} ipython3
 for indices, IQ, conditions in [([*range(2*n), 2*n], 'θ', 'y1, y2, y3, y4'),
                                 ([*range(n), 2*n], 'θ', 'y1, y2'),
                                 ([*range(n, 2*n), 2*n], 'θ', 'y3, y4'),
@@ -1080,12 +1080,12 @@ $$
 
 因此，堆叠序列 $\{x_{t}\}_{t=0}^T$ 和 $\{y_{t}\}_{t=0}^T$ 共同服从多元正态分布 $N\left(0, \Sigma_{z}\right)$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 作为示例，考虑 T = 3 的情况
 T = 3
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 初始分布 x_0 的方差
 σ0 = 1.
 
@@ -1096,7 +1096,7 @@ c = 1.0
 d = .05
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建 X 的协方差矩阵
 Σx = np.empty((T+1, T+1))
 
@@ -1108,11 +1108,11 @@ for i in range(T):
     Σx[i+1, i+1] = a ** 2 * Σx[i, i] + b ** 2
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 Σx
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建Y的协方差矩阵
 C = np.eye(T+1) * c
 D = np.eye(T+1) * d
@@ -1120,7 +1120,7 @@ D = np.eye(T+1) * d
 Σy = C @ Σx @ C.T + D @ D.T
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建Z的协方差矩阵
 Σz = np.empty((2*(T+1), 2*(T+1)))
 
@@ -1130,11 +1130,11 @@ D = np.eye(T+1) * d
 Σz[T+1:, T+1:] = Σy
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 Σz
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建Z的均值向量
 μz = np.zeros(2*(T+1))
 ```
@@ -1143,7 +1143,7 @@ D = np.eye(T+1) * d
 
 这对于在下面有趣的练习中进行条件化处理将非常有用。
 
-```{code-cell} python3
+```{code-cell} ipython3
 z = np.random.multivariate_normal(μz, Σz)
 
 x = z[:T+1]
@@ -1159,19 +1159,19 @@ y = z[T+1:]
 - $X$是一个隐马尔可夫状态变量$x_t$的随机序列
 - $Y$是一个包含隐藏状态信息的观测信号$y_t$序列
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建一个多元正态分布实例
 multi_normal_ex1 = MultivariateNormal(μz, Σz)
 x = z[:T+1]
 y = z[T+1:]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 将Z分割成X和Y
 multi_normal_ex1.partition(T+1)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 计算给定Y=y时X的条件均值和协方差矩阵
 
 print("X = ", x)
@@ -1189,11 +1189,11 @@ multi_normal_ex1.cond_dist(0, y)
 
 例如，假设我们想要求 $x_{3}$ 的条件分布。
 
-```{code-cell} python3
+```{code-cell} ipython3
 t = 3
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 子向量的均值
 sub_μz = np.zeros(t+1)
 
@@ -1206,16 +1206,16 @@ sub_Σz[1:, 0] = Σz[T+1:T+t+1, t]
 sub_Σz[1:, 1:] = Σz[T+1:T+t+1, T+1:T+t+1]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 sub_Σz
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 multi_normal_ex2 = MultivariateNormal(sub_μz, sub_Σz)
 multi_normal_ex2.partition(1)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 sub_y = y[:t]
 
 multi_normal_ex2.cond_dist(0, sub_y)
@@ -1229,12 +1229,12 @@ multi_normal_ex2.cond_dist(0, sub_y)
 
 例如，我们以 $t=3$ 且 $j=2$ 的情况为例。
 
-```{code-cell} python3
+```{code-cell} ipython3
 t = 3
 j = 2
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 sub_μz = np.zeros(t-j+2)
 sub_Σz = np.empty((t-j+2, t-j+2))
 
@@ -1244,16 +1244,16 @@ sub_Σz[1:, 0] = Σz[T+1:T+t-j+2, T+t+1]
 sub_Σz[1:, 1:] = Σz[T+1:T+t-j+2, T+1:T+t-j+2]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 sub_Σz
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 multi_normal_ex3 = MultivariateNormal(sub_μz, sub_Σz)
 multi_normal_ex3.partition(1)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 sub_y = y[:t-j+1]
 
 multi_normal_ex3.cond_dist(0, sub_y)
@@ -1274,19 +1274,19 @@ $$
 y_{t} = h_{t,t} \epsilon_{t} + h_{t,t-1} \epsilon_{t-1} + \dots + h_{t,0} \epsilon_{0}.
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 H = np.linalg.cholesky(Σy)
 
 H
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ε = np.linalg.inv(H) @ y
 
 ε
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 y
 ```
 
@@ -1392,7 +1392,7 @@ $$
 \end{array}\right]
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 设置参数
 T = 80
 T = 160
@@ -1410,7 +1410,7 @@ T = 160
 Σy_tilde = np.array([[2., 1.], [1., 0.5]])
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建 A 和 A^{\prime}
 A = np.zeros((T, T))
 
@@ -1426,7 +1426,7 @@ for i in range(T):
 A_inv = np.linalg.inv(A)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 计算b和y的均值向量
 μb = np.full(T, 𝛼0)
 μb[0] += 𝛼1 * μy_tilde[1] + 𝛼2 * μy_tilde[0]
@@ -1435,7 +1435,7 @@ A_inv = np.linalg.inv(A)
 μy = A_inv @ μb
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 计算b和y的协方差矩阵
 Σu = np.eye(T) * σu ** 2
 
@@ -1488,11 +1488,11 @@ $$
 \end{aligned}
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 β = .96
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建 B
 B = np.zeros((T, T))
 
@@ -1524,23 +1524,23 @@ $$
 \Sigma_{z}=D\Sigma_{y}D^{\prime}
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 D = np.vstack([np.eye(T), B])
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 μz = D @ μy
 Σz = D @ Σy @ D.T
 ```
 
 我们可以使用 `MultivariateNormal` 类来模拟 $y_{t}$ 和 $p_{t}$ 的路径，并计算条件期望 $E \left[p_{t} \mid y_{t-1}, y_{t}\right]$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 z = np.random.multivariate_normal(μz, Σz)
 y, p = z[:T], z[T:]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 cond_Ep = np.empty(T-1)
 
 sub_μ = np.empty(3)
@@ -1555,7 +1555,7 @@ for t in range(2, T+1):
     cond_Ep[t-2] = multi_normal.cond_dist(1, y[t-2:t])[0][0]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.plot(range(1, T), y[1:], label='$y_{t}$')
 plt.plot(range(1, T), y[:-1], label='$y_{t-1}$')
 plt.plot(range(1, T), p[1:], label='$p_{t}$')
@@ -1741,7 +1741,7 @@ P_{t-1} =R + A' P_t A  - A' P_t B
 
 这是一个时间为$0$的单期问题示例
 
-```{code-cell} python3
+```{code-cell} ipython3
 G = np.array([[1., 3.]])
 R = np.array([[1.]])
 
@@ -1752,16 +1752,16 @@ x0_hat = np.array([0., 1.])
 Σ = np.block([[Σ0, Σ0 @ G.T], [G @ Σ0, G @ Σ0 @ G.T + R]])
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建多元正态分布实例
 multi_normal = MultivariateNormal(μ, Σ)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 multi_normal.partition(2)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # y的观测值
 y0 = 2.3
 
@@ -1770,7 +1770,7 @@ y0 = 2.3
 μ1_hat, Σ11
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 A = np.array([[0.5, 0.2], [-0.1, 0.3]])
 C = np.array([[2.], [1.]])
 
@@ -1784,7 +1784,7 @@ x1_cond, Σ1_cond
 
 以下是通过迭代方程来解决动态滤波问题的代码，并附有示例。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def iterate(x0_hat, Σ0, A, C, G, R, y_seq):
 
     p, n = G.shape
@@ -1814,7 +1814,7 @@ def iterate(x0_hat, Σ0, A, C, G, R, y_seq):
     return x_hat_seq, Σ_hat_seq
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 iterate(x0_hat, Σ0, A, C, G, R, [2.3, 1.2, 3.2])
 ```
 
@@ -1877,7 +1877,7 @@ $$
 
 接下来，我们首先构造 $N=10$ 和 $k=2$ 情况下的均值向量和协方差矩阵。
 
-```{code-cell} python3
+```{code-cell} ipython3
 N = 10
 k = 2
 ```
@@ -1904,7 +1904,7 @@ $$
 
 $D$是一个对角矩阵，对角线上的元素为参数$\sigma_{u}^{2}$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 Λ = np.zeros((N, k))
 Λ[:N//2, 0] = 1
 Λ[N//2:, 1] = 1
@@ -1913,14 +1913,14 @@ $D$是一个对角矩阵，对角线上的元素为参数$\sigma_{u}^{2}$。
 D = np.eye(N) * σu ** 2
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 计算 Σy
 Σy = Λ @ Λ.T + D
 ```
 
 我们现在可以构建$Z$的均值向量和协方差矩阵。
 
-```{code-cell} python3
+```{code-cell} ipython3
 μz = np.zeros(k+N)
 
 Σz = np.empty((k+N, k+N))
@@ -1931,21 +1931,21 @@ D = np.eye(N) * σu ** 2
 Σz[k:, k:] = Σy
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 z = np.random.multivariate_normal(μz, Σz)
 
 f = z[:k]
 y = z[k:]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 multi_normal_factor = MultivariateNormal(μz, Σz)
 multi_normal_factor.partition(k)
 ```
 
 让我们计算隐藏因子$f$在观测值$Y$上的条件分布，即$f \mid Y=y$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 multi_normal_factor.cond_dist(0, y)
 ```
 
@@ -1953,7 +1953,7 @@ multi_normal_factor.cond_dist(0, y)
 $E \left[f \mid Y=y\right] = B Y$ 其中
 $B = \Lambda^{\prime} \Sigma_{y}^{-1}$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 B = Λ.T @ np.linalg.inv(Σy)
 
 B @ y
@@ -1961,14 +1961,14 @@ B @ y
 
 类似地，我们可以计算条件分布 $Y \mid f$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 multi_normal_factor.cond_dist(1, f)
 ```
 
 可以验证该均值为
 $\Lambda I^{-1} f = \Lambda f$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 Λ @ f
 ```
 
@@ -2004,7 +2004,7 @@ $$
 
 注意,我们将按特征值*降序*排列 $P$ 中的特征向量。
 
-```{code-cell} python3
+```{code-cell} ipython3
 𝜆_tilde, P = np.linalg.eigh(Σy)
 
 # 按特征值排列特征向量
@@ -2017,23 +2017,23 @@ P = P[:, ind]
 print('𝜆_tilde =', 𝜆_tilde)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 验证特征向量的正交性
 np.abs(P @ P.T - np.eye(N)).max()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 验证特征值分解是否正确
 P @ Λ_tilde @ P.T
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ε = P.T @ y
 
 print("ε = ", ε)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 打印两个因子的值
 
 print('f = ', f)
@@ -2046,7 +2046,7 @@ print('f = ', f)
 - 第一个因子 $f_1$ 的值，仅绘制前 $N/2$ 个在 $\Lambda$ 中具有非零载荷的 $y$ 观测值
 - 第二个因子 $f_2$ 的值，仅绘制最后 $N/2$ 个在 $\Lambda$ 中具有非零载荷的观测值
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.scatter(range(N), y, label='y')
 plt.scatter(range(N), ε, label='$\epsilon$')
 plt.hlines(f[0], 0, N//2-1, ls='--', label='$f_{1}$')
@@ -2060,18 +2060,18 @@ plt.show()
 
 让我们来看看它们，之后我们将查看 $E f | y = B y$
 
-```{code-cell} python3
+```{code-cell} ipython3
 ε[:2]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 与 Ef|y 比较
 B @ y
 ```
 
 $y_{t}$ 中由前两个主成分解释的方差比例可以按如下方式计算。
 
-```{code-cell} python3
+```{code-cell} ipython3
 𝜆_tilde[:2].sum() / 𝜆_tilde.sum()
 ```
 
@@ -2083,7 +2083,7 @@ $$
 
 其中 $P_{j}$ 和 $P_{k}$ 对应最大的两个特征值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 y_hat = P[:, :2] @ ε[:2]
 ```
 
@@ -2091,7 +2091,7 @@ y_hat = P[:, :2] @ ε[:2]
 
 我们通过下面的图来确认这一点，图中展示了$f$、$E y \mid f$、$E f \mid y$和$\hat{y}$（在坐标轴上）与$y$（在纵轴上）的关系。
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.scatter(range(N), Λ @ f, label='$Ey|f$')
 plt.scatter(range(N), y_hat, label=r'$\hat{y}$')
 plt.hlines(f[0], 0, N//2-1, ls='--', label='$f_{1}$')
@@ -2108,7 +2108,7 @@ plt.show()
 
 $\hat{Y}$ 的协方差矩阵可以通过先构建 $\epsilon$ 的协方差矩阵，然后使用 $\epsilon_{1}$ 和 $\epsilon_{2}$ 的左上角块来计算。
 
-```{code-cell} python3
+```{code-cell} ipython3
 Σεjk = (P.T @ Σy @ P)[:2, :2]
 
 Pjk = P[:, :2]

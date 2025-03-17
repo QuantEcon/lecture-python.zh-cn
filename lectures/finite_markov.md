@@ -233,7 +233,7 @@ $$
 
 对于这个任务，我们将使用来自 [QuantEcon](http://quantecon.org/quantecon-py) 的 `random.draw`，其使用方法如下：
 
-```{code-cell} python3
+```{code-cell} ipython3
 ψ = (0.3, 0.7)           # {0, 1}上的概率
 cdf = np.cumsum(ψ)       # 转换为累积分布
 qe.random.draw(cdf, 5)   # 从ψ中生成5个独立抽样
@@ -245,7 +245,7 @@ qe.random.draw(cdf, 5)   # 从ψ中生成5个独立抽样
 * 一个初始状态 `init`
 * 一个正整数 `sample_size` 表示函数应返回的时间序列长度
 
-```{code-cell} python3
+```{code-cell} ipython3
 def mc_sample_path(P, ψ_0=None, sample_size=1_000):
 
     # 设置
@@ -272,7 +272,7 @@ def mc_sample_path(P, ψ_0=None, sample_size=1_000):
 
 让我们用一个小矩阵来看看它是如何工作的
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[0.4, 0.6],
      [0.2, 0.8]]
 ```
@@ -283,7 +283,7 @@ P = [[0.4, 0.6],
 
 以下代码演示了这一点
 
-```{code-cell} python3
+```{code-cell} ipython3
 X = mc_sample_path(P, ψ_0=[0.1, 0.9], sample_size=100_000)
 np.mean(X == 0)
 ```
@@ -296,7 +296,7 @@ np.mean(X == 0)
 
 这里用与前面例子相同的P进行说明
 
-```{code-cell} python3
+```{code-cell} ipython3
 from quantecon import MarkovChain
 
 mc = qe.MarkovChain(P)
@@ -322,22 +322,22 @@ np.mean(X == 0)
 
 以下代码演示了这一点
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc = qe.MarkovChain(P, state_values=('unemployed', 'employed'))
 mc.simulate(ts_length=4, init='employed')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc.simulate(ts_length=4, init='unemployed')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc.simulate(ts_length=4)  # 从随机选择的初始状态开始
 ```
 
 如果我们想要看到索引而不是状态值作为输出，我们可以使用
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc.simulate_indices(ts_length=4)
 ```
 
@@ -539,7 +539,7 @@ $$
 
 我们也可以使用[QuantEcon.py](http://quantecon.org/quantecon-py)的MarkovChain类来测试这一点
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[0.9, 0.1, 0.0],
      [0.4, 0.4, 0.2],
      [0.1, 0.1, 0.8]]
@@ -558,7 +558,7 @@ mc.is_irreducible
 
 让我们来验证这一点
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[1.0, 0.0, 0.0],
      [0.1, 0.8, 0.1],
      [0.0, 0.2, 0.8]]
@@ -569,7 +569,7 @@ mc.is_irreducible
 
 我们也可以确定"通信类"
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc.communication_classes
 ```
 
@@ -591,7 +591,7 @@ mc.communication_classes
 
 该链以周期3循环：
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[0, 1, 0],
      [0, 0, 1],
      [1, 0, 0]]
@@ -618,7 +618,7 @@ $$
 
 我们可以用以下代码确认这个随机矩阵是周期的
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[0.0, 1.0, 0.0, 0.0],
      [0.5, 0.0, 0.5, 0.0],
      [0.0, 0.5, 0.0, 0.5],
@@ -628,7 +628,7 @@ mc = qe.MarkovChain(P)
 mc.period
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc.is_aperiodic
 ```
 
@@ -641,7 +641,7 @@ mc.is_aperiodic
 
 某些分布在这种更新过程下保持不变 --- 例如，
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = np.array([[0.4, 0.6],
               [0.2, 0.8]])
 ψ = (0.25, 0.75)
@@ -753,7 +753,7 @@ $$ (eq:eqpsifixed)
 
 这是我们推荐的方法：
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[0.4, 0.6],
      [0.2, 0.8]]
 
@@ -1017,7 +1017,7 @@ $$
 
 随着 $m$ 变大，两个序列都收敛于零。
 
-```{code-cell} python3
+```{code-cell} ipython3
 α = β = 0.1
 N = 10000
 p = β / (α + β)
@@ -1198,12 +1198,12 @@ n -> m;
 
 下面的代码片段提供了一个关于如何实现的提示
 
-```{code-cell} python3
+```{code-cell} ipython3
 import re
 re.findall(r'\w', 'x +++ y ****** z')  # \w 匹配字母数字字符
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 re.findall(r'\w', 'a ^^ b &&& $$ c')
 ```
 
@@ -1219,7 +1219,7 @@ re.findall(r'\w', 'a ^^ b &&& $$ c')
 
 这是一个解决方案：
 
-```{code-cell} python3
+```{code-cell} ipython3
 """
 返回按排名排序的页面列表
 """

@@ -340,7 +340,7 @@ $$
 
 这是Python代码
 
-```{code-cell} python3
+```{code-cell} ipython3
 λ = .9
 
 α = 0
@@ -359,18 +359,18 @@ G = np.array([[0, 1, 0]])
 
 我们可以验证，与状态$x_t$中的常数不相关的$A$的两个特征值的模严格小于1。
 
-```{code-cell} python3
+```{code-cell} ipython3
 eigvals = np.linalg.eigvals(A)
 print(eigvals)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 (abs(eigvals) <= 1).all()
 ```
 
 现在让我们计算公式{eq}`equation_4`和{eq}`equation_5`中的$F$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 计算解，即公式(3)
 F = (1 - λ) * G @ np.linalg.inv(np.eye(A.shape[0]) - λ * A)
 print("F= ",F)
@@ -378,7 +378,7 @@ print("F= ",F)
 
 现在让我们从初始值 $x_0$ 开始模拟 $m_t$ 和 $p_t$ 的路径。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 设置初始状态
 x0 = np.array([1, 1, 0])
 
@@ -402,7 +402,7 @@ for t in range(T):
     x_old = x
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.figure()
 plt.plot(range(T+1), m_seq, label=r'$m_t$')
 plt.plot(range(T+1), p_seq, label=r'$p_t$')
@@ -425,7 +425,7 @@ plt.show()
 
 以下代码块使用该代码进行计算。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建一个 LinearStateSpace 实例
 
 # 堆叠 G 和 F
@@ -436,7 +436,7 @@ C = np.zeros((A.shape[0], 1))
 ss = qe.LinearStateSpace(A, C, G_ext, mu_0=x0)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 T = 100
 
 # 使用LinearStateSpace进行模拟
@@ -734,7 +734,7 @@ $\rho \in (0,1)$ 和 $\lambda^{-1} > 1$
 
 让我们编写并执行一些Python代码，来探索结果如何依赖于 $\delta$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def construct_H(ρ, λ, δ):
     "根据参数构建矩阵H。"
 
@@ -756,25 +756,25 @@ def H_eigvals(ρ=.9, λ=.5, δ=0):
     return eigvals
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 H_eigvals()
 ```
 
 注意即使负的 $\delta$ 有很大的绝对值，也不会危及矩阵 $H$ 的稳定性。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 小的负 δ
 H_eigvals(δ=-0.05)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 较大的负δ值
 H_eigvals(δ=-1.5)
 ```
 
 一个足够小的正数 $\delta$ 也不会造成问题。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 足够小的正数 δ
 H_eigvals(δ=0.05)
 ```
@@ -783,7 +783,7 @@ H_eigvals(δ=0.05)
 
 例如，
 
-```{code-cell} python3
+```{code-cell} ipython3
 H_eigvals(δ=0.2)
 ```
 
@@ -791,7 +791,7 @@ H_eigvals(δ=0.2)
 
 也就是说，我们要避免从$p_t$到$m_{t+1}$的正反馈过强。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def magic_p0(m0, ρ=.9, λ=.5, δ=0):
     """
     使用魔法公式(8)计算使系统稳定的p0水平。
@@ -817,7 +817,7 @@ def magic_p0(m0, ρ=.9, λ=.5, δ=0):
 
 让我们绘制在不同的$\delta$设置下，$p_0$如何随着$m_0$的变化而变化。
 
-```{code-cell} python3
+```{code-cell} ipython3
 m_range = np.arange(0.1, 2., 0.1)
 
 for δ in [-0.05, 0, 0.05]:
@@ -831,7 +831,7 @@ plt.show()
 
 从另一个角度来看，我们可以固定初始值$m_0$，观察当$\delta$变化时$p_0$如何变化。
 
-```{code-cell} python3
+```{code-cell} ipython3
 m0 = 1
 
 δ_range = np.linspace(-0.05, 0.05, 100)
@@ -844,7 +844,7 @@ plt.show()
 
 注意当 $\delta$ 足够大时，两个特征值的模都大于1，这导致不存在能使系统稳定的 $p_0$ 值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 magic_p0(1, δ=0.2)
 ```
 
@@ -910,14 +910,14 @@ $x_t = \begin{bmatrix} m_t \cr P_t \end{bmatrix}$ 请注意
 1. 我们计算 $F_1 +  F_2 F^*$ 并将其
    与 $F^*$ 进行比较，检验是否符合预期的等式。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 设置参数
 ρ = .9
 λ = .5
 δ = .05
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 求解 F_star
 H = construct_H(ρ, λ, δ)
 eigvals, Q = np.linalg.eig(H)
@@ -927,7 +927,7 @@ F_star = Q[1, ind] / Q[0, ind]
 F_star
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 求解 F_check
 A = np.empty((2, 2))
 A[0, :] = ρ, δ
@@ -941,7 +941,7 @@ F_check
 
 比较 $F^*$ 与 $F_1 + F_2 F^*$
 
-```{code-cell} python3
+```{code-cell} ipython3
 F_check[0] + F_check[1] * F_star, F_star
 ```
 
@@ -955,41 +955,41 @@ F_check[0] + F_check[1] * F_star, F_star
 
 我们首先生成一个具有非零 $\delta$ 的 $H$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 λ, δ, ρ = symbols('λ, δ, ρ')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 H1 = Matrix([[ρ,δ], [- (1 - λ) / λ, λ ** -1]])
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 H1
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 H1.eigenvals()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 H1.eigenvects()
 ```
 
 现在让我们计算当 $\delta$ 为零时的 $H$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 H2 = Matrix([[ρ,0], [- (1 - λ) / λ, λ ** -1]])
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 H2
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 H2.eigenvals()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 H2.eigenvects()
 ```
 
@@ -1001,7 +1001,7 @@ H2.eigenvects()
 1. 我们使用SymPy计算$Q_{21} Q_{11}^{-1}$（用符号表示）。
 1. 其中$Q^{ij}$表示$Q^{-1}$的$(i,j)$分量，我们使用SymPy计算$- (Q^{22})^{-1} Q^{21}$（同样用符号表示）
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构造Q
 vec = []
 for i, (eigval, _, eigvec) in enumerate(H2.eigenvects()):
@@ -1014,26 +1014,26 @@ for i, (eigval, _, eigvec) in enumerate(H2.eigenvects()):
 Q = vec[ind].col_insert(1, vec[1-ind])
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 Q
 ```
 
 $Q^{-1}$
 
-```{code-cell} python3
+```{code-cell} ipython3
 Q_inv = Q ** (-1)
 Q_inv
 ```
 
 $Q_{21}Q_{11}^{-1}$
 
-```{code-cell} python3
+```{code-cell} ipython3
 Q[1, 0] / Q[0, 0]
 ```
 
 $−(Q^{22})^{−1}Q^{21}$
 
-```{code-cell} python3
+```{code-cell} ipython3
 - Q_inv[1, 0] / Q_inv[1, 1]
 ```
 

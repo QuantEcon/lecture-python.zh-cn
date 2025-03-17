@@ -213,7 +213,7 @@ $\mathbb E (X_i - \mu)(X_j - \mu)$ 不一定为零。
 
 在这三种情况下，$\bar X_n$ 都如预期般收敛到 $\mu$
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 100
 
 # 任意分布集合
@@ -313,7 +313,7 @@ n \to \infty
 
 下图展示了当 $n = 1, 2, 4, 8$ 时，$Y_n$ 的概率质量函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axes = plt.subplots(2, 2, figsize=(10, 6))
 plt.subplots_adjust(hspace=0.4)
 axes = axes.flatten()
@@ -368,7 +368,7 @@ plt.show()
 (请尝试其他的$F$选择，但请记住，为了符合中心极限定理的条件，分布必须具有有限的二阶矩。)
 
 (sim_one)=
-```{code-cell} python3
+```{code-cell} ipython3
 # 设置参数
 n = 250                  # n的选择
 k = 100000              # Y_n的抽样次数
@@ -420,7 +420,7 @@ plt.show()
 
 在图中，最近的密度是 $Y_1$ 的密度，而最远的是 $Y_5$ 的密度。
 
-```{code-cell} python3
+```{code-cell} ipython3
 beta_dist = beta(2, 2)
 
 def gen_x_draws(k):
@@ -645,7 +645,7 @@ n \to \infty
 
 这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 """
 演示delta方法，这是中心极限定理的一个推论。
 """
@@ -846,7 +846,7 @@ $\mathbf Q \mathbf Y_n \stackrel{d}{\to} \mathbf Q \mathbf Y \sim N(\mathbf 0, \
 
 我们的解决方案如下
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 设置参数
 n = 250
 replications = 50000

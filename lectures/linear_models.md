@@ -188,7 +188,7 @@ $$
 下图显示了当$\phi_0 = 1.1, \phi_1=0.8, \phi_2 = -0.8, y_0 = y_{-1} = 1$时，这个过程的动态变化。
 
 (lss_sode_fig)=
-```{code-cell} python3
+```{code-cell} ipython3
 def plot_lss(A,
          C,
          G,
@@ -207,7 +207,7 @@ def plot_lss(A,
     plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ϕ_0, ϕ_1, ϕ_2 = 1.1, 0.8, -0.8
 
 A = [[1,     0,     0  ],
@@ -272,7 +272,7 @@ $$
 时该过程的动态变化
 
 (lss_uap_fig)=
-```{code-cell} python3
+```{code-cell} ipython3
 ϕ_1, ϕ_2, ϕ_3, ϕ_4 = 0.5, -0.2, 0, 0.5
 σ = 0.2
 
@@ -639,7 +639,7 @@ y_t \sim N(G \mu_t, G \Sigma_t G')
 
 左图中的黑点表示 $y_T$ 的值
 
-```{code-cell} python3
+```{code-cell} ipython3
 def cross_section_plot(A,
                    C,
                    G,
@@ -683,7 +683,7 @@ def cross_section_plot(A,
     plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ϕ_1, ϕ_2, ϕ_3, ϕ_4 = 0.5, -0.2, 0, 0.5
 σ = 0.1
 
@@ -703,14 +703,14 @@ cross_section_plot(A_2, C_2, G_2)
 
 这是另一个图，这次有100个观测值
 
-```{code-cell} python3
+```{code-cell} ipython3
 t = 100
 cross_section_plot(A_2, C_2, G_2, T=t)
 ```
 
 让我们现在尝试用500,000个观测值，只显示直方图（不旋转）
 
-```{code-cell} python3
+```{code-cell} ipython3
 T = 100
 ymin=-0.8
 ymax=1.25
@@ -760,7 +760,7 @@ $$
 参数与前面的图表相同，样本量相对较小（$I=20$）。
 
 (lss_em_fig)=
-```{code-cell} python3
+```{code-cell} ipython3
 I = 20
 T = 50
 ymin = -0.5
@@ -887,7 +887,7 @@ $$
 
 这张图显示了 $y$ 在时间点 $T, T', T''$ 的横截面分布
 
-```{code-cell} python3
+```{code-cell} ipython3
 def cross_plot(A,
             C,
             G,
@@ -927,7 +927,7 @@ def cross_plot(A,
     plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 cross_plot(A_2, C_2, G_2)
 ```
 
@@ -968,7 +968,7 @@ $$
 让我们看看当我们从平稳分布开始 $x_0$ 时，前面的图形会发生什么变化。
 
 (lss_s_fig)=
-```{code-cell} python3
+```{code-cell} ipython3
 cross_plot(A_2, C_2, G_2, steady_state='True')
 ```
 

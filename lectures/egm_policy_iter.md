@@ -140,13 +140,13 @@ EGM这个名称来源于网格$\{y_i\}$是**内生**决定的这一事实。
 
 这将使我们能够与解析解进行比较
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/cd_analytical.py
 ```
 
 我们重用 `OptimalGrowthModel` 类
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth_fast/ogm.py
 ```
 
@@ -154,7 +154,7 @@ EGM这个名称来源于网格$\{y_i\}$是**内生**决定的这一事实。
 
 以下是使用EGM实现$K$的代码，如上所述。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def K(σ_array, og):
     """
@@ -191,27 +191,27 @@ def K(σ_array, og):
 
 首先我们创建一个实例。
 
-```{code-cell} python3
+```{code-cell} ipython3
 og = OptimalGrowthModel()
 grid = og.grid
 ```
 
 这是我们的求解程序：
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/coleman_policy_iter/solve_time_iter.py
 ```
 
 让我们运行它：
 
-```{code-cell} python3
+```{code-cell} ipython3
 σ_init = np.copy(grid)
 σ = solve_model_time_iter(og, σ_init)
 ```
 
 以下是结果策略与真实策略的比较：
 
-```{code-cell} python3
+```{code-cell} ipython3
 y = grid + σ  # y_i = k_i + c_i
 
 fig, ax = plt.subplots()
@@ -228,13 +228,13 @@ plt.show()
 
 两个策略之间的最大绝对偏差是
 
-```{code-cell} python3
+```{code-cell} ipython3
 np.max(np.abs(σ - σ_star(y, og.α, og.β)))
 ```
 
 收敛需要多长时间？
 
-```{code-cell} python3
+```{code-cell} ipython3
 %%timeit -n 3 -r 1
 σ = solve_model_time_iter(og, σ_init, verbose=False)
 ```

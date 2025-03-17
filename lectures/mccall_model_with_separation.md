@@ -306,7 +306,7 @@ This helps to tidy up the code and provides an object that's easy to pass to fun
 
 The default utility function is a CRRA utility function
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def u(c, σ=2.0):
     return (c**(1 - σ) - 1) / (1 - σ)
@@ -315,7 +315,7 @@ def u(c, σ=2.0):
 Also, here's a default wage distribution, based around the BetaBinomial
 distribution:
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 60                                  # n possible outcomes for w
 w_default = np.linspace(10, 20, n)      # wages between 10 and 20
 a, b = 600, 400                         # shape parameters
@@ -325,7 +325,7 @@ q_default = dist.pdf()
 
 Here's our jitted class for the McCall model with separation.
 
-```{code-cell} python3
+```{code-cell} ipython3
 mccall_data = [
     ('α', float64),      # job separation rate
     ('β', float64),      # discount factor
@@ -363,7 +363,7 @@ Now we iterate until successive realizations are closer together than some small
 
 We then return the current iterate as an approximate solution.
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def solve_model(mcm, tol=1e-5, max_iter=2000):
     """
@@ -401,7 +401,7 @@ Let's compare $v$ and $h$ to see what they look like.
 
 We'll use the default parameterizations found in the code above.
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcm = McCallModel()
 v, d = solve_model(mcm)
 h = u(mcm.c) + mcm.β * d
@@ -424,7 +424,7 @@ The value $v$ is increasing because higher $w$ generates a higher wage flow cond
 Here's a function `compute_reservation_wage` that takes an instance of `McCallModel`
 and returns the associated reservation wage.
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def compute_reservation_wage(mcm):
     """
@@ -503,7 +503,7 @@ Reproduce all the reservation wage figures shown above.
 
 Regarding the values on the horizontal axis, use
 
-```{code-cell} python3
+```{code-cell} ipython3
 grid_size = 25
 c_vals = np.linspace(2, 12, grid_size)         # unemployment compensation
 beta_vals = np.linspace(0.8, 0.99, grid_size)  # discount factors
@@ -519,7 +519,7 @@ alpha_vals = np.linspace(0.05, 0.5, grid_size) # separation rate
 
 Here's the first figure.
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcm = McCallModel()
 
 w_bar_vals = np.empty_like(c_vals)
@@ -541,7 +541,7 @@ plt.show()
 
 Here's the second one.
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 for i, β in enumerate(beta_vals):
@@ -558,7 +558,7 @@ plt.show()
 
 Here's the third.
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 for i, α in enumerate(alpha_vals):

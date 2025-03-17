@@ -136,7 +136,7 @@ beta distributions, then computes and simulates an associated likelihood
 ratio process by generating a sequence $w^t$ from *some*
 probability distribution, for example, a sequence of  IID draws from $g$.
 
-```{code-cell} python3
+```{code-cell} ipython3
 # Parameters in the two beta distributions.
 F_a, F_b = 1, 1
 G_a, G_b = 3, 1.2
@@ -151,7 +151,7 @@ f = jit(lambda x: p(x, F_a, F_b))
 g = jit(lambda x: p(x, G_a, G_b))
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def simulate(a, b, T=50, N=500):
     '''
@@ -173,12 +173,12 @@ def simulate(a, b, T=50, N=500):
 
 We'll also use the following Python code to prepare some informative simulations
 
-```{code-cell} python3
+```{code-cell} ipython3
 l_arr_g = simulate(G_a, G_b, N=50000)
 l_seq_g = np.cumprod(l_arr_g, axis=1)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 l_arr_f = simulate(F_a, F_b, N=50000)
 l_seq_f = np.cumprod(l_arr_f, axis=1)
 ```
@@ -208,7 +208,7 @@ i.e., a personal or subjective belief about $q$ based on our having seen no data
 Below we define a Python function that updates belief $\pi$ using
 likelihood ratio $\ell$ according to  recursion {eq}`eq_recur1`
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def update(π, l):
     "Update π using likelihood l"
@@ -293,14 +293,14 @@ $\pi_t$ that are associated with the *same* realization of the likelihood ratio 
 
 First, we tell Python two values of $\pi_0$.
 
-```{code-cell} python3
+```{code-cell} ipython3
 π1, π2 = 0.2, 0.8
 ```
 
 Next we generate paths of the likelihood ratio process $L_t$ and the posterior $\pi_t$ for a
 history of IID draws from density $f$.
 
-```{code-cell} python3
+```{code-cell} ipython3
 T = l_arr_f.shape[1]
 π_seq_f = np.empty((2, T+1))
 π_seq_f[:, 0] = π1, π2
@@ -310,7 +310,7 @@ for t in range(T):
         π_seq_f[i, t+1] = update(π_seq_f[i, t], l_arr_f[0, t])
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax1 = plt.subplots()
 
 for i in range(2):
@@ -334,7 +334,7 @@ Please note that there are two different scales on the $y$ axis.
 
 Now let's study what happens when the history consists of IID draws from density $g$
 
-```{code-cell} python3
+```{code-cell} ipython3
 T = l_arr_g.shape[1]
 π_seq_g = np.empty((2, T+1))
 π_seq_g[:, 0] = π1, π2
@@ -344,7 +344,7 @@ for t in range(T):
         π_seq_g[i, t+1] = update(π_seq_g[i, t], l_arr_g[0, t])
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax1 = plt.subplots()
 
 for i in range(2):
@@ -364,7 +364,7 @@ plt.show()
 
 Below we offer Python code that verifies that nature chose permanently to draw from density $f$.
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_seq = np.empty((2, T+1))
 π_seq[:, 0] = π1, π2
 
@@ -373,7 +373,7 @@ for i in range(2):
     π_seq[i, 1:] = πL / (πL + 1 - π_seq[i, 0])
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 np.abs(π_seq - π_seq_f).max() < 1e-10
 ```
 

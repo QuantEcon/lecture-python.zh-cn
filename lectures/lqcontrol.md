@@ -625,7 +625,7 @@ $$
 
 冲击 $\{w_t\}$ 被设定为独立同分布的标准正态分布。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 模型参数
 r = 0.05
 β = 1/(1 + r)
@@ -706,7 +706,7 @@ $$
 
 这个消费者比之前的更有耐心，因此对后期消费值赋予相对更大的权重。
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -1237,7 +1237,7 @@ $$
 - $p(0) = 0, p(T/2) = \mu$，以及
 - $p(T) = 0$
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 模型参数
 r = 0.05
 β = 1/(1 + r)
@@ -1307,9 +1307,8 @@ plt.show()
 ```{solution-end}
 ```
 
-```{exercise-start}
+````{exercise}
 :label: lqc_ex2
-```
 
 复现上面{ref}`所示的工作和退休图表 <solution_lqc_ex2_fig>`。
 
@@ -1337,9 +1336,7 @@ plt.show()
 被退休时期通过迭代`lq_retired`得到的最终值函数所替代。
 
 通过仔细处理,可以将这两个独立模型的模拟结果拼接在一起生成完整的模拟。
-
-```{exercise-end}
-```
+````
 
 ```{solution-start} lqc_ex2
 :class: dropdown
@@ -1349,7 +1346,7 @@ plt.show()
 
 该模型通过组合两个LQ规划问题来求解,正如讲座中所述。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 模型参数
 r = 0.05
 β = 1/(1 + r)
@@ -1498,7 +1495,7 @@ $$
 
 我们的解决方案代码如下：
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 模型参数
 a0 = 5
 a1 = 0.5

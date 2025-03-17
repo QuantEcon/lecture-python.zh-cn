@@ -174,7 +174,7 @@ $\text{Beta}(2,2)$ 分布的支撑集是 $(0,1)$ - 它具有单峰、对称的�
 
 我们将设置一个`JVWorker`类来保存上述模型的参数
 
-```{code-cell} python3
+```{code-cell} ipython3
 class JVWorker:
     r"""
     一个Jovanovic类型的就业模型，包含在职搜索。
@@ -233,7 +233,7 @@ w(s, \phi)
 
 另一个函数`get_greedy`在给定值函数的情况下，返回每个$x$处$s$和$\phi$的最优选择。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def operator_factory(jv, parallel_flag=True):
 
     """
@@ -309,7 +309,7 @@ def operator_factory(jv, parallel_flag=True):
 
 为了求解模型，我们将编写一个使用贝尔曼算子并通过迭代寻找不动点的函数。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def solve_model(jv,
                 use_parallel=True,
                 tol=1e-4,
@@ -355,7 +355,7 @@ def solve_model(jv,
 让我们生成最优政策并看看它们是什么样子。
 
 (jv_policies)=
-```{code-cell} python3
+```{code-cell} ipython3
 jv = JVWorker()
 T, get_greedy = operator_factory(jv)
 v_star = solve_model(jv)
@@ -364,7 +364,7 @@ s_star, ϕ_star = get_greedy(v_star)
 
 以下是这些图表：
 
-```{code-cell} python3
+```{code-cell} ipython3
 plots = [s_star, ϕ_star, v_star]
 titles = ["s策略", "ϕ策略",  "价值函数"]
 
@@ -425,7 +425,7 @@ ax.set_ylim(0, plot_grid_max)
 
 以下是生成45度图的代码
 
-```{code-cell} python3
+```{code-cell} ipython3
 jv = JVWorker(grid_size=25, mc_size=50)
 π, g, f_rvs, x_grid = jv.π, jv.g, jv.f_rvs, jv.x_grid
 T, get_greedy = operator_factory(jv)
@@ -505,7 +505,7 @@ $\phi_t = \phi(x_t) \approx 0.6$。
 
 可以用以下方法生成图像
 
-```{code-cell} python3
+```{code-cell} ipython3
 jv = JVWorker()
 
 def xbar(ϕ):

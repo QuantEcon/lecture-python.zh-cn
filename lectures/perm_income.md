@@ -464,7 +464,7 @@ $$
 
 下图显示了一个典型的实现，其中 $r = 0.05$，$\mu = 1$，且 $\sigma = 0.15$
 
-```{code-cell} python3
+```{code-cell} ipython3
 r = 0.05
 β = 1 / (1 + r)
 σ = 0.15
@@ -500,7 +500,7 @@ plt.show()
 
 下图显示了250个具有独立收入流的消费者的消费路径
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(10, 6))
 
 b_sum = np.zeros(T+1)
@@ -791,7 +791,7 @@ b_{t+1} - b_t = - z_{2t} = - \sigma_2 w_{2t}
 
 下图展示了脉冲响应函数，说明了对暂时性和永久性收入冲击的这些非常不同的反应。
 
-```{code-cell} python3
+```{code-cell} ipython3
 r = 0.05
 β = 1 / (1 + r)
 S = 5   # 脉冲日期

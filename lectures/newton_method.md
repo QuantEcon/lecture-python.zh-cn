@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -937,7 +937,7 @@ init = np.repeat(1.0, 3)
 
 结果与真实值非常接近，但仍有细微差异。
 
-```{code-cell} python3
+```{code-cell} ipython3
 %time k = newton(lambda k: multivariate_solow(k, A=A, s=s, α=α, δ=δ) - k, \
                  init,\
                  tol=1e-7)

@@ -102,10 +102,12 @@ z_{t+1} & = D x_t + F w_{t+1},
 
 卡尔曼滤波公式为：
 
-\begin{align*}
+```{math}
+:label: eq:Kalman102
+
 K(\Sigma_t) & = (A \Sigma_t D' + BF')(D \Sigma_t D' + FF')^{-1}, \\
 \Sigma_{t+1}&  = A \Sigma_t A' + BB' - (A \Sigma_t D' + BF')(D \Sigma_t D' + FF')^{-1} (D \Sigma_t A' + FB').
-\end{align*} (eq:Kalman102)
+```
 
 定义转换后的矩阵：
 

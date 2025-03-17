@@ -340,7 +340,7 @@ $$
 
 这里我们构建一个名为 `IFP` 的类来存储模型的基本要素。
 
-```{code-cell} python3
+```{code-cell} ipython3
 ifp_data = [
     ('R', float64),              # 利率 1 + r
     ('β', float64),              # 贴现因子
@@ -388,7 +388,7 @@ u'(c) - \max \left\{
      \right\}
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def euler_diff(c, a, z, σ_vals, ifp):
     """
@@ -422,7 +422,7 @@ def euler_diff(c, a, z, σ_vals, ifp):
 
 下一步是求取欧拉方程差的根。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def K(σ, ifp):
     """
@@ -442,13 +442,13 @@ def K(σ, ifp):
 
 下面的函数进行迭代直至收敛，并返回近似的最优策略。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/coleman_policy_iter/solve_time_iter.py
 ```
 
 让我们使用`IFP`类的默认参数来执行这个过程：
 
-```{code-cell} python3
+```{code-cell} ipython3
 ifp = IFP()
 
 # 设置初始消费策略，即在所有z状态下消费所有资产
@@ -462,7 +462,7 @@ a_size = len(a_grid)
 
 这是每个外生状态 $z$ 对应的最优策略图。
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 for z in range(z_size):
     label = rf'$\sigma^*(\cdot, {z})$'
@@ -485,13 +485,13 @@ plt.show()
 
 我们知道，在这种情况下，价值函数和最优消费政策由以下给出：
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/cake_eating_numerical/analytical.py
 ```
 
 让我们看看是否匹配：
 
-```{code-cell} python3
+```{code-cell} ipython3
 ifp_cake_eating = IFP(r=0.0, y=(0.0, 0.0))
 
 σ_star = solve_model_time_iter(ifp_cake_eating, σ_init)
@@ -536,7 +536,7 @@ plt.show()
 
 这是一个解决方案：
 
-```{code-cell} python3
+```{code-cell} ipython3
 r_vals = np.linspace(0, 0.04, 4)
 
 fig, ax = plt.subplots()
@@ -562,7 +562,7 @@ plt.show()
 
 下图是一个45度图,显示了在消费最优时资产的变动规律
 
-```{code-cell} python3
+```{code-cell} ipython3
 ifp = IFP()
 
 σ_star = solve_model_time_iter(ifp, σ_init, verbose=False)
@@ -615,7 +615,7 @@ $$
 
 首先我们编写一个函数来计算长期资产序列。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def compute_asset_series(ifp, T=500_000, seed=1234):
     """
     模拟资产的长度为T的时间序列，基于最优储蓄行为。
@@ -642,7 +642,7 @@ def compute_asset_series(ifp, T=500_000, seed=1234):
 
 现在我们调用函数，生成序列并绘制直方图：
 
-```{code-cell} python3
+```{code-cell} ipython3
 ifp = IFP()
 a = compute_asset_series(ifp)
 
@@ -689,7 +689,7 @@ plt.show()
 
 这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 M = 25
 r_vals = np.linspace(0, 0.02, M)
 fig, ax = plt.subplots()

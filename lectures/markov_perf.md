@@ -436,7 +436,7 @@ x_{t+1} = (A - B_1 F_1 -B_1 F_2 ) x_t
 
 根据这些参数，我们使用前面的代码计算无限期MPE
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/markov_perf/duopoly_mpe.py
 ```
 
@@ -448,7 +448,7 @@ x_{t+1} = (A - B_1 F_1 -B_1 F_2 ) x_t
 
 我们希望得到的策略与上面计算的F1一致。
 
-```{code-cell} python3
+```{code-cell} ipython3
 Λ1 = A - B2 @ F2
 lq1 = qe.LQ(Q1, R1, Λ1, B1, beta=β)
 P1_ih, F1_ih, d = lq1.stationary_values()
@@ -459,7 +459,7 @@ F1_ih
 
 事实上，np.allclose也认同我们的判断
 
-```{code-cell} python3
+```{code-cell} ipython3
 np.allclose(F1, F1_ih)
 ```
 
@@ -475,7 +475,7 @@ np.allclose(F1, F1_ih)
 * 使用{eq}`eq_mpe_cle`计算$x_t$的演变。
 * 提取并绘制行业总产出$q_t = q_{1t} + q_{2t}$和价格$p_t = a_0 - a_1 q_t$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 AF = A - B1 @ F1 - B2 @ F2
 n = 20
 x = np.empty((3, n))
@@ -533,7 +533,7 @@ plt.show()
 
 首先,让我们用给定参数计算双寡头垄断的 MPE
 
-```{code-cell} python3
+```{code-cell} ipython3
 # == 参数 == #
 a0 = 10.0
 a1 = 2.0
@@ -563,7 +563,7 @@ F1, F2, P1, P2 = qe.nnash(A, B1, B2, R1, R2, Q1,
 
 现在我们根据初始条件$q_{10} = q_{20} = 1$来评估行业产出和价格的时间路径。
 
-```{code-cell} python3
+```{code-cell} ipython3
 AF = A - B1 @ F1 - B2 @ F2
 n = 20
 x = np.empty((3, n))
@@ -605,7 +605,7 @@ $$
 我们求解最优策略 $u_t = - Fx_t$ 并追踪
 $\{q_t\}$ 的结果动态，从 $q_0 = 2.0$ 开始。
 
-```{code-cell} python3
+```{code-cell} ipython3
 R = a1
 Q = γ
 A = B = 1
@@ -624,7 +624,7 @@ pm = a0 - a1 * qm
 
 让我们看看不同的时间路径
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axes = plt.subplots(2, 1, figsize=(9, 9))
 
 ax = axes[0]
@@ -718,7 +718,7 @@ $$
 
 第一个图显示了在给定参数下每个公司的库存动态变化。
 
-```{code-cell} python3
+```{code-cell} ipython3
 δ = 0.02
 D = np.array([[-1, 0.5], [0.5, -1]])
 b = np.array([25, 25])
@@ -749,7 +749,7 @@ e1 = e2 = np.array([10, 10, 3])
 
 我们处理 $\delta = 0.02$ 的情况
 
-```{code-cell} python3
+```{code-cell} ipython3
 δ = 0.02
 D = np.array([[-1, 0.5], [0.5, -1]])
 b = np.array([25, 25])
@@ -778,7 +778,7 @@ $$
 
 我们按如下方式设置矩阵：
 
-```{code-cell} python3
+```{code-cell} ipython3
 # ==  创建计算纳什反馈均衡所需的矩阵 == #
 
 A = np.array([[δ_1,      0,    -δ_1 * b[0]],
@@ -819,7 +819,7 @@ M2 = np.copy(M1)
 
 现在我们可以使用`qe.nnash`来计算均衡
 
-```{code-cell} python3
+```{code-cell} ipython3
 F1, F2, P1, P2 = qe.nnash(A, B1, B2, R1,
                           R2, Q1, Q2, S1,
                           S2, W1, W2, M1, M2)
@@ -833,7 +833,7 @@ print(F2)
 
 现在让我们来看看库存的动态变化，并重现对应于$\delta = 0.02$的图表
 
-```{code-cell} python3
+```{code-cell} ipython3
 AF = A - B1 @ F1 - B2 @ F2
 n = 25
 x = np.empty((3, n))

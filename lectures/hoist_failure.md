@@ -46,11 +46,11 @@ El-Shanawany, Ardron 和 Walker {cite}`Ardron_2018` 以及 Greenfield 和 Sargen
 
 
 
-```{code-cell} python3
+```{code-cell} ipython3
 !pip install tabulate
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import fftconvolve
@@ -58,7 +58,7 @@ from tabulate import tabulate
 import time
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 np.set_printoptions(precision=3, suppress=True)
 ```
 
@@ -169,7 +169,7 @@ $$ h = f* g = g* f $$
 
 让我们使用`numpy.convolve`和`scipy.signal.fftconvolve`来计算一个例子。
 
-```{code-cell} python3
+```{code-cell} ipython3
 f = [.75, .25]
 g = [0., .6,  0., .4]
 h = np.convolve(f,g)
@@ -196,7 +196,7 @@ print("hf = ", hf, ",np.sum(hf) = ", np.sum(hf))
 
 然后我们将绘制直方图，并将其与适当离散化的对数正态分布的卷积进行比较。
 
-```{code-cell} python3
+```{code-cell} ipython3
 ## 创建两个和三个对数正态随机变量的和 ssum2 = s1 + s2 和 ssum3 = s1 + s2 + s3
 
 
@@ -216,17 +216,17 @@ ssum3 = s1 + s2 + s3
 count, bins, ignored = plt.hist(s1, 1000, density=True, align='mid')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 
 count, bins, ignored = plt.hist(ssum2, 1000, density=True, align='mid')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 
 count, bins, ignored = plt.hist(ssum3, 1000, density=True, align='mid')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 samp_mean2 = np.mean(s2)
 pop_mean2 = np.exp(mu2+ (sigma2**2)/2)
 
@@ -235,7 +235,7 @@ pop_mean2, samp_mean2, mu2, sigma2
 
 以下是创建对数正态概率密度函数离散化版本的辅助函数。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def p_log_normal(x,μ,σ):
     p = 1 / (σ*x*np.sqrt(2*np.pi)) * np.exp(-1/2*((np.log(x) - μ)/σ)**2)
     return p
@@ -260,14 +260,14 @@ def pdf_seq(μ,σ,I,m):
 
 <!-- #endregion -->
 
-```{code-cell} python3
+```{code-cell} ipython3
 p=15
 I = 2**p # 截断值
 m = .1 # 增量大小
 
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ## 检查单元格 -- 注意当不进行归一化时会发生什么！
 ## 无需调整即可匹配。与上面进行比较
 
@@ -284,7 +284,7 @@ count, bins, ignored = plt.hist(s1, 1000, density=True, align='mid')
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 从离散化的概率密度函数计算均值并与理论值进行比较
 
 mean= np.sum(np.multiply(x[:NT],p1_norm[:NT]))
@@ -338,7 +338,7 @@ $$ (eq:ift1)
 
 让我们做一个预热计算，比较 `numpy.convolve` 和 `scipy.signal.fftconvolve` 所需的时间。
 
-```{code-cell} python3
+```{code-cell} ipython3
 
 
 p1,p1_norm,x = pdf_seq(mu1,sigma1,I,m)
@@ -374,7 +374,7 @@ print("time with np.convolve = ", tdiff1,  "; time with fftconvolve = ",  tdiff2
 
 现在让我们将计算得到的两个对数正态随机变量之和的概率质量函数近似值与我们上面形成的样本直方图进行对比绘制。
 
-```{code-cell} python3
+```{code-cell} ipython3
 NT= np.size(x)
 
 plt.figure(figsize = (8,8))
@@ -388,7 +388,7 @@ count, bins, ignored = plt.hist(ssum2, 1000, density=True, align='mid')
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 NT= np.size(x)
 plt.figure(figsize = (8,8))
 plt.subplot(2,1,1)
@@ -401,14 +401,14 @@ count, bins, ignored = plt.hist(ssum3, 1000, density=True, align='mid')
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ## 让我们计算离散化pdf的均值
 mean= np.sum(np.multiply(x[:NT],c1f[:NT]))
 # meantheory = np.exp(mu1+.5*sigma1**2)
 mean, 2*meantheory
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ## 让我们计算离散化pdf的均值
 mean= np.sum(np.multiply(x[:NT],c2f[:NT]))
 # meantheory = np.exp(mu1+.5*sigma1**2)
@@ -524,7 +524,7 @@ $$ (eq:probtop)
 
 * 如{cite}`Greenfield_Sargent_1993`第27页表10所述，七个唯一概率$P(A_i)$的对数正态分布参数已被校准为以下Python代码中的值：
 
-```{code-cell} python3
+```{code-cell} ipython3
 mu1, sigma1 = 4.28, 1.1947
 mu2, sigma2 = 3.39, 1.1947
 mu3, sigma3 = 2.795, 1.1947
@@ -543,7 +543,7 @@ mu7, sigma7 = -.040, 1.4632
 
 为了提取汇总计算分位数的表格，我们将使用一个辅助函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
@@ -556,7 +556,7 @@ def find_nearest(array, value):
 
 我们将绘制一个与{cite}`Greenfield_Sargent_1993`第29页图5中的累积分布函数(CDF)相对应的图，并且还将展示一个与他们第28页表11相对应的表。
 
-```{code-cell} python3
+```{code-cell} ipython3
 p=15
 I = 2**p # 截断值
 m =  .05 # 增量大小
@@ -603,7 +603,7 @@ print("13个卷积的计算时间 = ", tdiff13)
 
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 d13 = np.cumsum(c13)
 Nx=int(1400)
 plt.figure()

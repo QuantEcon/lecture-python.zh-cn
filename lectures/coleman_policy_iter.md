@@ -228,7 +228,7 @@ $$
 
 这将使我们能够将结果与解析解进行比较
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/cd_analytical.py
 ```
 如上所述，我们计划使用时间迭代来求解模型，这意味着要使用算子$K$进行迭代。
@@ -237,7 +237,7 @@ $$
 
 这些函数在我们在{doc}`之前的讲座 <optgrowth_fast>`中构建的`OptimalGrowthModel`类中可用。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth_fast/ogm.py
 ```
 现在我们实现一个名为`euler_diff`的方法，它返回
@@ -298,7 +298,7 @@ def K(σ, og):
 
 让我们生成一个实例并绘制$K$的一些迭代结果，从$σ(y) = y$开始。
 
-```{code-cell} python3
+```{code-cell} ipython3
 og = OptimalGrowthModel()
 grid = og.grid
 
@@ -325,18 +325,18 @@ plt.show()
 
 这里有一个名为`solve_model_time_iter`的函数，它接收一个`OptimalGrowthModel`实例作为输入，并通过时间迭代法返回最优策略的近似解。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/coleman_policy_iter/solve_time_iter.py
 ```
 让我们运行它：
 
-```{code-cell} python3
+```{code-cell} ipython3
 σ_init = np.copy(og.grid)
 σ = solve_model_time_iter(og, σ_init)
 ```
 这是得到的策略与真实策略的对比图：
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(og.grid, σ, lw=2,
@@ -352,12 +352,12 @@ plt.show()
 
 两种策略之间的最大绝对偏差是
 
-```{code-cell} python3
+```{code-cell} ipython3
 np.max(np.abs(σ - σ_star(og.grid, og.α, og.β)))
 ```
 需要多长时间才能收敛？
 
-```{code-cell} python3
+```{code-cell} ipython3
 %%timeit -n 3 -r 1
 σ = solve_model_time_iter(og, σ_init, verbose=False)
 ```
@@ -387,19 +387,19 @@ $$
 
 我们使用{doc}`VFI讲座<optgrowth_fast>`中的`OptimalGrowthModel_CRRA`类。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth_fast/ogm_crra.py
 ```
 
 让我们创建一个实例：
 
-```{code-cell} python3
+```{code-cell} ipython3
 og_crra = OptimalGrowthModel_CRRA()
 ```
 
 现在我们求解并绘制策略：
 
-```{code-cell} python3
+```{code-cell} ipython3
 %%time
 σ = solve_model_time_iter(og_crra, σ_init)
 

@@ -58,11 +58,11 @@ kernelspec:
 
 数据集可通过以下链接访问：
 
-```{code-cell} python3
+```{code-cell} ipython3
 url1 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/realwage.csv'
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 import pandas as pd
 
 # 为了查看目的显示6列
@@ -76,7 +76,7 @@ realwage = pd.read_csv(url1)
 
 让我们看看我们有什么可以使用的数据
 
-```{code-cell} python3
+```{code-cell} ipython3
 realwage.head()  # 显示前5行
 ```
 
@@ -88,7 +88,7 @@ realwage.head()  # 显示前5行
 
 通过在columns参数中传入一个列表，我们可以在列轴上创建一个`MultiIndex`
 
-```{code-cell} python3
+```{code-cell} ipython3
 realwage = realwage.pivot_table(values='value',
                                 index='Time',
                                 columns=['Country', 'Series', 'Pay period'])
@@ -97,7 +97,7 @@ realwage.head()
 
 为了更容易地过滤我们的时间序列数据，接下来我们将把索引转换为`DateTimeIndex`
 
-```{code-cell} python3
+```{code-cell} ipython3
 realwage.index = pd.to_datetime(realwage.index)
 type(realwage.index)
 ```
@@ -106,17 +106,17 @@ type(realwage.index)
 
 `MultiIndex`是在pandas中管理面板数据最简单和最灵活的方式。
 
-```{code-cell} python3
+```{code-cell} ipython3
 type(realwage.columns)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 realwage.columns.names
 ```
 
 和之前一样，我们可以选择国家（我们的`MultiIndex`的最高层级）
 
-```{code-cell} python3
+```{code-cell} ipython3
 realwage['United States'].head()
 ```
 
@@ -124,13 +124,13 @@ realwage['United States'].head()
 
 `.stack()`将列`MultiIndex`的最低层级旋转到行索引（`.unstack()`的作用方向相反 - 你可以试试看）
 
-```{code-cell} python3
+```{code-cell} ipython3
 realwage.stack().head()
 ```
 
 我们也可以传入一个参数来选择我们想要堆叠的层级
 
-```{code-cell} python3
+```{code-cell} ipython3
 realwage.stack(level='Country').head()
 ```
 
@@ -138,7 +138,7 @@ realwage.stack(level='Country').head()
 
 选择一年并堆叠`MultiIndex`的两个较低层级，可以创建我们面板数据的横截面
 
-```{code-cell} python3
+```{code-cell} ipython3
 realwage.loc['2015'].stack(level=(1, 2)).transpose().head()
 ```
 
@@ -146,7 +146,7 @@ realwage.loc['2015'].stack(level=(1, 2)).transpose().head()
 
 要创建我们的筛选数据框（`realwage_f`），我们可以使用`xs`方法在保持更高层级（本例中为国家）的同时，选择多重索引中较低层级的值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 realwage_f = realwage.xs(('Hourly', 'In 2015 constant prices at 2015 USD exchange rates'),
                          level=('Pay period', 'Series'), axis=1)
 realwage_f.head()
@@ -160,18 +160,18 @@ realwage_f.head()
 
 可以通过以下链接访问数据集：
 
-```{code-cell} python3
+```{code-cell} ipython3
 url2 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/countries.csv'
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 worlddata = pd.read_csv(url2, sep=';')
 worlddata.head()
 ```
 
 首先，我们将从`worlddata`中只选择国家和大洲变量，并将列名重命名为'Country'
 
-```{code-cell} python3
+```{code-cell} ipython3
 worlddata = worlddata[['Country (en)', 'Continent']]
 worlddata = worlddata.rename(columns={'Country (en)': 'Country'})
 worlddata.head()
@@ -183,7 +183,7 @@ pandas的`merge`函数允许通过行将数据框连接在一起。
 
 我们的数据框将使用国家名称进行合并，这需要我们使用`realwage_f`的转置，以便两个数据框中的行都对应于国家名称。
 
-```{code-cell} python3
+```{code-cell} ipython3
 realwage_f.transpose().head()
 ```
 
@@ -210,7 +210,7 @@ realwage_f.transpose().head()
 
 我们的'right'数据框（`worlddata`）在'Country'列中包含国家名称，所以我们设置`right_on='Country'`
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged = pd.merge(realwage_f.transpose(), worlddata,
                   how='left', left_index=True, right_on='Country')
 merged.head()
@@ -220,7 +220,7 @@ merged.head()
 
 要检查是否发生这种情况，我们可以在 continent 列上使用 `.isnull()` 并过滤合并后的数据框
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged[merged['Continent'].isnull()]
 ```
 
@@ -232,7 +232,7 @@ merged[merged['Continent'].isnull()]
 
 注意那些不在我们字典中的国家是如何被映射为 `NaN` 的
 
-```{code-cell} python3
+```{code-cell} ipython3
 missing_continents = {'Korea': 'Asia',
                       'Russian Federation': 'Europe',
                       'Slovak Republic': 'Europe'}
@@ -244,7 +244,7 @@ merged['Country'].map(missing_continents)
 
 `.fillna()` 只会用映射填充 `merged['Continent']` 中的 `NaN` 值，而保持列中的其他值不变
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged['Continent'] = merged['Continent'].fillna(merged['Country'].map(missing_continents))
 
 # 检查大洲是否正确映射
@@ -256,7 +256,7 @@ merged[merged['Country'] == 'Korea']
 
 为此，我们将使用`.replace()`并遍历一个包含我们想要替换的大洲值的列表
 
-```{code-cell} python3
+```{code-cell} ipython3
 replace = ['Central America', 'North America', 'South America']
 
 for country in replace:
@@ -271,20 +271,20 @@ for country in replace:
 
 默认情况下，层级将按照从上到下的顺序排序
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged = merged.set_index(['Continent', 'Country']).sort_index()
 merged.head()
 ```
 
 在合并过程中，我们丢失了`DatetimeIndex`，因为我们合并的列不是日期时间格式的
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged.columns
 ```
 
 现在我们已经将合并的列设置为索引，我们可以使用`.to_datetime()`重新创建一个`DatetimeIndex`
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged.columns = pd.to_datetime(merged.columns)
 merged.columns = merged.columns.rename('Time')
 merged.columns
@@ -292,7 +292,7 @@ merged.columns
 
 `DatetimeIndex`在行轴上运行更加顺畅，所以我们将对`merged`进行转置
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged = merged.transpose()
 merged.head()
 ```
@@ -305,7 +305,7 @@ merged.head()
 
 例如，我们可以计算2006年至2016年期间每个国家的平均实际最低工资（默认是按行聚合）
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged.mean().head(10)
 ```
 
@@ -331,13 +331,13 @@ plt.show()
 
 通过向`.mean()`传入`axis=1`参数可以对列进行聚合（得到所有国家随时间变化的平均最低工资）
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged.mean(axis=1).head()
 ```
 
 我们可以将这个时间序列绘制成折线图
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged.mean(axis=1).plot()
 plt.title('2006 - 2016年平均实际最低工资')
 plt.ylabel('2015年美元')
@@ -347,13 +347,13 @@ plt.show()
 
 我们也可以指定`MultiIndex`的一个层级（在列轴上）来进行聚合
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged.groupby(level='Continent', axis=1).mean().head()
 ```
 
 我们可以将每个大洲的平均最低工资绘制成时间序列图
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged.groupby(level='Continent', axis=1).mean().plot()
 plt.title('平均实际最低工资')
 plt.ylabel('2015年美元')
@@ -363,7 +363,7 @@ plt.show()
 
 为了绘图目的，我们将去掉澳大利亚这个大洲
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged = merged.drop('Australia', level='Continent', axis=1)
 merged.groupby(level='Continent', axis=1).mean().plot()
 plt.title('平均实际最低工资')
@@ -374,7 +374,7 @@ plt.show()
 
 `.describe()` 可以快速获取一些常见的统计摘要数据
 
-```{code-cell} python3
+```{code-cell} ipython3
 merged.stack().describe()
 ```
 
@@ -390,7 +390,7 @@ merged.stack().describe()
 
 让我们再次按大洲拆分 `merged`，这次使用 `groupby` 函数，并将结果对象命名为 `grouped`
 
-```{code-cell} python3
+```{code-cell} ipython3
 grouped = merged.groupby(level='Continent', axis=1)
 grouped
 ```
@@ -401,7 +401,7 @@ grouped
 
 在这种情况下，我们的新数据结构是一个`Series`
 
-```{code-cell} python3
+```{code-cell} ipython3
 grouped.size()
 ```
 
@@ -409,7 +409,7 @@ grouped.size()
 
 `grouped.groups.keys()` 将返回 `groupby` 对象中的键
 
-```{code-cell} python3
+```{code-cell} ipython3
 continents = grouped.groups.keys()
 
 for continent in continents:
@@ -437,7 +437,7 @@ plt.show()
 
 可以通过以下链接访问数据集：
 
-```{code-cell} python3
+```{code-cell} ipython3
 url3 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/employ.csv'
 ```
 
@@ -454,7 +454,7 @@ url3 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source
 :class: dropdown
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 employ = pd.read_csv(url3)
 employ = employ.pivot_table(values='Value',
                             index=['DATE'],
@@ -465,13 +465,13 @@ employ.head()
 
 由于这是一个大型数据集，因此探索可用的层级和变量很有用
 
-```{code-cell} python3
+```{code-cell} ipython3
 employ.columns.names
 ```
 
 可以通过循环快速获取层级中的变量
 
-```{code-cell} python3
+```{code-cell} ipython3
 for name in employ.columns.names:
     print(name, employ.columns.get_level_values(name).unique())
 ```
@@ -502,7 +502,7 @@ for name in employ.columns.names:
 
 为了方便按国家筛选，将`GEO`调整到最上层并对`MultiIndex`进行排序
 
-```{code-cell} python3
+```{code-cell} ipython3
 employ.columns = employ.columns.swaplevel(0,-1)
 employ = employ.sort_index(axis=1)
 ```
@@ -511,7 +511,7 @@ employ = employ.sort_index(axis=1)
 
 一个快速去除欧盟地区的方法是使用列表推导式来查找`GEO`中以'Euro'开头的层级值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 geo_list = employ.columns.get_level_values('GEO').unique().tolist()
 countries = [x for x in geo_list if not x.startswith('Euro')]
 employ = employ[countries]
@@ -520,7 +520,7 @@ employ.columns.get_level_values('GEO').unique()
 
 从数据框中仅选择活动人口中的就业百分比
 
-```{code-cell} python3
+```{code-cell} ipython3
 employ_f = employ.xs(('Percentage of total population', 'Active population'),
                      level=('UNIT', 'INDIC_EM'),
                      axis=1)
@@ -529,11 +529,11 @@ employ_f.head()
 
 在创建分组箱形图之前删除"总计"值
 
-```{code-cell} python3
+```{code-cell} ipython3
 employ_f = employ_f.drop('Total', level='SEX', axis=1)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 box = employ_f.loc['2015'].unstack().reset_index()
 sns.boxplot(x="AGE", y=0, hue="SEX", data=box, palette=("husl"), showfliers=False)
 plt.xlabel('')

@@ -227,7 +227,7 @@ you need to create an instance and update it by `lm = LakeModel(α=0.03)`.
 
 In the exercises, we show how to avoid this issue by using getter and setter methods.
 
-```{code-cell} python3
+```{code-cell} ipython3
 class LakeModel:
     """
     Solves the lake model and computes dynamics of unemployment stocks and
@@ -316,16 +316,16 @@ class LakeModel:
 As explained, if we create an instance and update it by `lm = LakeModel(α=0.03)`,
 derived objects like $A$ will also change.
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm = LakeModel()
 lm.α
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm.A
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm = LakeModel(α = 0.03)
 lm.A
 ```
@@ -334,7 +334,7 @@ lm.A
 
 Let's run a simulation under the default parameters (see above) starting from $X_0 = (12, 138)$
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm = LakeModel()
 N_0 = 150      # Population
 e_0 = 0.92     # Initial employment rate
@@ -378,7 +378,7 @@ We also have $x_t \to \bar x$ as $t \to \infty$ provided that the remaining eige
 
 This is the case for our default parameters:
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm = LakeModel()
 e, f = np.linalg.eigvals(lm.A_hat)
 abs(e), abs(f)
@@ -386,7 +386,7 @@ abs(e), abs(f)
 
 Let's look at the convergence of the unemployment and employment rate to steady state levels (dashed red line)
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm = LakeModel()
 e_0 = 0.92     # Initial employment rate
 u_0 = 1 - e_0  # Initial unemployment rate
@@ -501,7 +501,7 @@ MarkovChain class to investigate this.
 
 Let's plot the path of the sample averages over 5,000 periods
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm = LakeModel(d=0, b=0)
 T = 5000  # Simulation length
 
@@ -642,7 +642,7 @@ We will make use of techniques from the {doc}`McCall model lecture <mccall_model
 
 The first piece of code implements value function iteration
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -738,7 +738,7 @@ def solve_mccall_model(mcm, tol=1e-5, max_iter=2000):
 
 The second piece of code is used to complete the reservation wage:
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -782,7 +782,7 @@ def compute_reservation_wage(mcm, return_values=False):
 Now let's compute and plot welfare, employment, unemployment, and tax revenue as a
 function of the unemployment compensation rate
 
-```{code-cell} python3
+```{code-cell} ipython3
 # Some global variables that will stay constant
 α = 0.013
 α_q = (1-(1-α)**3)   # Quarterly (α is monthly)
@@ -923,7 +923,7 @@ In this exercise, your task is to arrange the `LakeModel` class by using descrip
 
 Here is one solution
 
-```{code-cell} python3
+```{code-cell} ipython3
 class LakeModelModified:
     """
     Solves the lake model and computes dynamics of unemployment stocks and
@@ -1103,7 +1103,7 @@ It may be easier to use the class created in exercise 1 to help with changing va
 We begin by constructing the class containing the default parameters and assigning the
 steady state values to `x0`
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm = LakeModelModified()
 x0 = lm.rate_steady_state()
 print(f"Initial Steady State: {x0}")
@@ -1111,14 +1111,14 @@ print(f"Initial Steady State: {x0}")
 
 Initialize the simulation values
 
-```{code-cell} python3
+```{code-cell} ipython3
 N0 = 100
 T = 50
 ```
 
 New legislation changes $\lambda$ to $0.2$
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm.λ = 0.2
 
 xbar = lm.rate_steady_state()  # new steady state
@@ -1129,7 +1129,7 @@ print(f"New Steady State: {xbar}")
 
 Now plot stocks
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axes = plt.subplots(3, 1, figsize=[10, 9])
 
 axes[0].plot(X_path[:, 0])
@@ -1150,7 +1150,7 @@ plt.show()
 
 And how the rates evolve
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axes = plt.subplots(2, 1, figsize=(10, 8))
 
 titles = ['Unemployment rate', 'Employment rate']
@@ -1199,21 +1199,21 @@ For 20 periods the economy has a new entry rate into the labor market.
 Let's start off at the baseline parameterization and record the steady
 state
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm = LakeModelModified()
 x0 = lm.rate_steady_state()
 ```
 
 Here are the other parameters:
 
-```{code-cell} python3
+```{code-cell} ipython3
 b_hat = 0.025
 T_hat = 20
 ```
 
 Let's increase $b$ to the new value and simulate for 20 periods
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm.b = b_hat
 # Simulate stocks
 X_path1 = np.vstack(tuple(lm.simulate_stock_path(x0 * N0, T_hat)))
@@ -1225,7 +1225,7 @@ Now we reset $b$ to the original value and then, using the state
 after 20 periods for the new initial conditions, we simulate for the
 additional 30 periods
 
-```{code-cell} python3
+```{code-cell} ipython3
 lm.b = 0.0124
 # Simulate stocks
 X_path2 = np.vstack(tuple(lm.simulate_stock_path(X_path1[-1, :2], T-T_hat+1)))
@@ -1235,7 +1235,7 @@ x_path2 = np.vstack(tuple(lm.simulate_rate_path(x_path1[-1, :2], T-T_hat+1)))
 
 Finally, we combine these two paths and plot
 
-```{code-cell} python3
+```{code-cell} ipython3
 # note [1:] to avoid doubling period 20
 x_path = np.vstack([x_path1, x_path2[1:]])
 X_path = np.vstack([X_path1, X_path2[1:]])
@@ -1260,7 +1260,7 @@ plt.show()
 
 And the rates
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axes = plt.subplots(2, 1, figsize=[10, 6])
 
 titles = ['Unemployment rate', 'Employment rate']

@@ -165,7 +165,7 @@ The integral in the definition of $Qf$ is calculated by Monte Carlo.
 
 The following list helps Numba by providing some type information about the data we will work with.
 
-```{code-cell} python3
+```{code-cell} ipython3
 job_search_data = [
      ('μ', float64),             # transient shock log mean
      ('s', float64),             # transient shock log variance

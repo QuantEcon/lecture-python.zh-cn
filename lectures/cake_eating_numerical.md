@@ -53,7 +53,7 @@ v(x) = \max_{0\leq c \leq x} \{u(c) + \beta v(x-c)\}
 
 价值函数和最优策略的解析解如下所示。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/cake_eating_numerical/analytical.py
 ```
 我们的首要目标是以数值方式获得这些解析解。
@@ -118,7 +118,7 @@ $$
 
 下面的`maximize`函数是一个小型辅助函数，它将SciPy的最小化程序转换为最大化程序。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def maximize(g, a, b, args):
     """
     在区间[a, b]上最大化函数g。
@@ -139,7 +139,7 @@ def maximize(g, a, b, args):
 
 这个类还将提供一个名为 `state_action_value` 的方法，该方法根据特定状态和对 $v$ 的猜测返回消费选择的价值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 class CakeEating:
 
     def __init__(self,
@@ -181,7 +181,7 @@ class CakeEating:
 ```
 现在我们定义贝尔曼算子：
 
-```{code-cell} python3
+```{code-cell} ipython3
 def T(v, ce):
     """
     贝尔曼算子。更新值函数的估计值。
@@ -202,14 +202,14 @@ def T(v, ce):
 
 让我们先用默认参数创建一个`CakeEating`实例。
 
-```{code-cell} python3
+```{code-cell} ipython3
 ce = CakeEating()
 ```
 现在让我们看看值函数的迭代过程。
 
 我们从初始猜测值$v$开始，对每个网格点$x$，令$v(x) = u(x)$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 x_grid = ce.x_grid
 v = ce.u(x_grid)       # 初始猜测
 n = 12                 # 迭代次数
@@ -232,7 +232,7 @@ plt.show()
 ```
 为了更系统地完成这项工作，我们引入一个名为`compute_value_function`的包装函数，该函数会一直迭代直到满足某些收敛条件。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def compute_value_function(ce,
                            tol=1e-4,
                            max_iter=1000,
@@ -264,12 +264,12 @@ def compute_value_function(ce,
 ```
 现在让我们调用它，注意运行需要一点时间。
 
-```{code-cell} python3
+```{code-cell} ipython3
 v = compute_value_function(ce)
 ```
 现在我们可以绘图查看收敛后的值函数是什么样子。
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(x_grid, v, label='近似值函数')
@@ -281,10 +281,10 @@ plt.show()
 ```
 接下来让我们将其与解析解进行比较。
 
-```{code-cell} python3
+```{code-cell} ipython3
 v_analytical = v_star(ce.x_grid, ce.β, ce.γ)
 ```
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(x_grid, v_analytical, label='解析解')
@@ -323,7 +323,7 @@ $$
 
 这是相关函数:
 
-```{code-cell} python3
+```{code-cell} ipython3
 def σ(ce, v):
     """
     最优策略函数。给定价值函数,
@@ -344,13 +344,13 @@ def σ(ce, v):
 ```
 现在让我们传入近似值函数并计算最优消费：
 
-```{code-cell} python3
+```{code-cell} ipython3
 c = σ(ce, v)
 ```
 (pol_an)=
 让我们将其与真实的解析解进行对比绘图
 
-```{code-cell} python3
+```{code-cell} ipython3
 c_analytical = c_star(ce.x_grid, ce.β, ce.γ)
 
 fig, ax = plt.subplots()
@@ -445,7 +445,7 @@ $$
 
 我们将使用[继承](https://en.wikipedia.org/wiki/Inheritance_%28object-oriented_programming%29)来最大化代码重用。
 
-```{code-cell} python3
+```{code-cell} ipython3
 class OptimalGrowth(CakeEating):
     """
     CakeEating的一个子类，添加了参数α并重写了
@@ -473,12 +473,12 @@ class OptimalGrowth(CakeEating):
 
         return u(c) + β * v((x - c)**α)
 ```
-```{code-cell} python3
+```{code-cell} ipython3
 og = OptimalGrowth()
 ```
 这是计算得到的值函数。
 
-```{code-cell} python3
+```{code-cell} ipython3
 v = compute_value_function(og, verbose=False)
 
 fig, ax = plt.subplots()
@@ -491,7 +491,7 @@ plt.show()
 ```
 这是计算得出的策略，与我们之前推导的标准蛋糕食用情况（$\alpha=1$）的解决方案相结合。
 
-```{code-cell} python3
+```{code-cell} ipython3
 c_new = σ(og, v)
 
 fig, ax = plt.subplots()
@@ -525,7 +525,7 @@ plt.show()
 
 这是实现时间迭代的一种方法。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def K(σ_array, ce):
     """
     策略函数算子。给定策略函数,
@@ -556,7 +556,7 @@ def K(σ_array, ce):
 
     return σ_new
 ```
-```{code-cell} python3
+```{code-cell} ipython3
 def iterate_euler_equation(ce,
                            max_iter=500,
                            tol=1e-5,
@@ -588,12 +588,12 @@ def iterate_euler_equation(ce,
 
     return σ
 ```
-```{code-cell} python3
+```{code-cell} ipython3
 ce = CakeEating(x_grid_min=0.0)
 c_euler = iterate_euler_equation(ce)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(ce.x_grid, c_analytical, label='解析解')

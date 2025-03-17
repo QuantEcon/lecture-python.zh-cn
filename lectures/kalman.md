@@ -118,7 +118,7 @@ p = N(\hat x, \Sigma)
 
 这个密度 $p(x)$ 在下面以等高线图的形式显示，其中红色椭圆的中心等于 $\hat x$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -207,7 +207,7 @@ plt.show()
 
 下图显示了原始先验分布$p(x)$和新报告的位置$y$
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(10, 8))
 ax.grid()
 
@@ -274,7 +274,7 @@ $$
 
 原始密度以等高线的形式保留作为对比
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(10, 8))
 ax.grid()
 
@@ -377,7 +377,7 @@ A
 Q = 0.3 * \Sigma
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(10, 8))
 ax.grid()
 
@@ -563,7 +563,7 @@ $$
 :class: dropdown
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 参数
 θ = 10  # 状态 x_t 的常数值
 A, C, G, H = 1, 0, 1, 1
@@ -626,7 +626,7 @@ $$
 :class: dropdown
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ϵ = 0.1
 θ = 10  # 状态x_t的常数值
 A, C, G, H = 1, 0, 1, 1
@@ -727,7 +727,7 @@ $$
 :class: dropdown
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 定义 A, C, G, H
 G = np.identity(2)
 H = np.sqrt(0.5) * np.identity(2)

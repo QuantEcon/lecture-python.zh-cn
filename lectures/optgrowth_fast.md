@@ -86,7 +86,7 @@ $$
 
 和之前一样，我们将能够与真实解进行比较
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/cd_analytical.py
 ```
 
@@ -107,7 +107,7 @@ $$
 
 这是我们为了获得更快的速度而牺牲灵活性的地方。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth_fast/ogm.py
 ```
 
@@ -119,7 +119,7 @@ $$
 
 首先，这里有一个函数，根据Bellman方程{eq}`fpb30`返回特定消费选择`c`在给定状态`y`下的值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def state_action_value(c, y, v_array, og):
     """
@@ -141,7 +141,7 @@ def state_action_value(c, y, v_array, og):
 
 现在我们可以实现贝尔曼算子，它用于最大化贝尔曼方程的右侧：
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def T(v, og):
     """
@@ -167,7 +167,7 @@ def T(v, og):
 
 我们使用`solve_model`函数进行迭代直到收敛。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/solve_model.py
 ```
 
@@ -175,13 +175,13 @@ def T(v, og):
 
 首先创建一个实例：
 
-```{code-cell} python3
+```{code-cell} ipython3
 og = OptimalGrowthModel()
 ```
 
 现在我们调用`solve_model`，使用`%%time`魔法指令来检查运行时间。
 
-```{code-cell} python3
+```{code-cell} ipython3
 %%time
 v_greedy, v_solution = solve_model(og)
 ```
@@ -190,7 +190,7 @@ v_greedy, v_solution = solve_model(og)
 
 下面是生成的策略与真实策略的对比图：
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(og.grid, v_greedy, lw=2,
@@ -207,7 +207,7 @@ plt.show()
 
 两种策略之间的最大绝对偏差是
 
-```{code-cell} python3
+```{code-cell} ipython3
 np.max(np.abs(v_greedy - σ_star(og.grid, og.α, og.β)))
 ```
 
@@ -270,26 +270,26 @@ $$
 
 这是我们的CRRA版本的`OptimalGrowthModel`：
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth_fast/ogm_crra.py
 ```
 
 让我们创建一个实例：
 
-```{code-cell} python3
+```{code-cell} ipython3
 og_crra = OptimalGrowthModel_CRRA()
 ```
 
 现在我们调用`solve_model`，使用`%%time`魔术命令来检查运行时间。
 
-```{code-cell} python3
+```{code-cell} ipython3
 %%time
 v_greedy, v_solution = solve_model(og_crra)
 ```
 
 以下是得到的策略图：
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(og.grid, v_greedy, lw=2,
@@ -347,7 +347,7 @@ $$
 
 这是一个解决方案：
 
-```{code-cell} python3
+```{code-cell} ipython3
 def simulate_og(σ_func, og, y0=0.1, ts_length=100):
     '''
     根据消费策略σ计算时间序列。
@@ -360,7 +360,7 @@ def simulate_og(σ_func, og, y0=0.1, ts_length=100):
     return y
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 for β in (0.8, 0.9, 0.98):

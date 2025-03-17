@@ -548,7 +548,7 @@ under this consumption policy.
 As with our {doc}`earlier lecture <ifp>` on the income fluctuation problem, we
 begin by producing a 45 degree diagram showing the law of motion for assets
 
-```{code-cell} python3
+```{code-cell} ipython3
 # Good and bad state mean labor income
 Y_mean = [np.mean(ifp.Y(z, ifp.η_draws)) for z in (0, 1)]
 # Mean returns
@@ -618,7 +618,7 @@ solve inside the function.
 The reason we do this is that `solve_model_time_iter` is not
 JIT-compiled.
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def compute_asset_series(ifp, a_star, σ_star, z_seq, T=500_000):
     """
@@ -649,7 +649,7 @@ def compute_asset_series(ifp, a_star, σ_star, z_seq, T=500_000):
 Now we call the function, generate the series and then histogram it, using the
 solutions computed above.
 
-```{code-cell} python3
+```{code-cell} ipython3
 T = 1_000_000
 mc = MarkovChain(ifp.P)
 z_seq = mc.simulate(T, random_state=1234)
@@ -667,7 +667,7 @@ wealth distribution.
 
 Here's another view of this using a horizontal violin plot.
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 ax.violinplot(a, vert=False, showmedians=True)
 ax.set(xlabel='assets')

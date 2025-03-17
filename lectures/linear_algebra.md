@@ -166,7 +166,7 @@ $$
 
 下图展示了标量乘法
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -205,13 +205,13 @@ plt.show()
 
 NumPy数组的一个优点是标量乘法和加法具有非常自然的语法
 
-```{code-cell} python3
+```{code-cell} ipython3
 x = np.ones(3)            # 创建一个包含三个1的向量
 y = np.array((2, 4, 6))   # 将元组(2, 4, 6)转换为数组
 x + y
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 4 * x
 ```
 
@@ -241,15 +241,15 @@ $$
 
 继续前面的例子，内积和范数可以按如下方式计算
 
-```{code-cell} python3
+```{code-cell} ipython3
 np.sum(x * y)          # x和y的内积
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 np.sqrt(np.sum(x**2))  # x的范数，第一种方法
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 np.linalg.norm(x)      # x的范数，第二次计算
 ```
 
@@ -278,7 +278,7 @@ $A$的所有线性组合构成的集合被称为$A$的*张成空间*。
 张成空间是一个通过这两个点和原点的二维平面。
 
 (la_3dvec)=
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -569,20 +569,20 @@ NumPy数组也被用作矩阵，并且对所有标准矩阵运算都有快速、
 
 你可以通过元组的元组（或列表的列表）手动创建它们，如下所示
 
-```{code-cell} python3
+```{code-cell} ipython3
 A = ((1, 2),
      (3, 4))
 
 type(A)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 A = np.array(A)
 
 type(A)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 A.shape
 ```
 
@@ -594,13 +594,13 @@ A.shape
 
 由于运算默认按元素执行，标量乘法和加法具有非常自然的语法
 
-```{code-cell} python3
+```{code-cell} ipython3
 A = np.identity(3)
 B = np.ones((3, 3))
 2 * A
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 A + B
 ```
 
@@ -657,7 +657,7 @@ y = Ax
 
 这两个问题的答案都是否定的，如下图所示
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -849,24 +849,24 @@ $$
 
 所有这些程序都是经过时间检验和高度优化的FORTRAN代码的Python前端接口
 
-```{code-cell} python3
+```{code-cell} ipython3
 A = ((1, 2), (3, 4))
 A = np.array(A)
 y = np.ones((2, 1))  # 列向量
 det(A)  # 检查A是非奇异的，因此是可逆的
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 A_inv = inv(A)  # 计算逆矩阵
 A_inv
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 x = A_inv @ y  # 解
 A @ x          # 应该等于y
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 solve(A, y)  # 产生相同的解
 ```
 
@@ -901,7 +901,7 @@ $$
 
 正如预期的那样，每个向量 $v$ 的像 $Av$ 只是原向量的缩放版本
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -971,7 +971,7 @@ plt.show()
 
 使用SciPy，我们可以按如下方式求解矩阵的特征值和特征向量
 
-```{code-cell} python3
+```{code-cell} ipython3
 A = ((1, 2),
      (2, 1))
 
@@ -980,7 +980,7 @@ evals, evecs = eig(A)
 evals
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 evecs
 ```
 

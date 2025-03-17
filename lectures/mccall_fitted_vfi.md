@@ -141,7 +141,7 @@ v(w) = u(w) + \beta
 
 下图展示了在网格点$0, 0.2, 0.4, 0.6, 0.8, 1$上对任意函数进行分段线性插值的情况。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def f(x):
     y1 = 2 * np.cos(6 * x) + np.sin(14 * x)
     return y1 + 2.5
@@ -172,7 +172,7 @@ plt.show()
 
 我们将为工资采用对数正态分布，当$z$为标准正态分布且$\mu, \sigma$为参数时，$w = \exp(\mu + \sigma z)$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def lognormal_draws(n=1000, μ=2.5, σ=0.5, seed=1234):
     np.random.seed(seed)
@@ -183,7 +183,7 @@ def lognormal_draws(n=1000, μ=2.5, σ=0.5, seed=1234):
 
 这是我们的类。
 
-```{code-cell} python3
+```{code-cell} ipython3
 mccall_data_continuous = [
     ('c', float64),          # 失业补偿
     ('α', float64),          # 工作分离率
@@ -230,7 +230,7 @@ class McCallModelContinuous:
 
 然后我们返回当前迭代值作为近似解。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def solve_model(mcm, tol=1e-5, max_iter=2000):
     """
@@ -260,7 +260,7 @@ def solve_model(mcm, tol=1e-5, max_iter=2000):
 
 如果对所有的w都有$v(w) < h$，那么函数返回np.inf
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def compute_reservation_wage(mcm):
     """
@@ -303,7 +303,7 @@ def compute_reservation_wage(mcm):
 
 这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcm = McCallModelContinuous()
 mu_vals = np.linspace(0.0, 2.0, 15)
 w_bar_vals = np.empty_like(mu_vals)
@@ -351,7 +351,7 @@ plt.show()
 
 这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcm = McCallModelContinuous()
 s_vals = np.linspace(1.0, 2.0, 15)
 m = 2.0

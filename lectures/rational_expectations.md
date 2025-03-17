@@ -539,7 +539,6 @@ Y_{t+1}
 正如练习中要求你证明的那样，企业问题的LQ表述意味着一个如下形式的运动规律
 
 ```{math}
-
 :label: ree_ex5
 
 y_{t+1} = h_0 + h_1 y_t + h_2 Y_t
@@ -629,7 +628,7 @@ $$
 
 这是我们的解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 模型参数
 
 a0 = 100
@@ -697,6 +696,7 @@ $$
 （你不需要实际使用你所建议的算法）
 ```
 
+```{solution-start} ree_ex2
 :class: dropdown
 ```
 
@@ -720,7 +720,7 @@ $\kappa_1 = h_1 + h_2$。
 
 以下代码实现了这个检验
 
-```{code-cell} python3
+```{code-cell} ipython3
 candidates = ((94.0886298678, 0.923409232937),
               (93.2119845412, 0.984323478873),
               (95.0818452486, 0.952459076301))
@@ -769,6 +769,7 @@ $(h_0, h_1, h_2) = (95.0819, 1.0000, -.0475)$。
     * $a_0= 100, a_1= 0.05, \beta = 0.95, \gamma=10$
 1. 将解表示为$Y_{t+1} = \kappa_0 + \kappa_1 Y_t$的形式。
 1. 将你的答案与练习2的结果进行比较。
+```
 
 ```{solution-start} ree_ex3
 :class: dropdown
@@ -811,7 +812,7 @@ $$
 
 解决此问题的Python代码如下：
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建规划者的LQ问题
 
 A = np.array([[1, 0], [0, 1]])
@@ -873,7 +874,7 @@ $$
 
 问题可以按如下方式求解：
 
-```{code-cell} python3
+```{code-cell} ipython3
 A = np.array([[1, 0], [0, 1]])
 B = np.array([[1], [0]])
 R = np.array([[a1, -a0 / 2], [-a0 / 2, 0]])

@@ -446,7 +446,7 @@ $$
 
 为此，并保持接口整洁，我们将把 `minimize_scalar` 封装在一个外部函数中，如下所示：
 
-```{code-cell} python3
+```{code-cell} ipython3
 def maximize(g, a, b, args):
     """
     在区间 [a, b] 上最大化函数 g。
@@ -475,7 +475,7 @@ def maximize(g, a, b, args):
 
 下面定义的类结合了参数和一个实现贝尔曼方程{eq}`fpb30`右侧的方法。
 
-```{code-cell} python3
+```{code-cell} ipython3
 class OptimalGrowthModel:
 
     def __init__(self,
@@ -530,7 +530,7 @@ $$
 
 （我们本可以将其作为`OptimalGrowthModel`类的方法添加，但对于这种数值计算工作，我们更倾向于使用小型类而不是单体类。）
 
-```{code-cell} python3
+```{code-cell} ipython3
 def T(v, og):
     """
     贝尔曼算子。更新值函数的猜测值，
@@ -589,13 +589,13 @@ $$
 
 在Python中，上述函数可以表示为：
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/cd_analytical.py
 ```
 
 接下来让我们用上述基本要素创建一个模型实例，并将其赋值给变量`og`。
 
-```{code-cell} python3
+```{code-cell} ipython3
 α = 0.4
 def fcd(k):
     return k**α
@@ -609,7 +609,7 @@ og = OptimalGrowthModel(u=np.log, f=fcd)
 
 在实践中，我们预计会有一些小的数值误差。
 
-```{code-cell} python3
+```{code-cell} ipython3
 grid = og.grid
 
 v_init = v_star(grid, α, og.β, og.μ)    # 从解开始
@@ -629,7 +629,7 @@ plt.show()
 
 我们选择的初始条件是，有点随意地设定为 $v(y) = 5 \ln (y)$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 v = 5 * np.log(grid)  # 初始条件
 n = 35
 
@@ -663,19 +663,19 @@ plt.show()
 
 我们可以编写一个函数，使其迭代直到差异小于特定的容差水平。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/solve_model.py
 ```
 
 让我们使用这个函数在默认设置下计算一个近似解。
 
-```{code-cell} python3
+```{code-cell} ipython3
 v_greedy, v_solution = solve_model(og)
 ```
 
 现在我们通过将结果与真实值进行对比绘图来检验：
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(grid, v_solution, lw=2, alpha=0.6,
@@ -700,7 +700,7 @@ plt.show()
 
 下图将其与精确解进行比较，如上所述，精确解为$\sigma(y) = (1 - \alpha \beta) y$
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(grid, v_greedy, lw=2,
@@ -740,7 +740,7 @@ $$
 
 这里我们设置模型。
 
-```{code-cell} python3
+```{code-cell} ipython3
 γ = 1.5   # 偏好参数
 
 def u_crra(c):
@@ -752,14 +752,14 @@ og = OptimalGrowthModel(u=u_crra, f=fcd)
 
 现在让我们运行它，并计时。
 
-```{code-cell} python3
+```{code-cell} ipython3
 %%time
 v_greedy, v_solution = solve_model(og)
 ```
 
 让我们绘制策略函数看看它的样子：
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(grid, v_greedy, lw=2,

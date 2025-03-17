@@ -81,7 +81,7 @@ $$
 
 这里有一个类，用于存储参数并生成库存的时间路径。
 
-```{code-cell} python3
+```{code-cell} ipython3
 firm_data = [
    ('s', float64),          # 补货触发水平
    ('S', float64),          # 容量

@@ -398,7 +398,7 @@ v = (I - \beta K)^{-1} \beta K{\mathbb 1}
 
 这是代码，包括对谱半径条件的测试
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 25  # 状态空间大小
 β = 0.9
 mc = qe.tauchen(n, 0.96, 0.02)
@@ -534,7 +534,7 @@ v = (I - \beta J)^{-1} \beta  J {\mathbb 1}
 
 我们将定义一个函数 tree_price 来计算 $v$，其参数存储在 AssetPriceModel 类中
 
-```{code-cell} python3
+```{code-cell} ipython3
 class AssetPriceModel:
     """
     一个存储资产定价模型基本要素的类。
@@ -608,7 +608,7 @@ def tree_price(ap):
 这是在几个不同 $\gamma$ 值下 $v$ 作为状态函数的图表，
 其中包含一个正相关的马尔可夫过程和 $g(x) = \exp(x)$
 
-```{code-cell} python3
+```{code-cell} ipython3
 γs = [1.2, 1.4, 1.6, 1.8, 2.0]
 ap = AssetPriceModel()
 states = ap.mc.state_values
@@ -696,7 +696,7 @@ p = (I - \beta M)^{-1} \beta M \zeta {\mathbb 1}
 
 上述公式在函数consol_price中实现。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def consol_price(ap, ζ):
     """
     计算支付额为ζ的永续债券价格
@@ -801,7 +801,7 @@ $$
 
 我们可以通过以下 call_option 函数找到解
 
-```{code-cell} python3
+```{code-cell} ipython3
 def call_option(ap, ζ, p_s, ϵ=1e-7):
     """
     计算永续债券看涨期权的价格。
@@ -849,7 +849,7 @@ def call_option(ap, ζ, p_s, ϵ=1e-7):
 
 当 $P_S = 40$ 时，这是 $w$ 与永续债价格的对比图
 
-```{code-cell} python3
+```{code-cell} ipython3
 ap = AssetPriceModel(β=0.9)
 ζ = 1.0
 strike_price = 40
@@ -946,7 +946,7 @@ $$
 
 考虑以下基本要素
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 5  # 状态空间大小
 P = np.full((n, n), 0.0125)
 P[range(n), range(n)] += 1 - P.sum(1)
@@ -974,7 +974,7 @@ s = np.array([0.95, 0.975, 1.0, 1.025, 1.05])
 
 首先，让我们输入参数：
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 5
 P = np.full((n, n), 0.0125)
 P[range(n), range(n)] += 1 - P.sum(1)
@@ -989,27 +989,27 @@ p_s = 150.0
 
 接下来，我们将创建一个`AssetPriceModel`实例来输入到这些函数中
 
-```{code-cell} python3
+```{code-cell} ipython3
 apm = AssetPriceModel(β=β, mc=mc, γ=γ, g=lambda x: x)
 ```
 
 现在我们只需要对数据调用相关函数：
 
-```{code-cell} python3
+```{code-cell} ipython3
 tree_price(apm)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 consol_price(apm, ζ)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 看涨期权(apm, ζ, p_s)
 ```
 
 让我们将最后两个函数绘制成图表
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 ax.plot(s, consol_price(apm, ζ), label='consol')
 ax.plot(s, call_option(apm, ζ, p_s), label='call option')
@@ -1069,7 +1069,7 @@ $$
 
 这里是一个合适的函数：
 
-```{code-cell} python3
+```{code-cell} ipython3
 def finite_horizon_call_option(ap, ζ, p_s, k):
     """
     计算k期期权价值。
@@ -1095,7 +1095,7 @@ def finite_horizon_call_option(ap, ζ, p_s, k):
 
 现在让我们计算在`k=5`和`k=25`时的期权价值
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 for k in [5, 25]:
     w = finite_horizon_call_option(apm, ζ, p_s, k)

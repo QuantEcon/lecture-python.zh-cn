@@ -184,7 +184,7 @@ import numpy as np
 import quantecon as qe
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 class SmoothingExample:
     """
     用于构建、求解和绘制库存和销售平滑问题结果的类。
@@ -352,7 +352,7 @@ $$
 
 我们将计算并显示结果，然后在相关图表下方进行讨论。
 
-```{code-cell} python3
+```{code-cell} ipython3
 ex1 = SmoothingExample()
 
 x0 = [0, 1, 0]
@@ -456,7 +456,7 @@ $$
 
 为了更容易看清绿色-蓝色模型的生产对比，让我们将图表限制在前10个周期：
 
-```{code-cell} python3
+```{code-cell} ipython3
 ex1.simulate(x0, T=10)
 ```
 
@@ -470,7 +470,7 @@ $$
 
 同样，我们将计算并在一些图表中展示结果
 
-```{code-cell} python3
+```{code-cell} ipython3
 ex2 = SmoothingExample(C2=[[0], [0]])
 
 x0 = [0, 1, 0]
@@ -485,7 +485,7 @@ ex2.simulate(x0)
 
 现在，将销售量大致设置为等于库存量，并利用库存来很好地平滑生产变得最优，如下图所示：
 
-```{code-cell} python3
+```{code-cell} ipython3
 ex3 = SmoothingExample(d1=0)
 
 x0 = [0, 1, 0]
@@ -523,7 +523,7 @@ $$
 
 以下图表证实了库存无限下降
 
-```{code-cell} python3
+```{code-cell} ipython3
 ex4 = SmoothingExample(d1=0, d2=0)
 
 x0 = [0, 1, 0]
@@ -534,7 +534,7 @@ ex4.simulate(x0)
 
 我们将用以下代码设置时间范围 $T =30$
 
-```{code-cell} python3
+```{code-cell} ipython3
 # shorter period
 ex4.simulate(x0, T=30)
 ```
@@ -562,13 +562,13 @@ G=\left[\begin{array}{cc}
 b & a\end{array}\right]
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 设置参数
 a = 0.5
 b = 3.
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ex5 = SmoothingExample(A22=[[1, 0], [1, 1]], C2=[[0], [0]], G=[b, a])
 
 x0 = [0, 1, 0] # 将初始库存设为0
@@ -596,7 +596,7 @@ $$
 x_0 = \begin{bmatrix} 1 \cr 0 \cr 1 \cr 0 \cr 0 \end{bmatrix}
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 ex6 = SmoothingExample(A22=[[1, 0, 0, 0, 0],
                             [0, 0, 0, 0, 1],
                             [0, 1, 0, 0, 0],
@@ -611,17 +611,17 @@ ex6.simulate(x00, T=20)
 
 现在我们将生成一些更多的例子，这些例子仅仅在开始需求冲击的**季节**上有所不同
 
-```{code-cell} python3
+```{code-cell} ipython3
 x01 = [0, 1, 1, 0, 0, 0]
 ex6.simulate(x01, T=20)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 x02 = [0, 1, 0, 0, 1, 0]
 ex6.simulate(x02, T=20)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 x03 = [0, 1, 0, 0, 0, 1]
 ex6.simulate(x03, T=20)
 ```
@@ -655,14 +655,14 @@ $\epsilon_t$。通过长期模拟计算稳态$\bar{x}$。
 :class: dropdown
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 设置参数
 α = 1
 ρ1 = 1.2
 ρ2 = -.3
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建矩阵
 A22 =[[1,  0,  0],
           [1, ρ1, ρ2],
@@ -671,14 +671,14 @@ C2 = [[0], [1], [0]]
 G = [0, 1, 0]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ex1 = SmoothingExample(A22=A22, C2=C2, G=G)
 
 x0 = [0, 1, 0, 0] # 初始条件
 ex1.simulate(x0)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 现在消除噪音
 ex1_no_noise = SmoothingExample(A22=A22, C2=[[0], [0], [0]], G=G)
 
@@ -692,18 +692,18 @@ x_bar
 
 在下面的内容中，我们对$\bar{\nu}_t$添加小幅和大幅冲击，并比较企业在产量方面的不同反应。由于在我们使用的参数化条件下冲击的持续性不是很强，我们主要关注短期反应。
 
-```{code-cell} python3
+```{code-cell} ipython3
 T = 40
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 小幅冲击
 x_bar1 = x_bar.copy()
 x_bar1[2] += 2
 ex1_no_noise.simulate(x_bar1, T=T)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 大幅冲击
 x_bar1 = x_bar.copy()
 x_bar1[2] += 10
@@ -726,15 +726,15 @@ ex1_no_noise.simulate(x_bar1, T=T)
 :class: dropdown
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 x0 = [0, 1, 0]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 SmoothingExample(c2=5).simulate(x0)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 SmoothingExample(d2=5).simulate(x0)
 ```
 

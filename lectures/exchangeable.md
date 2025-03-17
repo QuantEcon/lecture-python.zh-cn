@@ -355,7 +355,7 @@ $$
 
 为了创建完成工作所需的 Python 基础设施，我们构建一个包装函数，该函数可以根据 $f$ 和 $g$ 的参数显示信息丰富的图表。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @vectorize
 def p(x, a, b):
     "通用贝塔分布函数。"
@@ -443,7 +443,7 @@ def learning_example(F_a=1, F_b=1, G_a=3, G_b=1.2):
 
 我们将从Python函数的各种对象的默认值开始，然后在后续示例中对其进行修改。
 
-```{code-cell} python3
+```{code-cell} ipython3
 learning_example()
 ```
 
@@ -471,7 +471,7 @@ learning_example()
 
 我们保持$F$与前一个实例相同，即均匀分布，但现在假设$G$是一个参数为$G_a=2, G_b=1.6$的Beta分布。
 
-```{code-cell} python3
+```{code-cell} ipython3
 learning_example(G_a=2, G_b=1.6)
 ```
 
@@ -490,7 +490,7 @@ learning_example(G_a=2, G_b=1.6)
 
 让我们编写一些Python代码。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def function_factory(F_a=1, F_b=1, G_a=3, G_b=1.2):
 
     # 定义 f 和 g
@@ -543,17 +543,17 @@ def function_factory(F_a=1, F_b=1, G_a=3, G_b=1.2):
     return simulate
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 simulate = function_factory()
 ```
 
 我们首先生成 $N$ 条模拟的 $\{\pi_t\}$ 路径，每条路径包含 $T$ 个时期，其中序列是真实的从分布 $F$ 中独立同分布抽取的。我们设定初始先验 $\pi_{-1} = .5$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 T = 50
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 当自然选择F时
 π_paths_F = simulate(a=1, b=1, T=T, N=1000)
 ```
@@ -564,7 +564,7 @@ T = 50
 
 接下来，当序列确实是来自 $G$ 的独立同分布抽样时，我们生成 $T$ 期的路径。同样，我们设定初始先验 $\pi_{-1} = .5$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # when nature selects G
 π_paths_G = simulate(a=3, b=1.2, T=T, N=1000)
 ```
@@ -579,7 +579,7 @@ T = 50
 
 使用 $N$ 条模拟的 $\pi_t$ 路径，当数据是从 $F$ 中抽样生成时，我们在每个 $t$ 时刻计算 $1 - \sum_{i=1}^{N}\pi_{i,t}$，当数据是从 $G$ 中抽样生成时，我们计算 $\sum_{i=1}^{N}\pi_{i,t}$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.plot(range(T+1), 1 - np.mean(π_paths_F, 0), label='F生成')
 plt.plot(range(T+1), np.mean(π_paths_G, 0), label='G生成')
 plt.legend()
@@ -603,7 +603,7 @@ $$
 
 以下代码近似计算上述积分：
 
-```{code-cell} python3
+```{code-cell} ipython3
 def expected_ratio(F_a=1, F_b=1, G_a=3, G_b=1.2):
 
     # define f and g
@@ -632,7 +632,7 @@ def expected_ratio(F_a=1, F_b=1, G_a=3, G_b=1.2):
 
 首先，考虑 $F_a=F_b=1$ 且 $G_a=3, G_b=1.2$ 的情况。
 
-```{code-cell} python3
+```{code-cell} ipython3
 expected_ratio()
 ```
 
@@ -642,7 +642,7 @@ expected_ratio()
 
 从某种意义上说，这里没有什么可学习的。
 
-```{code-cell} python3
+```{code-cell} ipython3
 expected_ratio(F_a=3, F_b=1.2)
 ```
 
@@ -651,7 +651,7 @@ expected_ratio(F_a=3, F_b=1.2)
 
 最后，让我们看一个 $f$ 和 $g$ 既不是非常不同也不完全相同的情况，特别是当 $F_a=2, F_b=1$ 且 $G_a=3, G_b=1.2$ 时。
 
-```{code-cell} python3
+```{code-cell} ipython3
 expected_ratio(F_a=2, F_b=1, G_a=3, G_b=1.2)
 ```
 

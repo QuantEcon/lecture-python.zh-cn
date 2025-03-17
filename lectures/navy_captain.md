@@ -82,7 +82,7 @@ from scipy.optimize import minimize
 
 下面是设置这些对象的Python代码。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def p(x, a, b):
     "贝塔分布。"
@@ -94,7 +94,7 @@ def p(x, a, b):
 
 我们首先定义一个`jitclass`，用于存储参数和函数，这些参数和函数将用于解决贝叶斯派和频率派海军上尉的问题。
 
-```{code-cell} python3
+```{code-cell} ipython3
 wf_data = [
     ('c', float64),           # 失业补偿
     ('a0', float64),          # beta分布的参数
@@ -111,7 +111,7 @@ wf_data = [
 ]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jitclass(wf_data)
 class WaldFriedman:
 
@@ -156,7 +156,7 @@ class WaldFriedman:
         return π_new
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 wf = WaldFriedman()
 
 grid = np.linspace(0, 1, 50)
@@ -233,17 +233,17 @@ $$
 
 模拟当$f_0$或$f_1$生成数据时的$z$序列。
 
-```{code-cell} python3
+```{code-cell} ipython3
 N = 10000
 T = 100
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 z0_arr = np.random.beta(wf.a0, wf.b0, (N, T))
 z1_arr = np.random.beta(wf.a1, wf.b1, (N, T))
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.hist(z0_arr.flatten(), bins=50, alpha=0.4, label='f0')
 plt.hist(z1_arr.flatten(), bins=50, alpha=0.4, label='f1')
 plt.legend()
@@ -252,11 +252,11 @@ plt.show()
 
 我们可以使用模拟样本计算似然比序列。
 
-```{code-cell} python3
+```{code-cell} ipython3
 l = lambda z: wf.f0(z) / wf.f1(z)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 l0_arr = l(z0_arr)
 l1_arr = l(z1_arr)
 
@@ -266,7 +266,7 @@ L1_arr = np.cumprod(l1_arr, 1)
 
 有了似然比的经验分布后，我们可以通过列举每个样本量 $t$ 下的 $\left(PFA,PD\right)$ 对来绘制**接收者操作特征曲线**。
 
-```{code-cell} python3
+```{code-cell} ipython3
 PFA = np.arange(0, 100, 1)
 
 for t in range(1, 15, 4):
@@ -306,7 +306,7 @@ $\pi^{*}=\Pr\left\{ \text{自然选择}f_{0}\right\} =0.5$
 
 以下是执行该操作并绘制有用图表的Python代码。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def V_fre_d_t(d, t, L0_arr, L1_arr, π_star, wf):
 
@@ -320,7 +320,7 @@ def V_fre_d_t(d, t, L0_arr, L1_arr, π_star, wf):
     return V
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 def V_fre_t(t, L0_arr, L1_arr, π_star, wf):
 
     res = minimize(V_fre_d_t, 1, args=(t, L0_arr, L1_arr, π_star, wf), method='Nelder-Mead')
@@ -333,7 +333,7 @@ def V_fre_t(t, L0_arr, L1_arr, π_star, wf):
     return V, PFA, PD
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 def compute_V_fre(L0_arr, L1_arr, π_star, wf):
 
     T = L0_arr.shape[1]
@@ -351,7 +351,7 @@ def compute_V_fre(L0_arr, L1_arr, π_star, wf):
     return V_fre_arr, PFA_arr, PD_arr
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_star = 0.5
 V_fre_arr, PFA_arr, PD_arr = compute_V_fre(L0_arr, L1_arr, π_star, wf)
 
@@ -362,18 +362,18 @@ plt.legend()
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 t_optimal = np.argmin(V_fre_arr) + 1
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 msg = f"上图表明，对t进行最小化告诉频率学家要抽取{t_optimal}个观测值然后做出决定。"
 print(msg)
 ```
 
 现在让我们改变 $\pi^{*}$ 的值，观察决策规则如何变化。
 
-```{code-cell} python3
+```{code-cell} ipython3
 n_π = 20
 π_star_arr = np.linspace(0.1, 0.9, n_π)
 
@@ -392,7 +392,7 @@ for i, π_star in enumerate(π_star_arr):
     PD_optimal_arr[i] = PD_arr[t_idx]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.plot(π_star_arr, V_fre_bar_arr)
 plt.xlabel(r'$\pi^*$')
 plt.title(r'$\overline{V}_{fre}$')
@@ -402,7 +402,7 @@ plt.show()
 
 下图展示了当 $\pi^{*}$ 变化时，最优样本量 $t$ 和目标 $\left(PFA,PD\right)$ 如何变化。
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axs = plt.subplots(1, 2, figsize=(14, 5))
 
 axs[0].plot(π_star_arr, t_optimal_arr)
@@ -426,7 +426,7 @@ plt.show()
 
 为了继续，我们从quantecon讲座{doc}`一个让米尔顿·弗里德曼困惑的问题 <wald_friedman>`中借用一些Python代码，用于计算$\alpha$和$\beta$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit(parallel=True)
 def Q(h, wf):
 
@@ -459,7 +459,7 @@ def Q(h, wf):
     return h_new
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def solve_model(wf, tol=1e-4, max_iter=1000):
     """
@@ -485,11 +485,11 @@ def solve_model(wf, tol=1e-4, max_iter=1000):
     return h_new
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 h_star = solve_model(wf)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def find_cutoff_rule(wf, h):
 
@@ -588,7 +588,7 @@ $$
 
 下面我们编写一些 Python 代码来数值计算 $V^{0}\left(\pi\right)$ 和 $V^{1}\left(\pi\right)$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit(parallel=True)
 def V_q(wf, flag):
     V = np.zeros(wf.π_grid_size)
@@ -623,7 +623,7 @@ def V_q(wf, flag):
     return V
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 V0 = V_q(wf, 0)
 V1 = V_q(wf, 1)
 
@@ -651,7 +651,7 @@ $\pi^{*}=0.25,0.3,0.5,0.7$。
 
 我们观察到在每种情况下 $\pi_{0}^{*}$ 都等于 $\pi^{*}$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def compute_V_baye_bar(π_star, V0, V1, wf):
 
     V_baye = π_star * V0 + (1 - π_star) * V1
@@ -662,7 +662,7 @@ def compute_V_baye_bar(π_star, V0, V1, wf):
     return V_baye, π_optimal, V_baye_bar
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_star_arr = [0.25, 0.3, 0.5, 0.7]
 
 fig, axs = plt.subplots(2, 2, figsize=(15, 10))
@@ -690,7 +690,7 @@ plt.show()
 
 因此，以下Python代码生成相关图表，验证了对于所有的$\pi^{*}$值，$\pi_{0}^{*}$等于$\pi^{*}$这一等式都成立。
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_star_arr = np.linspace(0.1, 0.9, n_π)
 V_baye_bar_arr = np.empty_like(π_star_arr)
 π_optimal_arr = np.empty_like(π_star_arr)
@@ -725,11 +725,11 @@ plt.show()
 
 让我们先从比较$\pi^{*}=0.5$时的平均损失函数开始。
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_star = 0.5
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 频率派
 V_fre_arr, PFA_arr, PD_arr = compute_V_fre(L0_arr, L1_arr, π_star, wf)
 
@@ -738,7 +738,7 @@ V_baye = π_star * V0 + π_star * V1
 V_baye_bar = V_baye.min()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.plot(range(T), V_fre_arr, label=r'$\min_{d} \overline{V}_{fre}(t,d)$')
 plt.plot([0, T], [V_baye_bar, V_baye_bar], label=r'$\overline{V}_{baye}$')
 plt.xlabel('t')
@@ -751,7 +751,7 @@ plt.show()
 
 此外，下图表明贝叶斯决策规则在所有 $\pi^{*}$ 值上平均表现都更好。
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axs = plt.subplots(1, 2, figsize=(14, 5))
 
 axs[0].plot(π_star_arr, V_fre_bar_arr, label=r'$\overline{V}_{fre}$')
@@ -774,7 +774,7 @@ plt.show()
 
 我们可以通过聚焦于$\pi^{*}=0.5=\pi_{0}$的情况来提供更多见解。
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_star = 0.5
 ```
 
@@ -782,13 +782,13 @@ plt.show()
 
 对于我们的参数设置，我们可以计算它的值：
 
-```{code-cell} python3
+```{code-cell} ipython3
 t_optimal
 ```
 
 为了方便，让我们将 `t_idx` 定义为对应于 `t_optimal` 样本量的 Python 数组索引。
 
-```{code-cell} python3
+```{code-cell} ipython3
 t_idx = t_optimal - 1
 ```
 
@@ -802,7 +802,7 @@ t_idx = t_optimal - 1
 
 当$q=f_0$时，贝叶斯规则平均比频率派规则**更早**做出决定，而当$q=f_1$时则**更晚**做出决定。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit(parallel=True)
 def check_results(L_arr, α, β, flag, π0):
 
@@ -823,7 +823,7 @@ def check_results(L_arr, α, β, flag, π0):
     return time_arr, correctness
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 time_arr0, correctness0 = check_results(L0_arr, α, β, 0, π_star)
 time_arr1, correctness1 = check_results(L1_arr, α, β, 1, π_star)
 
@@ -832,7 +832,7 @@ time_arr_u = np.concatenate((time_arr0, time_arr1))
 correctness_u = np.concatenate((correctness0, correctness1))
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 n1 = plt.hist(time_arr0, bins=range(1, 30), alpha=0.4, label='f0生成')[0]
 n2 = plt.hist(time_arr1, bins=range(1, 30), alpha=0.4, label='f1生成')[0]
 plt.vlines(t_optimal, 0, max(n1.max(), n2.max()), linestyle='--', label='频率派')
@@ -855,12 +855,12 @@ plt.show()
 
 利用本讲{doc}`似然比过程 <likelihood_ratio_process>`中描述的从$L_{t}$到$\pi_{t}$的一一映射（给定$\pi_0$），我们可以轻松计算任意时间$t$的更新信念。
 
-```{code-cell} python3
+```{code-cell} ipython3
 π0_arr = π_star * L0_arr / (π_star * L0_arr + 1 - π_star)
 π1_arr = π_star * L1_arr / (π_star * L1_arr + 1 - π_star)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axs = plt.subplots(1, 2, figsize=(14, 4))
 
 axs[0].plot(np.arange(1, π0_arr.shape[1]+1), np.mean(π0_arr, 0), label='f0生成')
@@ -892,7 +892,7 @@ plt.show()
 
 这个合并分布从某种意义上描述了贝叶斯决策者平均会更早做出决定,这似乎在一定程度上证实了海军上尉的直觉判断。
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = plt.hist(time_arr_u, bins=range(1, 30), alpha=0.4, label='bayesian')[0]
 plt.vlines(np.mean(time_arr_u), 0, n.max(), linestyle='--',
            color='b', label='bayesian E(t)')
@@ -914,12 +914,12 @@ plt.show()
 
 下面我们绘制频率主义规则的这两个概率，以及贝叶斯规则在$t$之前做出决定*且*决定正确的条件概率。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 频率主义最优样本量下的最优虚警概率和检测概率
 V, PFA, PD = V_fre_t(t_optimal, L0_arr, L1_arr, π_star, wf)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.plot([1, 20], [PD, PD], linestyle='--', label='PD: 正确选择f1的频率')
 plt.plot([1, 20], [1-PFA, 1-PFA], linestyle='--', label='1-PFA: 正确选择f0的频率')
 plt.vlines(t_optimal, 0, 1, linestyle='--', label='频率论最优样本量')
@@ -941,7 +941,7 @@ plt.show()
 
 通过使用 $\pi^{*}$ 进行平均，我们还绘制了无条件分布。
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.plot([1, 20], [(PD + 1 - PFA) / 2, (PD + 1 - PFA) / 2],
         linestyle='--', label='频率派正确决策')
 plt.vlines(t_optimal, 0, 1, linestyle='--', label='频率派最优样本量')
@@ -968,12 +968,12 @@ plt.show()
 
 下面的图表报告了两个分布，一个是在 $f_0$ 生成数据的条件下的分布，另一个是在 $f_1$ 生成数据的条件下的分布。
 
-```{code-cell} python3
+```{code-cell} ipython3
 Lα = (1 - π_star) *  α / (π_star - π_star * α)
 Lβ = (1 - π_star) *  β / (π_star - π_star * β)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 L_min = min(L0_arr[:, t_idx].min(), L1_arr[:, t_idx].min())
 L_max = max(L0_arr[:, t_idx].max(), L1_arr[:, t_idx].max())
 bin_range = np.linspace(np.log(L_min), np.log(L_max), 50)
@@ -993,7 +993,7 @@ plt.show()
 
 下一个图表绘制了贝叶斯决策时间的无条件分布，这是通过将两个条件分布合并而构建的。
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.hist(np.log(np.concatenate([L0_arr[:, t_idx], L1_arr[:, t_idx]])),
         bins=50, alpha=0.4, label='log(L)的无条件分布')
 plt.vlines(np.log(Lβ), 0, max(n0.max(), n1.max()), linestyle='--', color='r', label='log($L_β$)')

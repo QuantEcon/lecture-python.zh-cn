@@ -317,21 +317,21 @@ v'(i)
 
 对于状态过程的分布 $q$，我们的默认选择是[Beta-二项分布](https://en.wikipedia.org/wiki/Beta-binomial_distribution)。
 
-```{code-cell} python3
+```{code-cell} ipython3
 n, a, b = 50, 200, 100                        # 默认参数
 q_default = BetaBinomial(n, a, b).pdf()       # q的默认选择
 ```
 
 我们的工资默认值设置为
 
-```{code-cell} python3
+```{code-cell} ipython3
 w_min, w_max = 10, 60
 w_default = np.linspace(w_min, w_max, n+1)
 ```
 
 这是不同工资结果的概率分布图：
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 ax.plot(w_default, q_default, '-o', label='$q(w(i))$')
 ax.set_xlabel('工资')
@@ -346,7 +346,7 @@ plt.show()
 
 以下内容通过提供一些类型来帮助Numba
 
-```{code-cell} python3
+```{code-cell} ipython3
 mccall_data = [
     ('c', float64),      # 失业补偿
     ('β', float64),      # 贴现因子
@@ -361,7 +361,7 @@ mccall_data = [
 
 类中包含了默认参数值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jitclass(mccall_data)
 class McCallModel:
 
@@ -390,7 +390,7 @@ class McCallModel:
 
 这里有一个实现该功能的函数：
 
-```{code-cell} python3
+```{code-cell} ipython3
 def plot_value_function_seq(mcm, ax, num_plots=6):
     """
     绘制一系列值函数。
@@ -415,7 +415,7 @@ def plot_value_function_seq(mcm, ax, num_plots=6):
 
 现在让我们创建一个 `McCallModel` 实例，并观察迭代 $T^k v$ 从下方收敛的过程：
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcm = McCallModel()
 
 fig, ax = plt.subplots()
@@ -433,7 +433,7 @@ plt.show()
 
 我们将通过Numba的JIT编译来加速我们的循环。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def compute_reservation_wage(mcm,
                              max_iter=500,
@@ -466,7 +466,7 @@ def compute_reservation_wage(mcm,
 
 下一行计算在默认参数下的保留工资
 
-```{code-cell} python3
+```{code-cell} ipython3
 compute_reservation_wage(mcm)
 ```
 
@@ -476,7 +476,7 @@ compute_reservation_wage(mcm)
 
 具体来说，让我们看看当我们改变$\beta$和$c$时会发生什么。
 
-```{code-cell} python3
+```{code-cell} ipython3
 grid_size = 25
 R = np.empty((grid_size, grid_size))
 
@@ -489,7 +489,7 @@ for i, c in enumerate(c_vals):
         R[i, j] = compute_reservation_wage(mcm)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 cs1 = ax.contourf(c_vals, β_vals, R.T, alpha=0.75)
@@ -580,7 +580,7 @@ h'
 
 以下是实现代码：
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def compute_reservation_wage_two(mcm,
                                  max_iter=500,
@@ -633,7 +633,7 @@ def compute_reservation_wage_two(mcm,
 
 这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 cdf = np.cumsum(q_default)
 
 @jit
@@ -739,7 +739,7 @@ h
 
 这是一个解决方案：
 
-```{code-cell} python3
+```{code-cell} ipython3
 mccall_data_continuous = [
     ('c', float64),          # 失业补助
     ('β', float64),          # 贴现因子
@@ -788,7 +788,7 @@ def compute_reservation_wage_continuous(mcmc, max_iter=500, tol=1e-5):
 
 我们将使用等高线图来进行这项研究。
 
-```{code-cell} python3
+```{code-cell} ipython3
 grid_size = 25
 R = np.empty((grid_size, grid_size))
 
@@ -801,7 +801,7 @@ for i, c in enumerate(c_vals):
         R[i, j] = compute_reservation_wage_continuous(mcmc)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 cs1 = ax.contourf(c_vals, β_vals, R.T, alpha=0.75)

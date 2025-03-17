@@ -104,7 +104,7 @@ $$
 
 为了帮助我们理解其工作原理，以下Python代码将$f$和$g$评估为两个不同的beta分布，然后通过从两个概率分布之一生成序列$w^t$（例如，从$g$生成的IID序列）来计算和模拟相关的似然比过程。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 两个beta分布中的参数
 F_a, F_b = 1, 1
 G_a, G_b = 3, 1.2
@@ -119,7 +119,7 @@ f = jit(lambda x: p(x, F_a, F_b))
 g = jit(lambda x: p(x, G_a, G_b))
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def simulate(a, b, T=50, N=500):
     '''
@@ -143,12 +143,12 @@ def simulate(a, b, T=50, N=500):
 
 我们首先模拟当自然永久地从 $g$ 中抽取时的似然比过程。
 
-```{code-cell} python3
+```{code-cell} ipython3
 l_arr_g = simulate(G_a, G_b)
 l_seq_g = np.cumprod(l_arr_g, axis=1)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 N, T = l_arr_g.shape
 
 for i in range(N):
@@ -163,7 +163,7 @@ plt.title("$L(w^{t})$ 路径");
 
 为了更清楚地看到这一点，我们绘制了随时间变化的路径分数 $L\left(w^{t}\right)$ 落在区间 $\left[0, 0.01\right]$ 内的比例。
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.plot(range(T), np.sum(l_seq_g <= 0.01, axis=0) / N)
 ```
 
@@ -221,7 +221,7 @@ $L_t$ 的分布变得越来越重尾：
 
 通过在每个时刻$t$对这些路径取平均值来计算$L\left(w^t\right)$的无条件均值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 l_arr_g = simulate(G_a, G_b, N=50000)
 l_seq_g = np.cumprod(l_arr_g, axis=1)
 ```
@@ -263,19 +263,19 @@ $$
 
 请注意 $y$ 轴的刻度。
 
-```{code-cell} python3
+```{code-cell} ipython3
 l_arr_f = simulate(F_a, F_b, N=50000)
 l_seq_f = np.cumprod(l_arr_f, axis=1)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 N, T = l_arr_f.shape
 plt.plot(range(T), np.mean(l_seq_f, axis=0))
 ```
 
 我们还绘制了 $L\left(w^t\right)$ 落入区间 $[10000, \infty)$ 的概率随时间的变化图，观察概率质量向 $+\infty$ 发散的速度。
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.plot(range(T), np.sum(l_seq_f > 10000, axis=0) / N)
 ```
 
@@ -339,7 +339,7 @@ Neyman和Pearson证明，检验这个假设的最佳方法是使用**似然比�
 
 让我们从一个将阈值$c$固定为$1$的情况开始。
 
-```{code-cell} python3
+```{code-cell} ipython3
 c = 1
 ```
 
@@ -353,7 +353,7 @@ c = 1
 
 log$(L(w^t))$在$f$和$q$下的这种不同行为使得区分$q=f$和$q=g$成为可能。
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axs = plt.subplots(2, 2, figsize=(12, 8))
 fig.suptitle('distribution of $log(L(w^t))$ under f or g', fontsize=15)
 
@@ -381,7 +381,7 @@ plt.show()
 
 下图更清楚地显示，当我们固定阈值$c$时，检测概率随着$t$的增加而单调增加，而虚警概率则单调减少。
 
-```{code-cell} python3
+```{code-cell} ipython3
 PD = np.empty(T)
 PFA = np.empty(T)
 
@@ -405,7 +405,7 @@ plt.show()
 
 下面，我们绘制不同样本量 $t$ 的接收者操作特征曲线。
 
-```{code-cell} python3
+```{code-cell} ipython3
 PFA = np.arange(0, 100, 1)
 
 for t in range(1, 15, 4):
@@ -444,7 +444,7 @@ plt.show()
 
 目标检测概率，例如 $0.9$，如下图所示。
 
-```{code-cell} python3
+```{code-cell} ipython3
 PFA = 0.05
 PD = np.empty(T)
 
@@ -516,13 +516,13 @@ $$
 我们首先设置参数$G_a$和$G_b$，使得
 $h$更接近$g$
 
-```{code-cell} python3
+```{code-cell} ipython3
 H_a, H_b = 3.5, 1.8
 
 h = jit(lambda x: p(x, H_a, H_b))
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 x_range = np.linspace(0, 1, 100)
 plt.plot(x_range, f(x_range), label='f')
 plt.plot(x_range, g(x_range), label='g')
@@ -534,7 +534,7 @@ plt.show()
 
 让我们通过求积分计算Kullback-Leibler差异。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def KL_integrand(w, q, h):
 
     m = q(w) / h(w)
@@ -542,7 +542,7 @@ def KL_integrand(w, q, h):
     return np.log(m) * q(w)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 def compute_KL(h, f, g):
 
     Kf, _ = quad(KL_integrand, 0, 1, args=(f, h))
@@ -551,7 +551,7 @@ def compute_KL(h, f, g):
     return Kf, Kg
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 Kf, Kg = compute_KL(h, f, g)
 Kf, Kg
 ```
@@ -560,7 +560,7 @@ Kf, Kg
 
 接下来，我们可以通过模拟来验证我们关于 $L\left(w^t\right)$ 的猜想。
 
-```{code-cell} python3
+```{code-cell} ipython3
 l_arr_h = simulate(H_a, H_b)
 l_seq_h = np.cumprod(l_arr_h, axis=1)
 ```
@@ -569,31 +569,31 @@ l_seq_h = np.cumprod(l_arr_h, axis=1)
 
 注意当$g$比$f$更接近$h$时，该比例如预期般收敛到1。
 
-```{code-cell} python3
+```{code-cell} ipython3
 N, T = l_arr_h.shape
 plt.plot(range(T), np.sum(l_seq_h <= 0.01, axis=0) / N)
 ```
 
 我们也可以尝试一个比$g$更接近$f$的$h$，这样$K_g$就会大于$K_f$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 H_a, H_b = 1.2, 1.2
 h = jit(lambda x: p(x, H_a, H_b))
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 Kf, Kg = compute_KL(h, f, g)
 Kf, Kg
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 l_arr_h = simulate(H_a, H_b)
 l_seq_h = np.cumprod(l_arr_h, axis=1)
 ```
 
 现在$L\left(w^t\right)$的概率质量在10000以上的部分趋向于$+\infty$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 N, T = l_arr_h.shape
 plt.plot(range(T), np.sum(l_seq_h > 10000, axis=0) / N)
 ```

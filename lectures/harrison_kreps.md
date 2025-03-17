@@ -129,7 +129,7 @@ $$
 
 这两个矩阵的平稳（即不变）分布可以按如下方式计算：
 
-```{code-cell} python3
+```{code-cell} ipython3
 qa = np.array([[1/2, 1/2], [2/3, 1/3]])
 qb = np.array([[2/3, 1/3], [1/4, 3/4]])
 mca = qe.MarkovChain(qa)
@@ -137,7 +137,7 @@ mcb = qe.MarkovChain(qb)
 mca.stationary_distributions
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcb.平稳分布
 ```
 
@@ -271,7 +271,7 @@ $$ (eq:assetpricehomog)
 
 这里有一个可以用来计算这些值的函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 def price_single_beliefs(transition, dividend_payoff, β=.75):
     """
     求解单一信念的函数
@@ -397,7 +397,7 @@ $a$类型的投资者想在状态$1$时卖出资产，而$b$类型的投资者�
 
 以下是使用上述迭代方法求解$\bar p$、$\hat p_a$和$\hat p_b$的代码
 
-```{code-cell} python3
+```{code-cell} ipython3
 def price_optimistic_beliefs(transitions, dividend_payoff, β=.75,
                             max_iter=50000, tol=1e-16):
     """
@@ -465,7 +465,7 @@ def price_optimistic_beliefs(transitions, dividend_payoff, β=.75,
 
 以下是使用迭代法求解$\check p$的代码
 
-```{code-cell} python3
+```{code-cell} ipython3
 def price_pessimistic_beliefs(transitions, dividend_payoff, β=.75,
                             max_iter=50000, tol=1e-16):
     """
@@ -564,7 +564,7 @@ $$
 
 首先，我们将获得具有同质信念的均衡价格向量，包括当所有投资者都持乐观或悲观态度时的情况。
 
-```{code-cell} python3
+```{code-cell} ipython3
 qa = np.array([[1/2, 1/2], [2/3, 1/3]])    # a类型转移矩阵
 qb = np.array([[2/3, 1/3], [1/4, 3/4]])    # b类型转移矩阵
 # 乐观投资者转移矩阵
@@ -588,7 +588,7 @@ for transition, label in zip(transitions, labels):
 
 我们将使用price_optimistic_beliefs函数来找出在异质信念下的价格。
 
-```{code-cell} python3
+```{code-cell} ipython3
 opt_beliefs = price_optimistic_beliefs([qa, qb], dividendreturn)
 labels = ['p_optimistic', 'p_hat_a', 'p_hat_b']
 

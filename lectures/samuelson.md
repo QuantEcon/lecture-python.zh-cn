@@ -358,7 +358,7 @@ $$
 
 我们从 {cite}`Sargent1987` 第189页开始绘制一个信息丰富的图表
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -443,7 +443,7 @@ plt.show()
 
 ### 描述特征多项式含义的函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 def categorize_solution(ρ1, ρ2):
 
     """该函数接收ρ1和ρ2的值，并用它们
@@ -463,7 +463,7 @@ def categorize_solution(ρ1, ρ2):
 因此平滑收敛到稳态')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ### 测试categorize_solution函数
 
 categorize_solution(1.3, -.4)
@@ -473,7 +473,7 @@ categorize_solution(1.3, -.4)
 
 对于我们接下来的工作，以下是一个有用的函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 def plot_y(function=None):
 
     """该函数用于绘制 Y_t 的路径"""
@@ -494,7 +494,7 @@ def plot_y(function=None):
 
 该函数还根据我们设置的初始条件绘制 $Y_t$ 的图像
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 这是一个'手动'方法
 
 def y_nonstochastic(y_0=100, y_1=80, α=.92, β=.5, γ=10, n=80):
@@ -557,7 +557,7 @@ $$
 - 代码假设这两个复数是特征多项式的根
 - 然后反向推导出能生成这些根的 $(a,b)$ 和 $(\rho_1, \rho_2)$ 对
 
-```{code-cell} python3
+```{code-cell} ipython3
 ### 反向工程周期的代码
 ### y_t = r^t (c_1 cos(ϕ t) + c2 sin(ϕ t))
 ###
@@ -593,7 +593,7 @@ print(f"a, b = {a}, {b}")
 print(f"ρ1, ρ2 = {ρ1}, {ρ2}")
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ## 打印 ρ1 和 ρ2 的实部
 
 ρ1 = ρ1.real
@@ -606,7 +606,7 @@ print(f"ρ1, ρ2 = {ρ1}, {ρ2}")
 
 我们将使用numpy来计算特征多项式的根
 
-```{code-cell} python3
+```{code-cell} ipython3
 r1, r2 = np.roots([1, -ρ1, -ρ2])
 
 p1 = cmath.polar(r1)
@@ -620,7 +620,7 @@ print(f"a, b = {a}, {b}")
 print(f"ρ1, ρ2 = {ρ1}, {ρ2}")
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 ##=== 此方法使用numpy计算根 ===#
 
 
@@ -673,7 +673,7 @@ plot_y(y_nonstochastic())
 
 我们将生成一个周期为10的**无阻尼**循环
 
-```{code-cell} python3
+```{code-cell} ipython3
 r = 1   # 生成无阻尼、非爆炸性循环
 
 period = 10   # 时间单位中的循环长度
@@ -697,7 +697,7 @@ plot_y(ytemp)
 
 我们也可以使用 sympy 来计算根的解析公式
 
-```{code-cell} python3
+```{code-cell} ipython3
 init_printing()
 
 r1 = Symbol("ρ_1")
@@ -707,7 +707,7 @@ z = Symbol("z")
 sympy.solve(z**2 - r1*z - r2, z)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 a = Symbol("α")
 b = Symbol("β")
 r1 = a + b
@@ -720,7 +720,7 @@ sympy.solve(z**2 - r1*z - r2, z)
 
 现在我们将构建一些代码来模拟模型的随机版本，这个版本是通过在总需求中添加随机冲击过程而产生的
 
-```{code-cell} python3
+```{code-cell} ipython3
 def y_stochastic(y_0=0, y_1=0, α=0.8, β=0.2, γ=10, n=100, σ=5):
 
     """该函数接收模型随机版本的参数，
@@ -772,7 +772,7 @@ plot_y(y_stochastic())
 
 让我们进行一个模拟，其中存在冲击且特征多项式具有复根
 
-```{code-cell} python3
+```{code-cell} ipython3
 r = .97
 
 period = 10   # 时间单位中的周期长度
@@ -794,7 +794,7 @@ plot_y(y_stochastic(y_0=40, y_1 = 42, α=a, β=b, σ=2, n=100))
 
 此函数计算对政府支出的永久性或一次性增加的响应
 
-```{code-cell} python3
+```{code-cell} ipython3
 def y_stochastic_g(y_0=20,
                    y_1=20,
                    α=0.8,
@@ -880,13 +880,13 @@ def y_stochastic_g(y_0=20,
 
 可以按以下方式模拟永久性政府支出冲击
 
-```{code-cell} python3
+```{code-cell} ipython3
 plot_y(y_stochastic_g(g=10, g_t=20, duration='permanent'))
 ```
 
 我们还可以观察一次性政府支出增加所带来的响应
 
-```{code-cell} python3
+```{code-cell} ipython3
 plot_y(y_stochastic_g(g=500, g_t=50, duration='one-off'))
 ```
 
@@ -896,7 +896,7 @@ plot_y(y_stochastic_g(g=500, g_t=50, duration='one-off'))
 
 现在让我们撸起袖子，为萨缪尔森模型编写一个名为`Samuelson`的Python类
 
-```{code-cell} python3
+```{code-cell} ipython3
 class Samuelson():
 
     """这个类代表萨缪尔森模型，也称为多重加速器模型。该模型将凯恩斯乘数与
@@ -1088,12 +1088,12 @@ class Samuelson():
 
 现在我们用一个例子来展示Samuelson类的应用
 
-```{code-cell} python3
+```{code-cell} ipython3
 sam = Samuelson(α=0.8, β=0.5, σ=2, g=10, g_t=20, duration='permanent')
 sam.summary()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 sam.plot()
 plt.show()
 ```
@@ -1104,7 +1104,7 @@ plt.show()
 
 红色的 $+$ 符号显示了根的位置
 
-```{code-cell} python3
+```{code-cell} ipython3
 sam.param_plot()
 plt.show()
 ```
@@ -1115,7 +1115,7 @@ plt.show()
 
 以下是我们如何将萨缪尔森模型映射到`LinearStateSpace`类的实例中
 
-```{code-cell} python3
+```{code-cell} ipython3
 """此脚本将萨缪尔森模型映射到
 ``LinearStateSpace``类中
 """
@@ -1161,7 +1161,7 @@ plt.show()
 
 让我们使用 `LinearStateSpace` 类中的方法为萨缪尔森模型的实例绘制**脉冲响应函数**
 
-```{code-cell} python3
+```{code-cell} ipython3
 imres = sam_t.impulse_response()
 imres = np.asarray(imres)
 y1 = imres[:, :, 0]
@@ -1171,7 +1171,7 @@ y1.shape
 
 现在让我们通过计算矩阵$A$的特征值来求解特征多项式的零点
 
-```{code-cell} python3
+```{code-cell} ipython3
 A = np.asarray(A)
 w, v = np.linalg.eig(A)
 print(w)
@@ -1181,7 +1181,7 @@ print(w)
 
 我们也可以创建 `LinearStateSpace` 的子类（继承其所有方法和属性）来添加更多可用的函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 class SamuelsonLSS(LinearStateSpace):
 
     """
@@ -1288,26 +1288,26 @@ class SamuelsonLSS(LinearStateSpace):
 
 让我们展示如何使用`SamuelsonLSS`
 
-```{code-cell} python3
+```{code-cell} ipython3
 samlss = SamuelsonLSS()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 samlss.plot_simulation(100, stationary=False)
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 samlss.plot_simulation(100, stationary=True)
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 samlss.plot_irf(100)
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 samlss.multipliers()
 ```
 
@@ -1317,23 +1317,23 @@ samlss.multipliers()
 
 - 缺少周期性的现象说明了为什么萨缪尔森要引入加速器
 
-```{code-cell} python3
+```{code-cell} ipython3
 pure_multiplier = SamuelsonLSS(α=0.95, β=0)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 pure_multiplier.plot_simulation()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 pure_multiplier = SamuelsonLSS(α=0.8, β=0)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 pure_multiplier.plot_simulation()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 pure_multiplier.plot_irf(100)
 ```
 

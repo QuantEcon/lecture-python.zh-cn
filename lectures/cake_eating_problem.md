@@ -70,7 +70,7 @@ u(c) = \frac{c^{1-\gamma}}{1-\gamma} \qquad (\gamma \gt 0, \, \gamma \neq 1)
 
 用Python表示为
 
-```{code-cell} python3
+```{code-cell} ipython3
 def u(c, γ):
 
     return c**(1 - γ) / (1 - γ)
@@ -201,14 +201,14 @@ v^*(x_t) = \left( 1-\beta^{1/\gamma} \right)^{-\gamma}u(x_t)
 
 以下是值函数的Python表示：
 
-```{code-cell} python3
+```{code-cell} ipython3
 def v_star(x, β, γ):
 
     return (1 - β**(1 / γ))**(-γ) * u(x, γ)
 ```
 下面是一个显示固定参数下函数的图表：
 
-```{code-cell} python3
+```{code-cell} ipython3
 β, γ = 0.95, 1.2
 x_grid = np.linspace(0.1, 5, 100)
 
@@ -255,14 +255,14 @@ $$
 从{eq}`crra_opt_pol`可以看出，事实确实如此。
 这里有一些图表来说明。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def c_star(x, β, γ):
 
     return (1 - β ** (1/γ)) * x
 ```
 继续使用上面的$\beta$和$\gamma$值，绘图如下
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 ax.plot(x_grid, c_star(x_grid, β, γ), label='默认参数')
 ax.plot(x_grid, c_star(x_grid, β + 0.02, γ), label=r'更高的$\beta$')

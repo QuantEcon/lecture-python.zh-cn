@@ -90,14 +90,14 @@ sns.set_theme()
 
 我们将使用pandas的`.read_stata()`函数将`.dta`文件中的数据读入数据框
 
-```{code-cell} python3
+```{code-cell} ipython3
 df1 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable1.dta?raw=true')
 df1.head()
 ```
 
 让我们使用散点图来观察人均GDP和防止征用指数之间是否存在明显的关系
 
-```{code-cell} python3
+```{code-cell} ipython3
 df1.plot(x='avexpr', y='logpgp95', kind='scatter')
 plt.show()
 ```
@@ -124,7 +124,7 @@ $$
 
 拟合数据，如下图所示（图2，引用自{cite}`Acemoglu2001`）
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 删除NA值是使用numpy的polyfit所必需的
 df1_subset = df1.dropna(subset=['logpgp95', 'avexpr'])
 
@@ -167,7 +167,7 @@ $$
 
 为了估计常数项$\beta_0$，我们需要在数据集中添加一列1（考虑如果将$\beta_0$替换为$\beta_0 x_i$且$x_i = 1$时的方程）
 
-```{code-cell} python3
+```{code-cell} ipython3
 df1['const'] = 1
 ```
 
@@ -175,7 +175,7 @@ df1['const'] = 1
 
 我们将在`statsmodels`中使用`pandas`数据框，不过标准数组也可以作为参数使用
 
-```{code-cell} python3
+```{code-cell} ipython3
 reg1 = sm.OLS(endog=df1['logpgp95'], exog=df1[['const', 'avexpr']], \
     missing='drop')
 type(reg1)
@@ -186,7 +186,7 @@ type(reg1)
 我们需要使用`.fit()`来获得参数估计值
 $\hat{\beta}_0$ 和 $\hat{\beta}_1$
 
-```{code-cell} python3
+```{code-cell} ipython3
 results = reg1.fit()
 type(results)
 ```
@@ -197,7 +197,7 @@ type(results)
 
 请注意，在原始论文中一个观测值被错误地删除了（参见Acemoglu网页中`maketable2.do`文件中的注释），因此系数略有不同。
 
-```{code-cell} python3
+```{code-cell} ipython3
 print(results.summary())
 ```
 
@@ -229,12 +229,12 @@ $$
 
 在数据集中），我们发现他们预测的1995年人均GDP对数值为8.38。
 
-```{code-cell} python3
+```{code-cell} ipython3
 mean_expr = np.mean(df1_subset['avexpr'])
 mean_expr
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 predicted_logpdp95 = 4.63 + 0.53 * 7.07
 predicted_logpdp95
 ```
@@ -243,7 +243,7 @@ predicted_logpdp95
 `.predict()` 并设置 $constant = 1$ 和
 ${avexpr}_i = mean\_expr$
 
-```{code-cell} python3
+```{code-cell} ipython3
 results.predict(exog=[1, mean_expr])
 ```
 
@@ -253,7 +253,7 @@ results.predict(exog=[1, mean_expr])
 
 同时也绘制了${logpgp95}_i$的观测值以作比较。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 从整个样本中删除缺失观测值
 
 df1_plot = df1.dropna(subset=['logpgp95', 'avexpr'])
@@ -291,7 +291,7 @@ plt.show()
 
 让我们使用`maketable2.dta`中的数据来估计论文中考虑的一些扩展模型（表2）
 
-```{code-cell} python3
+```{code-cell} ipython3
 df2 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable2.dta?raw=true')
 
 # 向数据集添加常数项
@@ -310,7 +310,7 @@ reg3 = sm.OLS(df2['logpgp95'], df2[X3], missing='drop').fit()
 
 现在我们已经拟合了模型，我们将使用`summary_col`在一个表格中显示结果（模型编号与论文中的相对应）
 
-```{code-cell} python3
+```{code-cell} ipython3
 info_dict={'R-squared' : lambda x: f"{x.rsquared:.2f}",
            'No. observations' : lambda x: f"{int(x.nobs):d}"}
 
@@ -357,7 +357,7 @@ print(results_table)
 
 通过散点图（{cite}`Acemoglu2001`中的图3），我们可以看到防止征收风险与殖民者死亡率呈负相关，这与作者的假设相符，满足了有效工具变量的第一个条件。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # Dropping NA's is required to use numpy's polyfit
 df1_subset2 = df1.dropna(subset=['logem4', 'avexpr'])
 
@@ -414,7 +414,7 @@ $$
 
 估计这个方程所需的数据位于`maketable4.dta`文件中（仅使用完整数据进行估计，由`baseco = 1`标识）
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 导入并选择数据
 df4 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable4.dta?raw=true')
 df4 = df4[df4['baseco'] == 1]
@@ -441,7 +441,7 @@ $$
 {logpgp95}_i = \beta_0 + \beta_1 \widehat{avexpr}_i + u_i
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 df4['predicted_avexpr'] = results_fs.predict()
 
 results_ss = sm.OLS(df4['logpgp95'],
@@ -459,7 +459,7 @@ print(results_ss.summary())
 
 注意，在使用`IV2SLS`时，外生变量和工具变量在函数参数中是分开的（而之前工具变量包含了外生变量）
 
-```{code-cell} python3
+```{code-cell} ipython3
 iv = IV2SLS(dependent=df4['logpgp95'],
             exog=df4['const'],
             endog=df4['avexpr'],
@@ -520,7 +520,7 @@ $$
 :class: dropdown
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 加载数据
 df4 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable4.dta?raw=true')
 
@@ -589,7 +589,7 @@ $$
 :class: dropdown
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 加载数据
 df1 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable1.dta?raw=true')
 df1 = df1.dropna(subset=['logpgp95', 'avexpr'])

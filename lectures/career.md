@@ -153,7 +153,7 @@ $$
 
 下图展示了当$n=50$时，不同形状参数对概率质量函数的影响。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def gen_probs(n, a, b):
     probs = np.zeros(n+1)
     for k in range(n+1):
@@ -174,7 +174,7 @@ plt.show()
 
 我们首先创建一个类 `CareerWorkerProblem`，它将保存模型的默认参数化和价值函数的初始猜测。
 
-```{code-cell} python3
+```{code-cell} ipython3
 class CareerWorkerProblem:
 
     def __init__(self,
@@ -204,7 +204,7 @@ class CareerWorkerProblem:
 
 在此模型中，$T$由$Tv(\theta, \epsilon) = \max\{I, II, III\}$定义，其中$I$、$II$和$III$如{eq}`eyes`所示。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def operator_factory(cw, parallel_flag=True):
 
     """
@@ -257,7 +257,7 @@ def operator_factory(cw, parallel_flag=True):
 ```
 最后，`solve_model`将接收一个`CareerWorkerProblem`实例，并使用贝尔曼算子进行迭代，以找到贝尔曼方程的不动点。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def solve_model(cw,
                 use_parallel=True,
                 tol=1e-4,
@@ -290,7 +290,7 @@ def solve_model(cw,
 ```
 这是模型的解决方案 -- 一个近似值函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 cw = CareerWorkerProblem()
 T, get_greedy = operator_factory(cw)
 v_star = solve_model(cw, verbose=False)
@@ -311,7 +311,7 @@ plt.show()
 ```
 这就是最优策略
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(6, 6))
 tg, eg = np.meshgrid(cw.θ, cw.ϵ)
 lvls = (0.5, 1.5, 2.5, 3.5)
@@ -366,7 +366,7 @@ plt.show()
 
 在阅读代码时，请注意`optimal_policy[i, j]` = 在$(\theta_i, \epsilon_j)$处的策略 = 1、2或3；分别表示'保持现状'、'新工作'和'新生活'。
 
-```{code-cell} python3
+```{code-cell} ipython3
 F = np.cumsum(cw.F_probs)
 G = np.cumsum(cw.G_probs)
 v_star = solve_model(cw, verbose=False)
@@ -433,7 +433,7 @@ $$
 ```
 
 原始参数下的中位数可以按如下方式计算
-```{code-cell} python3
+```{code-cell} ipython3
 cw = CareerWorkerProblem()
 F = np.cumsum(cw.F_probs)
 G = np.cumsum(cw.G_probs)
@@ -485,7 +485,7 @@ median_time(greedy_star, F, G)
 
 这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 cw = CareerWorkerProblem(G_a=100, G_b=100)
 T, get_greedy = operator_factory(cw)
 v_star = solve_model(cw, verbose=False)

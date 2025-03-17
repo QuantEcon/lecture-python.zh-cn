@@ -96,7 +96,7 @@ $$
 
 我们可以按如下方式绘制不同 $\mu$ 值下的泊松分布图
 
-```{code-cell} python3
+```{code-cell} ipython3
 poisson_pmf = lambda y, μ: μ**y / factorial(y) * exp(-μ)
 y_values = range(0, 25)
 
@@ -131,7 +131,7 @@ Treisman的主要数据来源是《福布斯》年度富豪榜及其估计净资
 数据集`mle/fp.dta`可以从[这里](https://python.quantecon.org/_static/lecture_specific/mle/fp.dta)
 或其[AER页面](https://www.aeaweb.org/articles?id=10.1257/aer.p20161068)下载。
 
-```{code-cell} python3
+```{code-cell} ipython3
 pd.options.display.max_columns = 10
 
 # 加载数据并查看
@@ -141,7 +141,7 @@ df.head()
 
 通过直方图，我们可以查看2008年各国亿万富翁人数`numbil0`的分布情况（为了绘图目的，已排除美国数据）
 
-```{code-cell} python3
+```{code-cell} ipython3
 numbil0_2008 = df[(df['year'] == 2008) & (
     df['country'] != 'United States')].loc[:, 'numbil0']
 
@@ -180,7 +180,7 @@ $$
 
 我们使用上面的`poisson_pmf`函数和任意值的$\boldsymbol{\beta}$和$\mathbf{x}_i$
 
-```{code-cell} python3
+```{code-cell} ipython3
 y_values = range(0, 20)
 
 # 定义一个带有估计值的参数向量
@@ -247,7 +247,7 @@ $f(y_1, y_2) = f(y_1) \cdot f(y_2)$。
 如果 $y_i$ 服从参数为 $\lambda = 7$ 的泊松分布，
 我们可以这样可视化联合概率质量函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 def plot_joint_poisson(μ=7, y_n=20):
     yi_values = np.arange(0, y_n, 1)
 
@@ -349,7 +349,7 @@ $$
 \log \mathcal{L(\beta)} = - (\beta - 10) ^2 - 10
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 β = np.linspace(1, 20)
 logL = -(β - 10) ** 2 - 10
 dlogL = -2 * β + 20
@@ -413,7 +413,7 @@ H(\boldsymbol{\beta}_{(k)}) = \frac{d^2 \log \mathcal{L(\boldsymbol{\beta}_{(k)}
 
 首先，我们创建一个名为 `PoissonRegression` 的类，这样我们就可以在每次迭代时轻松重新计算对数似然、梯度和海森矩阵的值
 
-```{code-cell} python3
+```{code-cell} ipython3
 class PoissonRegression:
 
     def __init__(self, y, X, β):
@@ -454,7 +454,7 @@ class PoissonRegression:
 
 为了让我们能够了解算法运行时的情况，添加了`display=True`选项来打印每次迭代的值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def newton_raphson(model, tol=1e-3, max_iter=1000, display=True):
 
     i = 0
@@ -491,7 +491,7 @@ def newton_raphson(model, tol=1e-3, max_iter=1000, display=True):
 
 让我们用一个包含5个观测值和3个变量的小数据集来测试我们的算法$\mathbf{X}$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 X = np.array([[1, 2, 5],
               [1, 1, 3],
               [1, 4, 2],
@@ -522,13 +522,13 @@ poi = PoissonRegression(y, X, β=init_β)
 
 在$\hat{\boldsymbol{\beta}}$处，梯度向量应该接近0
 
-```{code-cell} python3
+```{code-cell} ipython3
 poi.G()
 ```
 
 迭代过程可以在下图中可视化，其中最大值在 $\beta = 10$ 处
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -576,7 +576,7 @@ plt.show()
 
 在开始之前，让我们用 `statsmodels` 重新估计我们的简单模型，以确认我们能得到相同的系数和对数似然值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 X = np.array([[1, 2, 5],
               [1, 1, 3],
               [1, 4, 2],
@@ -602,7 +602,7 @@ Treisman首先估计方程{eq}`poissonreg`，其中：
 
 我们将按如下方式设置估计变量（你应该已经从讲座前面部分将数据赋值给了`df`）
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 仅保留2008年数据
 df = df[df['year'] == 2008]
 
@@ -621,7 +621,7 @@ reg3 = ['const', 'lngdppc', 'lnpop', 'gattwto08', 'lnmcap08',
 
 我们将像作者论文中那样使用稳健标准误
 
-```{code-cell} python3
+```{code-cell} ipython3
 # Specify model
 poisson_reg = sm.Poisson(df[['numbil0']], df[reg1],
                          missing='drop').fit(cov_type='HC0')
@@ -634,7 +634,7 @@ print(poisson_reg.summary())
 
 让我们也来估算作者的更完整模型，并将它们显示在同一个表格中
 
-```{code-cell} python3
+```{code-cell} ipython3
 regs = [reg1, reg2, reg3]
 reg_names = ['模型1', '模型2', '模型3']
 info_dict = {'伪R方': lambda x: f"{x.prsquared:.2f}",
@@ -670,7 +670,7 @@ print(results_table)
 
 为了按国家分析我们的结果，我们可以绘制预测值与实际值之间的差异，然后从高到低排序并绘制前15个国家
 
-```{code-cell} python3
+```{code-cell} ipython3
 data = ['const', 'lngdppc', 'lnpop', 'gattwto08', 'lnmcap08', 'rintr',
         'topint08', 'nrrents', 'roflaw', 'numbil0', 'country']
 results_df = df[data].dropna()
@@ -781,7 +781,7 @@ $$
 
 根据这些结果，我们可以按如下方式编写Probit模型的类
 
-```{code-cell} python3
+```{code-cell} ipython3
 class ProbitRegression:
 
     def __init__(self, y, X, β):
@@ -852,7 +852,7 @@ $$
 
 使用`statsmodels`验证你的结果 - 你可以用以下导入语句导入Probit函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 from statsmodels.discrete.discrete_model import Probit
 ```
 
@@ -867,7 +867,7 @@ from statsmodels.discrete.discrete_model import Probit
 
 这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 X = np.array([[1, 2, 4],
               [1, 1, 1],
               [1, 4, 3],
@@ -886,7 +886,7 @@ prob = ProbitRegression(y, X, β)
 newton_raphson(prob)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 使用statsmodels验证结果
 
 print(Probit(y, X).fit().summary())
