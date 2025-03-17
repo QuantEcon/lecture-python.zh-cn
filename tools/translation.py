@@ -11,6 +11,8 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 import logging
+import hashlib
+import json
 
 # Set up logging
 logging.basicConfig(
@@ -22,12 +24,65 @@ logging.basicConfig(
     ]
 )
 
+def get_file_hash(filepath):
+    """Calculate MD5 hash of file content."""
+    hasher = hashlib.md5()
+    with open(filepath, 'rb') as f:
+        buf = f.read()
+        hasher.update(buf)
+    return hasher.hexdigest()
+
+def load_translation_history():
+    """Load translation history from JSON file."""
+    history_file = 'translation_history.json'
+    if os.path.exists(history_file):
+        with open(history_file, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_translation_history(history):
+    """Save translation history to JSON file."""
+    with open('translation_history.json', 'w') as f:
+        json.dump(history, f, indent=2)
+
+def needs_translation(input_file, history):
+    """Check if file needs translation based on hash and modification time."""
+    translated_file = input_file.replace('.md', '_cn.md')
+    
+    # If translated file doesn't exist, needs translation
+    if not os.path.exists(translated_file):
+        return True
+        
+    current_hash = get_file_hash(input_file)
+    last_mod_time = os.path.getmtime(input_file)
+    
+    # Check if file has been modified since last translation
+    if input_file in history:
+        if (history[input_file]['hash'] != current_hash or 
+            history[input_file]['last_modified'] < last_mod_time):
+            return True
+    else:
+        return True
+        
+    return False
+
 def process_file(filename):
     try:
         input_file = os.path.join(directory, filename)
         logging.info(f'Processing {input_file}')
         if os.path.isfile(input_file):
             translate_cn(input_file)
+            
+            # Update translation history after successful translation
+            current_hash = get_file_hash(input_file)
+            last_mod_time = os.path.getmtime(input_file)
+            translation_history[input_file] = {
+                'hash': current_hash,
+                'last_modified': last_mod_time,
+                'last_translated': time.time()
+            }
+            save_translation_history(translation_history)
+            
             return f"Successfully processed {filename}"
         return f"Skipped {filename} - not a file"
     except Exception as e:
@@ -85,7 +140,7 @@ def translate_cn(input_file):
         file.write("")
     
     for i, chunk in enumerate(chunks):
-        max_retries = 2
+        max_retries = 5
         retry_count = 0
         
         while retry_count < max_retries:
@@ -133,18 +188,47 @@ if __name__ == "__main__":
     directory = "lectures"
     max_workers = 2  # Adjust this based on your API rate limits and system capabilities
     
-    files = [f for f in os.listdir(directory) if f.endswith('.md') and os.path.isfile(os.path.join(directory, f))]
-    logging.info(f'Files to translate: {files}')
+    # Load translation history
+    translation_history = load_translation_history()
+    
+    # Get all markdown files and filter out already translated ones
+    all_files = [f for f in os.listdir(directory) if f.endswith('.md') and os.path.isfile(os.path.join(directory, f))]
+    files_to_translate = []
+    
+    for file in all_files:
+        if file.endswith('_cn.md'):
+            continue  # Skip already translated files
+        
+        input_file = os.path.join(directory, file)
+        if needs_translation(input_file, translation_history):
+            files_to_translate.append(file)
+        else:
+            logging.info(f"Skipping {file} - already translated and unchanged")
+    
+    if not files_to_translate:
+        logging.info("No new files to translate!")
+        exit(0)
+        
+    logging.info(f'Files to translate: {files_to_translate}')
+    
+    # Keep track of failed files
+    failed_files = []
     
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_file = {executor.submit(process_file, file): file for file in files}
+        future_to_file = {executor.submit(process_file, file): file for file in files_to_translate}
         
         for future in as_completed(future_to_file):
             file = future_to_file[future]
             try:
                 result = future.result()
                 logging.info(f"Result for {file}: {result}")
+                if "Failed to process" in result:
+                    failed_files.append(file)
             except Exception as e:
                 logging.error(f"Exception occurred while processing {file}: {str(e)}")
+                failed_files.append(file)
 
-    logging.info("\nAll translations completed!")
+    if failed_files:
+        logging.error(f"\nThe following files failed to translate: {failed_files}")
+    else:
+        logging.info("\nAll translations completed successfully!")

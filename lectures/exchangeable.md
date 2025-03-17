@@ -18,60 +18,54 @@ kernelspec:
 </div>
 ```
 
-# Exchangeability and Bayesian Updating
+# 可交换性和贝叶斯更新
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-This lecture studies  learning
-via Bayes' Law.
+本讲座研究通过贝叶斯定律进行的学习。
 
-We touch foundations of Bayesian statistical inference invented by Bruno DeFinetti {cite}`definetti`.
+我们涉及由Bruno DeFinetti {cite}`definetti`发明的贝叶斯统计推断的基础。
 
-The relevance of DeFinetti's work for economists is presented forcefully
-in chapter 11 of {cite}`Kreps88` by David Kreps.
+DeFinetti的工作对经济学家的相关性在David Kreps的{cite}`Kreps88`第11章中得到了有力的阐述。
 
-An example  that we study in this lecture  is a key component of {doc}`this lecture <odu>` that augments the
-{doc}`classic <mccall_model>`  job search model of McCall
-{cite}`McCall1970` by presenting an unemployed worker with a statistical inference problem.
+我们在本讲座中研究的一个例子是{doc}`这个讲座 <odu>`的一个关键组成部分，它扩充了
 
-Here we create  graphs that illustrate the role that  a  likelihood ratio
-plays in  Bayes' Law.
+{doc}`classic <mccall_model>` McCall的经典工作搜索模型{cite}`McCall1970`通过为失业工人提供一个统计推断问题来展示。
 
-We'll use such graphs to provide insights into  mechanics driving outcomes in {doc}`this lecture <odu>` about learning in an augmented McCall job
-search model.
+我们创建图表来说明似然比在贝叶斯定律中所起的作用。
 
-Among other things, this lecture discusses  connections between the statistical concepts of sequences of random variables that are
+我们将使用这些图表来深入理解{doc}`本讲座 <odu>`中关于增强型McCall工作搜索模型中学习机制的运作原理。
 
-- independently and identically distributed
-- exchangeable (also known as *conditionally* independently and identically distributed)
+除此之外，本讲座还讨论了随机变量序列的统计概念之间的联系，这些序列是：
 
-Understanding these concepts is essential for appreciating how Bayesian updating
-works.
+- 独立同分布的
+- 可交换的（也称为*条件*独立同分布）
 
-You can read about exchangeability [here](https://en.wikipedia.org/wiki/Exchangeable_random_variables).
+理解这些概念对于领会贝叶斯更新的工作原理至关重要。
 
-Because another term for **exchangeable** is **conditionally independent**,  we want   to convey an answer to the question *conditional on what?*
+你可以在[这里](https://en.wikipedia.org/wiki/Exchangeable_random_variables)阅读关于可交换性的内容。
 
-We also tell why  an assumption of independence precludes  learning while
-an assumption of conditional independence makes learning possible.
+因为**可交换性**的另一个术语是**条件独立性**，我们想要回答*基于什么条件*这个问题。
 
-Below, we'll often use
+我们还要解释为什么独立性假设阻碍了学习，而条件独立性假设使学习成为可能。
 
-- $W$ to denote a random variable
-- $w$ to denote a particular realization of a random variable $W$
+在下文中，我们经常使用
 
-Let’s start with some imports:
+- $W$ 表示一个随机变量
+- $w$ 表示随机变量 $W$ 的一个特定实现值
+
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 ---
 tags: [hide-output]
 ---
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 from numba import jit, vectorize
 from math import gamma
 import scipy.optimize as op
@@ -79,49 +73,45 @@ from scipy.integrate import quad
 import numpy as np
 ```
 
-## Independently and Identically Distributed
+## 独立同分布
 
-We begin by looking at the notion of an  **independently and identically  distributed sequence** of random variables.
+我们首先来看看**独立同分布序列**这个概念。
 
-An independently and identically distributed sequence is often abbreviated as IID.
+独立同分布序列通常简写为IID。
 
-Two notions are involved
+这个概念包含两个方面：
 
-- **independence**
+- **独立性**
 
-- **identically distributed**
+- **同分布**
 
-A sequence $W_0, W_1, \ldots$ is **independently distributed** if the joint probability density
-of the sequence is the **product** of the densities of the  components of the sequence.
+如果一个序列$W_0, W_1, \ldots$的联合概率密度等于序列各个组成部分的密度的**乘积**，则称该序列是**独立分布**的。
 
-The sequence $W_0, W_1, \ldots$ is **independently and identically distributed** (IID) if in addition the marginal
-density of $W_t$ is the same for all $t =0, 1, \ldots$.
+如果序列$W_0, W_1, \ldots$是**独立同分布**的（IID），那么除了独立性之外，对于所有$t =0, 1, \ldots$，$W_t$的边际密度都相同。
 
-For example,  let $p(W_0, W_1, \ldots)$ be the **joint density** of the sequence and
-let $p(W_t)$ be the **marginal density** for a particular $W_t$ for all $t =0, 1, \ldots$.
+例如，设$p(W_0, W_1, \ldots)$为序列的**联合密度**，$p(W_t)$为特定$W_t$的**边际密度**（对所有$t =0, 1, \ldots$成立）。
 
-Then the joint density of the sequence $W_0, W_1, \ldots$ is IID if
+那么，如果序列$W_0, W_1, \ldots$是IID的，则其联合密度满足：
 
 $$
 p(W_0, W_1, \ldots) =  p(W_0) p(W_1) \cdots
 $$
 
-so that the joint density is the product of a sequence of identical marginal densities.
+因此联合密度是一系列相同边际密度的乘积。
 
-### IID Means Past Observations Don't Tell Us Anything About Future Observations
+### IID意味着过去的观测不能告诉我们任何关于未来观测的信息
 
-If a sequence is random variables is IID, past information provides no information about future realizations.
+如果一个随机变量序列是IID的，过去的信息对未来的实现没有任何指示作用。
 
-Therefore, there is **nothing to learn** from the past  about the future.
+因此，从过去**无法学到**任何关于未来的信息。
 
-To understand these statements, let the joint distribution of a sequence of random variables $\{W_t\}_{t=0}^T$
-that is not necessarily IID be
+为了理解这些陈述，让我们考虑一个不一定是IID的随机变量序列$\{W_t\}_{t=0}^T$的联合分布
 
 $$
 p(W_T, W_{T-1}, \ldots, W_1, W_0)
 $$
 
-Using the laws of probability, we can always factor such a joint density into a product of conditional densities:
+根据概率定律，我们总可以将这样的联合密度分解为条件密度的乘积：
 
 $$
 \begin{aligned}
@@ -130,105 +120,87 @@ $$
 \end{aligned}
 $$
 
-In general,
+一般来说，
 
 $$
 p(W_t | W_{t-1}, \ldots, W_0)   \neq   p(W_t)
 $$
 
-which states that the **conditional density** on the left side does not equal the **marginal density** on the right side.
+这表明左边的**条件密度**不等于右边的**边际密度**。
 
-But in the special IID case,
+但在特殊的独立同分布(IID)情况下，
 
 $$
 p(W_t | W_{t-1}, \ldots, W_0)   =  p(W_t)
 $$
 
-and partial history $W_{t-1}, \ldots, W_0$ contains no information about the probability of $W_t$.
+且部分历史$W_{t-1}, \ldots, W_0$不包含关于$W_t$概率的任何信息。
 
-So in the IID case, there is **nothing to learn** about the densities of future random variables from past random variables.
+因此在IID情况下，从过去的随机变量中**无法学习到**关于未来随机变量密度的任何信息。
 
-But when the sequence is not IID, there is something to learn about the future from observations of past random variables.
+但当序列不是IID时，我们可以从过去随机变量的观测中学习到关于未来的一些信息。
 
-We turn next to an instance of the general case in which the sequence is not IID.
+接下来我们来看一个序列不是IID的一般情况的例子。
 
-Please watch for what can be  learned from the past and when.
+请注意从过去可以学到什么以及何时可以学到。
 
-## A Setting in Which Past Observations Are Informative
+## 过去观测具有信息性的情况
 
-Let $\{W_t\}_{t=0}^\infty$ be a sequence of nonnegative
-scalar random variables with a joint probability distribution
-constructed as follows.
+设$\{W_t\}_{t=0}^\infty$是一个非负标量随机变量序列，其联合概率分布按如下方式构建。
 
-There are two distinct cumulative distribution functions $F$ and $G$ that have  densities $f$ and $g$, respectively,  for a nonnegative scalar random
-variable $W$.
+有两个不同的累积分布函数$F$和$G$，它们分别具有密度函数$f$和$g$，用于描述一个非负标量随机变量$W$。
 
-Before the start of time, say at time $t= -1$, “nature” once and for
-all selects **either** $f$ **or** $g$.
+在时间开始之前，比如在时间$t=-1$时，"自然"一次性地选择了**要么**$f$**要么**$g$。
 
-Thereafter at each time
-$t \geq 0$, nature  draws a random variable $W_t$ from the selected
-distribution.
+此后在每个时间$t \geq 0$，自然从所选的分布中抽取一个随机变量$W_t$。
 
-So  the data are permanently generated as independently and identically distributed (IID) draws from **either** $F$ **or**
-$G$.
+因此，数据被永久地生成为从**要么**$F$**要么**$G$中独立同分布(IID)的抽样。
 
-We could say that *objectively*, meaning *after* nature has chosen either $F$ or $G$, the probability that the data are generated as draws from $F$ is either $0$
-or $1$.
+我们可以说*客观上*，即在自然选择了$F$或$G$*之后*，数据是从$F$中生成的概率要么是$0$要么是$1$。
 
-We now drop into this setting a partially informed decision maker who knows
+现在我们在这个设定中引入一个部分知情的决策者，他知道：
 
-- both $F$ and $G$, but
+- $F$和$G$两者，但是
 
-- not the $F$ or $G$ that nature drew once-and-for-all at $t = -1$
+- 不知道自然在$t=-1$时一次性选择的是$F$还是$G$
 
-So our decision maker does not know which of the two distributions nature selected.
+所以我们的决策者不知道自然选择了这两个分布中的哪一个。
 
-The decision maker describes his ignorance with a **subjective probability**
-$\tilde \pi$ and reasons as if  nature had selected $F$ with probability
-$\tilde \pi \in (0,1)$ and
-$G$ with probability $1 - \tilde \pi$.
+决策者用**主观概率**$\tilde \pi$来描述他的不确定性，并假设自然以概率$\tilde \pi \in (0,1)$选择了$F$，以概率$1 - \tilde \pi$选择了$G$。
 
-Thus, we  assume that the decision maker
+因此，我们假设决策者：
 
-- **knows** both $F$ and $G$
-- **doesn't know** which of these two distributions that nature has drawn
-- expresses  his ignorance by **acting as if** or **thinking that** nature chose distribution $F$ with probability $\tilde \pi \in (0,1)$ and distribution
-  $G$ with probability $1 - \tilde \pi$
-- at date $t \geq 0$ knows  the partial history $w_t, w_{t-1}, \ldots, w_0$
+- **知道**$F$和$G$这两个分布
+- **不知道**自然选择了这两个分布中的哪一个
+- 通过**表现得好像**或**认为**自然以概率$\tilde \pi \in (0,1)$选择了分布$F$，以概率$1 - \tilde \pi$选择了分布$G$来表达他的不确定性
+- 在时间$t \geq 0$时知道部分历史$w_t, w_{t-1}, \ldots, w_0$
 
-To proceed, we want to know the decision maker's belief about the joint distribution of the partial history.
+为了继续，我们需要了解决策者对部分历史的联合分布的信念。
 
-We'll discuss that next and in the process describe the concept of **exchangeability**.
+接下来我们将讨论这一点，并在此过程中描述**可交换性**的概念。
 
-## Relationship Between IID and Exchangeable
+## IID和可交换之间的关系
 
-Conditional on nature selecting $F$, the joint density of the
-sequence $W_0, W_1, \ldots$ is
+在自然选择$F$的条件下，序列$W_0, W_1, \ldots$的联合密度是
 
 $$
 f(W_0) f(W_1) \cdots
+
 $$
 
-Conditional on nature selecting $G$, the joint density of the
-sequence $W_0, W_1, \ldots$ is
+在自然选择$G$的条件下，序列$W_0, W_1, \ldots$的联合密度为
 
 $$
 g(W_0) g(W_1) \cdots
 $$
 
-Thus,  **conditional on nature having selected** $F$, the
-sequence $W_0, W_1, \ldots$ is independently and
-identically distributed.
+因此，**在自然选择**$F$**的条件下**，序列$W_0, W_1, \ldots$是独立同分布的。
 
-Furthermore,  **conditional on nature having
-selected** $G$, the sequence $W_0, W_1, \ldots$ is also
-independently and identically distributed.
+此外，**在自然选择**$G$**的条件下**，序列$W_0, W_1, \ldots$也是独立同分布的。
 
-But what about the **unconditional distribution** of a partial history?
+但是部分历史的**无条件分布**又如何呢？
 
-The unconditional distribution of $W_0, W_1, \ldots$ is
-evidently
+$W_0, W_1, \ldots$的无条件分布显然是
 
 ```{math}
 :label: eq_definetti
@@ -236,114 +208,100 @@ evidently
 h(W_0, W_1, \ldots ) \equiv \tilde \pi [f(W_0) f(W_1) \cdots \ ] + ( 1- \tilde \pi) [g(W_0) g(W_1) \cdots \ ]
 ```
 
-Under the unconditional distribution $h(W_0, W_1, \ldots )$, the
-sequence $W_0, W_1, \ldots$ is **not** independently and
-identically distributed.
+在无条件分布$h(W_0, W_1, \ldots )$下，序列$W_0, W_1, \ldots$**不是**独立同分布的。
 
-To verify this claim, it is sufficient to notice, for example, that
+要验证这个说法，只需注意到，例如
 
 $$
 h(W_0, W_1) = \tilde \pi f(W_0)f (W_1) + (1 - \tilde \pi) g(W_0)g(W_1) \neq
-              (\tilde \pi f(W_0) + (1-\tilde \pi) g(W_0))(
+
+(\tilde \pi f(W_0) + (1-\tilde \pi) g(W_0))(
                \tilde \pi f(W_1) + (1-\tilde \pi) g(W_1))
 $$
 
-Thus, the conditional distribution
+因此，条件分布
 
 $$
 h(W_1 | W_0) \equiv \frac{h(W_0, W_1)}{(\tilde \pi f(W_0) + (1-\tilde \pi) g(W_0))}
  \neq ( \tilde \pi f(W_1) + (1-\tilde \pi) g(W_1))
 $$
 
-This means that  random variable  $W_0$ contains information about random variable  $W_1$.
+这意味着随机变量 $W_0$ 包含了关于随机变量 $W_1$ 的信息。
 
-So there is something to learn from the past about the future.
+所以过去确实包含了可以用来了解未来的信息。
 
-But what and how?
+但是什么信息？如何了解？
 
-## Exchangeability
+## 可交换性
 
-While the sequence $W_0, W_1, \ldots$ is not IID, it can be verified that it is
-**exchangeable**, which means that the  ``re-ordered'' joint distributions $h(W_0, W_1)$ and $h(W_1, W_0)$
-satisfy
+虽然序列 $W_0, W_1, \ldots$ 不是独立同分布的，但可以验证它是**可交换的**，这意味着"重新排序"的联合分布 $h(W_0, W_1)$ 和 $h(W_1, W_0)$ 满足
 
 $$
 h(W_0, W_1) = h(W_1, W_0)
 $$
 
-and so on.
+等等。
 
-More generally, a sequence of random variables is said to be **exchangeable** if  the  joint probability distribution
-for a sequence does not change when the positions in the sequence in which finitely many  of random variables
-appear are altered.
+更一般地说，如果一个随机变量序列的联合概率分布在有限个随机变量的位置发生改变时保持不变，则称该序列是**可交换的**。
 
-Equation {eq}`eq_definetti` represents our instance of an exchangeable joint density over a sequence of random
-variables  as a **mixture**  of  two IID joint densities over a sequence of random variables.
+方程 {eq}`eq_definetti` 表示了一个可交换的联合密度函数，它是由两个独立同分布(IID)的随机变量序列的联合密度函数构成的**混合**。
 
-For a Bayesian statistician, the mixing parameter $\tilde \pi \in (0,1)$ has a special interpretation
-as a subjective **prior probability** that nature selected probability distribution $F$.
+对贝叶斯统计学家来说，混合参数 $\tilde \pi \in (0,1)$ 具有特殊的解释，即自然选择概率分布 $F$ 的主观**先验概率**。
 
-DeFinetti {cite}`definetti` established a related representation of an exchangeable process created by mixing
-sequences of IID Bernoulli random variables with parameter $\theta \in (0,1)$ and mixing probability density $\pi(\theta)$
- that a Bayesian statistician would interpret as a prior over the unknown
-Bernoulli parameter $\theta$.
+DeFinetti {cite}`definetti` 建立了一个相关的可交换过程表示，该过程是通过混合参数为 $\theta \in (0,1)$ 的独立同分布伯努利随机变量序列，以及混合概率密度 $\pi(\theta)$ 得到的。贝叶斯统计学家会将这个混合概率密度解释为未知伯努利参数 $\theta$ 的先验分布。
 
-## Bayes' Law
+## 贝叶斯定律
 
-We noted above that in our example model there is something to learn about about the future from past data drawn
-from our particular instance of a process that is exchangeable but not IID.
+我们在上面注意到，在我们的示例模型中，从可交换但非独立同分布过程的历史数据中可以学到关于未来的一些信息。
 
-But how can we learn?
+但是我们如何学习？
 
-And about what?
+以及学习什么？
 
-The answer to the *about what* question is  $\tilde \pi$.
+*关于什么*问题的答案是 $\tilde \pi$。
 
-The answer to the *how* question is to use  Bayes' Law.
+*如何*问题的答案是使用贝叶斯定律。
 
-Another way to say *use Bayes' Law* is to say *from a (subjective) joint distribution, compute an appropriate conditional distribution*.
+另一种表述*使用贝叶斯定律*的方式是说*从一个（主观的）联合分布中，计算适当的条件分布*。
 
-Let's dive into Bayes' Law in this context.
+让我们在这个背景下深入了解贝叶斯定律。
 
-Let $q$ represent the distribution that nature actually draws $w$
- from and let
+令 $q$ 表示自然实际从中抽取 $w$ 的分布，并令
 
 $$
 \pi = \mathbb{P}\{q = f \}
 $$
 
-where we regard $\pi$ as a decision maker's **subjective probability**  (also called a **personal probability**).
+这里我们将 $\pi$ 视为决策者的**主观概率**（也称为**个人概率**）。
 
-Suppose that at $t \geq 0$, the decision maker has  observed a history
-$w^t \equiv [w_t, w_{t-1}, \ldots, w_0]$.
+假设在 $t \geq 0$ 时，决策者已观察到历史序列
+$w^t \equiv [w_t, w_{t-1}, \ldots, w_0]$。
 
-We let
+我们令
 
 $$
 \pi_t  = \mathbb{P}\{q = f  | w^t \}
 $$
 
-where we adopt the convention
+其中我们采用如下约定
 
 $$
 \pi_{-1}  = \tilde \pi
 $$
 
-The distribution of $w_{t+1}$ conditional on $w^t$ is then
+在给定 $w^t$ 条件下，$w_{t+1}$ 的分布为
 
 $$
 \pi_t f + (1 - \pi_t) g .
 $$
 
-Bayes’ rule for updating $\pi_{t+1}$ is
+更新 $\pi_{t+1}$ 的贝叶斯规则为
 
 $$
 \pi_{t+1} = \frac{\pi_t f(w_{t+1})}{\pi_t f(w_{t+1}) + (1 - \pi_t) g(w_{t+1})}
 $$ (eq_Bayes102)
 
-
-Equation {eq}`eq_Bayes102` follows from Bayes’ rule, which
-tells us that
+等式{eq}`eq_Bayes102`源自贝叶斯法则，该法则告诉我们
 
 $$
 \mathbb{P}\{q = f \,|\, W = w\}
@@ -351,30 +309,30 @@ $$
 {\mathbb{P}\{W = w\}}
 $$
 
-where
+其中
 
 $$
 \mathbb{P}\{W = w\} = \sum_{a \in \{f, g\}} \mathbb{P}\{W = w \,|\, q = a \} \mathbb{P}\{q = a \}
 $$
 
-## More Details about Bayesian Updating
+## 关于贝叶斯更新的更多细节
 
-Let's stare at and rearrange Bayes' Law as represented in equation {eq}`eq_Bayes102` with the aim of understanding
-how the **posterior** probability $\pi_{t+1}$ is influenced by the **prior** probability $\pi_t$ and the **likelihood ratio**
+让我们仔细观察并重新整理等式{eq}`eq_Bayes102`中表示的贝叶斯法则，目的是理解**后验**概率$\pi_{t+1}$如何受到**先验**概率$\pi_t$和**似然比**的影响
 
 $$
 l(w) = \frac{f(w)}{g(w)}
 $$
 
-It is convenient for us to rewrite the updating rule {eq}`eq_Bayes102` as
+我们可以方便地将更新规则{eq}`eq_Bayes102`重写为
 
 $$
 \pi_{t+1}   =\frac{\pi_{t}f\left(w_{t+1}\right)}{\pi_{t}f\left(w_{t+1}\right)+\left(1-\pi_{t}\right)g\left(w_{t+1}\right)}
     =\frac{\pi_{t}\frac{f\left(w_{t+1}\right)}{g\left(w_{t+1}\right)}}{\pi_{t}\frac{f\left(w_{t+1}\right)}{g\left(w_{t+1}\right)}+\left(1-\pi_{t}\right)}
-    =\frac{\pi_{t}l\left(w_{t+1}\right)}{\pi_{t}l\left(w_{t+1}\right)+\left(1-\pi_{t}\right)}
+
+=\frac{\pi_{t}l\left(w_{t+1}\right)}{\pi_{t}l\left(w_{t+1}\right)+\left(1-\pi_{t}\right)}
 $$
 
-This implies that
+这意味着
 
 ```{math}
 :label: eq_Bayes103
@@ -385,35 +343,29 @@ This implies that
 \end{cases}
 ```
 
-Notice how the likelihood ratio and the prior interact to determine whether an observation $w_{t+1}$ leads the decision maker
-to increase or decrease the subjective probability he/she attaches to distribution $F$.
+注意似然比和先验是如何相互作用，以决定观测值$w_{t+1}$是导致决策者增加还是减少他/她对分布$F$的主观概率。
 
-When the likelihood ratio $l(w_{t+1})$ exceeds one, the observation $w_{t+1}$ nudges the probability
-$\pi$ put on distribution $F$ upward,
-and when the likelihood ratio $l(w_{t+1})$ is less that  one, the observation $w_{t+1}$ nudges $\pi$ downward.
+当似然比$l(w_{t+1})$大于1时，观测值$w_{t+1}$会将分布$F$的概率$\pi$向上推动，当似然比$l(w_{t+1})$小于1时，观测值$w_{t+1}$会将$\pi$向下推动。
 
-Representation {eq}`eq_Bayes103` is the foundation of some graphs that we'll use to display the dynamics of
-$\{\pi_t\}_{t=0}^\infty$ that are  induced by
-Bayes' Law.
+表达式{eq}`eq_Bayes103`是我们将用来显示由以下因素引起的$\{\pi_t\}_{t=0}^\infty$动态的一些图表的基础
 
-We’ll plot $l\left(w\right)$ as a way to enlighten us about how
-learning – i.e., Bayesian updating of the probability $\pi$ that
-nature has chosen distribution $f$ – works.
+贝叶斯定律。
 
-To create the Python infrastructure to do our work for us,  we construct a wrapper function that displays informative graphs
-given parameters of $f$ and $g$.
+我们将绘制 $l\left(w\right)$ 来帮助我们理解学习过程是如何进行的——即，如何通过贝叶斯更新来更新自然选择分布 $f$ 的概率 $\pi$。
+
+为了创建完成工作所需的 Python 基础设施，我们构建一个包装函数，该函数可以根据 $f$ 和 $g$ 的参数显示信息丰富的图表。
 
 ```{code-cell} python3
 @vectorize
 def p(x, a, b):
-    "The general beta distribution function."
+    "通用贝塔分布函数。"
     r = gamma(a + b) / (gamma(a) * gamma(b))
     return r * x ** (a-1) * (1 - x) ** (b-1)
 
 def learning_example(F_a=1, F_b=1, G_a=3, G_b=1.2):
     """
-    A wrapper function that displays the updating rule of belief π,
-    given the parameters which specify F and G distributions.
+    一个包装函数，用于显示信念π的更新规则，
+    给定指定F和G分布的参数。
     """
 
     f = jit(lambda x: p(x, F_a, F_b))
@@ -421,7 +373,7 @@ def learning_example(F_a=1, F_b=1, G_a=3, G_b=1.2):
 
     # l(w) = f(w) / g(w)
     l = lambda w: f(w) / g(w)
-    # objective function for solving l(w) = 1
+    # 用于求解 l(w) = 1 的目标函数
     obj = lambda w: l(w) - 1
 
     x_grid = np.linspace(0, 1, 100)
@@ -430,8 +382,8 @@ def learning_example(F_a=1, F_b=1, G_a=3, G_b=1.2):
     w_max = 1
     w_grid = np.linspace(1e-12, w_max-1e-12, 100)
 
-    # the mode of beta distribution
-    # use this to divide w into two intervals for root finding
+    # 贝塔分布的众数
+    # 用它将w分成两个区间进行根查找
     G_mode = (G_a - 1) / (G_a + G_b - 2)
     roots = np.empty(2)
     roots[0] = op.root_scalar(obj, bracket=[1e-10, G_mode]).root
@@ -487,98 +439,83 @@ def learning_example(F_a=1, F_b=1, G_a=3, G_b=1.2):
     plt.show()
 ```
 
-Now we'll create a group of graphs that illustrate  dynamics induced by Bayes' Law.
+现在我们将创建一组图表来说明贝叶斯定律所引发的动态变化。
 
-We'll begin with Python function default values of various objects, then change them in a subsequent example.
+我们将从Python函数的各种对象的默认值开始，然后在后续示例中对其进行修改。
 
 ```{code-cell} python3
 learning_example()
 ```
 
-Please look at the three graphs above created for an instance in which $f$ is a uniform distribution on $[0,1]$
-(i.e., a Beta distribution with parameters $F_a=1, F_b=1$), while  $g$ is a Beta distribution with the default parameter values $G_a=3, G_b=1.2$.
+请看上面的三个图表，这些图表是针对以下情况创建的：$f$ 是在 $[0,1]$ 上的均匀分布（即参数为 $F_a=1, F_b=1$ 的Beta分布），而 $g$ 是具有默认参数值 $G_a=3, G_b=1.2$ 的Beta分布。
 
-The graph on the left  plots the likelihood ratio $l(w)$ as the absciassa  axis against $w$ as the ordinate.
+左侧的图表将似然比 $l(w)$ 作为横坐标轴，将 $w$ 作为纵坐标轴进行绘制。
 
-The middle graph plots both $f(w)$ and $g(w)$  against $w$, with the horizontal dotted lines showing values
-of $w$ at which the likelihood ratio equals $1$.
+中间的图表将 $f(w)$ 和 $g(w)$ 对 $w$ 进行绘制，其中水平虚线显示了似然比等于1时的 $w$ 值。
 
-The graph on the right plots arrows to the right that show when Bayes' Law  makes $\pi$ increase and arrows
-to the left that show when Bayes' Law make $\pi$ decrease.
+右侧的图表用向右的箭头表示贝叶斯定律使 $\pi$ 增加的情况，用向左的箭头表示贝叶斯定律使 $\pi$ 减少的情况。
 
-Lengths of the arrows  show  magnitudes of the force from Bayes' Law impelling $\pi$ to change.
+箭头的长度表示贝叶斯定律驱使 $\pi$ 改变的力的大小。
 
-These lengths depend on both the prior probability $\pi$ on the abscissa axis and the evidence in the form of the current draw of
-$w$ on the ordinate axis.
+这些长度取决于两个因素：横坐标轴上的先验概率 $\pi$，以及以当前 $w$ 值形式出现的证据（在纵坐标轴上）。
 
-The fractions in the colored areas of the middle graphs are probabilities under $F$ and $G$, respectively,
-that  realizations of $w$ fall
-into the interval that updates the belief $\pi$ in a correct direction (i.e., toward $0$ when $G$ is the true
-distribution, and toward $1$ when $F$ is the true distribution).
+中间图中彩色区域的分数分别表示在分布$F$和$G$下，$w$的实现值落入能将信念$\pi$向正确方向更新的区间的概率（即当$G$为真实分布时向$0$更新，当$F$为真实分布时向$1$更新）。
 
-For example,
-in the above  example, under true distribution $F$,  $\pi$ will  be updated toward $0$ if $w$ falls into the interval
-$[0.524, 0.999]$, which occurs with probability $1 - .524 = .476$ under $F$.
+例如，在上述例子中，在真实分布$F$下，如果$w$落入区间$[0.524, 0.999]$，$\pi$将向$0$更新，这在$F$下发生的概率是$1 - .524 = .476$。
 
-But this
-would occur with probability
-$0.816$ if $G$ were the true distribution.
+但如果$G$是真实分布，这种情况发生的概率将是$0.816$。
 
-The fraction $0.816$
-in the orange region is the integral of $g(w)$ over this interval.
+橙色区域中的分数$0.816$是$g(w)$在这个区间上的积分。
 
-Next we use our code to create graphs for another instance of our model.
+接下来我们使用代码为我们模型的另一个实例创建图形。
 
-We keep $F$ the same as in the preceding instance, namely a uniform distribution, but now assume that $G$
-is a Beta distribution with parameters $G_a=2, G_b=1.6$.
+我们保持$F$与前一个实例相同，即均匀分布，但现在假设$G$是一个参数为$G_a=2, G_b=1.6$的Beta分布。
 
 ```{code-cell} python3
 learning_example(G_a=2, G_b=1.6)
 ```
 
-Notice how the likelihood ratio, the middle graph, and the arrows compare with the previous instance of our example.
+注意观察似然比、中间图表以及箭头与我们之前例子的对比。
 
-## Appendix
+## 附录
 
-### Sample Paths of $\pi_t$
+### $\pi_t$ 的样本路径
 
-Now we'll have some fun by plotting multiple realizations of sample paths of $\pi_t$ under two possible
-assumptions about nature's choice of distribution, namely
+现在我们将通过绘制 $\pi_t$ 的多个样本路径来进行一些有趣的探索，这些路径基于两种可能的自然分布选择假设：
 
-- that nature permanently draws from $F$
-- that nature permanently draws from $G$
+- 自然永久从 $F$ 分布中抽取
+- 自然永久从 $G$ 分布中抽取
 
-Outcomes depend on a peculiar property of likelihood ratio processes  discussed in
-[this lecture](https://python-advanced.quantecon.org/additive_functionals.html).
+结果取决于似然比过程的一个特殊性质，这在[本讲座](https://python-advanced.quantecon.org/additive_functionals.html)中有详细讨论。
 
-To proceed, we create some Python code.
+让我们编写一些Python代码。
 
 ```{code-cell} python3
 def function_factory(F_a=1, F_b=1, G_a=3, G_b=1.2):
 
-    # define f and g
+    # 定义 f 和 g
     f = jit(lambda x: p(x, F_a, F_b))
     g = jit(lambda x: p(x, G_a, G_b))
 
     @jit
     def update(a, b, π):
-        "Update π by drawing from beta distribution with parameters a and b"
+        "通过从参数为a和b的beta分布中抽样来更新π"
 
-        # Draw
+        # 抽样
         w = np.random.beta(a, b)
 
-        # Update belief
+        # 更新信念
         π = 1 / (1 + ((1 - π) * g(w)) / (π * f(w)))
 
         return π
 
     @jit
     def simulate_path(a, b, T=50):
-        "Simulates a path of beliefs π with length T"
+        "模拟长度为T的信念π路径"
 
         π = np.empty(T+1)
 
-        # initial condition
+        # 初始条件
         π[0] = 0.5
 
         for t in range(1, T+1):
@@ -587,7 +524,7 @@ def function_factory(F_a=1, F_b=1, G_a=3, G_b=1.2):
         return π
 
     def simulate(a=1, b=1, T=50, N=200, display=True):
-        "Simulates N paths of beliefs π with length T"
+        "模拟N条长度为T的信念π路径"
 
         π_paths = np.empty((N, T+1))
         if display:
@@ -610,58 +547,50 @@ def function_factory(F_a=1, F_b=1, G_a=3, G_b=1.2):
 simulate = function_factory()
 ```
 
-We begin by generating $N$ simulated $\{\pi_t\}$ paths with $T$
-periods when the sequence is truly IID draws from $F$. We set an initial prior $\pi_{-1} = .5$.
+我们首先生成 $N$ 条模拟的 $\{\pi_t\}$ 路径，每条路径包含 $T$ 个时期，其中序列是真实的从分布 $F$ 中独立同分布抽取的。我们设定初始先验 $\pi_{-1} = .5$。
 
 ```{code-cell} python3
 T = 50
 ```
 
 ```{code-cell} python3
-# when nature selects F
+# 当自然选择F时
 π_paths_F = simulate(a=1, b=1, T=T, N=1000)
 ```
 
-In the above example,  for most paths $\pi_t \rightarrow 1$.
+在上述例子中，对于大多数路径 $\pi_t \rightarrow 1$。
 
-So Bayes' Law evidently eventually
-discovers the truth for most of our paths.
+因此，贝叶斯定律显然最终能够在我们的大多数路径中发现真相。
 
-Next, we generate paths with $T$
-periods when the sequence is truly IID draws from $G$. Again, we set the initial prior $\pi_{-1} = .5$.
+接下来，当序列确实是来自 $G$ 的独立同分布抽样时，我们生成 $T$ 期的路径。同样，我们设定初始先验 $\pi_{-1} = .5$。
 
 ```{code-cell} python3
 # when nature selects G
 π_paths_G = simulate(a=3, b=1.2, T=T, N=1000)
 ```
 
-In the above graph we observe that now  most paths $\pi_t \rightarrow 0$.
+在上图中我们观察到现在大多数路径 $\pi_t \rightarrow 0$。
 
-### Rates of convergence
+### 收敛速率
 
-We study rates of  convergence of $\pi_t$ to $1$ when nature generates the data as IID draws from $F$
-and of convergence of $\pi_t$ to $0$ when nature generates  IID draws from $G$.
+我们研究当自然生成的数据是来自 $F$ 的独立同分布抽样时 $\pi_t$ 向 $1$ 的收敛速率，以及当自然生成的数据是来自 $G$ 的独立同分布抽样时 $\pi_t$ 向 $0$ 的收敛速率。
 
-We do this by averaging across simulated paths of $\{\pi_t\}_{t=0}^T$.
+我们通过对 $\{\pi_t\}_{t=0}^T$ 的模拟路径进行平均来实现这一点。
 
-Using   $N$ simulated $\pi_t$ paths, we compute
-$1 - \sum_{i=1}^{N}\pi_{i,t}$ at each $t$ when the data are generated as draws from  $F$
-and compute $\sum_{i=1}^{N}\pi_{i,t}$ when the data are generated as draws from $G$.
+使用 $N$ 条模拟的 $\pi_t$ 路径，当数据是从 $F$ 中抽样生成时，我们在每个 $t$ 时刻计算 $1 - \sum_{i=1}^{N}\pi_{i,t}$，当数据是从 $G$ 中抽样生成时，我们计算 $\sum_{i=1}^{N}\pi_{i,t}$。
 
 ```{code-cell} python3
-plt.plot(range(T+1), 1 - np.mean(π_paths_F, 0), label='F generates')
-plt.plot(range(T+1), np.mean(π_paths_G, 0), label='G generates')
+plt.plot(range(T+1), 1 - np.mean(π_paths_F, 0), label='F生成')
+plt.plot(range(T+1), np.mean(π_paths_G, 0), label='G生成')
 plt.legend()
-plt.title("convergence");
+plt.title("收敛");
 ```
 
-From the above graph, rates of convergence appear not to depend on whether $F$ or $G$ generates the data.
+从上图可以看出，收敛速率似乎不依赖于是 $F$ 还是 $G$ 生成数据。
 
-### Graph of Ensemble Dynamics of $\pi_t$
+### $\pi_t$ 的集合动态图
 
-More insights about the dynamics of $\{\pi_t\}$ can be gleaned by computing
-conditional expectations of $\frac{\pi_{t+1}}{\pi_{t}}$ as functions of $\pi_t$ via integration with respect
-to the pertinent probability distribution:
+通过对相关概率分布进行积分计算 $\frac{\pi_{t+1}}{\pi_{t}}$ 的条件期望作为 $\pi_t$ 的函数，可以获得关于 $\{\pi_t\}$ 动态的更多见解：
 
 $$
 \begin{aligned}
@@ -670,9 +599,9 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &=E\left[\frac{l\left
 \end{aligned}
 $$
 
-where $a =f,g$.
+其中 $a =f,g$。
 
-The following code approximates the integral above:
+以下代码近似计算上述积分：
 
 ```{code-cell} python3
 def expected_ratio(F_a=1, F_b=1, G_a=3, G_b=1.2):
@@ -701,42 +630,35 @@ def expected_ratio(F_a=1, F_b=1, G_a=3, G_b=1.2):
     plt.show()
 ```
 
-First, consider the case where $F_a=F_b=1$ and
-$G_a=3, G_b=1.2$.
+首先，考虑 $F_a=F_b=1$ 且 $G_a=3, G_b=1.2$ 的情况。
 
 ```{code-cell} python3
 expected_ratio()
 ```
 
-The above graphs shows that when $F$ generates the data, $\pi_t$ on average always heads north, while
-when $G$ generates the data, $\pi_t$ heads south.
+上图显示，当数据由 $F$ 生成时，$\pi_t$ 平均总是向北移动，而当数据由 $G$ 生成时，$\pi_t$ 向南移动。
 
-Next, we'll look at a degenerate case in whcih  $f$ and $g$ are identical beta
-distributions, and $F_a=G_a=3, F_b=G_b=1.2$.
+接下来，我们将看一个退化情况，其中 $f$ 和 $g$ 是相同的贝塔分布，且 $F_a=G_a=3, F_b=G_b=1.2$。
 
-In a sense, here  there
-is nothing to learn.
+从某种意义上说，这里没有什么可学习的。
 
 ```{code-cell} python3
 expected_ratio(F_a=3, F_b=1.2)
 ```
 
-The above graph says that $\pi_t$ is inert and  remains at its initial value.
 
-Finally, let's look at a case in which  $f$ and $g$ are neither very
-different nor identical, in particular one in which  $F_a=2, F_b=1$ and
-$G_a=3, G_b=1.2$.
+上图表明 $\pi_t$ 是惰性的，保持在其初始值。
+
+最后，让我们看一个 $f$ 和 $g$ 既不是非常不同也不完全相同的情况，特别是当 $F_a=2, F_b=1$ 且 $G_a=3, G_b=1.2$ 时。
 
 ```{code-cell} python3
 expected_ratio(F_a=2, F_b=1, G_a=3, G_b=1.2)
 ```
 
-## Sequels
+## 后续内容
 
-We'll apply and dig deeper into some of the ideas presented in this lecture:
+我们将在以下讲座中应用并深入探讨本讲座中提出的一些想法：
 
-* {doc}`this lecture <likelihood_ratio_process>` describes **likelihood ratio processes**
-  and their role in frequentist and Bayesian statistical theories
-* {doc}`this lecture <navy_captain>` studies  whether a World War II US Navy Captain's hunch that a (frequentist) decision rule that the Navy had told
-  him to use was  inferior to a sequential rule that Abraham
-  Wald had not yet designed.
+* {doc}`本讲座 <likelihood_ratio_process>` 描述了**似然比过程**及其在频率派和贝叶斯统计理论中的作用
+* {doc}`本讲座 <navy_captain>` 研究了二战时期一位美国海军上尉的直觉，即海军要求他使用的（频率派）决策规则不如亚伯拉罕·瓦尔德尚未设计的序贯规则。
+

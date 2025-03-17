@@ -21,30 +21,23 @@ kernelspec:
 ```{index} single: python
 ```
 
-# Von Neumann Growth Model (and a Generalization)
+# 冯·诺依曼增长模型（及其推广）
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-This lecture uses the class `Neumann` to calculate key objects of a
-linear growth model of John von Neumann {cite}`von1937uber` that was generalized by
-Kemeny, Morgenstern and Thompson {cite}`kemeny1956generalization`.
+本讲座使用`Neumann`类来计算约翰·冯·诺依曼{cite}`von1937uber`提出的线性增长模型的关键要素，该模型后来被Kemeny、Morgenstern和Thompson {cite}`kemeny1956generalization`进行了推广。
 
-Objects of interest are the maximal expansion rate ($\alpha$), the
-interest factor ($β$), the optimal intensities ($x$), and
-prices ($p$).
+我们关注的要素包括最大扩张率（$\alpha$）、利息因子（$β$）、最优强度（$x$）和价格（$p$）。
 
-In addition to watching how the towering mind of John von Neumann
-formulated an equilibrium model of price and quantity vectors in
-balanced growth, this lecture shows how fruitfully to employ the
-following important tools:
+除了观察约翰·冯·诺依曼这位伟大思想家如何构建均衡增长中的价格和数量向量模型外，本讲还将展示如何有效地运用以下重要工具：
 
-- a zero-sum two-player game
-- linear programming
-- the Perron-Frobenius theorem
+- 零和双人博弈
+- 线性规划
+- Perron-Frobenius定理
 
-We'll begin with some imports:
+让我们先从导入包开始：
 
 ```{code-cell} ipython
 import numpy as np
@@ -55,7 +48,7 @@ from textwrap import dedent
 np.set_printoptions(precision=2)
 ```
 
-The code below provides the `Neumann` class
+以下代码提供了`Neumann`类
 
 ```{code-cell} python3
 ---
@@ -64,36 +57,35 @@ tags: [collapse-20]
 class Neumann(object):
 
     """
-    This class describes the Generalized von Neumann growth model as it was
-    discussed in Kemeny et al. (1956, ECTA) and Gale (1960, Chapter 9.5):
+    该类描述了Kemeny等人(1956, ECTA)和Gale(1960, 第9.5章)讨论的广义冯·诺依曼增长模型：
 
-    Let:
-    n ... number of goods
-    m ... number of activities
-    A ... input matrix is m-by-n
-        a_{i,j} - amount of good j consumed by activity i
-    B ... output matrix is m-by-n
-        b_{i,j} - amount of good j produced by activity i
+    设：
+    n ... 商品数量
+    m ... 生产活动数量
+    A ... 投入矩阵，维度为m×n
+        a_{i,j} - 活动i消耗的商品j的数量
+    B ... 产出矩阵，维度为m×n
+        b_{i,j} - 活动i生产的商品j的数量
 
-    x ... intensity vector (m-vector) with non-negative entries
-        x'B - the vector of goods produced
-        x'A - the vector of goods consumed
-    p ... price vector (n-vector) with non-negative entries
-        Bp - the revenue vector for every activity
-        Ap - the cost of each activity
+    x ... 强度向量(m维向量)，具有非负分量
+        x'B - 生产的商品向量
+        x'A - 消耗的商品向量
+    p ... 价格向量(n维向量)，具有非负分量
+        Bp - 每个活动的收入向量
+        Ap - 每个活动的成本
 
-    Both A and B have non-negative entries. Moreover, we assume that
-    (1) Assumption I (every good which is consumed is also produced):
-        for all j, b_{.,j} > 0, i.e. at least one entry is strictly positive
-    (2) Assumption II (no free lunch):
-        for all i, a_{i,.} > 0, i.e. at least one entry is strictly positive
+    A和B都具有非负分量。此外，我们假设：
+    (1) 假设I(每种被消耗的商品都会被生产)：
+        对所有j，b_{.,j} > 0，即至少有一个分量严格为正
+    (2) 假设II(没有免费午餐)：
+        对所有i，a_{i,.} > 0，即至少有一个分量严格为正
 
-    Parameters
+    参数
     ----------
-    A : array_like or scalar(float)
-        Part of the state transition equation.  It should be `n x n`
-    B : array_like or scalar(float)
-        Part of the state transition equation.  It should be `n x k`
+    A : array_like或标量(float)
+        状态转移方程的一部分。应为`n x n`
+    B : array_like或标量(float)
+        状态转移方程的一部分。应为`n x k`
     """
 
     def __init__(self, A, B):
@@ -101,19 +93,17 @@ class Neumann(object):
         self.A, self.B = list(map(self.convert, (A, B)))
         self.m, self.n = self.A.shape
 
-        # Check if (A, B) satisfy the basic assumptions
-        assert self.A.shape == self.B.shape, 'The input and output matrices \
-              must have the same dimensions!'
-        assert (self.A >= 0).all() and (self.B >= 0).all(), 'The input and \
-              output matrices must have only non-negative entries!'
+        # 检查(A, B)是否满足基本假设
+        assert self.A.shape == self.B.shape, '输入和输出矩阵必须具有相同的维度！'
+        assert (self.A >= 0).all() and (self.B >= 0).all(), '输入和输出矩阵必须只包含非负分量！'
 
-        # (1) Check whether Assumption I is satisfied:
+        # (1) 检查是否满足假设I：
         if (np.sum(B, 0) <= 0).any():
             self.AI = False
         else:
             self.AI = True
 
-        # (2) Check whether Assumption II is satisfied:
+        # (2) 检查是否满足假设II：
         if (np.sum(A, 1) <= 0).any():
             self.AII = False
         else:
@@ -125,31 +115,31 @@ class Neumann(object):
     def __str__(self):
 
         me = """
-        Generalized von Neumann expanding model:
-          - number of goods          : {n}
-          - number of activities     : {m}
+        广义冯·诺依曼扩张模型：
+          - 商品数量              : {n}
+          - 生产活动数量          : {m}
 
-        Assumptions:
-          - AI:  every column of B has a positive entry    : {AI}
-          - AII: every row of A has a positive entry       : {AII}
+        假设：
+          - AI:  B的每一列都有正分量    : {AI}
+          - AII: A的每一行都有正分量    : {AII}
 
         """
-        # Irreducible                                       : {irr}
+        # 不可约的                                       : {irr}
         return dedent(me.format(n=self.n, m=self.m,
                                 AI=self.AI, AII=self.AII))
 
     def convert(self, x):
         """
-        Convert array_like objects (lists of lists, floats, etc.) into
-        well-formed 2D NumPy arrays
+        将类数组对象(列表的列表、浮点数等)转换为
+        规范的2D NumPy数组
         """
         return np.atleast_2d(np.asarray(x))
 
 
     def bounds(self):
         """
-        Calculate the trivial upper and lower bounds for alpha (expansion rate)
-        and beta (interest factor). See the proof of Theorem 9.8 in Gale (1960)
+        计算alpha(扩张率)和beta(利息因子)的简单上下界。
+        参见Gale(1960)定理9.8的证明
         """
 
         n, m = self.n, self.m
@@ -158,62 +148,61 @@ class Neumann(object):
         f = lambda α: ((B - α * A) @ np.ones((n, 1))).max()
         g = lambda β: (np.ones((1, m)) @ (B - β * A)).min()
 
-        UB = fsolve(f, 1).item()  # Upper bound for α, β
-        LB = fsolve(g, 2).item()  # Lower bound for α, β
+        UB = fsolve(f, 1).item()  # α, β的上界
+        LB = fsolve(g, 2).item()  # α, β的下界
 
         return LB, UB
 
 
     def zerosum(self, γ, dual=False):
         """
-        Given gamma, calculate the value and optimal strategies of a
-        two-player zero-sum game given by the matrix
+        给定gamma，计算由矩阵定义的两人零和博弈的值和最优策略
 
                 M(gamma) = B - gamma * A
 
-        Row player maximizing, column player minimizing
+        行玩家最大化，列玩家最小化
 
-        Zero-sum game as an LP (primal --> α)
+        零和博弈作为线性规划(原问题 --> α)
 
             max (0', 1) @ (x', v)
-            subject to
+            约束条件
             [-M', ones(n, 1)] @ (x', v)' <= 0
             (x', v) @ (ones(m, 1), 0) = 1
             (x', v) >= (0', -inf)
 
-        Zero-sum game as an LP (dual --> beta)
+        零和博弈作为线性规划(对偶问题 --> beta)
 
             min (0', 1) @ (p', u)
-            subject to
+            约束条件
             [M, -ones(m, 1)] @ (p', u)' <= 0
             (p', u) @ (ones(n, 1), 0) = 1
             (p', u) >= (0', -inf)
 
-        Outputs:
+        输出：
         --------
-        value: scalar
-            value of the zero-sum game
+        value: 标量
+            零和博弈的值
 
-        strategy: vector
-            if dual = False, it is the intensity vector,
-            if dual = True, it is the price vector
+        strategy: 向量
+            如果dual = False，则为强度向量
+            如果dual = True，则为价格向量
         """
 
         A, B, n, m = self.A, self.B, self.n, self.m
         M = B - γ * A
 
         if dual == False:
-            # Solve the primal LP (for details see the description)
-            # (1) Define the problem for v as a maximization (linprog minimizes)
+            # 求解原问题线性规划(详见描述)
+            # (1) 定义v的最大化问题(linprog最小化)
             c = np.hstack([np.zeros(m), -1])
 
-            # (2) Add constraints :
-            # ... non-negativity constraints
+            # (2) 添加约束：
+            # ... 非负约束
             bounds = tuple(m * [(0, None)] + [(None, None)])
-            # ... inequality constraints
+            # ... 不等式约束
             A_iq = np.hstack([-M.T, np.ones((n, 1))])
             b_iq = np.zeros((n, 1))
-            # ... normalization
+            # ... 归一化
             A_eq = np.hstack([np.ones(m), 0]).reshape(1, m + 1)
             b_eq = 1
 
@@ -221,17 +210,17 @@ class Neumann(object):
                           bounds=bounds)
 
         else:
-            # Solve the dual LP (for details see the description)
-            # (1) Define the problem for v as a maximization (linprog minimizes)
+            # 求解对偶线性规划(详见描述)
+            # (1) 定义v的最大化问题(linprog最小化)
             c = np.hstack([np.zeros(n), 1])
 
-            # (2) Add constraints :
-            # ... non-negativity constraints
+            # (2) 添加约束：
+            # ... 非负约束
             bounds = tuple(n * [(0, None)] + [(None, None)])
-            # ... inequality constraints
+            # ... 不等式约束
             A_iq = np.hstack([M, -np.ones((m, 1))])
             b_iq = np.zeros((m, 1))
-            # ... normalization
+            # ... 归一化
             A_eq = np.hstack([np.ones(n), 0]).reshape(1, n + 1)
             b_eq = 1
 
@@ -241,7 +230,7 @@ class Neumann(object):
         if res.status != 0:
             print(res.message)
 
-        # Pull out the required quantities
+        # 提取所需的量
         value = res.x[-1]
         strategy = res.x[:-1]
 
@@ -250,16 +239,15 @@ class Neumann(object):
 
     def expansion(self, tol=1e-8, maxit=1000):
         """
-        The algorithm used here is described in Hamburger-Thompson-Weil
-        (1967, ECTA). It is based on a simple bisection argument and utilizes
-        the idea that for a given γ (= α or β), the matrix "M = B - γ * A"
-        defines a two-player zero-sum game, where the optimal strategies are
-        the (normalized) intensity and price vector.
+        这里使用的算法在Hamburger-Thompson-Weil(1967, ECTA)中有描述。
+        它基于简单的二分法，并利用了这样一个思想：对于给定的γ(= α或β)，
+        矩阵"M = B - γ * A"定义了一个两人零和博弈，其中最优策略是
+        (归一化的)强度和价格向量。
 
-        Outputs:
+        输出：
         --------
-        alpha: scalar
-            optimal expansion rate
+        alpha: 标量
+            最优扩张率
         """
 
         LB, UB = self.bounds()
@@ -268,7 +256,7 @@ class Neumann(object):
 
             γ = (LB + UB) / 2
             ZS = self.zerosum(γ=γ)
-            V = ZS[0]     # value of the game with γ
+            V = ZS[0]     # γ对应的博弈值
 
             if V >= 0:
                 LB = γ
@@ -285,17 +273,15 @@ class Neumann(object):
 
     def interest(self, tol=1e-8, maxit=1000):
         """
-        The algorithm used here is described in Hamburger-Thompson-Weil
-        (1967, ECTA). It is based on a simple bisection argument and utilizes
-        the idea that for a given gamma (= alpha or beta),
-        the matrix "M = B - γ * A" defines a two-player zero-sum game,
-        where the optimal strategies are the (normalized) intensity and price
-        vector
+        这里使用的算法在Hamburger-Thompson-Weil(1967, ECTA)中有描述。
+        它基于简单的二分法，并利用了这样一个思想：对于给定的gamma(= alpha或beta)，
+        矩阵"M = B - γ * A"定义了一个两人零和博弈，其中最优策略是
+        (归一化的)强度和价格向量
 
-        Outputs:
+        输出：
         --------
-        beta: scalar
-            optimal interest rate
+        beta: 标量
+            最优利率
         """
 
         LB, UB = self.bounds()
@@ -319,111 +305,84 @@ class Neumann(object):
         return γ, x, p
 ```
 
-## Notation
+## 符号表示
 
-We use the following notation.
+我们使用以下符号表示。
 
-$\mathbf{0}$ denotes
-a vector of zeros.
+$\mathbf{0}$ 表示零向量。
 
-We call an $n$-vector  positive and write
-$x\gg \mathbf{0}$ if $x_i>0$ for all $i=1,2,\dots,n$.
+对于一个 $n$ 维向量，如果对所有 $i=1,2,\dots,n$ 都有 $x_i>0$，我们称之为正向量，记作 $x\gg \mathbf{0}$。
 
-We call a vector  non-negative and write $x\geq \mathbf{0}$ if $x_i\geq 0$ for
-all $i=1,2,\dots,n$.
+如果对所有 $i=1,2,\dots,n$ 都有 $x_i\geq 0$，我们称之为非负向量，记作 $x\geq \mathbf{0}$。
 
-We call a vector  semi-positive and written $x > \mathbf{0}$ if
-$x\geq \mathbf{0}$ and $x\neq \mathbf{0}$.
+如果 $x\geq \mathbf{0}$ 且 $x\neq \mathbf{0}$，我们称之为半正向量，记作 $x > \mathbf{0}$。
 
-For two conformable vectors $x$ and $y$, $x\gg y$,
-$x\geq y$ and $x> y$ mean $x-y\gg \mathbf{0}$,
-$x-y \geq \mathbf{0}$, and $x-y > \mathbf{0}$, respectively.
+对于两个可比向量 $x$ 和 $y$，$x\gg y$、$x\geq y$ 和 $x> y$ 分别表示 $x-y\gg \mathbf{0}$、$x-y \geq \mathbf{0}$ 和 $x-y > \mathbf{0}$。
 
-We let all vectors in this lecture be column vectors; $x^{T}$ denotes the
-transpose of $x$ (i.e., a row vector).
+本讲中所有向量均为列向量；$x^{T}$ 表示 $x$ 的转置（即行向量）。
 
-Let $\iota_n$ denote a
-column vector composed of $n$ ones, i.e.
-$\iota_n = (1,1,\dots,1)^T$.
+用 $\iota_n$ 表示由 $n$ 个1组成的列向量，即 $\iota_n = (1,1,\dots,1)^T$。
 
-Let $e^i$ denote a vector (of
-arbitrary size) containing zeros except for the $i$ th position
-where it is one.
+用 $e^i$ 表示一个（任意大小的）向量，除第 $i$ 个位置为1外，其余位置均为0。
 
-We denote matrices by capital letters. For an arbitrary matrix
-$A$, $a_{i,j}$ represents the entry in its $i$ th
-row and $j$ th column.
+我们用大写字母表示矩阵。对于任意矩阵 $A$，$a_{i,j}$ 表示其第 $i$ 行
 
-$a_{\cdot j}$ and $a_{i\cdot}$
-denote the $j$ th column and $i$ th row of $A$,
-respectively.
+行和第 $j$ 列。
 
-## Model Ingredients and Assumptions
+$a_{\cdot j}$ 和 $a_{i\cdot}$ 分别表示矩阵 $A$ 的第 $j$ 列和第 $i$ 行。
 
-A pair $(A,B)$ of $m\times n$ non-negative matrices defines
-an economy.
+## 模型要素和假设
 
-- $m$ is the number of *activities* (or sectors)
-- $n$ is the number of *goods* (produced and/or consumed).
-- $A$ is called the *input matrix*; $a_{i,j}$ denotes the
-  amount of good $j$ consumed by activity $i$
-- $B$ is called the *output matrix*; $b_{i,j}$ represents
-  the amount of good $j$ produced by activity $i$
+一对 $m\times n$ 非负矩阵 $(A,B)$ 定义了一个经济。
 
-Two key assumptions restrict economy $(A,B)$:
+- $m$ 是*活动*（或部门）的数量
+- $n$ 是*商品*（生产和/或消费）的数量
+- $A$ 被称为*投入矩阵*；$a_{i,j}$ 表示活动 $i$ 消耗的商品 $j$ 的数量
+- $B$ 被称为*产出矩阵*；$b_{i,j}$ 表示活动 $i$ 生产的商品 $j$ 的数量
 
-- **Assumption I:** (every good that is consumed is also produced)
+两个关键假设限制经济 $(A,B)$：
+
+- **假设 I：**（每种被消费的商品也都被生产）
 
   $$
   b_{.,j} > \mathbf{0}\hspace{5mm}\forall j=1,2,\dots,n
   $$
 
-- **Assumption II:** (no free lunch)
+- **假设 II：**（没有免费午餐）
 
   $$
   a_{i,.} > \mathbf{0}\hspace{5mm}\forall i=1,2,\dots,m
   $$
 
+半正*强度* $m$ 维向量 $x$ 表示活动的运行水平。
 
-A semi-positive  *intensity* $m$-vector  $x$ denotes  levels at which
-activities are operated.
+因此，
 
-Therefore,
+- 向量 $x^TA$ 表示*生产中使用的商品总量*
+- 向量 $x^TB$ 表示*总产出*
 
-- vector $x^TA$ gives the total amount of *goods used in
-  production*
-- vector $x^TB$ gives *total outputs*
+如果存在一个非负强度向量 $x \geq 0$ 使得 $x^T B > x^TA$，则称经济 $(A,B)$ 是*生产性的*。
 
-An economy $(A,B)$ is said to be *productive*, if there exists a
-non-negative intensity vector $x \geq 0$ such
-that $x^T B > x^TA$.
+半正 $n$ 维向量 $p$ 包含了分配给 $n$ 种商品的价格。
 
-The semi-positive $n$-vector $p$ contains prices assigned to
-the $n$ goods.
+向量 $p$ 意味着*成本*和*收入*向量
 
-The $p$ vector implies *cost* and *revenue* vectors
+- 向量 $Ap$ 表示活动向量的*成本*
+- 向量 $Bp$ 表示活动向量的*收入*
 
-- the vector $Ap$ tells *costs* of the vector of activities
-- the vector $Bp$ tells *revenues* from the vector of activities
+满足度或称为*不可约性*（或不可分解性）的投入产出对 $(A,B)$ 的一个性质决定了一个经济是否可以被分解为多个"子经济"。
 
-Satisfaction or a property of an input-output pair $(A,B)$ called *irreducibility*
-(or indecomposability) determines whether an economy can be decomposed
-into multiple     "sub-economies".
+**定义：** 对于经济 $(A,B)$，如果可以在不消耗 $S$ 以外商品的情况下生产 $S$ 中的每种商品，则称商品集合 $S\subset \{1,2,\dots,n\}$ 为*独立子集*。形式上，如果集合 $S$ 满足以下条件，则称其为独立的：
 
-**Definition:** For an economy $(A,B)$, the set of goods
-$S\subset \{1,2,\dots,n\}$ is called an *independent subset* if
-it is possible to produce every good in $S$ without consuming
-goods from outside $S$. Formally, the set $S$ is independent if
-$\exists T\subset \{1,2,\dots,m\}$ (a subset of activities) such
-that $a_{i,j}=0$ $\forall i\in T$ and $j\in S^c$ and
-for all $j\in S$, $\exists i\in T$ for which  $b_{i,j}>0$.
-The economy is **irreducible** if there are no proper independent
-subsets.
+$\exists T\subset \{1,2,\dots,m\}$（活动的一个子集），使得
+对于所有 $i\in T$ 和 $j\in S^c$，有 $a_{i,j}=0$，且
+对于所有 $j\in S$，$\exists i\in T$ 使得 $b_{i,j}>0$。
+如果不存在真独立子集，则称该经济是**不可约的**。
 
-We study two examples, both in  Chapter 9.6 of Gale {cite}`gale1989theory`
+我们研究两个例子，都来自Gale的著作第9.6章 {cite}`gale1989theory`
 
 ```{code-cell} python3
-# (1) Irreducible (A, B) example: α_0 = β_0
+# (1) 不可约的(A, B)例子：α_0 = β_0
 A1 = np.array([[0, 1, 0, 0],
                [1, 0, 0, 1],
                [0, 0, 1, 0]])
@@ -432,7 +391,7 @@ B1 = np.array([[1, 0, 0, 0],
                [0, 0, 2, 0],
                [0, 1, 0, 1]])
 
-# (2) Reducible (A, B) example: β_0 < α_0
+# (2) 可约的(A, B)例子：β_0 < α_0
 A2 = np.array([[0, 1, 0, 0, 0, 0],
                [1, 0, 1, 0, 0, 0],
                [0, 0, 0, 1, 0, 0],
@@ -446,45 +405,37 @@ B2 = np.array([[1, 0, 0, 1, 0, 0],
                [0, 0, 0, 1, 0, 1]])
 ```
 
-The following code sets up our first Neumann economy or `Neumann`
-instance
+以下代码设置我们的第一个诺伊曼经济或`Neumann`实例
 
 ```{code-cell} python3
 n1 = Neumann(A1, B1)
 n1
 ```
 
-Here is a second instance of a Neumann economy
+这是第二个诺伊曼经济的实例
 
 ```{code-cell} python3
 n2 = Neumann(A2, B2)
 n2
 ```
 
-## Dynamic Interpretation
+## 动态解释
 
-Attach a time index $t$ to the preceding objects, regard an economy
-as a dynamic system, and study sequences
+将时间指标 $t$ 附加到前述对象上，将经济视为一个动态系统，并研究以下序列
 
 $$
 \{(A_t,B_t)\}_{t\geq 0}, \hspace{1cm}\{x_t\}_{t\geq 0},\hspace{1cm} \{p_t\}_{t\geq 0}
 $$
 
-An interesting special case holds the technology process constant and
-investigates the dynamics of quantities and prices only.
+一个有趣的特殊情况是保持技术过程不变，仅研究数量和价格的动态变化。
 
-Accordingly, in the rest of this lecture, we assume that
-$(A_t,B_t)=(A,B)$ for all $t\geq 0$.
+因此，在本讲座的剩余部分，我们假设对所有 $t\geq 0$ 都有 $(A_t,B_t)=(A,B)$。
 
-A crucial element of the dynamic interpretation involves the timing of
-production.
+动态解释的一个关键要素涉及生产的时间安排。
 
-We assume that production (consumption of inputs) takes place in period
-$t$, while the consequent output materializes in period
-$t+1$, i.e., consumption of $x_{t}^TA$ in period $t$
-results in $x^T_{t}B$ amounts of output in period $t+1$.
+我们假设生产（投入品的消耗）发生在 $t$ 期，而相应的产出在 $t+1$ 期实现，即在 $t$ 期消耗 $x_{t}^TA$ 将在 $t+1$ 期产生 $x^T_{t}B$ 数量的产出。
 
-These timing conventions imply the following feasibility condition:
+这些时间约定意味着以下可行性条件：
 
 $$
 \begin{aligned}
@@ -492,63 +443,49 @@ x^T_{t}B \geq x^T_{t+1} A \hspace{1cm}\forall t\geq 1
 \end{aligned}
 $$
 
-which asserts that no more goods can be used today than were produced
-yesterday.
+这表明今天使用的商品不能超过昨天生产的数量。
 
-Accordingly, $Ap_t$ tells the costs of production in period
-$t$ and $Bp_t$ tells revenues in period $t+1$.
+因此，$Ap_t$ 表示第 $t$ 期的生产成本，而 $Bp_t$ 表示第 $t+1$ 期的收入。
 
-### Balanced Growth
+### 平衡增长
 
-We follow John von Neumann in studying “balanced growth”.
+我们遵循约翰·冯·诺依曼的方法来研究"平衡增长"。
 
-Let $./$ denote an elementwise division of one vector by another and let
-$\alpha >0$ be a scalar.
+让 $./$表示两个向量的逐元素除法，让 $\alpha >0$ 为一个标量。
 
-Then *balanced growth* is a situation in which
+那么*平衡增长*是一种满足以下条件的情况：
 
 $$
 x_{t+1}./x_t = \alpha , \quad \forall t \geq 0
 $$
 
-With balanced growth, the law of motion of $x$ is evidently $x_{t+1}=\alpha x_t$
-and so we can rewrite the feasibility constraint as
+在平衡增长下，$x$ 的运动规律显然是 $x_{t+1}=\alpha x_t$，因此我们可以将可行性约束重写为：
 
 $$
 x^T_{t}B \geq \alpha x^T_t A \hspace{1cm}\forall t
 $$
 
-In the same spirit, define $\beta\in\mathbb{R}$ as the **interest
-factor** per unit of time.
+同样地，将 $\beta\in\mathbb{R}$ 定义为每单位时间的**利息因子**。
 
-We assume that it is always possible to earn a gross return equal to the
-constant interest factor $\beta$ by investing “outside the model”.
+我们假设始终可以通过在"模型外"投资获得等于常数利息因子 $\beta$ 的总回报。
 
-Under this assumption about outside investment opportunities, a
-no-arbitrage condition gives rise to the following (no profit)
-restriction on the price sequence:
+在这个关于外部投资机会的假设下，一个
+
+无套利条件产生以下（无利润）价格序列限制：
 
 $$
 \beta Ap_{t} \geq B p_{t} \hspace{1cm}\forall t
 $$
 
-This says that production cannot yield a return greater than that
-offered by the outside investment opportunity (here we compare values in
-period $t+1$).
+这表明生产的回报不能超过外部投资机会所提供的回报（这里我们比较第$t+1$期的价值）。
 
-The balanced growth assumption allows us to drop time subscripts and
-conduct an analysis purely in terms of a time-invariant growth rate
-$\alpha$ and interest factor $\beta$.
+平衡增长假设使我们可以省略时间下标，并完全基于时间不变的增长率$\alpha$和利息因子$\beta$进行分析。
 
-## Duality
+## 对偶性
 
-Two problems are connected by a remarkable dual
-relationship between  technological and valuation characteristics of
-the economy:
+两个问题通过经济的技术特征和估值特征之间存在着一个显著的对偶关系：
 
-**Definition:** The *technological expansion problem* (TEP) for the economy
-$(A,B)$ is to find a semi-positive $m$-vector $x>0$
-and a number $\alpha\in\mathbb{R}$ that satisfy
+**定义：** 经济$(A,B)$的*技术扩张问题*（TEP）是找到一个半正$m$维向量$x>0$和一个实数$\alpha\in\mathbb{R}$，使其满足
 
 $$
 \begin{aligned}
@@ -557,17 +494,11 @@ $$
     \end{aligned}
 $$
 
-Theorem 9.3 of David Gale’s book {cite}`gale1989theory` asserts that if Assumptions I and II are
-both satisfied, then a maximum value of $\alpha$ exists and that it is
-positive.
+David Gale的著作中的定理9.3 {cite}`gale1989theory`指出，如果假设I和II都满足，那么$\alpha$的最大值存在且为正数。
 
-The maximal value is called the *technological expansion rate* and is denoted
-by $\alpha_0$. The associated intensity vector $x_0$ is the
-*optimal intensity vector*.
+这个最大值被称为*技术扩张率*，用$\alpha_0$表示。相应的强度向量$x_0$被称为*最优强度向量*。
 
-**Definition:** The economic expansion problem (EEP) for
-$(A,B)$ is to find a semi-positive $n$-vector $p>0$
-and a number $\beta\in\mathbb{R}$ that satisfy
+**定义：** $(A,B)$的经济扩张问题（EEP）是要找到一个半正$n$维向量$p>0$和一个实数$\beta\in\mathbb{R}$，使其满足
 
 $$
 \begin{aligned}
@@ -576,153 +507,107 @@ $$
     \end{aligned}
 $$
 
-Assumptions I and II imply existence of a minimum value
-$\beta_0>0$ called the *economic expansion rate*.
+假设I和II意味着存在一个最小值$\beta_0>0$，称为*经济扩张率*。
 
-The corresponding price vector $p_0$ is the *optimal price vector*.
+相应的价格向量$p_0$是*最优价格向量*。
 
-Because the criterion functions in the *technological expansion* problem
-and the *economical expansion problem* are both linearly homogeneous,
-the optimality of $x_0$ and $p_0$ are defined only up to a
-positive scale factor.
+由于*技术扩张*问题和*经济扩张问题*中的目标函数都是线性齐次的，
 
-For convenience (and to emphasize a close connection to zero-sum games),  we normalize both vectors
-$x_0$ and $p_0$ to have unit length.
+$x_0$ 和 $p_0$ 的最优性仅由一个正的比例因子来定义。
 
-A standard duality argument (see Lemma 9.4. in (Gale, 1960) {cite}`gale1989theory`) implies
-that under Assumptions I and II, $\beta_0\leq \alpha_0$.
+为了方便（并强调与零和博弈的密切联系），我们将向量 $x_0$ 和 $p_0$ 都归一化为单位长度。
 
-But to deduce that $\beta_0\geq \alpha_0$,
-Assumptions I and II are not sufficient.
+标准对偶性论证（参见 (Gale, 1960) {cite}`gale1989theory` 中的引理9.4）表明，在假设I和II下，$\beta_0\leq \alpha_0$。
 
-Therefore, von Neumann {cite}`von1937uber`  went on to prove the following remarkable
-“duality” result that connects TEP and EEP.
+但要推导出 $\beta_0\geq \alpha_0$，假设I和II是不够的。
 
-**Theorem 1 (von Neumann):** If the economy $(A,B)$ satisfies
-Assumptions I and II, then there exist
-$\left(\gamma^{*}, x_0, p_0\right)$, where
-$\gamma^{*}\in[\beta_0, \alpha_0]\subset\mathbb{R}$, $x_0>0$
-is an $m$-vector, $p_0>0$ is an $n$-vector, and the
-following arbitrage true
+因此，冯·诺依曼 {cite}`von1937uber` 继续证明了以下连接TEP和EEP的重要"对偶性"结果。
+
+**定理1（冯·诺依曼）：** 如果经济 $(A,B)$ 满足假设I和II，则存在 $\left(\gamma^{*}, x_0, p_0\right)$，其中 $\gamma^{*}\in[\beta_0, \alpha_0]\subset\mathbb{R}$，$x_0>0$ 是一个 $m$ 维向量，$p_0>0$ 是一个 $n$ 维向量，且以下套利关系成立
 
 $$
 \begin{aligned}
 x_0^T B &\geq \gamma^{* } x_0^T A \\
 Bp_0 &\leq \gamma^{* } Ap_0 \\
 x_0^T\left(B-\gamma^{* } A\right)p_0 &= 0
+
 \end{aligned}
 $$
 
 ```{note}
-*Proof (Sketch):* Assumption I and II imply that there exist $(\alpha_0,
-x_0)$ and $(\beta_0, p_0)$ that solve the TEP and EEP, respectively. If
-$\gamma^*>\alpha_0$, then by definition of $\alpha_0$, there cannot
-exist a semi-positive $x$ that satisfies $x^T B \geq \gamma^{* }
-x^T A$.  Similarly, if $\gamma^*<\beta_0$, there is no semi-positive
-$p$ for which $Bp \leq \gamma^{* } Ap$. Let $\gamma^{*
-}\in[\beta_0, \alpha_0]$, then $x_0^T B \geq \alpha_0 x_0^T A \geq
-\gamma^{* } x_0^T A$.  Moreover, $Bp_0\leq \beta_0 A p_0\leq \gamma^* A
-p_0$. These two inequalities imply $x_0\left(B - \gamma^{* } A\right)p_0
-= 0$.
+*证明（概要）：* 假设I和II意味着存在$(\alpha_0, x_0)$和$(\beta_0, p_0)$分别解决TEP和EEP。如果$\gamma^*>\alpha_0$，根据$\alpha_0$的定义，不可能存在半正向量$x$满足$x^T B \geq \gamma^{* } x^T A$。类似地，如果$\gamma^*<\beta_0$，不存在半正向量$p$满足$Bp \leq \gamma^{* } Ap$。令$\gamma^{* }\in[\beta_0, \alpha_0]$，则$x_0^T B \geq \alpha_0 x_0^T A \geq \gamma^{* } x_0^T A$。此外，$Bp_0\leq \beta_0 A p_0\leq \gamma^* A p_0$。这两个不等式意味着$x_0\left(B - \gamma^{* } A\right)p_0 = 0$。
 ```
 
-Here the constant $\gamma^{*}$ is both an expansion factor  and an interest
-factor (not necessarily optimal).
+这里常数$\gamma^{*}$既是扩张因子也是利息因子（不一定是最优的）。
 
-We have already encountered and
-discussed the first two inequalities that represent feasibility and
-no-profit conditions.
+我们已经遇到并讨论了前两个表示可行性和无利润条件的不等式。
 
-Moreover, the equality $x_0^T\left(B-\gamma^{* } A\right)p_0 = 0$ concisely expresses the
-requirements that if any good grows at a rate larger than
-$\gamma^{*}$ (i.e., if it is *oversupplied*), then its price
-must be zero; and that if any activity provides negative profit, it must
-be unused.
+此外，等式$x_0^T\left(B-\gamma^{* } A\right)p_0 = 0$简洁地表达了
 
-Therefore, the conditions stated in Theorem I ex encode all equilibrium conditions.
+如果任何商品的增长率大于$\gamma^{*}$（即*供过于求*），那么其价格必须为零；如果任何生产活动产生负利润，则该活动必须停止。
 
-So  Theorem I essentially states that under Assumptions I and II there
-always exists an equilibrium $\left(\gamma^{*}, x_0, p_0\right)$
-with balanced growth.
+因此，定理I中所述的条件包含了所有均衡条件。
 
-Note that Theorem I is silent about uniqueness of the equilibrium. In
-fact, it does not rule out (trivial) cases with $x_0^TBp_0 = 0$ so
-that nothing of value is produced.
+所以定理I本质上表明，在假设I和II下，总是存在具有平衡增长的均衡$\left(\gamma^{*}, x_0, p_0\right)$。
 
-To exclude such uninteresting cases,
-Kemeny, Morgenstern and Thomspson {cite}`kemeny1956generalization` add an extra requirement
+注意，定理I并未说明均衡的唯一性。事实上，它并不排除$x_0^TBp_0 = 0$的（平凡）情况，即没有产生任何有价值的产出。
+
+为了排除这些无关紧要的情况，Kemeny、Morgenstern和Thompson {cite}`kemeny1956generalization`增加了一个额外要求
 
 $$
 x^T_0 B p_0 > 0
 $$
 
-and call the associated equilibria *economic solutions*.
+并将相关的均衡称为*经济解*。
 
-They show that
-this extra condition does not affect the existence result, while it
-significantly reduces the number of (relevant) solutions.
+他们证明了这个额外条件不影响均衡的存在性，同时显著减少了（相关）解的数量。
 
-## Interpretation as Two-player Zero-sum Game
+## 作为零和双人博弈的解释
 
-To compute the equilibrium $(\gamma^{*}, x_0, p_0)$, we follow the
-algorithm proposed by Hamburger, Thompson and Weil (1967), building on
-the key insight that an equilibrium (with balanced growth) can be
-solves a particular two-player zero-sum game.
-First, we introduce some notation.
+为了计算均衡 $(\gamma^{*}, x_0, p_0)$，我们遵循 Hamburger、Thompson 和 Weil (1967) 提出的算法，基于这样一个关键洞察：均衡(伴随平衡增长)可以解决一个特定的零和双人博弈。
+首先，我们引入一些符号。
 
-Consider the $m\times n$ matrix $C$ as a payoff matrix,
-with the entries representing payoffs from the **minimizing** column
-player to the **maximizing** row player and assume that the players can
-use mixed strategies. Thus,
+考虑 $m\times n$ 矩阵 $C$ 作为支付矩阵，其中的元素表示从**最小化**的列玩家到**最大化**的行玩家的支付，并假设玩家可以使用混合策略。因此，
 
-* the  row player chooses the $m$-vector $x > \mathbf{0}$ subject to $\iota_m^T x = 1$
-* the column player chooses the $n$-vector $p > \mathbf{0}$ subject to $\iota_n^T p = 1$.
+* 行玩家选择 $m$ 维向量 $x > \mathbf{0}$，满足 $\iota_m^T x = 1$
+* 列玩家选择 $n$ 维向量 $p > \mathbf{0}$，满足 $\iota_n^T p = 1$
 
-**Definition:** The $m\times n$ matrix game $C$ has the
-*solution* $(x^*, p^*, V(C))$ in mixed strategies if
+**定义：** $m\times n$ 矩阵博弈 $C$ 在混合策略中有*解* $(x^*, p^*, V(C))$，如果
 
 $$
 \begin{aligned}
 (x^* )^T C e^j \geq V(C)\quad \forall j\in\{1, \dots, n\}\quad \quad
-\text{and}\quad\quad (e^i)^T C p^* \leq V(C)\quad \forall i\in\{1, \dots, m\}
+
+\text{且}\quad\quad (e^i)^T C p^* \leq V(C)\quad \forall i\in\{1, \dots, m\}
 \end{aligned}
 $$
 
-The number $V(C)$ is called the *value* of the game.
+数值 $V(C)$ 被称为博弈的*值*。
 
-From the above definition, it is clear that the value $V(C)$ has
-two alternative interpretations:
+从上述定义可以清楚地看出，值 $V(C)$ 有两种解释：
 
-* by playing the appropriate mixed
-  stategy, the maximizing player can assure himself at least $V(C)$
-  (no matter what the column player chooses)
-* by playing the appropriate
-  mixed stategy, the minimizing player can make sure that the maximizing
-  player will not get more than $V(C)$ (irrespective of what is the
-  maximizing player’s choice)
+* 通过采用适当的混合策略，最大化玩家可以确保至少获得 $V(C)$（无论列玩家如何选择）
 
-A famous theorem of Nash (1951) tells us that there always
-exists a mixed strategy Nash equilibrium for any *finite* two-player
-zero-sum game.
+* 通过采用适当的混合策略，最小化玩家可以确保最大化玩家获得的不会超过 $V(C)$（无论最大化玩家如何选择）
 
-Moreover, von Neumann’s Minmax Theorem {cite}`neumann1928theorie` implies that
+Nash (1951) 的一个著名定理告诉我们，任何*有限*的双人零和博弈总是存在混合策略纳什均衡。
+
+此外，冯·诺依曼的极小极大定理 {cite}`neumann1928theorie` 表明
 
 $$
 V(C) = \max_x \min_p \hspace{2mm} x^T C p = \min_p \max_x \hspace{2mm} x^T C p = (x^*)^T C p^*
 $$
 
-### Connection with Linear Programming (LP)
+### 与线性规划(LP)的联系
 
-Nash equilibria of a finite two-player zero-sum game solve  a linear programming problem.
+有限双人零和博弈的纳什均衡可以解决一个线性规划问题。
 
-To see this, we introduce
-the following notation
+为了说明这一点，我们引入以下符号
 
-* For a fixed $x$, let $v$ be the value of the minimization problem: $v \equiv \min_p x^T C p = \min_j x^T C e^j$
-* For a fixed $p$, let $u$ be the value of the maximization problem: $u \equiv \max_x x^T C p = \max_i (e^i)^T C p$
+* 对于固定的 $x$，令 $v$ 为最小化问题的值：$v \equiv \min_p x^T C p = \min_j x^T C e^j$
+* 对于固定的 $p$，令 $u$ 为最大化问题的值：$u \equiv \max_x x^T C p = \max_i (e^i)^T C p$
 
-Then the *max-min problem* (the game from the maximizing player’s point
-of view) can be written as the *primal* LP
+那么，从最大化玩家角度来看的*最大最小问题*可以写成*原始*线性规划问题
 
 $$
 \begin{aligned}
@@ -733,8 +618,7 @@ x &\geq \mathbf{0} \\
 \end{aligned}
 $$
 
-while the *min-max problem* (the game from the minimizing player’s point
-of view) is the *dual* LP
+而从最小化玩家角度来看的*最小最大问题*是*对偶*线性规划问题
 
 $$
 \begin{aligned}
@@ -745,164 +629,139 @@ p &\geq \mathbf{0} \\
 \end{aligned}
 $$
 
-Hamburger, Thompson and Weil {cite}`hamburger1967computation` view the input-output pair of the
-economy as payoff matrices of two-player zero-sum games.
+Hamburger、Thompson和Weil {cite}`hamburger1967computation` 将经济的投入产出对视为双人零和博弈的收益矩阵。
 
-Using this interpretation, they restate Assumption I and II as follows
+使用这种解释，他们将假设I和II重述如下
 
 $$
-V(-A) < 0\quad\quad \text{and}\quad\quad V(B)>0
+V(-A) < 0\quad\quad \text{和}\quad\quad V(B)>0
 $$
 
 ```{note}
-*Proof (Sketch)*:
-* $\Rightarrow$ $V(B)>0$ implies
-$x_0^T B \gg \mathbf{0}$, where $x_0$ is a maximizing
-vector. Since $B$ is non-negative, this requires that each
-column of $B$ has at least one positive entry, which is
-Assumption I.
-* $\Leftarrow$ From Assumption I and the fact
-that $p>\mathbf{0}$, it follows that $Bp > \mathbf{0}$.
-This implies that the maximizing player can always choose $x$
-so that $x^TBp>0$ so that it must be the case
-that $V(B)>0$.
+*证明（概要）*:
+* $\Rightarrow$ $V(B)>0$ 意味着
+$x_0^T B \gg \mathbf{0}$，其中 $x_0$ 是最大化
+向量。由于 $B$ 是非负的，这要求 $B$ 的每一
+列至少有一个正项，这就是假设I。
+* $\Leftarrow$ 从假设I和事实
+$p>\mathbf{0}$ 可知，$Bp > \mathbf{0}$。
+这意味着最大化玩家总能选择 $x$
+使得 $x^TBp>0$，因此必然有
+$V(B)>0$。
 ```
 
-In order to (re)state Theorem I in terms of a particular two-player
-zero-sum game, we define a matrix for $\gamma\in\mathbb{R}$
+为了用特定的双人零和博弈重述定理I，我们定义一个矩阵，对于 $\gamma\in\mathbb{R}$
 
 $$
 M(\gamma) \equiv B - \gamma A
 $$
 
-For fixed $\gamma$, treating $M(\gamma)$ as a matrix game,
-calculating the solution of the game implies
+对于固定的 $\gamma$，将 $M(\gamma)$ 视为一个矩阵博弈，
 
-- If $\gamma > \alpha_0$, then for all $x>0$, there
-  $\exists j\in\{1, \dots, n\}$, s.t.
-  $[x^T M(\gamma)]_j < 0$ implying
-  that $V(M(\gamma)) < 0$.
-- If $\gamma < \beta_0$, then for all $p>0$, there
-  $\exists i\in\{1, \dots, m\}$, s.t.
-  $[M(\gamma)p]_i > 0$ implying that $V(M(\gamma)) > 0$.
-- If $\gamma \in \{\beta_0, \alpha_0\}$, then (by Theorem I) the
-  optimal intensity and price vectors $x_0$ and $p_0$
-  satisfy
+计算博弈的解意味着
+
+- 如果 $\gamma > \alpha_0$，那么对于所有 $x>0$，存在
+  $j\in\{1, \dots, n\}$，使得
+  $[x^T M(\gamma)]_j < 0$，这意味着
+  $V(M(\gamma)) < 0$。
+- 如果 $\gamma < \beta_0$，那么对于所有 $p>0$，存在
+  $i\in\{1, \dots, m\}$，使得
+  $[M(\gamma)p]_i > 0$，这意味着 $V(M(\gamma)) > 0$。
+- 如果 $\gamma \in \{\beta_0, \alpha_0\}$，那么（根据定理I）最优
+  强度和价格向量 $x_0$ 和 $p_0$
+  满足
 
 $$
 \begin{aligned}
-x_0^T M(\gamma) \geq \mathbf{0}^T \quad \quad \text{and}\quad\quad M(\gamma) p_0 \leq \mathbf{0}
+x_0^T M(\gamma) \geq \mathbf{0}^T \quad \quad \text{和}\quad\quad M(\gamma) p_0 \leq \mathbf{0}
 \end{aligned}
 $$
 
-That is, $(x_0, p_0, 0)$ is a solution of the game
-$M(\gamma)$ so
-that $V\left(M(\beta_0)\right) = V\left(M(\alpha_0)\right) = 0$.
+也就是说，$(x_0, p_0, 0)$ 是博弈
+$M(\gamma)$ 的解，因此
+$V\left(M(\beta_0)\right) = V\left(M(\alpha_0)\right) = 0$。
 
-* If $\beta_0 < \alpha_0$ and
-$\gamma \in (\beta_0, \alpha_0)$, then $V(M(\gamma)) = 0$.
+* 如果 $\beta_0 < \alpha_0$ 且
+$\gamma \in (\beta_0, \alpha_0)$，那么 $V(M(\gamma)) = 0$。
 
-Moreover, if $x'$ is optimal for the maximizing player in
-$M(\gamma')$ for $\gamma'\in(\beta_0, \alpha_0)$ and
-$p''$ is optimal for the minimizing player in $M(\gamma'')$
-where $\gamma''\in(\beta_0, \gamma')$, then $(x', p'', 0)$
-is a solution for $M(\gamma)$ $\forall \gamma\in (\gamma'', \gamma')$.
+此外，如果 $x'$ 是在
+$\gamma'\in(\beta_0, \alpha_0)$ 时博弈
+$M(\gamma')$ 中最大化玩家的最优策略且
 
-*Proof (Sketch):* If $x'$ is optimal for a maximizing player in
-game $M(\gamma')$, then $(x')^T M(\gamma')\geq \mathbf{0}^T$ and so for all $\gamma<\gamma'$.
+$p''$ 对于 $M(\gamma'')$ 中的最小化玩家来说是最优的，其中 $\gamma''\in(\beta_0, \gamma')$，那么 $(x', p'', 0)$ 对于所有 $\gamma\in (\gamma'', \gamma')$ 都是 $M(\gamma)$ 的解。
+
+*证明（概要）：* 如果 $x'$ 对于游戏 $M(\gamma')$ 中的最大化玩家是最优的，那么 $(x')^T M(\gamma')\geq \mathbf{0}^T$，因此对于所有 $\gamma<\gamma'$：
 
 $$
 (x')^T M(\gamma) = (x')^T M(\gamma') + (x')^T(\gamma' - \gamma)A \geq \mathbf{0}^T
 $$
 
-hence $V(M(\gamma))\geq 0$. If $p''$ is optimal for a
-minimizing player in game $M(\gamma'')$, then $M(\gamma)p \leq \mathbf{0}$
-and so for all $\gamma''<\gamma$
+因此 $V(M(\gamma))\geq 0$。如果 $p''$ 对于游戏 $M(\gamma'')$ 中的最小化玩家是最优的，那么 $M(\gamma)p \leq \mathbf{0}$，因此对于所有 $\gamma''<\gamma$：
 
 $$
 M(\gamma)p'' = M(\gamma'') + (\gamma'' - \gamma)Ap'' \leq \mathbf{0}
 $$
 
-hence $V(M(\gamma))\leq 0$.
+因此 $V(M(\gamma))\leq 0$。
 
-It is clear from the above argument that $\beta_0$, $\alpha_0$ are the minimal and maximal $\gamma$ for which
-$V(M(\gamma))=0$.
+从上述论证中可以清楚地看出，$\beta_0$、$\alpha_0$ 是使得 $V(M(\gamma))=0$ 的最小和最大的 $\gamma$ 值。
 
-Furthermore, Hamburger et al. {cite}`hamburger1967computation` show that the
-function $\gamma \mapsto V(M(\gamma))$ is continuous and
-nonincreasing in $\gamma$.
+此外，Hamburger等人{cite}`hamburger1967computation`证明了函数 $\gamma \mapsto V(M(\gamma))$ 是连续的且关于 $\gamma$ 单调递减的。
 
-This suggests an algorithm to compute
-$(\alpha_0, x_0)$ and $(\beta_0, p_0)$ for a given
-input-output pair $(A, B)$.
+这表明了一个算法来计算给定输入-输出对$(A, B)$的$(\alpha_0, x_0)$和$(\beta_0, p_0)$。
 
-### Algorithm
+### 算法
 
-Hamburger, Thompson and Weil {cite}`hamburger1967computation` propose a simple bisection algorithm
-to find the minimal and maximal roots (i.e. $\beta_0$ and
-$\alpha_0$) of the function $\gamma \mapsto V(M(\gamma))$.
+Hamburger、Thompson和Weil {cite}`hamburger1967computation`提出了一个简单的二分法算法来找到函数$\gamma \mapsto V(M(\gamma))$的最小和最大根(即$\beta_0$和$\alpha_0$)。
 
-#### Step 1
+#### 第1步
 
-First, notice that we can easily find trivial upper and lower bounds for
-$\alpha_0$ and $\beta_0$.
+首先，注意到我们可以很容易地为$\alpha_0$和$\beta_0$找到简单的上下界。
 
-* TEP requires that
-$x^T(B-\alpha A)\geq \mathbf{0}^T$ and $x > \mathbf{0}$, so
-if $\alpha$ is so large that
-$\max_i\{[(B-\alpha A)\iota_n]_i\} < 0$, then TEP ceases to have a
-solution.
+* TEP要求$x^T(B-\alpha A)\geq \mathbf{0}^T$且$x > \mathbf{0}$，所以如果$\alpha$大到使得$\max_i\{[(B-\alpha A)\iota_n]_i\} < 0$，那么TEP将不再有解。
 
-Accordingly, let **``UB``** be the $\alpha^{*}$ that
-solves $\max_i\{[(B-\alpha^{*} A)\iota_n]_i\} = 0$.
+相应地，令**``UB``**为满足$\max_i\{[(B-\alpha^{*} A)\iota_n]_i\} = 0$的$\alpha^{*}$。
 
-* Similar to
-the upper bound, if $\beta$ is so low that
-$\min_j\{[\iota^T_m(B-\beta A)]_j\}>0$, then the EEP has no
-solution and so we can define **``LB``** as the $\beta^{*}$ that
-solves $\min_j\{[\iota^T_m(B-\beta^{*} A)]_j\}=0$.
+* 类似于上界，如果$\beta$低到使得$\min_j\{[\iota^T_m(B-\beta A)]_j\}>0$，那么EEP将没有解，因此我们可以定义**``LB``**为满足$\min_j\{[\iota^T_m(B-\beta^{*} A)]_j\}=0$的$\beta^{*}$。
 
-The *bounds* method calculates these trivial bounds for us
+*bounds* 方法为我们计算这些基本边界
 
 ```{code-cell} python3
 n1.bounds()
 ```
 
-#### Step 2
+#### 步骤 2
 
-Compute $\alpha_0$ and $\beta_0$
+计算 $\alpha_0$ 和 $\beta_0$
 
-- Finding $\alpha_0$
-    1. Fix $\gamma = \frac{UB + LB}{2}$ and compute the solution
-       of the two-player zero-sum game associated
-       with $M(\gamma)$. We can use either the primal or the dual
-       LP problem.
-    1. If $V(M(\gamma)) \geq 0$, then set $LB = \gamma$,
-       otherwise let $UB = \gamma$.
-    1. Iterate on 1. and 2. until $|UB - LB| < \epsilon$.
-- Finding $\beta_0$
-    1. Fix $\gamma = \frac{UB + LB}{2}$ and compute the solution
-       of the two-player zero-sum game associated.
-       with $M(\gamma)$. We can use either the primal or the dual
-       LP problem.
-    1. If $V(M(\gamma)) > 0$, then set $LB = \gamma$,
-       otherwise let $UB = \gamma$.
-    1. Iterate on 1. and 2. until $|UB - LB| < \epsilon$.
-- *Existence*: Since $V(M(LB))>0$ and $V(M(UB))<0$ and
-  $V(M(\cdot))$ is a continuous, nonincreasing function, there is
-  at least one $\gamma\in[LB, UB]$, s.t. $V(M(\gamma))=0$.
+- 求解 $\alpha_0$
+    1. 固定 $\gamma = \frac{UB + LB}{2}$ 并计算与 $M(\gamma)$ 
+       相关的双人零和博弈的解。我们可以使用原始或对偶
+       线性规划问题。
+    1. 如果 $V(M(\gamma)) \geq 0$，则令 $LB = \gamma$，
+       否则令 $UB = \gamma$。
+    1. 重复步骤1和2，直到 $|UB - LB| < \epsilon$。
+- 求解 $\beta_0$
+    1. 固定 $\gamma = \frac{UB + LB}{2}$ 并计算与 $M(\gamma)$ 
+       相关的双人零和博弈的解。我们可以使用原始或对偶
+       线性规划问题。
+    1. 如果 $V(M(\gamma)) > 0$，则令 $LB = \gamma$，
+       否则令 $UB = \gamma$。
+    1. 重复步骤1和2，直到 $|UB - LB| < \epsilon$。
+- *存在性*：由于 $V(M(LB))>0$ 且 $V(M(UB))<0$，并且
+  $V(M(\cdot))$ 是连续的单调递减函数，因此在
+  $[LB, UB]$ 区间内至少存在一个 $\gamma$，使得 $V(M(\gamma))=0$。
 
-The *zerosum* method calculates the value and optimal strategies
-associated with a given $\gamma$.
+*zerosum* 方法计算与给定 $\gamma$ 相关的值和最优策略。
 
 ```{code-cell} python3
 γ = 2
 
-print(f'Value of the game with γ = {γ}')
+print(f'游戏在 γ = {γ} 时的值')
 print(n1.zerosum(γ=γ)[0])
-print('Intensity vector (from the primal)')
+print('强度向量（来自原问题）')
 print(n1.zerosum(γ=γ)[1])
-print('Price vector (from the dual)')
+print('价格向量（来自对偶问题）')
 print(n1.zerosum(γ=γ, dual=True)[1])
 ```
 
@@ -916,31 +775,29 @@ value_ex2_grid = np.asarray([n2.zerosum(γ=γ_grid[i])[0]
                             for i in range(numb_grid)])
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5), sharey=True)
-fig.suptitle(r'The function $V(M(\gamma))$', fontsize=16)
+fig.suptitle(r'函数 $V(M(\gamma))$', fontsize=16)
 
 for ax, grid, N, i in zip(axes, (value_ex1_grid, value_ex2_grid),
                           (n1, n2), (1, 2)):
     ax.plot(γ_grid, grid)
-    ax.set(title=f'Example {i}', xlabel='$\gamma$')
+    ax.set(title=f'示例 {i}', xlabel='$\gamma$')
     ax.axhline(0, c='k', lw=1)
-    ax.axvline(N.bounds()[0], c='r', ls='--', label='lower bound')
-    ax.axvline(N.bounds()[1], c='g', ls='--', label='upper bound')
+    ax.axvline(N.bounds()[0], c='r', ls='--', label='下界')
+    ax.axvline(N.bounds()[1], c='g', ls='--', label='上界')
 
 plt.show()
 ```
 
-The *expansion* method implements the bisection algorithm for
-$\alpha_0$ (and uses the primal LP problem for $x_0$)
+*扩展*方法实现了对$\alpha_0$的二分法算法（并使用原始LP问题求解$x_0$）
 
 ```{code-cell} python3
 α_0, x, p = n1.expansion()
 print(f'α_0 = {α_0}')
 print(f'x_0 = {x}')
-print(f'The corresponding p from the dual = {p}')
+print(f'对偶问题得到的相应p值 = {p}')
 ```
 
-The *interest* method implements the bisection algorithm for
-$\beta_0$ (and uses the dual LP problem for $p_0$)
+*interest* 方法使用二分法算法求解 $\beta_0$ (并使用对偶线性规划问题求解 $p_0$)
 
 ```{code-cell} python3
 β_0, x, p = n1.interest()
@@ -949,18 +806,13 @@ print(f'p_0 = {p}')
 print(f'The corresponding x from the primal = {x}')
 ```
 
-Of course, when $\gamma^*$ is unique, it is irrelevant which one of the two methods we use  -- both work.
+当然，当 $\gamma^*$ 是唯一的时候，我们使用哪种方法都无所谓 -- 两种方法都可行。
 
-In particular, as will be shown below, in
-case of an irreducible $(A,B)$ (like in Example 1), the maximal
-and minimal roots of $V(M(\gamma))$ necessarily coincide implying
-a ‘‘full duality’’ result, i.e. $\alpha_0 = \beta_0 = \gamma^*$ so that the expansion (and interest) rate $\gamma^*$ is unique.
+特别是，如下所示，在 $(A,B)$ 不可约的情况下（如例1所示），$V(M(\gamma))$ 的最大根和最小根必然相同，这意味着存在"完全对偶"结果，即 $\alpha_0 = \beta_0 = \gamma^*$，因此扩张（和利息）率 $\gamma^*$ 是唯一的。
 
-### Uniqueness and Irreducibility
+### 唯一性和不可约性
 
-As an illustration, compute first the maximal and minimal roots of
-$V(M(\cdot))$ for our Example 2 that has a reducible
-input-output pair $(A, B)$
+作为说明，让我们首先计算例2中可约输入输出对 $(A, B)$ 的 $V(M(\cdot))$ 的最大根和最小根
 
 ```{code-cell} python3
 α_0, x, p = n2.expansion()
@@ -973,72 +825,47 @@ print(f'The corresponding p from the dual = {p}')
 β_0, x, p = n2.interest()
 print(f'β_0 = {β_0}')
 print(f'p_0 = {p}')
-print(f'The corresponding x from the primal = {x}')
+print(f'对偶问题得到的原问题解为 = {x}')
 ```
 
-As we can see, with a reducible $(A,B)$, the roots found by the
-bisection algorithms might differ, so there might be multiple
-$\gamma^*$ that make the value of the game
-with $M(\gamma^*)$ zero. (see the figure above).
+如我们所见，当$(A,B)$可约时，二分法算法找到的根可能不同，因此可能存在多个使得博弈$M(\gamma^*)$的值为零的$\gamma^*$（见上图）。
 
-Indeed, although the von Neumann theorem assures existence of the
-equilibrium, Assumptions I and II are not sufficient for uniqueness.
-Nonetheless, Kemeny et al. (1967) show that there are at most finitely
-many economic solutions, meaning that there are only finitely many
-$\gamma^*$ that satisfy $V(M(\gamma^*)) = 0$ and
-$x_0^TBp_0 > 0$ and that for each such $\gamma^*_i$, there
-is a self-contained part of the economy (a sub-economy) that in
-equilibrium can expand independently with the expansion
-coefficient $\gamma^*_i$.
+事实上，虽然冯·诺依曼定理保证了均衡的存在性，但假设I和II并不足以保证唯一性。尽管如此，Kemeny等人(1967)证明了经济解的数量至多是有限的，这意味着只有有限个$\gamma^*$满足$V(M(\gamma^*)) = 0$和$x_0^TBp_0 > 0$，并且对于每个这样的$\gamma^*_i$，都存在一个经济体的自包含部分（子经济体），在均衡状态下可以以扩张系数$\gamma^*_i$独立扩张。
 
-The following theorem (see Theorem 9.10. in Gale {cite}`gale1989theory`) asserts that
-imposing irreducibility is sufficient for uniqueness of
-$(\gamma^*, x_0, p_0)$.
+以下定理（参见Gale {cite}`gale1989theory`中的定理9.10）断言，施加不可约性条件足以保证$(\gamma^*, x_0, p_0)$的唯一性。
 
-**Theorem II:** Adopt the conditions of Theorem 1. If the economy
-$(A,B)$ is irreducible, then $\gamma^*=\alpha_0=\beta_0$.
+**定理II：**采用定理1的条件。如果经济体
 
-### A Special Case
+$(A,B)$ 不可约，则 $\gamma^*=\alpha_0=\beta_0$。
 
-There is a special $(A,B)$ that allows us to simplify the solution
-method significantly by invoking the powerful Perron-Frobenius theorem
-for non-negative matrices.
+### 特殊情况
 
-**Definition:** We call an economy *simple* if it satisfies
+有一种特殊的 $(A,B)$ 允许我们通过引用非负矩阵的 Perron-Frobenius 定理来显著简化求解方法。
+
+**定义：** 如果一个经济满足以下条件，我们称之为*简单*经济：
 
 * $n=m$
-* Each activity produces exactly one good
-* Each good is produced by one and only one activity.
+* 每个生产活动恰好生产一种商品
+* 每种商品恰好由一个生产活动生产
 
-These assumptions imply that $B=I_n$, i.e., that $B$ can be
-written as an identity matrix (possibly after reshuffling its rows and
-columns).
+这些假设意味着 $B=I_n$，即 $B$ 可以写成单位矩阵（可能需要重新排列其行和列）。
 
-The simple model has the following special property (Theorem 9.11. in Gale {cite}`gale1989theory`): if $x_0$ and $\alpha_0>0$ solve the TEP
-with $(A,I_n)$, then
+简单模型具有以下特殊性质（Gale {cite}`gale1989theory` 中的定理 9.11）：如果 $x_0$ 和 $\alpha_0>0$ 是 $(A,I_n)$ 的 TEP 的解，那么
 
 $$
 x_0^T = \alpha_0 x_0^T A\hspace{1cm}\Leftrightarrow\hspace{1cm}x_0^T
 A=\left(\frac{1}{\alpha_0}\right)x_0^T
 $$
 
-The latter shows that $1/\alpha_0$ is a positive eigenvalue of
-$A$ and $x_0$ is the corresponding non-negative left
-eigenvector.
+后者表明 $1/\alpha_0$ 是 $A$ 的一个正特征值，而 $x_0$ 是相应的非负左特征向量。
 
-The classic result of **Perron and Frobenius** implies
-that a non-negative matrix  has a non-negative
-eigenvalue-eigenvector pair.
+**Perron和Frobenius**的经典结果表明，非负矩阵具有非负的特征值-特征向量对。
 
-Moreover, if $A$ is irreducible, then
-the optimal intensity vector $x_0$ is positive and *unique* up to
-multiplication by a positive scalar.
+此外，如果$A$是不可约的，则最优强度向量$x_0$是正的，并且在乘以正标量的意义下是*唯一*的。
 
-Suppose that $A$ is reducible with $k$ irreducible subsets
-$S_1,\dots,S_k$. Let $A_i$ be the submatrix corresponding to
-$S_i$ and let $\alpha_i$ and $\beta_i$ be the
-associated expansion and interest factors, respectively. Then we have
+假设$A$是可约的，具有$k$个不可约子集$S_1,\dots,S_k$。令$A_i$为对应于$S_i$的子矩阵，令$\alpha_i$和$\beta_i$分别为相关的扩张因子和利息因子。那么我们有
 
 $$
-\alpha_0 = \max_i \{\alpha_i\}\hspace{1cm}\text{and}\hspace{1cm}\beta_0 = \min_i \{\beta_i\}
+\alpha_0 = \max_i \{\alpha_i\}\hspace{1cm}\text{和}\hspace{1cm}\beta_0 = \min_i \{\beta_i\}
 $$
+

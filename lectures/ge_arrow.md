@@ -12,174 +12,141 @@ kernelspec:
   name: python3
 ---
 
-# Competitive Equilibria with Arrow Securities
+# 带有阿罗证券的竞争均衡
 
-## Introduction
+## 引言
 
-This lecture presents Python code for experimenting with  competitive equilibria of  an infinite-horizon pure exchange economy with
+本讲座介绍了Python代码，用于实验具有以下特征的无限期纯交换经济的竞争均衡：
 
-* Heterogeneous agents
+* 异质代理人
 
-* Endowments of a single consumption that are person-specific functions of a common Markov state
+* 单一消费品的禀赋，是共同马尔可夫状态的个人特定函数
 
-* Complete markets in one-period Arrow state-contingent securities
+* 一期阿罗状态或有证券的完全市场
 
-* Discounted expected utility preferences  of a kind often used in macroeconomics and finance
+* 在宏观经济学和金融学中常用的贴现期望效用偏好
 
-* Common expected utility preferences across agents
+* 代理人之间具有共同的期望效用偏好
 
-* Common beliefs among agents
+* 代理人之间具有共同的信念
 
-* A constant relative risk aversion (CRRA)  one-period utility function that implies the existence of a representative consumer whose consumption process can be plugged into a formula for the pricing kernel for  one-step Arrow securities and thereby determine equilibrium prices before determining an equilibrium distribution of wealth
+* 一个具有固定相对风险厌恶度(CRRA)的单期效用函数，它意味着存在一个代表性消费者，其消费过程可以代入单步Arrow证券定价核的公式中，从而在确定财富均衡分配之前确定均衡价格
 
-* Differences in their  endowments make individuals want to reallocate consumption goods across time and Markov states
+* 个体在禀赋上的差异使他们想要在时间和马尔可夫状态之间重新配置消费品
 
-We impose  restrictions that allow us to **Bellmanize** competitive equilibrium prices and quantities
+我们施加限制条件，使我们能够将竞争均衡的价格和数量**贝尔曼化**
 
-We use  Bellman equations  to describe
+我们使用贝尔曼方程来描述
 
-* asset prices
+* 资产价格
 
-* continuation wealth levels for each person
+* 每个人的持续财富水平
 
-* state-by-state natural debt limits for each person
-
-
-In the course of presenting the model we shall encounter these important ideas
-
-*  a **resolvent operator**   widely  used in this class of models
-
-* absence of  **borrowing limits** in finite horizon economies
-
-* state-by-state **borrowing limits** required in infinite horizon economies
-
-* a counterpart of the **law of iterated expectations** known as a **law of iterated values**
-
-* a  **state-variable degeneracy** that prevails within a competitive equilibrium and that opens the way to various appearances of resolvent operators
-
-## The setting
-
-In effect, this lecture implements a Python version of  the model presented in section 9.3.3 of Ljungqvist and Sargent {cite}`Ljungqvist2012`.
-
-### Preferences and endowments
-
-In each period $t\geq 0$,  a stochastic
-event $s_t \in {\bf S}$ is realized.
-
-Let the history of events up until time $t$
-be denoted $s^t = [s_0, s_{1}, \ldots, s_{t-1}, s_t]$.
-
-(Sometimes  we inadvertently reverse the recording order and  denote a history as $s^t = [s_t, s_{t-1}, \ldots, s_1, s_0]$.)
-
-The unconditional
-probability of observing a particular sequence of events $s^t$ is
-given by a probability measure $\pi_t(s^t)$.
-
-For $t > \tau$, we write the probability
-of observing $s^t$ conditional on the realization of $s^\tau$as $\pi_t(s^t\vert s^\tau)$.
-
-We  assume that trading occurs after
-observing $s_0$,
-which we capture by setting $\pi_0(s_0)=1$ for the initially
-given value of $s_0$.
-
-In this lecture we shall follow much macroeconomics and econometrics and assume that
-$\pi_t(s^t)$  is induced by  a Markov process.
+* 每个人的逐状态自然债务限额
 
 
-There are $K$ consumers named $k=1, \ldots , K$.
+在介绍模型的过程中，我们将遇到这些重要概念
 
-Consumer $k$
-owns a stochastic endowment of one good
-$y_t^k(s^t)$ that depends on the
-history $s^t$.
+* 在此类模型中广泛使用的**解算子**
 
-The history $s^t$ is publicly observable.
+* 有限期限经济中**借贷限制**的缺失
 
+* 无限期经济中所需的**各州借贷限制**
 
-Consumer $k$
-purchases a history-dependent  consumption plan $c^k =
- \{c_t^k(s^t)\}_{t=0}^\infty$
+* **迭代期望法则**的对应概念，称为**迭代值法则**
 
-Consumer $k$  orders consumption plans by
+* 在竞争均衡中存在的**状态变量退化**现象，这为各种解算子的出现铺平了道路
+
+## 设定
+
+实际上，本讲座实现了 Ljungqvist 和 Sargent {cite}`Ljungqvist2012` 第9.3.3节中所提出模型的 Python 版本。
+
+### 偏好和禀赋
+
+在每个时期 $t\geq 0$，一个随机事件 $s_t \in {\bf S}$ 会实现。
+
+让我们用 $s^t = [s_0, s_{1}, \ldots, s_{t-1}, s_t]$ 来表示直到时间 t 的事件历史。
+
+(有时我们会无意中颠倒记录顺序，将历史表示为 $s^t = [s_t, s_{t-1}, \ldots, s_1, s_0]$。)
+
+观察到特定事件序列 $s^t$ 的无条件概率由概率测度 $\pi_t(s^t)$ 给出。
+
+对于 $t > \tau$，我们写出概率
+
+将观察到的 $s^t$ 在已知 $s^\tau$ 的条件下表示为 $\pi_t(s^t\vert s^\tau)$。
+
+我们假设交易发生在观察到 $s_0$ 之后，这通过设定初始给定值 $s_0$ 的 $\pi_0(s_0)=1$ 来表示。
+
+在本讲中，我们将遵循大多数宏观经济学和计量经济学的做法，假设 $\pi_t(s^t)$ 是由马尔可夫过程产生的。
+
+有 $K$ 个消费者，记为 $k=1, \ldots , K$。
+
+消费者 $k$ 拥有一个随机禀赋，即一种商品 $y_t^k(s^t)$，其取决于历史 $s^t$。
+
+历史 $s^t$ 是公开可观察的。
+
+消费者 $k$ 购买一个依赖于历史的消费计划 $c^k = \{c_t^k(s^t)\}_{t=0}^\infty$
+
+消费者 $k$ 对消费计划的排序为
 
 $$ U_k(c^k) =
    \sum_{t=0}^\infty \sum_{s^t} \beta^t u_k[c_t^k(s^t)]
    \pi_t(s^t),
   $$
 
-where $0 < \beta < 1$.
+其中 $0 < \beta < 1$。
 
-The right side is equal to $ E_0 \sum_{t=0}^\infty \beta^t
-u_k(c_t^k) $, where $E_0$ is the mathematical expectation operator,
-conditioned on $s_0$.
+右边等于 $ E_0 \sum_{t=0}^\infty \beta^t u_k(c_t^k) $，其中 $E_0$ 是数学期望算子，以 $s_0$ 为条件。
 
-Here $u_k(c)$ is an increasing, twice
-continuously differentiable, strictly concave function of
-consumption $c\geq 0$  of one good.
+这里 $u_k(c)$ 是一个关于消费 $c\geq 0$ 的递增、二次连续可微、严格凹的函数。
 
-The utility function of person $k$ satisfies
-the Inada condition
+个人 $k$ 的效用函数满足 Inada 条件
 
 $$ \lim_{c \downarrow 0} u'_k(c) = +\infty.$$
 
-This condition implies that each
-agent chooses strictly positive consumption for every
-date-history pair $(t, s^t)$.
+这个条件意味着每个代理人在每个日期-历史对 $(t, s^t)$ 都会选择严格正的消费。
 
-Those interior solutions enable us to confine our
-analysis to Euler equations that hold with equality and also guarantee that
-**natural debt limits**  don't bind  in economies like ours  with
-sequential trading of Arrow securities.
+这些内部解使我们能够将分析限制在等式成立的欧拉方程上，并且保证在像我们这样的经济中，**自然债务限制**在连续交易箭头证券时不会受到约束。
 
-We adopt the assumption, routinely
-employed in much of macroeconomics,
-that  consumers share   probabilities $\pi_t(s^t)$  for all $t$ and $s^t$.
+我们采用宏观经济学中常用的假设，即消费者对所有的 $t$ 和 $s^t$ 共享相同的概率 $\pi_t(s^t)$。
 
-
-A **feasible allocation** satisfies
+一个**可行配置**满足
 
 $$
 \sum_i c_t^k(s^t) \leq \sum_i y_t^k(s^t)
 $$
 
-for all $t$ and for all $s^t$.
+对所有的 $t$ 和所有的 $s^t$ 成立。
 
-## Recursive Formulation
+## 递归表述
 
-Following descriptions in section 9.3.3 of Ljungqvist and Sargent {cite}`Ljungqvist2012` chapter 9, we  set up  a competitive equilibrium of a pure exchange economy with complete markets in one-period Arrow securities.
+根据Ljungqvist和Sargent {cite}`Ljungqvist2012`第9章第9.3.3节的描述,我们建立了一个具有完整一期Arrow证券市场的纯交换经济的竞争均衡。
 
+当禀赋$y^k(s)$都是共同马尔可夫状态$s$的函数时,定价核心采用$Q(s'|s)$的形式,其中$Q(s'|s)$是在t时刻马尔可夫状态为$s$时,t+1时刻状态$s'$中一单位消费的价格。
 
+这使我们能够对消费者优化问题提供递归表述。
 
-When  endowments $y^k(s)$ are all functions of a common Markov state $s$,
-the pricing kernel takes the form $Q(s'|s)$, where $Q(s'| s)$ is the price of one unit of consumption
-in state $s'$ at date $t+1$ when the Markov state at date $t$ is $s$.
+消费者$k$在t时刻的状态是其金融财富$a^k_t$和马尔可夫状态$s_t$。
 
-These enable us to provide a
-recursive formulation of a consumer's optimization problem.
+令$v^k(a,s)$为消费者$k$从状态$(a,s)$开始的问题的最优值。
 
+* $v^k(a,s)$是当前拥有金融财富$a$的消费者$k$在马尔可夫状态$s$下能获得的最大期望贴现效用。
 
-Consumer $k$'s state at time $t$ is its financial wealth $a^k_t$ and Markov state $s_t$.
-
-Let $v^k(a,s)$ be the optimal value of consumer $k$'s problem
-starting from state $(a, s)$.
-
- * $v^k(a,s)$ is the maximum expected discounted utility that consumer $k$ with current financial wealth $a$ can attain in Markov state $s$.
-
-The optimal  value function satisfies the Bellman equation
+最优值函数满足贝尔曼方程
 
 $$
+
 v^k(a, s) = \max_{c, \hat a(s')} \left\{ u_k(c) + \beta \sum_{s'} v^k[\hat a(s'),s'] \pi (s' | s) \right\}
 $$
 
-where  maximization is subject to the budget constraint
+其中最大化受预算约束
 
 $$
 c + \sum_{s'} \hat a(s') Q(s' | s)
      \leq  y^k(s) + a
      $$
 
-and also the constraints
+以及约束条件
 
 $$
 \begin{aligned}
@@ -188,205 +155,167 @@ c & \geq 0, \\
 \end{aligned}
 $$
 
-with the second constraint evidently being a set of state-by-state debt limits.
+第二个约束显然是一组逐状态的债务限制。
 
-Note that the value function and decision rule that solve  the Bellman equation implicitly depend
-on the pricing kernel $Q(\cdot \vert \cdot)$ because it appears in the agent's budget constraint.
+注意，求解贝尔曼方程的值函数和决策规则隐含地依赖于定价核$Q(\cdot \vert \cdot)$，因为它出现在代理人的预算约束中。
 
-Use the first-order conditions for  the
-problem on the right of the Bellman  equation and a
-Benveniste-Scheinkman formula and rearrange to get
+使用贝尔曼方程右侧问题的一阶条件和Benveniste-Scheinkman公式并重新整理得到
 
 $$
 Q(s_{t+1} | s_t ) = {\beta u'_k(c_{t+1}^k) \pi(s_{t+1} | s_t)
                  \over u'_k(c_t^k) },
                  $$
 
-where it is understood that $c_t^k = c^k(s_t)$
-and $c_{t+1}^k = c^k(s_{t+1})$.
+其中$c_t^k = c^k(s_t)$
 
+且 $c_{t+1}^k = c^k(s_{t+1})$。
 
+**递归竞争均衡**是指
+一个初始财富分布 $\vec a_0$，一组借贷限额 $\{\bar A^k(s)\}_{k=1}^K$，
+一个定价核 $Q(s' | s)$，一组价值函数 $\{v^k(a,s)\}_{k=1}^K$，以及
+决策规则 $\{c^k(s), \hat a^k(s)\}_{k=1}^K$，使得
 
-A **recursive competitive equilibrium** is
-an initial distribution of wealth $\vec a_0$, a set of borrowing limits $\{\bar A^k(s)\}_{k=1}^K$,
-a pricing kernel $Q(s' | s)$, sets of value functions $\{v^k(a,s)\}_{k=1}^K$, and
-decision rules $\{c^k(s), \hat a^k(s)\}_{k=1}^K$ such
-that
-
-* The state-by-state borrowing constraints satisfy the recursion
+* 各状态下的借贷约束满足递归式
 
 $$
 \bar A^k(s) = y^k(s) + \sum_{s'} Q(s'|s) \bar A^k(s')
 $$
 
-* For all $k$, given
- $a^k_0$, $\bar A^k(s)$,  and the pricing kernel, the value functions and decision rules
-solve the consumers' problems;
+* 对于所有 $k$，给定
+$a^k_0$、$\bar A^k(s)$ 和定价核，价值函数和决策规则
+求解消费者问题；
 
-* For all realizations of $\{s_t\}_{t=0}^\infty$, the consumption and asset
-portfolios $\{\{c^k_t,$
-$\{\hat a^k_{t+1}(s')\}_{s'}\}_k\}_t$  satisfy $\sum_k c^k_t = \sum_k y^k(s_t)$ and
-$\sum_k \hat a_{t+1}^k(s') = 0$
-for all $t$ and $s'$.
+* 对于 $\{s_t\}_{t=0}^\infty$ 的所有实现，消费和资产
+组合 $\{\{c^k_t,$
+$\{\hat a^k_{t+1}(s')\}_{s'}\}_k\}_t$ 满足 $\sum_k c^k_t = \sum_k y^k(s_t)$ 且
+对所有 $t$ 和 $s'$ 有 $\sum_k \hat a_{t+1}^k(s') = 0$。
 
-* The initial financial wealth vector $\vec a_0$ satisfies $\sum_{k=1}^K a_0^k = 0 $.
+* 初始金融财富向量 $\vec a_0$ 满足 $\sum_{k=1}^K a_0^k = 0$。
 
+第三个条件断言在所有马尔可夫状态下净总索赔为零。
 
-The third condition asserts that there are  zero net aggregate claims in all Markov states.
+第四个条件断言经济是封闭的,并且从净总索赔为零的情况开始。
 
-The fourth condition asserts that the economy is closed and  starts  from a situation in which there
-are  zero net aggregate claims.
+## 状态变量退化
 
+请参见 Ljungqvist 和 Sargent {cite}`Ljungqvist2012` 对交易时序协议的描述,该协议与 Arrow-Debreu 的设想一致:
 
+* 在时间 $0$ 时存在完整的市场,包含完整的历史 $s^t$ 条件下所有日期消费的索赔菜单,所有交易都在时间零发生
+* 所有交易一次性地在时间 $0$ 发生
 
-## State Variable Degeneracy
+如果递归竞争均衡中的分配和定价核 $Q$ 要与相应的完全市场经济中的均衡分配和价格体系保持一致(在该经济中存在这种历史条件商品且所有交易在时间 $0$ 发生),我们必须要求 $k = 1, \ldots , K$ 时 $a_0^k = 0$。
 
-Please see Ljungqvist and Sargent {cite}`Ljungqvist2012` for a description of
-timing protocol for trades  consistent with an  Arrow-Debreu vision in which
+也就是说
 
-  * at time $0$ there are complete markets in a complete menu of history $s^t$-contingent claims on consumption at all dates that all trades occur at time zero
-  * all trades occur once and for all at time $0$
+在时间$0$时，每个代理人的消费现值等于其禀赋流的现值，这确保了在时间$0$发生所有交易的单一预算约束安排。
 
+系统以所有$i$的$a_0^k =0$开始，这带来了一个显著的含义，我们称之为**状态变量退化**。
 
-If  an allocation and pricing kernel $Q$ in   a recursive competitive equilibrium are to be
-consistent
-with the equilibrium allocation and price system that prevail in a  corresponding complete markets economy with such history-contingent commodities and
- all trades occurring at time $0$,
-we must impose that $a_0^k = 0$ for $k = 1, \ldots , K$.
+以下是我们所说的**状态变量退化**的含义：
 
-That  is
-what assures that at time $0$ the present value of each agent's consumption equals the present value of his endowment stream,
-the  single  budget constraint in   arrangement with all trades occurring at time $0$.
+尽管价值函数$v^k(a,s)$中出现了两个状态变量$a,s$，但在从初始马尔可夫状态$s_0$且$a_0^k = 0 \ \forall i$开始的递归竞争均衡中，会出现两个结果：
 
+* 当马尔可夫状态$s_t$返回到$s_0$时，所有$i$的$a_0^k = 0$。
 
+* 金融财富$a$是马尔可夫状态$s$的一个精确函数。
 
-Starting the system  with $a_0^k =0$ for all $i$ has a striking implication that we  call **state variable degeneracy**.
+第一个发现表明，每个家庭都会周期性地回到其生命开始时的零金融财富状态。
 
+第二个发现表明，在竞争均衡中，外生马尔可夫状态是我们追踪个体所需的全部信息。
 
-Here is  what we mean by **state variable degeneracy**:
+金融财富变得多余，因为它对每个个体来说都是马尔可夫状态的精确函数。
 
-Although two state variables $a,s$ appear in the value function $v^k(a,s)$, within a recursive competitive equilibrium starting from $a_0^k = 0 \ \forall i$  at initial Markov state  $s_0$, two outcomes  prevail:
+这个结果严重依赖于箭头证券市场的完整性。
 
+例如，在本讲座{doc}`艾亚加里模型 <aiyagari>`的不完整市场设置中，这一结果并不成立。
 
-*  $a_0^k = 0 $ for all $i$ whenever the Markov state $s_t$ returns to   $s_0$.
+## 马尔可夫资产价格
 
-* Financial wealth $a$ is an exact function of the Markov state $s$.
+让我们从简要总结在马尔可夫环境下计算资产价格的公式开始。
 
-The first finding  asserts that each household  recurrently visits the zero financial wealth state with which it began life.
+该设置假定以下基础架构：
 
-
-The second finding  asserts that within a competitive equilibrium  the exogenous Markov state is all we require to track an individual.
-
-Financial wealth turns out to be redundant because it is an exact function of the Markov state for each individual.
-
-
-This outcome depends critically on there being complete markets in Arrow securities.
-
-For example, it does not prevail in the incomplete markets setting of this lecture {doc}`The Aiyagari Model <aiyagari>`
-
-## Markov Asset Prices
-
-
-Let's start with a brief summary of formulas for computing asset prices in
-a Markov setting.
-
-
-The setup assumes the following infrastructure
-
-* Markov states: $s \in S = \left[\bar{s}_1, \ldots, \bar{s}_n \right]$ governed by  an $n$-state Markov chain with transition probability
+* 马尔可夫状态：$s \in S = \left[\bar{s}_1, \ldots, \bar{s}_n \right]$，由具有转移概率的n状态马尔可夫链支配
 
 $$
 P_{ij} = \Pr \left\{s_{t+1} = \bar{s}_j \mid s_t = \bar{s}_i \right\}
 $$
 
-* A collection $h=1,\ldots, H$ of  $n \times 1$ vectors of  $H$ assets that pay off  $d^h\left(s\right)$  in state $s$
+* 一组$h=1,\ldots, H$个$n \times 1$向量，表示$H$个资产在状态$s$下的支付$d^h\left(s\right)$
 
-
-
-* An $n \times n$ matrix  pricing kernel $Q$ for one-period Arrow securities, where $ Q_{ij}$  = price at time $t$ in state $s_t =
-\bar s_i$ of one unit of consumption when $s_{t+1} = \bar s_j$ at time $t+1$:
-
+* 一个 $n \times n$ 矩阵定价核 $Q$ 用于一期箭头证券，其中 $Q_{ij}$ = 在时间 $t$ 状态 $s_t = \bar s_i$ 时，当 $s_{t+1} = \bar s_j$ 在时间 $t+1$ 时一单位消费的价格：
 
 $$
 Q_{ij} = {\textrm{Price}} \left\{s_{t+1} = \bar{s}_j \mid s_t = \bar{s}_i \right\}
 $$
 
-* The price of risk-free one-period bond in state $i$ is $R_i^{-1} = \sum_{j}Q_{i,j}$
+* 在状态 $i$ 中无风险一期债券的价格是 $R_i^{-1} = \sum_{j}Q_{i,j}$
 
-* The gross rate of return on a one-period risk-free bond Markov state $\bar s_i$ is $R_i = (\sum_j Q_{i,j})^{-1}$
+* 在马尔可夫状态 $\bar s_i$ 中一期无风险债券的总回报率是 $R_i = (\sum_j Q_{i,j})^{-1}$
 
-### Exogenous Pricing Kernel
+### 外生定价核
 
-At this point, we'll take the pricing kernel $Q$ as exogenous, i.e., determined outside the model
+在这一点上，我们将把定价核 $Q$ 视为外生的，即由模型外部决定
 
-Two examples would be
+两个例子是：
 
-* $ Q = \beta P $ where $\beta \in (0,1) $
+* $Q = \beta P$ 其中 $\beta \in (0,1)$
 
-* $Q = S P $ where $S$ is an $n \times n$ matrix of *stochastic discount factors*
+* $Q = S P$ 其中 $S$ 是一个 $n \times n$ 的*随机贴现因子*矩阵
 
+我们将简要写下马尔可夫资产定价对两种类型资产的含义
 
-We'll write down implications of  Markov asset pricing in a nutshell for two types of assets
-
-  * the price in Markov state $s$ at time $t$ of a **cum dividend** stock that entitles the owner at the beginning of time $t$ to the time $t$ dividend and the option to sell the asset at time $t+1$.  The price evidently satisfies $p^h(\bar s_i) = d^h(\bar s_i) + \sum_j Q_{ij} p^h(\bar s_j) $, which implies that the vector $p^h$ satisfies $p^h = d^h + Q p^h$ which implies the formula
+* 在马尔可夫状态$s$和时间$t$时，一个**含红利**股票的价格，该股票使持有人在时间$t$开始时有权获得时间$t$的红利，并可选择在时间$t+1$出售资产。该价格显然满足$p^h(\bar s_i) = d^h(\bar s_i) + \sum_j Q_{ij} p^h(\bar s_j)$，这意味着向量$p^h$满足$p^h = d^h + Q p^h$，从而得出公式
 
 $$
 p^h = (I - Q)^{-1} d^h
 $$
 
-
-
-
-* the price in Markov state $s$ at time $t$ of an **ex dividend** stock that entitles the owner at the end  of time $t$ to the time $t+1$ dividend and the option to sell the stock at time $t+1$. The  price is
+* 在马尔可夫状态$s$和时间$t$时，一个**除权**股票的价格，该股票使持有人在时间$t$结束时有权获得时间$t+1$的红利，并可选择在时间$t+1$出售股票。该价格为
 
 $$
 p^h = (I - Q)^{-1} Q d^h
 $$
 
 ```{note}
-The matrix geometric sum $(I - Q)^{-1} = I + Q + Q^2 + \cdots $
-is an example of a **resolvent operator**.
+矩阵几何级数$(I - Q)^{-1} = I + Q + Q^2 + \cdots$
+是一个**预解算子**的例子。
 ```
 
-Below, we describe an equilibrium model with trading of one-period Arrow securities in which the pricing kernel is endogenous.
+下面，我们将描述一个包含一期箭头证券交易的均衡模型，其中定价核是内生的。
 
-In constructing our model, we'll repeatedly encounter formulas that remind us of our asset pricing formulas.
+在构建我们的模型时，我们会反复遇到让我们想起资产定价公式的公式。
 
-### Multi-Step-Forward Transition Probabilities and Pricing Kernels
+### 多步前向转移概率和定价核
 
-The $(i,j)$ component of  the $\ell$-step ahead transition probability $P^\ell$ is
+$\ell$步前向转移概率$P^\ell$的$(i,j)$分量是
 
 $$
 Prob(s_{t+\ell} = \bar s_j | s_t = \bar s_i)   = P^{\ell}_{i,j}
 $$
 
-The $(i,j)$ component of  the $\ell$-step ahead pricing kernel $Q^\ell$ is
-
+$\ell$步前向定价核$Q^\ell$的$(i,j)$分量是
 
 $$
 Q^{(\ell)}(s_{t+\ell} = \bar s_j | s_t = \bar s_i)   = Q^{\ell}_{i,j}
 $$
 
+我们将使用这些对象来说明资产定价理论中的一个有用性质。
 
-We'll use these objects to state a useful property in asset pricing theory.
+### 迭代期望法则和迭代值法则
 
-### Laws of Iterated Expectations and Iterated Values
+**迭代值法则**具有与**迭代期望法则**相平行的数学结构
 
-A  **law of iterated values** has a mathematical structure that parallels a
-**law of iterated expectations**
+在本讲座的马尔可夫设定中，我们可以很容易地描述其结构
 
-We can describe its structure readily in the  Markov setting of this lecture
-
-Recall the following recursion satisfied  by $j$ step ahead transition probabilites
-for our finite state Markov chain:
+回顾我们有限状态马尔可夫链的$j$步前向转移概率满足的以下递归关系：
 
 $$
+
 P_j(s_{t+j}| s_t)  = \sum_{s_{t+1}} P_{j-1}(s_{t+j}| s_{t+1}) P(s_{t+1} | s_t)
 $$
 
-We can use this recursion to verify the law of iterated expectations applied
-to computing the conditional expectation of a random variable $d(s_{t+j})$ conditioned
-on $s_t$ via the following string of equalities
+我们可以使用这个递归来验证迭代期望法则，该法则用于计算随机变量$d(s_{t+j})$在$s_t$条件下的条件期望，通过以下等式链：
 
 $$
 \begin{aligned}
@@ -398,29 +327,26 @@ E \left[ E d(s_{t+j}) | s_{t+1} \right] | s_t
     \end{aligned}
 $$
 
-The pricing kernel for $j$ step ahead Arrow securities satisfies the recursion
+j步前向Arrow证券的定价核满足以下递归关系：
 
 $$
 Q_j(s_{t+j}| s_t)  = \sum_{s_{t+1}} Q_{j-1}(s_{t+j}| s_{t+1}) Q(s_{t+1} | s_t)
 $$
 
-
-The time $t$ **value** in Markov state $s_t$  of a time $t+j$  payout $d(s_{t+j})$
-is
-
+在马尔可夫状态$s_t$下，时间$t+j$的支付$d(s_{t+j})$在时间$t$的**价值**是
 
 $$
+
 V(d(s_{t+j})|s_t) = \sum_{s_{t+j}} d(s_{t+j}) Q_j(s_{t+j}| s_t)
 $$
 
-The **law of iterated values** states
+**迭代值法则**指出
 
 $$
 V \left[ V (d(s_{t+j}) | s_{t+1}) \right] | s_t  =   V(d(s_{t+j}))| s_t
 $$
 
-We verify it by pursuing the following a string of inequalities that are counterparts to those we used
-to verify the law of iterated expectations:
+我们通过以下一系列不等式来验证它，这些不等式与我们用来验证迭代期望法则的不等式相对应：
 
 $$
 \begin{aligned}
@@ -432,109 +358,99 @@ V \left[ V  ( d(s_{t+j}) | s_{t+1} ) \right] | s_t
     \end{aligned}
 $$
 
-## General Equilibrium
+## 一般均衡
 
-Now we are ready to do some fun calculations.
+现在我们准备进行一些有趣的计算。
 
-We find it interesting to think in terms of analytical **inputs** into and **outputs** from our general equilibrium theorizing.
+我们发现从分析性的**输入**和**输出**角度来思考我们的一般均衡理论很有意思。
 
-### Inputs
+### 输入
 
-* Markov states: $s \in S = \left[\bar{s}_1, \ldots, \bar{s}_n \right]$ governed by  an $n$-state Markov chain with transition probability
+* Markov状态：$s \in S = \left[\bar{s}_1, \ldots, \bar{s}_n \right]$，由具有转移概率的$n$状态马尔可夫链控制
 
 $$
 P_{ij} = \Pr \left\{s_{t+1} = \bar{s}_j \mid s_t = \bar{s}_i \right\}
 $$
 
-* A collection of  $K \times 1$ vectors of individual $k$ endowments: $y^k\left(s\right), k=1,\ldots, K$
+* 个体$k$禀赋的$K \times 1$向量集合：$y^k\left(s\right), k=1,\ldots, K$
 
-* An $n \times 1$ vector of aggregate endowment:  $y\left(s\right) \equiv \sum_{k=1}^K y^k\left(s\right)$
+* 总禀赋的$n \times 1$向量：$y\left(s\right) \equiv \sum_{k=1}^K y^k\left(s\right)$
 
-* A collection of  $K \times 1$ vectors of individual $k$ consumptions: $c^k\left(s\right), k=1,\ldots, K$
+* 个体$k$消费的$K \times 1$向量集合：$c^k\left(s\right), k=1,\ldots, K$
 
-* A collection of restrictions  on feasible consumption allocations for $s \in S$:
+* 对于$s \in S$的可行消费分配限制集合：
 
 $$
 c\left(s\right)= \sum_{k=1}^K c^k\left(s\right)
 \leq  y\left(s\right)
 $$
 
-* Preferences: a common utility functional across agents $ E_0 \sum_{t=0}^\infty \beta^t u(c^k_t) $ with  CRRA one-period utility function $u\left(c\right)$ and discount factor $\beta \in (0,1)$
+* 偏好：各主体共同的效用函数$ E_0 \sum_{t=0}^\infty \beta^t u(c^k_t) $，具有CRRA单期效用函数$u\left(c\right)$和贴现因子$\beta \in (0,1)$
 
-The one-period utility function is
+单期效用函数为
 
 $$
 u \left(c\right) = \frac{c^{1-\gamma}}{1-\gamma}
 $$
 
-so that
+因此
 
 $$
+
 u^\prime \left(c\right) = c^{-\gamma}
 $$
 
-### Outputs
+### 输出
 
-* An $n \times n$ matrix  pricing kernel $Q$ for one-period Arrow securities, where $ Q_{ij}$  = price at time $t$ in state $s_t = \bar s_i$ of one unit of consumption when $s_{t+1} = \bar s_j$ at time $t+1$
+* 一个 $n \times n$ 矩阵定价核 $Q$，用于一期箭头证券，其中 $Q_{ij}$ = 在时间 $t$ 状态 $s_t = \bar s_i$ 时，购买在 $t+1$ 时刻状态 $s_{t+1} = \bar s_j$ 时一单位消费的价格
 
-* pure exchange so that $c\left(s\right) = y\left(s\right)$
+* 纯交换，因此 $c\left(s\right) = y\left(s\right)$
 
-* a $K \times 1$ vector distribution of wealth vector $\alpha$, $\alpha_k \geq 0, \sum_{k=1}^K \alpha_k =1$
+* 一个 $K \times 1$ 的财富分布向量 $\alpha$，$\alpha_k \geq 0, \sum_{k=1}^K \alpha_k =1$
 
-* A collection of $n \times 1$ vectors of individual $k$ consumptions: $c^k\left(s\right), k=1,\ldots, K$
+* 一组 $n \times 1$ 的个人 $k$ 消费向量：$c^k\left(s\right), k=1,\ldots, K$
 
-### $Q$ is the Pricing Kernel
+### $Q$ 是定价核
 
-
-For any agent  $k \in \left[1, \ldots, K\right]$, at the equilibrium allocation,
-the one-period Arrow securities pricing kernel satisfies
+对于任意代理人 $k \in \left[1, \ldots, K\right]$，在均衡配置下，一期箭头证券的定价核满足
 
 $$
 Q_{ij} = \beta \left(\frac{c^k\left(\bar{s}_j\right)}{c^k\left(\bar{s}_i\right)}\right)^{-\gamma} P_{ij}
 $$
 
-where $Q$ is an $n \times n$ matrix
+其中 $Q$ 是一个 $n \times n$ 矩阵
 
+这来自代理人 $k$ 的一阶必要条件。
 
-This follows from agent $k$'s first-order necessary conditions.
+但是在我们假设的CRRA偏好下，个人消费与总消费成比例变化，因此也与总禀赋成比例变化。
 
-But with the CRRA preferences that we have assumed, individual consumptions vary proportionately
-with aggregate consumption and therefore with the aggregate endowment.
+  * 这是我们的偏好设定的结果，意味着**恩格尔曲线**在财富方面是仿射的，因此满足**戈尔曼聚合**的条件
 
-  * This is a consequence of our preference specification implying that **Engle curves** are affine in wealth and therefore  satisfy conditions for **Gorman aggregation**
-
-Thus,
+因此，
 
 $$
 c^k \left(s\right) = \alpha_k c\left(s\right) = \alpha_k y\left(s\right)
 $$
 
-for an arbitrary   **distribution of wealth**  in the form of an   $K \times 1$ vector $\alpha$
-that satisfies
+对于任意形式为$K \times 1$向量$\alpha$的**财富分配**，满足：
 
 $$ \alpha_k \in \left(0, 1\right), \quad \sum_{k=1}^K \alpha_k = 1 $$
 
-This means that we can compute the pricing kernel from
+这意味着我们可以通过以下公式计算定价核：
 
 $$
 Q_{ij} = \beta \left(\frac{y_j}{y_i}\right)^{-\gamma} P_{ij}
 $$ (eq:Qformula)
 
+注意$Q_{ij}$与向量$\alpha$无关。
 
-Note that $Q_{ij}$ is independent of vector $\alpha$.
+**关键发现：**我们可以在计算**财富分配**之前计算竞争均衡**价格**。
 
+### 数值
 
+在计算出均衡定价核$Q$后，我们可以计算几个在表示或构建个体家庭最优问题解时所需的**值**。
 
-**Key finding:** We can compute competitive equilibrium **prices** prior to computing a **distribution of wealth**.
-
-### Values
-
-
-Having computed an equilibrium pricing kernel $Q$, we can compute several **values** that are required
-to pose or represent the solution of an individual household's optimum problem.
-
-
-We denote  an $K \times 1$ vector of  state-dependent values of agents' endowments in Markov state $s$ as
+我们用一个$K \times 1$向量表示在马尔可夫状态$s$下代理人禀赋的状态依赖值：
 
 $$
 A\left(s\right)=\left[\begin{array}{c}
@@ -544,7 +460,7 @@ A^{K}\left(s\right)
 \end{array}\right], \quad s \in \left[\bar{s}_1, \ldots, \bar{s}_n\right]
 $$
 
-and an  $n \times 1$ vector of continuation endowment values for each individual $k$ as
+以及一个$n \times 1$向量表示每个个体$k$的持续禀赋值：
 
 $$
 A^{k}=\left[\begin{array}{c}
@@ -554,13 +470,13 @@ A^{k}\left(\bar{s}_{n}\right)
 \end{array}\right], \quad k \in \left[1, \ldots, K\right]
 $$
 
-$A^k$ of consumer $k$ satisfies
+消费者$k$的$A^k$满足：
 
 $$
 A^k = \left[I - Q\right]^{-1} \left[ y^k\right]
 $$
 
-where
+其中
 
 $$
 y^{k}=\left[\begin{array}{c}
@@ -568,30 +484,26 @@ y^{k}\left(\bar{s}_{1}\right)\\
 \vdots\\
 y^{k}\left(\bar{s}_{n}\right)
 \end{array}\right] \equiv \begin{bmatrix} y^k_1 \cr \vdots \cr y^k_n \end{bmatrix}
+
 $$
 
 
-In a competitive equilibrium of an **infinite horizon** economy with sequential trading of one-period Arrow securities, $A^k(s)$ serves as a state-by-state vector of **debt limits** on the quantities of one-period  Arrow securities
-paying off  in state $s$ at time $t+1$ that individual $k$ can issue at time $t$.
+在具有一期阿罗证券序列交易的**无限期限**经济的竞争均衡中，$A^k(s)$作为**债务限制**的状态向量，限制个人$k$在$t$时刻可以发行的、在$t+1$时刻在状态$s$下支付的一期阿罗证券数量。
 
 
-These are often called **natural debt limits**.
+这些通常被称为**自然债务限制**。
 
-Evidently, they equal the maximum amount that it is feasible for  individual $k$ to repay
-even if he consumes zero goods forevermore.
+显然，它们等于个人$k$即使永远不消费任何商品也能偿还的最大金额。
 
-**Remark:** If  we have an Inada condition at zero consumption or just impose that consumption
-be nonnegative, then in a **finite horizon** economy with sequential trading of one-period Arrow securities there is no need to impose natural debt limits. See the section on a Finite Horizon Economy  below.
+**注意：**如果我们在零消费处有一个Inada条件，或者仅仅规定消费必须非负，那么在具有一期阿罗证券序列交易的**有限期限**经济中，就不需要施加自然债务限制。详见下文关于有限期限经济的部分。
 
 
 
-### Continuation Wealth
+### 延续财富
 
-Continuation wealth plays an important role in Bellmanizing a competitive equilibrium with sequential
-trading of a complete set of one-period Arrow securities.
+延续财富在将具有完整一期阿罗证券序列交易的竞争均衡贝尔曼化过程中扮演着重要角色。
 
-
-We denote  an $K \times 1$ vector of  state-dependent continuation wealths in Markov state $s$ as
+我们用 $K \times 1$ 向量表示马尔可夫状态 $s$ 下的状态依赖延续财富：
 
 $$
 \psi\left(s\right)=\left[\begin{array}{c}
@@ -601,7 +513,7 @@ $$
 \end{array}\right], \quad s \in \left[\bar{s}_1, \ldots, \bar{s}_n\right]
 $$
 
-and an  $n \times 1$ vector of continuation wealths for each individual $k$ as
+对每个个体 $k$ 的延续财富用 $n \times 1$ 向量表示：
 
 $$
 \psi^{k}=\left[\begin{array}{c}
@@ -611,13 +523,13 @@ $$
 \end{array}\right], \quad k \in \left[1, \ldots, K\right]
 $$
 
-Continuation wealth  $\psi^k$ of consumer $k$ satisfies
+消费者 $k$ 的延续财富 $\psi^k$ 满足：
 
 $$
 \psi^k = \left[I - Q\right]^{-1} \left[\alpha_k y - y^k\right]
 $$ (eq:continwealth)
 
-where
+其中：
 
 $$
 y^{k}=\left[\begin{array}{c}
@@ -631,91 +543,79 @@ y\left(\bar{s}_{n}\right)
 \end{array}\right]
 $$
 
-Note that $\sum_{k=1}^K \psi^k = {0}_{n \times 1}$.
+注意 $\sum_{k=1}^K \psi^k = {0}_{n \times 1}$。
 
-**Remark:** At the initial state $s_0 \in \begin{bmatrix} \bar s_1, \ldots, \bar s_n \end{bmatrix}$,
-the continuation wealth $\psi^k(s_0) = 0$ for all agents $k = 1, \ldots, K$.  This indicates that
-the economy begins with  all agents being debt-free and financial-asset-free at time $0$, state $s_0$.
+**注释：** 在初始状态 $s_0 \in \begin{bmatrix} \bar s_1, \ldots, \bar s_n \end{bmatrix}$ 时，所有代理人 $k = 1, \ldots, K$ 的延续财富 $\psi^k(s_0) = 0$。这表明在时间 $0$、状态 $s_0$ 时，经济中的所有代理人都没有债务和金融资产。
 
+**注释：** 请注意，当马尔可夫状态回到时间 $0$ 时的任何值 $s_0$ 时，所有代理人的延续财富都会周期性地回到零。
 
-**Remark:** Note that all agents' continuation wealths recurrently return to zero when the Markov state returns to whatever value $s_0$ it had at time $0$.
+### 最优投资组合
 
-### Optimal Portfolios
+该模型的一个巧妙特点是，k 类型代理人的最优投资组合等于我们刚刚计算的延续财富。
 
-A nifty feature of the model is that an optimal portfolio of  a type $k$ agent equals the continuation wealth that we just computed.
-
-Thus, agent $k$'s state-by-state purchases of Arrow securities next period depend only on next period's
-Markov state and equal
+因此，k 类代理人在下一期对箭头证券的逐状态购买仅取决于下一期的马尔可夫状态，且等于
 
 $$
 a_k(s) = \psi^k(s), \quad s \in \left[\bar s_1, \ldots, \bar s_n \right]
 $$ (eqn:optport)
 
-### Equilibrium Wealth Distribution $\alpha$
+### 均衡财富分布 $\alpha$
 
+当初始状态为特定状态 $s_0 \in \left[\bar{s}_1, \ldots, \bar{s}_n\right]$ 时，
 
-With the initial state being  a particular state $s_0 \in \left[\bar{s}_1, \ldots, \bar{s}_n\right]$,
-we must have
+我们必须有
 
 $$
 \psi^k\left(s_0\right) = 0, \quad k=1, \ldots, K
 $$
 
-which means the equilibrium distribution of wealth satisfies
+这意味着财富的均衡分布满足
 
 $$
 \alpha_k = \frac{V_z y^k}{V_z y}
 $$ (eqn:alphakform)
 
+其中 $V \equiv \left[I - Q\right]^{-1}$ 且 $z$ 是对应于初始状态 $s_0$ 的行索引。
 
+由于 $\sum_{k=1}^K V_z y^k = V_z y$，所以 $\sum_{k=1}^K \alpha_k = 1$。
 
-where $V \equiv \left[I - Q\right]^{-1}$ and $z$ is the row index corresponding to the initial state $s_0$.
+总之，计算竞争均衡的算法逻辑流程如下：
 
-Since $\sum_{k=1}^K V_z y^k = V_z y$,  $\sum_{k=1}^K \alpha_k = 1$.
+* 根据总体配置和公式 {eq}`eq:Qformula` 计算 $Q$
 
+* 根据公式 {eq}`eqn:alphakform` 计算财富分布 $\alpha$
 
-In summary, here is the logical flow of an algorithm to compute a competitive equilibrium:
+* 使用 $\alpha$ 为每个消费者 $k$ 分配总体禀赋在每个状态下的份额 $\alpha_k$
 
-* compute $Q$ from the aggregate allocation and  formula {eq}`eq:Qformula`
+* 返回到依赖于 $\alpha$ 的公式 {eq}`eq:continwealth` 并计算延续财富
 
-* compute the distribution of wealth $\alpha$ from the formula {eq}`eqn:alphakform`
+* 通过公式 {eq}`eqn:optport` 使代理人 $k$ 的投资组合在每个状态下等于其延续财富
 
-* Using  $\alpha$ assign each consumer $k$ the share  $\alpha_k$ of the aggregate endowment at each state
+我们还可以在完整的一期状态或有Arrow证券交易的竞争均衡中添加最优值函数的公式。
 
-* return to the $\alpha$-dependent formula {eq}`eq:continwealth`  and compute continuation wealths
+对消费者$k$，将最优值函数称为$J^k$。
 
-* via formula {eq}`eqn:optport` equate agent $k$'s portfolio to its continuation wealth state by state
-
-We can also add formulas for optimal value functions in  a competitive equilibrium with trades
-in a complete set of one-period state-contingent Arrow securities.
-
-Call the optimal value functions $J^k$ for consumer $k$.
-
-For the infinite horizon economy now under study, the formula is
+对于现在研究的无限期限经济，公式为
 
 $$ J^k = (I - \beta P)^{-1} u(\alpha_k y)  , \quad u(c) = \frac{c^{1-\gamma}}{1-\gamma} $$
 
-where it is understood that $ u(\alpha_k y)$ is a vector.
+其中$u(\alpha_k y)$被理解为一个向量。
+
+## 有限期限
+
+我们现在描述一个在$T+1$期内运行的有限期限版本经济，时期$t \in {\bf T} = \{ 0, 1, \ldots, T\}$。
+
+因此，我们需要上述对象的$T+1$个对应物，但有一个重要的例外：我们不需要**借贷限制**。
+
+* 对于有限期限经济，如果一期效用函数$u(c)$满足在零消费时边际效用为零的Inada条件，则不需要借贷限制。
+
+* 在所有时间点 $t \in {\bf T}$ 上消费选择的非负性自动限制了借贷。
 
 
-## Finite Horizon
-
-We now describe a finite-horizon version of the economy that operates  for $T+1$ periods
-$t \in {\bf T} = \{ 0, 1, \ldots, T\}$.
-
-Consequently, we'll  want  $T+1$ counterparts to objects described above, with one important exception:
-we won't need **borrowing limits**.
-
- * borrowing limits aren't required for a finite horizon economy in which a
-one-period utility function $u(c)$ satisfies an Inada condition that sets the marginal utility of consumption at zero consumption to zero.
- * Nonnegativity of consumption choices at all $t \in {\bf T}$ automatically
-limits borrowing.
+### 延续财富
 
 
-### Continuation Wealths
-
-
-We denote  a $K \times 1$ vector of  state-dependent continuation wealths in Markov state $s$ at time $t$ as
+我们用 $K \times 1$ 向量表示在时间 $t$ 马尔可夫状态 $s$ 下的状态依赖延续财富：
 
 $$
 \psi_t\left(s\right)=\left[\begin{array}{c}
@@ -725,7 +625,7 @@ $$
 \end{array}\right], \quad s \in \left[\bar{s}_1, \ldots, \bar{s}_n\right]
 $$
 
-and an  $n \times 1$ vector of continuation wealths for each individual $k$ as
+以及每个个体 $k$ 的 $n \times 1$ 延续财富向量：
 
 $$
 \psi_t^{k}=\left[\begin{array}{c}
@@ -737,18 +637,19 @@ $$
 
 
 
-Continuation wealths  $\psi^k$ of consumer $k$ satisfy
+消费者 $k$ 的延续财富 $\psi^k$ 满足：
 
 $$
 \begin{aligned}
 \psi_T^k & =  \left[\alpha_k y - y^k\right] \cr
 \psi_{T-1}^k & =  \left[I + Q \right] \left[\alpha_k y - y^k\right] \cr
 \vdots \quad  & \quad \quad \quad \vdots \cr
+
 \psi_0^k  & = \left[I + Q + Q^2 + \cdots + Q^T \right] \left[\alpha_k y - y^k\right]
 \end{aligned}
 $$ (eq:vv)
 
-where
+其中
 
 $$
 y^{k}=\left[\begin{array}{c}
@@ -762,75 +663,61 @@ y\left(\bar{s}_{n}\right)
 \end{array}\right]
 $$
 
-Note that $\sum_{k=1}^K \psi_t^k = {0}_{n \times 1}$ for all $t \in {\bf T}$.
+注意对于所有 $t \in {\bf T}$，$\sum_{k=1}^K \psi_t^k = {0}_{n \times 1}$。
 
-**Remark:** At the initial state $s_0 \in \begin{bmatrix} \bar s_1, \ldots, \bar s_n \end{bmatrix}$,
- for all agents $k = 1, \ldots, K$, continuation wealth $\psi_0^k(s_0) = 0$.  This indicates that
-the economy begins with  all agents being debt-free and financial-asset-free at time $0$, state $s_0$.
+**注解：** 在初始状态 $s_0 \in \begin{bmatrix} \bar s_1, \ldots, \bar s_n \end{bmatrix}$ 时，对于所有代理人 $k = 1, \ldots, K$，延续财富 $\psi_0^k(s_0) = 0$。这表明经济在时间0、状态$s_0$时，所有代理人都没有债务和金融资产。
 
+**注解：** 注意当马尔可夫状态回到时间0时的初始值$s_0$时，所有代理人的延续财富都会回到零。如果马尔可夫链使初始状态$s_0$成为循环状态，这种情况会重复发生。
 
-**Remark:** Note that all agents' continuation wealths  return to zero when the Markov state returns to whatever value $s_0$ it had at time $0$. This will recur if the Markov chain makes the initial state $s_0$ recurrent.
-
-
-
-
-With the initial state being  a particular state $s_0 \in \left[\bar{s}_1, \ldots, \bar{s}_n\right]$, we must have
+初始状态为特定状态$s_0 \in \left[\bar{s}_1, \ldots, \bar{s}_n\right]$时，我们必须有
 
 $$
 \psi_0^k\left(s_0\right) = 0, \quad k=1, \ldots, K
 $$
 
-which means the equilibrium distribution of wealth satisfies
+这意味着财富的均衡分布满足
 
 $$
 \alpha_k = \frac{V_z y^k}{V_z y}
 $$ (eq:w)
 
-
-
-where  now in our finite-horizon economy
+其中在我们的有限期限经济中
 
 $$
  V = \left[I + Q + Q^2 + \cdots + Q^T \right]
 $$ (eq:ww)
 
-and $z$ is the row index corresponding to the initial state $s_0$.
+且$z$是对应于初始状态$s_0$的行索引。
 
-Since $\sum_{k=1}^K V_z y^k = V_z y$,  $\sum_{k=1}^K \alpha_k = 1$.
+由于$\sum_{k=1}^K V_z y^k = V_z y$，所以$\sum_{k=1}^K \alpha_k = 1$。
 
+总之，以下是在我们的有限期限马尔可夫经济中计算带有阿罗证券的竞争均衡的算法逻辑流程：
 
-In summary, here is the logical flow of an algorithm to compute a competitive equilibrium with Arrow securities
-in our finite-horizon Markov economy:
+* 根据总体配置和公式{eq}`eq:Qformula`计算$Q$
 
-* compute $Q$ from the aggregate allocation and  formula {eq}`eq:Qformula`
+* 根据公式{eq}`eq:w`和{eq}`eq:ww`计算财富分布$\alpha$
 
-* compute the distribution of wealth $\alpha$ from  formulas {eq}`eq:w` and {eq}`eq:ww`
+* 使用$\alpha$，为每个消费者$k$分配总体禀赋在每个状态下的份额$\alpha_k$
 
-* using  $\alpha$, assign each consumer $k$ the share  $\alpha_k$ of the aggregate endowment at each state
+* 返回到依赖于$\alpha$的公式{eq}`eq:vv`计算延续财富
 
-* return to the $\alpha$-dependent formula {eq}`eq:vv` for continuation wealths and compute continuation wealths
+* 将代理人$k$的投资组合与其延续财富在各个状态下对应
 
-* equate agent $k$'s portfolio to its continuation wealth state by state
-
-
-While for  the infinite horizon economy, the formula for value functions  is
+对于无限期限经济，价值函数的公式是
 
 $$ J^k = (I - \beta P)^{-1} u(\alpha_k y)  , \quad u(c) = \frac{c^{1-\gamma}}{1-\gamma} $$
 
-for the finite horizon economy the formula is
+对于有限期限经济，公式是
 
 $$ J_0^k = (I + \beta P + \cdots + \beta^T P^T) u(\alpha_k y) , $$
 
-where it is understood that $ u(\alpha_k y)$ is a vector.
+其中$u(\alpha_k y)$是一个向量。
 
+## Python代码
 
+现在我们准备深入一些Python代码。
 
-## Python Code
-
-We are ready to dive into some Python code.
-
-
-As usual, we start with Python imports.
+像往常一样，我们先导入Python库。
 
 ```{code-cell} ipython3
 import numpy as np
@@ -841,56 +728,54 @@ import matplotlib.pyplot as plt
 np.set_printoptions(suppress=True)
 ```
 
-First, we create a Python class to compute  the objects that comprise a competitive equilibrium
-with sequential trading of one-period Arrow securities.
+首先，我们创建一个Python类来计算包含单期Arrow证券连续交易的竞争均衡对象。
 
-In addition to infinite-horizon economies, the code is set up to handle finite-horizon economies indexed by horizon $T$.
+除了无限期限经济外，该代码还可以处理以期限$T$为索引的有限期限经济。
 
-We'll study examples of  finite horizon economies after we first  look at  some infinite-horizon economies.
+在我们先看一些无限期限经济的例子之前，我们将研究一些有限期限经济的例子。
 
 ```{code-cell} ipython3
 class RecurCompetitive:
     """
-    A class that represents a recursive competitive economy
-    with one-period Arrow securities.
+    表示具有单期Arrow证券的递归竞争经济的类。
     """
 
     def __init__(self,
-                 s,        # state vector
-                 P,        # transition matrix
-                 ys,       # endowments ys = [y1, y2, .., yI]
-                 γ=0.5,    # risk aversion
-                 β=0.98,   # discount rate
-                 T=None):  # time horizon, none if infinite
+                 s,        # 状态向量
+                 P,        # 转移矩阵
+                 ys,       # 禀赋 ys = [y1, y2, .., yI]
+                 γ=0.5,    # 风险厌恶
+                 β=0.98,   # 贴现率
+                 T=None):  # 时间范围，无限期则为none
 
-        # preference parameters
+        # 偏好参数
         self.γ = γ
         self.β = β
 
-        # variables dependent on state
+        # 依赖于状态的变量
         self.s = s
         self.P = P
         self.ys = ys
         self.y = np.sum(ys, 1)
 
-        # dimensions
+        # 维度
         self.n, self.K = ys.shape
 
-        # compute pricing kernel
+        # 计算定价核
         self.Q = self.pricing_kernel()
 
-        # compute price of risk-free one-period bond
+        # 计算无风险一期债券价格
         self.PRF = self.price_risk_free_bond()
 
-        # compute risk-free rate
+        # 计算无风险利率
         self.R = self.risk_free_rate()
 
-        # V = [I - Q]^{-1} (infinite case)
+        # V = [I - Q]^{-1} (无限期情况)
         if T is None:
             self.T = None
             self.V = np.empty((1, n, n))
             self.V[0] = np.linalg.inv(np.eye(n) - self.Q)
-        # V = [I + Q + Q^2 + ... + Q^T] (finite case)
+        # V = [I + Q + Q^2 + ... + Q^T] (有限期情况)
         else:
             self.T = T
             self.V = np.empty((T+1, n, n))
@@ -901,21 +786,21 @@ class RecurCompetitive:
                 Qt = Qt.dot(self.Q)
                 self.V[t] = self.V[t-1] + Qt
 
-        # natural debt limit
+        # 自然债务限制
         self.A = self.V[-1] @ ys
 
     def u(self, c):
-        "The CRRA utility"
+        "CRRA效用函数"
 
         return c ** (1 - self.γ) / (1 - self.γ)
 
     def u_prime(self, c):
-        "The first derivative of CRRA utility"
+        "CRRA效用函数的一阶导数"
 
         return c ** (-self.γ)
 
     def pricing_kernel(self):
-        "Compute the pricing kernel matrix Q"
+        "计算定价核矩阵Q"
 
         c = self.y
 
@@ -931,17 +816,17 @@ class RecurCompetitive:
         return Q
 
     def wealth_distribution(self, s0_idx):
-        "Solve for wealth distribution α"
+        "求解财富分布α"
 
-        # set initial state
+        # 设置初始状态
         self.s0_idx = s0_idx
 
-        # simplify notations
+        # 简化符号
         n = self.n
         Q = self.Q
         y, ys = self.y, self.ys
 
-        # row of V corresponding to s0
+        # V对应s0的行
         Vs0 = self.V[-1, s0_idx, :]
         α = Vs0 @ self.ys / (Vs0 @ self.y)
 
@@ -950,7 +835,7 @@ class RecurCompetitive:
         return α
 
     def continuation_wealths(self):
-        "Given α, compute the continuation wealths ψ"
+        "给定α，计算延续财富ψ"
 
         diff = np.empty((n, K))
         for k in range(K):
@@ -962,7 +847,7 @@ class RecurCompetitive:
         return ψ
 
     def price_risk_free_bond(self):
-        "Give Q, compute price of one-period risk free bond"
+        "给定Q，计算一期无风险债券价格"
 
         PRF = np.sum(self.Q, 0)
         self.PRF = PRF
@@ -970,7 +855,7 @@ class RecurCompetitive:
         return PRF
 
     def risk_free_rate(self):
-        "Given Q, compute one-period gross risk-free interest rate R"
+        "给定Q，计算一期无风险利率R"
 
         R = np.sum(self.Q, 0)
         R = np.reciprocal(R)
@@ -979,17 +864,17 @@ class RecurCompetitive:
         return R
 
     def value_functionss(self):
-        "Given α, compute the optimal value functions J in equilibrium"
+        "给定α，计算均衡中的最优价值函数J"
 
         n, T = self.n, self.T
         β = self.β
         P = self.P
 
-        # compute (I - βP)^(-1) in infinite case
+        # 计算无限期情况下的(I - βP)^(-1)
         if T is None:
             P_seq = np.empty((1, n, n))
             P_seq[0] = np.linalg.inv(np.eye(n) - β * P)
-        # and (I + βP + ... + β^T P^T) in finite case
+        # 以及有限期情况下的(I + βP + ... + β^T P^T)
         else:
             P_seq = np.empty((T+1, n, n))
             P_seq[0] = np.eye(n)
@@ -999,7 +884,7 @@ class RecurCompetitive:
                 Pt = Pt.dot(P)
                 P_seq[t] = P_seq[t-1] + Pt * β ** t
 
-        # compute the matrix [u(α_1 y), ..., u(α_K, y)]
+        # 计算矩阵[u(α_1 y), ..., u(α_K, y)]
         flow = np.empty((n, K))
         for k in range(K):
             flow[:, k] = self.u(self.α[k] * self.y)
@@ -1011,19 +896,19 @@ class RecurCompetitive:
         return J
 ```
 
-## Examples
+## 示例
 
-We'll use our code to construct equilibrium objects in several example economies.
+我们将使用代码在几个示例经济中构建均衡对象。
 
-Our first several examples will be infinite horizon economies.
+我们的前几个示例将是无限期限经济。
 
-Our final example will be a finite horizon economy.
+我们的最后一个示例将是有限期限经济。
 
-### Example 1
+### 示例 1
 
-Please read the preceding class for default parameter values and the  following Python code for the fundamentals of the economy.
+请阅读前面课程中的默认参数值以及以下 Python 代码中的经济基本要素。
 
-Here goes.
+开始。
 
 ```{code-cell} ipython3
 # dimensions
@@ -1046,52 +931,52 @@ ex1 = RecurCompetitive(s, P, ys)
 ```
 
 ```{code-cell} ipython3
-# endowments
+# 禀赋
 ex1.ys
 ```
 
 ```{code-cell} ipython3
-# pricing kernal
+# 定价核
 ex1.Q
 ```
 
 ```{code-cell} ipython3
-# Risk free rate R
+# 无风险利率 R
 ex1.R
 ```
 
 ```{code-cell} ipython3
-# natural debt limit, A = [A1, A2, ..., AI]
+# 自然债务限制，A = [A1, A2, ..., AI]
 ex1.A
 ```
 
 ```{code-cell} ipython3
-# when the initial state is state 1
+# 当初始状态为状态1时
 print(f'α = {ex1.wealth_distribution(s0_idx=0)}')
 print(f'ψ = \n{ex1.continuation_wealths()}')
 print(f'J = \n{ex1.value_functionss()}')
 ```
 
 ```{code-cell} ipython3
-# when the initial state is state 2
+# 当初始状态为状态2时
 print(f'α = {ex1.wealth_distribution(s0_idx=1)}')
 print(f'ψ = \n{ex1.continuation_wealths()}')
 print(f'J = \n{ex1.value_functionss()}')
 ```
 
-### Example 2
+### 示例 2
 
 ```{code-cell} ipython3
-# dimensions
+# 维度
 K, n = 2, 2
 
-# states
+# 状态
 s = np.array([1, 2])
 
-# transition
+# 转移
 P = np.array([[.5, .5], [.5, .5]])
 
-# endowments
+# 禀赋
 ys = np.empty((n, K))
 ys[:, 0] = 1.5         # y1
 ys[:, 1] = s           # y2
@@ -1102,25 +987,25 @@ ex2 = RecurCompetitive(s, P, ys)
 ```
 
 ```{code-cell} ipython3
-# endowments
+# 禀赋
 
 print("ys = \n", ex2.ys)
 
-# pricing kernal
+# 定价核
 print ("Q = \n", ex2.Q)
 
-# Risk free rate R
+# 无风险利率 R
 print("R = ", ex2.R)
 ```
 
 ```{code-cell} ipython3
-# pricing kernal
+# 定价核
 ex2.Q
 ```
 
-Note that the pricing kernal in example economies 1 and 2 differ.
+请注意示例经济1和2中的定价核心是不同的。
 
-This comes from differences in the aggregate endowments in state 1 and 2 in example 1.
+这源于示例1中状态1和状态2的总体禀赋的差异。
 
 ```{code-cell} ipython3
 ex2.β * ex2.u_prime(3.5) / ex2.u_prime(2.5) * ex2.P[0,1]
@@ -1130,46 +1015,44 @@ ex2.β * ex2.u_prime(3.5) / ex2.u_prime(2.5) * ex2.P[0,1]
 ex2.β * ex2.u_prime(2.5) / ex2.u_prime(3.5) * ex2.P[1,0]
 ```
 
-
-
 ```{code-cell} ipython3
-# Risk free rate R
+# 无风险利率 R
 ex2.R
 ```
 
 ```{code-cell} ipython3
-# natural debt limit, A = [A1, A2, ..., AI]
+# 自然债务限制，A = [A1, A2, ..., AI]
 ex2.A
 ```
 
 ```{code-cell} ipython3
-# when the initial state is state 1
+# 当初始状态为状态1时
 print(f'α = {ex2.wealth_distribution(s0_idx=0)}')
 print(f'ψ = \n{ex2.continuation_wealths()}')
 print(f'J = \n{ex2.value_functionss()}')
 ```
 
 ```{code-cell} ipython3
-# when the initial state is state 1
+# 当初始状态为状态1时
 print(f'α = {ex2.wealth_distribution(s0_idx=1)}')
 print(f'ψ = \n{ex2.continuation_wealths()}')
 print(f'J = \n{ex2.value_functionss()}')
 ```
 
-### Example 3
+### 示例 3
 
 ```{code-cell} ipython3
-# dimensions
+# 维度
 K, n = 2, 2
 
-# states
+# 状态
 s = np.array([1, 2])
 
-# transition
+# 转移
 λ = 0.9
 P = np.array([[1-λ, λ], [0, 1]])
 
-# endowments
+# 禀赋
 ys = np.empty((n, K))
 ys[:, 0] = [1, 0]         # y1
 ys[:, 1] = [0, 1]         # y2
@@ -1180,49 +1063,49 @@ ex3 = RecurCompetitive(s, P, ys)
 ```
 
 ```{code-cell} ipython3
-# endowments
+# 禀赋
 
 print("ys = ", ex3.ys)
 
-# pricing kernel
+# 定价核
 print ("Q = ", ex3.Q)
 
-# Risk free rate R
+# 无风险利率 R
 print("R = ", ex3.R)
 ```
 
 ```{code-cell} ipython3
-# pricing kernel
+# 定价核
 ex3.Q
 ```
 
 ```{code-cell} ipython3
-# natural debt limit, A = [A1, A2, ..., AI]
+# 自然债务限制，A = [A1, A2, ..., AI]
 ex3.A
 ```
 
-Note that the natural debt limit for agent $1$ in state $2$ is $0$.
+注意代理人$1$在状态$2$下的自然债务限制为$0$。
 
 ```{code-cell} ipython3
-# when the initial state is state 1
+# 当初始状态为状态1时
 print(f'α = {ex3.wealth_distribution(s0_idx=0)}')
 print(f'ψ = \n{ex3.continuation_wealths()}')
 print(f'J = \n{ex3.value_functionss()}')
 ```
 
 ```{code-cell} ipython3
-# when the initial state is state 1
+# 当初始状态为状态1时
 print(f'α = {ex3.wealth_distribution(s0_idx=1)}')
 print(f'ψ = \n{ex3.continuation_wealths()}')
 print(f'J = \n{ex3.value_functionss()}')
 ```
 
-For the specification of the Markov chain in example 3, let's take a look at how the equilibrium allocation changes as a function of transition probability $\lambda$.
+让我们看看在示例3的马尔可夫链规范中，均衡分配是如何随转移概率$\lambda$变化的。
 
 ```{code-cell} ipython3
 λ_seq = np.linspace(0, 0.99, 100)
 
-# prepare containers
+# 准备容器
 αs0_seq = np.empty((len(λ_seq), 2))
 αs1_seq = np.empty((len(λ_seq), 2))
 
@@ -1230,11 +1113,11 @@ for i, λ in enumerate(λ_seq):
     P = np.array([[1-λ, λ], [0, 1]])
     ex3 = RecurCompetitive(s, P, ys)
 
-    # initial state s0 = 1
+    # 初始状态 s0 = 1
     α = ex3.wealth_distribution(s0_idx=0)
     αs0_seq[i, :] = α
 
-    # initial state s0 = 2
+    # 初始状态 s0 = 2
     α = ex3.wealth_distribution(s0_idx=1)
     αs1_seq[i, :] = α
 ```
@@ -1246,30 +1129,30 @@ for i, αs_seq in enumerate([αs0_seq, αs1_seq]):
     for j in range(2):
         axs[i].plot(λ_seq, αs_seq[:, j], label=f'α{j+1}')
         axs[i].set_xlabel('λ')
-        axs[i].set_title(f'initial state s0 = {s[i]}')
+        axs[i].set_title(f'初始状态 s0 = {s[i]}')
         axs[i].legend()
 
 plt.show()
 ```
 
-### Example 4
+### 示例 4
 
 ```{code-cell} ipython3
-# dimensions
+# 维度
 K, n = 2, 3
 
-# states
+# 状态
 s = np.array([1, 2, 3])
 
-# transition
+# 转移
 λ = .9
 μ = .9
 δ = .05
 
-# prosperous, moderate, and recession states
+# 繁荣、适中和衰退状态
 P = np.array([[1-λ, λ, 0], [μ/2, μ, μ/2], [(1-δ)/2, (1-δ)/2, δ]])
 
-# endowments
+# 禀赋
 ys = np.empty((n, K))
 ys[:, 0] = [.25, .75, .2]       # y1
 ys[:, 1] = [1.25, .25, .2]      # y2
@@ -1280,44 +1163,43 @@ ex4 = RecurCompetitive(s, P, ys)
 ```
 
 ```{code-cell} ipython3
-# endowments
+# 禀赋
 print("ys = \n", ex4.ys)
 
-# pricing kernal
+# 定价核
 print ("Q = \n", ex4.Q)
 
-# Risk free rate R
+# 无风险利率 R
 print("R = ", ex4.R)
 
-# natural debt limit, A = [A1, A2, ..., AI]
+# 自然债务限制, A = [A1, A2, ..., AI]
 print("A = \n", ex4.A)
 
 print('')
 
 for i in range(1, 4):
-    # when the initial state is state i
-    print(f"when the initial state is state {i}")
+    # 当初始状态为状态i时
+    print(f"当初始状态为状态 {i}")
     print(f'α = {ex4.wealth_distribution(s0_idx=i-1)}')
     print(f'ψ = \n{ex4.continuation_wealths()}')
     print(f'J = \n{ex4.value_functionss()}\n')
 ```
 
+### 有限期限示例
 
-### Finite Horizon Example
-
-We now  revisit the economy defined in example 1, but set the time horizon to be $T=10$.
+我们现在重新审视示例1中定义的经济，但将时间期限设为$T=10$。
 
 ```{code-cell} ipython3
-# dimensions
+# 维度
 K, n = 2, 2
 
-# states
+# 状态
 s = np.array([0, 1])
 
-# transition
+# 转移矩阵
 P = np.array([[.5, .5], [.5, .5]])
 
-# endowments
+# 禀赋
 ys = np.empty((n, K))
 ys[:, 0] = 1 - s       # y1
 ys[:, 1] = s           # y2
@@ -1333,39 +1215,39 @@ ex1_finite.V[-1]
 ```
 
 ```{code-cell} ipython3
-# endowments
+# 禀赋
 ex1_finite.ys
 ```
 
 ```{code-cell} ipython3
-# pricing kernal
+# 定价核
 ex1_finite.Q
 ```
 
 ```{code-cell} ipython3
-# Risk free rate R
+# 无风险利率 R
 ex1_finite.R
 ```
 
-In the finite time horizon case, `ψ` and `J` are returned as sequences.
+在有限时间范围的情况下，`ψ`和`J`以序列形式返回。
 
-Components  are ordered from $t=T$ to $t=0$.
+各组成部分按照从$t=T$到$t=0$的顺序排列。
 
 ```{code-cell} ipython3
-# when the initial state is state 2
+# 当初始状态为状态2时
 print(f'α = {ex1_finite.wealth_distribution(s0_idx=0)}')
 print(f'ψ = \n{ex1_finite.continuation_wealths()}\n')
 print(f'J = \n{ex1_finite.value_functionss()}')
 ```
 
 ```{code-cell} ipython3
-# when the initial state is state 2
+# 当初始状态为状态2时
 print(f'α = {ex1_finite.wealth_distribution(s0_idx=1)}')
 print(f'ψ = \n{ex1_finite.continuation_wealths()}\n')
 print(f'J = \n{ex1_finite.value_functionss()}')
 ```
 
-We can check the results with finite horizon converges to the ones with infinite horizon as $T \rightarrow \infty$.
+我们可以检验当 $T \rightarrow \infty$ 时，有限期限的结果是否收敛到无限期限的结果。
 
 ```{code-cell} ipython3
 ex1_large = RecurCompetitive(s, P, ys, T=10000)
@@ -1385,3 +1267,4 @@ ex1.ψ, ex1_large.ψ[-1]
 ex1_large.value_functionss()
 ex1.J, ex1_large.J[-1]
 ```
+

@@ -18,16 +18,16 @@ kernelspec:
 </div>
 ```
 
-# Job Search V: Modeling Career Choice
+# 职业搜索 V：职业选择建模
 
 ```{index} single: Modeling; Career Choice
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -35,16 +35,15 @@ tags: [hide-output]
 ---
 !pip install quantecon
 ```
+## 概述
 
-## Overview
+接下来，我们研究一个关于职业和工作选择的计算问题。
 
-Next, we study a computational problem concerning career and job choices.
+这个模型最初由Derek Neal提出{cite}`Neal1999`。
 
-The model is originally due to Derek Neal {cite}`Neal1999`.
+本文的讲解借鉴了{cite}`Ljungqvist2012`第6.5节的内容。
 
-This exposition draws on the presentation in {cite}`Ljungqvist2012`, section 6.5.
-
-We begin with some imports:
+我们先导入一些包：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
@@ -57,44 +56,41 @@ from scipy.special import binom, beta
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from matplotlib import cm
 ```
+### 模型特点
 
-### Model Features
+* 职业和职业内的工作都选择以最大化预期贴现工资流。
+* 具有两个状态变量的无限期动态规划。
 
-* Career and job within career both chosen to maximize expected discounted wage flow.
-* Infinite horizon dynamic programming with two state variables.
+## 模型
 
-## Model
+在下文中，我们区分职业和工作，其中
 
-In what follows we distinguish between a career and a job, where
+* *职业*被理解为包含许多可能工作的一般领域，而
+* *工作*被理解为在特定公司的一个职位
 
-* a *career* is understood to be a general field encompassing many possible jobs, and
-* a *job*  is understood to be a position with a particular firm
+对于工人来说，工资可以分解为工作和职业的贡献
 
-For workers, wages can be decomposed into the contribution of job and career
+* $w_t = \theta_t + \epsilon_t$，其中
+  * $\theta_t$ 是在时间 t 职业的贡献
+  * $\epsilon_t$ 是在时间 t 工作的贡献
 
-* $w_t = \theta_t + \epsilon_t$, where
-  * $\theta_t$ is the contribution of career at time $t$
-  * $\epsilon_t$ is the contribution of the job at time $t$
+在时间 t 开始时，工人有以下选择
 
-At the start of time $t$, a worker has the following options
+* 保持当前的（职业，工作）组合 $(\theta_t, \epsilon_t)$
+  --- 以下简称为"原地不动"
+* 保持当前职业 $\theta_t$ 但重新选择工作 $\epsilon_t$
+  --- 以下简称为"新工作"
+* 同时重新选择职业 $\theta_t$ 和工作 $\epsilon_t$
+--- 以下简称"新生活"
 
-* retain a current (career, job) pair $(\theta_t, \epsilon_t)$
-  --- referred to hereafter as "stay put"
-* retain a current career $\theta_t$ but redraw a job $\epsilon_t$
-  --- referred to hereafter as "new job"
-* redraw both a career $\theta_t$ and a job $\epsilon_t$
-  --- referred to hereafter as "new life"
-
-Draws of $\theta$ and $\epsilon$ are independent of each other and
-past values, with
+$\theta$ 和 $\epsilon$ 的抽取彼此独立，且与过去的值无关，其中：
 
 * $\theta_t \sim F$
 * $\epsilon_t \sim G$
 
-Notice that the worker does not have the option to retain a job but redraw
-a career --- starting a new career always requires starting a new job.
+注意，工人没有保留工作但重新选择职业的选项 --- 开始新职业总是需要开始新工作。
 
-A young worker aims to maximize the expected sum of discounted wages
+年轻工人的目标是最大化折现工资的预期总和
 
 ```{math}
 :label: exw
@@ -102,19 +98,17 @@ A young worker aims to maximize the expected sum of discounted wages
 \mathbb{E} \sum_{t=0}^{\infty} \beta^t w_t
 ```
 
-subject to the choice restrictions specified above.
+受限于上述选择限制。
 
-Let $v(\theta, \epsilon)$ denote the value function, which is the
-maximum of {eq}`exw` overall feasible (career, job) policies, given the
-initial state $(\theta, \epsilon)$.
+令 $v(\theta, \epsilon)$ 表示价值函数，即在给定初始状态 $(\theta, \epsilon)$ 的情况下，所有可行的（职业，工作）策略中 {eq}`exw` 的最大值。
 
-The value function obeys
+价值函数满足
 
 $$
 v(\theta, \epsilon) = \max\{I, II, III\}
 $$
 
-where
+其中
 
 ```{math}
 :label: eyes
@@ -126,24 +120,20 @@ where
 \end{aligned}
 ```
 
-Evidently $I$, $II$ and $III$ correspond to "stay put", "new job" and "new life", respectively.
+显然 $I$、$II$ 和 $III$ 分别对应"原地不动"、"新工作"和"新生活"。
 
-### Parameterization
+### 参数化
 
-As in {cite}`Ljungqvist2012`, section 6.5, we will focus on a discrete version of the model, parameterized as follows:
+如同 {cite}`Ljungqvist2012` 第6.5节所述，我们将关注模型的离散版本，参数设置如下：
 
-* both $\theta$ and $\epsilon$ take values in the set
-  `np.linspace(0, B, grid_size)` --- an even grid of points between
-  $0$ and $B$ inclusive
+* $\theta$ 和 $\epsilon$ 的取值都在集合 `np.linspace(0, B, grid_size)` 中 --- 在 $0$ 和 $B$ 之间（包含端点）的均匀网格点
 * `grid_size = 50`
 * `B = 5`
 * `β = 0.95`
 
-The distributions $F$ and $G$ are discrete distributions
-generating draws from the grid points `np.linspace(0, B, grid_size)`.
+分布 $F$ 和 $G$ 是离散分布，从网格点 `np.linspace(0, B, grid_size)` 中生成抽样。
 
-A very useful family of discrete distributions is the Beta-binomial family,
-with probability mass function
+Beta-二项分布族是一个非常有用的离散分布族，其概率质量函数为
 
 $$
 p(k \,|\, n, a, b)
@@ -151,18 +141,17 @@ p(k \,|\, n, a, b)
 \qquad k = 0, \ldots, n
 $$
 
-Interpretation:
+解释：
+* 从形状参数为$(a, b)$的Beta分布中抽取$q$
+* 进行$n$次独立的二项试验，每次试验的成功概率为$q$
+* $p(k \,|\, n, a, b)$是在这$n$次试验中获得$k$次成功的概率
 
-* draw $q$ from a Beta distribution with shape parameters $(a, b)$
-* run $n$ independent binary trials, each with success probability $q$
-* $p(k \,|\, n, a, b)$ is the probability of $k$ successes in these $n$ trials
+优良特性：
 
-Nice properties:
+* 非常灵活的分布类别，包括均匀分布、对称单峰分布等
+* 仅有三个参数
 
-* very flexible class of distributions, including uniform, symmetric unimodal, etc.
-* only three parameters
-
-Here's a figure showing the effect on the pmf of different shape parameters when $n=50$.
+下图展示了当$n=50$时，不同形状参数对概率质量函数的影响。
 
 ```{code-cell} python3
 def gen_probs(n, a, b):
@@ -181,19 +170,17 @@ for a, b in zip(a_vals, b_vals):
 ax.legend()
 plt.show()
 ```
+## 实现
 
-## Implementation
-
-We will first create a class `CareerWorkerProblem` which will hold the
-default parameterizations of the model and an initial guess for the value function.
+我们首先创建一个类 `CareerWorkerProblem`，它将保存模型的默认参数化和价值函数的初始猜测。
 
 ```{code-cell} python3
 class CareerWorkerProblem:
 
     def __init__(self,
-                 B=5.0,          # Upper bound
-                 β=0.95,         # Discount factor
-                 grid_size=50,   # Grid size
+                 B=5.0,          # 上界
+                 β=0.95,         # 贴现因子
+                 grid_size=50,   # 网格大小
                  F_a=1,
                  F_b=1,
                  G_a=1,
@@ -201,33 +188,29 @@ class CareerWorkerProblem:
 
         self.β, self.grid_size, self.B = β, grid_size, B
 
-        self.θ = np.linspace(0, B, grid_size)     # Set of θ values
-        self.ϵ = np.linspace(0, B, grid_size)     # Set of ϵ values
+        self.θ = np.linspace(0, B, grid_size)     # θ值集合
+        self.ϵ = np.linspace(0, B, grid_size)     # ϵ值集合
 
         self.F_probs = BetaBinomial(grid_size - 1, F_a, F_b).pdf()
         self.G_probs = BetaBinomial(grid_size - 1, G_a, G_b).pdf()
         self.F_mean = np.sum(self.θ * self.F_probs)
         self.G_mean = np.sum(self.ϵ * self.G_probs)
 
-        # Store these parameters for str and repr methods
+        # 存储这些参数用于str和repr方法
         self._F_a, self._F_b = F_a, F_b
         self._G_a, self._G_b = G_a, G_b
 ```
+以下函数接收一个`CareerWorkerProblem`实例，并返回相应的贝尔曼算子$T$和贪婪策略函数。
 
-The following function takes an instance of `CareerWorkerProblem` and returns
-the corresponding Bellman operator $T$ and the greedy policy function.
-
-In this model, $T$ is defined by $Tv(\theta, \epsilon) = \max\{I, II, III\}$, where
-$I$, $II$ and $III$ are as given in {eq}`eyes`.
+在此模型中，$T$由$Tv(\theta, \epsilon) = \max\{I, II, III\}$定义，其中$I$、$II$和$III$如{eq}`eyes`所示。
 
 ```{code-cell} python3
 def operator_factory(cw, parallel_flag=True):
 
     """
-    Returns jitted versions of the Bellman operator and the
-    greedy policy function
+    返回经过jit编译的贝尔曼算子和贪婪策略函数
 
-    cw is an instance of ``CareerWorkerProblem``
+    cw是一个``CareerWorkerProblem``实例
     """
 
     θ, ϵ, β = cw.θ, cw.ϵ, cw.β
@@ -236,22 +219,22 @@ def operator_factory(cw, parallel_flag=True):
 
     @jit(parallel=parallel_flag)
     def T(v):
-        "The Bellman operator"
+        "贝尔曼算子"
 
         v_new = np.empty_like(v)
 
         for i in prange(len(v)):
             for j in prange(len(v)):
-                v1 = θ[i] + ϵ[j] + β * v[i, j]                    # Stay put
-                v2 = θ[i] + G_mean + β * v[i, :] @ G_probs        # New job
-                v3 = G_mean + F_mean + β * F_probs @ v @ G_probs  # New life
+                v1 = θ[i] + ϵ[j] + β * v[i, j]                    # 保持现状
+                v2 = θ[i] + G_mean + β * v[i, :] @ G_probs        # 新工作
+                v3 = G_mean + F_mean + β * F_probs @ v @ G_probs  # 新生活
                 v_new[i, j] = max(v1, v2, v3)
 
         return v_new
 
     @jit
     def get_greedy(v):
-        "Computes the v-greedy policy"
+        "计算v-贪婪策略"
 
         σ = np.empty(v.shape)
 
@@ -272,9 +255,7 @@ def operator_factory(cw, parallel_flag=True):
 
     return T, get_greedy
 ```
-
-Lastly, `solve_model` will  take an instance of `CareerWorkerProblem` and
-iterate using the Bellman operator to find the fixed point of the Bellman equation.
+最后，`solve_model`将接收一个`CareerWorkerProblem`实例，并使用贝尔曼算子进行迭代，以找到贝尔曼方程的不动点。
 
 ```{code-cell} python3
 def solve_model(cw,
@@ -286,8 +267,8 @@ def solve_model(cw,
 
     T, _ = operator_factory(cw, parallel_flag=use_parallel)
 
-    # Set up loop
-    v = np.full((cw.grid_size, cw.grid_size), 100.)  # Initial guess
+    # 设置循环
+    v = np.full((cw.grid_size, cw.grid_size), 100.)  # 初始猜测
     i = 0
     error = tol + 1
 
@@ -307,8 +288,7 @@ def solve_model(cw,
 
     return v_new
 ```
-
-Here's the solution to the model -- an approximate value function
+这是模型的解决方案 -- 一个近似值函数
 
 ```{code-cell} python3
 cw = CareerWorkerProblem()
@@ -329,8 +309,7 @@ ax.set(xlabel='θ', ylabel='ϵ', zlim=(150, 200))
 ax.view_init(ax.elev, 225)
 plt.show()
 ```
-
-And here is the optimal policy
+这就是最优策略
 
 ```{code-cell} python3
 fig, ax = plt.subplots(figsize=(6, 6))
@@ -339,43 +318,40 @@ lvls = (0.5, 1.5, 2.5, 3.5)
 ax.contourf(tg, eg, greedy_star.T, levels=lvls, cmap=cm.winter, alpha=0.5)
 ax.contour(tg, eg, greedy_star.T, colors='k', levels=lvls, linewidths=2)
 ax.set(xlabel='θ', ylabel='ϵ')
-ax.text(1.8, 2.5, 'new life', fontsize=14)
-ax.text(4.5, 2.5, 'new job', fontsize=14, rotation='vertical')
-ax.text(4.0, 4.5, 'stay put', fontsize=14)
+ax.text(1.8, 2.5, '新生活', fontsize=14)
+ax.text(4.5, 2.5, '新工作', fontsize=14, rotation='vertical')
+ax.text(4.0, 4.5, '维持现状', fontsize=14)
 plt.show()
 ```
+解释：
 
-Interpretation:
+* 如果工作和职业都很差或一般，工人会尝试新的工作和新的职业。
+* 如果职业足够好，工人会保持这个职业，并尝试新的工作直到找到一个足够好的工作。
+* 如果工作和职业都很好，工人会保持现状。
 
-* If both job and career are poor or mediocre, the worker will experiment with a new job and new career.
-* If career is sufficiently good, the worker will hold it and experiment with new jobs until a sufficiently good one is found.
-* If both job and career are good, the worker will stay put.
+注意，工人总是会保持一个足够好的职业，但不一定会保持即使是最高薪的工作。
 
-Notice that the worker will always hold on to a sufficiently good career, but not necessarily hold on to even the best paying job.
+原因是高终身工资需要这两个变量都很大，而且
+工人不能在不换工作的情况下换职业。
 
-The reason is that high lifetime wages require both variables to be large, and
-the worker cannot change careers without changing jobs.
+* 有时必须牺牲一个好工作来转向一个更好的职业。
 
-* Sometimes a good job must be sacrificed in order to change to a better career.
-
-## Exercises
+## 练习
 
 ```{exercise-start}
 :label: career_ex1
 ```
 
-Using the default parameterization in the class `CareerWorkerProblem`,
-generate and plot typical sample paths for $\theta$ and $\epsilon$
-when the worker follows the optimal policy.
-
-In particular, modulo randomness, reproduce the following figure (where the horizontal axis represents time)
+使用 `CareerWorkerProblem` 类中的默认参数设置，
+当工人遵循最优策略时，生成并绘制 $\theta$ 和 $\epsilon$ 的典型样本路径。
+特别是，除了随机性之外，复现以下图形（其中横轴表示时间）
 
 ```{figure} /_static/lecture_specific/career/career_solutions_ex1_py.png
 ```
 
 ```{hint}
 :class: dropdown
-To generate the draws from the distributions $F$ and $G$, use `quantecon.random.draw()`.
+要从分布$F$和$G$中生成抽样，请使用`quantecon.random.draw()`。
 ```
 
 ```{exercise-end}
@@ -386,11 +362,9 @@ To generate the draws from the distributions $F$ and $G$, use `quantecon.random.
 :class: dropdown
 ```
 
-Simulate job/career paths.
+模拟工作/职业路径。
 
-In reading the code, recall that `optimal_policy[i, j]` = policy at
-$(\theta_i, \epsilon_j)$ = either 1, 2 or 3; meaning 'stay put',
-'new job' and 'new life'.
+在阅读代码时，请注意`optimal_policy[i, j]` = 在$(\theta_i, \epsilon_j)$处的策略 = 1、2或3；分别表示'保持现状'、'新工作'和'新生活'。
 
 ```{code-cell} python3
 F = np.cumsum(cw.F_probs)
@@ -404,13 +378,13 @@ def gen_path(optimal_policy, F, G, t=20):
     θ_index = []
     ϵ_index = []
     for t in range(t):
-        if optimal_policy[i, j] == 1:       # Stay put
+        if optimal_policy[i, j] == 1:       # 保持现状
             pass
 
-        elif greedy_star[i, j] == 2:     # New job
+        elif greedy_star[i, j] == 2:     # 新工作
             j = qe.random.draw(G)
 
-        else:                            # New life
+        else:                            # 新生活
             i, j = qe.random.draw(F), qe.random.draw(G)
         θ_index.append(i)
         ϵ_index.append(j)
@@ -427,43 +401,38 @@ for ax in axes:
 plt.legend()
 plt.show()
 ```
-
 ```{solution-end}
 ```
 
 ```{exercise}
 :label: career_ex2
 
-Let's now consider how long it takes for the worker to settle down to a
-permanent job, given a starting point of $(\theta, \epsilon) = (0, 0)$.
+现在让我们考虑从起点$(\theta, \epsilon) = (0, 0)$开始，工人需要多长时间才能找到一份永久性工作。
 
-In other words, we want to study the distribution of the random variable
+换句话说，我们要研究这个随机变量的分布
 
 $$
-T^* := \text{the first point in time from which the worker's job no longer changes}
+T^* := \text{工人的工作不再改变的第一个时间点}
 $$
 
-Evidently, the worker's job becomes permanent if and only if $(\theta_t, \epsilon_t)$ enters the
-"stay put" region of $(\theta, \epsilon)$ space.
+显然，当且仅当$(\theta_t, \epsilon_t)$进入$(\theta, \epsilon)$空间的"保持不变"区域时，工人的工作才会变成永久性的。
 
-Letting $S$ denote this region, $T^*$ can be expressed as the
-first passage time to $S$ under the optimal policy:
+令$S$表示这个区域，$T^*$可以表示为在最优策略下首次到达$S$的时间：
 
 $$
 T^* := \inf\{t \geq 0 \,|\, (\theta_t, \epsilon_t) \in S\}
 $$
 
-Collect 25,000 draws of this random variable and compute the median (which should be about 7).
+收集这个随机变量的25,000个样本并计算中位数（应该约为7）。
 
-Repeat the exercise with $\beta=0.99$ and interpret the change.
+用$\beta=0.99$重复这个练习并解释变化。
 ```
 
 ```{solution-start} career_ex2
 :class: dropdown
 ```
 
-The median for the original parameterization can be computed as follows
-
+原始参数下的中位数可以按如下方式计算
 ```{code-cell} python3
 cw = CareerWorkerProblem()
 F = np.cumsum(cw.F_probs)
@@ -477,11 +446,11 @@ def passage_time(optimal_policy, F, G):
     t = 0
     i = j = 0
     while True:
-        if optimal_policy[i, j] == 1:    # Stay put
+        if optimal_policy[i, j] == 1:    # 保持不变
             return t
-        elif optimal_policy[i, j] == 2:  # New job
+        elif optimal_policy[i, j] == 2:  # 新工作
             j = qe.random.draw(G)
-        else:                            # New life
+        else:                            # 新生活
             i, j  = qe.random.draw(F), qe.random.draw(G)
         t += 1
 
@@ -494,14 +463,11 @@ def median_time(optimal_policy, F, G, M=25000):
 
 median_time(greedy_star, F, G)
 ```
+要计算中位数时使用 $\beta=0.99$ 而不是默认值 $\beta=0.95$，请将 `cw = CareerWorkerProblem()` 替换为 `cw = CareerWorkerProblem(β=0.99)`。
 
-To compute the median with $\beta=0.99$ instead of the default
-value $\beta=0.95$, replace `cw = CareerWorkerProblem()` with
-`cw = CareerWorkerProblem(β=0.99)`.
+这些中位数会受随机性影响，但应该分别约为7和14。
 
-The medians are subject to randomness but should be about 7 and 14 respectively.
-
-Not surprisingly, more patient workers will wait longer to settle down to their final job.
+不出所料，更有耐心的工人会等待更长时间才会安定在最终的工作岗位上。
 
 ```{solution-end}
 ```
@@ -510,15 +476,14 @@ Not surprisingly, more patient workers will wait longer to settle down to their 
 ```{exercise}
 :label: career_ex3
 
-Set the parameterization to `G_a = G_b = 100` and generate a new optimal policy
-figure -- interpret.
+将参数设置为 `G_a = G_b = 100` 并生成一个新的最优策略图 -- 解释。
 ```
 
 ```{solution-start} career_ex3
 :class: dropdown
 ```
 
-Here is one solution
+这是一个解决方案
 
 ```{code-cell} python3
 cw = CareerWorkerProblem(G_a=100, G_b=100)
@@ -532,16 +497,12 @@ lvls = (0.5, 1.5, 2.5, 3.5)
 ax.contourf(tg, eg, greedy_star.T, levels=lvls, cmap=cm.winter, alpha=0.5)
 ax.contour(tg, eg, greedy_star.T, colors='k', levels=lvls, linewidths=2)
 ax.set(xlabel='θ', ylabel='ϵ')
-ax.text(1.8, 2.5, 'new life', fontsize=14)
-ax.text(4.5, 1.5, 'new job', fontsize=14, rotation='vertical')
-ax.text(4.0, 4.5, 'stay put', fontsize=14)
+ax.text(1.8, 2.5, '新生活', fontsize=14)
+ax.text(4.5, 1.5, '新工作', fontsize=14, rotation='vertical')
+ax.text(4.0, 4.5, '保持现状', fontsize=14)
 plt.show()
 ```
-
-In the new figure, you see that the region for which the worker
-stays put has grown because the distribution for $\epsilon$
-has become more concentrated around the mean, making high-paying jobs
-less realistic.
+在新图中，你可以看到工人选择留在原地的区域变大了，这是因为 $\epsilon$ 的分布更加集中在均值附近，使得高薪工作的可能性降低了。
 
 ```{solution-end}
 ```

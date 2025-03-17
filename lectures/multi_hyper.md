@@ -18,159 +18,150 @@ kernelspec:
 </div>
 ```
 
-# Multivariate Hypergeometric Distribution
+# 多元超几何分布
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-This lecture describes how an  administrator deployed a **multivariate hypergeometric distribution** in order to access the fairness of a procedure for awarding research grants.
+本讲解介绍了一位管理者如何运用**多元超几何分布**来评估研究基金分配程序的公平性。
 
-In the lecture we'll learn about
+在本讲中，我们将学习：
 
-* properties of the multivariate hypergeometric distribution
-* first and second moments of  a multivariate hypergeometric distribution
-* using a Monte Carlo simulation of a multivariate normal distribution to evaluate the quality of a normal approximation
-* the administrator's problem and why the multivariate hypergeometric distribution is the right tool
+* 多元超几何分布的性质
+* 多元超几何分布的一阶和二阶矩
 
-## The Administrator's Problem
+* 使用多元正态分布的蒙特卡洛模拟来评估正态近似的质量
+* 管理员的问题以及为什么多元超几何分布是正确的工具
 
-An administrator in charge of allocating research grants is in the following situation.
+## 管理员的问题
 
-To help us forget details that are none of our business here and to protect the anonymity of the administrator and the subjects, we call
-research proposals **balls** and continents of residence of authors of a proposal a **color**.
+一位负责分配研究基金的管理员面临以下情况。
 
-There are $K_i$ balls (proposals) of color $i$.
+为了帮助我们忽略与此无关的细节，并保护管理员和相关人员的匿名性，我们将研究提案称为**球**，将提案作者所在的大洲称为**颜色**。
 
-There are $c$ distinct colors (continents of residence).
+有 $K_i$ 个颜色为 $i$ 的球（提案）。
 
-Thus, $i = 1, 2, \ldots, c$
+有 $c$ 种不同的颜色（大洲）。
 
-So there is a total of $N = \sum_{i=1}^c K_i$ balls.
+因此，$i = 1, 2, \ldots, c$
 
-All $N$ of these balls are placed in an urn.
+所以总共有 $N = \sum_{i=1}^c K_i$ 个球。
 
-Then $n$ balls are drawn randomly.
+所有这 $N$ 个球被放入一个箱子中。
 
-The selection procedure is supposed to be **color blind**  meaning that **ball quality**, a random variable that is supposed to be  independent of **ball color**, governs whether a ball is drawn.
+然后随机抽取 $n$ 个球。
 
-Thus, the selection procedure is supposed randomly to draw $n$  balls from the urn.
+选拔程序应该是**色盲的**，这意味着**球的质量**这一随机变量应该与**球的颜色**无关，决定一个球是否被抽中。
 
-The $n$ balls drawn represent  successful proposals and are  awarded research funds.
+因此，选拔程序应该从箱子中随机抽取$n$个球。
 
-The remaining $N-n$ balls receive no research funds.
+这$n$个被抽中的球代表成功的提案，将获得研究资金。
 
-### Details of the Awards Procedure Under Study
+剩余的$N-n$个球不会获得研究资金。
 
-Let $k_i$ be the number of balls of color $i$ that are drawn.
+### 研究中的奖励程序细节
 
-Things have to add up so $\sum_{i=1}^c k_i = n$.
+令$k_i$为抽取的颜色$i$的球的数量。
 
-Under the hypothesis that the selection process judges proposals on their quality and that quality is independent of continent of the author's continent of residence, the administrator views the outcome of the selection procedure as a random vector
+总数必须相加，所以$\sum_{i=1}^c k_i = n$。
+
+在假设选拔过程根据提案质量进行判断，且质量与作者所在大洲无关的前提下，管理者将选拔程序的结果视为一个随机向量
 
 $$
 X = \begin{pmatrix} k_1 \cr k_2 \cr \vdots \cr k_c \end{pmatrix}.
 $$
 
-To evaluate whether the selection procedure is **color blind** the administrator wants to  study whether the particular realization of $X$ drawn can plausibly
-be said to be a random draw from the probability distribution that is implied by the **color blind** hypothesis.
+为了评估选择程序是否**色盲**，管理员想研究所抽取的$X$的特定实现是否可以合理地被认为是从**色盲**假设所暗示的概率分布中随机抽取的。
 
-The appropriate probability distribution is the one described [here](https://en.wikipedia.org/wiki/Hypergeometric_distribution).
+适当的概率分布是[这里](https://en.wikipedia.org/wiki/Hypergeometric_distribution)所描述的分布。
 
-Let's now instantiate the administrator's problem, while continuing to use the colored balls metaphor.
+让我们现在具体化管理员的问题，同时继续使用彩色球的比喻。
 
-The administrator has an urn with $N = 238$ balls.
+管理员有一个装有$N = 238$个球的罐子。
 
-157 balls are blue, 11 balls are green, 46 balls are yellow, and 24 balls are black.
+157个球是蓝色的，11个球是绿色的，46个球是黄色的，24个球是黑色的。
 
-So $(K_1, K_2, K_3, K_4) = (157 , 11 , 46 , 24)$ and $c = 4$.
+所以$(K_1, K_2, K_3, K_4) = (157 , 11 , 46 , 24)$且$c = 4$。
 
-15 balls are drawn without replacement.
+不放回地抽取15个球。
 
-So $n = 15$.
+所以$n = 15$。
 
-The administrator wants to know the probability distribution of outcomes
+管理员想知道结果的概率分布
 
 $$
 X = \begin{pmatrix} k_1 \cr k_2 \cr \vdots \cr k_4 \end{pmatrix}.
 $$
 
-In particular, he wants to know whether a particular
-outcome - in the form of a $4 \times 1$ vector of integers recording the
-numbers of blue, green, yellow, and black balls, respectively, - contains
-evidence against the hypothesis that the selection process is *fair*, which
-here means  *color blind* and truly are random draws without replacement from
-the population of $N$ balls.
+特别地，他想知道一个特定的
 
-The right tool for the administrator's job is the **multivariate hypergeometric distribution**.
+结果 - 以一个 $4 \times 1$ 的整数向量形式记录蓝色、绿色、黄色和黑色球的数量 - 包含了反对选择过程是*公平*的证据，这里*公平*意味着*色盲*且确实是从 $N$ 个球的总体中进行的无放回随机抽取。
 
-### Multivariate Hypergeometric Distribution
+管理员的正确工具是**多元超几何分布**。
 
-Let's start with some imports.
+### 多元超几何分布
+
+让我们从一些导入开始。
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from scipy.special import comb
 from scipy.stats import normaltest
 from numba import jit, prange
 ```
 
-To recapitulate, we assume there are in total $c$ types of objects in an urn.
+总的来说，我们假设在一个坛子里总共有$c$种物品。
 
-If there are $K_{i}$ type $i$ object in the urn and we take
-$n$ draws at random without replacement, then the numbers of type
-$i$ objects in the sample $(k_{1},k_{2},\dots,k_{c})$
-has the multivariate hypergeometric distribution.
+如果坛子里有$K_{i}$个第$i$种物品，我们不放回地随机抽取$n$次，那么样本中第$i$种物品的数量$(k_{1},k_{2},\dots,k_{c})$服从多元超几何分布。
 
-Note again  that $N=\sum_{i=1}^{c} K_{i}$ is
-the total number of objects in the urn and $n=\sum_{i=1}^{c}k_{i}$.
+再次注意，$N=\sum_{i=1}^{c} K_{i}$是坛子中物品的总数，且$n=\sum_{i=1}^{c}k_{i}$。
 
-**Notation**
+**符号说明**
 
-We use the following notation for **binomial coefficients**: ${m \choose q} = \frac{m!}{(m-q)!}$.
+我们使用以下符号表示**二项式系数**：${m \choose q} = \frac{m!}{(m-q)!}$。
 
-The multivariate hypergeometric distribution has the following properties:
+多元超几何分布具有以下性质：
 
-**Probability mass function**:
+**概率质量函数**：
 
 $$
 \Pr \{X_{i}=k_{i} \  \forall i\} =
  \frac {\prod _{i=1}^{c}{\binom {K_{i}}{k_{i}}}}{\binom {N}{n}}
 $$
 
-**Mean**:
+**期望值**：
 
 $$
 {\displaystyle \operatorname {E} (X_{i})=n{\frac {K_{i}}{N}}}
 $$
 
-**Variances and covariances**:
+**方差和协方差**：
 
 $$
 {\displaystyle \operatorname {Var} (X_{i})=n{\frac {N-n}{N-1}}\;{\frac {K_{i}}{N}}\left(1-{\frac {K_{i}}{N}}\right)}
 $$
 
-$$
 {\displaystyle \operatorname {Cov} (X_{i},X_{j})=-n{\frac {N-n}{N-1}}\;{\frac {K_{i}}{N}}{\frac {K_{j}}{N}}}
 $$
 
-To do our work for us, we'll write an `Urn` class.
+为了帮我们完成工作，我们将编写一个`Urn`类。
 
 ```{code-cell} python3
 class Urn:
 
     def __init__(self, K_arr):
         """
-        Initialization given the number of each type i object in the urn.
+        根据坛子中每种类型i物体的数量进行初始化。
 
-        Parameters
+        参数
         ----------
         K_arr: ndarray(int)
-            number of each type i object.
+            每种类型i物体的数量。
         """
 
         self.K_arr = np.array(K_arr)
@@ -179,12 +170,12 @@ class Urn:
 
     def pmf(self, k_arr):
         """
-        Probability mass function.
+        概率质量函数。
 
-        Parameters
+        参数
         ----------
         k_arr: ndarray(int)
-            number of observed successes of each object.
+            每种物体观察到的成功次数。
         """
 
         K_arr, N = self.K_arr, self.N
@@ -201,21 +192,20 @@ class Urn:
 
     def moments(self, n):
         """
-        Compute the mean and variance-covariance matrix for
-        multivariate hypergeometric distribution.
+        计算多元超几何分布的均值和方差-协方差矩阵。
 
-        Parameters
+        参数
         ----------
         n: int
-            number of draws.
+            抽取次数。
         """
 
         K_arr, N, c = self.K_arr, self.N, self.c
 
-        # mean
+        # 均值
         μ = n * K_arr / N
 
-        # variance-covariance matrix
+        # 方差-协方差矩阵
         Σ = np.full((c, c), n * (N - n) / (N - 1) / N ** 2)
         for i in range(c-1):
             Σ[i, i] *= K_arr[i] * (N - K_arr[i])
@@ -229,18 +219,17 @@ class Urn:
 
     def simulate(self, n, size=1, seed=None):
         """
-        Simulate a sample from multivariate hypergeometric
-        distribution where at each draw we take n objects
-        from the urn without replacement.
+        从多元超几何分布中模拟样本，每次抽取时
+        从坛子中不放回地取出n个物体。
 
-        Parameters
+        参数
         ----------
         n: int
-            number of objects for each draw.
-        size: int(optional)
-            sample size.
-        seed: int(optional)
-            random seed.
+            每次抽取的物体数量。
+        size: int(可选)
+            样本大小。
+        seed: int(可选)
+            随机种子。
         """
 
         K_arr = self.K_arr
@@ -251,45 +240,39 @@ class Urn:
         return sample
 ```
 
-## Usage
+## 使用方法
 
-### First example
+### 第一个例子
 
-Apply this to an example from
-[wiki](https://en.wikipedia.org/wiki/Hypergeometric_distribution#Multivariate_hypergeometric_distribution):
+应用这个例子，来自[维基百科](https://en.wikipedia.org/wiki/Hypergeometric_distribution#Multivariate_hypergeometric_distribution)：
 
-Suppose there are 5 black, 10 white, and 15 red marbles in an urn. If
-six marbles are chosen without replacement, the probability that exactly
-two of each color are chosen is
+假设一个骨灰盒中有5个黑色、10个白色和15个红色的弹珠。如果不放回地抽取六个弹珠，抽到每种颜色各两个的概率是
 
 $$
-P(2{\text{ black}},2{\text{ white}},2{\text{ red}})={{{5 \choose 2}{10 \choose 2}{15 \choose 2}} \over {30 \choose 6}}=0.079575596816976
+P(2{\text{ 黑色}},2{\text{ 白色}},2{\text{ 红色}})={{{5 \choose 2}{10 \choose 2}{15 \choose 2}} \over {30 \choose 6}}=0.079575596816976
 $$
 
 ```{code-cell} python3
-# construct the urn
+# 构造骨灰盒
 K_arr = [5, 10, 15]
 urn = Urn(K_arr)
 ```
 
-Now use the Urn Class method `pmf` to compute the probability of the outcome $X = \begin{pmatrix} 2 & 2 & 2 \end{pmatrix}$
+现在使用 Urn 类的 `pmf` 方法来计算结果 $X = \begin{pmatrix} 2 & 2 & 2 \end{pmatrix}$ 的概率
 
 ```{code-cell} python3
-k_arr = [2, 2, 2] # array of number of observed successes
+k_arr = [2, 2, 2] # 观察到成功次数的数组
 urn.pmf(k_arr)
 ```
 
-We can use the code to compute probabilities of a list of possible outcomes by
-constructing  a 2-dimensional
-array `k_arr` and `pmf` will return an array of probabilities for
-observing each case.
+我们可以通过构建一个二维数组`k_arr`来计算一系列可能结果的概率，`pmf`将返回一个数组，包含观察到每种情况的概率。
 
 ```{code-cell} python3
 k_arr = [[2, 2, 2], [1, 3, 2]]
 urn.pmf(k_arr)
 ```
 
-Now let's compute the mean vector and variance-covariance matrix.
+现在让我们计算均值向量和方差-协方差矩阵。
 
 ```{code-cell} python3
 n = 6
@@ -304,52 +287,50 @@ n = 6
 Σ
 ```
 
-### Back to The Administrator's Problem
+### 回到管理员的问题
 
-Now let's turn to the grant administrator's problem.
+现在让我们回到拨款管理员的问题。
 
-Here the array of
-numbers of $i$ objects in the urn is
-$\left(157, 11, 46, 24\right)$.
+这里在箱子里的$i$个物品的数组是
+$\left(157, 11, 46, 24\right)$。
 
 ```{code-cell} python3
 K_arr = [157, 11, 46, 24]
 urn = Urn(K_arr)
 ```
 
-Let's compute the probability of the outcome $\left(10, 1, 4, 0 \right)$.
+让我们计算结果 $\left(10, 1, 4, 0 \right)$ 的概率。
 
 ```{code-cell} python3
 k_arr = [10, 1, 4, 0]
 urn.pmf(k_arr)
 ```
 
-We can compute probabilities of three possible outcomes by constructing a 3-dimensional
-arrays `k_arr` and utilizing the method `pmf` of the `Urn` class.
+我们可以通过构建一个3维数组`k_arr`并使用`Urn`类的`pmf`方法来计算三种可能结果的概率。
 
 ```{code-cell} python3
 k_arr = [[5, 5, 4 ,1], [10, 1, 2, 2], [13, 0, 2, 0]]
 urn.pmf(k_arr)
 ```
 
-Now let's compute the mean and variance-covariance matrix of $X$ when $n=6$.
+现在让我们计算当 $n=6$ 时 $X$ 的均值和方差-协方差矩阵。
 
 ```{code-cell} python3
-n = 6 # number of draws
+n = 6 # 抽取次数
 μ, Σ = urn.moments(n)
 ```
 
 ```{code-cell} python3
-# mean
+# 均值
 μ
 ```
 
 ```{code-cell} python3
-# variance-covariance matrix
+# 方差-协方差矩阵
 Σ
 ```
 
-We can simulate a large sample and verify that sample means and covariances closely approximate the population means and covariances.
+我们可以模拟一个大样本，并验证样本均值和协方差与总体均值和协方差非常接近。
 
 ```{code-cell} python3
 size = 10_000_000
@@ -357,20 +338,20 @@ sample = urn.simulate(n, size=size)
 ```
 
 ```{code-cell} python3
-# mean
+# 均值
 np.mean(sample, 0)
 ```
 
 ```{code-cell} python3
-# variance covariance matrix
+# 方差协方差矩阵
 np.cov(sample.T)
 ```
 
-Evidently, the sample means and covariances approximate their population counterparts well.
+显然，样本均值和协方差很好地近似了它们的总体对应值。
 
-### Quality of Normal Approximation
+### 正态近似的质量
 
-To judge the quality of a multivariate normal approximation to the multivariate hypergeometric distribution, we draw a large sample from a multivariate normal distribution with the mean vector  and covariance matrix for the corresponding multivariate hypergeometric distribution and compare the simulated distribution with the population multivariate hypergeometric distribution.
+为了判断多元正态分布对多元超几何分布的近似质量，我们从具有相应多元超几何分布的均值向量和协方差矩阵的多元正态分布中抽取大量样本，并将模拟分布与总体多元超几何分布进行比较。
 
 ```{code-cell} python3
 sample_normal = np.random.multivariate_normal(μ, Σ, size=size)
@@ -409,26 +390,26 @@ def count(vec1, vec2, n):
 c = urn.c
 fig, axs = plt.subplots(c, c, figsize=(14, 14))
 
-# grids for ploting the bivariate Gaussian
+# 用于绘制二元高斯分布的网格
 x_grid = np.linspace(-2, n+1, 100)
 y_grid = np.linspace(-2, n+1, 100)
 X, Y = np.meshgrid(x_grid, y_grid)
 
 for i in range(c):
-    axs[i, i].hist(sample[:, i], bins=np.arange(0, n, 1), alpha=0.5, density=True, label='hypergeom')
-    axs[i, i].hist(sample_normal[:, i], bins=np.arange(0, n, 1), alpha=0.5, density=True, label='normal')
+    axs[i, i].hist(sample[:, i], bins=np.arange(0, n, 1), alpha=0.5, density=True, label='超几何')
+    axs[i, i].hist(sample_normal[:, i], bins=np.arange(0, n, 1), alpha=0.5, density=True, label='正态')
     axs[i, i].legend()
     axs[i, i].set_title('$k_{' +str(i+1) +'}$')
     for j in range(c):
         if i == j:
             continue
 
-        # bivariate Gaussian density function
+        # 二元高斯密度函数
         Z = bivariate_normal(X, Y, μ, Σ, i, j)
         cs = axs[i, j].contour(X, Y, Z, 4, colors="black", alpha=0.6)
         axs[i, j].clabel(cs, inline=1, fontsize=10)
 
-        # empirical multivariate hypergeometric distrbution
+        # 经验多元超几何分布
         count_mat = count(sample[:, i], sample[:, j], n)
         axs[i, j].pcolor(count_mat.T/size, cmap='Blues')
         axs[i, j].set_title('$(k_{' +str(i+1) +'}, k_{' + str(j+1) + '})$')
@@ -436,37 +417,35 @@ for i in range(c):
 plt.show()
 ```
 
-The diagonal graphs plot the marginal distributions of $k_i$ for
-each $i$ using histograms.
+对角线图使用直方图绘制每个$k_i$的边际分布。
 
-Note the substantial differences between hypergeometric distribution and the approximating normal distribution.
+注意超几何分布与近似正态分布之间存在显著差异。
 
-The off-diagonal graphs plot the empirical joint distribution of
-$k_i$ and $k_j$ for each pair $(i, j)$.
+非对角线图为每对$(i, j)$绘制$k_i$和$k_j$的经验联合分布。
 
-The darker the blue, the more data points are contained in the corresponding cell.  (Note that $k_i$ is on the x-axis and $k_j$ is on the y-axis).
+蓝色越深，表示相应单元格中包含的数据点越多。（注意$k_i$在x轴上，$k_j$在y轴上）。
 
-The contour maps plot the bivariate Gaussian density function of $\left(k_i, k_j\right)$ with the population mean and covariance given by slices of $\mu$ and $\Sigma$ that we computed above.
+等高线图绘制了$\left(k_i, k_j\right)$的二元高斯密度函数，其中总体均值和协方差由我们上面计算的$\mu$和$\Sigma$的切片给出。
 
-Let's also test the normality for each $k_i$ using `scipy.stats.normaltest` that implements D’Agostino and Pearson's
-test that combines skew and kurtosis to form an omnibus test of normality.
+让我们也使用`scipy.stats.normaltest`对每个$k_i$进行正态性检验，该检验实现了D'Agostino和Pearson的检验方法，将偏度和峰度结合起来形成正态性的综合检验。
 
-The null hypothesis is that the sample follows normal distribution.
+原假设是样本服从正态分布。
 
-> `normaltest` returns an array of p-values associated with tests for each $k_i$ sample.
+> `normaltest` 返回与每个 $k_i$ 样本测试相关的p值数组。
 
 ```{code-cell} python3
 test_multihyper = normaltest(sample)
 test_multihyper.pvalue
 ```
 
-As we can see, all the p-values are almost $0$ and the null hypothesis is soundly rejected.
+正如我们所见，所有p值几乎都是 $0$，零假设被明确地拒绝。
 
-By contrast, the sample from normal distribution does not reject the null hypothesis.
+相比之下，来自正态分布的样本并不拒绝零假设。
 
 ```{code-cell} python3
 test_normal = normaltest(sample_normal)
 test_normal.pvalue
 ```
 
-The lesson to take away from this is that the normal approximation is imperfect.
+从这里得到的教训是，正态近似并不完美。
+

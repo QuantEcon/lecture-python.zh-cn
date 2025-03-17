@@ -18,16 +18,16 @@ kernelspec:
 </div>
 ```
 
-# Markov Perfect Equilibrium
+# 马尔可夫完美均衡
 
-```{index} single: Markov Perfect Equilibrium
+```{index} single: 马尔可夫完美均衡
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -36,61 +36,62 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-```{index} single: Markov Perfect Equilibrium; Overview
+```{index} single: 马尔可夫完美均衡; 概述
 ```
 
-This lecture describes the concept of Markov perfect equilibrium.
+本讲座介绍马尔可夫完美均衡的概念。
 
-Markov perfect equilibrium is a key notion for analyzing economic problems involving dynamic strategic interaction, and a cornerstone of applied game theory.
+马尔可夫完美均衡是分析涉及动态战略互动的经济问题的关键概念，也是应用博弈论的基石。
 
-In this lecture, we teach Markov perfect equilibrium by example.
+在本讲座中，我们将通过示例来讲解马尔可夫完美均衡。
 
-We will focus on settings with
+我们将重点关注具有以下特征的设定：
 
-* two players
-* quadratic payoff functions
-* linear transition rules for the state
+* 两个参与者
+* 二次效用函数
+* 状态的线性转移规则
 
-Other references include chapter 7 of {cite}`Ljungqvist2012`.
+其他参考文献包括{cite}`Ljungqvist2012`的第7章。
 
-Let's start with some standard imports:
+让我们从一些标准导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 import quantecon as qe
 ```
 
-## Background
+## 背景
 
-```{index} single: Markov Perfect Equilibrium; Background
+```{index} single: 马尔可夫完美均衡; 背景
 ```
 
-Markov perfect equilibrium is a refinement of the concept of Nash equilibrium.
+马尔可夫完美均衡是纳什均衡概念的一种细化。
 
-It is used to study settings where multiple decision-makers interact non-cooperatively over time, each pursuing its own objective.
+它用于研究多个决策者在时间维度上非合作互动的情况，每个决策者都在追求自己的目标。
 
-The agents in the model face a common state vector, the time path of which is influenced by -- and influences -- their decisions.
+模型中的参与者面对一个共同的状态向量，其时间路径既受到参与者决策的影响，也会影响他们的决策。
 
-In particular, the transition law for the state that confronts each agent is affected by decision rules of other agents.
+具体而言，每个参与者所面对的状态转移规律都会受到其他参与者决策规则的影响。
 
-Individual payoff maximization requires that each agent solve a dynamic programming problem that includes  this transition law.
+为了实现个体收益最大化，每个参与者都需要解决一个包含这种转移规律的动态规划问题。
 
-Markov perfect equilibrium prevails when no agent wishes to revise its policy, taking as given the policies of all other agents.
+当所有参与者在给定其他参与者策略的情况下都不想修改自己的策略时，就达到了马尔可夫完美均衡。
 
-Well known examples include
+著名的例子包括：
 
-* Choice of price, output, location or capacity for firms in an industry (e.g., {cite}`ericson1995markov`, {cite}`ryan2012costs`, {cite}`doraszelski2010computable`).
-* Rate of extraction from a shared natural resource, such as a fishery (e.g., {cite}`levhari1980great`, {cite}`van2011dynamic`).
+* 行业内企业对价格、产出、位置或产能的选择（例如，{cite}`ericson1995markov`、{cite}`ryan2012costs`、{cite}`doraszelski2010computable`）。
 
-Let's examine a model of the first type.
+* 从共享自然资源中的开采率，例如渔业（如{cite}`levhari1980great`，{cite}`van2011dynamic`）。
 
-### Example: A Duopoly Model
+让我们来研究第一类模型。
 
-Two firms are the only producers of a good, the demand for which is governed by a linear inverse demand function
+### 示例：双寡头模型
+
+两家公司是某种商品的唯一生产者，该商品的需求由线性反向需求函数决定
 
 ```{math}
 :label: game2
@@ -98,16 +99,16 @@ Two firms are the only producers of a good, the demand for which is governed by 
 p = a_0 - a_1 (q_1 +  q_2)
 ```
 
-Here $p = p_t$ is the price of the good, $q_i = q_{it}$ is the output of firm $i=1,2$ at time $t$ and $a_0 > 0, a_1 >0$.
+这里$p = p_t$是商品价格，$q_i = q_{it}$是第$i=1,2$家公司在$t$时刻的产量，且$a_0 > 0, a_1 >0$。
 
-In {eq}`game2` and what follows,
+在{eq}`game2`和后文中，
 
-* the time subscript is suppressed when possible to simplify notation
-* $\hat x$ denotes a next period value of variable $x$
+* 为简化符号，在可能的情况下省略时间下标
+* $\hat x$表示变量$x$的下一期值
 
-Each firm recognizes that its output affects total output and therefore the market price.
+每家公司都意识到其产量会影响总产量，从而影响市场价格。
 
-The one-period payoff function of firm $i$ is price times quantity minus adjustment costs:
+公司$i$的单期收益函数是价格乘以数量减去调整成本：
 
 ```{math}
 :label: game1
@@ -115,7 +116,7 @@ The one-period payoff function of firm $i$ is price times quantity minus adjustm
 \pi_i = p q_i - \gamma (\hat q_i - q_i)^2, \quad \gamma > 0 ,
 ```
 
-Substituting the inverse demand curve {eq}`game2` into {eq}`game1` lets us express the one-period payoff as
+将逆需求曲线{eq}`game2`代入{eq}`game1`，我们可以将单期收益表示为
 
 ```{math}
 :label: game3
@@ -123,15 +124,15 @@ Substituting the inverse demand curve {eq}`game2` into {eq}`game1` lets us expre
 \pi_i(q_i, q_{-i}, \hat q_i) = a_0 q_i - a_1 q_i^2 - a_1 q_i q_{-i} - \gamma (\hat q_i - q_i)^2 ,
 ```
 
-where $q_{-i}$ denotes the output of the firm other than $i$.
+其中$q_{-i}$表示除$i$之外的企业的产量。
 
-The objective of the firm is to maximize $\sum_{t=0}^\infty \beta^t \pi_{it}$.
+企业的目标是最大化$\sum_{t=0}^\infty \beta^t \pi_{it}$。
 
-Firm $i$ chooses a decision rule that sets next period quantity $\hat q_i$ as a function $f_i$ of the current state $(q_i, q_{-i})$.
+企业$i$选择一个决策规则，将下一期的产量$\hat q_i$设定为当前状态$(q_i, q_{-i})$的函数$f_i$。
 
-An essential aspect of a Markov perfect equilibrium is that each firm takes the decision rule of the other firm as known and given.
+马尔可夫完美均衡的一个重要特征是每个企业都将其他企业的决策规则视为已知和既定的。
 
-Given $f_{-i}$, the Bellman equation of firm $i$ is
+给定$f_{-i}$，企业$i$的贝尔曼方程为
 
 ```{math}
 :label: game4
@@ -140,24 +141,24 @@ v_i(q_i, q_{-i}) = \max_{\hat q_i}
    \left\{\pi_i (q_i, q_{-i}, \hat q_i) + \beta v_i(\hat q_i, f_{-i}(q_{-i}, q_i)) \right\}
 ```
 
-**Definition**  A *Markov perfect equilibrium* of the duopoly model is a pair of value functions $(v_1, v_2)$ and a pair of policy functions $(f_1, f_2)$ such that, for each $i \in \{1, 2\}$ and each possible state,
+**定义**  双头垄断模型的*马尔可夫完美均衡*是一对价值函数$(v_1, v_2)$和一对策略函数$(f_1, f_2)$，对于每个$i \in \{1, 2\}$和每个可能的状态，满足：
 
-* The value function $v_i$ satisfies  Bellman equation {eq}`game4`.
-* The maximizer on the right side of {eq}`game4`  equals $f_i(q_i, q_{-i})$.
+* 价值函数$v_i$满足贝尔曼方程{eq}`game4`。
+* {eq}`game4`右侧的最大化值等于$f_i(q_i, q_{-i})$。
 
-The adjective "Markov" denotes that the equilibrium decision rules depend only on the current values of the state variables, not other parts of their histories.
+形容词"马尔可夫"表示均衡决策规则仅依赖于状态变量的当前值，而不依赖于它们历史的其他部分。
 
-"Perfect" means complete, in the sense that the equilibrium is constructed by backward induction and hence builds in optimizing behavior for each firm at all possible future states.
+"完美"意味着完整，即均衡是通过反向归纳构建的，因此在所有可能的未来状态下都包含了每个公司的优化行为。
 
-* These include many states that will not be reached when we iterate forward on the pair of equilibrium strategies $f_i$ starting from a given initial state.
+* 这包括了许多状态，当我们从给定的初始状态开始，在一对均衡策略$f_i$上向前迭代时，这些状态不会被达到。
 
-### Computation
+### 计算
 
-One strategy for computing a Markov perfect equilibrium is iterating to convergence on pairs of Bellman equations and decision rules.
+计算马尔可夫完美均衡的一种策略是对贝尔曼方程和决策规则的配对进行迭代收敛。
 
-In particular, let $v_i^j,f_i^j$ be the value function and policy function for firm $i$ at the $j$-th iteration.
+具体来说，令$v_i^j,f_i^j$分别为第$j$次迭代时企业$i$的价值函数和策略函数。
 
-Imagine constructing the iterates
+设想构造迭代式
 
 ```{math}
 :label: game6
@@ -166,28 +167,28 @@ v_i^{j+1}(q_i, q_{-i}) = \max_{\hat q_i}
    \left\{\pi_i (q_i, q_{-i}, \hat q_i) + \beta v^j_i(\hat q_i, f_{-i}(q_{-i}, q_i)) \right\}
 ```
 
-These iterations can be challenging to implement computationally.
+在计算实现上，这些迭代可能具有挑战性。
 
-However, they simplify for the case in which  one-period payoff functions are quadratic and  transition laws are linear --- which takes us to our next topic.
+然而，当单期收益函数为二次型且转移规律为线性时，这些迭代会变得简单——这就引出了我们的下一个话题。
 
-## Linear Markov Perfect Equilibria
+## 线性马尔可夫完美均衡
 
 ```{index} single: Linear Markov Perfect Equilibria
 ```
 
-As we saw in the duopoly example, the study of Markov perfect equilibria in games with two players leads us to an interrelated pair of Bellman equations.
+正如我们在双寡头例子中看到的，研究两个参与者博弈中的马尔可夫完美均衡会导向一对相互关联的贝尔曼方程。
 
-In linear-quadratic dynamic games, these "stacked Bellman equations" become "stacked Riccati equations" with a tractable mathematical structure.
+在线性二次动态博弈中，这些"叠加贝尔曼方程"变成了具有可处理数学结构的"叠加黎卡提方程"。
 
-We'll lay out that structure in a general setup and then apply it to some simple problems.
+我们将在一般设置中阐述这个结构，然后将其应用于一些简单问题。
 
-### Coupled Linear Regulator Problems
+### 耦合线性调节器问题
 
-We consider a general linear-quadratic regulator game with two players.
+我们考虑一个具有两个参与者的一般线性二次调节器博弈。
 
-For convenience, we'll start with a finite horizon formulation, where $t_0$ is the initial date and $t_1$ is the common terminal date.
+为方便起见，我们从有限时域表述开始，其中$t_0$是初始日期，$t_1$是共同的终止日期。
 
-Player $i$ takes $\{u_{-it}\}$ as given and minimizes
+参与者$i$将$\{u_{-it}\}$视为给定，并最小化
 
 ```{math}
 :label: orig-1
@@ -203,7 +204,7 @@ Player $i$ takes $\{u_{-it}\}$ as given and minimizes
 \right\}
 ```
 
-while the state evolves according to
+同时状态按照以下方式演变：
 
 ```{math}
 :label: orig-0
@@ -211,29 +212,30 @@ while the state evolves according to
 x_{t+1} = A x_t + B_1 u_{1t} + B_2 u_{2t}
 ```
 
-Here
+这里
 
-* $x_t$ is an $n \times 1$ state vector and  $u_{it}$ is a $k_i \times 1$ vector of controls for player $i$
-* $R_i$ is $n \times n$
-* $S_i$ is $k_{-i} \times k_{-i}$
-* $Q_i$ is $k_i \times k_i$
-* $W_i$ is $n \times k_i$
-* $M_i$ is $k_{-i} \times k_i$
-* $A$ is $n \times n$
-* $B_i$ is $n \times k_i$
+* $x_t$是一个$n \times 1$状态向量，$u_{it}$是参与者$i$的一个$k_i \times 1$控制向量
+* $R_i$是$n \times n$维的
 
-### Computing Equilibrium
+* $S_i$ 是 $k_{-i} \times k_{-i}$ 矩阵
+* $Q_i$ 是 $k_i \times k_i$ 矩阵
+* $W_i$ 是 $n \times k_i$ 矩阵
+* $M_i$ 是 $k_{-i} \times k_i$ 矩阵
+* $A$ 是 $n \times n$ 矩阵
+* $B_i$ 是 $n \times k_i$ 矩阵
 
-We formulate a linear Markov perfect equilibrium as follows.
+### 计算均衡
 
-Player $i$ employs linear decision rules $u_{it} = - F_{it} x_t$, where $F_{it}$ is a $k_i \times n$ matrix.
+我们将线性马尔可夫完美均衡表述如下。
 
-A Markov perfect equilibrium is a pair of sequences $\{F_{1t}, F_{2t}\}$ over $t = t_0, \ldots, t_1 - 1$ such that
+玩家 $i$ 采用线性决策规则 $u_{it} = - F_{it} x_t$，其中 $F_{it}$ 是一个 $k_i \times n$ 矩阵。
 
-* $\{F_{1t}\}$ solves player 1's problem, taking $\{F_{2t}\}$ as given, and
-* $\{F_{2t}\}$ solves player 2's problem, taking $\{F_{1t}\}$ as given
+马尔可夫完美均衡是一对序列 $\{F_{1t}, F_{2t}\}$，在 $t = t_0, \ldots, t_1 - 1$ 上满足
 
-If we take $u_{2t} = - F_{2t} x_t$ and substitute it into {eq}`orig-1` and {eq}`orig-0`, then player 1's problem becomes minimization of
+* $\{F_{1t}\}$ 在给定 $\{F_{2t}\}$ 的情况下解决玩家1的问题，且
+* $\{F_{2t}\}$ 在给定 $\{F_{1t}\}$ 的情况下解决玩家2的问题
+
+如果我们取 $u_{2t} = - F_{2t} x_t$ 并将其代入 {eq}`orig-1` 和 {eq}`orig-0`，那么玩家1的问题变成最小化
 
 ```{math}
 :label: eq_mpe_p1p
@@ -247,7 +249,7 @@ If we take $u_{2t} = - F_{2t} x_t$ and substitute it into {eq}`orig-1` and {eq}`
     \right\}
 ```
 
-subject to
+约束条件为
 
 ```{math}
 :label: eq_mpe_p1d
@@ -255,15 +257,15 @@ subject to
 x_{t+1} = \Lambda_{1t} x_t + B_1 u_{1t},
 ```
 
-where
+其中
 
 * $\Lambda_{it} := A - B_{-i} F_{-it}$
 * $\Pi_{it} := R_i + F_{-it}' S_i F_{-it}$
 * $\Gamma_{it} := W_i' - M_i' F_{-it}$
 
-This is an LQ dynamic programming problem that can be solved by working backwards.
+这是一个可以通过反向求解的LQ动态规划问题。
 
-Decision rules that solve this problem are
+解决此问题的决策规则是
 
 ```{math}
 :label: orig-3
@@ -273,7 +275,7 @@ F_{1t}
 (\beta B_1' P_{1t+1} \Lambda_{1t} + \Gamma_{1t})
 ```
 
-where $P_{1t}$ solves the matrix Riccati difference equation
+其中$P_{1t}$满足矩阵Riccati差分方程
 
 ```{math}
 :label: orig-4
@@ -285,7 +287,7 @@ P_{1t} =
 \beta \Lambda_{1t}' P_{1t+1} \Lambda_{1t}
 ```
 
-Similarly, decision rules that solve player 2's problem are
+类似地，解决玩家2问题的决策规则是
 
 ```{math}
 :label: orig-5
@@ -294,60 +296,62 @@ F_{2t} = (Q_2 + \beta B_2' P_{2t+1} B_2)^{-1}
 (\beta B_2' P_{2t+1} \Lambda_{2t} + \Gamma_{2t})
 ```
 
-where $P_{2t}$ solves
+其中$P_{2t}$满足
 
 ```{math}
 :label: orig-6
 
 P_{2t} =
+
 \Pi_{2t} - (\beta B_2' P_{2t+1} \Lambda_{2t} +
 \Gamma_{2t})' (Q_2 + \beta B_2' P_{2t+1} B_2)^{-1}
 (\beta B_2' P_{2t+1} \Lambda_{2t} + \Gamma_{2t}) +
 \beta \Lambda_{2t}' P_{2t+1} \Lambda_{2t}
 ```
 
-Here, in all cases $t = t_0, \ldots, t_1 - 1$ and the terminal conditions are $P_{it_1} = 0$.
+在所有情况下，$t = t_0, \ldots, t_1 - 1$，且终端条件为$P_{it_1} = 0$。
 
-The solution procedure is to use equations {eq}`orig-3`, {eq}`orig-4`, {eq}`orig-5`, and {eq}`orig-6`, and "work backwards" from time $t_1 - 1$.
+求解过程是使用方程{eq}`orig-3`、{eq}`orig-4`、{eq}`orig-5`和{eq}`orig-6`，从时间$t_1 - 1$开始"向后推算"。
 
-Since we're working backward, $P_{1t+1}$ and $P_{2t+1}$ are taken as given at each stage.
+由于我们是向后推算，在每个阶段$P_{1t+1}$和$P_{2t+1}$都被视为已知。
 
-Moreover, since
+此外，由于
 
-* some terms on the right-hand side of {eq}`orig-3` contain $F_{2t}$
-* some terms on the right-hand side of {eq}`orig-5` contain $F_{1t}$
+* {eq}`orig-3`右侧的某些项包含$F_{2t}$
+* {eq}`orig-5`右侧的某些项包含$F_{1t}$
 
-we need to solve these $k_1 + k_2$ equations simultaneously.
+我们需要同时求解这$k_1 + k_2$个方程。
 
-#### Key Insight
+#### 关键洞察
 
-A key insight is that  equations  {eq}`orig-3` and {eq}`orig-5` are linear in $F_{1t}$ and $F_{2t}$.
+一个关键洞察是方程{eq}`orig-3`和{eq}`orig-5`对$F_{1t}$和$F_{2t}$是线性的。
 
-After these equations have been solved, we can take  $F_{it}$ and solve for $P_{it}$ in {eq}`orig-4` and {eq}`orig-6`.
+在求解这些方程之后，我们可以利用$F_{it}$来求解{eq}`orig-4`和{eq}`orig-6`中的$P_{it}$。
 
-#### Infinite Horizon
+#### 无限视界
 
-We often want to compute the solutions of such games for infinite horizons, in the hope that the decision rules $F_{it}$ settle down to be time-invariant as $t_1 \rightarrow +\infty$.
+我们通常希望计算这类博弈在无限视界下的解，期望决策规则 $F_{it}$ 在 $t_1 \rightarrow +\infty$ 时趋于时间不变。
 
-In practice, we usually fix $t_1$ and compute the equilibrium of an infinite horizon game by driving $t_0 \rightarrow - \infty$.
+在实践中，我们通常固定 $t_1$ 并通过让 $t_0 \rightarrow - \infty$ 来计算无限视界博弈的均衡。
 
-This is the approach we adopt in the next section.
+这就是我们在下一节采用的方法。
 
-### Implementation
+### 实现
 
-We use the function [nnash](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lqnash.py) from [QuantEcon.py](http://quantecon.org/quantecon-py) that computes a Markov perfect equilibrium of the infinite horizon linear-quadratic dynamic game in the manner described above.
+我们使用 [QuantEcon.py](http://quantecon.org/quantecon-py) 中的 [nnash](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lqnash.py) 函数，该函数按照上述方式计算无限视界线性二次动态博弈的马尔可夫完美均衡。
 
-## Application
+## 应用
 
 ```{index} single: Markov Perfect Equilibrium; Applications
 ```
 
-Let's use these procedures to treat some applications, starting with the duopoly model.
+让我们用这些程序来处理一些应用，首先从双寡头模型开始。
 
-### A Duopoly Model
+### 双寡头模型
 
-To map the duopoly model into  coupled linear-quadratic dynamic programming problems, define the state
-and controls as
+为了将双寡头模型映射到耦合的线性二次动态规划问题中，定义状态
+
+状态和控制变量为
 
 $$
 x_t :=
@@ -361,13 +365,13 @@ u_{it} :=
 q_{i,t+1} - q_{it}, \quad i=1,2
 $$
 
-If we write
+如果我们写作
 
 $$
 x_t' R_i x_t + u_{it}' Q_i u_{it}
 $$
 
-where $Q_1 = Q_2 = \gamma$,
+其中 $Q_1 = Q_2 = \gamma$，
 
 $$
 R_1 :=
@@ -385,9 +389,9 @@ R_2 :=
 \end{bmatrix}
 $$
 
-then we recover the  one-period  payoffs in expression {eq}`game3`.
+那么我们就得到了表达式{eq}`game3`中的单期收益。
 
-The law of motion for the state $x_t$ is $x_{t+1} = A x_t + B_1 u_{1t} + B_2 u_{2t}$ where
+状态 $x_t$ 的运动方程为 $x_{t+1} = A x_t + B_1 u_{1t} + B_2 u_{2t}$，其中
 
 $$
 A :=
@@ -406,13 +410,14 @@ B_1 :=
 \quad
 B_2 :=
 \begin{bmatrix}
-            0 \\
+
+0 \\
             0 \\
             1
 \end{bmatrix}
 $$
 
-The optimal decision rule of firm $i$ will take the form $u_{it} = - F_i x_t$, inducing the following closed-loop system for the evolution of $x$ in the Markov perfect equilibrium:
+企业$i$的最优决策规则将采用$u_{it} = - F_i x_t$的形式，在马尔可夫完美均衡中导致$x$演变的闭环系统如下：
 
 ```{math}
 :label: eq_mpe_cle
@@ -420,28 +425,28 @@ The optimal decision rule of firm $i$ will take the form $u_{it} = - F_i x_t$, i
 x_{t+1} = (A - B_1 F_1 -B_1 F_2 ) x_t
 ```
 
-### Parameters and Solution
+### 参数和解决方案
 
-Consider the previously presented duopoly model with parameter values of:
+考虑之前提出的双寡头模型，参数值为：
 
 * $a_0 = 10$
 * $a_1 = 2$
 * $\beta = 0.96$
 * $\gamma = 12$
 
-From these, we compute the infinite horizon MPE using the preceding code
+根据这些参数，我们使用前面的代码计算无限期MPE
 
 ```{code-cell} python3
 :load: _static/lecture_specific/markov_perf/duopoly_mpe.py
 ```
 
-Running the code produces the following output.
+运行代码会产生以下输出。
 
-One way to see that $F_i$ is indeed optimal for firm $i$ taking $F_2$ as given is to use [QuantEcon.py](http://quantecon.org/quantecon-py)'s LQ class.
+通过使用[QuantEcon.py](http://quantecon.org/quantecon-py)的LQ类，我们可以看到$F_i$确实是在给定$F_2$的情况下对公司$i$来说是最优的。
 
-In particular, let's take F2 as computed above, plug it into {eq}`eq_mpe_p1p` and {eq}`eq_mpe_p1d` to get firm 1's problem and solve it using LQ.
+具体来说，让我们把上面计算得到的F2代入{eq}`eq_mpe_p1p`和{eq}`eq_mpe_p1d`中得到公司1的问题，并使用LQ来求解。
 
-We hope that the resulting policy will agree with F1 as computed above
+我们希望得到的策略与上面计算的F1一致。
 
 ```{code-cell} python3
 Λ1 = A - B2 @ F2
@@ -450,25 +455,25 @@ P1_ih, F1_ih, d = lq1.stationary_values()
 F1_ih
 ```
 
-This is close enough for rock and roll, as they say in the trade.
+正如业内人士所说，这已经足够接近了。
 
-Indeed, np.allclose agrees with our assessment
+事实上，np.allclose也认同我们的判断
 
 ```{code-cell} python3
 np.allclose(F1, F1_ih)
 ```
 
-### Dynamics
+### 动态分析
 
-Let's now investigate the dynamics of price and output in this simple duopoly model under the MPE policies.
+让我们现在研究在这个简单双寡头模型中，在MPE策略下价格和产出的动态变化。
 
-Given our optimal policies $F1$ and $F2$, the state evolves according to {eq}`eq_mpe_cle`.
+基于我们的最优策略$F1$和$F2$，状态按照{eq}`eq_mpe_cle`方程演变。
 
-The following program
+以下程序将：
 
-* imports $F1$ and $F2$ from the previous program along with all parameters.
-* computes the evolution of $x_t$ using {eq}`eq_mpe_cle`.
-* extracts and plots industry output $q_t = q_{1t} + q_{2t}$ and price $p_t = a_0 - a_1 q_t$.
+* 从之前的程序中导入$F1$和$F2$以及所有参数。
+* 使用{eq}`eq_mpe_cle`计算$x_t$的演变。
+* 提取并绘制行业总产出$q_t = q_{1t} + q_{2t}$和价格$p_t = a_0 - a_1 q_t$。
 
 ```{code-cell} python3
 AF = A - B1 @ F1 - B2 @ F2
@@ -479,62 +484,63 @@ for t in range(n-1):
     x[:, t+1] = AF @ x[:, t]
 q1 = x[1, :]
 q2 = x[2, :]
-q = q1 + q2       # Total output, MPE
-p = a0 - a1 * q   # Price, MPE
+q = q1 + q2       # 总产出，MPE
+p = a0 - a1 * q   # 价格，MPE
 
 fig, ax = plt.subplots(figsize=(9, 5.8))
-ax.plot(q, 'b-', lw=2, alpha=0.75, label='total output')
-ax.plot(p, 'g-', lw=2, alpha=0.75, label='price')
-ax.set_title('Output and prices, duopoly MPE')
+ax.plot(q, 'b-', lw=2, alpha=0.75, label='总产出')
+ax.plot(p, 'g-', lw=2, alpha=0.75, label='价格')
+ax.set_title('双寡头MPE下的产出和价格')
 ax.legend(frameon=False)
 plt.show()
 ```
 
-Note that the initial condition has been set to $q_{10} = q_{20} = 1.0$.
+注意初始条件设定为 $q_{10} = q_{20} = 1.0$。
 
-To gain some perspective we can compare this to what happens in the monopoly case.
+为了获得一些视角，我们可以将其与垄断情况下的结果进行比较。
 
-The first panel in the next figure compares output of the monopolist and industry output under the MPE, as a function of time.
+下图的第一个面板比较了垄断者的产出和MPE下的行业产出随时间的变化。
 
-The second panel shows analogous curves for price.
+第二个面板显示了价格的类似曲线。
 
 (mpe_vs_monopolist)=
 ```{figure} /_static/lecture_specific/markov_perf/mpe_vs_monopolist.png
 
 ```
 
-Here parameters are the same as above for both the MPE and monopoly solutions.
+这里MPE和垄断解的参数设置都与上面相同。
 
-The monopolist initial condition is $q_0 = 2.0$ to mimic the industry initial condition $q_{10} = q_{20} = 1.0$ in the MPE case.
+垄断者的初始条件是 $q_0 = 2.0$，以模拟MPE情况下的行业初始条件 $q_{10} = q_{20} = 1.0$。
 
-As expected, output is higher and prices are lower under duopoly than monopoly.
+正如预期的那样，在双寡头情况下，产出更高，价格更低。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: mp_ex1
 
-Replicate the {ref}`pair of figures <mpe_vs_monopolist>` showing the comparison of output and prices for the monopolist and duopoly under MPE.
+复现{ref}`这对图表<mpe_vs_monopolist>`，展示垄断者和MPE下双寡头的产出和价格比较。
 
-Parameters are as in duopoly_mpe.py and you can use that code to compute MPE policies under duopoly.
+参数与 duopoly_mpe.py 中的相同,你可以使用该代码计算双寡头垄断下的 MPE 策略。
 
-The optimal policy in the monopolist case can be computed using [QuantEcon.py](http://quantecon.org/quantecon-py)'s LQ class.
+垄断者情况下的最优策略可以使用 [QuantEcon.py](http://quantecon.org/quantecon-py) 的 LQ 类来计算。
+
 ```
 
 ```{solution-start} mp_ex1
 :class: dropdown
 ```
 
-First, let's compute the duopoly MPE under the stated parameters
+首先,让我们用给定参数计算双寡头垄断的 MPE
 
 ```{code-cell} python3
-# == Parameters == #
+# == 参数 == #
 a0 = 10.0
 a1 = 2.0
 β = 0.96
 γ = 12.0
 
-# == In LQ form == #
+# == LQ 形式 == #
 A  = np.eye(3)
 B1 = np.array([[0.], [1.], [0.]])
 B2 = np.array([[0.], [0.], [1.]])
@@ -549,14 +555,13 @@ R2 = [[     0.,          0.,     -a0 / 2],
 Q1 = Q2 = γ
 S1 = S2 = W1 = W2 = M1 = M2 = 0.0
 
-# == Solve using QE's nnash function == #
+# == 使用 QE 的 nnash 函数求解 == #
 F1, F2, P1, P2 = qe.nnash(A, B1, B2, R1, R2, Q1,
                           Q2, S1, S2, W1, W2, M1,
                           M2, beta=β)
 ```
 
-Now we evaluate the time path of industry output and prices given
-initial condition $q_{10} = q_{20} = 1$.
+现在我们根据初始条件$q_{10} = q_{20} = 1$来评估行业产出和价格的时间路径。
 
 ```{code-cell} python3
 AF = A - B1 @ F1 - B2 @ F2
@@ -567,38 +572,38 @@ for t in range(n-1):
     x[:, t+1] = AF @ x[:, t]
 q1 = x[1, :]
 q2 = x[2, :]
-q = q1 + q2       # Total output, MPE
-p = a0 - a1 * q   # Price, MPE
+q = q1 + q2       # 总产出，MPE
+p = a0 - a1 * q   # 价格，MPE
 ```
 
-Next, let's have a look at the monopoly solution.
+接下来，让我们来看看垄断解决方案。
 
-For the state and control, we take
+对于状态和控制，我们取
 
 $$
 x_t = q_t - \bar q
-\quad \text{and} \quad
+\quad \text{和} \quad
 u_t = q_{t+1} - q_t
 $$
 
-To convert to an LQ problem we set
+为了转换成LQ问题，我们设定
 
 $$
 R = a_1
-\quad \text{and} \quad
+\quad \text{和} \quad
 Q = \gamma
 $$
 
-in the payoff function $x_t' R x_t + u_t' Q u_t$ and
+在收益函数 $x_t' R x_t + u_t' Q u_t$ 中，以及
 
 $$
 A = B = 1
 $$
 
-in the law of motion $x_{t+1} = A x_t + B u_t$.
+在运动方程 $x_{t+1} = A x_t + B u_t$ 中。
 
-We solve for the optimal policy $u_t = - Fx_t$ and track the
-resulting dynamics of $\{q_t\}$, starting at $q_0 = 2.0$.
+我们求解最优策略 $u_t = - Fx_t$ 并追踪
+$\{q_t\}$ 的结果动态，从 $q_0 = 2.0$ 开始。
 
 ```{code-cell} python3
 R = a1
@@ -617,21 +622,21 @@ for i in range(1, n):
 pm = a0 - a1 * qm
 ```
 
-Let's have a look at the different time paths
+让我们看看不同的时间路径
 
 ```{code-cell} python3
 fig, axes = plt.subplots(2, 1, figsize=(9, 9))
 
 ax = axes[0]
-ax.plot(qm, 'b-', lw=2, alpha=0.75, label='monopolist output')
-ax.plot(q, 'g-', lw=2, alpha=0.75, label='MPE total output')
-ax.set(ylabel="output", xlabel="time", ylim=(2, 4))
+ax.plot(qm, 'b-', lw=2, alpha=0.75, label='垄断者产量')
+ax.plot(q, 'g-', lw=2, alpha=0.75, label='MPE总产量')
+ax.set(ylabel="产量", xlabel="时间", ylim=(2, 4))
 ax.legend(loc='upper left', frameon=0)
 
 ax = axes[1]
-ax.plot(pm, 'b-', lw=2, alpha=0.75, label='monopolist price')
-ax.plot(p, 'g-', lw=2, alpha=0.75, label='MPE price')
-ax.set(ylabel="price", xlabel="time")
+ax.plot(pm, 'b-', lw=2, alpha=0.75, label='垄断者价格')
+ax.plot(p, 'g-', lw=2, alpha=0.75, label='MPE价格')
+ax.set(ylabel="价格", xlabel="时间")
 ax.legend(loc='upper right', frameon=0)
 plt.show()
 ```
@@ -643,51 +648,52 @@ plt.show()
 :label: mp_ex2
 ```
 
-In this exercise, we consider a slightly more sophisticated duopoly problem.
+在本练习中，我们考虑一个稍微复杂一点的双寡头问题。
 
-It takes the form of infinite horizon linear-quadratic game proposed by Judd {cite}`Judd1990`.
+这是由Judd {cite}`Judd1990`提出的一个无限期线性二次博弈。
 
-Two firms set prices and quantities of two goods interrelated through their demand curves.
+两家公司通过需求曲线的相互关联来设定两种商品的价格和数量。
 
-Relevant variables are defined as follows:
+相关变量定义如下：
 
-* $I_{it}$ = inventories of firm $i$ at beginning of $t$
-* $q_{it}$ = production of firm $i$ during period $t$
-* $p_{it}$ = price charged by firm $i$ during period $t$
-* $S_{it}$ = sales made by firm $i$ during period $t$
-* $E_{it}$ = costs of production of firm $i$ during period $t$
-* $C_{it}$ = costs of carrying inventories for firm $i$ during $t$
+* $I_{it}$ = t期初第i家公司的库存
+* $q_{it}$ = t期间第i家公司的生产量
+* $p_{it}$ = t期间第i家公司收取的价格
+* $S_{it}$ = t期间第i家公司的销售量
+* $E_{it}$ = t期间第i家公司的生产成本
+* $C_{it}$ = t期间第i家公司的库存持有成本
 
-The firms' cost functions are
+公司的成本函数为：
 
 * $C_{it} = c_{i1} + c_{i2} I_{it} + 0.5 c_{i3} I_{it}^2$
-* $E_{it} = e_{i1} + e_{i2}q_{it} + 0.5 e_{i3} q_{it}^2$ where $e_{ij}, c_{ij}$ are positive scalars
+* $E_{it} = e_{i1} + e_{i2}q_{it} + 0.5 e_{i3} q_{it}^2$ 其中 $e_{ij}, c_{ij}$ 为正标量
 
-Inventories obey the laws of motion
+库存遵循以下运动规律：
 
 $$
+
 I_{i,t+1} = (1 - \delta)  I_{it} + q_{it} - S_{it}
 $$
 
-Demand is governed by the linear schedule
+需求由线性方程决定
 
 $$
 S_t = D p_{it} + b
 $$
 
-where
+其中
 
 * $S_t = \begin{bmatrix} S_{1t} & S_{2t} \end{bmatrix}'$
-* $D$ is a $2\times 2$ negative definite matrix and
-* $b$ is a vector of constants
+* $D$ 是一个 $2\times 2$ 负定矩阵
+* $b$ 是常数向量
 
-Firm $i$ maximizes the undiscounted sum
+公司 $i$ 最大化未贴现总和
 
 $$
 \lim_{T \to \infty}\ {1 \over T}\   \sum^T_{t=0}\   \left( p_{it} S_{it} - E_{it} - C_{it} \right)
 $$
 
-We can convert this to a linear-quadratic problem by taking
+我们可以通过以下方式将其转换为线性二次规划问题
 
 $$
 u_{it} =
@@ -695,7 +701,7 @@ u_{it} =
     p_{it} \\
     q_{it}
 \end{bmatrix}
-\quad \text{and} \quad
+\quad \text{和} \quad
 x_t =
 \begin{bmatrix}
     I_{1t} \\
@@ -704,13 +710,13 @@ x_t =
 \end{bmatrix}
 $$
 
-Decision rules for price and quantity take the form $u_{it} = -F_i  x_t$.
+价格和数量的决策规则采用形式 $u_{it} = -F_i  x_t$。
 
-The Markov perfect equilibrium of Judd’s model can be computed by filling in the matrices appropriately.
+通过适当填充矩阵可以计算出Judd模型的马尔可夫完美均衡。
 
-The exercise is to calculate these matrices and compute the following figures.
+练习是计算这些矩阵并计算以下图形。
 
-The first figure shows the dynamics of inventories for each firm when the parameters are
+第一个图显示了在给定参数下每个公司的库存动态变化。
 
 ```{code-cell} python3
 δ = 0.02
@@ -723,16 +729,16 @@ e1 = e2 = np.array([10, 10, 3])
 ```{figure} /_static/lecture_specific/markov_perf/judd_fig2.png
 ```
 
-Inventories trend to a common steady state.
+库存量趋向于一个共同的稳态。
 
-If we increase the depreciation rate to $\delta = 0.05$, then we expect steady state inventories to fall.
+如果我们将折旧率提高到 $\delta = 0.05$，那么预计稳态库存量会下降。
 
-This is indeed the case, as the next figure shows
+正如下图所示，确实如此
 
 ```{figure} /_static/lecture_specific/markov_perf/judd_fig1.png
 ```
 
-In this exercise, reproduce the figure when $\delta = 0.02$.
+在这个练习中，重现 $\delta = 0.02$ 时的图形。
 
 ```{exercise-end}
 ```
@@ -741,7 +747,7 @@ In this exercise, reproduce the figure when $\delta = 0.02$.
 :class: dropdown
 ```
 
-We treat the case $\delta = 0.02$
+我们处理 $\delta = 0.02$ 的情况
 
 ```{code-cell} python3
 δ = 0.02
@@ -753,7 +759,7 @@ e1 = e2 = np.array([10, 10, 3])
 δ_1 = 1 - δ
 ```
 
-Recalling that the control and state are
+回想控制和状态为
 
 $$
 u_{it} =
@@ -761,7 +767,7 @@ u_{it} =
     p_{it} \\
     q_{it}
 \end{bmatrix}
-\quad \text{and} \quad
+\quad \text{和} \quad
 x_t =
 \begin{bmatrix}
     I_{1t} \\
@@ -770,10 +776,10 @@ x_t =
 \end{bmatrix}
 $$
 
-we set up the matrices as follows:
+我们按如下方式设置矩阵：
 
 ```{code-cell} python3
-# ==  Create matrices needed to compute the Nash feedback equilibrium == #
+# ==  创建计算纳什反馈均衡所需的矩阵 == #
 
 A = np.array([[δ_1,      0,    -δ_1 * b[0]],
               [  0,    δ_1,    -δ_1 * b[1]],
@@ -810,22 +816,22 @@ M1 = np.array([[0, 0], [0, D[0, 1] / 2.]])
 M2 = np.copy(M1)
 ```
 
-We can now compute the equilibrium using `qe.nnash`
+
+现在我们可以使用`qe.nnash`来计算均衡
 
 ```{code-cell} python3
 F1, F2, P1, P2 = qe.nnash(A, B1, B2, R1,
                           R2, Q1, Q2, S1,
                           S2, W1, W2, M1, M2)
 
-print("\nFirm 1's feedback rule:\n")
+print("\n公司1的反馈规则：\n")
 print(F1)
 
-print("\nFirm 2's feedback rule:\n")
+print("\n公司2的反馈规则：\n")
 print(F2)
 ```
 
-Now let's look at the dynamics of inventories, and reproduce the graph
-corresponding to $\delta = 0.02$
+现在让我们来看看库存的动态变化，并重现对应于$\delta = 0.02$的图表
 
 ```{code-cell} python3
 AF = A - B1 @ F1 - B2 @ F2
@@ -837,8 +843,8 @@ for t in range(n-1):
 I1 = x[0, :]
 I2 = x[1, :]
 fig, ax = plt.subplots(figsize=(9, 5))
-ax.plot(I1, 'b-', lw=2, alpha=0.75, label='inventories, firm 1')
-ax.plot(I2, 'g-', lw=2, alpha=0.75, label='inventories, firm 2')
+ax.plot(I1, 'b-', lw=2, alpha=0.75, label='公司1的库存')
+ax.plot(I2, 'g-', lw=2, alpha=0.75, label='公司2的库存')
 ax.set_title(rf'$\delta = {δ}$')
 ax.legend()
 plt.show()
@@ -846,3 +852,4 @@ plt.show()
 
 ```{solution-end}
 ```
+

@@ -18,13 +18,13 @@ kernelspec:
 </div>
 ```
 
-# Production Smoothing via Inventories
+# 通过库存实现生产平滑
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture employs the following library:
+除了Anaconda中包含的库外，本讲座还使用以下库：
 
 ```{code-cell} ipython
 ---
@@ -33,85 +33,62 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-This lecture can be viewed as an application of this {doc}`quantecon lecture <lqcontrol>` about linear quadratic control
-theory.
+本讲座可以视为这个{doc}`quantecon讲座<lqcontrol>`中线性二次控制理论的一个应用。
 
-It formulates a discounted dynamic program for a firm that
-chooses a production schedule to balance
+它为一个企业制定了一个折现动态规划问题，该企业需要选择生产计划来平衡：
 
-- minimizing costs of production across time, against
-- keeping costs of holding inventories low
+- 跨时期最小化生产成本
+- 保持库存持有成本较低
 
-In the tradition of a classic book by Holt, Modigliani, Muth, and
-Simon {cite}`Holt_Modigliani_Muth_Simon`, we simplify the
-firm’s problem by formulating it as a linear quadratic discounted
-dynamic programming problem of the type studied in this {doc}`quantecon lecture <lqcontrol>`.
+遵循Holt、Modigliani、Muth和Simon {cite}`Holt_Modigliani_Muth_Simon`的经典著作传统，我们通过将企业问题构建为这个{doc}`quantecon讲座<lqcontrol>`中研究的线性二次折现动态规划问题来简化它。
 
-Because its costs of production are increasing and quadratic in
-production, the firm holds inventories as a buffer stock in order to smooth production across time, provided
-that holding inventories is not too costly.
+由于生产成本随产量增加呈二次增长，如果持有库存的成本不是太高，企业会将库存作为缓冲，以便在时间上平滑生产。
 
-But the firm also wants to make its sales  out of existing inventories, a
-preference that we represent by a cost that is quadratic in the
-difference between sales in a period and the firm’s beginning of period
-inventories.
+但企业也希望从现有库存中进行销售，我们用二次方程来表示这种偏好，其中
 
-We compute examples designed to indicate how the firm optimally
-smooths production  while keeping inventories
-close to sales.
+某时期的销售额与公司期初库存的差额。
 
-To introduce components of the model, let
+我们计算示例来说明公司如何在保持库存接近销售的同时实现最优生产平滑。
 
-- $S_t$ be sales at time $t$
-- $Q_t$ be production at time $t$
-- $I_t$ be inventories at the beginning of time $t$
-- $\beta \in (0,1)$ be a discount factor
-- $c(Q_t) = c_1 Q_t + c_2 Q_t^2$, be a cost of production
-  function, where $c_1>0, c_2>0$, be an inventory cost function
-- $d(I_t, S_t) = d_1 I_t + d_2 (S_t - I_t)^2$, where
-  $d_1>0, d_2 >0$, be a cost-of-holding-inventories function,
-  consisting of two components:
-    - a cost $d_1 I_t$ of carrying inventories, and
-    - a cost $d_2 (S_t - I_t)^2$ of having inventories deviate
-      from sales
-- $p_t = a_0 - a_1 S_t + v_t$ be an inverse demand function for a
-  firm’s product, where $a_0>0, a_1 >0$ and $v_t$ is a
-  demand shock at time $t$
-- $\pi\_t = p_t S_t - c(Q_t) - d(I_t, S_t)$ be the firm’s
-  profits at time $t$
-- $\sum_{t=0}^\infty \beta^t \pi_t$
-  be the present value of the firm’s profits at
-  time $0$
-- $I_{t+1} = I_t + Q_t - S_t$ be the law of motion of inventories
-- $z_{t+1} = A_{22} z_t + C_2 \epsilon_{t+1}$ be a law
-  of motion for an exogenous state vector $z_t$ that contains
-  time $t$ information useful for predicting the demand shock
-  $v_t$
-- $v_t = G z_t$ link the demand shock to the information set
-  $z_t$
-- the constant $1$ be the first component of $z_t$
+为介绍模型的组成部分，令：
 
-To map our problem into a linear-quadratic discounted dynamic
-programming problem (also known as an optimal linear regulator), we
-define the **state** vector at time $t$ as
+- $S_t$ 为t时刻的销售额
+- $Q_t$ 为t时刻的生产量
+- $I_t$ 为t时刻期初的库存量
+- $\beta \in (0,1)$ 为折现因子
+- $c(Q_t) = c_1 Q_t + c_2 Q_t^2$，为生产成本函数，其中$c_1>0, c_2>0$，为库存成本函数
+- $d(I_t, S_t) = d_1 I_t + d_2 (S_t - I_t)^2$，其中$d_1>0, d_2 >0$，为持有库存成本函数，包含两个组成部分：
+    - 持有库存的成本 $d_1 I_t$，以及
+    - 库存偏离销售的成本 $d_2 (S_t - I_t)^2$
+- $p_t = a_0 - a_1 S_t + v_t$ 为公司产品的反需求函数，其中$a_0>0, a_1 >0$，且$v_t$为t时刻的需求冲击
+
+- $\pi\_t = p_t S_t - c(Q_t) - d(I_t, S_t)$ 是企业在时间 $t$ 的利润
+- $\sum_{t=0}^\infty \beta^t \pi_t$ 是企业在时间 $0$ 的利润现值
+- $I_{t+1} = I_t + Q_t - S_t$ 是库存的变动规律
+- $z_{t+1} = A_{22} z_t + C_2 \epsilon_{t+1}$ 是外生状态向量 $z_t$ 的变动规律，其中 $z_t$ 包含时间 $t$ 时用于预测需求冲击 $v_t$ 的有用信息
+- $v_t = G z_t$ 将需求冲击与信息集 $z_t$ 联系起来
+- 常数 $1$ 是 $z_t$ 的第一个分量
+
+为了将我们的问题映射到线性二次折现动态规划问题（也称为最优线性调节器），我们将时间 $t$ 的**状态**向量定义为
 
 $$
 x_t = \begin{bmatrix} I_t \cr z_t \end{bmatrix}
 $$
 
-and the **control** vector as
+并将**控制**向量定义为
 
 $$
 u_t =  \begin{bmatrix} Q_t \cr S_t \end{bmatrix}
 $$
 
-The law of motion for the state vector $x_t$ is evidently
+状态向量 $x_t$ 的变动规律显然是
 
 $$
 \begin{aligned}
- \begin{bmatrix} I_{t+1} \cr z_t \end{bmatrix} = \left[\begin{array}{cc}
+
+\begin{bmatrix} I_{t+1} \cr z_t \end{bmatrix} = \left[\begin{array}{cc}
 1 & 0\\
 0 & A_{22}
 \end{array}\right] \begin{bmatrix} I_t \cr z_t \end{bmatrix}
@@ -120,28 +97,25 @@ $$
              + \begin{bmatrix} 0 \cr C_2 \end{bmatrix} \epsilon_{t+1} \end{aligned}
 $$
 
-or
+或
 
 $$
 x_{t+1} = A x_t + B u_t + C \epsilon_{t+1}
 $$
 
-(At this point, we ask that you please forgive us for using $Q_t$
-to be the firm’s production at time $t$, while below we use
-$Q$ as the matrix in the quadratic form $u_t' Q u_t$ that
-appears in the firm’s one-period profit function)
+(在这里，请原谅我们使用$Q_t$表示企业在t时刻的产量，而下面我们用$Q$表示在企业单期利润函数中出现的二次型$u_t' Q u_t$的矩阵)
 
-We can express the firm’s profit as a function of states and controls as
+我们可以将企业的利润表示为状态和控制的函数：
 
 $$
 \pi_t =  - (x_t' R x_t + u_t' Q u_t + 2 u_t' N x_t )
 $$
 
-To form the matrices $R, Q, N$ in an LQ dynamic programming problem, we note that the firm’s profits at
-time $t$ function can be expressed
+为了在LQ动态规划问题中构建矩阵$R, Q, N$，我们注意到企业在t时刻的利润函数可以表示为
 
 $$
 \begin{aligned}
+
 \pi_{t} =&p_{t}S_{t}-c\left(Q_{t}\right)-d\left(I_{t},S_{t}\right)  \\
     =&\left(a_{0}-a_{1}S_{t}+v_{t}\right)S_{t}-c_{1}Q_{t}-c_{2}Q_{t}^{2}-d_{1}I_{t}-d_{2}\left(S_{t}-I_{t}\right)^{2}  \\
     =&a_{0}S_{t}-a_{1}S_{t}^{2}+Gz_{t}S_{t}-c_{1}Q_{t}-c_{2}Q_{t}^{2}-d_{1}I_{t}-d_{2}S_{t}^{2}-d_{2}I_{t}^{2}+2d_{2}S_{t}I_{t}  \\
@@ -155,6 +129,9 @@ d_{2} & \frac{d_{1}}{2}S_{c}\\
 I_{t}\\
 z_{t}
 \end{array}\right]+\left[\begin{array}{cc}
+
+$$
+\begin{aligned}
 Q_{t} & S_{t}\end{array}\right]\underset{\equiv Q}{\underbrace{\left[\begin{array}{cc}
 c_{2} & 0\\
 0 & a_{1}+d_{2}
@@ -172,39 +149,37 @@ z_{t}
 \end{aligned}
 $$
 
-where $S_{c}=\left[1,0\right]$.
+其中 $S_{c}=\left[1,0\right]$。
 
-**Remark on notation:** The notation for cross product term in the
-QuantEcon library is $N$.
+**符号说明：** QuantEcon库中交叉乘积项的符号是 $N$。
 
-The firms’ optimum decision rule takes the form
+企业的最优决策规则采用以下形式
 
 $$
 u_t = - F x_t
 $$
 
-and the evolution of the state under the optimal decision rule is
+在最优决策规则下，状态的演变为
 
 $$
 x_{t+1} = (A - BF ) x_t + C \epsilon_{t+1}
 $$
 
-The firm chooses a decision rule for $u_t$ that maximizes
+企业选择 $u_t$ 的决策规则以最大化
 
 $$
 E_0 \sum_{t=0}^\infty \beta^t \pi_t
 $$
 
-subject to a given $x_0$.
+其中 $x_0$ 给定。
 
-This is a stochastic discounted LQ dynamic program.
+这是一个随机贴现线性二次动态规划问题。
 
-Here is code for computing an optimal decision rule and for analyzing
-its consequences.
+以下是用于计算最优决策规则并分析其结果的代码。
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图像大小
 import numpy as np
 import quantecon as qe
 ```
@@ -212,19 +187,18 @@ import quantecon as qe
 ```{code-cell} python3
 class SmoothingExample:
     """
-    Class for constructing, solving, and plotting results for
-    inventories and sales smoothing problem.
+    用于构建、求解和绘制库存和销售平滑问题结果的类。
     """
 
     def __init__(self,
-                 β=0.96,           # Discount factor
-                 c1=1,             # Cost-of-production
+                 β=0.96,           # 折现因子
+                 c1=1,             # 生产成本
                  c2=1,
-                 d1=1,             # Cost-of-holding inventories
+                 d1=1,             # 库存持有成本
                  d2=1,
-                 a0=10,            # Inverse demand function
+                 a0=10,            # 反需求函数
                  a1=1,
-                 A22=[[1,   0],    # z process
+                 A22=[[1,   0],    # z过程
                       [1, 0.9]],
                  C2=[[0], [1]],
                  G=[0, 1]):
@@ -237,15 +211,15 @@ class SmoothingExample:
         self.C2 = np.atleast_2d(C2)
         self.G = np.atleast_2d(G)
 
-        # Dimensions
-        k, j = self.C2.shape        # Dimensions for randomness part
-        n = k + 1                   # Number of states
-        m = 2                       # Number of controls
+        # 维度
+        k, j = self.C2.shape        # 随机部分的维度
+        n = k + 1                   # 状态数量
+        m = 2                       # 控制变量数量
 
         Sc = np.zeros(k)
         Sc[0] = 1
 
-        # Construct matrices of transition law
+        # 构建转移法则矩阵
         A = np.zeros((n, n))
         A[0, 0] = 1
         A[1:, 1:] = self.A22
@@ -258,7 +232,7 @@ class SmoothingExample:
 
         self.A, self.B, self.C = A, B, C
 
-        # Construct matrices of one period profit function
+        # 构建单期收益函数矩阵
         R = np.zeros((n, n))
         R[0, 0] = d2
         R[1:, 0] = d1 / 2 * Sc
@@ -275,7 +249,7 @@ class SmoothingExample:
 
         self.R, self.Q, self.N = R, Q, N
 
-        # Construct LQ instance
+        # 构建LQ实例
         self.LQ = qe.LQ(Q, R, A, B, C, N, beta=β)
         self.LQ.stationary_values()
 
@@ -304,62 +278,59 @@ class SmoothingExample:
 
         fig, ax = plt.subplots(2, 2, figsize=(15, 10))
 
-        ax[0, 0].plot(range(T), I_path, label="inventories")
-        ax[0, 0].plot(range(T), S_path, label="sales")
-        ax[0, 0].plot(range(T), Q_path, label="production")
+        ax[0, 0].plot(range(T), I_path, label="库存")
+        ax[0, 0].plot(range(T), S_path, label="销售")
+        ax[0, 0].plot(range(T), Q_path, label="生产")
         ax[0, 0].legend(loc=1)
-        ax[0, 0].set_title("inventories, sales, and production")
+        ax[0, 0].set_title("库存、销售和生产")
 
         ax[0, 1].plot(range(T), (Q_path - S_path), color='b')
-        ax[0, 1].set_ylabel("change in inventories", color='b')
+        ax[0, 1].set_ylabel("库存变化", color='b')
         span = max(abs(Q_path - S_path))
         ax[0, 1].set_ylim(0-span*1.1, 0+span*1.1)
-        ax[0, 1].set_title("demand shock and change in inventories")
+        ax[0, 1].set_title("需求冲击和库存变化")
 
         ax1_ = ax[0, 1].twinx()
         ax1_.plot(range(T), 𝜈_path, color='r')
-        ax1_.set_ylabel("demand shock", color='r')
+        ax1_.set_ylabel("需求冲击", color='r')
         span = max(abs(𝜈_path))
         ax1_.set_ylim(0-span*1.1, 0+span*1.1)
 
         ax1_.plot([0, T], [0, 0], '--', color='k')
 
-        ax[1, 0].plot(range(T), revenue, label="revenue")
-        ax[1, 0].plot(range(T), cost_production, label="cost_production")
-        ax[1, 0].plot(range(T), cost_inventories, label="cost_inventories")
+        ax[1, 0].plot(range(T), revenue, label="收入")
+        ax[1, 0].plot(range(T), cost_production, label="生产成本")
+        ax[1, 0].plot(range(T), cost_inventories, label="库存成本")
         ax[1, 0].legend(loc=1)
-        ax[1, 0].set_title("profits decomposition")
+        ax[1, 0].set_title("利润分解")
 
-        ax[1, 1].plot(range(T), Q_path, label="production")
-        ax[1, 1].plot(range(T), Q_hardwired, label='production when  $I_t$ \
-            forced to be zero')
-        ax[1, 1].plot(range(T), Q_no_inventory, label='production when \
-            inventories not useful')
+        ax[1, 1].plot(range(T), Q_path, label="生产")
+        ax[1, 1].plot(range(T), Q_hardwired, label='强制$I_t$为零时的生产')
+        ax[1, 1].plot(range(T), Q_no_inventory, label='库存无用时的生产')
         ax[1, 1].legend(loc=1)
-        ax[1, 1].set_title('three production concepts')
+        ax[1, 1].set_title('三种生产概念')
 
         plt.show()
 ```
 
-Notice that the above code sets parameters at the following default
-values
+请注意上述代码将参数设置为以下默认值
 
-- discount factor $\beta=0.96$,
-- inverse demand function: $a0=10, a1=1$
-- cost of production $c1=1, c2=1$
-- costs of holding inventories $d1=1, d2=1$
+- 贴现因子 $\beta=0.96$,
+- 反需求函数: $a0=10, a1=1$
+- 生产成本 $c1=1, c2=1$
+- 库存持有成本 $d1=1, d2=1$
 
-In the examples below, we alter some or all of these parameter values.
+在下面的例子中，我们将改变部分或全部这些参数值。
 
-## Example 1
+## 示例1
 
-In this example, the demand shock follows AR(1) process:
+在这个例子中，需求冲击遵循AR(1)过程：
 
 $$
 \nu_t = \alpha + \rho \nu_{t-1} + \epsilon_t,
 $$
 
-which implies
+这意味着
 
 $$
 z_{t+1}=\left[\begin{array}{c}
@@ -377,10 +348,9 @@ v_{t}
 \end{array}\right]\epsilon_{t+1}.
 $$
 
-We set $\alpha=1$ and $\rho=0.9$, their default values.
+我们设置 $\alpha=1$ 和 $\rho=0.9$，这是它们的默认值。
 
-We’ll calculate and display outcomes, then discuss them below the
-pertinent figures.
+我们将计算并显示结果，然后在相关图表下方进行讨论。
 
 ```{code-cell} python3
 ex1 = SmoothingExample()
@@ -389,142 +359,116 @@ x0 = [0, 1, 0]
 ex1.simulate(x0)
 ```
 
-The figures above illustrate various features of an optimal production
-plan.
+上述图表展示了最优生产计划的各种特征。
 
-Starting from zero inventories, the firm builds up a stock of
-inventories and uses them to smooth costly production in the face of
-demand shocks.
+从零库存开始，企业建立库存并利用它们来平滑面对需求冲击时的高成本生产。
 
-Optimal decisions evidently respond to demand shocks.
+最优决策显然会对需求冲击做出反应。
 
-Inventories are always less than sales, so some sales come from current
-production, a consequence of the cost, $d_1 I_t$ of holding
-inventories.
+库存总是小于销售量，因此部分销售来自当期生产，这是持有库存成本$d_1 I_t$导致的结果。
 
-The lower right panel shows differences between optimal production and
-two alternative production concepts that come from altering the firm’s
-cost structure – i.e., its technology.
+右下方的面板显示了最优生产与两种替代生产概念之间的差异 - 这两种概念源于改变企业的成本结构，即其技术。
 
-These two concepts correspond to these distinct altered firm problems.
+这两个概念对应于以下两种不同的经过改变的企业问题：
 
-- a setting in which inventories are not needed
-- a setting in which they are needed but we arbitrarily prevent the
-  firm from holding inventories by forcing it to set $I_t=0$
-  always
+- 一种不需要库存的情况
+- 一种需要库存但我们强制企业始终保持$I_t=0$的情况
 
-We use these two alternative production concepts in order to shed light on the baseline model.
+我们使用这两种替代生产概念来阐明基准模型。
 
-## Inventories Not Useful
+## 库存无用处的情况
 
-Let’s turn first to the setting in which inventories aren’t needed.
+让我们首先来看不需要库存的情况。
 
-In this problem, the firm forms an output plan that maximizes the expected
-value of
+在这个问题中，企业制定一个产出计划，使以下期望值最大化
 
 $$
 \sum_{t=0}^\infty \beta^t \{ p_t Q_t - C(Q_t) \}
 $$
 
-It turns out that the optimal plan for $Q_t$ for this problem also
-solves a sequence of static problems
-$\max_{Q_t}\{p_t Q_t - c(Q_t)\}$.
+事实证明，这个问题中$Q_t$的最优计划也能解决一系列静态问题
+$\max_{Q_t}\{p_t Q_t - c(Q_t)\}$。
 
-When inventories aren’t required or used,  sales always equal
-production.
+当不需要或不使用库存时，销售总是等于生产。
 
-This simplifies the problem and the optimal no-inventory production
-maximizes the expected value of
+这简化了问题，无库存生产的最优化就是使以下期望值最大化
 
 $$
 \sum_{t=0}^{\infty}\beta^{t}\left\{ p_{t}Q_{t}-C\left(Q_{t}\right)\right\}.
 $$
 
-The optimum decision rule is
+最优决策规则是
 
 $$
 Q_{t}^{ni}=\frac{a_{0}+\nu_{t}-c_{1}}{c_{2}+a_{1}}.
 $$
 
-## Inventories Useful but are Hardwired to be Zero Always
+## 库存有用但被强制设为永远为零
 
-Next, we turn to a distinct problem in which inventories are useful –
-meaning that there are costs of $d_2 (I_t - S_t)^2$ associated
-with having sales not equal to inventories – but we arbitrarily impose on the firm
-the costly restriction that it never hold inventories.
+接下来，我们来看另一个不同的问题，在这个问题中库存是有用的 - 
+意味着销售不等于库存会产生$d_2 (I_t - S_t)^2$的成本 - 但我们任意地强加给企业
 
-Here the firm’s maximization problem is
+这个不持有库存的代价高昂的限制。
+
+在这里，企业的最大化问题是
 
 $$
 \max_{\{I_t, Q_t, S_t\}}\sum_{t=0}^{\infty}\beta^{t}\left\{ p_{t}S_{t}-C\left(Q_{t}\right)-d\left(I_{t},S_{t}\right)\right\}
 $$
 
-subject to the restrictions that $I_{t}=0$ for all $t$ and
-that $I_{t+1}=I_{t}+Q_{t}-S_{t}$.
+受限于对所有t都有$I_{t}=0$的限制，
+以及$I_{t+1}=I_{t}+Q_{t}-S_{t}$。
 
-The restriction that $I_t = 0$ implies that $Q_{t}=S_{t}$
-and that the maximization problem reduces to
+$I_t = 0$的限制意味着$Q_{t}=S_{t}$，
+且最大化问题简化为
 
 $$
 \max_{Q_t}\sum_{t=0}^{\infty}\beta^{t}\left\{ p_{t}Q_{t}-C\left(Q_{t}\right)-d\left(0,Q_{t}\right)\right\}
 $$
 
-Here the optimal production plan is
+这里的最优生产计划是
 
 $$
 Q_{t}^{h}=\frac{a_{0}+\nu_{t}-c_{1}}{c_{2}+a_{1}+d_{2}}.
 $$
 
-We introduce this $I_t$ **is hardwired to zero** specification in
-order to shed light on the role that inventories play by comparing outcomes
-with those under our two other versions of the problem.
+我们引入这个$I_t$ **硬性设定为零**的规范，
+目的是通过与其他两个版本问题的结果比较，
+来阐明库存所发挥的作用。
 
-The bottom right panel displays a production path for the original
-problem that we are interested in (the blue line) as well with an
-optimal production path for the model in which inventories are not
-useful (the green path) and also for the model in which, although
-inventories are useful, they are hardwired to zero and the firm pays
-cost $d(0, Q_t)$ for not setting sales $S_t = Q_t$ equal to
-zero (the orange line).
+右下方面板显示了我们感兴趣的原始问题的生产路径（蓝线）以及一个
 
-Notice that it is typically optimal for the firm to produce more when
-inventories aren’t useful. Here there is no requirement to sell out of
-inventories and no costs from having sales deviate from inventories.
+对于存货无用的模型（绿色路径）以及存货虽然有用但被强制设为零且公司需要为销售量$S_t$不等于零而支付成本$d(0, Q_t)$的模型（橙色线），这是最优生产路径。
 
-But “typical” does not mean “always”.
+注意，当存货无用时，公司通常会选择生产更多。在这种情况下，不需要从存货中销售，也不会因销售量偏离存货量而产生成本。
 
-Thus, if we look closely, we notice that for small $t$, the green
-“production when inventories aren’t useful” line in the lower right
-panel is below optimal production in the original model.
+但是"通常"并不意味着"总是"。
 
-High optimal production in the original model early on occurs because the
-firm wants to accumulate inventories quickly in order to acquire high
-inventories for use in later periods.
+因此，如果仔细观察，我们会发现在较小的$t$值时，右下方面板中绿色的"存货无用时的生产"线位于原始模型的最优生产线之下。
 
-But how the green line compares to the blue line early on depends on the
-evolution of the demand shock, as we will see in a
-deterministically seasonal demand shock example to be analyzed below.
+在原始模型中早期的高最优生产量出现是因为公司希望快速积累存货，以便在后期使用大量存货。
 
-In that example,  the original firm optimally accumulates inventories slowly
-because the next positive demand shock is in the distant future.
+但是绿线与蓝线在早期的比较关系取决于
 
-To make the green-blue model production comparison easier to see, let’s
-confine the graphs to the first 10 periods:
+需求冲击的演变，正如我们将在下面分析的确定性季节性需求冲击示例中所看到的。
+
+在该示例中，由于下一次正向需求冲击在较远的未来，原始企业会选择缓慢积累库存。
+
+为了更容易看清绿色-蓝色模型的生产对比，让我们将图表限制在前10个周期：
 
 ```{code-cell} python3
 ex1.simulate(x0, T=10)
 ```
 
-## Example 2
+## 示例2
 
-Next, we shut down randomness in demand and assume that the demand shock
-$\nu_t$ follows a deterministic path:
+接下来，我们关闭需求中的随机性，假设需求冲击$\nu_t$遵循一个确定性路径：
 
 $$
 \nu_t = \alpha + \rho \nu_{t-1}
 $$
 
-Again, we’ll compute and display outcomes in some figures
+同样，我们将计算并在一些图表中展示结果
 
 ```{code-cell} python3
 ex2 = SmoothingExample(C2=[[0], [0]])
@@ -533,17 +477,13 @@ x0 = [0, 1, 0]
 ex2.simulate(x0)
 ```
 
-## Example 3
+## 示例 3
 
-Now we’ll put randomness back into the demand shock process and also
-assume that there are zero costs of holding inventories.
+现在我们将随机性重新引入需求冲击过程中，并且假设持有库存的成本为零。
 
-In particular, we’ll look at a situation in which $d_1=0$ but
-$d_2>0$.
+具体来说，我们将研究一种情况，其中 $d_1=0$ 但 $d_2>0$。
 
-Now it becomes optimal to set sales approximately equal to
-inventories and to use inventories to smooth production quite well, as
-the following figures confirm
+现在，将销售量大致设置为等于库存量，并利用库存来很好地平滑生产变得最优，如下图所示：
 
 ```{code-cell} python3
 ex3 = SmoothingExample(d1=0)
@@ -552,48 +492,36 @@ x0 = [0, 1, 0]
 ex3.simulate(x0)
 ```
 
-## Example 4
+## 示例 4
 
-To bring out some features of the optimal policy that are related to
-some technical issues in linear control theory, we’ll now temporarily
-assume that it is costless to hold inventories.
+为了突出与线性控制理论中某些技术问题相关的最优策略特征，我们现在暂时假设持有库存是无成本的。
 
-When we completely shut down the cost of holding inventories by setting
-$d_1=0$ and $d_2=0$, something absurd happens (because the
-Bellman equation is opportunistic and very smart).
+当我们通过设置$d_1=0$和$d_2=0$完全取消持有库存的成本时，会发生一些荒谬的情况（因为贝尔曼方程具有机会主义性质且非常智能）。
 
-(Technically, we have set parameters that end up violating conditions
-needed to assure **stability** of the optimally controlled state.)
+（从技术角度来说，我们设置的参数最终违反了确保最优控制状态**稳定性**所需的条件。）
 
-The firm finds it optimal to set
-$Q_t \equiv Q^* = \frac{-c_1}{2c_2}$, an output level that sets
-the costs of production to zero (when $c_1 >0$, as it is with our
-default settings, then it is optimal to set production negative,
-whatever that means!).
+公司发现最优的选择是设置$Q_t \equiv Q^* = \frac{-c_1}{2c_2}$，这个产出水平使生产成本为零（当$c_1 >0$时，就像我们的默认设置一样，那么将产量设为负值是最优的，不管这意味着什么！）。
 
-Recall the law of motion for inventories
+回顾库存的运动规律
 
 $$
 I_{t+1} = I_t + Q_t - S_t
 $$
 
-So when $d_1=d_2= 0$ so that the firm finds it optimal to set
-$Q_t = \frac{-c_1}{2c_2}$ for all $t$, then
+因此，当$d_1=d_2= 0$时，公司发现在所有时期$t$将$Q_t = \frac{-c_1}{2c_2}$设为最优，那么
 
 $$
+
 I_{t+1} - I_t = \frac{-c_1}{2c_2} - S_t < 0
 $$
 
-for almost all values of $S_t$ under our default parameters that
-keep demand positive almost all of the time.
+在我们默认参数下，对于几乎所有保持需求为正的$S_t$值都成立。
 
-The dynamic program instructs the firm to set production costs to zero
-and to **run a Ponzi scheme** by running inventories down forever.
+动态规划指示企业将生产成本设为零，并通过永远减少库存来**运行庞氏骗局**。
 
-(We can interpret this as the firm somehow **going short in** or
-**borrowing** inventories)
+（我们可以将此理解为企业以某种方式**做空**或**借入**库存）
 
-The following figures confirm that inventories head south without limit
+以下图表证实了库存无限下降
 
 ```{code-cell} python3
 ex4 = SmoothingExample(d1=0, d2=0)
@@ -602,26 +530,25 @@ x0 = [0, 1, 0]
 ex4.simulate(x0)
 ```
 
-Let’s shorten the time span displayed in order to highlight what is
-going on.
+让我们缩短显示的时间跨度以突出显示正在发生的情况。
 
-We’ll set the horizon $T =30$ with the following code
+我们将用以下代码设置时间范围 $T =30$
 
 ```{code-cell} python3
 # shorter period
 ex4.simulate(x0, T=30)
 ```
 
-## Example 5
+## 示例 5
 
-Now we’ll assume that the demand shock that follows a linear time trend
+现在我们假设需求冲击遵循线性时间趋势
 
 $$
 v_t = b + a t  , a> 0, b> 0
 $$
 
-To represent this, we set
-$C_2 = \begin{bmatrix} 0 \cr 0 \end{bmatrix}$ and
+为了表示这一点，我们设定
+$C_2 = \begin{bmatrix} 0 \cr 0 \end{bmatrix}$ 和
 
 $$
 A_{22}=\left[\begin{array}{cc}
@@ -636,7 +563,7 @@ b & a\end{array}\right]
 $$
 
 ```{code-cell} python3
-# Set parameters
+# 设置参数
 a = 0.5
 b = 3.
 ```
@@ -644,15 +571,15 @@ b = 3.
 ```{code-cell} python3
 ex5 = SmoothingExample(A22=[[1, 0], [1, 1]], C2=[[0], [0]], G=[b, a])
 
-x0 = [0, 1, 0] # set the initial inventory as 0
+x0 = [0, 1, 0] # 将初始库存设为0
 ex5.simulate(x0, T=10)
 ```
 
-## Example 6
+## 示例6
 
-Now we’ll assume a deterministically seasonal demand shock.
+现在我们假设一个确定性的季节性需求冲击。
 
-To represent this we’ll set
+为了表示这一点，我们设定
 
 $$
 A_{22} = \begin{bmatrix}  1 & 0 & 0 & 0 & 0  \cr 0 & 0 & 0 & 0  & 1 \cr
@@ -663,7 +590,7 @@ A_{22} = \begin{bmatrix}  1 & 0 & 0 & 0 & 0  \cr 0 & 0 & 0 & 0  & 1 \cr
   \end{bmatrix}
 $$
 
-where $a > 0, b>0$ and
+其中 $a > 0, b>0$ 且
 
 $$
 x_0 = \begin{bmatrix} 1 \cr 0 \cr 1 \cr 0 \cr 0 \end{bmatrix}
@@ -678,12 +605,11 @@ ex6 = SmoothingExample(A22=[[1, 0, 0, 0, 0],
                        C2=[[0], [0], [0], [0], [0]],
                        G=[b, a, 0, 0, 0])
 
-x00 = [0, 1, 0, 1, 0, 0] # Set the initial inventory as 0
+x00 = [0, 1, 0, 1, 0, 0] # 设置初始库存为0
 ex6.simulate(x00, T=20)
 ```
 
-Now we’ll generate some more examples that differ simply from the
-initial **season** of the year in which we begin the demand shock
+现在我们将生成一些更多的例子，这些例子仅仅在开始需求冲击的**季节**上有所不同
 
 ```{code-cell} python3
 x01 = [0, 1, 1, 0, 0, 0]
@@ -700,32 +626,29 @@ x03 = [0, 1, 0, 0, 0, 1]
 ex6.simulate(x03, T=20)
 ```
 
-## Exercises
+## 练习
 
-Please try to analyze some inventory sales smoothing problems using the
-`SmoothingExample` class.
+请尝试使用`SmoothingExample`类分析一些库存销售平滑问题。
 
 ```{exercise}
 :label: lqi_ex1
 
-Assume that the demand shock follows AR(2) process below:
+假设需求冲击遵循以下AR(2)过程：
 
 $$
 \nu_{t}=\alpha+\rho_{1}\nu_{t-1}+\rho_{2}\nu_{t-2}+\epsilon_{t}.
 $$
 
-where $\alpha=1$, $\rho_{1}=1.2$, and $\rho_{2}=-0.3$.
-You need to construct $A22$, $C$, and $G$ matrices
-properly and then to input them as the keyword arguments of
-`SmoothingExample` class. Simulate paths starting from the initial
-condition $x_0 = \left[0, 1, 0, 0\right]^\prime$.
+其中$\alpha=1$，$\rho_{1}=1.2$，且$\rho_{2}=-0.3$。
+你需要正确构建$A22$、$C$和$G$矩阵，
+然后将它们作为关键字参数输入到`SmoothingExample`类中。从初始
+条件$x_0 = \left[0, 1, 0, 0\right]^\prime$开始模拟路径。
 
-After this, try to construct a very similar `SmoothingExample` with
-the same demand shock process but exclude the randomness
-$\epsilon_t$. Compute the stationary states $\bar{x}$ by
-simulating for a long period. Then try to add shocks with different
-magnitude to $\bar{\nu}_t$ and simulate paths. You should see how
-firms respond differently by staring at the production plans.
+之后，尝试构建一个非常相似的`SmoothingExample`，
+使用相同的需求冲击过程但排除随机性
+$\epsilon_t$。通过长期模拟计算稳态$\bar{x}$。
+然后尝试对$\bar{\nu}_t$添加不同幅度的冲击并模拟路径。
+通过观察生产计划，你应该能看到企业如何做出不同的响应。
 ```
 
 ```{solution-start} lqi_ex1
@@ -733,14 +656,14 @@ firms respond differently by staring at the production plans.
 ```
 
 ```{code-cell} python3
-# set parameters
+# 设置参数
 α = 1
 ρ1 = 1.2
 ρ2 = -.3
 ```
 
 ```{code-cell} python3
-# construct matrices
+# 构建矩阵
 A22 =[[1,  0,  0],
           [1, ρ1, ρ2],
           [0,  1, 0]]
@@ -751,40 +674,37 @@ G = [0, 1, 0]
 ```{code-cell} python3
 ex1 = SmoothingExample(A22=A22, C2=C2, G=G)
 
-x0 = [0, 1, 0, 0] # initial condition
+x0 = [0, 1, 0, 0] # 初始条件
 ex1.simulate(x0)
 ```
 
 ```{code-cell} python3
-# now silence the noise
+# 现在消除噪音
 ex1_no_noise = SmoothingExample(A22=A22, C2=[[0], [0], [0]], G=G)
 
-# initial condition
+# 初始条件
 x0 = [0, 1, 0, 0]
 
-# compute stationary states
+# 计算稳态
 x_bar = ex1_no_noise.LQ.compute_sequence(x0, ts_length=250)[0][:, -1]
 x_bar
 ```
 
-In the following, we add small and large shocks to $\bar{\nu}_t$
-and compare how firm responds differently in quantity. As the shock is
-not very persistent under the parameterization we are using, we focus on
-a short period response.
+在下面的内容中，我们对$\bar{\nu}_t$添加小幅和大幅冲击，并比较企业在产量方面的不同反应。由于在我们使用的参数化条件下冲击的持续性不是很强，我们主要关注短期反应。
 
 ```{code-cell} python3
 T = 40
 ```
 
 ```{code-cell} python3
-# small shock
+# 小幅冲击
 x_bar1 = x_bar.copy()
 x_bar1[2] += 2
 ex1_no_noise.simulate(x_bar1, T=T)
 ```
 
 ```{code-cell} python3
-# large shock
+# 大幅冲击
 x_bar1 = x_bar.copy()
 x_bar1[2] += 10
 ex1_no_noise.simulate(x_bar1, T=T)
@@ -796,11 +716,10 @@ ex1_no_noise.simulate(x_bar1, T=T)
 ```{exercise}
 :label: lqi_ex2
 
-Change parameters of $C(Q_t)$ and $d(I_t, S_t)$.
+改变$C(Q_t)$和$d(I_t, S_t)$的参数。
 
-1. Make production more costly, by setting $c_2=5$.
-1. Increase the cost of having inventories deviate from sales, by
-   setting $d_2=5$.
+1. 通过设置$c_2=5$来提高生产成本。
+2. 通过设置$d_2=5$来增加库存偏离销售的成本。
 ```
 
 ```{solution-start} lqi_ex2
@@ -821,3 +740,4 @@ SmoothingExample(d2=5).simulate(x0)
 
 ```{solution-end}
 ```
+

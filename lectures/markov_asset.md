@@ -18,24 +18,24 @@ kernelspec:
 </div>
 ```
 
-# {index}`Asset Pricing: Finite State Models <single: Asset Pricing: Finite State Models>`
+# {index}`资产定价：有限状态模型 <single: Asset Pricing: Finite State Models>`
 
 ```{index} single: Models; Markov Asset Pricing
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
 ```{epigraph}
-"A little knowledge of geometric series goes a long way" -- Robert E. Lucas, Jr.
+"对几何级数的一点了解就能走很远" -- Robert E. Lucas, Jr.
 ```
 
 ```{epigraph}
-"Asset pricing is all about covariances" -- Lars Peter Hansen
+"资产定价就是关于协方差" -- Lars Peter Hansen
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -44,32 +44,32 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
 ```{index} single: Markov Asset Pricing; Overview
 ```
 
-An asset is a claim on one or more future payoffs.
+资产是对一个或多个未来收益的权利要求。
 
-The spot price of an asset depends primarily on
+资产的现货价格主要取决于
 
-* the anticipated  income stream
-* attitudes about risk
-* rates of time preference
+* 预期收入流
+* 风险态度
+* 时间偏好率
 
-In this lecture, we consider some standard pricing models and dividend stream specifications.
+在本讲中，我们将探讨一些标准定价模型和股息流规格。
 
-We study how prices and dividend-price ratios respond in these different scenarios.
+我们研究在这些不同情况下价格和股息-价格比率如何变化。
 
-We also look at creating and pricing *derivative* assets that repackage income streams.
+我们还将研究创建和定价重新打包收入流的*衍生*资产。
 
-Key tools for the lecture are
+本讲的主要工具包括
 
-* Markov processses
-* formulas for predicting future values of functions of a Markov state
-* a formula for predicting the discounted sum of future values of a Markov state
+* 马尔可夫过程
+* 预测马尔可夫状态函数未来值的公式
+* 预测马尔可夫状态未来值折现总和的公式
 
-Let's start with some imports:
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
@@ -79,30 +79,30 @@ import quantecon as qe
 from numpy.linalg import eigvals, solve
 ```
 
-## {index}`Pricing Models <single: Pricing Models>`
+## {index}`定价模型 <single: Pricing Models>`
 
 ```{index} single: Models; Pricing
 ```
 
-Let $\{d_t\}_{t \geq 0}$ be a stream of dividends
+设 $\{d_t\}_{t \geq 0}$ 为股息流
 
-* A time-$t$ **cum-dividend** asset is a claim to the stream $d_t, d_{t+1}, \ldots$.
-* A time-$t$ **ex-dividend** asset is a claim to the stream $d_{t+1}, d_{t+2}, \ldots$.
+* 时间$t$的**含息资产**是对股息流 $d_t, d_{t+1}, \ldots$ 的索取权。
+* 时间$t$的**除息资产**是对股息流 $d_{t+1}, d_{t+2}, \ldots$ 的索取权。
 
-Let's look at some equations that we expect to hold for prices of assets under ex-dividend contracts
-(we will consider cum-dividend pricing in the exercises).
+让我们看看在除息合约下资产价格应该满足的一些等式
+（我们将在练习中考虑含息定价）。
 
-### Risk-Neutral Pricing
+### 风险中性定价
 
 ```{index} single: Pricing Models; Risk-Neutral
 ```
 
-Our first scenario is risk-neutral pricing.
+我们的第一个场景是风险中性定价。
 
-Let $\beta = 1/(1+\rho)$ be an intertemporal discount **factor**, where
-$\rho$ is the **rate** at which agents discount the future.
+设 $\beta = 1/(1+\rho)$ 为跨期贴现**因子**，其中
+$\rho$ 是代理人对未来进行贴现的**利率**。
 
-The basic risk-neutral asset pricing equation for pricing one unit of an ex-dividend asset is
+对于定价一单位除息资产的基本风险中性资产定价方程是
 
 (mass_pra)=
 ```{math}
@@ -111,22 +111,20 @@ The basic risk-neutral asset pricing equation for pricing one unit of an ex-divi
 p_t = \beta {\mathbb E}_t [d_{t+1} + p_{t+1}]
 ```
 
-This is a simple "cost equals expected benefit" relationship.
+这是一个简单的"成本等于预期收益"关系。
 
-Here ${\mathbb E}_t [y]$ denotes the best forecast of $y$, conditioned on information available at time $t$.
+这里 ${\mathbb E}_t [y]$ 表示基于 $t$ 时刻可获得信息所做出的 $y$ 的最佳预测。
 
-More precisely, ${\mathbb E}_t [y]$ is the mathematical expectation of $y$ conditional on information available at time $t$.
+更准确地说，${\mathbb E}_t [y]$ 是基于 $t$ 时刻可获得信息的 $y$ 的数学期望。
 
-### Pricing with Random Discount Factor
+### 随机贴现因子定价
 
 ```{index} single: Pricing Models; Risk Aversion
 ```
 
-What happens if for some reason traders discount payouts differently depending on the state of the world?
+如果由于某些原因，交易者根据不同的世界状态对收益进行不同的贴现，会发生什么情况？
 
-Michael Harrison and David Kreps {cite}`HarrisonKreps1979` and Lars Peter Hansen
-and Scott Richard {cite}`HansenRichard1987` showed that in quite general
-settings the price of an ex-dividend asset obeys
+Michael Harrison 和 David Kreps {cite}`HarrisonKreps1979` 以及 Lars Peter Hansen 和 Scott Richard {cite}`HansenRichard1987` 证明，在相当一般的情况下，除息资产的价格满足：
 
 ```{math}
 :label: lteeqs0
@@ -134,21 +132,21 @@ settings the price of an ex-dividend asset obeys
 p_t = {\mathbb E}_t \left[ m_{t+1}  ( d_{t+1} + p_{t+1} ) \right]
 ```
 
-for some  **stochastic discount factor** $m_{t+1}$.
+其中 $m_{t+1}$ 是某个**随机贴现因子**。
 
-Here the fixed discount factor $\beta$ in {eq}`rnapex` has been replaced by the random variable $m_{t+1}$.
+这里，{eq}`rnapex` 中的固定贴现因子 $\beta$ 已被随机变量 $m_{t+1}$ 替代。
 
-How anticipated future payoffs are evaluated  now depends on statistical properties of $m_{t+1}$.
+未来预期收益的评估现在取决于 $m_{t+1}$ 的统计特性。
 
-The stochastic discount factor can be specified to capture the idea that assets that tend to have good payoffs in bad states of the world are valued more highly than other assets whose payoffs don't behave that way.
+随机贴现因子可以被设定来体现这样一个概念：在经济状况不佳时能提供良好回报的资产，比起其他回报表现不具有这种特性的资产，会被赋予更高的价值。
 
-This is because such assets pay well when funds are more urgently wanted.
+这是因为这类资产在资金最为急需时能提供良好回报。
 
-We give examples of how the stochastic discount factor has been modeled below.
+我们将在下面给出随机贴现因子建模的一些例子。
 
-### Asset Pricing and Covariances
+### 资产定价与协方差
 
-Recall that, from the definition of a conditional covariance ${\rm cov}_t (x_{t+1}, y_{t+1})$, we have
+回想一下，根据条件协方差 ${\rm cov}_t (x_{t+1}, y_{t+1})$ 的定义，我们有：
 
 ```{math}
 :label: lteeqs101
@@ -156,7 +154,7 @@ Recall that, from the definition of a conditional covariance ${\rm cov}_t (x_{t+
 {\mathbb E}_t (x_{t+1} y_{t+1}) = {\rm cov}_t (x_{t+1}, y_{t+1}) + {\mathbb E}_t x_{t+1} {\mathbb E}_t y_{t+1}
 ```
 
-If we apply this definition to the asset pricing equation {eq}`lteeqs0` we obtain
+如果我们将这个定义应用到资产定价方程 {eq}`lteeqs0`，我们得到：
 
 ```{math}
 :label: lteeqs102
@@ -164,24 +162,24 @@ If we apply this definition to the asset pricing equation {eq}`lteeqs0` we obtai
 p_t = {\mathbb E}_t m_{t+1} {\mathbb E}_t (d_{t+1} + p_{t+1}) + {\rm cov}_t (m_{t+1}, d_{t+1}+ p_{t+1})
 ```
 
-It is useful to regard equation {eq}`lteeqs102`   as a generalization of equation {eq}`rnapex`
+将方程 {eq}`lteeqs102` 视为方程 {eq}`rnapex` 的推广是很有用的。
 
-* In equation {eq}`rnapex`, the stochastic discount factor $m_{t+1} = \beta$,  a constant.
-* In equation {eq}`rnapex`, the covariance term ${\rm cov}_t (m_{t+1}, d_{t+1}+ p_{t+1})$ is zero because $m_{t+1} = \beta$.
-* In equation {eq}`rnapex`, ${\mathbb E}_t m_{t+1}$ can be interpreted as the reciprocal of the one-period risk-free gross interest rate.
-* When  $m_{t+1}$  covaries more negatively with the payout $p_{t+1} + d_{t+1}$, the price of the asset is lower.
+* 在方程 {eq}`rnapex` 中，随机贴现因子 $m_{t+1} = \beta$，是一个常数。
+* 在方程 {eq}`rnapex` 中，协方差项 ${\rm cov}_t (m_{t+1}, d_{t+1}+ p_{t+1})$ 为零，因为 $m_{t+1} = \beta$。
+* 在方程 {eq}`rnapex` 中，${\mathbb E}_t m_{t+1}$ 可以被解释为一期无风险总利率的倒数。
+* 当 $m_{t+1}$ 与支付 $p_{t+1} + d_{t+1}$ 的负相关性更强时，资产价格会更低。
 
-Equation {eq}`lteeqs102` asserts that the covariance of the stochastic discount factor with the one period payout $d_{t+1} + p_{t+1}$ is an important determinant of the price $p_t$.
+方程 {eq}`lteeqs102` 表明随机贴现因子与一期支付 $d_{t+1} + p_{t+1}$ 的协方差是决定价格 $p_t$ 的重要因素。
 
-We give examples of some models of stochastic discount factors that have been proposed later in this lecture and also in a [later lecture](https://python-advanced.quantecon.org/lucas_model.html).
+我们将在本讲座后面以及[后续讲座](https://python-advanced.quantecon.org/lucas_model.html)中给出一些已提出的随机贴现因子模型的例子。
 
-### The Price-Dividend Ratio
+### 价格-股息比率
 
-Aside from prices, another quantity of interest is the **price-dividend ratio** $v_t := p_t / d_t$.
+除了价格之外，另一个值得关注的量是**价格-股息比率** $v_t := p_t / d_t$。
 
-Let's write down an expression that this ratio should satisfy.
+让我们写下这个比率应该满足的表达式。
 
-We can divide both sides of {eq}`lteeqs0` by $d_t$ to get
+我们可以将{eq}`lteeqs0`的两边都除以$d_t$，得到
 
 ```{math}
 :label: pdex
@@ -189,32 +187,33 @@ We can divide both sides of {eq}`lteeqs0` by $d_t$ to get
 v_t = {\mathbb E}_t \left[ m_{t+1} \frac{d_{t+1}}{d_t} (1 + v_{t+1}) \right]
 ```
 
-Below we'll discuss the implication of this equation.
+下面我们将讨论这个方程的含义。
 
-## Prices in the Risk-Neutral Case
+## 风险中性情况下的价格
 
-What can we say about price dynamics on the basis of the models described above?
+基于上述模型，我们能对价格动态说些什么？
 
-The answer to this question depends on
+这个问题的答案取决于
 
-1. the process we specify for dividends
-1. the stochastic discount factor and how it correlates with dividends
+1. 我们为股息指定的过程
+1. 随机贴现因子及其与股息的相关性
 
-For now we'll study  the risk-neutral case in which  the stochastic discount factor is constant.
+现在我们将研究随机贴现因子为常数的风险中性情况。
 
-We'll  focus on how an asset  price depends on a dividend process.
+我们将重点关注资产价格如何依赖于股息过程。
 
-### Example 1: Constant Dividends
+### 示例1：常数股息
 
-The simplest case is risk-neutral price of a constant, non-random dividend stream $d_t = d > 0$.
+最简单的情况是风险中性价格下的常数、非随机股息流$d_t = d > 0$。
 
-Removing the expectation from {eq}`rnapex` and iterating forward gives
+从{eq}`rnapex`中移除期望并向前迭代得到
 
 $$
 \begin{aligned}
     p_t & = \beta (d + p_{t+1})
         \\
-        & = \beta (d + \beta(d + p_{t+2}))
+
+& = \beta (d + \beta(d + p_{t+2}))
         \\
         & \quad \vdots
         \\
@@ -222,7 +221,7 @@ $$
 \end{aligned}
 $$
 
-If $\lim_{k \rightarrow + \infty} \beta^{k-1} p_{t+k} = 0$, this sequence converges to
+如果 $\lim_{k \rightarrow + \infty} \beta^{k-1} p_{t+k} = 0$，这个序列收敛于
 
 ```{math}
 :label: ddet
@@ -230,47 +229,44 @@ If $\lim_{k \rightarrow + \infty} \beta^{k-1} p_{t+k} = 0$, this sequence conver
 \bar p := \frac{\beta d}{1-\beta}
 ```
 
-This is the equilibrium price in the constant dividend case.
+这是常数股息情况下的均衡价格。
 
-Indeed, simple algebra shows that setting $p_t = \bar p$ for all $t$
-satisfies the difference equation $p_t = \beta (d + p_{t+1})$.
+事实上，简单的代数运算表明，对所有 $t$ 设定 $p_t = \bar p$ 满足差分方程 $p_t = \beta (d + p_{t+1})$。
 
-### Example 2: Dividends with Deterministic Growth Paths
+### 示例2：具有确定性增长路径的股息
 
-Consider a growing, non-random dividend process $d_{t+1} = g d_t$
-where $0 < g \beta < 1$.
+考虑一个增长的、非随机的股息过程 $d_{t+1} = g d_t$，其中 $0 < g \beta < 1$。
 
-While prices are not usually constant when dividends grow over time, a price
-dividend-ratio can be.
+虽然当股息随时间增长时价格通常不是常数，但价格-股息比可以是常数。
 
-If we guess this, substituting $v_t = v$ into {eq}`pdex` as well as our
-other assumptions, we get $v = \beta g (1 + v)$.
+如果我们猜测这一点，将 $v_t = v$ 代入 {eq}`pdex` 以及我们的其他假设，我们得到 $v = \beta g (1 + v)$。
 
-Since $\beta g < 1$, we have a unique positive solution:
+由于 $\beta g < 1$，我们有一个唯一的正解：
 
 $$
+
 v = \frac{\beta g}{1 - \beta g }
 $$
 
-The price is then
+价格则为
 
 $$
 p_t = \frac{\beta g}{1 - \beta g } d_t
 $$
 
-If, in this example, we take $g = 1+\kappa$ and let
-$\rho := 1/\beta - 1$, then the price becomes
+如果在这个例子中，我们取 $g = 1+\kappa$ 并令
+$\rho := 1/\beta - 1$，则价格变为
 
 $$
 p_t = \frac{1 + \kappa}{ \rho - \kappa} d_t
 $$
 
-This is called the *Gordon formula*.
+这被称为*戈登公式*。
 
 (mass_mg)=
-### Example 3: Markov Growth, Risk-Neutral Pricing
+### 例3：马尔可夫增长，风险中性定价
 
-Next, we consider a dividend process
+接下来，我们考虑一个股息过程
 
 ```{math}
 :label: mass_fmce
@@ -278,38 +274,39 @@ Next, we consider a dividend process
 d_{t+1} = g_{t+1} d_t
 ```
 
-The stochastic growth factor $\{g_t\}$ is given by
+随机增长因子 $\{g_t\}$ 由下式给出
 
 $$
 g_t = g(X_t), \quad t = 1, 2, \ldots
 $$
 
-where
+其中
 
-1. $\{X_t\}$ is a finite Markov chain with state space $S$ and
-   transition probabilities
+1. $\{X_t\}$ 是一个有限马尔可夫链，具有状态空间 $S$ 和
+   转移概率
 
    $$
    P(x, y) := \mathbb P \{ X_{t+1} = y \,|\, X_t = x \}
    \qquad (x, y \in S)
    $$
 
-1. $g$ is a given function on $S$ taking nonnegative values
+1. $g$ 是定义在 $S$ 上的一个非负值函数
 
-You can think of
+你可以将
 
-* $S$ as $n$ possible "states of the world" and $X_t$ as the
-  current state.
-* $g$ as a function that maps a given state $X_t$ into a growth of dividends
-  factor $g_t = g(X_t)$.
-* $\ln g_t = \ln (d_{t+1} / d_t)$ is the growth rate of dividends.
+* $S$ 理解为 $n$ 个可能的"世界状态"，$X_t$ 为
+  当前状态。
+* $g$ 理解为一个函数，它将给定状态 $X_t$ 映射到股息
+  增长因子 $g_t = g(X_t)$。
 
-(For a refresher on notation and theory for finite Markov chains see {doc}`this lecture <finite_markov>`)
+* $\ln g_t = \ln (d_{t+1} / d_t)$ 是股息的增长率。
 
-The next figure shows a simulation, where
+（关于有限马尔可夫链的符号和理论复习，请参见{doc}`本讲座 <finite_markov>`）
 
-* $\{X_t\}$ evolves as a discretized AR1 process produced using {ref}`Tauchen's method <fm_ex3>`.
-* $g_t = \exp(X_t)$, so that $\ln g_t = X_t$ is the growth rate.
+下图显示了一个模拟，其中
+
+* $\{X_t\}$ 作为使用{ref}`陶臣方法 <fm_ex3>`生成的离散化AR1过程演变。
+* $g_t = \exp(X_t)$，因此 $\ln g_t = X_t$ 是增长率。
 
 ```{code-cell} ipython
 n = 7
@@ -318,7 +315,7 @@ sim_length = 80
 
 x_series = mc.simulate(sim_length, init=np.median(mc.state_values))
 g_series = np.exp(x_series)
-d_series = np.cumprod(g_series) # Assumes d_0 = 1
+d_series = np.cumprod(g_series) # 假设 d_0 = 1
 
 series = [x_series, g_series, d_series, np.log(d_series)]
 labels = ['$X_t$', '$g_t$', '$d_t$', r'$\log \, d_t$']
@@ -331,29 +328,29 @@ plt.tight_layout()
 plt.show()
 ```
 
-#### Pricing Formula
+#### 定价公式
 
-To obtain asset prices in this setting, let's adapt our analysis from the case of deterministic growth.
+在这种情况下，让我们从确定性增长的情况来调整我们的分析，以获得资产价格。
 
-In that case, we found that $v$ is constant.
+在那种情况下，我们发现 $v$ 是常数。
 
-This encourages us to guess that, in the current case, $v_t$ is a fixed function of the state $X_t$.
+这鼓励我们猜测，在当前情况下，$v_t$ 是状态 $X_t$ 的固定函数。
 
-We seek a function $v$ such that the price-dividend ratio satisfies  $v_t = v(X_t)$.
+我们寻找一个函数 $v$，使得价格-股息比满足 $v_t = v(X_t)$。
 
-We can substitute this guess into {eq}`pdex` to get
+我们可以将这个猜测代入 {eq}`pdex` 得到
 
 $$
 v(X_t) = \beta {\mathbb E}_t [ g(X_{t+1}) (1 + v(X_{t+1})) ]
 $$
 
-If we condition on $X_t = x$, this becomes
+如果我们以 $X_t = x$ 为条件，这变成
 
 $$
 v(x) = \beta \sum_{y \in S}  g(y) (1 + v(y)) P(x, y)
 $$
 
-or
+或
 
 ```{math}
 :label: pstack
@@ -363,9 +360,9 @@ v(x) = \beta \sum_{y \in S}   K(x, y) (1 + v(y))
 K(x, y) := g(y) P(x, y)
 ```
 
-Suppose that there are $n$ possible states $x_1, \ldots, x_n$.
+假设有 $n$ 个可能的状态 $x_1, \ldots, x_n$。
 
-We can then think of {eq}`pstack` as $n$ stacked equations, one for each state, and write it in matrix form as
+我们可以将 {eq}`pstack` 看作 $n$ 个堆叠的方程，每个状态对应一个方程，并以矩阵形式写成
 
 ```{math}
 :label: vcumrn
@@ -373,19 +370,19 @@ We can then think of {eq}`pstack` as $n$ stacked equations, one for each state, 
 v = \beta K (\mathbb 1 + v)
 ```
 
-Here
+这里
 
-* $v$ is understood to be the column vector $(v(x_1), \ldots, v(x_n))'$.
-* $K$ is the matrix $(K(x_i, x_j))_{1 \leq i, j \leq n}$.
-* ${\mathbb 1}$ is a column vector of ones.
+* $v$ 被理解为列向量 $(v(x_1), \ldots, v(x_n))'$。
+* $K$ 是矩阵 $(K(x_i, x_j))_{1 \leq i, j \leq n}$。
+* ${\mathbb 1}$ 是一个全为1的列向量。
 
-When does equation {eq}`vcumrn` have a unique solution?
+方程 {eq}`vcumrn` 何时有唯一解？
 
-From the {ref}`Neumann series lemma <la_neumann>` and Gelfand's formula, equation {eq}`vcumrn` has a unique solution when $\beta K$ has spectral radius strictly less than one.
+根据{ref}`诺伊曼级数引理 <la_neumann>`和盖尔范德公式，当 $\beta K$ 的谱半径严格小于1时，方程 {eq}`vcumrn` 有唯一解。
 
-Thus,  we require that the eigenvalues of $K$  be strictly less than $\beta^{-1}$ in modulus.
+因此，我们要求 $K$ 的特征值的模严格小于 $\beta^{-1}$。
 
-The solution is then
+解为
 
 ```{math}
 :label: rned
@@ -393,22 +390,22 @@ The solution is then
 v = (I - \beta K)^{-1} \beta K{\mathbb 1}
 ```
 
-### Code
+### 代码
 
-Let's calculate and plot the price-dividend ratio at some parameters.
+让我们计算并绘制某些参数下的价格-股息比。
 
-As before, we'll generate $\{X_t\}$  as a {ref}`discretized AR1 process <fm_ex3>` and set $g_t = \exp(X_t)$.
+和之前一样，我们将生成 $\{X_t\}$ 作为一个{ref}`离散化的AR1过程 <fm_ex3>`，并设定 $g_t = \exp(X_t)$。
 
-Here's the code, including a test of the spectral radius condition
+这是代码，包括对谱半径条件的测试
 
 ```{code-cell} python3
-n = 25  # Size of state space
+n = 25  # 状态空间大小
 β = 0.9
 mc = qe.tauchen(n, 0.96, 0.02)
 
 K = mc.P * np.exp(mc.state_values)
 
-warning_message = "Spectral radius condition fails"
+warning_message = "谱半径条件不满足"
 assert np.max(np.abs(eigvals(K))) < 1 / β,  warning_message
 
 I = np.identity(n)
@@ -416,51 +413,51 @@ v = solve(I - β * K, β * K @ np.ones(n))
 
 fig, ax = plt.subplots()
 ax.plot(mc.state_values, v, 'g-o', lw=2, alpha=0.7, label='$v$')
-ax.set_ylabel("price-dividend ratio")
-ax.set_xlabel("state")
+ax.set_ylabel("价格-股息比")
+ax.set_xlabel("状态")
 ax.legend(loc='upper left')
 plt.show()
 ```
 
-Why does the price-dividend ratio increase with the state?
+为什么价格-股息比率随状态增加？
 
-The reason is that this Markov process is positively correlated, so high
-current states suggest high future states.
+原因是这个马尔可夫过程具有正相关性，所以当前的高状态预示着未来的高状态。
 
-Moreover, dividend growth is increasing in the state.
+此外，股息增长随状态增加。
 
-The anticipation of high future dividend growth leads to a high price-dividend ratio.
+对未来高股息增长的预期导致了高价格-股息比率。
 
-## Risk Aversion and Asset Prices
+## 风险规避与资产价格
 
-Now let's turn to the case where agents are risk averse.
+现在让我们来看看当代理人具有风险规避性时的情况。
 
-We'll price several distinct assets, including
+我们将对几种不同的资产定价，包括：
 
-* An endowment stream
-* A consol (a type of bond issued by the UK government in the 19th century)
-* Call options on a consol
+* 禀赋流
+* 永续债券（19世纪英国政府发行的一种债券）
+* 永续债券的看涨期权
 
-### Pricing a Lucas Tree
+### 卢卡斯树模型定价
 
 ```{index} single: Finite Markov Asset Pricing; Lucas Tree
 ```
 
-Let's start with a version of the celebrated asset pricing model of Robert E. Lucas, Jr. {cite}`Lucas1978`.
+让我们从Robert E. Lucas, Jr.的著名资产定价模型的一个版本开始 {cite}`Lucas1978`。
 
-Lucas considered an abstract pure exchange economy with these features:
+卢卡斯考虑了一个具有以下特征的抽象纯交换经济：
 
-* a single non-storable consumption good
-* a Markov process that governs the total amount of the consumption good available each period
-* a single *tree* that each period yields *fruit* that equals the total amount of consumption available to the economy
-* a competitive market in  *shares* in the tree that entitles their owners to corresponding shares of the *dividend* stream, i.e., the *fruit* stream, yielded by the tree
+* 一种不可储存的消费品
+* 一个控制每期可获得的消费品总量的马尔可夫过程
 
-* a representative consumer who in a competitive equilibrium
+* 一棵单独的*树*，每个时期产出的*果实*等于经济体可用的总消费量
+* 一个*股份*的竞争市场，股份所有者有权获得相应比例的*股息*流，即树产出的*果实*流
 
-    * consumes the economy's entire endowment each period
-    * owns 100 percent of the shares in the tree
+* 一个代表性消费者在竞争均衡中
 
-As in {cite}`Lucas1978`, we suppose that the stochastic discount factor takes the form
+    * 每期消费经济体的全部禀赋
+    * 拥有树的100%股份
+
+如{cite}`Lucas1978`所述，我们假设随机贴现因子的形式为
 
 ```{math}
 :label: lucsdf
@@ -468,18 +465,17 @@ As in {cite}`Lucas1978`, we suppose that the stochastic discount factor takes th
 m_{t+1} = \beta \frac{u'(c_{t+1})}{u'(c_t)}
 ```
 
-where $u$ is a concave utility function and $c_t$ is time $t$ consumption of a representative consumer.
+其中$u$是一个凹效用函数，$c_t$是代表性消费者在$t$时期的消费。
 
-(A derivation of this expression is given in a [later lecture](https://python-advanced.quantecon.org/lucas_model.html))
+(这个表达式的推导在[后面的讲座](https://python-advanced.quantecon.org/lucas_model.html)中给出)
 
-Assume the existence of an endowment that follows growth process {eq}`mass_fmce`.
+假设存在一个遵循增长过程{eq}`mass_fmce`的禀赋。
 
-The asset being priced is a claim on the endowment process, i.e., the *Lucas tree* described above.
+定价的资产是对禀赋过程的一种权利要求，即上述所描述的*卢卡斯树*。
 
-Following {cite}`Lucas1978`, we suppose  that in equilibrium the representative consumer's  consumption equals the aggregate endowment, so that $d_t = c_t$ for all $t$.
+根据{cite}`Lucas1978`，我们假设在均衡状态下，代表性消费者的消费等于总体禀赋，因此对所有时间$t$都有$d_t = c_t$。
 
-For utility, we'll assume the **constant relative risk aversion** (CRRA)
-specification
+对于效用函数，我们采用**常相对风险厌恶**（CRRA）规范
 
 ```{math}
 :label: eqCRRA
@@ -487,9 +483,9 @@ specification
 u(c) = \frac{c^{1-\gamma}}{1 - \gamma} \ {\rm with} \ \gamma > 0
 ```
 
-When $\gamma =1$ we let $u(c) = \ln c$.
+当$\gamma =1$时，我们令$u(c) = \ln c$。
 
-Inserting the CRRA specification into {eq}`lucsdf` and using $c_t = d_t$ gives
+将CRRA规范代入{eq}`lucsdf`并使用$c_t = d_t$得到
 
 ```{math}
 :label: lucsdf2
@@ -499,8 +495,7 @@ m_{t+1}
 = \beta g_{t+1}^{-\gamma}
 ```
 
-Substituting this into {eq}`pdex` gives the price-dividend ratio
-formula
+将此代入{eq}`pdex`得到价格-股息比率公式
 
 $$
 v(X_t)
@@ -510,26 +505,26 @@ v(X_t)
 \right]
 $$ (eq:neweqn101)
 
-Conditioning on $X_t = x$, we can write this as
+在$X_t = x$的条件下，我们可以将其写作
 
 $$
 v(x)
 = \beta \sum_{y \in S} g(y)^{1-\gamma} (1 + v(y) ) P(x, y)
 $$
 
-If we let
+如果我们令
 
 $$
 J(x, y) := g(y)^{1-\gamma}  P(x, y)
 $$
 
-then we can rewrite equation {eq}`eq:neweqn101` in vector form as
+那么我们可以将方程 {eq}`eq:neweqn101` 用向量形式重写为
 
 $$
 v = \beta J ({\mathbb 1} + v )
 $$
 
-Assuming that the spectral radius of $J$ is strictly less than $\beta^{-1}$, this equation has the unique solution
+假设 $J$ 的谱半径严格小于 $\beta^{-1}$，这个方程有唯一解
 
 ```{math}
 :label: resolvent2
@@ -537,32 +532,30 @@ Assuming that the spectral radius of $J$ is strictly less than $\beta^{-1}$, thi
 v = (I - \beta J)^{-1} \beta  J {\mathbb 1}
 ```
 
-We will define a function tree_price to compute $v$ given parameters stored in
-the class AssetPriceModel
+我们将定义一个函数 tree_price 来计算 $v$，其参数存储在 AssetPriceModel 类中
 
 ```{code-cell} python3
 class AssetPriceModel:
     """
-    A class that stores the primitives of the asset pricing model.
+    一个存储资产定价模型基本要素的类。
 
-    Parameters
+    参数
     ----------
-    β : scalar, float
-        Discount factor
+    β : 标量, float
+        贴现因子
     mc : MarkovChain
-        Contains the transition matrix and set of state values for the state
-        process
-    γ : scalar(float)
-        Coefficient of risk aversion
-    g : callable
-        The function mapping states to growth rates
+        包含状态过程的转移矩阵和状态值集合
+    γ : 标量(float)
+        风险厌恶系数
+    g : 可调用对象
+        将状态映射到增长率的函数
 
     """
     def __init__(self, β=0.96, mc=None, γ=2.0, g=np.exp):
         self.β, self.γ = β, γ
         self.g = g
 
-        # A default process for the Markov chain
+        # Markov链的默认过程
         if mc is None:
             self.ρ = 0.9
             self.σ = 0.02
@@ -574,37 +567,37 @@ class AssetPriceModel:
 
     def test_stability(self, Q):
         """
-        Stability test for a given matrix Q.
+        对给定矩阵Q进行稳定性测试。
         """
         sr = np.max(np.abs(eigvals(Q)))
         if not sr < 1 / self.β:
-            msg = f"Spectral radius condition failed with radius = {sr}"
+            msg = f"谱半径条件失败，半径 = {sr}"
             raise ValueError(msg)
 
 
 def tree_price(ap):
     """
-    Computes the price-dividend ratio of the Lucas tree.
+    计算卢卡斯树的价格-股息比率。
 
-    Parameters
+    参数
     ----------
     ap: AssetPriceModel
-        An instance of AssetPriceModel containing primitives
+        包含基本要素的AssetPriceModel实例
 
-    Returns
+    返回值
     -------
     v : array_like(float)
-        Lucas tree price-dividend ratio
+        卢卡斯树价格-股息比率
 
     """
-    # Simplify names, set up matrices
+    # 简化名称，设置矩阵
     β, γ, P, y = ap.β, ap.γ, ap.mc.P, ap.mc.state_values
     J = P * ap.g(y)**(1 - γ)
 
-    # Make sure that a unique solution exists
+    # 确保存在唯一解
     ap.test_stability(J)
 
-    # Compute v
+    # 计算v
     I = np.identity(ap.n)
     Ones = np.ones(ap.n)
     v = solve(I - β * J, β * J @ Ones)
@@ -612,8 +605,8 @@ def tree_price(ap):
     return v
 ```
 
-Here's a plot of $v$ as a function of the state for several values of $\gamma$,
-with a positively correlated Markov process and $g(x) = \exp(x)$
+这是在几个不同 $\gamma$ 值下 $v$ 作为状态函数的图表，
+其中包含一个正相关的马尔可夫过程和 $g(x) = \exp(x)$
 
 ```{code-cell} python3
 γs = [1.2, 1.4, 1.6, 1.8, 2.0]
@@ -627,25 +620,24 @@ for γ in γs:
     v = tree_price(ap)
     ax.plot(states, v, lw=2, alpha=0.6, label=rf"$\gamma = {γ}$")
 
-ax.set_title('Price-dividend ratio as a function of the state')
-ax.set_ylabel("price-dividend ratio")
-ax.set_xlabel("state")
+ax.set_title('价格-股息比作为状态的函数')
+ax.set_ylabel("价格-股息比")
+ax.set_xlabel("状态")
 ax.legend(loc='upper right')
 plt.show()
 ```
 
-Notice that $v$ is decreasing in each case.
+注意在每种情况下$v$都是递减的。
 
-This is because, with a positively correlated state process, higher states indicate higher future consumption growth.
+这是因为，在状态过程正相关的情况下，较高的状态意味着未来消费增长更高。
 
-With the stochastic discount factor {eq}`lucsdf2`, higher growth decreases the
-discount factor, lowering the weight placed on future dividends.
+根据随机贴现因子{eq}`lucsdf2`，更高的增长会降低贴现因子，从而降低对未来股息的权重。
 
-#### Special Cases
+#### 特殊情况
 
-In the special case $\gamma =1$, we have $J = P$.
+在特殊情况$\gamma =1$时，我们有$J = P$。
 
-Recalling that $P^i {\mathbb 1} = {\mathbb 1}$ for all $i$ and applying {ref}`Neumann's geometric series lemma <la_neumann>`, we are led to
+回想一下对所有$i$都有$P^i {\mathbb 1} = {\mathbb 1}$，并应用{ref}`诺伊曼几何级数引理 <la_neumann>`，我们得到
 
 $$
 v = \beta(I-\beta P)^{-1} {\mathbb 1}
@@ -653,33 +645,32 @@ v = \beta(I-\beta P)^{-1} {\mathbb 1}
 = \beta \frac{1}{1 - \beta} {\mathbb 1}
 $$
 
-Thus, with log preferences, the price-dividend ratio for a Lucas tree is constant.
+因此，在对数效用偏好下，卢卡斯树的价格-股息比是常数。
 
-Alternatively, if $\gamma = 0$, then $J = K$ and we recover the
-risk-neutral solution {eq}`rned`.
+另外，如果$\gamma = 0$，那么$J = K$，我们就得到了风险中性解{eq}`rned`。
 
-This is as expected, since $\gamma = 0$ implies $u(c) = c$ (and hence agents are risk-neutral).
+这是符合预期的，因为$\gamma = 0$意味着$u(c) = c$（因此代理人是风险中性的）。
 
-### A Risk-Free Consol
+### 无风险永续债券
 
-Consider the same pure exchange representative agent economy.
+考虑相同的纯交换代表性代理人经济。
 
-A risk-free consol promises to pay a constant amount  $\zeta> 0$ each period.
+一个无风险永续债承诺每期支付固定金额 $\zeta> 0$。
 
-Recycling notation, let $p_t$ now be the price of an  ex-coupon claim to the consol.
+沿用之前的符号，让 $p_t$ 现在表示除息永续债权的价格。
 
-An ex-coupon claim to the consol entitles an owner at the end of period $t$ to
+在t期末，除息永续债权的所有者有权获得：
 
-* $\zeta$ in period $t+1$, plus
-* the right to sell the claim for $p_{t+1}$ next period
+* 第t+1期的 $\zeta$ 收益，以及
+* 下一期以 $p_{t+1}$ 价格出售该权益的权利
 
-The price satisfies {eq}`lteeqs0` with $d_t = \zeta$, or
+价格满足{eq}`lteeqs0`，其中 $d_t = \zeta$，即
 
 $$
 p_t = {\mathbb E}_t \left[ m_{t+1}  ( \zeta + p_{t+1} ) \right]
 $$
 
-With the stochastic discount factor {eq}`lucsdf2`, this becomes
+结合随机贴现因子{eq}`lucsdf2`，这变成
 
 ```{math}
 :label: consolguess1
@@ -688,16 +679,14 @@ p_t
 = {\mathbb E}_t \left[ \beta g_{t+1}^{-\gamma}  ( \zeta + p_{t+1} ) \right]
 ```
 
-Guessing a solution of the form $p_t = p(X_t)$ and conditioning on
-$X_t = x$, we get
+假设解的形式为 $p_t = p(X_t)$ 并且在条件 $X_t = x$ 下，我们得到
 
 $$
 p(x)
 = \beta \sum_{y \in S}  g(y)^{-\gamma} (\zeta + p(y)) P(x, y)
 $$
 
-Letting $M(x, y) = P(x, y) g(y)^{-\gamma}$ and rewriting in vector notation
-yields the solution
+令 $M(x, y) = P(x, y) g(y)^{-\gamma}$ 并用向量符号重写，得到解
 
 ```{math}
 :label: consol_price
@@ -705,35 +694,35 @@ yields the solution
 p = (I - \beta M)^{-1} \beta M \zeta {\mathbb 1}
 ```
 
-The above is implemented in the function consol_price.
+上述公式在函数consol_price中实现。
 
 ```{code-cell} python3
 def consol_price(ap, ζ):
     """
-    Computes price of a consol bond with payoff ζ
+    计算支付额为ζ的永续债券价格
 
-    Parameters
+    参数
     ----------
     ap: AssetPriceModel
-        An instance of AssetPriceModel containing primitives
+        包含基本要素的AssetPriceModel实例
 
-    ζ : scalar(float)
-        Coupon of the console
+    ζ : 标量(float)
+        永续债券的票息
 
-    Returns
+    返回值
     -------
     p : array_like(float)
-        Console bond prices
+        永续债券价格
 
     """
-    # Simplify names, set up matrices
+    # 简化名称，设置矩阵
     β, γ, P, y = ap.β, ap.γ, ap.mc.P, ap.mc.state_values
     M = P * ap.g(y)**(- γ)
 
-    # Make sure that a unique solution exists
+    # 确保存在唯一解
     ap.test_stability(M)
 
-    # Compute price
+    # 计算价格
     I = np.identity(ap.n)
     Ones = np.ones(ap.n)
     p = solve(I - β * M, β * ζ * M @ Ones)
@@ -741,33 +730,32 @@ def consol_price(ap, ζ):
     return p
 ```
 
-### Pricing an Option to Purchase the Consol
+### 定价购买永续债券的期权
 
-Let's now price options of various maturities.
+让我们现在来为不同期限的期权定价。
 
-We'll study an option that  gives the owner the  right to purchase a consol at a price $p_S$.
+我们将研究一个期权，它赋予持有人以价格$p_S$购买永续债券的权利。
 
-#### An Infinite Horizon Call Option
+#### 无限期限看涨期权
 
-We want to price an *infinite horizon*  option to purchase a consol at a price $p_S$.
+我们要为以价格$p_S$购买永续债券的*无限期限*期权定价。
 
-The option entitles the owner at the beginning of a period either
+该期权赋予持有人在期初两个选择：
 
-1. to purchase the bond at price $p_S$ now, or
-1. not to exercise the option to purchase the asset now but to retain the right to exercise it later
+1. 现在以价格$p_S$购买债券，或者
+1. 现在不行使购买资产的期权，但保留以后行使的权利
 
-Thus, the owner either *exercises* the option now or chooses *not to exercise* and wait until next period.
+因此，持有人要么现在*行使*期权，要么选择*不行使*并等到下一期。
 
-This is termed an infinite-horizon *call option* with *strike price* $p_S$.
+这被称为具有*执行价格*$p_S$的无限期限*看涨期权*。
 
-The owner of the option is entitled to purchase the consol at  price $p_S$ at the beginning of any period, after the coupon has been paid to the previous owner of the bond.
+期权持有人有权在任何期初以价格$p_S$购买永续债券，此时息票已支付给债券的前任持有人。
 
-The fundamentals of the economy are identical with the one above, including the stochastic discount factor and the process for consumption.
+经济基本面与上述相同，包括随机贴现因子和消费过程。
 
-Let $w(X_t, p_S)$ be the value of the option when the time $t$ growth state is known to be $X_t$ but *before* the owner has decided whether to exercise the option
-at time $t$ (i.e., today).
+设 $w(X_t, p_S)$ 为在已知时间 $t$ 的增长状态为 $X_t$ 但*在*所有者决定是否在时间 $t$（即今天）行使期权*之前*的期权价值。
 
-Recalling that $p(X_t)$ is the value of the consol when the initial growth state is $X_t$, the value of the option satisfies
+回顾 $p(X_t)$ 是初始增长状态为 $X_t$ 时永续债券的价值，期权价值满足
 
 $$
 w(X_t, p_S)
@@ -777,9 +765,9 @@ w(X_t, p_S)
 \right\}
 $$
 
-The first term on the right is the value of waiting, while the second is the value of exercising now.
+右边的第一项是等待的价值，而第二项是立即行使的价值。
 
-We can also write this as
+我们也可以将其写作
 
 ```{math}
 :label: FEoption0
@@ -792,8 +780,9 @@ w(x, p_S)
 \right\}
 ```
 
-With $M(x, y) = P(x, y) g(y)^{-\gamma}$ and $w$ as the vector of
-values $(w(x_i), p_S)_{i = 1}^n$, we can express {eq}`FEoption0` as the nonlinear vector equation
+其中 $M(x, y) = P(x, y) g(y)^{-\gamma}$ 且 $w$ 作为向量
+
+对于值 $(w(x_i), p_S)_{i = 1}^n$，我们可以将 {eq}`FEoption0` 表示为非线性向量方程
 
 ```{math}
 :label: FEoption
@@ -801,65 +790,64 @@ values $(w(x_i), p_S)_{i = 1}^n$, we can express {eq}`FEoption0` as the nonlinea
 w = \max \{ \beta M w, \; p - p_S {\mathbb 1} \}
 ```
 
-To solve {eq}`FEoption`, form an operator $T$ that maps vector $w$
-into vector $Tw$ via
+为了求解 {eq}`FEoption`，构造一个算子 $T$，将向量 $w$ 映射到向量 $Tw$，通过
 
 $$
 T w
 = \max \{ \beta M w,\; p - p_S {\mathbb 1} \}
 $$
 
-Start at some initial $w$ and iterate with $T$ to convergence .
+从某个初始 $w$ 开始，通过 $T$ 迭代直至收敛。
 
-We can find the solution with the following function call_option
+我们可以通过以下 call_option 函数找到解
 
 ```{code-cell} python3
 def call_option(ap, ζ, p_s, ϵ=1e-7):
     """
-    Computes price of a call option on a consol bond.
+    计算永续债券看涨期权的价格。
 
-    Parameters
+    参数
     ----------
     ap: AssetPriceModel
-        An instance of AssetPriceModel containing primitives
+        包含基本要素的AssetPriceModel实例
 
     ζ : scalar(float)
-        Coupon of the console
+        永续债券的息票
 
     p_s : scalar(float)
-        Strike price
+        执行价格
 
     ϵ : scalar(float), optional(default=1e-8)
-        Tolerance for infinite horizon problem
+        无限期问题的容差
 
-    Returns
+    返回值
     -------
     w : array_like(float)
-        Infinite horizon call option prices
+        无限期看涨期权价格
 
     """
-    # Simplify names, set up matrices
+    # 简化名称，设置矩阵
     β, γ, P, y = ap.β, ap.γ, ap.mc.P, ap.mc.state_values
     M = P * ap.g(y)**(- γ)
 
-    # Make sure that a unique consol price exists
+    # 确保存在唯一的永续债券价格
     ap.test_stability(M)
 
-    # Compute option price
+    # 计算期权价格
     p = consol_price(ap, ζ)
     w = np.zeros(ap.n)
     error = ϵ + 1
     while error > ϵ:
-        # Maximize across columns
+        # 在列之间取最大值
         w_new = np.maximum(β * M @ w, p - p_s)
-        # Find maximal difference of each component and update
+        # 找到每个分量的最大差异并更新
         error = np.amax(np.abs(w - w_new))
         w = w_new
 
     return w
 ```
 
-Here's a plot of $w$ compared to the consol price when $P_S = 40$
+当 $P_S = 40$ 时，这是 $w$ 与永续债价格的对比图
 
 ```{code-cell} python3
 ap = AssetPriceModel(β=0.9)
@@ -871,84 +859,81 @@ p = consol_price(ap, ζ)
 w = call_option(ap, ζ, strike_price)
 
 fig, ax = plt.subplots()
-ax.plot(x, p, 'b-', lw=2, label='consol price')
-ax.plot(x, w, 'g-', lw=2, label='value of call option')
-ax.set_xlabel("state")
+ax.plot(x, p, 'b-', lw=2, label='永续债价格')
+ax.plot(x, w, 'g-', lw=2, label='看涨期权价值')
+ax.set_xlabel("状态")
 ax.legend(loc='upper right')
 plt.show()
 ```
 
-In high values of the Markov growth state, the value of the option is close to zero.
+在马尔可夫增长状态的高值时，期权的价值接近于零。
 
-This is despite the facts that the Markov chain is irreducible and that low states ---
-where the consol prices are high --- will be visited recurrently.
+尽管马尔可夫链是不可约的，且低状态（永续债券价格较高的状态）会被反复访问，但情况仍是如此。
 
-The reason for low valuations in high Markov growth states is that $\beta=0.9$, so  future payoffs are  discounted substantially.
+在马尔可夫增长状态较高时估值较低的原因是$\beta=0.9$，因此未来收益被大幅贴现。
 
-### Risk-Free Rates
+### 无风险利率
 
-Let's look at risk-free interest rates over different periods.
+让我们看看不同期限的无风险利率。
 
-#### The One-period Risk-free Interest Rate
+#### 一期无风险利率
 
-As before, the stochastic discount factor is $m_{t+1} = \beta g_{t+1}^{-\gamma}$.
+如前所述，随机贴现因子是$m_{t+1} = \beta g_{t+1}^{-\gamma}$。
 
-It follows that the reciprocal $R_t^{-1}$ of the gross risk-free interest rate $R_t$ in state $x$ is
+因此，在状态$x$下的无风险利率$R_t$的倒数$R_t^{-1}$为
 
 $$
 {\mathbb E}_t m_{t+1} = \beta \sum_{y \in S} P(x, y) g(y)^{-\gamma}
 $$
 
-We can write this as
+我们可以将其写作
 
 $$
 m_1 = \beta M {\mathbb 1}
 $$
 
-where the $i$-th  element of $m_1$ is the reciprocal of the one-period gross risk-free interest rate in state $x_i$.
+其中$m_1$的第$i$个元素是状态$x_i$中一期无风险总利率的倒数。
 
-#### Other Terms
+#### 其他期限
 
-Let $m_j$ be an $n \times 1$ vector whose $i$ th component is the reciprocal of the $j$ -period gross risk-free interest rate in state $x_i$.
+设 $m_j$ 为一个 $n \times 1$ 向量，其第 $i$ 个分量是状态 $x_i$ 下第 $j$ 期无风险利率总收益的倒数。
 
-Then $m_1 = \beta M$, and $m_{j+1} = M m_j$ for $j \geq 1$.
+则 $m_1 = \beta M$，且对于 $j \geq 1$，有 $m_{j+1} = M m_j$。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: ma_ex1
 
-In the lecture, we considered **ex-dividend assets**.
+在讲座中，我们考虑了**除息资产**。
 
-A **cum-dividend** asset is a claim to the stream $d_t, d_{t+1}, \ldots$.
+**含息资产**是对收益流 $d_t, d_{t+1}, \ldots$ 的一种权利要求。
 
-Following {eq}`rnapex`, find the risk-neutral asset pricing equation for
-one unit of a cum-dividend asset.
+根据{eq}`rnapex`，请找出一单位含息资产的风险中性资产定价方程。
 
-With a constant, non-random dividend stream $d_t = d > 0$, what is the equilibrium
-price of a cum-dividend asset?
+当股息流为常数且非随机时，即 $d_t = d > 0$，含息资产的均衡价格是多少？
 
-With a growing, non-random dividend process $d_t = g d_t$ where $0 < g \beta < 1$,
-what is the equilibrium price of a cum-dividend asset?
+当股息流以非随机方式增长，即 $d_t = g d_t$ 且 $0 < g \beta < 1$ 时，含息资产的均衡价格是多少？
 ```
 
 ```{solution} ma_ex1
 :class: dropdown
 
-For a cum-dividend asset, the basic risk-neutral asset pricing equation is
+对于含息资产，基本的风险中性资产定价方程是
 
 $$
 p_t = d_t + \beta {\mathbb E}_t [ p_{t+1} ]
 $$
 
 (mass_ex1)=
-With constant dividends, the equilibrium price is
+当股息为常数时，均衡价格为
 
 $$
+
 p_t = \frac{1}{1-\beta} d_t
 $$
 
-With a growing, non-random dividend process, the equilibrium price is
+对于一个增长的、非随机的股息过程，均衡价格为
 
 $$
 p_t = \frac{1}{1 - \beta g} d_t
@@ -959,26 +944,26 @@ $$
 :label: ma_ex2
 ```
 
-Consider the following primitives
+考虑以下基本要素
 
 ```{code-cell} python3
-n = 5  # Size of State Space
+n = 5  # 状态空间大小
 P = np.full((n, n), 0.0125)
 P[range(n), range(n)] += 1 - P.sum(1)
-# State values of the Markov chain
+# 马尔可夫链的状态值
 s = np.array([0.95, 0.975, 1.0, 1.025, 1.05])
 γ = 2.0
 β = 0.94
 ```
 
-Let $g$ be defined by $g(x) = x$  (that is, $g$ is the identity map).
+令 $g$ 由 $g(x) = x$ 定义（即 $g$ 是恒等映射）。
 
-Compute the price of the Lucas tree.
+计算 Lucas 树的价格。
 
-Do the same for
+对以下情况进行相同的计算：
 
-* the price of the risk-free consol when $\zeta = 1$
-* the call option on the consol when $\zeta = 1$ and $p_S = 150.0$
+* 当 $\zeta = 1$ 时无风险永续债券的价格
+* 当 $\zeta = 1$ 且 $p_S = 150.0$ 时永续债券的看涨期权价格
 
 ```{exercise-end}
 ```
@@ -987,13 +972,13 @@ Do the same for
 :class: dropdown
 ```
 
-First, let's enter the parameters:
+首先，让我们输入参数：
 
 ```{code-cell} python3
 n = 5
 P = np.full((n, n), 0.0125)
 P[range(n), range(n)] += 1 - P.sum(1)
-s = np.array([0.95, 0.975, 1.0, 1.025, 1.05])  # State values
+s = np.array([0.95, 0.975, 1.0, 1.025, 1.05])  # 状态值
 mc = qe.MarkovChain(P, state_values=s)
 
 γ = 2.0
@@ -1002,14 +987,13 @@ mc = qe.MarkovChain(P, state_values=s)
 p_s = 150.0
 ```
 
-Next, we'll create an instance of `AssetPriceModel` to feed into the
-functions
+接下来，我们将创建一个`AssetPriceModel`实例来输入到这些函数中
 
 ```{code-cell} python3
 apm = AssetPriceModel(β=β, mc=mc, γ=γ, g=lambda x: x)
 ```
 
-Now we just need to call the relevant functions on the data:
+现在我们只需要对数据调用相关函数：
 
 ```{code-cell} python3
 tree_price(apm)
@@ -1020,10 +1004,10 @@ consol_price(apm, ζ)
 ```
 
 ```{code-cell} python3
-call_option(apm, ζ, p_s)
+看涨期权(apm, ζ, p_s)
 ```
 
-Let's show the last two functions as a plot
+让我们将最后两个函数绘制成图表
 
 ```{code-cell} python3
 fig, ax = plt.subplots()
@@ -1039,20 +1023,19 @@ plt.show()
 ```{exercise}
 :label: ma_ex3
 
-Let's consider finite horizon call options, which are more common than
-infinite horizon ones.
+让我们考虑有限期限的看涨期权,这比无限期限的更常见。
 
-Finite horizon options obey functional equations closely related to {eq}`FEoption0`.
+有限期限期权遵循与{eq}`FEoption0`密切相关的函数方程。
 
-A $k$ period option expires after $k$ periods.
+一个k期期权在k期后到期。
 
-If we view today as date zero, a $k$ period option gives the owner the right to exercise the option to purchase the risk-free consol at the strike price $p_S$ at dates $0, 1, \ldots , k-1$.
+如果我们将今天视为日期零,k期期权赋予所有者在日期0、1、...、k-1时以执行价格$p_S$行使期权购买无风险永续债的权利。
 
-The option expires at time $k$.
+该期权在时间k到期。
 
-Thus, for $k=1, 2, \ldots$, let $w(x, k)$ be the value of a $k$-period option.
+因此,对于k=1,2,...,让w(x,k)表示k期期权的价值。
 
-It obeys
+它遵循
 
 $$
 w(x, k)
@@ -1063,9 +1046,9 @@ w(x, k)
 \right\}
 $$
 
-where $w(x, 0) = 0$ for all $x$.
+其中对所有x,w(x,0) = 0。
 
-We can express this  as a sequence of nonlinear vector equations
+我们可以将其表示为一系列非线性向量方程
 
 $$
 w_k = \max \{ \beta M w_{k-1}, \; p - p_S {\mathbb 1} \}
@@ -1073,43 +1056,44 @@ w_k = \max \{ \beta M w_{k-1}, \; p - p_S {\mathbb 1} \}
   \quad \text{with } w_0 = 0
 $$
 
-Write a function that computes $w_k$ for any given $k$.
+编写一个函数来计算任意给定k的$w_k$。
 
-Compute the value of the option with `k = 5` and `k = 25` using parameter values as in {ref}`ma_ex1`.
+使用{ref}`ma_ex1`中的参数值计算`k = 5`和`k = 25`时的期权价值。
 
-Is one higher than the other?  Can you give intuition?
+哪个更高？你能解释其中的原因吗？
 ```
 
 ```{solution-start} ma_ex3
 :class: dropdown
 ```
 
-Here's a suitable function:
+这里是一个合适的函数：
 
 ```{code-cell} python3
 def finite_horizon_call_option(ap, ζ, p_s, k):
     """
-    Computes k period option value.
+    计算k期期权价值。
     """
-    # Simplify names, set up matrices
+    # 简化名称，设置矩阵
     β, γ, P, y = ap.β, ap.γ, ap.mc.P, ap.mc.state_values
     M = P * ap.g(y)**(- γ)
 
-    # Make sure that a unique solution exists
+    # 确保存在唯一解
     ap.test_stability(M)
 
 
-    # Compute option price
+    # 计算期权价格
     p = consol_price(ap, ζ)
     w = np.zeros(ap.n)
     for i in range(k):
-        # Maximize across columns
+        # 在列之间取最大值
         w = np.maximum(β * M @ w, p - p_s)
 
     return w
 ```
 
-Now let's compute the option values at `k=5` and `k=25`
+
+现在让我们计算在`k=5`和`k=25`时的期权价值
 
 ```{code-cell} python3
 fig, ax = plt.subplots()
@@ -1120,10 +1104,10 @@ ax.legend()
 plt.show()
 ```
 
-Not surprisingly,  options with larger $k$ are worth more.
+不出所料，具有更大$k$值的期权价值更高。
 
-This is because an owner has a longer  horizon over which
- the option can be exercised.
+这是因为期权持有人有更长的时间范围来行使期权。
 
 ```{solution-end}
 ```
+

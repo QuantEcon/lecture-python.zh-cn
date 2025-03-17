@@ -18,16 +18,16 @@ kernelspec:
 </div>
 ```
 
-# A First Look at the Kalman Filter
+# 卡尔曼滤波初探
 
-```{index} single: Kalman Filter
+```{index} single: 卡尔曼滤波
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本课程还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -36,23 +36,23 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-This lecture provides a simple and intuitive introduction to the Kalman filter, for those who either
+本讲座为卡尔曼滤波提供了一个简单直观的介绍，适合以下读者：
 
-* have heard of the Kalman filter but don't know how it works, or
-* know the Kalman filter equations, but don't know where they come from
+* 听说过卡尔曼滤波但不知道它如何工作的人，或者
+* 知道卡尔曼滤波方程但不知道这些方程从何而来的人
 
-For additional (more advanced) reading on the Kalman filter, see
+关于卡尔曼滤波的更多（进阶）阅读材料，请参见：
 
-* {cite}`Ljungqvist2012`, section 2.7
+* {cite}`Ljungqvist2012`，第2.7节
 * {cite}`AndersonMoore2005`
 
-The second reference presents a  comprehensive treatment of the Kalman filter.
+第二个参考文献对卡尔曼滤波进行了全面的阐述。
 
-Required knowledge: Familiarity with matrix manipulations, multivariate normal distributions, covariance matrices, etc.
+所需知识：熟悉矩阵运算、多元正态分布、协方差矩阵等。
 
-We'll need the following imports:
+我们需要以下导入：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
@@ -66,30 +66,27 @@ from scipy.integrate import quad
 from scipy.linalg import eigvals
 ```
 
-## The Basic Idea
+## 基本概念
 
-The Kalman filter has many applications in economics, but for now
-let's pretend that we are rocket scientists.
+卡尔曼滤波在经济学中有许多应用，但现在让我们假装我们是火箭科学家。
 
-A missile has been launched from country Y and our mission is to track it.
+一枚导弹从Y国发射，我们的任务是追踪它。
 
-Let $x  \in \mathbb{R}^2$ denote the current location of the missile---a
-pair indicating latitude-longitude coordinates on a map.
+让 $x \in \mathbb{R}^2$ 表示导弹的当前位置——一个表示地图上经纬度坐标的数对。
 
-At the present moment in time, the precise location $x$ is unknown, but
-we do have some beliefs about $x$.
+在当前时刻，精确位置 $x$ 是未知的，但我们对 $x$ 有一些认知。
 
-One way to summarize our knowledge is a point prediction $\hat x$
+总结我们知识的一种方式是点预测 $\hat x$
 
-* But what if the President wants to know the probability that the missile is currently over the Sea of Japan?
-* Then it is better to summarize our initial beliefs with a bivariate probability density $p$
-  * $\int_E p(x)dx$ indicates the probability that we attach to the missile being in region $E$.
+* 但如果总统想知道导弹目前在日本海上空的概率呢？
+* 那么用二元概率密度 $p$ 来总结我们的初始认知会更好
+  * $\int_E p(x)dx$ 表示我们认为导弹在区域 E 内的概率。
 
-The density $p$ is called our *prior* for the random variable $x$.
+密度 $p$ 被称为随机变量 $x$ 的*先验*。
 
-To keep things tractable in our example,  we  assume that our prior is Gaussian.
+为了使我们的例子便于处理，我们假设我们的先验是高斯分布。
 
-In particular, we take
+特别地，我们采用
 
 ```{math}
 :label: prior
@@ -97,8 +94,7 @@ In particular, we take
 p = N(\hat x, \Sigma)
 ```
 
-where $\hat x$ is the mean of the distribution and $\Sigma$ is a
-$2 \times 2$ covariance matrix.  In our simulations, we will suppose that
+其中 $\hat x$ 是分布的均值，$\Sigma$ 是一个 $2 \times 2$ 的协方差矩阵。在我们的模拟中，我们假设
 
 ```{math}
 :label: kalman_dhxs
@@ -120,60 +116,59 @@ $2 \times 2$ covariance matrix.  In our simulations, we will suppose that
   \right)
 ```
 
-This density $p(x)$ is shown below as a contour map, with the center of the red ellipse being equal to $\hat x$.
+这个密度 $p(x)$ 在下面以等高线图的形式显示，其中红色椭圆的中心等于 $\hat x$。
 
 ```{code-cell} python3
 ---
 tags: [output_scroll]
 ---
-# Set up the Gaussian prior density p
+# 设置高斯先验密度 p
 Σ = [[0.4, 0.3], [0.3, 0.45]]
 Σ = np.matrix(Σ)
 x_hat = np.matrix([0.2, -0.2]).T
-# Define the matrices G and R from the equation y = G x + N(0, R)
+# 从方程 y = G x + N(0, R) 定义矩阵 G 和 R
 G = [[1, 0], [0, 1]]
 G = np.matrix(G)
 R = 0.5 * Σ
-# The matrices A and Q
+# 矩阵 A 和 Q
 A = [[1.2, 0], [0, -0.2]]
 A = np.matrix(A)
 Q = 0.3 * Σ
-# The observed value of y
+# y 的观测值
 y = np.matrix([2.3, -1.9]).T
 
-# Set up grid for plotting
+# 设置绘图网格
 x_grid = np.linspace(-1.5, 2.9, 100)
 y_grid = np.linspace(-3.1, 1.7, 100)
 X, Y = np.meshgrid(x_grid, y_grid)
 
 def bivariate_normal(x, y, σ_x=1.0, σ_y=1.0, μ_x=0.0, μ_y=0.0, σ_xy=0.0):
     """
-    Compute and return the probability density function of bivariate normal
-    distribution of normal random variables x and y
-
-    Parameters
+    计算并返回二元正态分布的概率密度函数
+    
+    参数
     ----------
     x : array_like(float)
-        Random variable
-
+        随机变量
+        
     y : array_like(float)
-        Random variable
-
+        随机变量
+        
     σ_x : array_like(float)
-          Standard deviation of random variable x
-
+          随机变量 x 的标准差
+          
     σ_y : array_like(float)
-          Standard deviation of random variable y
-
+          随机变量 y 的标准差
+          
     μ_x : scalar(float)
-          Mean value of random variable x
-
+          随机变量 x 的均值
+          
     μ_y : scalar(float)
-          Mean value of random variable y
-
+          随机变量 y 的均值
+          
     σ_xy : array_like(float)
-           Covariance of random variables x and y
-
+           随机变量 x 和 y 的协方差
+           
     """
 
     x_μ = x - μ_x
@@ -185,13 +180,13 @@ def bivariate_normal(x, y, σ_x=1.0, σ_y=1.0, μ_x=0.0, μ_y=0.0, σ_xy=0.0):
     return np.exp(-z / (2 * (1 - ρ**2))) / denom
 
 def gen_gaussian_plot_vals(μ, C):
-    "Z values for plotting the bivariate Gaussian N(μ, C)"
+    "用于绘制二元高斯 N(μ, C) 的 Z 值"
     m_x, m_y = float(μ[0]), float(μ[1])
     s_x, s_y = np.sqrt(C[0, 0]), np.sqrt(C[1, 1])
     s_xy = C[0, 1]
     return bivariate_normal(X, Y, s_x, s_y, m_x, m_y, s_xy)
 
-# Plot the figure
+# 绘制图形
 
 fig, ax = plt.subplots(figsize=(10, 8))
 ax.grid()
@@ -204,14 +199,13 @@ ax.clabel(cs, inline=1, fontsize=10)
 plt.show()
 ```
 
-### The Filtering Step
+### 滤波步骤
 
-We are now presented with some good news and some bad news.
+现在我们有一些好消息和坏消息。
 
-The good news is that the missile has been located by our sensors, which report that the current location is $y = (2.3, -1.9)$.
+好消息是我们的传感器已经定位到导弹，报告显示当前位置是$y = (2.3, -1.9)$。
 
-The next figure shows the original prior $p(x)$ and the new reported
-location $y$
+下图显示了原始先验分布$p(x)$和新报告的位置$y$
 
 ```{code-cell} python3
 fig, ax = plt.subplots(figsize=(10, 8))
@@ -226,10 +220,10 @@ ax.text(float(y[0]), float(y[1]), "$y$", fontsize=20, color="black")
 plt.show()
 ```
 
-The bad news is that our sensors are imprecise.
+坏消息是我们的传感器并不精确。
 
-In particular, we should interpret the output of our sensor not as
-$y=x$, but rather as
+具体来说，我们应该将传感器的输出理解为不是
+$y=x$，而是
 
 ```{math}
 :label: kl_measurement_model
@@ -237,52 +231,48 @@ $y=x$, but rather as
 y = G x + v, \quad \text{where} \quad v \sim N(0, R)
 ```
 
-Here $G$ and $R$ are $2 \times 2$ matrices with $R$
-positive definite.  Both are assumed known, and the noise term $v$ is assumed
-to be independent of $x$.
+这里 $G$ 和 $R$ 是 $2 \times 2$ 矩阵，其中 $R$ 是正定矩阵。两者都被假定为已知，且噪声项 $v$ 被假定与 $x$ 独立。
 
-How then should we combine our prior $p(x) = N(\hat x, \Sigma)$ and this
-new information $y$ to improve our understanding of the location of the
-missile?
+那么，我们应该如何将我们的先验 $p(x) = N(\hat x, \Sigma)$ 和这个新信息 $y$ 结合起来，以改进我们对导弹位置的理解呢？
 
-As you may have guessed, the answer is to use Bayes' theorem, which tells
-us to  update our prior $p(x)$ to $p(x \,|\, y)$ via
+正如你可能已经猜到的，答案是使用贝叶斯定理，它告诉我们通过以下方式将先验 $p(x)$ 更新为 $p(x \,|\, y)$：
 
 $$
 p(x \,|\, y) = \frac{p(y \,|\, x) \, p(x)} {p(y)}
 $$
 
-where $p(y) = \int p(y \,|\, x) \, p(x) dx$.
+其中 $p(y) = \int p(y \,|\, x) \, p(x) dx$。
 
-In solving for $p(x \,|\, y)$, we observe that
+在求解 $p(x \,|\, y)$ 时，我们观察到：
 
-* $p(x) = N(\hat x, \Sigma)$.
-* In view of {eq}`kl_measurement_model`, the conditional density $p(y \,|\, x)$ is $N(Gx, R)$.
-* $p(y)$ does not depend on $x$, and enters into the calculations only as a normalizing constant.
+* $p(x) = N(\hat x, \Sigma)$。
+* 根据 {eq}`kl_measurement_model`，条件密度 $p(y \,|\, x)$ 是 $N(Gx, R)$。
 
-Because we are in a linear and Gaussian framework, the updated density can be computed by calculating population linear regressions.
+* $p(y)$ 不依赖于 $x$，在计算中仅作为归一化常数出现。
 
-In particular, the solution is known [^f1] to be
+由于我们处在线性和高斯框架中，可以通过计算总体线性回归来得到更新后的密度。
+
+具体来说，已知解[^f1]为
 
 $$
 p(x \,|\, y) = N(\hat x^F, \Sigma^F)
 $$
 
-where
+其中
 
 ```{math}
 :label: kl_filter_exp
 
 \hat x^F := \hat x + \Sigma G' (G \Sigma G' + R)^{-1}(y - G \hat x)
-\quad \text{and} \quad
+\quad \text{和} \quad
 \Sigma^F := \Sigma - \Sigma G' (G \Sigma G' + R)^{-1} G \Sigma
 ```
 
-Here  $\Sigma G' (G \Sigma G' + R)^{-1}$ is the matrix of population regression coefficients of the hidden object $x - \hat x$ on the surprise $y - G \hat x$.
+这里 $\Sigma G' (G \Sigma G' + R)^{-1}$ 是隐藏对象 $x - \hat x$ 对意外值 $y - G \hat x$ 的总体回归系数矩阵。
 
-This new density $p(x \,|\, y) = N(\hat x^F, \Sigma^F)$ is shown in the next figure via contour lines and the color map.
+下图通过等高线和色彩图展示了这个新的密度 $p(x \,|\, y) = N(\hat x^F, \Sigma^F)$。
 
-The original density is left in as contour lines for comparison
+原始密度以等高线的形式保留作为对比
 
 ```{code-cell} python3
 fig, ax = plt.subplots(figsize=(10, 8))
@@ -303,28 +293,26 @@ ax.text(float(y[0]), float(y[1]), "$y$", fontsize=20, color="black")
 plt.show()
 ```
 
-Our new density twists the prior $p(x)$ in a direction determined by  the new
-information $y - G \hat x$.
+我们的新密度函数按照由新信息 $y - G \hat x$ 决定的方向扭转了先验分布 $p(x)$。
 
-In generating the figure, we set $G$ to the identity matrix and $R = 0.5 \Sigma$ for $\Sigma$ defined in {eq}`kalman_dhxs`.
+在生成图形时，我们将 $G$ 设为单位矩阵，将 $R$ 设为 $0.5 \Sigma$，其中 $\Sigma$ 在{eq}`kalman_dhxs`中定义。
 
 (kl_forecase_step)=
-### The Forecast Step
+### 预测步骤
 
-What have we achieved so far?
+到目前为止我们取得了什么成果？
 
-We have obtained probabilities for the current location of the state (missile) given prior and current information.
+我们已经获得了基于先验和当前信息的状态（导弹）当前位置的概率。
 
-This is called "filtering" rather than forecasting because we are filtering
-out noise rather than looking into the future.
+这被称为"滤波"而不是预测，因为我们是在过滤噪声而不是展望未来。
 
-* $p(x \,|\, y) = N(\hat x^F, \Sigma^F)$ is called the *filtering distribution*
+* $p(x \,|\, y) = N(\hat x^F, \Sigma^F)$ 被称为*滤波分布*
 
-But now let's suppose that we are given another task: to predict the location of the missile after one unit of time (whatever that may be) has elapsed.
+但现在假设我们有另一个任务：预测导弹在一个时间单位（无论是什么单位）后的位置。
 
-To do this we need a model of how the state evolves.
+为此我们需要一个状态演化的模型。
 
-Let's suppose that we have one, and that it's linear and Gaussian. In particular,
+让我们假设我们有这样一个模型，而且它是线性高斯的。具体来说，
 
 ```{math}
 :label: kl_xdynam
@@ -332,13 +320,13 @@ Let's suppose that we have one, and that it's linear and Gaussian. In particular
 x_{t+1} = A x_t + w_{t+1}, \quad \text{where} \quad w_t \sim N(0, Q)
 ```
 
-Our aim is to combine this law of motion and our current distribution $p(x \,|\, y) = N(\hat x^F, \Sigma^F)$ to come up with a new *predictive* distribution for the location in one unit of time.
+我们的目标是将这个运动定律和我们当前的分布 $p(x \,|\, y) = N(\hat x^F, \Sigma^F)$ 结合起来，得出一个新的一个时间单位后位置的*预测*分布。
 
-In view of {eq}`kl_xdynam`, all we have to do is introduce a random vector $x^F \sim N(\hat x^F, \Sigma^F)$ and work out the distribution of $A x^F + w$ where $w$ is independent of $x^F$ and has distribution $N(0, Q)$.
+根据{eq}`kl_xdynam`，我们只需要引入一个随机向量 $x^F \sim N(\hat x^F, \Sigma^F)$ 并计算出 $A x^F + w$ 的分布，其中 $w$ 与 $x^F$ 独立且服从分布 $N(0, Q)$。
 
-Since linear combinations of Gaussians are Gaussian, $A x^F + w$ is Gaussian.
+由于高斯分布的线性组合仍是高斯分布，$A x^F + w$ 也是高斯分布。
 
-Elementary calculations and the expressions in {eq}`kl_filter_exp` tell us that
+基本计算和{eq}`kl_filter_exp`中的表达式告诉我们：
 
 $$
 \mathbb{E} [A x^F + w]
@@ -347,7 +335,7 @@ $$
 = A \hat x + A \Sigma G' (G \Sigma G' + R)^{-1}(y - G \hat x)
 $$
 
-and
+和
 
 $$
 \operatorname{Var} [A x^F + w]
@@ -356,14 +344,13 @@ $$
 = A \Sigma A' - A \Sigma G' (G \Sigma G' + R)^{-1} G \Sigma A' + Q
 $$
 
-The matrix $A \Sigma G' (G \Sigma G' + R)^{-1}$ is often written as
-$K_{\Sigma}$ and called the *Kalman gain*.
+矩阵 $A \Sigma G' (G \Sigma G' + R)^{-1}$ 通常写作 $K_{\Sigma}$ 并称为*卡尔曼增益*。
 
-* The subscript $\Sigma$ has been added to remind us that  $K_{\Sigma}$ depends on $\Sigma$, but not $y$ or $\hat x$.
+* 添加下标 $\Sigma$ 是为了提醒我们 $K_{\Sigma}$ 依赖于 $\Sigma$，而不依赖于 $y$ 或 $\hat x$。
 
-Using this notation, we can summarize our results as follows.
+使用这个符号，我们可以将结果总结如下。
 
-Our updated prediction is the density $N(\hat x_{new}, \Sigma_{new})$ where
+我们更新后的预测是密度 $N(\hat x_{new}, \Sigma_{new})$，其中
 
 ```{math}
 :label: kl_mlom0
@@ -374,10 +361,9 @@ Our updated prediction is the density $N(\hat x_{new}, \Sigma_{new})$ where
 \end{aligned}
 ```
 
-* The density $p_{new}(x) = N(\hat x_{new}, \Sigma_{new})$ is called the *predictive distribution*
+* 密度 $p_{new}(x) = N(\hat x_{new}, \Sigma_{new})$ 被称为*预测分布*
 
-The predictive distribution is the new density shown in the following figure, where
-the update has used parameters.
+预测分布是下图中显示的新密度，其中更新使用了以下参数。
 
 $$
 A
@@ -420,31 +406,31 @@ ax.text(float(y[0]), float(y[1]), "$y$", fontsize=20, color="black")
 plt.show()
 ```
 
-### The Recursive Procedure
+### 递归程序
 
-```{index} single: Kalman Filter; Recursive Procedure
+```{index} single: 卡尔曼滤波器; 递归程序
 ```
 
-Let's look back at what we've done.
+让我们回顾一下我们所做的工作。
 
-We started the current period with a prior $p(x)$ for the location $x$ of the missile.
+我们以导弹位置$x$的先验分布$p(x)$开始当前周期。
 
-We then used the current measurement $y$ to update to $p(x \,|\, y)$.
+然后我们使用当前测量值$y$更新为$p(x \,|\, y)$。
 
-Finally, we used the law of motion {eq}`kl_xdynam` for $\{x_t\}$ to update to $p_{new}(x)$.
+最后，我们使用$\{x_t\}$的运动方程{eq}`kl_xdynam`更新为$p_{new}(x)$。
 
-If we now step into the next period, we are ready to go round again, taking $p_{new}(x)$
-as the current prior.
+如果我们现在进入下一个周期，我们就可以再次循环，将$p_{new}(x)$作为当前先验。
 
-Swapping notation $p_t(x)$ for $p(x)$ and $p_{t+1}(x)$ for $p_{new}(x)$, the full recursive procedure is:
+将符号$p_t(x)$替换为$p(x)$，将$p_{t+1}(x)$替换为$p_{new}(x)$，完整的递归程序为：
 
-1. Start the current period with prior $p_t(x) = N(\hat x_t, \Sigma_t)$.
-1. Observe current measurement $y_t$.
-1. Compute the filtering distribution $p_t(x \,|\, y) = N(\hat x_t^F, \Sigma_t^F)$ from $p_t(x)$ and $y_t$, applying Bayes rule and the conditional distribution {eq}`kl_measurement_model`.
-1. Compute the predictive distribution $p_{t+1}(x) = N(\hat x_{t+1}, \Sigma_{t+1})$ from the filtering distribution and {eq}`kl_xdynam`.
-1. Increment $t$ by one and go to step 1.
+1. 以先验分布$p_t(x) = N(\hat x_t, \Sigma_t)$开始当前周期。
+1. 观察当前测量值$y_t$。
+1. 根据$p_t(x)$和$y_t$计算滤波分布$p_t(x \,|\, y) = N(\hat x_t^F, \Sigma_t^F)$，应用贝叶斯法则和条件分布{eq}`kl_measurement_model`。
 
-Repeating {eq}`kl_mlom0`, the dynamics for $\hat x_t$ and $\Sigma_t$ are as follows
+1. 根据滤波分布和{eq}`kl_xdynam`计算预测分布 $p_{t+1}(x) = N(\hat x_{t+1}, \Sigma_{t+1})$。
+1. 将 $t$ 加一并返回步骤1。
+
+重复{eq}`kl_mlom0`，$\hat x_t$ 和 $\Sigma_t$ 的动态方程如下
 
 ```{math}
 :label: kalman_lom
@@ -455,24 +441,24 @@ Repeating {eq}`kl_mlom0`, the dynamics for $\hat x_t$ and $\Sigma_t$ are as foll
 \end{aligned}
 ```
 
-These are the standard dynamic equations for the Kalman filter (see, for example, {cite}`Ljungqvist2012`, page 58).
+这些是卡尔曼滤波的标准动态方程（参见，例如，{cite}`Ljungqvist2012`，第58页）。
 
 (kalman_convergence)=
-## Convergence
+## 收敛性
 
-The matrix $\Sigma_t$ is a measure of the uncertainty of our prediction $\hat x_t$ of $x_t$.
+矩阵 $\Sigma_t$ 是我们对 $x_t$ 的预测 $\hat x_t$ 的不确定性的度量。
 
-Apart from special cases, this uncertainty will never be fully resolved, regardless of how much time elapses.
+除了特殊情况外，无论经过多长时间，这种不确定性都永远不会完全消除。
 
-One reason is that our prediction $\hat x_t$ is made based on information available at $t-1$, not $t$.
+其中一个原因是我们的预测 $\hat x_t$ 是基于 $t-1$ 时刻的信息而不是 $t$ 时刻的信息。
 
-Even if we know the precise value of $x_{t-1}$ (which we don't), the transition equation {eq}`kl_xdynam` implies that $x_t = A x_{t-1} + w_t$.
+即使我们知道 $x_{t-1}$ 的精确值（实际上我们并不知道），转移方程 {eq}`kl_xdynam` 表明 $x_t = A x_{t-1} + w_t$。
 
-Since the shock $w_t$ is not observable at $t-1$, any time $t-1$ prediction of $x_t$ will incur some error (unless $w_t$ is degenerate).
+由于冲击项 $w_t$ 在 $t-1$ 时不可观测，任何在 $t-1$ 时对 $x_t$ 的预测都会产生一些误差（除非 $w_t$ 是退化的）。
 
-However, it is certainly possible that $\Sigma_t$ converges to a constant matrix as $t \to \infty$.
+然而，$\Sigma_t$ 在 $t \to \infty$ 时收敛到一个常数矩阵是完全可能的。
 
-To study this topic, let's expand the second equation in {eq}`kalman_lom`:
+为了研究这个问题，让我们展开 {eq}`kalman_lom` 中的第二个方程：
 
 ```{math}
 :label: kalman_sdy
@@ -480,9 +466,9 @@ To study this topic, let's expand the second equation in {eq}`kalman_lom`:
 \Sigma_{t+1} = A \Sigma_t A' -  A \Sigma_t G' (G \Sigma_t G' + R)^{-1} G \Sigma_t A' + Q
 ```
 
-This is a nonlinear difference equation in $\Sigma_t$.
+这是一个关于 $\Sigma_t$ 的非线性差分方程。
 
-A fixed point of {eq}`kalman_sdy` is a constant matrix $\Sigma$ such that
+{eq}`kalman_sdy` 的不动点是满足以下条件的常数矩阵 $\Sigma$：
 
 ```{math}
 :label: kalman_dare
@@ -490,30 +476,30 @@ A fixed point of {eq}`kalman_sdy` is a constant matrix $\Sigma$ such that
 \Sigma = A \Sigma A' -  A \Sigma G' (G \Sigma G' + R)^{-1} G \Sigma A' + Q
 ```
 
-Equation {eq}`kalman_sdy` is known as a discrete-time Riccati difference equation.
+方程 {eq}`kalman_sdy` 被称为离散时间里卡提差分方程。
 
-Equation {eq}`kalman_dare` is known as a [discrete-time algebraic Riccati equation](https://en.wikipedia.org/wiki/Algebraic_Riccati_equation).
+方程 {eq}`kalman_dare` 被称为[离散时间代数黎卡提方程](https://en.wikipedia.org/wiki/Algebraic_Riccati_equation)。
 
-Conditions under which a fixed point exists and the sequence $\{\Sigma_t\}$ converges to it are discussed in {cite}`AHMS1996` and {cite}`AndersonMoore2005`, chapter 4.
+关于固定点存在的条件以及序列 $\{\Sigma_t\}$ 收敛到该固定点的条件在 {cite}`AHMS1996` 和 {cite}`AndersonMoore2005` 第4章中有详细讨论。
 
-A sufficient (but not necessary) condition is that all the eigenvalues $\lambda_i$ of $A$ satisfy $|\lambda_i| < 1$ (cf. e.g., {cite}`AndersonMoore2005`, p. 77).
+一个充分（但非必要）条件是 $A$ 的所有特征值 $\lambda_i$ 满足 $|\lambda_i| < 1$（参见 {cite}`AndersonMoore2005`，第77页）。
 
-(This strong condition assures that the unconditional  distribution of $x_t$  converges as $t \rightarrow + \infty$.)
+（这个强条件确保了 $x_t$ 的无条件分布在 $t \rightarrow + \infty$ 时收敛。）
 
-In this case, for any initial choice of $\Sigma_0$ that is both non-negative and symmetric, the sequence $\{\Sigma_t\}$ in {eq}`kalman_sdy` converges to a non-negative symmetric matrix $\Sigma$ that solves {eq}`kalman_dare`.
+在这种情况下，对于任何非负且对称的初始 $\Sigma_0$ 选择，{eq}`kalman_sdy` 中的序列 $\{\Sigma_t\}$ 都会收敛到一个非负对称矩阵 $\Sigma$，该矩阵是 {eq}`kalman_dare` 的解。
 
-## Implementation
+## 实现
 
 ```{index} single: Kalman Filter; Programming Implementation
 ```
 
-The class `Kalman` from the [QuantEcon.py](http://quantecon.org/quantecon-py) package implements the Kalman filter
+来自 [QuantEcon.py](http://quantecon.org/quantecon-py) 包的 `Kalman` 类实现了卡尔曼滤波器
 
-* Instance data consists of:
-    * the moments $(\hat x_t, \Sigma_t)$ of the current prior.
-    * An instance of the [LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py) class from [QuantEcon.py](http://quantecon.org/quantecon-py).
+* 实例数据包括：
+    * 当前先验的矩 $(\hat x_t, \Sigma_t)$
+    * 来自 [QuantEcon.py](http://quantecon.org/quantecon-py) 的 [LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py) 类的一个实例
 
-The latter represents a linear state space model of the form
+后者表示形式如下的线性状态空间模型
 
 $$
 \begin{aligned}
@@ -523,48 +509,48 @@ $$
 \end{aligned}
 $$
 
-where the shocks $w_t$ and $v_t$ are IID standard normals.
+其中冲击项 $w_t$ 和 $v_t$ 是独立同分布的标准正态分布。
 
-To connect this with the notation of this lecture we set
+为了与本讲座的符号保持一致，我们设定
 
 $$
-Q := CC' \quad \text{and} \quad R := HH'
+Q := CC' \quad \text{和} \quad R := HH'
 $$
 
-* The class `Kalman` from the [QuantEcon.py](http://quantecon.org/quantecon-py) package has a number of methods, some that we will wait to use until we study more advanced applications in subsequent lectures.
-* Methods pertinent for this lecture  are:
-    * `prior_to_filtered`, which updates $(\hat x_t, \Sigma_t)$ to $(\hat x_t^F, \Sigma_t^F)$
-    * `filtered_to_forecast`, which updates the filtering distribution to the predictive distribution -- which becomes the new prior $(\hat x_{t+1}, \Sigma_{t+1})$
-    * `update`, which combines the last two methods
-    * a `stationary_values`, which computes the solution to {eq}`kalman_dare` and the corresponding (stationary) Kalman gain
+* 来自 [QuantEcon.py](http://quantecon.org/quantecon-py) 包的 `Kalman` 类有许多方法，其中一些我们会等到后续讲座中学习更高级的应用时再使用。
+* 与本讲座相关的方法有：
 
-You can view the program [on GitHub](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/kalman.py).
+* `prior_to_filtered`，将 $(\hat x_t, \Sigma_t)$ 更新为 $(\hat x_t^F, \Sigma_t^F)$
+    * `filtered_to_forecast`，将滤波分布更新为预测分布 -- 成为新的先验分布 $(\hat x_{t+1}, \Sigma_{t+1})$
+    * `update`，结合上述两种方法
+    * `stationary_values`，计算{eq}`kalman_dare`的解和相应的（稳态）卡尔曼增益
 
-## Exercises
+你可以在[GitHub](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/kalman.py)上查看程序。
+
+## 练习
 
 ```{exercise-start}
 :label: kalman_ex1
 ```
 
-Consider the following simple application of the Kalman filter, loosely based
-on {cite}`Ljungqvist2012`, section 2.9.2.
+考虑以下卡尔曼滤波的简单应用，大致基于{cite}`Ljungqvist2012`第2.9.2节。
 
-Suppose that
+假设
 
-* all variables are scalars
-* the hidden state $\{x_t\}$ is in fact constant, equal to some $\theta \in \mathbb{R}$ unknown to the modeler
+* 所有变量都是标量
+* 隐藏状态 $\{x_t\}$ 实际上是常数，等于建模者未知的某个 $\theta \in \mathbb{R}$
 
-State dynamics are therefore given by {eq}`kl_xdynam` with $A=1$, $Q=0$ and $x_0 = \theta$.
+因此，状态动态由{eq}`kl_xdynam`给出，其中 $A=1$，$Q=0$ 且 $x_0 = \theta$。
 
-The measurement equation is $y_t = \theta + v_t$ where $v_t$ is $N(0,1)$ and IID.
+测量方程为 $y_t = \theta + v_t$，其中 $v_t$ 服从 $N(0,1)$ 且独立同分布。
 
-The task of this exercise to simulate the model and, using the code from `kalman.py`, plot the first five predictive densities $p_t(x) = N(\hat x_t, \Sigma_t)$.
+本练习的任务是模拟该模型，并使用 `kalman.py` 中的代码绘制前五个预测密度 $p_t(x) = N(\hat x_t, \Sigma_t)$。
 
-As shown in {cite}`Ljungqvist2012`, sections 2.9.1--2.9.2, these distributions asymptotically put all mass on the unknown value $\theta$.
+如 {cite}`Ljungqvist2012` 第2.9.1--2.9.2节所示，这些分布渐近地将所有质量集中在未知值 $\theta$ 上。
 
-In the simulation, take $\theta = 10$, $\hat x_0 = 8$ and $\Sigma_0 = 1$.
+在模拟中，取 $\theta = 10$，$\hat x_0 = 8$ 和 $\Sigma_0 = 1$。
 
-Your figure should -- modulo randomness -- look something like this
+你的图形应该 -- 除去随机性 -- 看起来像这样
 
 ```{figure} /_static/lecture_specific/kalman/kl_ex1_fig.png
 ```
@@ -578,32 +564,32 @@ Your figure should -- modulo randomness -- look something like this
 ```
 
 ```{code-cell} python3
-# Parameters
-θ = 10  # Constant value of state x_t
+# 参数
+θ = 10  # 状态 x_t 的常数值
 A, C, G, H = 1, 0, 1, 1
 ss = LinearStateSpace(A, C, G, H, mu_0=θ)
 
-# Set prior, initialize kalman filter
+# 设置先验，初始化卡尔曼滤波器
 x_hat_0, Σ_0 = 8, 1
 kalman = Kalman(ss, x_hat_0, Σ_0)
 
-# Draw observations of y from state space model
+# 从状态空间模型中抽取 y 的观测值
 N = 5
 x, y = ss.simulate(N)
 y = y.flatten()
 
-# Set up plot
+# 设置图形
 fig, ax = plt.subplots(figsize=(10,8))
 xgrid = np.linspace(θ - 5, θ + 2, 200)
 
 for i in range(N):
-    # Record the current predicted mean and variance
+    # 记录当前预测的均值和方差
     m, v = [float(z) for z in (kalman.x_hat, kalman.Sigma)]
-    # Plot, update filter
+    # 绘图，更新滤波器
     ax.plot(xgrid, norm.pdf(xgrid, loc=m, scale=np.sqrt(v)), label=f'$t={i}$')
     kalman.update(y[i])
 
-ax.set_title(f'First {N} densities when $\\theta = {θ:.1f}$')
+ax.set_title(f'当 $\\theta = {θ:.1f}$ 时的前 {N} 个密度')
 ax.legend(loc='upper left')
 plt.show()
 ```
@@ -615,20 +601,19 @@ plt.show()
 :label: kalman_ex2
 ```
 
-The preceding figure gives some support to the idea that probability mass
-converges to $\theta$.
+前面的图形支持了概率质量收敛到 $\theta$ 的观点。
 
-To get a better idea, choose a small $\epsilon > 0$ and calculate
+为了更好地理解这一点，选择一个小的 $\epsilon > 0$ 并计算
 
 $$
 z_t := 1 - \int_{\theta - \epsilon}^{\theta + \epsilon} p_t(x) dx
 $$
 
-for $t = 0, 1, 2, \ldots, T$.
+对于 $t = 0, 1, 2, \ldots, T$。
 
-Plot $z_t$ against $T$, setting $\epsilon = 0.1$ and $T = 600$.
+绘制 $z_t$ 与 $T$ 的关系图，设置 $\epsilon = 0.1$ 和 $T = 600$。
 
-Your figure should show error erratically declining something like this
+你的图应该显示误差不规则地下降，类似这样
 
 ```{figure} /_static/lecture_specific/kalman/kl_ex2_fig.png
 ```
@@ -643,7 +628,7 @@ Your figure should show error erratically declining something like this
 
 ```{code-cell} python3
 ϵ = 0.1
-θ = 10  # Constant value of state x_t
+θ = 10  # 状态x_t的常数值
 A, C, G, H = 1, 0, 1, 1
 ss = LinearStateSpace(A, C, G, H, mu_0=θ)
 
@@ -656,7 +641,7 @@ x, y = ss.simulate(T)
 y = y.flatten()
 
 for t in range(T):
-    # Record the current predicted mean and variance and plot their densities
+    # 记录当前预测的均值和方差并绘制其密度
     m, v = [float(temp) for temp in (kalman.x_hat, kalman.Sigma)]
 
     f = lambda x: norm.pdf(x, loc=m, scale=np.sqrt(v))
@@ -680,30 +665,27 @@ plt.show()
 :label: kalman_ex3
 ```
 
-As discussed {ref}`above <kalman_convergence>`, if the shock sequence $\{w_t\}$ is not degenerate, then it is not in general possible to predict $x_t$ without error at time $t-1$ (and this would be the case even if we could observe $x_{t-1}$).
+如{ref}`上文所述 <kalman_convergence>`，如果冲击序列 $\{w_t\}$ 不是退化的，那么在 $t-1$ 时刻通常无法无误地预测 $x_t$（即使我们能观察到 $x_{t-1}$ 也是如此）。
 
-Let's now compare the prediction $\hat x_t$ made by the Kalman filter
-against a competitor who **is** allowed to observe $x_{t-1}$.
+让我们现在将卡尔曼滤波得到的预测值 $\hat x_t$ 与一个**被允许**观察 $x_{t-1}$ 的竞争者进行比较。
 
-This competitor will use the conditional expectation $\mathbb E[ x_t
-\,|\, x_{t-1}]$, which in this case is $A x_{t-1}$.
+这个竞争者将使用条件期望 $\mathbb E[ x_t \,|\, x_{t-1}]$，在这种情况下等于 $A x_{t-1}$。
 
-The conditional expectation is known to be the optimal prediction method in terms of minimizing mean squared error.
+条件期望被认为是在最小化均方误差方面的最优预测方法。
 
-(More precisely, the minimizer of $\mathbb E \, \| x_t - g(x_{t-1}) \|^2$ with respect to $g$ is $g^*(x_{t-1}) := \mathbb E[ x_t \,|\, x_{t-1}]$)
+（更准确地说，关于 $g$ 的 $\mathbb E \, \| x_t - g(x_{t-1}) \|^2$ 的最小化器是 $g^*(x_{t-1}) := \mathbb E[ x_t \,|\, x_{t-1}]$）
 
-Thus we are comparing the Kalman filter against a competitor who has more
-information (in the sense of being able to observe the latent state) and
-behaves optimally in terms of minimizing squared error.
+因此，我们是在将卡尔曼滤波与一个拥有更多信息（在能够观察潜在状态的意义上）的竞争者进行比较，并且
 
-Our horse race will be assessed in terms of squared error.
+在最小化平方误差方面表现最优。
 
-In particular, your task is to generate a graph plotting observations of both $\| x_t - A x_{t-1} \|^2$ and $\| x_t - \hat x_t \|^2$ against $t$ for $t = 1, \ldots, 50$.
+我们的对比竞赛将以平方误差来评估。
 
-For the parameters, set $G = I, R = 0.5 I$ and $Q = 0.3 I$, where $I$ is
-the $2 \times 2$ identity.
+具体来说，你的任务是生成一个图表，绘制 $\| x_t - A x_{t-1} \|^2$ 和 $\| x_t - \hat x_t \|^2$ 对 $t$ 的观测值，其中 $t = 1, \ldots, 50$。
 
-Set
+对于参数，设定 $G = I, R = 0.5 I$ 和 $Q = 0.3 I$，其中 $I$ 是 $2 \times 2$ 单位矩阵。
+
+设定
 
 $$
 A
@@ -715,7 +697,7 @@ A
   \right)
 $$
 
-To initialize the prior density, set
+要初始化先验密度，设定
 
 $$
 \Sigma_0
@@ -727,16 +709,16 @@ $$
   \right)
 $$
 
-and $\hat x_0 = (8, 8)$.
+且 $\hat x_0 = (8, 8)$。
 
-Finally, set $x_0 = (0, 0)$.
+最后，设定 $x_0 = (0, 0)$。
 
-You should end up with a figure similar to the following (modulo randomness)
+你最终应该得到一个类似下图的图表（考虑随机性的影响）
 
 ```{figure} /_static/lecture_specific/kalman/kalman_ex3.png
 ```
 
-Observe how, after an initial learning period, the Kalman filter performs quite well, even relative to the competitor who predicts optimally with knowledge of the latent state.
+观察可以发现，在初始学习期之后，卡尔曼滤波器表现得相当好，即使与那些在已知潜在状态的情况下进行最优预测的竞争者相比也是如此。
 
 ```{exercise-end}
 ```
@@ -746,7 +728,7 @@ Observe how, after an initial learning period, the Kalman filter performs quite 
 ```
 
 ```{code-cell} python3
-# Define A, C, G, H
+# 定义 A, C, G, H
 G = np.identity(2)
 H = np.sqrt(0.5) * np.identity(2)
 
@@ -754,28 +736,28 @@ A = [[0.5, 0.4],
      [0.6, 0.3]]
 C = np.sqrt(0.3) * np.identity(2)
 
-# Set up state space mode, initial value x_0 set to zero
+# 设置状态空间模型，初始值 x_0 设为零
 ss = LinearStateSpace(A, C, G, H, mu_0 = np.zeros(2))
 
-# Define the prior density
+# 定义先验密度
 Σ = [[0.9, 0.3],
      [0.3, 0.9]]
 Σ = np.array(Σ)
 x_hat = np.array([8, 8])
 
-# Initialize the Kalman filter
+# 初始化卡尔曼滤波器
 kn = Kalman(ss, x_hat, Σ)
 
-# Print eigenvalues of A
-print("Eigenvalues of A:")
+# 打印 A 的特征值
+print("A 的特征值：")
 print(eigvals(A))
 
-# Print stationary Σ
+# 打印平稳 Σ
 S, K = kn.stationary_values()
-print("Stationary prediction error variance:")
+print("平稳预测误差方差：")
 print(S)
 
-# Generate the plot
+# 生成图表
 T = 50
 x, y = ss.simulate(T)
 
@@ -789,9 +771,9 @@ for t in range(1, T):
 
 fig, ax = plt.subplots(figsize=(9,6))
 ax.plot(range(1, T), e1, 'k-', lw=2, alpha=0.6,
-        label='Kalman filter error')
+        label='卡尔曼滤波器误差')
 ax.plot(range(1, T), e2, 'g-', lw=2, alpha=0.6,
-        label='Conditional expectation error')
+        label='条件期望误差')
 ax.legend()
 plt.show()
 ```
@@ -802,11 +784,12 @@ plt.show()
 ```{exercise}
 :label: kalman_ex4
 
-Try varying the coefficient $0.3$ in $Q = 0.3 I$ up and down.
+尝试上下调整系数 $0.3$ (在 $Q = 0.3 I$ 中)。
 
-Observe how the diagonal values in the stationary solution $\Sigma$ (see {eq}`kalman_dare`) increase and decrease in line with this coefficient.
+观察平稳解 $\Sigma$ (参见 {eq}`kalman_dare`) 中的对角线值如何随这个系数增减而变化。
 
-The interpretation is that more randomness in the law of motion for $x_t$ causes more (permanent) uncertainty in prediction.
+这说明 $x_t$ 运动规律中的随机性越大，会导致预测中的(永久性)不确定性越大。
 ```
 
-[^f1]: See, for example, page 93 of {cite}`Bishop2006`. To get from his expressions to the ones used above, you will also need to apply the [Woodbury matrix identity](https://en.wikipedia.org/wiki/Woodbury_matrix_identity).
+[^f1]: 例如，参见 {cite}`Bishop2006` 第93页。要从他的表达式得到上面使用的表达式，你还需要应用 [Woodbury矩阵恒等式](https://en.wikipedia.org/wiki/Woodbury_matrix_identity)。
+

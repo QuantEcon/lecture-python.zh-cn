@@ -18,49 +18,45 @@ kernelspec:
 </div>
 ```
 
-# {index}`Pandas for Panel Data <single: Pandas for Panel Data>`
+# {index}`面板数据的Pandas使用 <single: Pandas for Panel Data>`
 
 ```{index} single: Python; Pandas
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-In an [earlier lecture on pandas](https://python-programming.quantecon.org/pandas.html), we looked at working with simple data sets.
+在[之前关于pandas的讲座](https://python-programming.quantecon.org/pandas.html)中，我们学习了如何处理简单的数据集。
 
-Econometricians often need to work with more complex data sets, such as panels.
+计量经济学家经常需要处理更复杂的数据集，比如面板数据。
 
-Common tasks include
+常见任务包括：
 
-* Importing data, cleaning it and reshaping it across several axes.
-* Selecting a time series or cross-section from a panel.
-* Grouping and summarizing data.
+* 导入数据、清理数据以及在多个轴上重塑数据。
 
-`pandas` (derived from 'panel' and 'data') contains powerful and
-easy-to-use tools for solving exactly these kinds of problems.
+* 从面板数据中选择时间序列或横截面数据。
+* 对数据进行分组和汇总。
 
-In what follows, we will use a panel data set of real minimum wages from the OECD to create:
+`pandas`（源自'panel'和'data'）包含强大且易用的工具，专门用于解决这类问题。
 
-* summary statistics over multiple dimensions of our data
-* a time series of the average minimum wage of countries in the dataset
-* kernel density estimates of wages by continent
+在接下来的内容中，我们将使用来自OECD的实际最低工资面板数据集来创建：
 
-We will begin by reading in our long format panel data from a CSV file and
-reshaping the resulting `DataFrame` with `pivot_table` to build a `MultiIndex`.
+* 数据多个维度的汇总统计
+* 数据集中各国平均最低工资的时间序列
+* 按大洲划分的工资核密度估计
 
-Additional detail will be added to our `DataFrame` using pandas'
-`merge` function, and data will be summarized with the `groupby`
-function.
+我们将首先从CSV文件中读取长格式面板数据，并使用`pivot_table`重塑生成的`DataFrame`来构建`MultiIndex`。
 
-## Slicing and Reshaping Data
+使用pandas的`merge`函数将为我们的`DataFrame`添加额外的详细信息，并使用`groupby`函数对数据进行汇总。
 
-We will read in a dataset from the OECD of real minimum wages in 32
-countries and assign it to `realwage`.
+## 切片和重塑数据
 
-The dataset can be accessed with the following link:
+我们将读取来自OECD的32个国家的实际最低工资数据集，并将其赋值给`realwage`。
+
+数据集可通过以下链接访问：
 
 ```{code-cell} python3
 url1 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/realwage.csv'
@@ -69,28 +65,28 @@ url1 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source
 ```{code-cell} python3
 import pandas as pd
 
-# Display 6 columns for viewing purposes
+# 为了查看目的显示6列
 pd.set_option('display.max_columns', 6)
 
-# Reduce decimal points to 2
+# 将小数点位数减少到2位
 pd.options.display.float_format = '{:,.2f}'.format
 
 realwage = pd.read_csv(url1)
 ```
 
-Let's have a look at what we've got to work with
+让我们看看我们有什么可以使用的数据
 
 ```{code-cell} python3
-realwage.head()  # Show first 5 rows
+realwage.head()  # 显示前5行
 ```
 
-The data is currently in long format, which is difficult to analyze when there are several dimensions to the data.
+数据目前是长格式的，当数据有多个维度时这种格式难以分析。
 
-We will use `pivot_table` to create a wide format panel, with a `MultiIndex` to handle higher dimensional data.
+我们将使用`pivot_table`创建宽格式面板，并使用`MultiIndex`来处理高维数据。
 
-`pivot_table` arguments should specify the data (values), the index, and the columns we want in our resulting dataframe.
+`pivot_table`的参数需要指定数据（values）、索引和我们想要在结果数据框中的列。
 
-By passing a list in columns, we can create a `MultiIndex` in our column axis
+通过在columns参数中传入一个列表，我们可以在列轴上创建一个`MultiIndex`
 
 ```{code-cell} python3
 realwage = realwage.pivot_table(values='value',
@@ -99,19 +95,16 @@ realwage = realwage.pivot_table(values='value',
 realwage.head()
 ```
 
-To more easily filter our time series data, later on, we will convert the index into a `DateTimeIndex`
+为了更容易地过滤我们的时间序列数据，接下来我们将把索引转换为`DateTimeIndex`
 
 ```{code-cell} python3
 realwage.index = pd.to_datetime(realwage.index)
 type(realwage.index)
 ```
 
-The columns contain multiple levels of indexing, known as a
-`MultiIndex`, with levels being ordered hierarchically (Country >
-Series > Pay period).
+这些列包含多层级索引，称为`MultiIndex`，各层级按层次结构排序（国家 > 系列 > 支付周期）。
 
-A `MultiIndex` is the simplest and most flexible way to manage panel
-data in pandas
+`MultiIndex`是在pandas中管理面板数据最简单和最灵活的方式。
 
 ```{code-cell} python3
 type(realwage.columns)
@@ -121,48 +114,37 @@ type(realwage.columns)
 realwage.columns.names
 ```
 
-Like before, we can select the country (the top level of our
-`MultiIndex`)
+和之前一样，我们可以选择国家（我们的`MultiIndex`的最高层级）
 
 ```{code-cell} python3
 realwage['United States'].head()
 ```
 
-Stacking and unstacking levels of the `MultiIndex` will be used
-throughout this lecture to reshape our dataframe into a format we need.
+在本讲中，我们将经常使用`MultiIndex`的堆叠和取消堆叠来将数据框重塑成所需的格式。
 
-`.stack()` rotates the lowest level of the column `MultiIndex` to
-the row index (`.unstack()` works in the opposite direction - try it
-out)
+`.stack()`将列`MultiIndex`的最低层级旋转到行索引（`.unstack()`的作用方向相反 - 你可以试试看）
 
 ```{code-cell} python3
 realwage.stack().head()
 ```
 
-We can also pass in an argument to select the level we would like to
-stack
+我们也可以传入一个参数来选择我们想要堆叠的层级
 
 ```{code-cell} python3
 realwage.stack(level='Country').head()
 ```
 
-Using a `DatetimeIndex` makes it easy to select a particular time
-period.
+使用`DatetimeIndex`可以轻松选择特定的时间段。
 
-Selecting one year and stacking the two lower levels of the
-`MultiIndex` creates a cross-section of our panel data
+选择一年并堆叠`MultiIndex`的两个较低层级，可以创建我们面板数据的横截面
 
 ```{code-cell} python3
 realwage.loc['2015'].stack(level=(1, 2)).transpose().head()
 ```
 
-For the rest of lecture, we will work with a dataframe of the hourly
-real minimum wages across countries and time, measured in 2015 US
-dollars.
+在本讲座剩余部分，我们将使用一个数据框，其中包含不同国家和时间段的每小时实际最低工资数据，以2015年美元计价。
 
-To create our filtered dataframe (`realwage_f`), we can use the `xs`
-method to select values at lower levels in the multiindex, while keeping
-the higher levels (countries in this case)
+要创建我们的筛选数据框（`realwage_f`），我们可以使用`xs`方法在保持更高层级（本例中为国家）的同时，选择多重索引中较低层级的值。
 
 ```{code-cell} python3
 realwage_f = realwage.xs(('Hourly', 'In 2015 constant prices at 2015 USD exchange rates'),
@@ -170,17 +152,13 @@ realwage_f = realwage.xs(('Hourly', 'In 2015 constant prices at 2015 USD exchang
 realwage_f.head()
 ```
 
-## Merging Dataframes and Filling NaNs
+## 合并数据框和填充空值
 
-Similar to relational databases like SQL, pandas has built in methods to
-merge datasets together.
+与SQL等关系型数据库类似，pandas内置了合并数据集的方法。
 
-Using country information from
-[WorldData.info](https://www.worlddata.info/downloads/), we'll add
-the continent of each country to `realwage_f` with the `merge`
-function.
+使用来自[WorldData.info](https://www.worlddata.info/downloads/)的国家信息，我们将使用`merge`函数将每个国家所属的大洲添加到`realwage_f`中。
 
-The dataset can be accessed with the following link:
+可以通过以下链接访问数据集：
 
 ```{code-cell} python3
 url2 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/countries.csv'
@@ -191,8 +169,7 @@ worlddata = pd.read_csv(url2, sep=';')
 worlddata.head()
 ```
 
-First, we'll select just the country and continent variables from
-`worlddata` and rename the column to 'Country'
+首先，我们将从`worlddata`中只选择国家和大洲变量，并将列名重命名为'Country'
 
 ```{code-cell} python3
 worlddata = worlddata[['Country (en)', 'Continent']]
@@ -200,48 +177,38 @@ worlddata = worlddata.rename(columns={'Country (en)': 'Country'})
 worlddata.head()
 ```
 
-We want to merge our new dataframe, `worlddata`, with `realwage_f`.
+我们想要将新的数据框`worlddata`与`realwage_f`合并。
 
-The pandas `merge` function allows dataframes to be joined together by
-rows.
+pandas的`merge`函数允许通过行将数据框连接在一起。
 
-Our dataframes will be merged using country names, requiring us to use
-the transpose of `realwage_f` so that rows correspond to country names
-in both dataframes
+我们的数据框将使用国家名称进行合并，这需要我们使用`realwage_f`的转置，以便两个数据框中的行都对应于国家名称。
 
 ```{code-cell} python3
 realwage_f.transpose().head()
 ```
 
-We can use either left, right, inner, or outer join to merge our
-datasets:
+我们可以使用左连接、右连接、内连接或外连接来合并我们的数据集：
 
-* left join includes only countries from the left dataset
-* right join includes only countries from the right dataset
-* outer join includes countries that are in either the left and right datasets
-* inner join includes only countries common to both the left and right datasets
+* 左连接只包含左侧数据集中的国家
+* 右连接只包含右侧数据集中的国家
+* 外连接包含左侧和右侧数据集中的任一国家
+* 内连接只包含左右数据集共有的国家
 
-By default, `merge` will use an inner join.
+默认情况下，`merge`将使用内连接。
 
-Here we will pass `how='left'` to keep all countries in
-`realwage_f`, but discard countries in `worlddata` that do not have
-a corresponding data entry `realwage_f`.
+在这里，我们将传入`how='left'`以保留`realwage_f`中的所有国家，但丢弃在`worlddata`中没有对应数据项`realwage_f`的国家。
 
-This is illustrated by the red shading in the following diagram
+这在下图中用红色阴影部分表示
 
 ```{figure} /_static/lecture_specific/pandas_panel/venn_diag.png
 
 ```
 
-We will also need to specify where the country name is located in each
-dataframe, which will be the `key` that is used to merge the
-dataframes 'on'.
+我们还需要指定每个数据框中国家名称的位置，这将作为合并数据框的"键"。
 
-Our 'left' dataframe (`realwage_f.transpose()`) contains countries in
-the index, so we set `left_index=True`.
+我们的"左"数据框（`realwage_f.transpose()`）在索引中包含国家，所以我们设置`left_index=True`。
 
-Our 'right' dataframe (`worlddata`) contains countries in the
-'Country' column, so we set `right_on='Country'`
+我们的'right'数据框（`worlddata`）在'Country'列中包含国家名称，所以我们设置`right_on='Country'`
 
 ```{code-cell} python3
 merged = pd.merge(realwage_f.transpose(), worlddata,
@@ -249,25 +216,21 @@ merged = pd.merge(realwage_f.transpose(), worlddata,
 merged.head()
 ```
 
-Countries that appeared in `realwage_f` but not in `worlddata` will
-have `NaN` in the Continent column.
+在 `realwage_f` 中出现但在 `worlddata` 中未出现的国家，其 Continent 列将显示 `NaN`。
 
-To check whether this has occurred, we can use `.isnull()` on the
-continent column and filter the merged dataframe
+要检查是否发生这种情况，我们可以在 continent 列上使用 `.isnull()` 并过滤合并后的数据框
 
 ```{code-cell} python3
 merged[merged['Continent'].isnull()]
 ```
 
-We have three missing values!
+我们有三个缺失值！
 
-One option to deal with NaN values is to create a dictionary containing
-these countries and their respective continents.
+处理 NaN 值的一个选项是创建一个包含这些国家及其各自大洲的字典。
 
-`.map()` will match countries in `merged['Country']` with their
-continent from the dictionary.
+`.map()` 将会把 `merged['Country']` 中的国家与字典中的大洲进行匹配。
 
-Notice how countries not in our dictionary are mapped with `NaN`
+注意那些不在我们字典中的国家是如何被映射为 `NaN` 的
 
 ```{code-cell} python3
 missing_continents = {'Korea': 'Asia',
@@ -277,22 +240,21 @@ missing_continents = {'Korea': 'Asia',
 merged['Country'].map(missing_continents)
 ```
 
-We don't want to overwrite the entire series with this mapping.
+我们不想用这个映射覆盖整个系列。
 
-`.fillna()` only fills in `NaN` values in `merged['Continent']`
-with the mapping, while leaving other values in the column unchanged
+`.fillna()` 只会用映射填充 `merged['Continent']` 中的 `NaN` 值，而保持列中的其他值不变
 
 ```{code-cell} python3
 merged['Continent'] = merged['Continent'].fillna(merged['Country'].map(missing_continents))
 
-# Check for whether continents were correctly mapped
+# 检查大洲是否正确映射
 
 merged[merged['Country'] == 'Korea']
 ```
 
-We will also combine the Americas into a single continent - this will make our visualization nicer later on.
+我们还要把美洲合并成一个大洲 - 这样可以让我们后面的可视化效果更好看。
 
-To do this, we will use `.replace()` and loop through a list of the continent values we want to replace
+为此，我们将使用`.replace()`并遍历一个包含我们想要替换的大洲值的列表
 
 ```{code-cell} python3
 replace = ['Central America', 'North America', 'South America']
@@ -303,28 +265,24 @@ for country in replace:
                                 inplace=True)
 ```
 
-Now that we have all the data we want in a single `DataFrame`, we will
-reshape it back into panel form with a `MultiIndex`.
+现在我们已经将所有想要的数据都放在一个`DataFrame`中，我们将把它重新整形成带有`MultiIndex`的面板形式。
 
-We should also ensure to sort the index using `.sort_index()` so that we
-can efficiently filter our dataframe later on.
+我们还应该使用`.sort_index()`来确保对索引进行排序，这样我们之后可以高效地筛选数据框。
 
-By default, levels will be sorted top-down
+默认情况下，层级将按照从上到下的顺序排序
 
 ```{code-cell} python3
 merged = merged.set_index(['Continent', 'Country']).sort_index()
 merged.head()
 ```
 
-While merging, we lost our `DatetimeIndex`, as we merged columns that
-were not in datetime format
+在合并过程中，我们丢失了`DatetimeIndex`，因为我们合并的列不是日期时间格式的
 
 ```{code-cell} python3
 merged.columns
 ```
 
-Now that we have set the merged columns as the index, we can recreate a
-`DatetimeIndex` using `.to_datetime()`
+现在我们已经将合并的列设置为索引，我们可以使用`.to_datetime()`重新创建一个`DatetimeIndex`
 
 ```{code-cell} python3
 merged.columns = pd.to_datetime(merged.columns)
@@ -332,33 +290,26 @@ merged.columns = merged.columns.rename('Time')
 merged.columns
 ```
 
-The `DatetimeIndex` tends to work more smoothly in the row axis, so we
-will go ahead and transpose `merged`
+`DatetimeIndex`在行轴上运行更加顺畅，所以我们将对`merged`进行转置
 
 ```{code-cell} python3
 merged = merged.transpose()
 merged.head()
 ```
 
-## Grouping and Summarizing Data
+## 数据分组和汇总
 
-Grouping and summarizing data can be particularly useful for
-understanding large panel datasets.
+对于理解大型面板数据集来说，数据分组和汇总特别有用。
 
-A simple way to summarize data is to call an [aggregation
-method](https://pandas.pydata.org/pandas-docs/stable/getting_started/intro_tutorials/06_calculate_statistics.html)
-on the dataframe, such as `.mean()` or `.max()`.
+一种简单的数据汇总方法是在数据框上调用[聚合方法](https://pandas.pydata.org/pandas-docs/stable/getting_started/intro_tutorials/06_calculate_statistics.html)，比如`.mean()`或`.max()`。
 
-For example, we can calculate the average real minimum wage for each
-country over the period 2006 to 2016 (the default is to aggregate over
-rows)
+例如，我们可以计算2006年至2016年期间每个国家的平均实际最低工资（默认是按行聚合）
 
 ```{code-cell} python3
 merged.mean().head(10)
 ```
 
-Using this series, we can plot the average real minimum wage over the
-past decade for each country in our data set
+使用这个数据系列，我们可以绘制数据集中每个国家过去十年的平均实际最低工资
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
@@ -368,105 +319,95 @@ sns.set_theme()
 
 ```{code-cell} ipython
 merged.mean().sort_values(ascending=False).plot(kind='bar',
-                                                title="Average real minimum wage 2006 - 2016")
+                                                title="2006-2016年平均实际最低工资")
 
-# Set country labels
+# 设置国家标签
 country_labels = merged.mean().sort_values(ascending=False).index.get_level_values('Country').tolist()
 plt.xticks(range(0, len(country_labels)), country_labels)
-plt.xlabel('Country')
+plt.xlabel('国家')
 
 plt.show()
 ```
 
-Passing in `axis=1` to `.mean()` will aggregate over columns (giving
-the average minimum wage for all countries over time)
+通过向`.mean()`传入`axis=1`参数可以对列进行聚合（得到所有国家随时间变化的平均最低工资）
 
 ```{code-cell} python3
 merged.mean(axis=1).head()
 ```
 
-We can plot this time series as a line graph
+我们可以将这个时间序列绘制成折线图
 
 ```{code-cell} python3
 merged.mean(axis=1).plot()
-plt.title('Average real minimum wage 2006 - 2016')
-plt.ylabel('2015 USD')
-plt.xlabel('Year')
+plt.title('2006 - 2016年平均实际最低工资')
+plt.ylabel('2015年美元')
+plt.xlabel('年份')
 plt.show()
 ```
 
-We can also specify a level of the `MultiIndex` (in the column axis)
-to aggregate over
+我们也可以指定`MultiIndex`的一个层级（在列轴上）来进行聚合
 
 ```{code-cell} python3
 merged.groupby(level='Continent', axis=1).mean().head()
 ```
 
-We can plot the average minimum wages in each continent as a time series
+我们可以将每个大洲的平均最低工资绘制成时间序列图
 
 ```{code-cell} python3
 merged.groupby(level='Continent', axis=1).mean().plot()
-plt.title('Average real minimum wage')
-plt.ylabel('2015 USD')
-plt.xlabel('Year')
+plt.title('平均实际最低工资')
+plt.ylabel('2015年美元')
+plt.xlabel('年份')
 plt.show()
 ```
 
-We will drop Australia as a continent for plotting purposes
+为了绘图目的，我们将去掉澳大利亚这个大洲
 
 ```{code-cell} python3
 merged = merged.drop('Australia', level='Continent', axis=1)
 merged.groupby(level='Continent', axis=1).mean().plot()
-plt.title('Average real minimum wage')
-plt.ylabel('2015 USD')
-plt.xlabel('Year')
+plt.title('平均实际最低工资')
+plt.ylabel('2015年美元')
+plt.xlabel('年份')
 plt.show()
 ```
 
-`.describe()` is useful for quickly retrieving a number of common
-summary statistics
+`.describe()` 可以快速获取一些常见的统计摘要数据
 
 ```{code-cell} python3
 merged.stack().describe()
 ```
 
-This is a simplified way to use `groupby`.
+这是使用 `groupby` 的简化方法。
 
-Using `groupby` generally follows a 'split-apply-combine' process:
+使用 `groupby` 通常遵循"拆分-应用-合并"的过程：
 
-* split: data is grouped based on one or more keys
-* apply: a function is called on each group independently
-* combine: the results of the function calls are combined into a new data structure
+* 拆分：数据根据一个或多个键进行分组
+* 应用：在每个组上独立调用函数
+* 合并：函数调用的结果被合并到新的数据结构中
 
-The `groupby` method achieves the first step of this process, creating
-a new `DataFrameGroupBy` object with data split into groups.
+`groupby` 方法实现了这个过程的第一步，创建一个新的 `DataFrameGroupBy` 对象，将数据拆分成组。
 
-Let's split `merged` by continent again, this time using the
-`groupby` function, and name the resulting object `grouped`
+让我们再次按大洲拆分 `merged`，这次使用 `groupby` 函数，并将结果对象命名为 `grouped`
 
 ```{code-cell} python3
 grouped = merged.groupby(level='Continent', axis=1)
 grouped
 ```
 
-Calling an aggregation method on the object applies the function to each
-group, the results of which are combined in a new data structure.
+在对象上调用聚合方法会将函数应用于每个组，其结果会被合并到一个新的数据结构中。
 
-For example, we can return the number of countries in our dataset for
-each continent using `.size()`.
+例如，我们可以使用`.size()`返回数据集中每个大洲的国家数量。
 
-In this case, our new data structure is a `Series`
+在这种情况下，我们的新数据结构是一个`Series`
 
 ```{code-cell} python3
 grouped.size()
 ```
 
-Calling `.get_group()` to return just the countries in a single group,
-we can create a kernel density estimate of the distribution of real
-minimum wages in 2016 for each continent.
+通过调用 `.get_group()` 来返回单个组中的国家，我们可以为每个大洲创建2016年实际最低工资分布的核密度估计。
 
-`grouped.groups.keys()` will return the keys from the `groupby`
-object
+`grouped.groups.keys()` 将返回 `groupby` 对象中的键
 
 ```{code-cell} python3
 continents = grouped.groups.keys()
@@ -480,37 +421,31 @@ plt.legend()
 plt.show()
 ```
 
-## Final Remarks
+## 总结
 
-This lecture has provided an introduction to some of pandas' more
-advanced features, including multiindices, merging, grouping and
-plotting.
+本讲座介绍了pandas的一些高级特性，包括多重索引、合并、分组和绘图。
 
-Other tools that may be useful in panel data analysis include [xarray](https://docs.xarray.dev/en/stable/), a python package that
-extends pandas to N-dimensional data structures.
+在面板数据分析中可能有用的其他工具包括[xarray](https://docs.xarray.dev/en/stable/)，这是一个将pandas扩展到N维数据结构的Python包。
 
-## Exercises
+## 练习
 
 ```{exercise-start}
 :label: pp_ex1
 ```
 
-In these exercises, you'll work with a dataset of employment rates
-in Europe by age and sex from [Eurostat](https://ec.europa.eu/eurostat/data/database).
+在这些练习中，你将使用来自[Eurostat](https://ec.europa.eu/eurostat/data/database)的欧洲按年龄和性别划分的就业率数据集。
 
-The dataset can be accessed with the following link:
+可以通过以下链接访问数据集：
 
 ```{code-cell} python3
 url3 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/employ.csv'
 ```
 
-Reading in the CSV file returns a panel dataset in long format. Use `.pivot_table()` to construct
-a wide format dataframe with a `MultiIndex` in the columns.
+读取 CSV 文件会返回一个长格式的面板数据集。使用 `.pivot_table()` 构建一个带有 `MultiIndex` 列的宽格式数据框。
 
-Start off by exploring the dataframe and the variables available in the
-`MultiIndex` levels.
+首先探索数据框和 `MultiIndex` 层级中可用的变量。
 
-Write a program that quickly returns all values in the `MultiIndex`.
+编写一个程序，快速返回 `MultiIndex` 中的所有值。
 
 ```{exercise-end}
 ```
@@ -524,18 +459,17 @@ employ = pd.read_csv(url3)
 employ = employ.pivot_table(values='Value',
                             index=['DATE'],
                             columns=['UNIT','AGE', 'SEX', 'INDIC_EM', 'GEO'])
-employ.index = pd.to_datetime(employ.index) # ensure that dates are datetime format
+employ.index = pd.to_datetime(employ.index) # 确保日期为 datetime 格式
 employ.head()
 ```
 
-This is a large dataset so it is useful to explore the levels and
-variables available
+由于这是一个大型数据集，因此探索可用的层级和变量很有用
 
 ```{code-cell} python3
 employ.columns.names
 ```
 
-Variables within levels can be quickly retrieved with a loop
+可以通过循环快速获取层级中的变量
 
 ```{code-cell} python3
 for name in employ.columns.names:
@@ -549,16 +483,14 @@ for name in employ.columns.names:
 :label: pp_ex2
 ```
 
-Filter the above dataframe to only include employment as a percentage of
-'active population'.
+筛选上述数据框，仅包含以'活动人口'百分比表示的就业数据。
 
-Create a grouped boxplot using `seaborn` of employment rates in 2015
-by age group and sex.
+使用`seaborn`创建一个按年龄组和性别分组的2015年就业率箱线图。
 
 ```{hint}
 :class: dropdown
 
-`GEO` includes both areas and countries.
+`GEO`包含地区和国家。
 ```
 
 ```{exercise-end}
@@ -568,18 +500,16 @@ by age group and sex.
 :class: dropdown
 ```
 
-To easily filter by country, swap `GEO` to the top level and sort the
-`MultiIndex`
+为了方便按国家筛选，将`GEO`调整到最上层并对`MultiIndex`进行排序
 
 ```{code-cell} python3
 employ.columns = employ.columns.swaplevel(0,-1)
 employ = employ.sort_index(axis=1)
 ```
 
-We need to get rid of a few items in `GEO` which are not countries.
+我们需要删除`GEO`中一些不是国家的项目。
 
-A fast way to get rid of the EU areas is to use a list comprehension to
-find the level values in `GEO` that begin with 'Euro'
+一个快速去除欧盟地区的方法是使用列表推导式来查找`GEO`中以'Euro'开头的层级值。
 
 ```{code-cell} python3
 geo_list = employ.columns.get_level_values('GEO').unique().tolist()
@@ -588,8 +518,7 @@ employ = employ[countries]
 employ.columns.get_level_values('GEO').unique()
 ```
 
-Select only percentage employed in the active population from the
-dataframe
+从数据框中仅选择活动人口中的就业百分比
 
 ```{code-cell} python3
 employ_f = employ.xs(('Percentage of total population', 'Active population'),
@@ -598,7 +527,7 @@ employ_f = employ.xs(('Percentage of total population', 'Active population'),
 employ_f.head()
 ```
 
-Drop the 'Total' value before creating the grouped boxplot
+在创建分组箱形图之前删除"总计"值
 
 ```{code-cell} python3
 employ_f = employ_f.drop('Total', level='SEX', axis=1)
@@ -609,11 +538,12 @@ box = employ_f.loc['2015'].unstack().reset_index()
 sns.boxplot(x="AGE", y=0, hue="SEX", data=box, palette=("husl"), showfliers=False)
 plt.xlabel('')
 plt.xticks(rotation=35)
-plt.ylabel('Percentage of population (%)')
-plt.title('Employment in Europe (2015)')
+plt.ylabel('人口百分比 (%)')
+plt.title('欧洲就业情况 (2015)')
 plt.legend(bbox_to_anchor=(1,0.5))
 plt.show()
 ```
 
 ```{solution-end}
 ```
+

@@ -18,16 +18,16 @@ kernelspec:
 </div>
 ```
 
-# {index}`Permanent Income II: LQ Techniques <single: Permanent Income II: LQ Techniques>`
+# {index}`永久收入 II：线性二次方法 <single: Permanent Income II: LQ Techniques>`
 
 ```{index} single: Models; Permanent Income
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -36,57 +36,56 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-This lecture continues our analysis of the linear-quadratic (LQ) permanent income model of savings and consumption.
+本讲座继续分析储蓄和消费的线性二次（LQ）永久收入模型。
 
-As we saw in our {doc}`previous lecture <perm_income>` on this topic, Robert Hall {cite}`Hall1978` used the LQ permanent income model to restrict and interpret intertemporal comovements of nondurable consumption, nonfinancial income, and financial wealth.
+正如我们在{doc}`上一讲<perm_income>`中所看到的，Robert Hall {cite}`Hall1978`使用LQ永久收入模型来限制和解释非耐用品消费、非金融收入和金融财富的跨期协动关系。
 
-For example, we saw how the model asserts that for any covariance stationary process for nonfinancial income
+例如，我们看到该模型表明，对于任何协方差平稳的非金融收入过程：
 
-- consumption is a random walk
-- financial wealth has a unit root and is cointegrated with consumption
+- 消费是一个随机游走过程
+- 金融财富具有单位根，并与消费存在协整关系
 
-Other applications use the same LQ framework.
+其他应用也使用相同的LQ框架。
 
-For example, a model isomorphic to the LQ permanent income model has been used by Robert Barro {cite}`Barro1979` to interpret intertemporal comovements of a government's tax collections, its  expenditures net of debt service, and its public debt.
+例如，Robert Barro {cite}`Barro1979`使用了一个与LQ永久收入模型同构的模型，来解释政府税收、扣除债务服务后的支出以及公共债务之间的跨期协动关系。
 
-This isomorphism means that in analyzing the LQ permanent income model, we are in effect also analyzing  the Barro tax smoothing model.
+这种同构意味着在分析LQ永久收入模型时，我们实际上也在分析Barro税收平滑模型。
 
-It is just a matter of appropriately relabeling the variables in Hall's model.
+这只是需要适当地重新标记Hall模型中的变量。
 
-In this lecture, we'll
+在本讲中，我们将：
 
-* show how the solution to the LQ permanent income model can be obtained using LQ control methods.
-* represent the model as a linear state space system as in {doc}`this lecture <linear_models>`.
-* apply [QuantEcon](http://quantecon.org/quantecon-py)'s [LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py) class to characterize statistical features of the consumer's optimal consumption and borrowing plans.
+* 展示如何使用LQ控制方法获得LQ永久收入模型的解。
+* 将模型表示为线性状态空间系统，如{doc}`本讲<linear_models>`所示。
+* 应用[QuantEcon](http://quantecon.org/quantecon-py)的[LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)类来描述消费者最优消费和借贷计划的统计特征。
 
-We'll then use these characterizations to construct a simple model of cross-section wealth and
-consumption dynamics in the spirit of Truman Bewley {cite}`Bewley86`.
+然后，我们将使用这些特征来构建一个简单的横截面财富和消费动态模型，这是按照Truman Bewley {cite}`Bewley86`的思路进行的。
 
-(Later we'll study other Bewley models---see {doc}`this lecture <aiyagari>`.)
+（稍后我们将研究其他Bewley模型——参见{doc}`本讲<aiyagari>`。）
 
-The model will prove useful for illustrating concepts such as
+该模型将有助于说明以下概念：
 
-* stationarity
-* ergodicity
-* ensemble moments and cross-section observations
+* 平稳性
+* 遍历性
+* 集合矩和横截面观测
 
-Let's start with some imports:
+让我们从导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import quantecon as qe
 import numpy as np
 import scipy.linalg as la
 ```
 
-## Setup
+## 设置
 
-Let's recall the basic features of the model discussed in the {doc}`permanent income model <perm_income>`.
+让我们回顾一下在{doc}`永久收入模型 <perm_income>`中讨论的模型基本特征。
 
-Consumer preferences are ordered  by
+消费者的偏好由以下式子排序
 
 ```{math}
 :label: old1
@@ -94,11 +93,10 @@ Consumer preferences are ordered  by
 E_0 \sum_{t=0}^\infty \beta^t u(c_t)
 ```
 
-where $u(c) = -(c - \gamma)^2$.
+其中 $u(c) = -(c - \gamma)^2$。
 
-The consumer maximizes {eq}`old1` by choosing a
-consumption, borrowing plan $\{c_t, b_{t+1}\}_{t=0}^\infty$
-subject to the sequence of budget constraints
+消费者通过选择消费和借贷计划 $\{c_t, b_{t+1}\}_{t=0}^\infty$ 来最大化 {eq}`old1`，
+受到一系列预算约束
 
 ```{math}
 :label: old2
@@ -107,7 +105,7 @@ c_t + b_t = \frac{1}{1 + r} b_{t+1}  + y_t,
 \quad t \geq 0
 ```
 
-and the no-Ponzi condition
+以及无庞氏条件
 
 ```{math}
 :label: old42
@@ -115,12 +113,11 @@ and the no-Ponzi condition
 E_0 \sum_{t=0}^\infty \beta^t b_t^2 < \infty
 ```
 
-The interpretation of all variables and parameters are the same as in the
-{doc}`previous lecture <perm_income>`.
+所有变量和参数的解释与{doc}`上一讲 <perm_income>`中相同。
 
-We continue to assume that $(1 + r) \beta = 1$.
+我们继续假设 $(1 + r) \beta = 1$。
 
-The dynamics of $\{y_t\}$ again follow the linear state space model
+$\{y_t\}$ 的动态仍然遵循线性状态空间模型
 
 ```{math}
 :label: sprob15ab2
@@ -132,48 +129,48 @@ The dynamics of $\{y_t\}$ again follow the linear state space model
 \end{aligned}
 ```
 
-The restrictions on the shock process and parameters are the same as in our {doc}`previous lecture <perm_income>`.
+对冲击过程和参数的限制与我们{doc}`之前的讲座 <perm_income>`中的相同。
 
-### Digression on a Useful Isomorphism
+### 关于一个有用同构的补充说明
 
-The LQ permanent income model of consumption is mathematically isomorphic with a version of
-Barro's {cite}`Barro1979` model of tax smoothing.
+消费的LQ永久收入模型在数学上与Barro的{cite}`Barro1979`税收平滑模型的一个版本是同构的。
 
-In the LQ permanent income model
+在LQ永久收入模型中：
 
-* the household faces an exogenous process of nonfinancial income
-* the household wants to smooth consumption across states and time
+* 家庭面临非金融收入的外生过程
+* 家庭希望在不同状态和时间中平滑消费
 
-In the Barro tax smoothing model
+在Barro税收平滑模型中：
 
-* a government faces an exogenous sequence of government purchases (net of  interest payments on its debt)
-* a government wants to smooth tax collections across states and time
+* 政府面临政府购买的外生序列（扣除其债务利息支付）
+* 政府希望在不同状态和时间中平滑税收
 
-If we set
+如果我们设：
 
-* $T_t$, total tax collections in Barro's model to consumption $c_t$ in the LQ permanent income model.
-* $G_t$, exogenous government expenditures in Barro's model to nonfinancial income $y_t$ in the permanent income model.
-* $B_t$, government risk-free one-period assets falling due in Barro's model to  risk-free one-period consumer debt $b_t$ falling due in the LQ permanent income model.
-* $R$, the gross rate of return on risk-free one-period government debt in Barro's model to the gross rate of return $1+r$ on financial assets in  the permanent income model of consumption.
+* Barro模型中的总税收$T_t$对应LQ永久收入模型中的消费$c_t$
+* Barro模型中的外生政府支出$G_t$对应永久收入模型中的非金融收入$y_t$
 
-then the two models are mathematically equivalent.
+* $B_t$，Barro模型中到期的政府无风险一期资产对应于LQ永久收入模型中到期的无风险一期消费者债务$b_t$。
+* $R$，Barro模型中无风险一期政府债务的总回报率对应于永久收入消费模型中金融资产的总回报率$1+r$。
 
-All characterizations of a $\{c_t, y_t, b_t\}$ in the LQ permanent income model automatically apply to a $\{T_t, G_t, B_t\}$ process in the Barro model of tax smoothing.
+那么这两个模型在数学上是等价的。
 
-See [consumption and tax smoothing models](https://python-advanced.quantecon.org/smoothing.html) for further exploitation of an isomorphism between consumption and tax smoothing models.
+LQ永久收入模型中对$\{c_t, y_t, b_t\}$的所有特征描述自动适用于Barro税收平滑模型中的$\{T_t, G_t, B_t\}$过程。
 
-### A Specification of the Nonfinancial Income Process
+关于消费和税收平滑模型之间的同构性的进一步探讨，请参见[消费和税收平滑模型](https://python-advanced.quantecon.org/smoothing.html)。
 
-For the purposes of this lecture, let's assume $\{y_t\}$ is a second-order univariate autoregressive process:
+### 非金融收入过程的具体说明
+
+在本讲中，我们假设$\{y_t\}$是一个二阶单变量自回归过程：
 
 $$
+
 y_{t+1} = \alpha + \rho_1 y_t + \rho_2 y_{t-1} + \sigma w_{t+1}
 $$
 
-We can map this into the linear state space framework in {eq}`sprob15ab2`, as
-discussed in our lecture on  {doc}`linear models <linear_models>`.
+我们可以将其映射到{eq}`sprob15ab2`中的线性状态空间框架中，正如我们在{doc}`线性模型 <linear_models>`讲座中所讨论的。
 
-To do so we take
+为此，我们取
 
 $$
 z_t =
@@ -194,41 +191,43 @@ C= \begin{bmatrix}
     \sigma \\
     0
     \end{bmatrix},
-\quad \text{and} \quad
+\quad \text{和} \quad
 U = \begin{bmatrix} 0 & 1 & 0 \end{bmatrix}
 $$
 
-## The LQ Approach
+## LQ方法
 
-{ref}`Previously <odr_pi>` we solved the permanent income model  by solving a system of linear expectational difference equations subject to two boundary conditions.
+{ref}`此前 <odr_pi>`我们通过求解受两个边界条件约束的线性期望差分方程组来解决永久收入模型。
 
-Here we solve the same model using {doc}`LQ methods <lqcontrol>` based on dynamic programming.
+这里我们使用基于动态规划的{doc}`LQ方法 <lqcontrol>`来解决相同的模型。
 
-After confirming that answers produced by the two methods agree, we apply [QuantEcon](http://quantecon.org/quantecon-py)'s [LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)
-class to illustrate features of the model.
+在确认两种方法得出的答案一致后，我们使用[QuantEcon](http://quantecon.org/quantecon-py)的[LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)类来展示模型的特点。
 
-Why solve a model in two distinct ways?
+为什么要用两种不同的方法来求解模型？
 
-Because by doing so we gather insights about the structure of the model.
+因为这样做可以让我们更深入地理解模型的结构。
 
-Our earlier approach based on solving a system of expectational difference equations brought to the fore the role of the consumer's expectations about future nonfinancial income.
+我们之前基于求解期望差分方程组的方法突出了消费者对未来非金融收入的预期所起的作用。
 
-On the other hand, formulating the model in terms of an LQ dynamic programming problem reminds us that
+另一方面，将模型表述为LQ动态规划问题提醒我们：
 
-- finding the state (of a dynamic programming problem) is an art, and
-- iterations on a Bellman equation  implicitly jointly solve both a  forecasting problem and a control problem
+- 找到(动态规划问题的)状态是一门艺术，并且
+- 对贝尔曼方程的迭代隐含地同时解决了预测问题和控制问题
 
-### The LQ Problem
+### LQ问题
 
-Recall from our {doc}`lecture on LQ theory <lqcontrol>` that the optimal linear regulator problem is to choose
-a decision rule for $u_t$ to minimize
+回顾我们在{doc}`LQ理论讲座<lqcontrol>`中提到，最优线性调节器问题是要选择
+
+用于最小化
 
 $$
 \mathbb E
 \sum_{t=0}^\infty \beta^t \{x'_t R x_t+ u'_t Q u_t\},
 $$
 
-subject to $x_0$ given and the law of motion
+的决策规则 $u_t$，
+
+受限于给定的 $x_0$ 和运动方程
 
 ```{math}
 :label: pilqsd
@@ -237,22 +236,22 @@ x_{t+1} =  \tilde A x_t+ \tilde B u_t+ \tilde C w_{t+1},
 \qquad t\geq 0,
 ```
 
-where $w_{t+1}$ is IID with mean vector zero and $\mathbb E w_t w'_t= I$.
+其中 $w_{t+1}$ 是独立同分布的，均值向量为零且 $\mathbb E w_t w'_t= I$。
 
-The tildes in $\tilde A, \tilde B, \tilde C$ are to avoid clashing with notation in {eq}`sprob15ab2`.
+$\tilde A, \tilde B, \tilde C$ 中的波浪线是为了避免与{eq}`sprob15ab2`中的符号冲突。
 
-The value function for this problem is $v(x) = - x'Px - d$, where
+这个问题的值函数是 $v(x) = - x'Px - d$，其中
 
-* $P$ is the unique positive semidefinite solution of the {ref}`corresponding matrix Riccati equation <riccati_equation>`.
-* The scalar $d$ is given by $d=\beta (1-\beta)^{-1} {\rm trace} ( P \tilde C \tilde C')$.
+* $P$ 是{ref}`相应矩阵黎卡提方程<riccati_equation>`的唯一半正定解。
+* 标量 $d$ 由 $d=\beta (1-\beta)^{-1} {\rm trace} ( P \tilde C \tilde C')$ 给出。
 
-The optimal policy is $u_t = -Fx_t$, where $F := \beta (Q+\beta \tilde B'P \tilde B)^{-1} \tilde B'P \tilde A$.
+最优策略是 $u_t = -Fx_t$，其中 $F := \beta (Q+\beta \tilde B'P \tilde B)^{-1} \tilde B'P \tilde A$。
 
-Under an optimal decision rule $F$, the state vector $x_t$ evolves according to $x_{t+1} = (\tilde A-\tilde BF) x_t + \tilde C w_{t+1}$.
+在最优决策规则 $F$ 下，状态向量 $x_t$ 按照 $x_{t+1} = (\tilde A-\tilde BF) x_t + \tilde C w_{t+1}$ 演化。
 
-### Mapping into the LQ Framework
+### 映射到LQ框架
 
-To map into the LQ framework, we'll use
+为了映射到LQ框架，我们将使用
 
 $$
 x_t :=
@@ -268,10 +267,10 @@ x_t :=
     \end{bmatrix}
 $$
 
-as the state vector and $u_t := c_t - \gamma$ as the control.
+作为状态向量，并将$u_t := c_t - \gamma$作为控制变量。
 
-With this notation and $U_\gamma := \begin{bmatrix} \gamma & 0 & 0
-\end{bmatrix}$, we can write the state dynamics as in {eq}`pilqsd` when
+使用这个符号表示法，并且$U_\gamma := \begin{bmatrix} \gamma & 0 & 0
+\end{bmatrix}$，我们可以将状态动态写成{eq}`pilqsd`的形式，其中
 
 $$
 \tilde A :=
@@ -285,7 +284,7 @@ $$
    0 \\
    1 + r
    \end{bmatrix}
-\quad \text{and} \quad
+\quad \text{和} \quad
 \tilde C :=
    \begin{bmatrix}
    C \\ 0
@@ -293,44 +292,43 @@ $$
    w_{t+1}
 $$
 
-Please confirm for yourself that, with these definitions, the LQ dynamics {eq}`pilqsd`  match the dynamics of $z_t$ and $b_t$ described above.
+请自行确认，使用这些定义，LQ动态{eq}`pilqsd`与上述$z_t$和$b_t$的动态是匹配的。
 
-To map utility into the quadratic form $x_t' R x_t + u_t'Q u_t$ we can set
+为了将效用映射到二次形式$x_t' R x_t + u_t'Q u_t$，我们可以设置
 
-* $Q := 1$ (remember that we are minimizing) and
-* $R :=$ a $4 \times 4$ matrix of zeros
+* $Q := 1$（请记住我们在最小化）且
+* $R :=$ 一个 $4 \times 4$ 的零矩阵
 
-However, there is one problem remaining.
+然而，还有一个问题待解决。
 
-We have no direct way to capture the non-recursive restriction {eq}`old42`
-on the debt sequence $\{b_t\}$ from within the LQ framework.
+在LQ框架内，我们没有直接的方法来捕捉债务序列 $\{b_t\}$ 的非递归限制 {eq}`old42`。
 
-To try to enforce it, we're going to use a trick: put a small penalty on $b_t^2$ in the criterion function.
+为了尝试强制执行这一限制，我们将使用一个技巧：在目标函数中对 $b_t^2$ 添加一个小惩罚项。
 
-In the present setting, this means adding a small entry $\epsilon > 0$ in the $(4,4)$ position of $R$.
+在当前设置中，这意味着在 $R$ 矩阵的 $(4,4)$ 位置添加一个小的值 $\epsilon > 0$。
 
-That will induce a (hopefully) small approximation error in the decision rule.
+这将在决策规则中引入一个（希望是）小的近似误差。
 
-We'll check whether it really is small numerically soon.
+我们很快就会通过数值计算来检验它是否真的很小。
 
-## Implementation
+## 实现
 
-Let's write some code to solve the model.
+让我们编写一些代码来求解这个模型。
 
-One comment before we start is that the bliss level of consumption $\gamma$ in the utility function has no effect on the optimal decision rule.
+在开始之前需要说明的是，效用函数中的消费福利水平 $\gamma$ 对最优决策规则没有影响。
 
-We saw this in the previous lecture  {doc}`permanent income <perm_income>`.
+我们在前面的讲座 {doc}`permanent income <perm_income>` 中已经看到了这一点。
 
-The reason is that it drops out of the Euler equation for consumption.
+原因是它在消费的欧拉方程中被消去了。
 
-In what follows we set it equal to unity.
+在下文中我们将其设为1。
 
-### The Exogenous Nonfinancial Income Process
+### 外生非金融收入过程
 
-First, we create the objects for the optimal linear regulator
+首先，我们为最优线性调节器创建对象
 
 ```{code-cell} python3
-# Set parameters
+# 设置参数
 α, β, ρ1, ρ2, σ = 10.0, 0.95, 0.9, 0.0, 1.0
 
 R = 1 / β
@@ -340,29 +338,28 @@ A = np.array([[1., 0., 0.],
 C = np.array([[0.], [σ], [0.]])
 G = np.array([[0., 1., 0.]])
 
-# Form LinearStateSpace system and pull off steady state moments
+# 构建LinearStateSpace系统并提取稳态矩
 μ_z0 = np.array([[1.0], [0.0], [0.0]])
 Σ_z0 = np.zeros((3, 3))
 Lz = qe.LinearStateSpace(A, C, G, mu_0=μ_z0, Sigma_0=Σ_z0)
 μ_z, μ_y, Σ_z, Σ_y, Σ_yx = Lz.stationary_distributions()
 
-# Mean vector of state for the savings problem
+# 储蓄问题的状态均值向量
 mxo = np.vstack([μ_z, 0.0])
 
-# Create stationary covariance matrix of x -- start everyone off at b=0
+# 创建x的稳态协方差矩阵 -- 所有人初始债务b=0
 a1 = np.zeros((3, 1))
 aa = np.hstack([Σ_z, a1])
 bb = np.zeros((1, 4))
 sxo = np.vstack([aa, bb])
 
-# These choices will initialize the state vector of an individual at zero
-# debt and the ergodic distribution of the endowment process. Use these to
-# create the Bewley economy.
+# 这些选择将个体的状态向量初始化为零债务和
+# 禀赋过程的遍历分布。使用这些来创建Bewley经济。
 mxbewley = mxo
 sxbewley = sxo
 ```
 
-The next step is to create the matrices for the LQ system
+下一步是创建LQ系统的矩阵
 
 ```{code-cell} python3
 A12 = np.zeros((3,1))
@@ -381,7 +378,7 @@ CLQ = np.array([0., σ, 0., 0.]).reshape(4,1)
 β_LQ = β
 ```
 
-Let's print these out and have a look at them
+让我们把这些打印出来看看
 
 ```{code-cell} python3
 print(f"A = \n {ALQ}")
@@ -390,32 +387,30 @@ print(f"R = \n {RLQ}")
 print(f"Q = \n {QLQ}")
 ```
 
-Now create the appropriate instance of an LQ model
+现在创建一个适当的LQ模型实例
 
 ```{code-cell} python3
 lqpi = qe.LQ(QLQ, RLQ, ALQ, BLQ, C=CLQ, beta=β_LQ)
 ```
 
-We'll save the implied optimal policy function soon compare them with what we get by
-employing an alternative solution method
+我们很快会保存隐含的最优策略函数，并将其与使用其他求解方法得到的结果进行比较
 
 ```{code-cell} python3
-P, F, d = lqpi.stationary_values()  # Compute value function and decision rule
-ABF = ALQ - BLQ @ F  #  Form closed loop system
+P, F, d = lqpi.stationary_values()  # 计算值函数和决策规则
+ABF = ALQ - BLQ @ F  # 构建闭环系统
 ```
 
-### Comparison with the Difference Equation Approach
+### 与差分方程方法的比较
 
-In our {doc}`first lecture <perm_income>` on the infinite horizon permanent
-income problem we used a different solution method.
+在我们关于无限期永久收入问题的{doc}`第一讲<perm_income>`中，我们使用了不同的解决方法。
 
-The method was based around
+该方法基于
 
-* deducing the Euler equations that are the first-order conditions with respect to consumption and savings.
-* using the budget constraints and boundary condition to complete a system of expectational linear difference equations.
-* solving those equations to obtain the solution.
+* 推导出关于消费和储蓄的一阶条件的欧拉方程。
+* 使用预算约束和边界条件来完成一个期望线性差分方程组。
+* 求解这些方程以获得解。
 
-Expressed in state space notation, the solution took the form
+用状态空间表示法表示，解的形式为
 
 $$
 \begin{aligned}
@@ -426,108 +421,106 @@ $$
 \end{aligned}
 $$
 
-Now we'll apply the formulas in this system
+现在我们将应用这个系统中的公式
 
 ```{code-cell} python3
-# Use the above formulas to create the optimal policies for b_{t+1} and c_t
+# 使用上述公式创建b_{t+1}和c_t的最优策略
 b_pol = G @ la.inv(np.eye(3, 3) - β * A) @ (A - np.eye(3, 3))
 c_pol = (1 - β) * G @ la.inv(np.eye(3, 3) - β * A)
 
-# Create the A matrix for a LinearStateSpace instance
+# 为LinearStateSpace实例创建A矩阵
 A_LSS1 = np.vstack([A, b_pol])
 A_LSS2 = np.eye(4, 1, -3)
 A_LSS = np.hstack([A_LSS1, A_LSS2])
 
-# Create the C matrix for LSS methods
+# 为LSS方法创建C矩阵
 C_LSS = np.vstack([C, np.zeros(1)])
 
-# Create the G matrix for LSS methods
+# 为LSS方法创建G矩阵
 G_LSS1 = np.vstack([G, c_pol])
 G_LSS2 = np.vstack([np.zeros(1), -(1 - β)])
 G_LSS = np.hstack([G_LSS1, G_LSS2])
 
-# Use the following values to start everyone off at b=0, initial incomes zero
+# 使用以下值使每个人从b=0开始，初始收入为零
 μ_0 = np.array([1., 0., 0., 0.])
 Σ_0 = np.zeros((4, 4))
 ```
 
-`A_LSS` calculated as we have here should equal `ABF` calculated above using the LQ model
+使用这里的方法计算的`A_LSS`应该等于上面用LQ模型计算的`ABF`
 
 ```{code-cell} python3
 ABF - A_LSS
 ```
 
-Now compare pertinent elements of `c_pol` and `F`
+现在比较 `c_pol` 和 `F` 的相关元素
 
 ```{code-cell} python3
 print(c_pol, "\n", -F)
 ```
 
-We have verified that the two methods give the same solution.
+我们已经验证了两种方法得出相同的解。
 
-Now let's create instances of the [LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py) class and use it to do some interesting experiments.
+现在让我们创建[LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)类的实例,并用它来做一些有趣的实验。
 
-To do this, we'll use the outcomes from our second method.
+为此,我们将使用第二种方法的结果。
 
-## Two Example Economies
+## 两个经济示例
 
-In the spirit of Bewley models {cite}`Bewley86`, we'll generate panels of consumers.
+本着Bewley模型{cite}`Bewley86`的精神,我们将生成消费者面板数据。
 
-The examples differ only in  the initial states with which we endow the consumers.
+这两个示例仅在赋予消费者的初始状态上有所不同。
 
-All other parameter values are kept the same in the two examples
+所有其他参数值在两个示例中保持相同
 
-- In the first example, all consumers begin with zero nonfinancial income and zero debt.
-    * The consumers are thus *ex-ante* identical.
-- In the second example, while all begin with zero debt, we draw their initial income levels from the invariant distribution of financial income.
-    * Consumers are *ex-ante* heterogeneous.
+- 在第一个示例中,所有消费者的初始非金融收入和债务都为零。
+    * 因此消费者在事前是相同的。
+- 在第二个示例中,虽然所有人的初始债务都为零,但我们从金融收入的不变分布中抽取他们的初始收入水平。
+    * 消费者在事前是异质的。
 
-In the first example, consumers' nonfinancial income paths  display
-pronounced transients early in the sample
+在第一个示例中,消费者的非金融收入路径显示
 
-- these will affect outcomes in striking ways
+样本早期的明显瞬态
 
-Those transient effects will not be present in the second example.
+- 这些会以显著方式影响结果
 
-We use methods affiliated with the [LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py) class to simulate the model.
+第二个例子中不会出现这些瞬态效应。
 
-### First Set of Initial Conditions
+我们使用与[LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)类相关的方法来模拟该模型。
 
-We generate  25 paths of the exogenous non-financial income process and the associated optimal consumption and debt paths.
+### 第一组初始条件
 
-In the first set of graphs,  darker lines depict a particular sample path, while the lighter lines describe 24 other  paths.
+我们生成25条外生非金融收入过程的路径以及相应的最优消费和债务路径。
 
-A second graph  plots a collection of simulations against the population distribution that we extract from the `LinearStateSpace` instance `LSS`.
+在第一组图中，深色线条描绘了一条特定的样本路径，而浅色线条描述了其他24条路径。
 
-Comparing sample paths with population distributions at each date $t$ is a useful exercise---see {ref}`our discussion <lln_mr>` of the laws of large numbers
+第二张图将一组模拟结果与我们从`LinearStateSpace`实例`LSS`中提取的总体分布进行对比。
+
+在每个时间点$t$比较样本路径与总体分布是一个有用的练习——参见{ref}`我们关于大数定律的讨论<lln_mr>`
 
 ```{code-cell} python3
 lss = qe.LinearStateSpace(A_LSS, C_LSS, G_LSS, mu_0=μ_0, Sigma_0=Σ_0)
 ```
 
-### Population and Sample Panels
+### 总体和样本面板
 
-In the code below, we use the [LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py) class to
+在下面的代码中，我们使用[LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)类来
 
-- compute and plot population quantiles of the distributions of
-  consumption and debt for a population of consumers.
-- simulate a group of 25 consumers and plot sample paths on the same
-  graph as the population distribution.
+- 计算并绘制一群消费者的消费和债务分布的总体分位数。
+- 模拟25个消费者的群体，并在同一图表上绘制样本路径和总体分布。
 
 ```{code-cell} python3
 def income_consumption_debt_series(A, C, G, μ_0, Σ_0, T=150, npaths=25):
     """
-    This function takes initial conditions (μ_0, Σ_0) and uses the
-    LinearStateSpace class from QuantEcon to  simulate an economy
-    npaths times for T periods. It then uses that information to
-    generate some graphs related to the discussion below.
+    该函数接收初始条件(μ_0, Σ_0)，并使用QuantEcon的LinearStateSpace类
+    对一个经济体进行T期的npaths次模拟。然后使用这些信息生成一些与下述
+    讨论相关的图表。
     """
     lss = qe.LinearStateSpace(A, C, G, mu_0=μ_0, Sigma_0=Σ_0)
 
-    # Simulation/Moment Parameters
+    # 模拟/矩参数
     moment_generator = lss.moment_sequence()
 
-    # Simulate various paths
+    # 模拟各种路径
     bsim = np.empty((npaths, T))
     csim = np.empty((npaths, T))
     ysim = np.empty((npaths, T))
@@ -538,7 +531,7 @@ def income_consumption_debt_series(A, C, G, μ_0, Σ_0, T=150, npaths=25):
         csim[i, :] = sims[1][1, :]
         ysim[i, :] = sims[1][0, :]
 
-    # Get the moments
+    # 获取矩
     cons_mean = np.empty(T)
     cons_var = np.empty(T)
     debt_mean = np.empty(T)
@@ -552,75 +545,74 @@ def income_consumption_debt_series(A, C, G, μ_0, Σ_0, T=150, npaths=25):
 
 def consumption_income_debt_figure(bsim, csim, ysim):
 
-    # Get T
+    # 获取T
     T =  bsim.shape[1]
 
-    # Create the first figure
+    # 创建第一个图
     fig, ax = plt.subplots(2, 1, figsize=(10, 8))
     xvals = np.arange(T)
 
-    # Plot consumption and income
+    # 绘制消费和收入
     ax[0].plot(csim[0, :], label="c", color="b")
     ax[0].plot(ysim[0, :], label="y", color="g")
     ax[0].plot(csim.T, alpha=.1, color="b")
     ax[0].plot(ysim.T, alpha=.1, color="g")
     ax[0].legend(loc=4)
-    ax[0].set(title="Nonfinancial Income, Consumption, and Debt",
-              xlabel="t", ylabel="y and c")
+    ax[0].set(title="非金融收入、消费和债务",
+              xlabel="t", ylabel="y和c")
 
-    # Plot debt
+    # 绘制债务
     ax[1].plot(bsim[0, :], label="b", color="r")
     ax[1].plot(bsim.T, alpha=.1, color="r")
     ax[1].legend(loc=4)
-    ax[1].set(xlabel="t", ylabel="debt")
+    ax[1].set(xlabel="t", ylabel="债务")
 
     fig.tight_layout()
     return fig
 
 def consumption_debt_fanchart(csim, cons_mean, cons_var,
                               bsim, debt_mean, debt_var):
-    # Get T
+    # 获取T
     T =  bsim.shape[1]
 
-    # Create percentiles of cross-section distributions
+    # 创建横截面分布的百分位数
     cmean = np.mean(cons_mean)
     c90 = 1.65 * np.sqrt(cons_var)
     c95 = 1.96 * np.sqrt(cons_var)
     c_perc_95p, c_perc_95m = cons_mean + c95, cons_mean - c95
     c_perc_90p, c_perc_90m = cons_mean + c90, cons_mean - c90
 
-    # Create percentiles of cross-section distributions
+    # 创建横截面分布的百分位数
     dmean = np.mean(debt_mean)
     d90 = 1.65 * np.sqrt(debt_var)
     d95 = 1.96 * np.sqrt(debt_var)
     d_perc_95p, d_perc_95m = debt_mean + d95, debt_mean - d95
     d_perc_90p, d_perc_90m = debt_mean + d90, debt_mean - d90
 
-
-    # Create second figure
+    # 创建第二个图
     fig, ax = plt.subplots(2, 1, figsize=(10, 8))
     xvals = np.arange(T)
 
-    # Consumption fan
+    # 消费扇形图
     ax[0].plot(xvals, cons_mean, color="k")
     ax[0].plot(csim.T, color="k", alpha=.25)
     ax[0].fill_between(xvals, c_perc_95m, c_perc_95p, alpha=.25, color="b")
     ax[0].fill_between(xvals, c_perc_90m, c_perc_90p, alpha=.25, color="r")
-    ax[0].set(title="Consumption/Debt over time",
-              ylim=(cmean-15, cmean+15), ylabel="consumption")
+    ax[0].set(title="消费/债务随时间变化",
+              ylim=(cmean-15, cmean+15), ylabel="消费")
 
-    # Debt fan
+    # 债务扇形图
     ax[1].plot(xvals, debt_mean, color="k")
     ax[1].plot(bsim.T, color="k", alpha=.25)
     ax[1].fill_between(xvals, d_perc_95m, d_perc_95p, alpha=.25, color="b")
     ax[1].fill_between(xvals, d_perc_90m, d_perc_90p, alpha=.25, color="r")
-    ax[1].set(xlabel="t", ylabel="debt")
+    ax[1].set(xlabel="t", ylabel="债务")
 
     fig.tight_layout()
     return fig
 ```
 
-Now let's create figures with initial conditions of zero for $y_0$ and $b_0$
+现在让我们创建 $y_0$ 和 $b_0$ 的初始条件为零的图表
 
 ```{code-cell} python3
 out = income_consumption_debt_series(A_LSS, C_LSS, G_LSS, μ_0, Σ_0)
@@ -639,13 +631,13 @@ consumption_debt_fanchart(csim0, cons_mean0, cons_var0,
 plt.show()
 ```
 
-Here is what is going on in the above graphs.
+以下是上述图表所显示的内容。
 
-For our simulation, we have set initial conditions $b_0 = y_{-1} = y_{-2} = 0$.
+在我们的模拟中，我们设定了初始条件 $b_0 = y_{-1} = y_{-2} = 0$。
 
-Because $y_{-1} = y_{-2} = 0$, nonfinancial income $y_t$ starts far below its stationary mean $\mu_{y, \infty}$ and rises early in each simulation.
+由于 $y_{-1} = y_{-2} = 0$，非金融收入 $y_t$ 在开始时远低于其稳态均值 $\mu_{y, \infty}$，并在每次模拟的早期阶段上升。
 
-Recall from  the {doc}`previous lecture <perm_income>` that we can represent the optimal decision rule for consumption in terms of the **co-integrating relationship**
+回顾{doc}`上一讲<perm_income>`，我们可以用**协整关系**来表示消费的最优决策规则
 
 ```{math}
 :label: old12
@@ -653,62 +645,53 @@ Recall from  the {doc}`previous lecture <perm_income>` that we can represent the
 (1-\beta) b_t + c_t = (1-\beta) E_t \sum_{j=0}^\infty \beta^j y_{t+j}
 ```
 
-So at time $0$ we have
+因此在时间 $0$ 时，我们有
 
 $$
 c_0 = (1-\beta) E_0 \sum_{t=0}^\infty \beta^j y_{t}
 $$
 
-This tells us that consumption starts at the income that would be paid by an annuity whose value equals the expected discounted value of nonfinancial income at time $t=0$.
+这告诉我们，消费开始于一个年金所支付的收入水平，该年金的价值等于在时间 $t=0$ 时非金融收入的预期贴现值。
 
-To support that level of consumption, the consumer borrows a lot early and consequently builds up substantial debt.
+为了维持这个消费水平，消费者在早期大量借贷，因此积累了大量债务。
 
-In fact, he or she incurs so much debt that eventually, in the stochastic steady state, he consumes less each period than his nonfinancial income.
+事实上，他/她积累了如此多的债务，以至于在随机稳态下，他每期的消费都低于其非金融收入。
 
-He uses the gap between consumption and nonfinancial income mostly to service the interest payments due on his debt.
+他主要用消费和非金融收入之间的差额来支付债务的利息。
 
-Thus, when we look at the panel of debt in the accompanying graph, we see that this is a group of *ex-ante* identical people each of whom starts with zero debt.
+因此，当我们查看附图中的债务面板时，我们看到这是一群*事前*完全相同的人，他们每个人都是从零债务开始的。
 
-All of them accumulate debt in anticipation of rising nonfinancial income.
+他们都在预期非金融收入上升的情况下积累债务。
 
-They expect their nonfinancial income to rise toward the invariant distribution of income, a consequence of our having started them at $y_{-1} = y_{-2} = 0$.
+他们预计他们的非金融收入会上升到收入的不变分布，这是因为我们一开始将他们的收入设定为$y_{-1} = y_{-2} = 0$。
 
-#### Cointegration Residual
+#### 协整残差
 
-The following figure plots realizations of the left side of {eq}`old12`, which,
-{ref}`as discussed in our last lecture <coint_pi>`, is called the **cointegrating residual**.
+下图绘制了{eq}`old12`左侧的实现值，这在{ref}`我们上一讲中讨论过 <coint_pi>`，被称为**协整残差**。
 
-As mentioned above, the right side can be thought of as an
-annuity payment on the expected present value of future income
-$E_t \sum_{j=0}^\infty \beta^j y_{t+j}$.
+如上所述，右侧可以被理解为未来收入预期现值的年金支付
 
-Early along a realization, $c_t$ is approximately constant while
-$(1-\beta) b_t$ and
-$(1-\beta) E_t \sum_{j=0}^\infty \beta^j y_{t+j}$ both rise
-markedly as the household's present value of income and borrowing rise
-pretty much together.
+$E_t \sum_{j=0}^\infty \beta^j y_{t+j}$。
 
-This example illustrates the following point: the definition
-of cointegration implies that the cointegrating residual is
-*asymptotically* covariance stationary, not *covariance stationary*.
+在实现过程的早期，当家庭的收入现值和借款几乎同时上升时，$c_t$ 大致保持恒定，而$(1-\beta) b_t$和$(1-\beta) E_t \sum_{j=0}^\infty \beta^j y_{t+j}$都显著上升。
 
-The cointegrating residual for the specification with zero income and zero
-debt initially has a notable transient component that dominates its
-behavior early in the sample.
+这个例子说明了以下观点：协整的定义意味着协整残差是*渐近*协方差平稳的，而不是*协方差平稳*的。
 
-By altering initial conditions, we shall remove this transient in our second example to be presented below
+对于初始收入和债务为零的规格，其协整残差在样本早期有一个显著的暂时性成分主导其行为。
+
+通过改变初始条件，我们将在下面要展示的第二个例子中消除这种暂时性成分。
 
 ```{code-cell} python3
 def cointegration_figure(bsim, csim):
     """
-    Plots the cointegration
+    绘制协整图
     """
-    # Create figure
+    # 创建图形
     fig, ax = plt.subplots(figsize=(10, 8))
     ax.plot((1 - β) * bsim[0, :] + csim[0, :], color="k")
     ax.plot((1 - β) * bsim.T + csim.T, color="k", alpha=.1)
 
-    ax.set(title="Cointegration of Assets and Consumption", xlabel="t")
+    ax.set(title="资产和消费的协整关系", xlabel="t")
 
     return fig
 ```
@@ -718,43 +701,36 @@ cointegration_figure(bsim0, csim0)
 plt.show()
 ```
 
-### A "Borrowers and Lenders" Closed Economy
+### "借贷者"封闭经济
 
-When we set $y_{-1} = y_{-2} = 0$ and $b_0 =0$ in the
-preceding exercise, we make debt "head north" early in the sample.
+当我们在前面的练习中设定 $y_{-1} = y_{-2} = 0$ 和 $b_0 =0$ 时，我们使债务在样本早期"向北"发展。
 
-Average debt in the cross-section rises and approaches the asymptote.
+横截面的平均债务上升并接近渐近线。
 
-We can regard these as outcomes of a "small open economy" that
-borrows from abroad at the fixed gross interest rate $R = r+1$ in
-anticipation of rising incomes.
+我们可以将这些视为一个"小型开放经济"的结果，该经济以固定的总利率 $R = r+1$ 从国外借款，以预期收入上升。
 
-So with the economic primitives set as above, the economy converges to a
-steady state in which there is an excess aggregate supply of risk-free
-loans at a gross interest rate of $R$.
+因此，在上述经济基本要素的设定下，经济收敛到一个稳态，在该稳态下，在总利率 $R$ 时存在无风险贷款的总供给过剩。
 
-This excess supply is filled by "foreigner lenders" willing to make those loans.
+这个供给过剩由愿意提供这些贷款的"外国贷款人"填补。
 
-We can use virtually the same code to rig a "poor man's Bewley {cite}`Bewley86` model" in the following way
+我们可以使用几乎相同的代码，通过以下方式构建一个"简化版的Bewley模型" {cite}`Bewley86`
 
-- as before, we start everyone at $b_0 = 0$.
-- But instead of starting everyone at $y_{-1} = y_{-2} = 0$, we
-  draw $\begin{bmatrix} y_{-1} \\ y_{-2}   \end{bmatrix}$ from
-  the invariant distribution of the $\{y_t\}$ process.
+- 和之前一样，我们让每个人从 $b_0 = 0$ 开始。
+- 但是我们不是让每个人从 $y_{-1} = y_{-2} = 0$ 开始，而是从以下分布中抽取 $\begin{bmatrix} y_{-1} \\ y_{-2}   \end{bmatrix}$
 
-This rigs a closed economy in which people are borrowing and lending
-with each other at a gross risk-free interest rate of
-$R = \beta^{-1}$.
+$\{y_t\}$ 过程的不变分布。
 
-Across the group of people being analyzed, risk-free loans are in zero excess supply.
+这构建了一个封闭经济，其中人们以总无风险利率 $R = \beta^{-1}$ 相互借贷。
 
-We have arranged primitives so that $R = \beta^{-1}$ clears the market for risk-free loans at zero aggregate excess supply.
+在被分析的群体中，无风险贷款的超额供给为零。
 
-So the risk-free loans are being made from one person to another within our closed set of agents.
+我们已经安排了基本要素，使得 $R = \beta^{-1}$ 在零总超额供给的水平上清算无风险贷款市场。
 
-There is no need for foreigners to lend to our group.
+因此，无风险贷款是在我们这个封闭代理人群体内部相互进行的。
 
-Let's have a look at the corresponding figures
+不需要外国人向我们的群体提供贷款。
+
+让我们看看相应的图表
 
 ```{code-cell} python3
 out = income_consumption_debt_series(A_LSS, C_LSS, G_LSS, mxbewley, sxbewley)
@@ -773,19 +749,20 @@ consumption_debt_fanchart(csimb, cons_meanb, cons_varb,
 plt.show()
 ```
 
-The graphs confirm the following outcomes:
+图表确认了以下结果：
 
-- As before, the consumption distribution spreads out over time.
+- 和之前一样，消费分布随时间扩散。
 
-But now there is some initial dispersion because there is *ex-ante* heterogeneity in the initial draws of $\begin{bmatrix} y_{-1} \\ y_{-2}   \end{bmatrix}$.
+但现在由于在初始抽取 $\begin{bmatrix} y_{-1} \\ y_{-2}   \end{bmatrix}$ 时存在*事前*异质性，所以有一些初始分散。
 
-- As before, the cross-section distribution of debt spreads out over time.
-- Unlike before, the average level of debt stays at zero, confirming that this is a closed borrower-and-lender economy.
-- Now the cointegrating residual seems stationary, and not just asymptotically stationary.
+- 和之前一样，债务的横截面分布随时间扩散。
+- 与之前不同的是，债务的平均水平保持在零，证实这是一个封闭的借贷经济。
+- 现在协整残差似乎是平稳的，而不仅仅是渐近平稳的。
 
-Let's have a look at the cointegration figure
+让我们看看协整图
 
 ```{code-cell} python3
 cointegration_figure(bsimb, csimb)
 plt.show()
 ```
+

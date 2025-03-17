@@ -11,32 +11,26 @@ kernelspec:
   name: python3
 ---
 
-# Optimal Transport
+# 最优传输
 
-## Overview
+## 概述
 
-The **transportation** or **optimal transport** problem is interesting both
-because of its many applications and because of its important role in the history of
-economic theory.
+**运输**或**最优传输**问题之所以有趣，不仅是因为它有许多应用，还因为它在经济理论历史中扮演着重要角色。
 
-In this lecture, we describe the problem, tell how
-{doc}`linear programming <intro:lp_intro>` is a
-key tool for solving it, and then provide some examples.
+在本讲座中，我们将描述这个问题，说明{doc}`线性规划 <intro:lp_intro>`是解决它的关键工具，然后提供一些示例。
 
-We will provide other applications in followup lectures.
+我们将在后续讲座中提供其他应用。
 
-The optimal transport problem was studied in early work about linear
-programming, as summarized for example by {cite}`DoSSo`.  A modern reference
-about applications in economics is {cite}`Galichon_2016`.
+最优传输问题在早期关于线性规划的研究中就被研究过，例如在{cite}`DoSSo`中有总结。关于经济学应用的现代参考文献是{cite}`Galichon_2016`。
 
-Below, we show how to solve the optimal transport problem using
-several implementations of linear programming, including, in order,
+下面，我们将展示如何使用几种线性规划的实现方法来解决最优传输问题，包括：
 
-1. the
-   [linprog](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html)
-   solver from SciPy,
-2. the [linprog_simplex](https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html) solver from QuantEcon and
-3. the simplex-based solvers included in the [Python Optimal Transport](https://pythonot.github.io/) package.
+1. 这个
+
+[linprog](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html)
+   来自SciPy的求解器，
+2. [linprog_simplex](https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html) 来自QuantEcon的求解器，以及
+3. [Python Optimal Transport](https://pythonot.github.io/) 包中包含的基于单纯形法的求解器。
 
 ```{code-cell} ipython3
 :tags: [hide-output]
@@ -45,7 +39,7 @@ several implementations of linear programming, including, in order,
 !pip install --upgrade POT
 ```
 
-Let's start with some imports.
+让我们从一些导入语句开始。
 
 ```{code-cell} ipython3
 import numpy as np
@@ -57,44 +51,41 @@ from scipy.stats import betabinom
 import networkx as nx
 ```
 
-## The Optimal Transport Problem
+## 最优运输问题
 
-Suppose that $m$ factories produce goods that must be sent to $n$ locations.
+假设有$m$个工厂生产的商品必须运送到$n$个地点。
 
-Let
+令
 
-* $x_{ij}$ denote the quantity  shipped from factory $i$ to location  $j$
+* $x_{ij}$ 表示从工厂$i$运往地点$j$的数量
 
-* $c_{ij}$ denote the cost of shipping one unit  from factory $i$ to location $j$
+* $c_{ij}$ 表示从工厂$i$运往地点$j$每单位的运输成本
 
-* $p_i$ denote the capacity of factory $i$ and $q_j$ denote the amount required at location $j$.
+* $p_i$ 表示工厂$i$的产能，$q_j$表示地点$j$所需的数量
 
-*  $i = 1, 2, \dots, m$ and $j = 1, 2, \dots, n$.
+* $i = 1, 2, \dots, m$ 且 $j = 1, 2, \dots, n$
 
-A planner wants to minimize  total transportation costs subject to the following constraints:
+规划者希望在以下约束条件下最小化总运输成本：
 
-* The amount shipped **from** each factory must equal  its capacity.
+* 从每个工厂运出的数量必须等于其产能
 
-* The amount shipped **to** each location must equal the quantity required there.
+* 运往每个地点的数量必须等于该地点所需的数量
 
-
-The figure below shows one visualization of this idea, when factories and
-target locations are distributed in the plane.
+下图展示了当工厂和目标地点分布在平面上时的一种可视化表示。
 
 ```{figure} /_static/lecture_specific/opt_transport/optimal_transport_splitting_experiment.png
 
 ```
 
-The size of the vertices in the figure are proportional to
+图中顶点的大小与以下内容成正比：
 
-- capacity, for the factories, and
-- demand (amount required) for the target locations.
+- 对于工厂来说，是产能
 
-The arrows show one possible transport plan, which respects the constraints
-stated above.
+- 目标地点的需求量。
 
+箭头显示了一个可能的运输方案，该方案遵守上述约束条件。
 
-The planner's problem can be expressed as the following constrained minimization problem:
+规划者的问题可以表示为以下约束最小化问题：
 
 $$
 \begin{aligned}
@@ -105,13 +96,13 @@ $$
 \end{aligned}
 $$ (plannerproblem)
 
-This is an **optimal transport problem** with
+这是一个**最优运输问题**，包含：
 
-* $mn$ decision variables, namely, the entries $x_{ij}$   and
+* $mn$ 个决策变量，即 $x_{ij}$ 的条目，以及
 
-* $m+n$ constraints.
+* $m+n$ 个约束条件。
 
-Summing the $q_j$'s across all $j$'s and the $p_i$'s across all $i$'s indicates that the total capacity of all the factories  equals  total requirements at all locations:
+将所有 $j$ 的 $q_j$ 相加和所有 $i$ 的 $p_i$ 相加表明，所有工厂的总产能等于所有地点的总需求：
 
 $$
     \sum_{j=1}^n q_j
@@ -120,72 +111,68 @@ $$
     = \sum_{i=1}^m p_i
 $$ (sumconstraints)
 
-The presence of the restrictions in {eq}`sumconstraints` will be the source of
-one redundancy in the complete set of restrictions that we describe below.
+{eq}`sumconstraints` 中的约束条件将导致我们下面描述的完整约束集中出现一个冗余。
 
-More about this later.
-
+稍后会详细讨论这一点。
 
 
 
-## The Linear Programming Approach
 
-In this section we discuss using using standard linear programming solvers to
-tackle the optimal transport problem.
+## 线性规划方法
+
+本节我们讨论如何使用标准线性规划求解器来解决最优运输问题。
 
 
-### Vectorizing a Matrix of Decision Variables
+### 决策变量矩阵的向量化
 
-A *matrix* of decision variables $x_{ij}$ appears in problem {eq}`plannerproblem`.
+在问题 {eq}`plannerproblem` 中出现了决策变量 $x_{ij}$ 的*矩阵*。
 
-The SciPy function `linprog` expects to see a *vector* of decision variables.
+SciPy 函数 `linprog` 需要接收决策变量的*向量*。
 
-This situation impels us to rewrite our problem in terms of a
-*vector* of decision variables.
+这种情况促使我们需要用决策变量的*向量*来重写我们的问题。
 
-Let
+令：
 
-* $X, C$ be $m \times n$ matrices with entries $x_{ij}, c_{ij}$,
+* $X, C$ 是具有元素 $x_{ij}, c_{ij}$ 的 $m \times n$ 矩阵，
 
-* $p$ be $m$-dimensional vector with entries $p_i$,
+* $p$ 是具有元素 $p_i$ 的 $m$ 维向量，
 
-* $q$ be $n$-dimensional vector with entries $q_j$.
+* $q$ 是具有元素 $q_j$ 的 $n$ 维向量。
 
-With $\mathbf{1}_n$ denoting the $n$-dimensional column vector $(1, 1, \dots,
-1)'$, our  problem can now be expressed compactly as:
+用 $\mathbf{1}_n$ 表示 $n$ 维列向量 $(1, 1, \dots, 1)'$，我们的问题现在可以简洁地表示为：
 
 $$
 \begin{aligned}
-    \min_{X} \ & \operatorname{tr} (C' X) \\
+
+\min_{X} \ & \operatorname{tr} (C' X) \\
     \mbox{subject to } \ & X \ \mathbf{1}_n = p \\
     & X' \ \mathbf{1}_m = q \\
     & X \ge 0 \\
 \end{aligned}
 $$
 
-We can convert the matrix $X$ into a vector by stacking all of its columns into a  column vector.
+我们可以通过将矩阵$X$的所有列堆叠成一个列向量来将其转换为向量。
 
-Doing this is called **vectorization**, an operation that we denote  $\operatorname{vec}(X)$.
+这种操作称为**向量化**，我们用$\operatorname{vec}(X)$表示。
 
-Similarly, we convert the matrix $C$ into an $mn$-dimensional vector $\operatorname{vec}(C)$.
+同样，我们将矩阵$C$转换为$mn$维向量$\operatorname{vec}(C)$。
 
-The objective function can be expressed as the inner product between $\operatorname{vec}(C)$ and $\operatorname{vec}(X)$:
+目标函数可以表示为$\operatorname{vec}(C)$和$\operatorname{vec}(X)$之间的内积：
 
 $$
     \operatorname{vec}(C)' \cdot \operatorname{vec}(X).
 $$
 
-To express the constraints in terms of $\operatorname{vec}(X)$, we use a
-**Kronecker product** denoted by $\otimes$ and defined as follows.
+为了用$\operatorname{vec}(X)$表示约束条件，我们使用**克罗内克积**，用$\otimes$表示，定义如下。
 
-Suppose $A$ is an $m \times s$ matrix with entries $(a_{ij})$ and that $B$ is
-an $n \times t$ matrix.
+假设$A$是一个$m \times s$矩阵，其元素为$(a_{ij})$，而$B$是一个$n \times t$矩阵。
 
-The **Kronecker product** of $A$ and $B$ is defined, in block matrix form, by
+**克罗内克积**的定义，以分块矩阵形式表示为：
 
 $$
     A \otimes B =
-    \begin{pmatrix}
+
+\begin{pmatrix}
     a_{11}B & a_{12}B & \dots & a_{1s}B \\
     a_{21}B & a_{22}B & \dots & a_{2s}B \\
       &   & \vdots &   \\
@@ -193,19 +180,19 @@ $$
     \end{pmatrix}.
 $$
 
-$A \otimes B$ is an $mn \times st$ matrix.
+$A \otimes B$ 是一个 $mn \times st$ 矩阵。
 
-It has the property that for any $m \times n$ matrix $X$
+它具有这样的性质：对于任意 $m \times n$ 矩阵 $X$
 
 $$
     \operatorname{vec}(A'XB) = (B' \otimes A') \operatorname{vec}(X).
 $$ (kroneckerprop)
 
-We can now express our constraints in terms of $\operatorname{vec}(X)$.
+现在我们可以用 $\operatorname{vec}(X)$ 来表示我们的约束条件。
 
-Let $A = \mathbf{I}_m', B = \mathbf{1}_n$.
+令 $A = \mathbf{I}_m', B = \mathbf{1}_n$。
 
-By equation {eq}`kroneckerprop`
+根据等式 {eq}`kroneckerprop`
 
 $$
     X \ \mathbf{1}_n
@@ -214,22 +201,21 @@ $$
     = (\mathbf{1}_n' \otimes \mathbf{I}_m) \operatorname{vec}(X).
 $$
 
-where  $\mathbf{I}_m$ denotes the $m \times m$ identity matrix.
+其中 $\mathbf{I}_m$ 表示 $m \times m$ 单位矩阵。
 
-Constraint $X \ \mathbf{1}_n = p$ can now be written as:
+约束条件 $X \ \mathbf{1}_n = p$ 现在可以写成：
 
 $$
     (\mathbf{1}_n' \otimes \mathbf{I}_m) \operatorname{vec}(X) = p.
 $$
 
-Similarly, the constraint $X' \ \mathbf{1}_m = q$ can be rewriten as:
+类似地，约束条件 $X' \ \mathbf{1}_m = q$ 可以重写为：
 
 $$
     (\mathbf{I}_n \otimes \mathbf{1}_m') \operatorname{vec}(X) = q.
 $$
 
-With $z := \operatorname{vec}(X)$, our problem can now be expressed
-in terms of an $mn$-dimensional vector of decision variables:
+令 $z := \operatorname{vec}(X)$，我们的问题现在可以用一个 $mn$ 维的决策变量向量来表示：
 
 $$
     \begin{aligned}
@@ -239,7 +225,7 @@ $$
     \end{aligned}
 $$ (decisionvars)
 
-where
+其中
 
 $$
     A =
@@ -247,7 +233,7 @@ $$
         \mathbf{1}_n' \otimes \mathbf{I}_m \\
         \mathbf{I}_n \otimes \mathbf{1}_m' \\
     \end{pmatrix}
-    \quad \text{and} \quad
+    \quad \text{和} \quad
     b = \begin{pmatrix}
             p \\
             q \\
@@ -255,25 +241,22 @@ $$
 $$
 
 
-### An Application
+### 应用实例
 
 
-We now provide an example that takes the form {eq}`decisionvars` that we'll
-solve by deploying the function `linprog`.
+我们现在提供一个采用 {eq}`decisionvars` 形式的例子，我们将通过使用 `linprog` 函数来求解。
 
-The table below provides numbers for the requirements vector $q$, the capacity vector $p$,
-and entries $c_{ij}$  of the cost-of-shipping matrix $C$.
-
+下表提供了需求向量 $q$、产能向量 $p$ 以及运输成本矩阵 $C$ 中各项 $c_{ij}$ 的数值。
 
 ```{raw} html
 <table>
     <tr>
 	    <th> </th>
-        <th colspan="3"><center>Factory</center></th>
-	    <th rowspan="2">Requirement</th>
+        <th colspan="3"><center>工厂</center></th>
+	    <th rowspan="2">需求量</th>
 	</tr >
     <tr>
-        <th> Location </th> <th>1</th> <th>2</th> <th>3</th>
+        <th> 地点 </th> <th>1</th> <th>2</th> <th>3</th>
 	</tr>
     <tr>
 	    <td>1</td>  <td>10</td> <td>20</td> <td>30</td> <td>25</td>
@@ -291,13 +274,12 @@ and entries $c_{ij}$  of the cost-of-shipping matrix $C$.
 	    <td>5</td> <td>40</td> <td>30</td> <td>25</td> <td>70</td>
 	</tr>
     <tr>
-	    <td>Capacity</td> <td>50</td> <td>100</td> <td>150</td> <td>300</td>
+	    <td>产能</td> <td>50</td> <td>100</td> <td>150</td> <td>300</td>
 	</tr>
 </table>
 ```
 
-The numbers in the above table tell us to set $m = 3$, $n = 5$, and construct
-the following objects:
+上表中的数字告诉我们设定 $m = 3$，$n = 5$，并构造以下对象：
 
 $$
 p = \begin{pmatrix}
@@ -311,10 +293,11 @@ p = \begin{pmatrix}
         25 \\
         115 \\
         60 \\
-        30 \\
+
+30 \\
         70
     \end{pmatrix}
-    \quad \text{and} \quad
+    \quad \text{和} \quad
     C =
     \begin{pmatrix}
         10 &15 &20 &20 &40 \\
@@ -323,10 +306,10 @@ p = \begin{pmatrix}
     \end{pmatrix}.
 $$
 
-Let's write Python code that sets up the problem and solves it.
+让我们编写Python代码来设置问题并求解。
 
 ```{code-cell} ipython3
-# Define parameters
+# 定义参数
 m = 3
 n = 5
 
@@ -337,65 +320,61 @@ C = np.array([[10, 15, 20, 20, 40],
               [20, 40, 15, 30, 30],
               [30, 35, 40, 55, 25]])
 
-# Vectorize matrix C
+# 将矩阵C向量化
 C_vec = C.reshape((m*n, 1), order='F')
 
-# Construct matrix A by Kronecker product
+# 通过克罗内克积构造矩阵A
 A1 = np.kron(np.ones((1, n)), np.identity(m))
 A2 = np.kron(np.identity(n), np.ones((1, m)))
 A = np.vstack([A1, A2])
 
-# Construct vector b
+# 构造向量b
 b = np.hstack([p, q])
 
-# Solve the primal problem
+# 求解原问题
 res = linprog(C_vec, A_eq=A, b_eq=b)
 
-# Print results
-print("message:", res.message)
-print("nit:", res.nit)
-print("fun:", res.fun)
+# 打印结果
+print("消息:", res.message)
+print("迭代次数:", res.nit)
+print("目标函数值:", res.fun)
 print("z:", res.x)
 print("X:", res.x.reshape((m,n), order='F'))
 ```
 
-Notice how, in the line `C_vec = C.reshape((m*n, 1), order='F')`, we are
-careful to vectorize using the flag `order='F'`.
+注意在 `C_vec = C.reshape((m*n, 1), order='F')` 这一行中，我们谨慎地使用了标志 `order='F'` 来进行向量化。
 
-This is consistent with converting $C$ into a vector by stacking all of its
-columns into a  column vector.
+这与将矩阵 $C$ 转换为向量的方式一致，即将其所有列堆叠成一个列向量。
 
-Here `'F'` stands for "Fortran", and we are using Fortran style column-major order.
+这里的 `'F'` 代表"Fortran"，我们使用的是Fortran风格的列优先顺序。
 
-(For an alternative approach, using Python's default row-major ordering, see [this
-        lecture by Alfred
-        Galichon](https://www.math-econ-code.org/dynamic-programming).)
+（关于使用Python默认的行优先顺序的另一种方法，请参见[Alfred Galichon的这个讲座](https://www.math-econ-code.org/dynamic-programming)。）
 
-**Interpreting the warning:**
+**解读警告信息：**
 
-The above warning message from SciPy points out that A is not full rank.
+上面来自SciPy的警告信息指出A不是满秩的。
 
-This indicates that the linear program has been set up to include one or more redundant constraints.
+这表明线性规划中包含了一个或多个冗余约束。
 
-Here, the source of the redundancy is the structure of  restrictions {eq}`sumconstraints`.
+这里，冗余的来源是限制条件 {eq}`sumconstraints` 的结构。
 
-Let's explore this further by printing out $A$ and staring at it.
+让我们通过打印出 $A$ 并仔细观察来进一步探讨这个问题。
 
 ```{code-cell} ipython3
 A
 ```
 
-The singularity of $A$ reflects that the  first three constraints and the last five constraints  both require  that "total requirements equal total capacities" expressed in {eq}`sumconstraints`.
+$A$ 的奇异性反映了前三个约束和后五个约束都要求"总需求等于总容量"，这在{eq}`sumconstraints`中表达。
 
-One  equality constraint here is redundant.
+这里有一个冗余的等式约束。
 
-Below we drop one of the equality constraints, and use only  7 of them.
+下面我们去掉一个等式约束，只使用其中的7个。
 
-After doing this, we attain the same minimized cost.
+这样做之后，我们得到了相同的最小成本。
 
-However, we find a  different transportation plan.
+然而，我们找到了一个不同的运输方案。
 
-Though it is a different plan, it attains the same cost!
+虽然这是一个不同的方案，但它达到了相同的成本！
 
 ```{code-cell} ipython3
 linprog(C_vec, A_eq=A[:-1], b_eq=b[:-1])
@@ -409,77 +388,73 @@ linprog(C_vec, A_eq=A[:-1], b_eq=b[:-1])
 %time linprog(C_vec, A_eq=A, b_eq=b)
 ```
 
-Evidently, it is slightly quicker to work with the system that removed a redundant constraint.
+显然，处理去掉冗余约束的系统会稍微快一些。
 
-Let's drill down and do some more calculations to help us understand whether or not our finding **two** different optimal transport plans reflects our having dropped a redundant equality constraint.
+让我们深入进行更多计算，以帮助我们理解发现**两个**不同的最优运输方案是否反映了我们删除了一个冗余的等式约束。
 
-```{admonition} Hint
-It will turn out that dropping a redundant equality isn't really what mattered.
+```{admonition} 提示
+事实将证明，删除冗余等式约束并不是真正重要的。
 ```
 
-To verify our hint, we shall simply use **all** of  the original equality constraints (including a redundant one), but we'll just shuffle the order of the constraints.
+为了验证我们的提示，我们将简单地使用**所有**原始的等式约束（包括一个冗余约束），但我们只是打乱约束的顺序。
 
 ```{code-cell} ipython3
 arr = np.arange(m+n)
 ```
 
 ```{code-cell} ipython3
-sol_found = []
-cost = []
+已找到解 = []
+成本 = []
 
-# simulate 1000 times
+# 模拟1000次
 for i in range(1000):
 
     np.random.shuffle(arr)
     res_shuffle = linprog(C_vec, A_eq=A[arr], b_eq=b[arr])
 
-    # if find a new solution
+    # 如果找到新解
     sol = tuple(res_shuffle.x)
-    if sol not in sol_found:
-        sol_found.append(sol)
-        cost.append(res_shuffle.fun)
+    if sol not in 已找到解:
+        已找到解.append(sol)
+        成本.append(res_shuffle.fun)
 ```
 
 ```{code-cell} ipython3
 for i in range(len(sol_found)):
-    print(f"transportation plan {i}: ", sol_found[i])
-    print(f"     minimized cost {i}: ", cost[i])
+    print(f"运输方案 {i}: ", sol_found[i])
+    print(f"     最小成本 {i}: ", cost[i])
 ```
 
-**Ah hah!** As you can see, putting constraints in different orders in this case uncovers two optimal transportation plans that achieve the same minimized cost.
+**啊哈！**如你所见，在这种情况下以不同顺序放置约束条件揭示了两个实现相同最小成本的最优运输方案。
 
-These are the same two plans computed earlier.
+这就是我们之前计算出的相同两个方案。
 
-Next, we show that leaving out the first constraint "accidentally" leads to the initial plan that we computed.
+接下来，我们展示"意外地"省略第一个约束条件会得到我们最初计算的方案。
 
 ```{code-cell} ipython3
 linprog(C_vec, A_eq=A[1:], b_eq=b[1:])
 ```
 
-Let's compare this transport plan with
+让我们将这个运输方案与
 
 ```{code-cell} ipython3
 res.x
 ```
 
-Here the matrix $X$ contains entries $x_{ij}$ that tell amounts shipped **from** factor $i = 1, 2, 3$
-**to** location $j=1,2, \ldots, 5$.
+这里矩阵 $X$ 包含的元素 $x_{ij}$ 表示从工厂 $i = 1, 2, 3$ **运往**地点 $j=1,2, \ldots, 5$ 的运输量。
 
-The vector $z$ evidently equals $\operatorname{vec}(X)$.
+向量 $z$ 显然等于 $\operatorname{vec}(X)$。
 
-The minimized cost from the optimal transport plan is given by the $fun$ variable.
+最优运输方案的最小成本由变量 $fun$ 给出。
 
 
-### Using a Just-in-Time Compiler
+### 使用即时编译器
 
-We can also solve optimal transportation problems using a powerful tool from
-QuantEcon, namely, `quantecon.optimize.linprog_simplex`.
+我们也可以使用 QuantEcon 中的一个强大工具来求解最优运输问题，即 `quantecon.optimize.linprog_simplex`。
 
-While this routine uses the same simplex algorithm as
-`scipy.optimize.linprog`, the code is accelerated by using a just-in-time
-compiler shipped in the `numba` library.
+虽然这个程序使用的是与 `scipy.optimize.linprog` 相同的单纯形算法，但通过使用 `numba` 库中的即时编译器，代码运行速度得到了加速。
 
-As you will see very soon, by using `scipy.optimize.linprog` the time required to solve an optimal transportation problem can be reduced significantly.
+如你很快就会看到，使用 `scipy.optimize.linprog` 可以显著减少求解最优运输问题所需的时间。
 
 ```{code-cell} ipython3
 # construct matrices/vectors for linprog_simplex
@@ -495,14 +470,13 @@ for i in range(m):
 b_eq = np.hstack([p, q])
 ```
 
-Since `quantecon.optimize.linprog_simplex` does maximization instead of
-minimization, we need to put a negative sign before vector `c`.
+由于 `quantecon.optimize.linprog_simplex` 执行的是最大化而不是最小化运算，我们需要在向量 `c` 前加上负号。
 
 ```{code-cell} ipython3
 res_qe = linprog_simplex(-c, A_eq=A_eq, b_eq=b_eq)
 ```
 
-Since the two LP solvers use the same simplex algorithm, we expect to get exactly the same solutions
+由于这两个线性规划求解器使用相同的单纯形算法，我们预期会得到完全相同的解
 
 ```{code-cell} ipython3
 res_qe.x.reshape((m, n), order='C')
@@ -512,7 +486,7 @@ res_qe.x.reshape((m, n), order='C')
 res.x.reshape((m, n), order='F')
 ```
 
-Let's do a speed comparison between `scipy.optimize.linprog` and `quantecon.optimize.linprog_simplex`.
+让我们比较一下 `scipy.optimize.linprog` 和 `quantecon.optimize.linprog_simplex` 的运行速度。
 
 ```{code-cell} ipython3
 # scipy.optimize.linprog
@@ -524,18 +498,16 @@ Let's do a speed comparison between `scipy.optimize.linprog` and `quantecon.opti
 %time out = linprog_simplex(-c, A_eq=A_eq, b_eq=b_eq)
 ```
 
-As you can see, the `quantecon.optimize.linprog_simplex` is much faster.
+如您所见，`quantecon.optimize.linprog_simplex` 的速度要快得多。
 
-(Note however, that the SciPy version is probably more stable than the
-QuantEcon version, having been tested more extensively over a longer period of
-time.)
+(但请注意，SciPy 版本可能比 QuantEcon 版本更稳定，因为它经过了更长时间的广泛测试。)
 
 
-## The Dual Problem
+## 对偶问题
 
-Let $u, v$ denotes vectors of dual decision variables with entries $(u_i), (v_j)$.
+设 $u, v$ 表示对偶决策变量的向量，其分量为 $(u_i), (v_j)$。
 
-The **dual** to  **minimization** problem {eq}`plannerproblem` is the **maximization** problem:
+{eq}`plannerproblem` **最小化**问题的**对偶**是以下**最大化**问题：
 
 $$
 \begin{aligned}
@@ -544,23 +516,23 @@ $$
 \end{aligned}
 $$ (dualproblem)
 
-The dual problem is also a linear programming problem.
+对偶问题也是一个线性规划问题。
 
-It has $m+n$ dual variables and $mn$ constraints.
+它有 $m+n$ 个对偶变量和 $mn$ 个约束。
 
-Vectors $u$ and $v$ of **values** are attached to the first and the second sets of primal constraits, respectively.
+**值**向量 $u$ 和 $v$ 分别附加到原问题的第一组和第二组约束上。
 
-Thus, $u$ is attached to the constraints
+因此，$u$ 附加到以下约束上：
 
 * $(\mathbf{1}_n' \otimes \mathbf{I}_m) \operatorname{vec}(X) = p$
 
-and  $v$ is attached to constraints
+且 $v$ 与以下约束相关
 
 * $(\mathbf{I}_n \otimes \mathbf{1}_m') \operatorname{vec}(X) = q.$
 
-Components of the vectors $u$ and $v$ of per unit **values**  are **shadow prices** of the quantities appearing on the right sides of those constraints.
+向量 $u$ 和 $v$ 的各个分量的单位**价值**是这些约束右侧数量的**影子价格**。
 
-We can write the dual problem as
+我们可以将对偶问题写作
 
 $$
 \begin{aligned}
@@ -569,7 +541,7 @@ $$
 \end{aligned}
 $$ (dualproblem2)
 
-For the same numerical example described above, let's solve the dual problem.
+对于上述相同的数值示例，让我们求解对偶问题。
 
 ```{code-cell} ipython3
 # Solve the dual problem
@@ -584,13 +556,13 @@ print("u:", res_dual.x[:m])
 print("v:", res_dual.x[-n:])
 ```
 
-We can also solve the dual problem using [quantecon.optimize.linprog_simplex](https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html).
+我们也可以使用[quantecon.optimize.linprog_simplex](https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html)来求解对偶问题。
 
 ```{code-cell} ipython3
 res_dual_qe = linprog_simplex(b_eq, A_ub=A_eq.T, b_ub=c)
 ```
 
-And the shadow prices computed by the two programs are identical.
+两个程序计算出的影子价格是相同的。
 
 ```{code-cell} ipython3
 res_dual_qe.x
@@ -600,7 +572,7 @@ res_dual_qe.x
 res_dual.x
 ```
 
-We can compare computational times from using our two tools.
+我们可以比较使用这两种工具的计算时间。
 
 ```{code-cell} ipython3
 %time linprog(-b, A_ub=A.T, b_ub=C_vec, bounds=[(None, None)]*(m+n))
@@ -610,95 +582,90 @@ We can compare computational times from using our two tools.
 %time linprog_simplex(b_eq, A_ub=A_eq.T, b_ub=c)
 ```
 
-`quantecon.optimize.linprog_simplex` solves the dual problem 10 times faster.
+`quantecon.optimize.linprog_simplex`求解对偶问题的速度快10倍。
 
-Just for completeness, let's  solve the dual problems with nonsingular $A$ matrices that we create by dropping a redundant equality constraint.
+为了完整性，让我们通过删除一个冗余的等式约束来求解具有非奇异$A$矩阵的对偶问题。
 
-Try first leaving out the first constraint:
+首先尝试去掉第一个约束：
 
 ```{code-cell} ipython3
 linprog(-b[1:], A_ub=A[1:].T, b_ub=C_vec,
         bounds=[(None, None)]*(m+n-1))
 ```
 
-Not let's instead leave out the last constraint:
+现在让我们去掉最后一个约束条件：
 
 ```{code-cell} ipython3
 linprog(-b[:-1], A_ub=A[:-1].T, b_ub=C_vec,
         bounds=[(None, None)]*(m+n-1))
 ```
 
-### Interpretation of dual problem
+### 对偶问题的解释
 
-By **strong duality** (please see this lecture
-{doc}`Linear Programming <intro:lp_intro>`), we know that:
+根据**强对偶性**（请参见此讲座
+{doc}`线性规划 <intro:lp_intro>`），我们知道：
 
 $$
 \sum_{i=1}^m \sum_{j=1}^n c_{ij} x_{ij}  = \sum_{i=1}^m p_i u_i + \sum_{j=1}^n q_j v_j
 $$
 
-One unit more  capacity in factory $i$, i.e. $p_i$,   results in $u_i$ more transportation costs.
+工厂$i$增加一个单位的产能，即$p_i$，将导致运输成本增加$u_i$。
 
-Thus, $u_i$ describes the  cost of shipping one unit  **from** factory $i$.
+因此，$u_i$描述了**从**工厂$i$运出一个单位的成本。
 
-Call this  the ship-out cost of one unit  shipped from factory $i$.
+我们称之为从工厂$i$运出一个单位的出货成本。
 
-Similarly, $v_j$ is the  cost of shipping one unit **to** location $j$.
+类似地，$v_j$是运送一个单位**到**地点$j$的成本。
 
-Call this  the ship-in cost of one unit  to location $j$.
+我们称之为运送一个单位到地点$j$的进货成本。
 
-Strong duality implies that  total transprotation costs  equals   total ship-out costs **plus**   total ship-in costs.
+强对偶性表明总运输成本等于总出货成本**加上**总进货成本。
 
-It is reasonable that, for one unit of a product, ship-out cost $u_i$ **plus** ship-in cost $v_j$ should  equal transportation cost $c_{ij}$.
+对于一个单位的产品，出货成本$u_i$**加上**进货成本$v_j$应该等于运输成本$c_{ij}$，这是合理的。
 
-This equality is assured by   **complementary slackness** conditions that state that whenever $x_{ij} > 0$, meaning that there are positive shipments  from factory $i$ to location $j$,    it must be true that  $u_i + v_j = c_{ij}$.
-
-
+这种相等性由**互补松弛**条件保证，该条件规定当 $x_{ij} > 0$ 时，即当从工厂 $i$ 到地点 $j$ 有正向运输量时，必须满足 $u_i + v_j = c_{ij}$。
 
 
-## The Python Optimal Transport Package
-
-There is an excellent [Python package](https://pythonot.github.io/) for
-optimal transport that simplifies some of the steps we took above.
-
-In particular, the package takes care of the vectorization steps before
-passing the data out to a linear programming routine.
-
-(That said, the discussion provided above on vectorization remains important,
-since we want to understand what happens under the hood.)
 
 
-### Replicating Previous Results
+## Python最优传输包
 
-The following line of code solves the example application discussed above
-using linear programming.
+有一个优秀的[Python包](https://pythonot.github.io/)专门用于最优传输，它简化了我们上面采取的一些步骤。
+
+特别是，该软件包在将数据传递给线性规划程序之前会处理向量化步骤。
+
+（话虽如此，上面关于向量化的讨论仍然很重要，因为我们想要了解其内部运作原理。）
+
+
+### 复现之前的结果
+
+下面这行代码使用线性规划解决了上面讨论的示例应用。
 
 ```{code-cell} ipython3
 X = ot.emd(p, q, C)
 X
 ```
 
-Sure enough, we have the same solution and the same cost
+果然，我们得到了相同的解决方案和相同的成本
 
 ```{code-cell} ipython3
 total_cost = np.sum(X * C)
 total_cost
 ```
 
-### A Larger Application
+### 更大的应用程序
 
-Now let's try using the same package on a slightly larger application.
+现在让我们尝试在一个稍大的应用程序上使用相同的包。
 
-The application has the same interpretation as above but we will also give
-each node (i.e., vertex) a location in the plane.
+该应用程序具有与上述相同的解释，但我们还将为每个节点（即顶点）在平面上赋予一个位置。
 
-This will allow us to plot the resulting transport plan as edges in a graph.
+这将使我们能够将得到的运输方案绘制为图中的边。
 
-The following class defines a node by
+以下类通过以下方式定义节点：
 
-* its location $(x, y) \in \mathbb R^2$,
-* its group (factory or location, denoted by `p` or `q`) and
-* its mass (e.g., $p_i$ or $q_j$).
+* 其位置 $(x, y) \in \mathbb R^2$，
+* 其组别（工厂或位置，用`p`或`q`表示）以及
+* 其质量（例如，$p_i$或$q_j$）。
 
 ```{code-cell} ipython3
 class Node:
@@ -710,12 +677,11 @@ class Node:
         self.name = name
 ```
 
-Next we write a function that repeatedly calls the class above to build
-instances.
+接下来我们编写一个函数，重复调用上面的类来构建实例。
 
-It allocates to the nodes it creates their location, mass, and group.
+它为创建的节点分配位置、质量和组别。
 
-Locations are assigned randomly.
+位置是随机分配的。
 
 ```{code-cell} ipython3
 def build_nodes_of_one_type(group='p', n=100, seed=123):
@@ -740,8 +706,7 @@ def build_nodes_of_one_type(group='p', n=100, seed=123):
     return nodes
 ```
 
-Now we build two lists of nodes, each one containing one type (factories or
-    locations)
+现在我们构建两个节点列表，每个列表包含一种类型（工厂或位置）
 
 ```{code-cell} ipython3
 n_p = 32
@@ -753,8 +718,7 @@ p_probs = [p.mass for p in p_list]
 q_probs = [q.mass for q in q_list]
 ```
 
-For the cost matrix $C$, we use the Euclidean distance between each factory
-and location.
+对于成本矩阵$C$，我们使用每个工厂和位置之间的欧几里得距离。
 
 ```{code-cell} ipython3
 c = np.empty((n_p, n_q))
@@ -765,19 +729,18 @@ for i in range(n_p):
         c[i, j] = np.sqrt((x0-x1)**2 + (y0-y1)**2)
 ```
 
-Now we are ready to apply the solver
+现在我们准备应用求解器
 
 ```{code-cell} ipython3
 %time pi = ot.emd(p_probs, q_probs, c)
 ```
 
-Finally, let's plot the results using `networkx`.
+最后，让我们使用`networkx`来绘制结果。
 
-In the plot below,
+在下面的图中，
 
-* node size is proportional to probability mass
-* an edge (arrow) from $i$ to $j$ is drawn when a positive transfer is made
-from $i$ to $j$ under the optimal transport plan.
+* 节点大小与概率质量成正比
+* 当在最优运输方案下从$i$到$j$有正向转移时，会画出一个从$i$到$j$的边（箭头）。
 
 ```{code-cell} ipython3
 g = nx.DiGraph()
@@ -827,6 +790,8 @@ nx.draw_networkx_edges(g,
 plt.show()
 ```
 
+
 ```{code-cell} ipython3
 
 ```
+

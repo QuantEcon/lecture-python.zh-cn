@@ -20,41 +20,41 @@ kernelspec:
 </div>
 ```
 
-# {index}`A Problem that Stumped Milton Friedman <single: A Problem that Stumped Milton Friedman>`
+# {index}`让弥尔顿·弗里德曼困惑的问题 <single: A Problem that Stumped Milton Friedman>`
 
-(and that Abraham Wald solved by inventing sequential analysis)
+(而亚伯拉罕·瓦尔德通过发明序贯分析解决了这个问题)
 
 ```{index} single: Models; Sequential analysis
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-This lecture describes a statistical decision problem presented to Milton
-Friedman and W. Allen Wallis during World War II when they were analysts at
-the U.S. Government's  Statistical Research Group at Columbia University.
+本讲座描述了二战期间提交给弥尔顿·弗里德曼和W·艾伦·沃利斯的一个统计决策问题，当时他们是分析师在
 
-This problem led Abraham Wald {cite}`Wald47` to formulate **sequential analysis**,
-an approach to statistical decision problems intimately related to dynamic programming.
+美国哥伦比亚大学政府统计研究组。
 
-In this lecture, we apply dynamic programming algorithms to Friedman and Wallis and Wald's problem.
+这个问题促使Abraham Wald {cite}`Wald47` 提出了**序贯分析**，
+这是一种与动态规划密切相关的统计决策问题方法。
 
-Key ideas in play will be:
+在本讲中，我们将动态规划算法应用于Friedman、Wallis和Wald的问题。
 
-- Bayes' Law
-- Dynamic programming
-- Type I and type II statistical errors
-    - a type I error occurs when you reject a null hypothesis that is true
-    - a type II error occures when you accept a null hypothesis that is false
-- Abraham Wald's **sequential probability ratio test**
-- The **power** of a statistical test
-- The **critical region** of a statistical test
-- A **uniformly most powerful test**
+主要涉及的概念包括：
 
-We'll begin with some imports:
+- 贝叶斯定理
+- 动态规划
+- 第一类和第二类统计错误
+    - 第一类错误是指在原假设为真时拒绝原假设
+    - 第二类错误是指在原假设为假时接受原假设
+- Abraham Wald的**序贯概率比检验**
+- 统计检验的**功效**
+- 统计检验的**临界区域**
+- **一致最优检验**
+
+我们先导入一些包：
 
 ```{code-cell} ipython3
 import numpy as np
@@ -64,126 +64,100 @@ from numba.experimental import jitclass
 from math import gamma
 ```
 
-This lecture uses ideas studied in {doc}`this lecture <likelihood_ratio_process>`, {doc}`this lecture <likelihood_bayes>`.
-and {doc}`this lecture <exchangeable>`.
+本讲座使用了{doc}`本讲座 <likelihood_ratio_process>`、{doc}`本讲座 <likelihood_bayes>`和{doc}`本讲座 <exchangeable>`中研究的概念。
 
-## Origin of the Problem
+## 问题的起源
 
-On pages 137-139 of his 1998 book *Two Lucky People* with Rose Friedman {cite}`Friedman98`,
-Milton Friedman described a problem presented to him and Allen Wallis
-during World War II, when they worked at the US Government's
-Statistical Research Group at Columbia University.
+在米尔顿·弗里德曼与罗斯·弗里德曼1998年合著的《两个幸运儿》一书第137-139页{cite}`Friedman98`中，米尔顿·弗里德曼描述了二战期间他和艾伦·沃利斯在哥伦比亚大学美国政府统计研究组工作时遇到的一个问题。
 
 ```{note}
-See pages 25 and 26  of Allen Wallis's 1980 article {cite}`wallis1980statistical`  about the Statistical Research Group at Columbia University during World War II for his account of the episode and  for important contributions  that Harold Hotelling made to formulating the problem.   Also see  chapter 5 of Jennifer Burns book about
-Milton Friedman {cite}`Burns_2023`.
+参见艾伦·沃利斯1980年发表的文章{cite}`wallis1980statistical`第25和26页，其中讲述了二战期间在哥伦比亚大学统计研究组的这段经历，以及哈罗德·霍特林对问题形成所做的重要贡献。另见珍妮弗·伯恩斯关于米尔顿·弗里德曼的著作{cite}`Burns_2023`第5章。
 ```
 
-Let's listen to Milton Friedman tell us what happened
+让我们听听米尔顿·弗里德曼是如何讲述这件事的
 
-> In order to understand the story, it is necessary to have an idea of a
-> simple statistical problem, and of the standard procedure for dealing
-> with it. The actual problem out of which sequential analysis grew will
-> serve. The Navy has two alternative designs (say A and B) for a
-> projectile. It wants to determine which is superior. To do so it
-> undertakes a series of paired firings. On each round, it assigns the
-> value 1 or 0 to A accordingly as its performance is superior or inferior
-> to that of B and conversely 0 or 1 to B. The Navy asks the statistician
-> how to conduct the test and how to analyze the results.
+> 为了理解这个故事，有必要先了解一个
 
-> The standard statistical answer was to specify a number of firings (say
-> 1,000) and a pair of percentages (e.g., 53% and 47%) and tell the client
-> that if A receives a 1 in more than 53% of the firings, it can be
-> regarded as superior; if it receives a 1 in fewer than 47%, B can be
-> regarded as superior; if the percentage is between 47% and 53%, neither
-> can be so regarded.
+> 这是一个简单的统计问题，以及处理它的标准程序。让我们以顺序分析发展的实际问题为例。海军有两种备选的炮弹设计（比如说A和B）。他们想要确定哪一种更好。为此，他们进行了一系列成对的发射试验。在每一轮中，如果A的性能优于B，则给A赋值1，B赋值0；反之，如果A的性能劣于B，则给A赋值0，B赋值1。海军请统计学家告诉他们如何进行测试并分析结果。
 
-> When Allen Wallis was discussing such a problem with (Navy) Captain
-> Garret L. Schyler, the captain objected that such a test, to quote from
-> Allen's account, may prove wasteful. If a wise and seasoned ordnance
-> officer like Schyler were on the premises, he would see after the first
-> few thousand or even few hundred [rounds] that the experiment need not
-> be completed either because the new method is obviously inferior or
-> because it is obviously superior beyond what was hoped for
-> $\ldots$.
+> 标准的统计学答案是指定发射次数（比如1,000次）和一对百分比（例如，53%和47%），并告诉客户：如果A在超过53%的发射中获得1，则可以认为A更优；如果A在少于47%的发射中获得1，则可以认为B更优；如果百分比在47%和53%之间，则无法得出任何一方更优的结论。
 
-Friedman and Wallis struggled with the problem but, after realizing that
-they were not able to solve it,  described the problem to  Abraham Wald.
+> 当艾伦·沃利斯与（海军）加勒特·L·施莱尔上尉讨论这样一个问题时，
+> 上尉提出反对意见，引用艾伦的说法，这样的测试可能会造成浪费。如果
+> 像施莱尔这样明智且经验丰富的军需官在现场，他在看到前几千发甚至
+> 前几百发[弹药]后就会发现实验不需要完成，要么是因为新方法明显
+> 较差，要么是因为它明显优于预期$\ldots$。
 
-That started Wald on the path that led him  to *Sequential Analysis* {cite}`Wald47`.
+弗里德曼和沃利斯为这个问题苦苦挣扎，但在意识到他们无法解决后，
+向亚伯拉罕·瓦尔德描述了这个问题。
 
-We'll formulate the problem using dynamic programming.
+这让瓦尔德开始了通往*序贯分析*{cite}`Wald47`的道路。
 
-## A Dynamic Programming Approach
+我们将使用动态规划来阐述这个问题。
 
-The following presentation of the problem closely follows Dmitri
-Berskekas's treatment in **Dynamic Programming and Stochastic Control** {cite}`Bertekas75`.
+## 动态规划方法
 
-A decision-maker can observe a sequence of draws of a random variable $z$.
+以下对问题的介绍紧密遵循德米特里·伯斯克卡斯在**动态规划与随机控制**{cite}`Bertekas75`中的处理方式。
 
-He (or she) wants to know which of two probability distributions $f_0$ or $f_1$ governs $z$.
+决策者可以观察一个随机变量$z$的一系列抽样。
 
-Conditional on knowing that successive observations are drawn from distribution $f_0$, the sequence of
-random variables is independently and identically distributed (IID).
+他（或她）想要知道是概率分布$f_0$还是$f_1$支配着$z$。
 
-Conditional on knowing that successive observations are drawn from distribution $f_1$, the sequence of
-random variables is also independently and identically distributed (IID).
+在已知连续观测值是从分布$f_0$中抽取的条件下，这个随机变量序列是独立同分布的（IID）。
 
-But the observer does not know which of the two distributions generated the sequence.
+在已知连续观测值是从分布$f_1$中抽取的条件下，这个随机变量序列也是独立同分布的（IID）。
 
-For reasons explained in  [Exchangeability and Bayesian Updating](https://python.quantecon.org/exchangeable.html), this means that the sequence is not
-IID.
+但观察者并不知道是哪一个分布生成了这个序列。
 
-The observer has something to learn, namely, whether the observations are drawn from  $f_0$ or from $f_1$.
+由[可交换性和贝叶斯更新](https://python.quantecon.org/exchangeable.html)中解释的原因，这意味着该序列不是独立同分布的。
 
-The decision maker   wants  to decide
-which of the  two distributions is generating outcomes.
+观察者有需要学习的东西，即观测值是从$f_0$还是从$f_1$中抽取的。
 
-We adopt a Bayesian formulation.
+决策者想要决定是哪一个分布在生成这些结果。
 
-The decision maker begins  with a prior probability
+我们采用贝叶斯公式。
+
+决策者从先验概率开始
 
 $$
 \pi_{-1} =
 \mathbb P \{ f = f_0 \mid \textrm{ no observations} \} \in (0, 1)
 $$
 
-After observing $k+1$ observations $z_k, z_{k-1}, \ldots, z_0$, he updates his personal probability that the observations are described by distribution $f_0$  to
+在观察到$k+1$个观测值$z_k, z_{k-1}, \ldots, z_0$后，他更新其个人对观测值由分布$f_0$描述的概率为
 
 $$
 \pi_k = \mathbb P \{ f = f_0 \mid z_k, z_{k-1}, \ldots, z_0 \}
 $$
 
-which is calculated recursively by applying Bayes' law:
+这是通过递归应用贝叶斯法则计算得出：
 
 $$
 \pi_{k+1} = \frac{ \pi_k f_0(z_{k+1})}{ \pi_k f_0(z_{k+1}) + (1-\pi_k) f_1 (z_{k+1}) },
 \quad k = -1, 0, 1, \ldots
 $$
 
-After observing $z_k, z_{k-1}, \ldots, z_0$, the decision-maker believes
-that $z_{k+1}$ has probability distribution
+在观察到$z_k, z_{k-1}, \ldots, z_0$后，决策者认为$z_{k+1}$具有概率分布
 
 $$
 f_{{\pi}_k} (v) = \pi_k f_0(v) + (1-\pi_k) f_1 (v) ,
 $$
 
-which  is a mixture of distributions $f_0$ and $f_1$, with the weight
-on $f_0$ being the posterior probability that $f = f_0$ [^f1].
+这是分布$f_0$和$f_1$的混合，其中$f_0$的权重是$f = f_0$的后验概率[^f1]。
 
-To  illustrate such a distribution, let's inspect some mixtures of beta distributions.
+为了说明这样的分布，让我们检查一些beta分布的混合。
 
-The density of a beta probability distribution with parameters $a$ and $b$ is
+具有参数 $a$ 和 $b$ 的贝塔概率分布的密度函数为
 
 $$
 f(z; a, b) = \frac{\Gamma(a+b) z^{a-1} (1-z)^{b-1}}{\Gamma(a) \Gamma(b)}
-\quad \text{where} \quad
+\quad \text{其中} \quad
 \Gamma(t) := \int_{0}^{\infty} x^{t-1} e^{-x} dx
 $$
 
-The next figure shows two beta distributions in the top panel.
+上图的上半部分显示了两个贝塔分布。
 
-The bottom panel presents mixtures of these distributions, with various mixing probabilities $\pi_k$
+下半部分展示了这些分布的混合，其中使用了不同的混合概率 $\pi_k$
 
 ```{code-cell} ipython3
 @jit
@@ -197,88 +171,78 @@ grid = np.linspace(0, 1, 50)
 
 fig, axes = plt.subplots(2, figsize=(10, 8))
 
-axes[0].set_title("Original Distributions")
+axes[0].set_title("原始分布")
 axes[0].plot(grid, f0(grid), lw=2, label="$f_0$")
 axes[0].plot(grid, f1(grid), lw=2, label="$f_1$")
 
-axes[1].set_title("Mixtures")
+axes[1].set_title("混合分布")
 for π in 0.25, 0.5, 0.75:
     y = π * f0(grid) + (1 - π) * f1(grid)
-    axes[1].plot(y, lw=2, label=f"$\pi_k$ = {π}")
+    axes[1].plot(y, lw=2, label=rf"$\pi_k$ = {π}")
 
 for ax in axes:
     ax.legend()
-    ax.set(xlabel="$z$ values", ylabel="probability of $z_k$")
+    ax.set(xlabel="$z$ 值", ylabel="$z_k$ 的概率")
 
 plt.tight_layout()
 plt.show()
 ```
 
-### Losses and Costs
+### 损失和成本
 
-After observing $z_k, z_{k-1}, \ldots, z_0$, the decision-maker
-chooses among three distinct actions:
+在观察到 $z_k, z_{k-1}, \ldots, z_0$ 后，决策者可以在三种不同的行动中选择：
 
-- He decides that $f = f_0$ and draws no more $z$'s
-- He decides that $f = f_1$ and draws no more $z$'s
-- He postpones deciding now and instead chooses to draw a
-  $z_{k+1}$
+- 他确定 $f = f_0$ 并停止获取更多 $z$ 值
+- 他确定 $f = f_1$ 并停止获取更多 $z$ 值
+- 他推迟现在做决定，转而选择获取一个新的 $z_{k+1}$
 
-Associated with these three actions, the decision-maker can suffer three
-kinds of losses:
+与这三种行动相关联，决策者可能遭受三种损失：
 
-- A loss $L_0$ if he decides $f = f_0$ when actually
-  $f=f_1$
-- A loss $L_1$ if he decides $f = f_1$ when actually
-  $f=f_0$
-- A cost $c$ if he postpones deciding and chooses instead to draw
-  another $z$
+- 当实际上 $f=f_1$ 时，他决定 $f = f_0$ 会遭受损失 $L_0$
+- 当实际上 $f=f_0$ 时，他决定 $f = f_1$ 会遭受损失 $L_1$
+- 如果他推迟决定并选择获取另一个 $z$ 值，会产生成本 $c$
 
-### Digression on Type I and Type II Errors
+### 关于第一类和第二类错误的补充说明
 
-If we regard  $f=f_0$ as a null hypothesis and $f=f_1$ as an alternative hypothesis,
-then $L_1$ and $L_0$ are losses associated with two types of statistical errors
+如果我们将 $f=f_0$ 视为原假设，将 $f=f_1$ 视为备择假设，那么 $L_1$ 和 $L_0$ 是与两类统计错误相关的损失
 
-- a type I error is an incorrect rejection of a true null hypothesis (a "false positive")
-- a type II error is a failure to reject a false null hypothesis (a "false negative")
+- 第一类错误是错误地拒绝了真实的原假设（"假阳性"）
+- 第二类错误是未能拒绝错误的原假设（"假阴性"）
 
-So when we treat $f=f_0$ as the null hypothesis
+当我们将 $f=f_0$ 作为零假设时
 
-- We can think of $L_1$ as the loss associated with a type I
-  error.
-- We can think of $L_0$ as the loss associated with a type II
-  error.
+- 我们可以将 $L_1$ 视为第一类错误相关的损失。
+- 我们可以将 $L_0$ 视为第二类错误相关的损失。
 
-### Intuition
+### 直观理解
 
-Before proceeding,  let's try to guess what an optimal decision rule might look like.
+在继续之前，让我们试着猜测一个最优决策规则可能是什么样的。
 
-Suppose at some given point in time that $\pi$ is close to 1.
+假设在某个特定时间点，$\pi$ 接近1。
 
-Then our prior beliefs and the evidence so far point strongly to $f = f_0$.
+那么我们的先验信念和目前的证据都强烈指向 $f = f_0$。
 
-If, on the other hand, $\pi$ is close to 0, then $f = f_1$ is strongly favored.
+另一方面，如果 $\pi$ 接近0，那么 $f = f_1$ 就更有可能。
 
-Finally, if $\pi$ is in the middle of the interval $[0, 1]$, then we are confronted with more uncertainty.
+最后，如果 $\pi$ 在区间 $[0, 1]$ 的中间位置，那么我们就面临更多的不确定性。
 
-This reasoning suggests a decision rule such as the one shown in the figure
+这种推理表明决策规则可能如图所示
 
 ```{figure} /_static/lecture_specific/wald_friedman/wald_dec_rule.png
 
 ```
 
-As we'll see, this is indeed the correct form of the decision rule.
+正如我们将看到的，这确实是决策规则的正确形式。
 
-Our problem is to determine threshold values $\alpha, \beta$ that somehow depend on the parameters described  above.
+我们的问题是确定阈值 $\alpha, \beta$，这些阈值以某种方式依赖于上述参数。
 
-You might like to pause at this point and try to predict the impact of a
-parameter such as $c$ or $L_0$ on $\alpha$ or $\beta$.
+在这一点上，你可能想要暂停并尝试预测参数如$c$或$L_0$对$\alpha$或$\beta$的影响。
 
-### A Bellman Equation
+### 贝尔曼方程
 
-Let $J(\pi)$ be the total loss for a decision-maker with current belief $\pi$ who chooses optimally.
+设$J(\pi)$为当前信念为$\pi$且做出最优选择的决策者的总损失。
 
-With some thought, you will agree that $J$ should satisfy the Bellman equation
+经过思考，你会同意$J$应该满足贝尔曼方程
 
 ```{math}
 :label: new1
@@ -291,25 +255,25 @@ J(\pi) =
     \right\}
 ```
 
-where $\pi'$ is the random variable defined by Bayes' Law
+其中$\pi'$是由贝叶斯法则定义的随机变量
 
 $$
 \pi' = \kappa(z', \pi) = \frac{ \pi f_0(z')}{ \pi f_0(z') + (1-\pi) f_1 (z') }
 $$
 
-when $\pi$ is fixed and $z'$ is drawn from the current best guess, which is the distribution $f$ defined by
+当$\pi$固定且$z'$从当前最佳猜测分布中抽取时，该分布$f$定义为
 
 $$
 f_{\pi}(v) = \pi f_0(v) + (1-\pi) f_1 (v)
 $$
 
-In the Bellman equation, minimization is over three actions:
+在贝尔曼方程中，最小化是针对三个行动：
 
-1. Accept the hypothesis that $f = f_0$
-1. Accept the hypothesis that $f = f_1$
-1. Postpone deciding and draw again
+1. 接受假设$f = f_0$
+1. 接受假设$f = f_1$
+1. 推迟决定并再次抽样
 
-We can represent the  Bellman equation as
+我们可以将贝尔曼方程表示为
 
 ```{math}
 :label: optdec
@@ -318,41 +282,38 @@ J(\pi) =
 \min \left\{ (1-\pi) L_0, \; \pi L_1, \; h(\pi) \right\}
 ```
 
-where $\pi \in [0,1]$ and
+其中 $\pi \in [0,1]$ 且
 
-- $(1-\pi) L_0$ is the expected loss associated with accepting
-  $f_0$ (i.e., the cost of making a type II error).
-- $\pi L_1$ is the expected loss associated with accepting
-  $f_1$ (i.e., the cost of making a type I error).
-- $h(\pi) :=  c + \mathbb E [J(\pi')]$; this is the continuation value; i.e.,
-  the expected cost associated with drawing one more $z$.
+- $(1-\pi) L_0$ 是接受 $f_0$ 相关的预期损失（即犯II类错误的成本）。
+- $\pi L_1$ 是接受 $f_1$ 相关的预期损失（即犯I类错误的成本）。
+- $h(\pi) :=  c + \mathbb E [J(\pi')]$；这是继续值；即与再抽取一个 $z$ 相关的预期成本。
 
-The optimal decision rule is characterized by two numbers $\alpha, \beta \in (0,1) \times (0,1)$ that satisfy
+最优决策规则由两个数 $\alpha, \beta \in (0,1) \times (0,1)$ 来表征，这两个数满足
 
 $$
 (1- \pi) L_0 < \min \{ \pi L_1, c + \mathbb E [J(\pi')] \}  \textrm { if } \pi \geq \alpha
 $$
 
-and
+且
 
 $$
 \pi L_1 < \min \{ (1-\pi) L_0,  c + \mathbb E [J(\pi')] \} \textrm { if } \pi \leq \beta
 $$
 
-The optimal decision rule is then
+最优决策规则则为
 
 $$
 \begin{aligned}
-\textrm { accept } f=f_0 \textrm{ if } \pi \geq \alpha \\
-\textrm { accept } f=f_1 \textrm{ if } \pi \leq \beta \\
-\textrm { draw another }  z \textrm{ if }  \beta \leq \pi \leq \alpha
+\textrm { 接受 } f=f_0 \textrm{ 如果 } \pi \geq \alpha \\
+
+\textrm { 接受 } f=f_1 \textrm{ 如果 } \pi \leq \beta \\
+\textrm { 再抽取一个 }  z \textrm{ 如果 }  \beta \leq \pi \leq \alpha
 \end{aligned}
 $$
 
-Our aim is to compute the cost function $J$, and from it the associated cutoffs $\alpha$
-and $\beta$.
+我们的目标是计算成本函数 $J$，并由此得出相关的临界值 $\alpha$ 和 $\beta$。
 
-To make our computations manageable, using {eq}`optdec`, we can write the continuation cost $h(\pi)$ as
+为了使计算更易于管理，使用{eq}`optdec`，我们可以将延续成本 $h(\pi)$ 写作
 
 ```{math}
 :label: optdec2
@@ -364,7 +325,7 @@ h(\pi) &= c + \mathbb E [J(\pi')] \\
 \end{aligned}
 ```
 
-The equality
+等式
 
 ```{math}
 :label: funceq
@@ -373,34 +334,32 @@ h(\pi) =
 c + \int \min \{ (1 - \kappa(z', \pi) ) L_0, \kappa(z', \pi)  L_1, h(\kappa(z', \pi) ) \} f_\pi (z') dz'
 ```
 
-is a **functional equation** in an unknown function  $h$.
+是一个未知函数 $h$ 的**泛函方程**。
 
-Using the functional equation, {eq}`funceq`, for the continuation cost, we can back out
-optimal choices using the right side of {eq}`optdec`.
+使用延续成本的泛函方程{eq}`funceq`，我们可以通过{eq}`optdec`的右侧推导出最优选择。
 
-This functional equation can be solved by taking an initial guess and iterating
-to find a fixed point.
+这个函数方程可以通过取一个初始猜测值并迭代来找到不动点来求解。
 
-Thus, we iterate with an operator $Q$, where
+因此，我们用算子$Q$进行迭代，其中
 
 $$
 Q h(\pi) =
 c + \int \min \{ (1 - \kappa(z', \pi) ) L_0, \kappa(z', \pi)  L_1, h(\kappa(z', \pi) ) \} f_\pi (z') dz'
 $$
 
-## Implementation
+## 实现
 
-First, we will construct a `jitclass` to store the parameters of the model
+首先，我们将构造一个`jitclass`来存储模型的参数
 
 ```{code-cell} ipython3
-wf_data = [('a0', float64),          # Parameters of beta distributions
+wf_data = [('a0', float64),          # beta分布的参数
            ('b0', float64),
            ('a1', float64),
            ('b1', float64),
-           ('c', float64),           # Cost of another draw
+           ('c', float64),           # 再次抽样的成本
            ('π_grid_size', int64),
-           ('L0', float64),          # Cost of selecting f0 when f1 is true
-           ('L1', float64),          # Cost of selecting f1 when f0 is true
+           ('L0', float64),          # 当f1为真时选择f0的成本
+           ('L1', float64),          # 当f0为真时选择f1的成本
            ('π_grid', float64[:]),
            ('mc_size', int64),
            ('z0', float64[:]),
@@ -448,7 +407,7 @@ class WaldFriedman:
 
     def κ(self, z, π):
         """
-        Updates π using Bayes' rule and the current observation z
+        使用贝叶斯法则和当前观测值z更新π
         """
 
         f0, f1 = self.f0, self.f1
@@ -459,12 +418,12 @@ class WaldFriedman:
         return π_new
 ```
 
-As in the {doc}`optimal growth lecture <optgrowth>`, to approximate a continuous value function
+如同{doc}`最优增长讲座 <optgrowth>`中所述，为了近似连续的值函数
 
-* We iterate at a finite grid of possible values of $\pi$.
-* When we evaluate $\mathbb E[J(\pi')]$ between grid points, we use linear interpolation.
+* 我们在有限的 $\pi$ 值网格上进行迭代。
+* 当我们在网格点之间评估 $\mathbb E[J(\pi')]$ 时，我们使用线性插值。
 
-We define the operator function `Q` below.
+我们在下面定义算子函数 `Q`。
 
 ```{code-cell} ipython3
 @jit(nopython=True, parallel=True)
@@ -499,18 +458,18 @@ def Q(h, wf):
     return h_new
 ```
 
-To solve the key functional equation, we will iterate using `Q` to find the fixed point
+为了求解关键的函数方程，我们将使用`Q`进行迭代以找到不动点
 
 ```{code-cell} ipython3
 @jit
 def solve_model(wf, tol=1e-4, max_iter=1000):
     """
-    Compute the continuation cost function
+    计算延续成本函数
 
-    * wf is an instance of WaldFriedman
+    * wf 是 WaldFriedman 的一个实例
     """
 
-    # Set up loop
+    # 设置循环
     h = np.zeros(len(wf.π_grid))
     i = 0
     error = tol + 1
@@ -522,16 +481,16 @@ def solve_model(wf, tol=1e-4, max_iter=1000):
         h = h_new
 
     if error > tol:
-        print("Failed to converge!")
+        print("未能收敛！")
 
     return h_new
 ```
 
-## Analysis
+## 分析
 
-Let's inspect outcomes.
+让我们检查结果。
 
-We will be using the default parameterization with distributions like so
+我们将使用默认参数化的分布，如下所示
 
 ```{code-cell} ipython3
 wf = WaldFriedman()
@@ -539,42 +498,40 @@ wf = WaldFriedman()
 fig, ax = plt.subplots(figsize=(10, 6))
 ax.plot(wf.f0(wf.π_grid), label="$f_0$")
 ax.plot(wf.f1(wf.π_grid), label="$f_1$")
-ax.set(ylabel="probability of $z_k$", xlabel="$z_k$", title="Distributions")
+ax.set(ylabel="$z_k$ 的概率", xlabel="$z_k$", title="分布")
 ax.legend()
 
 plt.show()
 ```
 
-### Value Function
+### 值函数
 
-To solve the model, we will call our `solve_model` function
+为了求解模型，我们将调用`solve_model`函数
 
 ```{code-cell} ipython3
-h_star = solve_model(wf)    # Solve the model
+h_star = solve_model(wf)    # 求解模型
 ```
 
-We will also set up a function to compute the cutoffs $\alpha$ and $\beta$
-and plot these on our cost function plot
+我们还将设置一个函数来计算截断值 $\alpha$ 和 $\beta$，并在成本函数图上绘制这些值
 
 ```{code-cell} ipython3
 @jit
 def find_cutoff_rule(wf, h):
 
     """
-    This function takes a continuation cost function and returns the
-    corresponding cutoffs of where you transition between continuing and
-    choosing a specific model
+    该函数接收一个延续成本函数，并返回在继续采样和选择特定模型之间
+    转换的对应截断点
     """
 
     π_grid = wf.π_grid
     L0, L1 = wf.L0, wf.L1
 
-    # Evaluate cost at all points on grid for choosing a model
+    # 在网格上计算选择模型的所有点的成本
     payoff_f0 = (1 - π_grid) * L0
     payoff_f1 = π_grid * L1
 
-    # The cutoff points can be found by differencing these costs with
-    # The Bellman equation (J is always less than or equal to p_c_i)
+    # 通过将这些成本与贝尔曼方程的差值可以找到截断点
+    # (J 总是小于或等于 p_c_i)
     β = π_grid[np.searchsorted(
                               payoff_f1 - np.minimum(h, payoff_f0),
                               1e-10)
@@ -592,12 +549,12 @@ cost_L1 = wf.π_grid * wf.L1
 
 fig, ax = plt.subplots(figsize=(10, 6))
 
-ax.plot(wf.π_grid, h_star, label='sample again')
-ax.plot(wf.π_grid, cost_L1, label='choose f1')
-ax.plot(wf.π_grid, cost_L0, label='choose f0')
+ax.plot(wf.π_grid, h_star, label='再次采样')
+ax.plot(wf.π_grid, cost_L1, label='选择 f1')
+ax.plot(wf.π_grid, cost_L0, label='选择 f0')
 ax.plot(wf.π_grid,
         np.amin(np.column_stack([h_star, cost_L0, cost_L1]),axis=1),
-        lw=15, alpha=0.1, color='b', label='$J(\pi)$')
+        lw=15, alpha=0.1, color='b', label=r'$J(\pi)$')
 
 ax.annotate(r"$\beta$", xy=(β + 0.01, 0.5), fontsize=14)
 ax.annotate(r"$\alpha$", xy=(α + 0.01, 0.5), fontsize=14)
@@ -605,36 +562,32 @@ ax.annotate(r"$\alpha$", xy=(α + 0.01, 0.5), fontsize=14)
 plt.vlines(β, 0, β * wf.L0, linestyle="--")
 plt.vlines(α, 0, (1 - α) * wf.L1, linestyle="--")
 
-ax.set(xlim=(0, 1), ylim=(0, 0.5 * max(wf.L0, wf.L1)), ylabel="cost",
-       xlabel="$\pi$", title="Cost function $J(\pi)$")
+ax.set(xlim=(0, 1), ylim=(0, 0.5 * max(wf.L0, wf.L1)), ylabel="成本",
+       xlabel=r"$\pi$", title="成本函数 $J(\pi)$")
 
 plt.legend(borderpad=1.1)
 plt.show()
 ```
 
-The cost function $J$ equals $\pi L_1$ for $\pi \leq \beta$, and $(1-\pi )L_0$ for $\pi
-\geq \alpha$.
+成本函数$J$在$\pi \leq \beta$时等于$\pi L_1$，在$\pi \geq \alpha$时等于$(1-\pi )L_0$。
 
-The slopes of the two linear pieces of the cost   function $J(\pi)$ are determined by $L_1$
-and $- L_0$.
+成本函数$J(\pi)$两个线性部分的斜率由$L_1$和$-L_0$决定。
 
-The cost function $J$ is smooth in the interior region, where the posterior
-probability assigned to $f_0$ is in the indecisive region $\pi \in (\beta, \alpha)$.
+在内部区域，当后验概率分配给$f_0$处于不确定区域$\pi \in (\beta, \alpha)$时，成本函数$J$是平滑的。
 
-The decision-maker continues to sample until the probability that he attaches to
-model $f_0$ falls below $\beta$ or above $\alpha$.
+决策者继续采样，直到他对模型$f_0$的概率低于$\beta$或高于$\alpha$。
 
-### Simulations
+### 模拟
 
-The next figure shows the outcomes of 500 simulations of the decision process.
+下图显示了决策过程的500次模拟结果。
 
-On the left is a histogram of **stopping times**, i.e.,  the number of draws of $z_k$ required to make a decision.
+左图是**停止时间**的直方图，即做出决策所需的$z_k$抽样次数。
 
-The average number of draws is around 6.6.
+平均抽样次数约为6.6。
 
-On the right is the fraction of correct decisions at the stopping time.
+右图是在停止时间点做出正确决策的比例。
 
-In this case, the decision-maker is correct 80% of the time
+在这种情况下，决策者80%的时间做出了正确的决策。
 
 ```{code-cell} ipython3
 def simulate(wf, true_dist, h_star, π_0=0.5):
@@ -729,214 +682,163 @@ def simulation_plot(wf):
 simulation_plot(wf)
 ```
 
-### Comparative Statics
+### 比较静态分析
 
-Now let's consider the following exercise.
+现在让我们来看下面的练习。
 
-We double the cost of drawing an additional observation.
+我们将获取额外观测值的成本提高一倍。
 
-Before you look, think about what will happen:
+在查看结果之前，请思考会发生什么：
 
-- Will the decision-maker be correct more or less often?
-- Will he make decisions sooner or later?
+- 决策者的判断正确率会提高还是降低？
+- 他会更早还是更晚做出决定？
 
 ```{code-cell} ipython3
 wf = WaldFriedman(c=2.5)
 simulation_plot(wf)
 ```
 
-Increased cost per draw has induced the decision-maker to take fewer draws before deciding.
+每次抽样成本的增加导致决策者在做出决定前减少抽样次数。
 
-Because he decides with fewer draws, the percentage of time he is correct drops.
+由于他用更少的抽样做决定，正确判断的比例下降。
 
-This leads to him having a higher expected loss when he puts equal weight on both models.
+这导致他在对两个模型赋予相同权重时产生更高的预期损失。
 
-### A Notebook Implementation
+### 笔记本实现
 
-To facilitate comparative statics, we provide
-a [Jupyter notebook](https://nbviewer.org/github/QuantEcon/lecture-python.notebooks/blob/main/wald_friedman.ipynb) that
-generates the same plots, but with sliders.
+为了便于比较静态分析，我们提供了一个[Jupyter笔记本](https://nbviewer.org/github/QuantEcon/lecture-python.notebooks/blob/main/wald_friedman.ipynb)，它可以生成相同的图表，但带有滑块控件。
 
-With these sliders, you can adjust parameters and immediately observe
+使用这些滑块，你可以调整参数并立即观察
 
-* effects on the smoothness of the value function in the indecisive middle range
-  as we increase the number of grid points in the piecewise linear  approximation.
-* effects of different settings for the cost parameters $L_0, L_1, c$, the
-  parameters of two beta distributions $f_0$ and $f_1$, and the number
-  of points and linear functions $m$ to use in the piece-wise continuous approximation to the value function.
-* various simulations from $f_0$ and associated distributions of waiting times to making a decision.
-* associated histograms of correct and incorrect decisions.
+* 当我们增加分段线性近似中的网格点数时，对犹豫不决的中间范围内价值函数平滑度的影响。
+* 不同成本参数$L_0, L_1, c$、两个beta分布$f_0$和$f_1$的参数，以及在价值函数分段连续近似中使用的点数和线性函数$m$的设置对结果的影响。
 
-## Comparison with Neyman-Pearson Formulation
+* 从 $f_0$ 进行的各种模拟以及相关的决策等待时间分布。
+* 正确和错误决策的相关直方图。
 
-For several reasons, it is useful to describe the theory underlying the test
-that Navy Captain G. S. Schuyler had been told to use and that led him
-to approach Milton Friedman and Allan Wallis to convey his conjecture
-that superior practical procedures existed.
+## 与奈曼-皮尔逊公式的比较
 
-Evidently, the Navy had told
-Captail Schuyler to use what it knew to be a state-of-the-art
-Neyman-Pearson test.
+出于几个原因，有必要描述海军上尉G. S. Schuyler被要求使用的测试背后的理论，这也是他向Milton Friedman和Allan Wallis提出他的推测，认为存在更好的实用程序的原因。
 
-We'll rely on Abraham Wald's {cite}`Wald47` elegant summary of Neyman-Pearson theory.
+显然，海军告诉Schuyler上尉使用他们所知的最先进的奈曼-皮尔逊检验。
 
-For our purposes, watch for there features of the setup:
+我们将依据Abraham Wald的{cite}`Wald47`对奈曼-皮尔逊理论的优雅总结。
 
-- the assumption of a *fixed* sample size $n$
-- the application of laws of large numbers, conditioned on alternative
-  probability models, to interpret the probabilities $\alpha$ and
-  $\beta$ defined in the Neyman-Pearson theory
+就我们的目的而言，需要注意设置中的以下特征：
 
-Recall that in the sequential analytic formulation above, that
+- 假设*固定*样本量 $n$
+- 应用大数定律，在备择概率模型的条件下，解释奈曼-皮尔逊理论中定义的概率 $\alpha$ 和 $\beta$
 
-- The sample size $n$ is not fixed but rather an object to be
-  chosen; technically $n$ is a random variable.
-- The parameters $\beta$ and $\alpha$ characterize cut-off
-  rules used to determine $n$ as a random variable.
-- Laws of large numbers make no appearances in the sequential
-  construction.
+回顾上述顺序分析公式中，
 
-In chapter 1 of **Sequential Analysis** {cite}`Wald47` Abraham Wald summarizes the
-Neyman-Pearson approach to hypothesis testing.
+- 样本量 $n$ 不是固定的，而是一个待选择的对象；从技术上讲，$n$ 是一个随机变量。
+- 参数 $\beta$ 和 $\alpha$ 表征用于确定随机变量 $n$ 的截止规则。
+- 大数定律在顺序构造中并未出现。
 
-Wald frames the problem as making a decision about a probability
-distribution that is partially known.
+在**顺序分析**{cite}`Wald47`第一章中，Abraham Wald总结了Neyman-Pearson的假设检验方法。
 
-(You have to assume that *something* is already known in order to state a well-posed
-problem -- usually, *something* means *a lot*)
+Wald将问题描述为对部分已知的概率分布做出决策。
 
-By limiting  what is unknown, Wald uses the following simple structure
-to illustrate the main ideas:
+（为了提出一个明确的问题，你必须假设*某些东西*是已知的 -- 通常，*某些东西*意味着*很多东西*）
 
-- A decision-maker wants to decide which of two distributions
-  $f_0$, $f_1$ govern an IID random variable $z$.
-- The null hypothesis $H_0$ is the statement that $f_0$
-  governs the data.
-- The alternative hypothesis $H_1$ is the statement that
-  $f_1$ governs the data.
-- The problem is to devise and analyze a test of hypothesis
-  $H_0$ against the alternative hypothesis $H_1$ on the
-  basis of a sample of a fixed number $n$ independent
-  observations $z_1, z_2, \ldots, z_n$ of the random variable
-  $z$.
+通过限制未知的内容，Wald使用以下简单结构来说明主要思想：
 
-To quote Abraham Wald,
+- 决策者想要决定两个分布 $f_0$、$f_1$ 中的哪一个支配着独立同分布随机变量 $z$。
 
-> A test procedure leading to the acceptance or rejection of the [null]
-> hypothesis in question is simply a rule specifying, for each possible
-> sample of size $n$, whether the [null] hypothesis should be accepted
-> or rejected on the basis of the sample. This may also be expressed as
-> follows: A test procedure is simply a subdivision of the totality of
-> all possible samples of size $n$ into two mutually exclusive
-> parts, say part 1 and part 2, together with the application of the
-> rule that the [null] hypothesis be accepted if the observed sample is
-> contained in part 2. Part 1 is also called the critical region. Since
-> part 2 is the totality of all samples of size $n$ which are not
-> included in part 1, part 2 is uniquely determined by part 1. Thus,
-> choosing a test procedure is equivalent to determining a critical
-> region.
+- 零假设 $H_0$ 是指 $f_0$ 支配数据的陈述。
+- 备择假设 $H_1$ 是指 $f_1$ 支配数据的陈述。
+- 问题在于基于固定数量 $n$ 个独立观测值 $z_1, z_2, \ldots, z_n$（来自随机变量 $z$）的样本，设计并分析一个针对零假设 $H_0$ 和备择假设 $H_1$ 的假设检验。
 
-Let's listen to Wald longer:
+引用 Abraham Wald 的话：
 
-> As a basis for choosing among critical regions the following
-> considerations have been advanced by Neyman and Pearson: In accepting
-> or rejecting $H_0$ we may commit errors of two kinds. We commit
-> an error of the first kind if we reject $H_0$ when it is true;
-> we commit an error of the second kind if we accept $H_0$ when
-> $H_1$ is true. After a particular critical region $W$ has
-> been chosen, the probability of committing an error of the first
-> kind, as well as the probability of committing an error of the second
-> kind is uniquely determined. The probability of committing an error
-> of the first kind is equal to the probability, determined by the
-> assumption that $H_0$ is true, that the observed sample will be
-> included in the critical region $W$. The probability of
-> committing an error of the second kind is equal to the probability,
-> determined on the assumption that $H_1$ is true, that the
-> probability will fall outside the critical region $W$. For any
-> given critical region $W$ we shall denote the probability of an
-> error of the first kind by $\alpha$ and the probability of an
-> error of the second kind by $\beta$.
+> 导致接受或拒绝[零]假设的检验程序，简单来说就是一个规则，它为每个可能的大小为 $n$ 的样本指定是否应该基于该样本接受或拒绝[零]假设。这也可以表述如下：检验程序就是将所有可能的大小为 $n$ 的样本总体划分为两个互斥的部分，比如说第1部分和第2部分，同时应用规则，如果观察到的样本属于
 
-Let's listen carefully to how Wald applies law of large numbers to
-interpret $\alpha$ and $\beta$:
+> 包含在第2部分中。第1部分也被称为临界区域。由于
+> 第2部分是所有大小为$n$的样本中不包含在第1部分的
+> 总体，第2部分由第1部分唯一确定。因此，
+> 选择检验程序等同于确定临界区域。
 
-> The probabilities $\alpha$ and $\beta$ have the
-> following important practical interpretation: Suppose that we draw a
-> large number of samples of size $n$. Let $M$ be the
-> number of such samples drawn. Suppose that for each of these
-> $M$ samples we reject $H_0$ if the sample is included in
-> $W$ and accept $H_0$ if the sample lies outside
-> $W$. In this way we make $M$ statements of rejection or
-> acceptance. Some of these statements will in general be wrong. If
-> $H_0$ is true and if $M$ is large, the probability is
-> nearly $1$ (i.e., it is practically certain) that the
-> proportion of wrong statements (i.e., the number of wrong statements
-> divided by $M$) will be approximately $\alpha$. If
-> $H_1$ is true, the probability is nearly $1$ that the
-> proportion of wrong statements will be approximately $\beta$.
-> Thus, we can say that in the long run [ here Wald applies law of
-> large numbers by driving $M \rightarrow \infty$ (our comment,
-> not Wald's) ] the proportion of wrong statements will be
-> $\alpha$ if $H_0$is true and $\beta$ if
-> $H_1$ is true.
+让我们继续听瓦尔德的说法：
 
-The quantity $\alpha$ is called the *size* of the critical region,
-and the quantity $1-\beta$ is called the *power* of the critical
-region.
+> 关于选择临界区域的依据，奈曼和皮尔逊提出了以下
+> 考虑：在接受或拒绝$H_0$时，我们可能会犯两种
+> 错误。当$H_0$为真而我们拒绝它时，我们犯第一类
+> 错误；当$H_1$为真而我们接受$H_0$时，我们犯
+> 第二类错误。在选定特定的临界区域$W$后，
+> 犯第一类错误的概率和犯第二类错误的概率就
+> 被唯一确定了。犯第一类错误的概率等于由
 
-Wald notes that
+> 假设 $H_0$ 为真，观察到的样本将落在临界区域 $W$ 内。
+> 犯第二类错误的概率等于在假设 $H_1$ 为真的情况下，
+> 概率落在临界区域 $W$ 之外的概率。对于任何给定的
+> 临界区域 $W$，我们用 $\alpha$ 表示第一类错误的概率，
+> 用 $\beta$ 表示第二类错误的概率。
 
-> one critical region $W$ is more desirable than another if it
-> has smaller values of $\alpha$ and $\beta$. Although
-> either $\alpha$ or $\beta$ can be made arbitrarily small
-> by a proper choice of the critical region $W$, it is possible
-> to make both $\alpha$ and $\beta$ arbitrarily small for a
-> fixed value of $n$, i.e., a fixed sample size.
+让我们仔细听听Wald如何运用大数定律来解释 $\alpha$ 和 $\beta$：
 
-Wald summarizes Neyman and Pearson's setup as follows:
+> 概率 $\alpha$ 和 $\beta$ 有以下重要的实际解释：
+> 假设我们抽取大量规模为 $n$ 的样本。设 $M$ 为
+> 抽取的样本总数。假设对于这 $M$ 个样本中的每一个，
+> 如果样本落在 $W$ 内则拒绝 $H_0$，如果样本落在
+> $W$ 外则接受 $H_0$。通过这种方式，我们做出了 $M$ 个
+> 拒绝或
 
-> Neyman and Pearson show that a region consisting of all samples
-> $(z_1, z_2, \ldots, z_n)$ which satisfy the inequality
+> 接受。这些陈述中的一些通常是错误的。如果
+> $H_0$为真且$M$很大，那么错误陈述的比例（即错误陈述的数量
+> 除以$M$）约为$\alpha$的概率接近于$1$（即几乎是确定的）。如果
+> $H_1$为真，错误陈述的比例约为$\beta$的概率接近于$1$。
+> 因此，我们可以说从长远来看[这里Wald通过令$M \rightarrow \infty$应用了大数定律（这是我们的注释，
+> 不是Wald的）]，如果$H_0$为真，错误陈述的比例将是
+> $\alpha$，如果$H_1$为真，则为$\beta$。
+
+量$\alpha$被称为临界区域的*大小*，
+而量$1-\beta$被称为临界区域的*检验力*。
+
+Wald指出
+
+> 如果一个临界区域$W$具有更小的$\alpha$和$\beta$值，
+> 那么它比另一个更可取。虽然
+
+> 通过适当选择临界区域 $W$，$\alpha$ 或 $\beta$ 中的任一个都可以被任意缩小，
+> 但在固定样本量 $n$ 的情况下，不可能同时使 $\alpha$ 和 $\beta$ 都任意小。
+
+Wald 总结了 Neyman 和 Pearson 的设置如下：
+
+> Neyman 和 Pearson 证明，由满足以下不等式的所有样本
+> $(z_1, z_2, \ldots, z_n)$ 构成的区域
 >
 > $$
   \frac{ f_1(z_1) \cdots f_1(z_n)}{f_0(z_1) \cdots f_0(z_n)} \geq k
   $$
 >
-> is a most powerful critical region for testing the hypothesis
-> $H_0$ against the alternative hypothesis $H_1$. The term
-> $k$ on the right side is a constant chosen so that the region
-> will have the required size $\alpha$.
+> 是检验假设 $H_0$ 对立假设 $H_1$ 的最优势临界区域。
+> 右侧的常数项 $k$ 的选择使得该区域具有所需的显著性水平 $\alpha$。
 
-Wald goes on to discuss Neyman and Pearson's concept of *uniformly most
-powerful* test.
+Wald 接着讨论了 Neyman 和 Pearson 的*一致最优势*检验的概念。
 
-Here is how Wald introduces the notion of a sequential test
+以下是 Wald 引入序贯检验概念的方式：
 
-> A rule is given for making one of the following three decisions at any stage of
-> the experiment (at the m th trial for each integral value of m ): (1) to
-> accept the hypothesis H , (2) to reject the hypothesis H , (3) to
-> continue the experiment by making an additional observation. Thus, such
-> a test procedure is carried out sequentially. On the basis of the first
-> observation, one of the aforementioned decision is made. If the first or
-> second decision is made, the process is terminated. If the third
-> decision is made, a second trial is performed. Again, on the basis of
-> the first two observations, one of the three decision is made. If the
-> third decision is made, a third trial is performed, and so on. The
-> process is continued until either the first or the second decisions is
-> made. The number n of observations required by such a test procedure is
-> a random variable, since the value of n depends on the outcome of the
-> observations.
+> 在任何阶段都给出一个规则来做出以下三个决定中的一个：
 
-[^f1]: The decision maker acts as if he believes that the sequence of random variables
-$[z_{0}, z_{1}, \ldots]$ is *exchangeable*.  See [Exchangeability and Bayesian Updating](https://python.quantecon.org/exchangeable.html) and
-{cite}`Kreps88` chapter 11, for  discussions of exchangeability.
+> 实验（在第m次试验中，m为整数值）：(1)接受假设H，(2)拒绝假设H，(3)
+> 通过进行额外观察来继续实验。因此，这样的检验程序是按顺序进行的。基于第一次
+> 观察，做出上述决策之一。如果做出第一个或第二个决策，过程就终止。如果做出第
+> 三个决策，则进行第二次试验。同样，基于前两次观察，做出三个决策中的一个。如
+> 果做出第三个决策，则进行第三次试验，依此类推。这个过程持续进行，直到做出第
+> 一个或第二个决策为止。这种检验程序所需的观察次数n是一个随机变量，因为n的值
+> 取决于观察的结果。
 
-## Sequels
+[^f1]: 决策者的行为就像他相信随机变量序列
 
-We'll dig deeper into some of the ideas used here in the following lectures:
+$[z_{0}, z_{1}, \ldots]$ 是*可交换的*。参见[可交换性和贝叶斯更新](https://python.quantecon.org/exchangeable.html)和
+{cite}`Kreps88`第11章对可交换性的讨论。
 
-* {doc}`this lecture <exchangeable>` discusses the key concept of **exchangeability** that rationalizes statistical learning
-* {doc}`this lecture <likelihood_ratio_process>` describes **likelihood ratio processes** and their role in frequentist and Bayesian statistical theories
-* {doc}`this lecture <likelihood_bayes>` discusses the role of likelihood ratio processes in **Bayesian learning**
-* {doc}`this lecture <navy_captain>` returns to the subject of this lecture and studies whether the Captain's hunch that the (frequentist) decision rule
-  that the Navy had ordered him to use can be expected to be better or worse than the rule sequential rule that Abraham Wald designed
+## 后续内容
+
+我们将在以下讲座中深入探讨这里使用的一些概念：
+
+* {doc}`本讲座 <exchangeable>` 讨论了合理化统计学习的关键概念**可交换性**
+* {doc}`本讲座 <likelihood_ratio_process>` 描述了**似然比过程**及其在频率派和贝叶斯统计理论中的作用
+* {doc}`本讲座 <likelihood_bayes>` 讨论了似然比过程在**贝叶斯学习**中的作用
+* {doc}`本讲座 <navy_captain>` 回到本讲座的主题，研究海军命令舰长使用的（频率派）决策规则是否可以预期会比Abraham Wald设计的序贯规则更好或更差
+

@@ -18,16 +18,16 @@ kernelspec:
 </div>
 ```
 
-# LQ Control: Foundations
+# LQ控制：基础
 
-```{index} single: LQ Control
+```{index} single: LQ控制
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -36,57 +36,58 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-Linear quadratic (LQ) control refers to a class of dynamic optimization problems that have found applications in almost every scientific field.
+线性二次（LQ）控制指的是一类在几乎所有科学领域都有应用的动态优化问题。
 
-This lecture provides an introduction to LQ control and its economic applications.
+本讲座介绍LQ控制及其经济应用。
 
-As we will see, LQ systems have a simple structure that makes them an excellent workhorse for a wide variety of economic problems.
+我们将会看到，LQ系统具有简单的结构，使其成为处理各种经济问题的优秀工具。
 
-Moreover, while the linear-quadratic structure is restrictive, it is in fact far more flexible than it may appear initially.
+此外，虽然线性二次结构具有局限性，但实际上它比最初看起来要灵活得多。
 
-These themes appear repeatedly below.
+这些主题在下文中会反复出现。
 
-Mathematically, LQ control problems are closely related to {doc}`the Kalman filter <kalman>`
+从数学角度来看，LQ控制问题与{doc}`卡尔曼滤波<kalman>`密切相关
 
-* Recursive formulations of linear-quadratic control problems and Kalman filtering problems both involve matrix **Riccati equations**.
-* Classical formulations of linear control and linear filtering problems make use of similar matrix decompositions (see for example [this lecture](https://python-advanced.quantecon.org/lu_tricks.html) and [this lecture](https://python-advanced.quantecon.org/classical_filtering.html)).
+* 线性二次控制问题和卡尔曼滤波问题的递归表述都涉及矩阵**黎卡提方程**。
 
-In reading what follows, it will be useful to have some familiarity with
+* 线性控制和线性滤波问题的经典表述使用类似的矩阵分解（参见[这节课](https://python-advanced.quantecon.org/lu_tricks.html)和[这节课](https://python-advanced.quantecon.org/classical_filtering.html)）。
 
-* matrix manipulations
-* vectors of random variables
-* dynamic programming and the Bellman equation (see for example {doc}`this lecture <intro:short_path>` and {doc}`this lecture <optgrowth>`)
+在阅读以下内容时，了解这些内容会很有帮助：
 
-For additional reading on LQ control, see, for example,
+* 矩阵运算
+* 随机变量向量
+* 动态规划和贝尔曼方程（参见{doc}`这节课 <intro:short_path>`和{doc}`这节课 <optgrowth>`）
 
-* {cite}`Ljungqvist2012`, chapter 5
-* {cite}`HansenSargent2008`, chapter 4
-* {cite}`HernandezLermaLasserre1996`, section 3.5
+关于LQ控制的更多阅读材料，请参见：
 
-In order to focus on computation, we leave longer proofs to these sources (while trying to provide as much intuition as possible).
+* {cite}`Ljungqvist2012`，第5章
+* {cite}`HansenSargent2008`，第4章
+* {cite}`HernandezLermaLasserre1996`，3.5节
 
-Let's start with some imports:
+为了专注于计算，我们将较长的证明留给这些参考资料（同时尽可能提供直观解释）。
+
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from quantecon import LQ
 ```
 
-## Introduction
+## 引言
 
-The "linear" part of LQ is a linear law of motion for the state, while the "quadratic" part refers to preferences.
+LQ中的"线性"部分指的是状态的线性运动规律，而"二次"部分则指的是偏好。
 
-Let's begin with the former, move on to the latter, and then put them together into an optimization problem.
+让我们先从前者开始，然后讨论后者，最后将它们组合成一个优化问题。
 
-### The Law of Motion
+### 运动规律
 
-Let $x_t$ be a vector describing the state of some economic system.
+设$x_t$是描述某个经济系统状态的向量。
 
-Suppose that $x_t$ follows a linear law of motion given by
+假设$x_t$遵循以下线性运动规律
 
 ```{math}
 :label: lq_lom
@@ -95,56 +96,52 @@ x_{t+1} = A x_t + B u_t + C w_{t+1},
 \qquad t = 0, 1, 2, \ldots
 ```
 
-Here
+这里
 
-* $u_t$ is a "control" vector, incorporating choices available to a decision-maker confronting the current state $x_t$
-* $\{w_t\}$ is an uncorrelated zero mean shock process satisfying $\mathbb E w_t w_t' = I$, where the right-hand side is the identity matrix
+* $u_t$是一个"控制"向量，包含了决策者面对当前状态$x_t$时可用的选择
+* $\{w_t\}$是一个不相关的零均值冲击过程，满足$\mathbb E w_t w_t' = I$，其中右边是单位矩阵
 
-Regarding the dimensions
+关于维度
 
-* $x_t$ is $n \times 1$, $A$ is $n \times n$
-* $u_t$ is $k \times 1$, $B$ is $n \times k$
-* $w_t$ is $j \times 1$, $C$ is $n \times j$
+* $x_t$是$n \times 1$维，$A$是$n \times n$维
+* $u_t$是$k \times 1$维，$B$是$n \times k$维
+* $w_t$是$j \times 1$维，$C$是$n \times j$维
 
-#### Example 1
+#### 示例1
 
-Consider a household budget constraint given by
+考虑一个家庭预算约束，表示为
 
 $$
+
 a_{t+1} + c_t = (1 + r) a_t + y_t
 $$
 
-Here $a_t$ is assets, $r$ is a fixed interest rate, $c_t$ is
-current consumption, and $y_t$ is current non-financial income.
+这里$a_t$是资产，$r$是固定利率，$c_t$是当前消费，$y_t$是当前非金融收入。
 
-If we suppose that $\{ y_t \}$ is serially uncorrelated and $N(0,
-\sigma^2)$, then, taking $\{ w_t \}$ to be standard normal, we can write
-the system as
+如果我们假设$\{ y_t \}$是序列不相关的且服从$N(0, \sigma^2)$分布，那么，令$\{ w_t \}$为标准正态分布，我们可以将系统写作
 
 $$
 a_{t+1} = (1 + r) a_t - c_t + \sigma w_{t+1}
 $$
 
-This is clearly a special case of {eq}`lq_lom`, with assets being the state and consumption being the control.
+这显然是{eq}`lq_lom`的一个特例，其中资产是状态变量，消费是控制变量。
 
 (lq_hhp)=
-#### Example 2
+#### 示例2
 
-One unrealistic feature of the previous model is that non-financial income has a zero mean and is often negative.
+前一个模型的一个不现实的特征是非金融收入的均值为零且经常为负。
 
-This can easily be overcome by adding a sufficiently large mean.
+这个问题可以通过添加一个足够大的均值来轻松解决。
 
-Hence in this example, we take $y_t = \sigma w_{t+1} + \mu$ for some positive real number $\mu$.
+因此在这个例子中，我们令$y_t = \sigma w_{t+1} + \mu$，其中$\mu$是某个正实数。
 
-Another alteration that's useful to introduce (we'll see why soon) is to
-change the control variable from consumption
-to the deviation of consumption from some "ideal" quantity $\bar c$.
+另一个值得引入的改变（我们很快就会明白原因）是将控制变量从消费改为消费与某个"理想"数量$\bar c$的偏差。
 
-(Most parameterizations will be such that $\bar c$ is large relative to the amount of consumption that is attainable in each period, and hence the household wants to increase consumption.)
+(大多数参数化情况下，$\bar c$ 相对于每个时期可获得的消费量来说都很大，因此家庭希望增加消费。)
 
-For this reason, we now take our control to be $u_t := c_t - \bar c$.
+因此，我们现在将控制变量设为 $u_t := c_t - \bar c$。
 
-In terms of these variables, the budget constraint $a_{t+1} = (1 + r) a_t - c_t + y_t$ becomes
+用这些变量表示，预算约束 $a_{t+1} = (1 + r) a_t - c_t + y_t$ 变为
 
 ```{math}
 :label: lq_lomwc
@@ -152,17 +149,17 @@ In terms of these variables, the budget constraint $a_{t+1} = (1 + r) a_t - c_t 
 a_{t+1} = (1 + r) a_t - u_t - \bar c + \sigma w_{t+1} + \mu
 ```
 
-How can we write this new system in the form of equation {eq}`lq_lom`?
+我们如何将这个新系统写成方程 {eq}`lq_lom` 的形式？
 
-If, as in the previous example, we take $a_t$ as the state, then we run into a problem:
-the law of motion contains some constant terms on the right-hand side.
+如果像前面的例子一样，我们把 $a_t$ 作为状态变量，那么我们会遇到一个问题：
+运动方程右侧包含一些常数项。
 
-This means that we are dealing with an *affine* function, not a linear one
-(recall {ref}`this discussion <la_linear_map>`).
+这意味着我们处理的是一个*仿射*函数，而不是线性函数
+(回顾 {ref}`这个讨论 <la_linear_map>`)。
 
-Fortunately, we can easily circumvent this problem by adding an extra state variable.
+幸运的是，我们可以通过添加一个额外的状态变量来轻松解决这个问题。
 
-In particular, if we write
+具体来说，如果我们写成
 
 ```{math}
 :label: lq_lowmc
@@ -172,6 +169,7 @@ In particular, if we write
 a_{t+1} \\
 1
 \end{array}
+
 \right) =
 \left(
 \begin{array}{cc}
@@ -201,10 +199,9 @@ u_t +
 w_{t+1}
 ```
 
-then the first row is equivalent to {eq}`lq_lomwc`.
+第一行等价于{eq}`lq_lomwc`。
 
-Moreover, the model is now linear and can be written in the form of
-{eq}`lq_lom` by setting
+此外，该模型现在是线性的，可以通过设定以下参数写成{eq}`lq_lom`的形式
 
 ```{math}
 :label: lq_lowmc2
@@ -242,11 +239,11 @@ C :=
 \right)
 ```
 
-In effect, we've bought ourselves linearity by adding another state.
+实际上，我们通过增加另一个状态变量获得了线性特性。
 
-### Preferences
+### 偏好
 
-In the LQ model, the aim is to minimize flow of losses, where time-$t$ loss is given by the quadratic expression
+在LQ模型中，目标是最小化损失流，其中时间t的损失由以下二次表达式给出
 
 ```{math}
 :label: lq_pref_flow
@@ -254,132 +251,119 @@ In the LQ model, the aim is to minimize flow of losses, where time-$t$ loss is g
 x_t' R x_t + u_t' Q u_t
 ```
 
-Here
-
-* $R$ is assumed to be $n \times n$, symmetric and nonnegative definite.
-* $Q$ is assumed to be $k \times k$, symmetric and positive definite.
+* 假设 $R$ 是 $n \times n$ 的对称非负定矩阵。
+* 假设 $Q$ 是 $k \times k$ 的对称正定矩阵。
 
 ```{note}
-In fact, for many economic problems, the definiteness conditions on $R$ and $Q$ can be relaxed.  It is sufficient that certain submatrices of $R$ and $Q$ be nonnegative definite. See {cite}`HansenSargent2008` for details.
+实际上，对于许多经济问题，可以放宽对 $R$ 和 $Q$ 的正定性条件。只需要 $R$ 和 $Q$ 的某些子矩阵是非负定的即可。详见 {cite}`HansenSargent2008`。
 ```
 
-#### Example 1
+#### 示例1
 
-A very simple example that satisfies these assumptions is to take $R$
-and $Q$ to be identity matrices so that current loss is
+一个满足这些假设的非常简单的例子是将 $R$ 和 $Q$ 取为单位矩阵，这样当前损失为
 
 $$
 x_t' I x_t + u_t' I u_t = \| x_t \|^2 + \| u_t \|^2
 $$
 
-Thus, for both the state and the control, loss is measured as squared distance from the origin.
+因此，对于状态和控制而言，损失都被度量为与原点的平方距离。
 
-(In fact, the general case {eq}`lq_pref_flow` can also be understood in this
-way, but with $R$ and $Q$ identifying other -- non-Euclidean -- notions of "distance" from the zero vector.)
+（实际上，一般情况 {eq}`lq_pref_flow` 也可以用这种方式理解，但 $R$ 和 $Q$ 定义了其他 - 非欧几里得 - 与零向量的"距离"概念。）
 
-Intuitively, we can often think of the state $x_t$ as representing deviation from a target, such
-as
+直观上，我们通常可以将状态 $x_t$ 理解为偏离目标的程度，例如
 
-* deviation of inflation from some target level
-* deviation of a firm's capital stock from some desired quantity
+* 通货膨胀偏离某个目标水平的程度
+* 企业资本存量偏离某个理想数量的程度
 
-The aim is to put the state close to the target, while using  controls parsimoniously.
+目标是使状态接近目标值，同时节约地使用控制变量。
 
-#### Example 2
+#### 示例2
 
-In the household problem {ref}`studied above <lq_hhp>`, setting $R=0$
-and $Q=1$ yields preferences
+在{ref}`之前研究的家庭问题 <lq_hhp>`中，设定$R=0$和$Q=1$得到的偏好为
 
 $$
 x_t' R x_t + u_t' Q u_t = u_t^2 = (c_t - \bar c)^2
 $$
 
-Under this specification, the household's current loss is the squared deviation of consumption from the ideal level $\bar c$.
+在这种设定下，家庭当前的损失是消费与理想水平$\bar c$的平方差。
 
-## Optimality -- Finite Horizon
+## 最优性 -- 有限时域
 
 ```{index} single: LQ Control; Optimality (Finite Horizon)
 ```
 
-Let's now be precise about the optimization problem we wish to consider, and look at how to solve it.
+让我们现在明确我们要考虑的优化问题，并看看如何解决它。
 
-### The Objective
+### 目标函数
 
-We will begin with the finite horizon case, with terminal time $T \in \mathbb N$.
+我们将从有限时域情况开始，终止时间为$T \in \mathbb N$。
 
-In this case, the aim is to choose a sequence of controls $\{u_0, \ldots, u_{T-1}\}$ to minimize the objective
+在这种情况下，目标是选择一系列控制变量$\{u_0, \ldots, u_{T-1}\}$来最小化目标函数
 
 ```{math}
 :label: lq_object
 
 \mathbb E \,
 \left\{
-    \sum_{t=0}^{T-1} \beta^t (x_t' R x_t + u_t' Q u_t) + \beta^T x_T' R_f x_T
+
+\sum_{t=0}^{T-1} \beta^t (x_t' R x_t + u_t' Q u_t) + \beta^T x_T' R_f x_T
 \right\}
 ```
 
-subject to the law of motion {eq}`lq_lom` and initial state $x_0$.
+受制于运动方程{eq}`lq_lom`和初始状态$x_0$。
 
-The new objects introduced here are $\beta$ and the matrix $R_f$.
+这里引入的新对象是$\beta$和矩阵$R_f$。
 
-The scalar $\beta$ is the discount factor, while $x' R_f x$ gives terminal loss associated with state $x$.
+标量$\beta$是折现因子，而$x' R_f x$给出与状态$x$相关的终端损失。
 
-Comments:
+注释：
 
-* We assume $R_f$ to be $n \times n$, symmetric and nonnegative definite.
-* We allow $\beta = 1$, and hence include the undiscounted case.
-* $x_0$ may itself be random, in which case we require it to be independent of the shock sequence $w_1, \ldots, w_T$.
+* 我们假设$R_f$是$n \times n$的、对称且非负定的矩阵。
+* 我们允许$\beta = 1$，因此包含了未折现的情况。
+* $x_0$本身可能是随机的，在这种情况下，我们要求它与冲击序列$w_1, \ldots, w_T$相互独立。
 
 (lq_cp)=
-### Information
+### 信息
 
-There's one constraint we've neglected to mention so far, which is that the
-decision-maker who solves this LQ problem knows only the present and the past,
-not the future.
+到目前为止，我们还忽略了一个约束，即解决这个LQ问题的决策者只知道现在和过去，而不知道未来。
 
-To clarify this point, consider the sequence of controls $\{u_0, \ldots, u_{T-1}\}$.
+为了说明这一点，考虑控制序列$\{u_0, \ldots, u_{T-1}\}$。
 
-When choosing these controls, the decision-maker is permitted to take into account the effects of the shocks
-$\{w_1, \ldots, w_T\}$ on the system.
+在选择这些控制时，决策者可以考虑冲击的影响
 
-However, it is typically assumed --- and will be assumed here --- that the
-time-$t$ control $u_t$ can  be made with knowledge of past and
-present shocks only.
+系统中的 $\{w_1, \ldots, w_T\}$。
 
-The fancy [measure-theoretic](https://en.wikipedia.org/wiki/Measure_%28mathematics%29) way of saying this is that $u_t$ must be measurable with respect to the $\sigma$-algebra generated by $x_0, w_1, w_2,
-\ldots, w_t$.
+然而，通常假设（在此也将假设）时刻 $t$ 的控制 $u_t$ 只能基于过去和当前的冲击来做出。
 
-This is in fact equivalent to stating that $u_t$ can be written in the form $u_t = g_t(x_0, w_1, w_2, \ldots, w_t)$ for some Borel measurable function $g_t$.
+用高深的[测度论](https://en.wikipedia.org/wiki/Measure_%28mathematics%29)术语来说，就是 $u_t$ 必须对由 $x_0, w_1, w_2, \ldots, w_t$ 生成的 $\sigma$-代数可测。
 
-(Just about every function that's useful for applications is Borel measurable,
-so, for the purposes of intuition, you can read that last phrase as "for some function $g_t$")
+这实际上等价于说 $u_t$ 可以写成形式 $u_t = g_t(x_0, w_1, w_2, \ldots, w_t)$，其中 $g_t$ 是某个 Borel 可测函数。
 
-Now note that $x_t$ will ultimately depend on the realizations of $x_0, w_1, w_2, \ldots, w_t$.
+（几乎所有在应用中有用的函数都是 Borel 可测的，所以从直观上理解，你可以把最后那句话理解为"对某个函数 $g_t$"）
 
-In fact, it turns out that $x_t$ summarizes all the information about  these historical  shocks that the decision-maker needs to set controls optimally.
+现在注意到 $x_t$ 最终将取决于 $x_0, w_1, w_2, \ldots, w_t$ 的实现值。
 
-More precisely, it can be shown that any optimal control $u_t$ can always be written as a function of the current state alone.
+事实上，$x_t$ 总结了决策者为了最优设置控制所需的所有历史冲击信息。
 
-Hence in what follows we restrict attention to control policies (i.e., functions) of the form $u_t = g_t(x_t)$.
+更准确地说，可以证明任何最优控制 $u_t$ 都可以表示为仅与当前状态相关的函数。
 
-Actually, the preceding discussion applies to all standard dynamic programming problems.
+因此，在接下来的内容中，我们将注意力限制在形如 $u_t = g_t(x_t)$ 的控制策略（即函数）上。
 
-What's special about the LQ case is that -- as we shall soon see ---  the optimal $u_t$ turns out to be a linear function of $x_t$.
+实际上，前面的讨论适用于所有标准动态规划问题。
 
-### Solution
+LQ情况的特殊之处在于——正如我们即将看到的——最优的 $u_t$ 原来是 $x_t$ 的线性函数。
 
-To solve the finite horizon LQ problem we can use a dynamic programming
-strategy based on backward induction that is conceptually similar to the approach adopted in {doc}`this lecture <intro:short_path>`.
+### 解决方案
 
-For reasons that will soon become clear, we first introduce the notation $J_T(x) = x' R_f x$.
+为了解决有限时域LQ问题，我们可以使用基于向后归纳的动态规划策略，这在概念上类似于{doc}`本讲座 <intro:short_path>`中采用的方法。
 
-Now consider the problem of the decision-maker in the second to last period.
+由于很快就会明白的原因，我们首先引入符号 $J_T(x) = x' R_f x$。
 
-In particular, let the time be $T-1$, and suppose that the
-state is $x_{T-1}$.
+现在考虑决策者在倒数第二个时期的问题。
 
-The decision-maker must trade-off current and (discounted) final losses, and hence
-solves
+具体来说，假设时间为$T-1$，且状态为$x_{T-1}$。
+
+决策者必须权衡当前损失和（折现的）最终损失，因此需要求解
 
 $$
 \min_u \{
@@ -388,7 +372,7 @@ x_{T-1}' R x_{T-1} + u' Q u + \beta \,
 \}
 $$
 
-At this stage, it is convenient to define the function
+在这个阶段，定义以下函数会比较方便
 
 ```{math}
 :label: lq_lsm
@@ -400,20 +384,20 @@ x' R x + u' Q u + \beta \,
 \}
 ```
 
-The function $J_{T-1}$ will be called the $T-1$ value function, and $J_{T-1}(x)$ can be thought of as representing total "loss-to-go" from state $x$ at time $T-1$ when the decision-maker behaves optimally.
+函数$J_{T-1}$被称为$T-1$时期的价值函数，而$J_{T-1}(x)$可以被理解为从$T-1$时期状态$x$开始，当决策者采取最优行为时的总"未来损失"。
 
-Now let's step back to $T-2$.
+现在让我们回到$T-2$时期。
 
-For a decision-maker at $T-2$, the value $J_{T-1}(x)$ plays a role analogous to that played by the terminal loss $J_T(x) = x' R_f x$ for the decision-maker at $T-1$.
+对于$T-2$时期的决策者来说，$J_{T-1}(x)$的作用类似于终端损失$J_T(x) = x' R_f x$对$T-1$时期决策者的作用。
 
-That is, $J_{T-1}(x)$ summarizes the future loss associated with moving to state $x$.
+也就是说，$J_{T-1}(x)$ 概括了转移到状态 $x$ 所关联的未来损失。
 
-The decision-maker chooses her control $u$ to trade off current loss against future loss, where
+决策者选择她的控制 $u$ 来权衡当前损失和未来损失，其中
 
-* the next period state is $x_{T-1} = Ax_{T-2} + B u + C w_{T-1}$, and hence depends on the choice of current control.
-* the "cost" of landing in state $x_{T-1}$ is $J_{T-1}(x_{T-1})$.
+* 下一期的状态是 $x_{T-1} = Ax_{T-2} + B u + C w_{T-1}$，因此取决于当前控制的选择。
+* 进入状态 $x_{T-1}$ 的"成本"是 $J_{T-1}(x_{T-1})$。
 
-Her problem is therefore
+因此她的问题是
 
 $$
 \min_u
@@ -423,7 +407,7 @@ x_{T-2}' R x_{T-2} + u' Q u + \beta \,
 \}
 $$
 
-Letting
+令
 
 $$
 J_{T-2} (x)
@@ -434,9 +418,9 @@ x' R x + u' Q u + \beta \,
 \}
 $$
 
-the pattern for backward induction is now clear.
+现在向后归纳的模式已经很清楚了。
 
-In particular, we define a sequence of value functions $\{J_0, \ldots, J_T\}$ via
+具体来说，我们通过以下方式定义一系列价值函数 $\{J_0, \ldots, J_T\}$
 
 $$
 J_{t-1} (x)
@@ -445,21 +429,21 @@ J_{t-1} (x)
 x' R x + u' Q u + \beta \,
 \mathbb E J_{t}(Ax + B u + C w_t)
 \}
-\quad \text{and} \quad
+\quad \text{和} \quad
 J_T(x) = x' R_f x
 $$
 
-The first equality is the Bellman equation from dynamic programming theory specialized to the finite horizon LQ problem.
+第一个等式是动态规划理论中的贝尔曼方程，专门用于有限时域LQ问题。
 
-Now that we have $\{J_0, \ldots, J_T\}$, we can obtain the optimal controls.
+现在我们有了$\{J_0, \ldots, J_T\}$，我们可以获得最优控制。
 
-As a first step, let's find out what the value functions look like.
+作为第一步，让我们看看价值函数是什么样的。
 
-It turns out that every $J_t$ has the form $J_t(x) = x' P_t x + d_t$ where $P_t$ is a $n \times n$ matrix and $d_t$ is a constant.
+事实证明，每个$J_t$都具有形式$J_t(x) = x' P_t x + d_t$，其中$P_t$是一个$n \times n$矩阵，而$d_t$是一个常数。
 
-We can show this by induction, starting from $P_T := R_f$ and $d_T = 0$.
+我们可以通过归纳法证明这一点，从$P_T := R_f$和$d_T = 0$开始。
 
-Using this notation, {eq}`lq_lsm` becomes
+使用这个符号，{eq}`lq_lsm`变为
 
 ```{math}
 :label: lq_fswb
@@ -471,9 +455,9 @@ x' R x + u' Q u + \beta \,
 \}
 ```
 
-To obtain the minimizer, we can take the derivative of the r.h.s. with respect to $u$ and set it equal to zero.
+为了得到最小值，我们可以对右边项关于$u$求导，并令其等于零。
 
-Applying the relevant rules of {ref}`matrix calculus <la_mcalc>`, this gives
+应用{ref}`矩阵微积分 <la_mcalc>`的相关规则，得到
 
 ```{math}
 :label: lq_oc0
@@ -481,13 +465,14 @@ Applying the relevant rules of {ref}`matrix calculus <la_mcalc>`, this gives
 u  = - (Q + \beta B' P_T B)^{-1} \beta B' P_T A x
 ```
 
-Plugging this back into {eq}`lq_fswb` and rearranging yields
+将此代回{eq}`lq_fswb`并重新整理得到
 
 $$
+
 J_{T-1} (x) = x' P_{T-1} x + d_{T-1}
 $$
 
-where
+其中
 
 ```{math}
 :label: lq_finr
@@ -496,7 +481,7 @@ P_{T-1} = R - \beta^2 A' P_T B (Q + \beta B' P_T B)^{-1} B' P_T A +
 \beta A' P_T A
 ```
 
-and
+且
 
 ```{math}
 :label: lq_finrd
@@ -504,44 +489,44 @@ and
 d_{T-1} := \beta \mathop{\mathrm{trace}}(C' P_T C)
 ```
 
-(The algebra is a good exercise --- we'll leave it up to you.)
+(这个代数运算是一个很好的练习 --- 我们把它留给你。)
 
-If we continue working backwards in this manner, it soon becomes clear that $J_t (x) = x' P_t x + d_t$ as claimed, where $\{P_t\}$ and $\{d_t\}$ satisfy the recursions
+如果我们继续按这种方式向后推导，很快就会清楚 $J_t (x) = x' P_t x + d_t$ 如我们所说，其中 $\{P_t\}$ 和 $\{d_t\}$ 满足递归式
 
 ```{math}
 :label: lq_pr
 
 P_{t-1} = R - \beta^2 A' P_t B (Q + \beta B' P_t B)^{-1} B' P_t A +
 \beta A' P_t A
-\quad \text{with } \quad
+\quad \text{其中} \quad
 P_T = R_f
 ```
 
-and
+和
 
 ```{math}
 :label: lq_dd
 
 d_{t-1} = \beta (d_t + \mathop{\mathrm{trace}}(C' P_t C))
-\quad \text{with } \quad
+\quad \text{其中} \quad
 d_T = 0
 ```
 
-Recalling {eq}`lq_oc0`, the minimizers from these backward steps are
+回顾 {eq}`lq_oc0`，这些向后推导步骤的最小化结果为
 
 ```{math}
 :label: lq_oc
 
 u_t  = - F_t x_t
-\quad \text{where} \quad
+\quad \text{其中} \quad
 F_t := (Q + \beta B' P_{t+1} B)^{-1} \beta B' P_{t+1} A
 ```
 
-These are the linear optimal control policies we {ref}`discussed above <lq_cp>`.
+这些是我们{ref}`上面讨论过的<lq_cp>`线性最优控制策略。
 
-In particular,  the sequence of controls given by {eq}`lq_oc` and {eq}`lq_lom` solves our finite horizon LQ problem.
+特别是，由{eq}`lq_oc`和{eq}`lq_lom`给出的控制序列解决了我们的有限时域LQ问题。
 
-Rephrasing this more precisely, the sequence $u_0, \ldots, u_{T-1}$ given by
+更准确地说，序列$u_0, \ldots, u_{T-1}$由以下式子给出
 
 ```{math}
 :label: lq_xud
@@ -551,47 +536,43 @@ u_t = - F_t x_t
 x_{t+1} = (A - BF_t) x_t + C w_{t+1}
 ```
 
-for $t = 0, \ldots, T-1$ attains the minimum of {eq}`lq_object` subject to our constraints.
+对于$t = 0, \ldots, T-1$，在我们的约束条件下实现了{eq}`lq_object`的最小值。
 
-## Implementation
+## 实现
 
-We will use code from [lqcontrol.py](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lqcontrol.py)
-in [QuantEcon.py](http://quantecon.org/quantecon-py)
-to solve finite and infinite horizon linear quadratic control problems.
+我们将使用[QuantEcon.py](http://quantecon.org/quantecon-py)中的[lqcontrol.py](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lqcontrol.py)代码来求解有限和无限时域线性二次控制问题。
 
-In the module, the various updating, simulation and fixed point methods
-are wrapped in a class  called `LQ`, which includes
+在该模块中，各种更新、模拟和不动点方法被封装在一个名为`LQ`的类中，包括
 
-* Instance data:
-    * The required parameters $Q, R, A, B$ and optional parameters $C, \beta, T, R_f, N$ specifying a given LQ model
-        * set $T$ and $R_f$ to `None` in the infinite horizon case
-        * set `C = None` (or zero) in the deterministic case
-    * the value function and policy data
-        * $d_t, P_t, F_t$ in the finite horizon case
-        * $d, P, F$ in the infinite horizon case
-* Methods:
-    * `update_values` --- shifts $d_t, P_t, F_t$ to their $t-1$ values via {eq}`lq_pr`, {eq}`lq_dd` and {eq}`lq_oc`
-    * `stationary_values` --- computes $P, d, F$ in the infinite horizon case
-    * `compute_sequence` ---- simulates the dynamics of $x_t, u_t, w_t$ given $x_0$ and assuming standard normal shocks
+* 实例数据：
+    * 所需参数$Q, R, A, B$和可选参数$C, \beta, T, R_f, N$用于指定给定的LQ模型
+
+* 在无限视界情况下，将 $T$ 和 $R_f$ 设为 `None`
+* 在确定性情况下，将 `C = None`（或零）
+* 值函数和策略数据
+    * 有限视界情况下的 $d_t, P_t, F_t$
+    * 无限视界情况下的 $d, P, F$
+* 方法：
+    * `update_values` --- 通过 {eq}`lq_pr`、{eq}`lq_dd` 和 {eq}`lq_oc` 将 $d_t, P_t, F_t$ 更新为它们在 $t-1$ 时的值
+    * `stationary_values` --- 计算无限视界情况下的 $P, d, F$
+    * `compute_sequence` ---- 给定 $x_0$ 并假设标准正态冲击，模拟 $x_t, u_t, w_t$ 的动态
 
 (lq_mfpa)=
-### An Application
+### 一个应用
 
-Early Keynesian models assumed that households have a constant marginal
-propensity to consume from current income.
+早期凯恩斯模型假设家庭从当前收入中的边际消费倾向是恒定的。
 
-Data contradicted the constancy of the marginal propensity to consume.
+数据与边际消费倾向的恒定性相矛盾。
 
-In response, Milton Friedman, Franco Modigliani and others built models
-based on a consumer's preference for an intertemporally smooth consumption stream.
+作为回应，米尔顿·弗里德曼、弗兰科·莫迪利亚尼等人基于消费者对跨期平滑消费流的偏好构建了模型。
 
-(See, for example, {cite}`Friedman1956` or {cite}`ModiglianiBrumberg1954`.)
+(参见{cite}`Friedman1956`或{cite}`ModiglianiBrumberg1954`。)
 
-One property of those models is that households purchase and sell financial assets to make consumption streams smoother than income streams.
+这些模型的一个特点是家庭通过购买和出售金融资产使消费流比收入流更加平滑。
 
-The household savings problem {ref}`outlined above <lq_hhp>` captures these ideas.
+{ref}`上述 <lq_hhp>`家庭储蓄问题体现了这些观点。
 
-The optimization problem for the household is to choose a consumption sequence in order to minimize
+家庭的优化问题是选择一个消费序列以最小化
 
 ```{math}
 :label: lq_pio
@@ -602,19 +583,17 @@ The optimization problem for the household is to choose a consumption sequence i
 \right\}
 ```
 
-subject to the sequence of budget constraints $a_{t+1} = (1 + r) a_t - c_t + y_t, \ t \geq 0$.
+受预算约束序列$a_{t+1} = (1 + r) a_t - c_t + y_t, \ t \geq 0$的限制。
 
-Here $q$ is a large positive constant, the role of which is to induce the consumer to target zero debt at the end of her life.
+这里$q$是一个较大的正常数，其作用是促使消费者在生命末期将债务目标控制为零。
 
-(Without such a constraint, the optimal choice is to choose $c_t = \bar c$ in each period, letting assets adjust accordingly.)
+(没有这样的约束，最优选择就是在每个时期选择$c_t = \bar c$，相应地让资产进行调整。)
 
-As before we set $y_t = \sigma w_{t+1} + \mu$ and $u_t := c_t - \bar c$, after which the constraint can be written as in {eq}`lq_lomwc`.
+和之前一样，我们设定 $y_t = \sigma w_{t+1} + \mu$ 和 $u_t := c_t - \bar c$，之后约束条件可以写成 {eq}`lq_lomwc` 的形式。
 
-We saw how this constraint could be manipulated into the LQ formulation $x_{t+1} =
-Ax_t + Bu_t + Cw_{t+1}$ by setting $x_t = (a_t \; 1)'$ and using the definitions in {eq}`lq_lowmc2`.
+我们看到这个约束条件可以通过设定 $x_t = (a_t \; 1)'$ 并使用 {eq}`lq_lowmc2` 中的定义，转化为 LQ 形式 $x_{t+1} = Ax_t + Bu_t + Cw_{t+1}$。
 
-To match with this state and control, the objective function {eq}`lq_pio` can
-be written in the form of {eq}`lq_object` by choosing
+为了与这个状态和控制相匹配，目标函数 {eq}`lq_pio` 可以通过选择以下参数写成 {eq}`lq_object` 的形式：
 
 $$
 Q := 1,
@@ -626,7 +605,7 @@ R :=
 0 & 0
 \end{array}
 \right),
-\quad \text{and} \quad
+\quad \text{和} \quad
 R_f :=
 \left(
 \begin{array}{cc}
@@ -636,19 +615,18 @@ q & 0 \\
 \right)
 $$
 
-Now that the problem is expressed in LQ form, we can proceed to the solution
-by applying {eq}`lq_pr` and {eq}`lq_oc`.
+现在问题已经表达为 LQ 形式，我们可以通过应用 {eq}`lq_pr` 和 {eq}`lq_oc` 来求解。
 
-After generating shocks $w_1, \ldots, w_T$, the dynamics for assets and
-consumption can be simulated via {eq}`lq_xud`.
+在生成冲击序列 $w_1, \ldots, w_T$ 之后，资产和消费的动态可以通过 {eq}`lq_xud` 来模拟。
 
-The following figure was computed using $r = 0.05, \beta = 1 / (1+ r),
-\bar c = 2,  \mu = 1, \sigma = 0.25, T = 45$ and $q = 10^6$.
+下图是使用参数 $r = 0.05, \beta = 1 / (1+ r)$ 计算得出的，
 
-The shocks $\{w_t\}$ were taken to be IID and standard normal.
+\bar c = 2，\mu = 1，\sigma = 0.25，T = 45$ 和 $q = 10^6$。
+
+冲击 $\{w_t\}$ 被设定为独立同分布的标准正态分布。
 
 ```{code-cell} python3
-# Model parameters
+# 模型参数
 r = 0.05
 β = 1/(1 + r)
 T = 45
@@ -657,7 +635,7 @@ c_bar = 2
 μ = 1
 q = 1e6
 
-# Formulate as an LQ problem
+# 构建为LQ问题
 Q = 1
 R = np.zeros((2, 2))
 Rf = np.zeros((2, 2))
@@ -669,17 +647,17 @@ B = [[-1],
 C = [[σ],
     [0]]
 
-# Compute solutions and simulate
+# 计算解并模拟
 lq = LQ(Q, R, A, B, C, beta=β, T=T, Rf=Rf)
 x0 = (0, 1)
 xp, up, wp = lq.compute_sequence(x0)
 
-# Convert back to assets, consumption and income
+# 转换回资产、消费和收入
 assets = xp[0, :]           # a_t
 c = up.flatten() + c_bar    # c_t
 income = σ * wp[0, 1:] + μ  # y_t
 
-# Plot results
+# 绘制结果
 n_rows = 2
 fig, axes = plt.subplots(n_rows, 1, figsize=(12, 10))
 
@@ -689,65 +667,60 @@ bbox = (0., 1.02, 1., .102)
 legend_args = {'bbox_to_anchor': bbox, 'loc': 3, 'mode': 'expand'}
 p_args = {'lw': 2, 'alpha': 0.7}
 
-axes[0].plot(list(range(1, T+1)), income, 'g-', label="non-financial income",
+axes[0].plot(list(range(1, T+1)), income, 'g-', label="非金融收入",
             **p_args)
-axes[0].plot(list(range(T)), c, 'k-', label="consumption", **p_args)
+axes[0].plot(list(range(T)), c, 'k-', label="消费", **p_args)
 
 axes[1].plot(list(range(1, T+1)), np.cumsum(income - μ), 'r-',
-            label="cumulative unanticipated income", **p_args)
-axes[1].plot(list(range(T+1)), assets, 'b-', label="assets", **p_args)
+            label="累计未预期收入", **p_args)
+axes[1].plot(list(range(T+1)), assets, 'b-', label="资产", **p_args)
 axes[1].plot(list(range(T)), np.zeros(T), 'k-')
 
 for ax in axes:
     ax.grid()
-    ax.set_xlabel('Time')
+    ax.set_xlabel('时间')
     ax.legend(ncol=2, **legend_args)
 
 plt.show()
 ```
 
-The top panel shows the time path of consumption $c_t$ and income $y_t$ in the simulation.
+顶部面板显示了模拟中消费 $c_t$ 和收入 $y_t$ 的时间路径。
 
-As anticipated by the discussion on consumption smoothing, the time path of
-consumption is much smoother than that for income.
+正如消费平滑讨论中所预期的那样，消费的时间路径比收入的时间路径要平滑得多。
 
-(But note that  consumption becomes more irregular towards the end of life,
-when the zero final asset requirement impinges more on consumption choices.)
+（但请注意，在生命周期末期，消费变得更加不规则，这是因为零期末资产要求对消费选择的影响更大。）
 
-The second panel in the figure shows that the time path of assets $a_t$ is
-closely correlated with cumulative unanticipated income, where the latter is defined as
+图中的第二个面板显示，资产 $a_t$ 的时间路径与累积未预期收入密切相关，后者定义为
 
 $$
 z_t := \sum_{j=0}^t \sigma w_t
 $$
 
-A key message is that unanticipated windfall gains are saved rather
-than consumed, while unanticipated negative shocks are met by reducing assets.
+一个关键信息是，未预期的意外收益会被储蓄而不是消费，而未预期的负面冲击则通过减少资产来应对。
 
-(Again, this relationship breaks down towards the end of life due to the zero final asset requirement.)
+（同样，由于零期末资产要求，这种关系在生命周期末期也会被打破。）
 
-These results are relatively robust to changes in parameters.
+这些结果对参数变化相对稳健。
 
-For example, let's increase $\beta$ from $1 / (1 + r) \approx 0.952$ to $0.96$ while keeping other parameters fixed.
+例如，让我们把 $\beta$ 从 $1 / (1 + r) \approx 0.952$ 增加到 $0.96$，同时保持其他参数不变。
 
-This consumer is slightly more patient than the last one, and hence puts
-relatively more weight on later consumption values.
+这个消费者比之前的更有耐心，因此对后期消费值赋予相对更大的权重。
 
 ```{code-cell} python3
 ---
 tags: [output_scroll]
 ---
-# Compute solutions and simulate
+# 计算解并模拟
 lq = LQ(Q, R, A, B, C, beta=0.96, T=T, Rf=Rf)
 x0 = (0, 1)
 xp, up, wp = lq.compute_sequence(x0)
 
-# Convert back to assets, consumption and income
+# 转换回资产、消费和收入
 assets = xp[0, :]           # a_t
 c = up.flatten() + c_bar    # c_t
 income = σ * wp[0, 1:] + μ  # y_t
 
-# Plot results
+# 绘制结果
 n_rows = 2
 fig, axes = plt.subplots(n_rows, 1, figsize=(12, 10))
 
@@ -757,50 +730,50 @@ bbox = (0., 1.02, 1., .102)
 legend_args = {'bbox_to_anchor': bbox, 'loc': 3, 'mode': 'expand'}
 p_args = {'lw': 2, 'alpha': 0.7}
 
-axes[0].plot(list(range(1, T+1)), income, 'g-', label="non-financial income",
+axes[0].plot(list(range(1, T+1)), income, 'g-', label="非金融收入",
              **p_args)
-axes[0].plot(list(range(T)), c, 'k-', label="consumption", **p_args)
+axes[0].plot(list(range(T)), c, 'k-', label="消费", **p_args)
 
 axes[1].plot(list(range(1, T+1)), np.cumsum(income - μ), 'r-',
-             label="cumulative unanticipated income", **p_args)
-axes[1].plot(list(range(T+1)), assets, 'b-', label="assets", **p_args)
+             label="累计未预期收入", **p_args)
+axes[1].plot(list(range(T+1)), assets, 'b-', label="资产", **p_args)
 axes[1].plot(list(range(T)), np.zeros(T), 'k-')
 
 for ax in axes:
     ax.grid()
-    ax.set_xlabel('Time')
+    ax.set_xlabel('时间')
     ax.legend(ncol=2, **legend_args)
 
 plt.show()
 ```
 
-We now have a slowly rising consumption stream and a hump-shaped build-up
-of assets in the middle periods to fund rising consumption.
+现在我们有一个缓慢上升的消费流，以及在中期出现驼峰形状的资产积累来为不断增长的消费提供资金。
 
-However, the essential features are the same: consumption is smooth relative to income, and assets are strongly positively correlated with cumulative unanticipated income.
+然而，基本特征保持不变：相对于收入而言，消费是平滑的，且资产与累积的未预期收入呈强烈的正相关。
 
-## Extensions and Comments
+## 扩展和评论
 
-Let's now consider a number of standard extensions to the LQ problem treated above.
+让我们现在考虑上述LQ问题的一些标准扩展。
 
-### Time-Varying Parameters
+### 时变参数
 
-In some settings, it can be desirable to allow $A, B, C, R$ and $Q$ to depend on $t$.
+在某些情况下，允许$A, B, C, R$和$Q$依赖于$t$可能是可取的。
 
-For the sake of simplicity, we've chosen not to treat this extension in our implementation given below.
+为了简单起见，我们在下面的实现中选择不处理这个扩展。
 
-However, the loss of generality is not as large as you might first imagine.
+然而，这种一般性的损失并不像你最初想象的那么大。
 
-In fact, we can tackle many models with time-varying parameters by suitable choice of state variables.
+事实上，我们可以通过适当选择状态变量来处理许多具有时变参数的模型。
 
-One illustration is given {ref}`below <lq_nsi>`.
+一个说明在{ref}`下面 <lq_nsi>`给出。
 
-For further examples and a more systematic treatment, see {cite}`HansenSargent2013`, section 2.4.
+要了解更多示例和更系统的处理方法，请参见{cite}`HansenSargent2013`第2.4节。
 
 (lq_cpt)=
-### Adding a Cross-Product Term
 
-In some LQ problems, preferences include a cross-product term $u_t' N x_t$, so that the objective function becomes
+### 添加交叉乘积项
+
+在某些LQ问题中，偏好包含一个交叉乘积项$u_t' N x_t$，使得目标函数变为
 
 ```{math}
 :label: lq_object_cp
@@ -811,9 +784,9 @@ In some LQ problems, preferences include a cross-product term $u_t' N x_t$, so t
 \right\}
 ```
 
-Our results extend to this case in a straightforward way.
+我们的结果可以直接扩展到这种情况。
 
-The sequence $\{P_t\}$ from {eq}`lq_pr` becomes
+{eq}`lq_pr`中的序列$\{P_t\}$变为
 
 ```{math}
 :label: lq_pr_cp
@@ -825,7 +798,7 @@ P_{t-1} = R - (\beta B' P_t A + N)'
 P_T = R_f
 ```
 
-The policies in {eq}`lq_oc` are modified to
+{eq}`lq_oc`中的策略修改为
 
 ```{math}
 :label: lq_oc_cp
@@ -835,18 +808,17 @@ u_t  = - F_t x_t
 F_t := (Q + \beta B' P_{t+1} B)^{-1} (\beta B' P_{t+1} A + N)
 ```
 
-The sequence $\{d_t\}$ is unchanged from {eq}`lq_dd`.
+序列$\{d_t\}$与{eq}`lq_dd`中保持不变。
 
-We leave interested readers to confirm these results (the calculations are long but not overly difficult).
+我们让感兴趣的读者自行验证这些结果（计算过程虽然冗长但并不特别困难）。
 
 (lq_ih)=
-### Infinite Horizon
+### 无限期限
 
 ```{index} single: LQ Control; Infinite Horizon
 ```
 
-Finally, we consider the infinite horizon case, with {ref}`cross-product term <lq_cpt>`, unchanged dynamics and
-objective function given by
+最后，我们考虑无限视界情况，带有{ref}`交叉项 <lq_cpt>`，动态方程不变，目标函数为
 
 ```{math}
 :label: lq_object_ih
@@ -857,19 +829,15 @@ objective function given by
 \right\}
 ```
 
-In the infinite horizon case, optimal policies can depend on time
-only if time itself is a component of the  state vector $x_t$.
+在无限视界情况下，最优策略只有在时间本身是状态向量$x_t$的一个分量时才会依赖于时间。
 
-In other words, there exists a fixed matrix $F$ such that $u_t = -
-F x_t$ for all $t$.
+换句话说，存在一个固定矩阵$F$，使得对所有$t$都有$u_t = -F x_t$。
 
-That decision rules are constant over time is intuitive --- after all, the decision-maker faces the
-same infinite horizon at every stage, with only the current state changing.
+决策规则随时间保持不变是直观的——毕竟，决策者在每个阶段都面临相同的无限视界，只是当前状态在变化。
 
-Not surprisingly, $P$ and $d$ are also constant.
+不出所料，$P$和$d$也是常数。
 
-The stationary matrix $P$ is the solution to the
-[discrete-time algebraic Riccati equation](https://en.wikipedia.org/wiki/Algebraic_Riccati_equation).
+稳态矩阵$P$是[离散时间代数黎卡提方程](https://en.wikipedia.org/wiki/Algebraic_Riccati_equation)的解。
 
 (riccati_equation)=
 ```{math}
@@ -880,21 +848,19 @@ P = R - (\beta B' P A + N)'
 \beta A' P A
 ```
 
-Equation {eq}`lq_pr_ih` is also called the *LQ Bellman equation*, and the map
-that sends a given $P$ into the right-hand side of {eq}`lq_pr_ih` is
-called the *LQ Bellman operator*.
+方程 {eq}`lq_pr_ih` 也被称为 *LQ 贝尔曼方程*，将给定的 $P$ 映射到 {eq}`lq_pr_ih` 右侧的映射被称为 *LQ 贝尔曼算子*。
 
-The stationary optimal policy for this model is
+这个模型的平稳最优策略是
 
 ```{math}
 :label: lq_oc_ih
 
 u  = - F x
-\quad \text{where} \quad
+\quad \text{其中} \quad
 F = (Q + \beta B' P B)^{-1} (\beta B' P A + N)
 ```
 
-The sequence $\{d_t\}$ from {eq}`lq_dd` is replaced by the constant value
+{eq}`lq_dd` 中的序列 $\{d_t\}$ 被常数值替代
 
 ```{math}
 :label: lq_dd_ih
@@ -903,37 +869,38 @@ d
 := \mathop{\mathrm{trace}}(C' P C) \frac{\beta}{1 - \beta}
 ```
 
-The state evolves according to the time-homogeneous process $x_{t+1} = (A - BF) x_t + C w_{t+1}$.
+状态按照时间齐次过程 $x_{t+1} = (A - BF) x_t + C w_{t+1}$ 演化。
 
-An example infinite horizon problem is treated {ref}`below <lqc_mwac>`.
+一个无限期问题的例子将在{ref}`下文 <lqc_mwac>` 中讨论。
 
 (lq_cert_eq)=
-### Certainty Equivalence
+### 确定性等价
 
-Linear quadratic control problems of the class discussed above have the property of *certainty equivalence*.
+上述类别的线性二次控制问题具有*确定性等价*的性质。
 
-By this, we mean that the optimal policy $F$ is not affected by the parameters in $C$, which specify the shock process.
+我们的意思是，最优策略 $F$ 不受指定冲击过程的参数 $C$ 的影响。
 
-This can be confirmed by inspecting {eq}`lq_oc_ih` or {eq}`lq_oc_cp`.
+这一点可以通过检查 {eq}`lq_oc_ih` 或 {eq}`lq_oc_cp` 来确认。
 
-It follows that we can ignore uncertainty when solving for optimal behavior, and plug it back in when examining optimal state dynamics.
+因此，在求解最优行为时我们可以忽略不确定性，而在研究最优状态动态时再将其纳入考虑。
 
-## Further Applications
+## 进一步应用
 
 (lq_nsi)=
-### Application 1: Age-Dependent Income Process
+### 应用1：与年龄相关的收入过程
 
-{ref}`Previously <lq_mfpa>` we studied a permanent income model that generated consumption smoothing.
+{ref}`此前 <lq_mfpa>` 我们研究了一个产生消费平滑的永久收入模型。
 
-One unrealistic feature of that model is the assumption that the mean of the random income process does not depend on the consumer's age.
+该模型一个不切实际的特点是假设随机收入过程的均值不依赖于消费者的年龄。
 
-A more realistic income profile is one that rises in early working life, peaks towards the middle and maybe declines toward the end of working life and falls more during retirement.
+一个更现实的收入曲线是在职业生涯早期上升，在中期达到顶峰，可能在后期下降，并在退休期间下降更多。
 
-In this section, we will model this rise and fall as a symmetric inverted "U" using a polynomial in age.
+在本节中，我们将使用年龄的多项式函数，将这种上升和下降模拟为一个对称的倒"U"形。
 
-As before, the consumer seeks to minimize
+和之前一样，消费者试图最小化
 
 ```{math}
+
 :label: lq_pip
 
 \mathbb E \,
@@ -942,17 +909,17 @@ As before, the consumer seeks to minimize
 \right\}
 ```
 
-subject to $a_{t+1} = (1 + r) a_t - c_t + y_t, \ t \geq 0$.
+满足约束条件 $a_{t+1} = (1 + r) a_t - c_t + y_t, \ t \geq 0$。
 
-For income we now take $y_t = p(t) + \sigma w_{t+1}$ where $p(t) := m_0 + m_1 t + m_2 t^2$.
+对于收入，我们现在取 $y_t = p(t) + \sigma w_{t+1}$，其中 $p(t) := m_0 + m_1 t + m_2 t^2$。
 
-(In {ref}`the next section <lq_nsi2>` we employ some tricks to implement a more sophisticated model.)
+(在{ref}`下一节 <lq_nsi2>`中，我们将使用一些技巧来实现一个更复杂的模型。)
 
-The coefficients $m_0, m_1, m_2$ are chosen such that $p(0)=0, p(T/2) = \mu,$ and $p(T)=0$.
+系数 $m_0, m_1, m_2$ 的选择使得 $p(0)=0, p(T/2) = \mu,$ 且 $p(T)=0$。
 
-You can confirm that the specification $m_0 = 0, m_1 = T \mu / (T/2)^2, m_2 = - \mu / (T/2)^2$ satisfies these constraints.
+你可以确认规格 $m_0 = 0, m_1 = T \mu / (T/2)^2, m_2 = - \mu / (T/2)^2$ 满足这些约束。
 
-To put this into an LQ setting, consider the budget constraint, which becomes
+要将其转化为LQ设定，考虑预算约束，它变为
 
 ```{math}
 :label: lq_hib
@@ -960,14 +927,13 @@ To put this into an LQ setting, consider the budget constraint, which becomes
 a_{t+1} = (1 + r) a_t - u_t - \bar c + m_1 t + m_2 t^2 + \sigma w_{t+1}
 ```
 
-The fact that $a_{t+1}$ is a linear function of
-$(a_t, 1, t, t^2)$ suggests taking these four variables as the state
-vector $x_t$.
+由于 $a_{t+1}$ 是 $(a_t, 1, t, t^2)$ 的线性函数，这提示我们将这四个变量作为状态向量 $x_t$。
 
-Once a good choice of state and control (recall $u_t = c_t - \bar c$)
-has been made, the remaining specifications fall into place relatively easily.
+一旦选定了合适的状态和控制（回想 $u_t = c_t - \bar c$）
 
-Thus, for the dynamics we set
+完成这些设置后，其余规格就相对容易确定了。
+
+因此，对于动态系统，我们设定
 
 ```{math}
 :label: lq_lowmc3
@@ -1013,11 +979,9 @@ C :=
 \right)
 ```
 
-If you expand the expression $x_{t+1} = A x_t + B u_t + C w_{t+1}$ using
-this specification, you will find that assets follow {eq}`lq_hib` as desired
-and that the other state variables also update appropriately.
+如果你使用这个规格展开表达式 $x_{t+1} = A x_t + B u_t + C w_{t+1}$，你会发现资产按照期望的方式遵循{eq}`lq_hib`，且其他状态变量也会适当更新。
 
-To implement preference specification {eq}`lq_pip` we take
+为了实现偏好规格{eq}`lq_pip`，我们取
 
 ```{math}
 :label: lq_4sp
@@ -1033,7 +997,8 @@ R :=
 0 & 0 & 0 & 0
 \end{array}
 \right)
-\quad \text{and} \quad
+
+\quad \text{和} \quad
 R_f :=
 \left(
 \begin{array}{cccc}
@@ -1045,34 +1010,32 @@ q & 0 & 0 & 0 \\
 \right)
 ```
 
-The next figure shows a simulation of consumption and assets computed using
-the `compute_sequence` method of `lqcontrol.py` with initial assets set to zero.
+下图显示了使用`lqcontrol.py`中的`compute_sequence`方法计算的消费和资产的模拟结果，初始资产设为零。
 
 (solution_lqc_ex1_fig)=
 ```{figure} /_static/lecture_specific/lqcontrol/solution_lqc_ex1.png
 
 ```
 
-Once again, smooth consumption is a dominant feature of the sample  paths.
+再次可以看到，平滑消费是样本路径的一个主要特征。
 
-The asset path exhibits dynamics consistent with standard life cycle theory.
+资产路径展现出与标准生命周期理论相一致的动态特征。
 
-{ref}`lqc_ex1` gives the full set of parameters used here and asks you to replicate the figure.
+{ref}`lqc_ex1`给出了此处使用的完整参数集，并要求你复现该图。
 
 (lq_nsi2)=
-### Application 2: A Permanent Income Model with Retirement
+### 应用2：包含退休的永久收入模型
 
-In the {ref}`previous application <lq_nsi>`, we generated income dynamics with an inverted U shape using polynomials and placed them in an LQ framework.
+在{ref}`前一个应用<lq_nsi>`中，我们使用多项式生成了一个倒U形的收入动态，并将其置于LQ框架中。
 
-It is arguably the case that this income process still contains unrealistic features.
+可以说，这个收入过程仍然包含一些不切实际的特征。
 
-A more common earning profile is where
+更常见的收入模式是
 
-1. income grows over working life, fluctuating around an increasing trend, with growth flattening off in later years
-1. retirement follows, with lower but relatively stable (non-financial) income
+1. 收入在工作生涯中增长，围绕着上升趋势波动，在晚年增长趋势趋于平缓
+1. 退休后，收入较低但相对稳定（非金融收入）
 
-Letting $K$ be the retirement date, we can express these income dynamics
-by
+令$K$为退休日期，我们可以用以下方式表达这些收入动态
 
 ```{math}
 :label: lq_cases
@@ -1084,73 +1047,69 @@ s                     & \quad \text{otherwise }
 \end{cases}
 ```
 
-Here
+这里
 
-* $p(t) := m_1 t + m_2 t^2$ with the coefficients $m_1, m_2$ chosen such that $p(K) = \mu$ and $p(0) = p(2K)=0$
-* $s$ is retirement income
+* $p(t) := m_1 t + m_2 t^2$，其中系数$m_1, m_2$的选择使得$p(K) = \mu$且$p(0) = p(2K)=0$
+* $s$是退休收入
 
-We suppose that preferences are unchanged and given by {eq}`lq_pio`.
+我们假设偏好保持不变，由{eq}`lq_pio`给出。
 
-The budget constraint is also unchanged and given by $a_{t+1} = (1 + r) a_t - c_t + y_t$.
+预算约束也保持不变，由$a_{t+1} = (1 + r) a_t - c_t + y_t$给出。
 
-Our aim is to solve this problem and simulate paths using the LQ techniques described in this lecture.
+我们的目标是解决这个问题，并使用本讲中描述的LQ技术模拟路径。
 
-In fact, this is a nontrivial problem, as the kink in the dynamics {eq}`lq_cases` at $K$ makes it very difficult to express the law of motion as a fixed-coefficient linear system.
+事实上，这是一个不简单的问题，因为在 $K$ 处动态方程{eq}`lq_cases`的拐点使得很难将运动规律表示为固定系数的线性系统。
 
-However, we can still use our LQ methods here by suitably linking two-component LQ problems.
+然而，我们仍然可以通过适当地连接两个组成部分的LQ问题来使用我们的LQ方法。
 
-These two LQ problems describe the consumer's behavior during her working life (`lq_working`) and retirement (`lq_retired`).
+这两个LQ问题分别描述了消费者在工作期间(`lq_working`)和退休期间(`lq_retired`)的行为。
 
-(This is possible because, in the two separate periods of life, the respective income processes
-[polynomial trend and constant] each fit the LQ framework.)
+(这是可行的，因为在生命的这两个不同阶段，各自的收入过程[多项式趋势和常数]都符合LQ框架。)
 
-The basic idea is that although the whole problem is not a single time-invariant LQ problem, it is
-still a dynamic programming problem, and hence we can use appropriate Bellman equations at
-every stage.
+基本思路是，尽管整个问题不是单一的时不变LQ问题，但它仍然是一个动态规划问题，因此我们可以在每个阶段使用适当的贝尔曼方程。
 
-Based on this logic, we can
+基于这个逻辑，我们可以：
 
-1. solve `lq_retired` by the usual backward induction procedure, iterating back to the start of retirement.
-1. take the start-of-retirement value function generated by this process, and use it as  the terminal condition $R_f$ to feed into the `lq_working` specification.
-1. solve `lq_working` by backward induction from this choice of $R_f$, iterating back to the start of working life.
+1. 通过常规的向后归纳程序求解`lq_retired`，从退休结束时向退休开始时迭代。
 
-This process gives the entire life-time sequence of value functions and optimal policies.
+1. 将通过此过程生成的退休初始值函数作为终端条件 $R_f$，输入到 `lq_working` 规范中。
+1. 从这个选定的 $R_f$ 开始，通过向后归纳法求解 `lq_working`，一直迭代回工作生涯开始时。
 
-The next figure shows one simulation based on this procedure.
+这个过程给出了整个生命周期的值函数序列和最优策略。
+
+下图显示了基于这个程序的一个模拟结果。
 
 (solution_lqc_ex2_fig)=
 ```{figure} /_static/lecture_specific/lqcontrol/solution_lqc_ex2.png
 
 ```
 
-The full set of parameters used in the simulation is discussed in {ref}`lqc_ex2`, where you are asked to replicate the figure.
+模拟中使用的完整参数集在{ref}`lqc_ex2`中讨论，那里要求你重现这个图形。
 
-Once again, the dominant feature observable in the simulation is consumption
-smoothing.
+再次强调，在模拟中可以观察到的主要特征是消费平滑。
 
-The asset path fits well with standard life cycle theory, with dissaving early
-in life followed by later saving.
+资产路径与标准生命周期理论相符，表现为生命早期的负储蓄，随后转为储蓄。
 
-Assets peak at retirement and subsequently decline.
+资产在退休时达到峰值，之后逐渐下降。
 
 (lqc_mwac)=
-### Application 3: Monopoly with Adjustment Costs
+### 应用3：具有调整成本的垄断
 
-Consider a monopolist facing stochastic inverse demand function
+考虑一个面临随机逆需求函数的垄断者
 
 $$
 p_t = a_0 - a_1 q_t + d_t
 $$
 
-Here $q_t$ is output, and the demand shock $d_t$ follows
+这里$q_t$是产量，需求冲击$d_t$遵循
 
 $$
 d_{t+1} = \rho d_t + \sigma w_{t+1}
 $$
 
-where $\{w_t\}$ is IID and standard normal.
+其中$\{w_t\}$是独立同分布的标准正态分布。
 
-The monopolist maximizes the expected discounted sum of present and future profits
+垄断者最大化当前和未来利润的期望贴现和
 
 ```{math}
 :label: lq_object_mp
@@ -1164,36 +1123,35 @@ The monopolist maximizes the expected discounted sum of present and future profi
 \pi_t := p_t q_t - c q_t - \gamma (q_{t+1} - q_t)^2
 ```
 
-Here
+这里
 
-* $\gamma (q_{t+1} - q_t)^2$ represents adjustment costs
-* $c$ is average cost of production
+* $\gamma (q_{t+1} - q_t)^2$表示调整成本
+* $c$是平均生产成本
 
-This can be formulated as an LQ problem and then solved and simulated,
-but first let's study the problem and try to get some intuition.
+这可以被表述为一个LQ问题，然后求解和模拟，
+但首先让我们研究这个问题并试图获得一些直观认识。
 
-One way to start thinking about the problem is to consider what would happen
-if $\gamma = 0$.
+思考这个问题的一种方式是考虑如果$\gamma = 0$会发生什么。
 
-Without adjustment costs there is no intertemporal trade-off, so the
-monopolist will choose output to maximize current profit in each period.
+没有调整成本就没有跨期权衡，所以
+垄断者将在每个时期选择产量以最大化当期利润。
 
-It's not difficult to show that profit-maximizing output is
+不难证明利润最大化的产出为
 
 $$
 \bar q_t := \frac{a_0 - c + d_t}{2 a_1}
 $$
 
-In light of this discussion, what we might expect for general $\gamma$ is that
+根据这个讨论，对于一般的$\gamma$值，我们可以预期：
 
-* if $\gamma$ is close to zero, then $q_t$ will track the time path of $\bar q_t$ relatively closely.
-* if $\gamma$ is larger, then $q_t$ will be smoother than $\bar q_t$, as the monopolist seeks to avoid adjustment costs.
+* 如果$\gamma$接近零，那么$q_t$会相对紧密地跟踪$\bar q_t$的时间路径。
+* 如果$\gamma$较大，那么$q_t$会比$\bar q_t$更平滑，因为垄断者试图避免调整成本。
 
-This intuition turns out to be correct.
+这种直觉是正确的。
 
-The following figures show simulations produced by solving the corresponding LQ problem.
+以下图表显示了通过求解相应的LQ问题所产生的模拟结果。
 
-The only difference in parameters across the figures is the size of $\gamma$
+这些图表之间的参数唯一区别是$\gamma$的大小
 
 ```{figure} /_static/lecture_specific/lqcontrol/solution_lqc_ex3_g1.png
 
@@ -1207,86 +1165,80 @@ The only difference in parameters across the figures is the size of $\gamma$
 
 ```
 
-To produce these figures we converted the monopolist problem into an LQ problem.
+为了生成这些图表，我们将垄断者问题转换为LQ问题。
 
-The key to this conversion is to choose the right state --- which can be a bit of an art.
+这种转换的关键在于选择正确的状态 --- 这有点像一门艺术。
 
-Here we take $x_t = (\bar q_t \;\, q_t \;\, 1)'$, while the control is chosen as $u_t = q_{t+1} - q_t$.
+这里我们取$x_t = (\bar q_t \;\, q_t \;\, 1)'$，而控制变量选择为$u_t = q_{t+1} - q_t$。
 
-We also manipulated the profit function slightly.
+我们还对利润函数做了轻微调整。
 
-In {eq}`lq_object_mp`, current profits are $\pi_t := p_t q_t - c q_t - \gamma (q_{t+1} - q_t)^2$.
+在{eq}`lq_object_mp`中，当期利润为$\pi_t := p_t q_t - c q_t - \gamma (q_{t+1} - q_t)^2$。
 
-Let's now replace $\pi_t$ in {eq}`lq_object_mp` with $\hat \pi_t := \pi_t - a_1 \bar q_t^2$.
+现在让我们在{eq}`lq_object_mp`中用$\hat \pi_t := \pi_t - a_1 \bar q_t^2$替换$\pi_t$。
 
-This makes no difference to the solution, since $a_1 \bar q_t^2$ does not depend on the controls.
+这对解决方案没有影响，因为$a_1 \bar q_t^2$不依赖于控制变量。
 
-(In fact, we are just adding a constant term to {eq}`lq_object_mp`, and optimizers are not affected by constant terms.)
+（实际上，我们只是在{eq}`lq_object_mp`中添加了一个常数项，而优化器不受常数项影响。）
 
-The reason for making this substitution is that, as you will be able to
-verify, $\hat \pi_t$ reduces to the simple quadratic
+进行这种替换的原因是，正如你将能够验证的那样，$\hat \pi_t$可以简化为简单的二次形式
 
 $$
 \hat \pi_t = -a_1 (q_t - \bar q_t)^2 - \gamma u_t^2
 $$
 
-After negation to convert to a minimization problem, the objective becomes
+在转换为最小化问题后（通过取负），目标函数变为
 
 ```{math}
 :label: lq_object_mp2
 
 \min
 \mathbb E \,
-    \sum_{t=0}^{\infty} \beta^t
+
+\sum_{t=0}^{\infty} \beta^t
 \left\{
     a_1 ( q_t - \bar q_t)^2 + \gamma u_t^2
 \right\}
 ```
 
-It's now relatively straightforward to find $R$ and $Q$ such that
-{eq}`lq_object_mp2` can be written as {eq}`lq_object_ih`.
+现在找到 $R$ 和 $Q$ 使得{eq}`lq_object_mp2`可以写成{eq}`lq_object_ih`的形式相对简单。
 
-Furthermore, the matrices $A, B$ and $C$ from {eq}`lq_lom`
-can be found by writing down the dynamics of each element of the state.
+此外，通过写出状态每个元素的动态方程，可以找到{eq}`lq_lom`中的矩阵 $A, B$ 和 $C$。
 
-{ref}`lqc_ex3` asks you to complete this process, and reproduce the preceding figures.
+{ref}`lqc_ex3`要求你完成这个过程，并重现前面的图表。
 
-## Exercises
+## 练习
 
 
 ```{exercise}
 :label: lqc_ex1
 
-Replicate the figure with polynomial income {ref}`shown above <solution_lqc_ex1_fig>`.
+复现上面{ref}`所示<solution_lqc_ex1_fig>`的多项式收入图。
 
-The parameters are $r = 0.05, \beta = 1 / (1 + r), \bar c = 1.5,  \mu = 2, \sigma = 0.15, T = 50$ and $q = 10^4$.
+参数为 $r = 0.05, \beta = 1 / (1 + r), \bar c = 1.5,  \mu = 2, \sigma = 0.15, T = 50$ 和 $q = 10^4$。
 ```
 
 ```{solution-start} lqc_ex1
 :class: dropdown
 ```
 
-Here’s one solution.
+这是一个解决方案。
 
-We use some fancy plot commands to get a certain style — feel free to
-use simpler ones.
+我们使用一些高级绘图命令来获得特定的样式 — 你可以使用更简单的命令。
 
-The model is an LQ permanent income / life-cycle model with hump-shaped
-income
+这个模型是一个具有驼峰形收入的LQ永久收入/生命周期模型
 
 $$
 y_t = m_1 t + m_2 t^2 + \sigma w_{t+1}
 $$
 
-where $\{w_t\}$ is IID $N(0, 1)$ and the coefficients
-$m_1$ and $m_2$ are chosen so that
-$p(t) = m_1 t + m_2 t^2$ has an inverted U shape with
+其中 $\{w_t\}$ 是独立同分布的 $N(0, 1)$ 随机变量，系数 $m_1$ 和 $m_2$ 的选择使得 $p(t) = m_1 t + m_2 t^2$ 呈现倒 U 形，且满足：
 
-- $p(0) = 0, p(T/2) = \mu$, and
+- $p(0) = 0, p(T/2) = \mu$，以及
 - $p(T) = 0$
 
 ```{code-cell} python3
-# Model parameters
+# 模型参数
 r = 0.05
 β = 1/(1 + r)
 T = 50
@@ -1297,7 +1249,7 @@ q = 1e4
 m1 = T * (μ/(T/2)**2)
 m2 = -(μ/(T/2)**2)
 
-# Formulate as an LQ problem
+# 构建为 LQ 问题
 Q = 1
 R = np.zeros((4, 4))
 Rf = np.zeros((4, 4))
@@ -1315,19 +1267,19 @@ C = [[σ],
      [0],
      [0]]
 
-# Compute solutions and simulate
+# 计算解并模拟
 lq = LQ(Q, R, A, B, C, beta=β, T=T, Rf=Rf)
 x0 = (0, 1, 0, 0)
 xp, up, wp = lq.compute_sequence(x0)
 
-# Convert results back to assets, consumption and income
-ap = xp[0, :]               # Assets
-c = up.flatten() + c_bar    # Consumption
+# 将结果转换回资产、消费和收入
+ap = xp[0, :]               # 资产
+c = up.flatten() + c_bar    # 消费
 time = np.arange(1, T+1)
-income = σ * wp[0, 1:] + m1 * time + m2 * time**2  # Income
+income = σ * wp[0, 1:] + m1 * time + m2 * time**2  # 收入
 
 
-# Plot results
+# 绘制结果
 n_rows = 2
 fig, axes = plt.subplots(n_rows, 1, figsize=(12, 10))
 
@@ -1337,16 +1289,16 @@ bbox = (0., 1.02, 1., .102)
 legend_args = {'bbox_to_anchor': bbox, 'loc': 3, 'mode': 'expand'}
 p_args = {'lw': 2, 'alpha': 0.7}
 
-axes[0].plot(range(1, T+1), income, 'g-', label="non-financial income",
+axes[0].plot(range(1, T+1), income, 'g-', label="非金融收入",
             **p_args)
-axes[0].plot(range(T), c, 'k-', label="consumption", **p_args)
+axes[0].plot(range(T), c, 'k-', label="消费", **p_args)
 
-axes[1].plot(range(T+1), ap.flatten(), 'b-', label="assets", **p_args)
+axes[1].plot(range(T+1), ap.flatten(), 'b-', label="资产", **p_args)
 axes[1].plot(range(T+1), np.zeros(T+1), 'k-')
 
 for ax in axes:
     ax.grid()
-    ax.set_xlabel('Time')
+    ax.set_xlabel('时间')
     ax.legend(ncol=2, **legend_args)
 
 plt.show()
@@ -1359,34 +1311,32 @@ plt.show()
 :label: lqc_ex2
 ```
 
-Replicate the figure on work and retirement {ref}`shown above <solution_lqc_ex2_fig>`.
+复现上面{ref}`所示的工作和退休图表 <solution_lqc_ex2_fig>`。
 
-The parameters are $r = 0.05, \beta = 1 / (1 + r), \bar c = 4,  \mu = 4, \sigma = 0.35, K = 40, T = 60, s = 1$ and $q = 10^4$.
+参数为 $r = 0.05, \beta = 1 / (1 + r), \bar c = 4,  \mu = 4, \sigma = 0.35, K = 40, T = 60, s = 1$ 和 $q = 10^4$。
 
-To understand the overall procedure, carefully read the section containing that figure.
+要理解整体过程,请仔细阅读包含该图表的章节。
 
 ```{hint}
 :class: dropdown
 
-First, in order to make our approach work, we must ensure that both LQ problems have the same state variables and control.
+首先,为了使我们的方法有效,我们必须确保两个LQ问题具有相同的状态变量和控制变量。
 
-As with previous applications, the control can be set to $u_t = c_t - \bar c$.
+与之前的应用一样,控制变量可以设置为 $u_t = c_t - \bar c$。
 
-For `lq_working`, $x_t, A, B, C$ can be chosen as in {eq}`lq_lowmc3`.
+对于`lq_working`, $x_t, A, B, C$ 可以按照{eq}`lq_lowmc3`中的方式选择。
 
-* Recall that $m_1, m_2$ are chosen so that $p(K) = \mu$ and $p(2K)=0$.
+* 请记住,选择 $m_1, m_2$ 使得 $p(K) = \mu$ 且 $p(2K)=0$。
 
-For `lq_retired`, use the same definition of $x_t$ and $u_t$, but modify $A, B, C$ to correspond to constant income $y_t = s$.
+对于`lq_retired`,使用相同的 $x_t$ 和 $u_t$ 定义,但修改 $A, B, C$ 以对应固定收入 $y_t = s$。
 
-For `lq_retired`, set preferences as in {eq}`lq_4sp`.
+对于`lq_retired`,按照{eq}`lq_4sp`设置偏好。
 
-For `lq_working`, preferences are the same, except that $R_f$ should
-be replaced by the final value function that emerges from iterating `lq_retired`
-back to the start of retirement.
+对于`lq_working`,偏好相同,除了 $R_f$ 应该
 
-With some careful footwork, the simulation can be generated by patching
-together the simulations from these two separate models.
-```
+被退休时期通过迭代`lq_retired`得到的最终值函数所替代。
+
+通过仔细处理,可以将这两个独立模型的模拟结果拼接在一起生成完整的模拟。
 
 ```{exercise-end}
 ```
@@ -1395,14 +1345,12 @@ together the simulations from these two separate models.
 :class: dropdown
 ```
 
-This is a permanent income / life-cycle model with polynomial growth in
-income over working life followed by a fixed retirement income.
+这是一个永久收入/生命周期模型,工作期间收入呈多项式增长,退休后收入固定。
 
-The model is solved by combining two LQ programming problems as described in
-the lecture.
+该模型通过组合两个LQ规划问题来求解,正如讲座中所述。
 
 ```{code-cell} python3
-# Model parameters
+# 模型参数
 r = 0.05
 β = 1/(1 + r)
 T = 60
@@ -1415,7 +1363,7 @@ s = 1
 m1 = 2 * μ/K
 m2 = -μ/K**2
 
-# Formulate LQ problem 1 (retirement)
+# 构建LQ问题1(退休期)
 Q = 1
 R = np.zeros((4, 4))
 Rf = np.zeros((4, 4))
@@ -1433,14 +1381,14 @@ C = [[0],
      [0],
      [0]]
 
-# Initialize LQ instance for retired agent
+# 为退休人员初始化LQ实例
 lq_retired = LQ(Q, R, A, B, C, beta=β, T=T-K, Rf=Rf)
-# Iterate back to start of retirement, record final value function
+# 迭代回退休开始时,记录最终值函数
 for i in range(T-K):
     lq_retired.update_values()
 Rf2 = lq_retired.P
 
-# Formulate LQ problem 2 (working life)
+# 构建LQ问题2(工作期)
 R = np.zeros((4, 4))
 A = [[1 + r, -c_bar, m1, m2],
      [0,          1,  0,  0],
@@ -1455,28 +1403,28 @@ C = [[σ],
      [0],
      [0]]
 
-# Set up working life LQ instance with terminal Rf from lq_retired
+# 使用lq_retired的终值Rf设置工作期LQ实例
 lq_working = LQ(Q, R, A, B, C, beta=β, T=K, Rf=Rf2)
 
-# Simulate working state / control paths
+# 模拟工作期状态/控制路径
 x0 = (0, 1, 0, 0)
 xp_w, up_w, wp_w = lq_working.compute_sequence(x0)
-# Simulate retirement paths (note the initial condition)
+# 模拟退休期路径(注意初始条件)
 xp_r, up_r, wp_r = lq_retired.compute_sequence(xp_w[:, K])
 
-# Convert results back to assets, consumption and income
+# 将结果转换回资产、消费和收入
 xp = np.column_stack((xp_w, xp_r[:, 1:]))
-assets = xp[0, :]                  # Assets
+assets = xp[0, :]                  # 资产
 
 up = np.column_stack((up_w, up_r))
-c = up.flatten() + c_bar           # Consumption
+c = up.flatten() + c_bar           # 消费
 
 time = np.arange(1, K+1)
-income_w = σ * wp_w[0, 1:K+1] + m1 * time + m2 * time**2  # Income
+income_w = σ * wp_w[0, 1:K+1] + m1 * time + m2 * time**2  # 收入
 income_r = np.full(T-K, s)
 income = np.concatenate((income_w, income_r))
 
-# Plot results
+# 绘制结果
 n_rows = 2
 fig, axes = plt.subplots(n_rows, 1, figsize=(12, 10))
 
@@ -1486,16 +1434,16 @@ bbox = (0., 1.02, 1., .102)
 legend_args = {'bbox_to_anchor': bbox, 'loc': 3, 'mode': 'expand'}
 p_args = {'lw': 2, 'alpha': 0.7}
 
-axes[0].plot(range(1, T+1), income, 'g-', label="non-financial income",
+axes[0].plot(range(1, T+1), income, 'g-', label="非金融收入",
             **p_args)
-axes[0].plot(range(T), c, 'k-', label="consumption", **p_args)
+axes[0].plot(range(T), c, 'k-', label="消费", **p_args)
 
-axes[1].plot(range(T+1), assets, 'b-', label="assets", **p_args)
+axes[1].plot(range(T+1), assets, 'b-', label="资产", **p_args)
 axes[1].plot(range(T+1), np.zeros(T+1), 'k-')
 
 for ax in axes:
     ax.grid()
-    ax.set_xlabel('Time')
+    ax.set_xlabel('时间')
     ax.legend(ncol=2, **legend_args)
 
 plt.show()
@@ -1507,40 +1455,37 @@ plt.show()
 ```{exercise}
 :label: lqc_ex3
 
-Reproduce the figures from the monopolist application {ref}`given above <lqc_mwac>`.
+复现上述垄断者应用中的图形 {ref}`given above <lqc_mwac>`。
 
-For parameters, use $a_0 = 5, a_1 = 0.5, \sigma = 0.15, \rho = 0.9,
-\beta = 0.95$ and $c = 2$, while $\gamma$ varies between 1 and 50
-(see figures).
+参数设置为 $a_0 = 5, a_1 = 0.5, \sigma = 0.15, \rho = 0.9,
+\beta = 0.95$ 和 $c = 2$，而 $\gamma$ 在1到50之间变化
+(参见图形)。
 ```
 
 ```{solution-start} lqc_ex3
 :class: dropdown
 ```
 
-The first task is to find the matrices $A, B, C, Q, R$ that define
-the LQ problem.
+第一个任务是找到定义LQ问题的矩阵 $A, B, C, Q, R$。
 
-Recall that $x_t = (\bar q_t \;\, q_t \;\, 1)'$, while
-$u_t = q_{t+1} - q_t$.
+回顾一下 $x_t = (\bar q_t \;\, q_t \;\, 1)'$，而
+$u_t = q_{t+1} - q_t$。
 
-Letting $m_0 := (a_0 - c) / 2a_1$ and $m_1 := 1 / 2 a_1$, we
-can write $\bar q_t = m_0 + m_1 d_t$, and then, with some
-manipulation
+令 $m_0 := (a_0 - c) / 2a_1$ 且 $m_1 := 1 / 2 a_1$，我们
+可以写成 $\bar q_t = m_0 + m_1 d_t$，然后经过一些
+推导
 
 $$
 \bar q_{t+1} = m_0 (1 - \rho) + \rho \bar q_t + m_1 \sigma w_{t+1}
 $$
 
-By our definition of $u_t$, the dynamics of $q_t$ are
-$q_{t+1} = q_t + u_t$.
+根据我们对 $u_t$ 的定义，$q_t$ 的动态方程为
+$q_{t+1} = q_t + u_t$。
 
-Using these facts you should be able to build the correct
-$A, B, C$ matrices (and then check them against those found in the
-solution code below).
+使用这些事实，你应该能够构建正确的
+$A, B, C$ 矩阵（然后与下面解决方案代码中的矩阵进行对照）。
 
-Suitable $R, Q$ matrices can be found by inspecting the objective
-function, which we repeat here for convenience:
+通过检查目标函数可以找到合适的 $R, Q$ 矩阵，为方便起见，我们在此重复该目标函数：
 
 $$
 \min
@@ -1551,10 +1496,10 @@ $$
 \right\}
 $$
 
-Our solution code is
+我们的解决方案代码如下：
 
 ```{code-cell} python3
-# Model parameters
+# 模型参数
 a0 = 5
 a1 = 0.5
 σ = 0.15
@@ -1564,11 +1509,11 @@ a1 = 0.5
 c = 2
 T = 120
 
-# Useful constants
+# 有用的常数
 m0 = (a0-c)/(2 * a1)
 m1 = 1/(2 * a1)
 
-# Formulate LQ problem
+# 构建LQ问题
 Q = γ
 R = [[ a1, -a1,  0],
      [-a1,  a1,  0],
@@ -1586,29 +1531,30 @@ C = [[m1 * σ],
 
 lq = LQ(Q, R, A, B, C=C, beta=β)
 
-# Simulate state / control paths
+# 模拟状态/控制路径
 x0 = (m0, 2, 1)
 xp, up, wp = lq.compute_sequence(x0, ts_length=150)
 q_bar = xp[0, :]
 q = xp[1, :]
 
-# Plot simulation results
+# 绘制模拟结果
 fig, ax = plt.subplots(figsize=(10, 6.5))
 
-# Some fancy plotting stuff -- simplify if you prefer
+# 一些复杂的绘图设置 -- 如果你愿意可以简化
 bbox = (0., 1.01, 1., .101)
 legend_args = {'bbox_to_anchor': bbox, 'loc': 3, 'mode': 'expand'}
 p_args = {'lw': 2, 'alpha': 0.6}
 
 time = range(len(q))
-ax.set(xlabel='Time', xlim=(0, max(time)))
+ax.set(xlabel='时间', xlim=(0, max(time)))
 ax.plot(time, q_bar, 'k-', lw=2, alpha=0.6, label=r'$\bar q_t$')
 ax.plot(time, q, 'b-', lw=2, alpha=0.6, label='$q_t$')
 ax.legend(ncol=2, **legend_args)
-s = f'dynamics with $\gamma = {γ}$'
+s = f'动态过程，其中 $\gamma = {γ}$'
 ax.text(max(time) * 0.6, 1 * q_bar.max(), s, fontsize=14)
 plt.show()
 ```
 
 ```{solution-end}
 ```
+

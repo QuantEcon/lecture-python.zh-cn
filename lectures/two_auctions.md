@@ -11,157 +11,149 @@ kernelspec:
   name: python3
 ---
 
-# First-Price and Second-Price Auctions
+# 一价和二价拍卖
 
-This lecture is designed to set the stage for a subsequent lecture about [Multiple Good Allocation Mechanisms](https://python.quantecon.org/house_auction.html)
+本讲座旨在为后续关于[多商品分配机制](https://python.quantecon.org/house_auction.html)的讲座做铺垫。
 
-In that lecture, a planner or auctioneer simultaneously allocates several goods to set of people.
+在那个讲座中，规划者或拍卖人同时将多个商品分配给一组人。
 
-In the present lecture, a single good is allocated to one person within a set of people.
+在本讲座中，我们将讨论如何将单个商品分配给一组人中的一个人。
 
+我们将学习并模拟两种经典的拍卖方式：
 
-Here  we'll learn about and simulate two classic auctions :
+* 第一价格密封投标拍卖(FPSB)
+* 由William Vickrey创建的第二价格密封投标拍卖(SPSB) {cite}`Vickrey_61`
 
-* a First-Price Sealed-Bid Auction (FPSB)
-* a Second-Price Sealed-Bid Auction (SPSB) created by William Vickrey {cite}`Vickrey_61`
+我们还将学习并应用：
 
-We'll also learn about and apply a
+* 收益等价定理
 
-* Revenue Equivalent Theorem
-
-
-We recommend watching this video about second price auctions by Anders Munk-Nielsen:
+我们建议观看Anders Munk-Nielsen关于第二价格拍卖的视频：
 
 ```{youtube} qwWk_Bqtue8
 ```
 
-
-and
-
+以及
 
 ```{youtube} eYTGQCGpmXI
 ```
 
-Anders Munk-Nielsen put his code [on GitHub](https://github.com/GamEconCph/Lectures-2021/tree/main/Bayesian%20Games).
+Anders Munk-Nielsen 将他的代码放在了[GitHub](https://github.com/GamEconCph/Lectures-2021/tree/main/Bayesian%20Games)上。
 
-Much of our  Python code below is based on his.
+我们下面的大部分Python代码都基于他的代码。
 
 
 
 
 +++
 
-##  First-Price Sealed-Bid Auction (FPSB)
+## 第一价格密封拍卖(FPSB)
 
 +++
 
-**Protocols:**
+**规则：**
 
-* A single good is auctioned.
-* Prospective buyers  simultaneously submit sealed bids.
-* Each bidder knows only his/her own bid.
-* The good is allocated to the person who submits the highest bid.
-* The winning bidder pays price she  has bid.
-
-
-**Detailed Setting:**
-
-There are $n>2$ prospective buyers named $i = 1, 2, \ldots, n$.
-
-Buyer $i$  attaches value $v_i$ to the good being sold.
-
-Buyer $i$ wants to maximize the expected value of her **surplus** defined as $v_i - p$, where
-$p$ is the price that she pays, conditional on her winning the auction.
-
-Evidently,
-
-- If $i$ bids exactly $v_i$, she pays what she thinks it is worth and gathers no surplus value.
-- Buyer $i$ will never want to bid more than $v_i$.
-- If buyer $i$ bids $b < v_i$ and wins the auction, then she gathers surplus value $b - v_i > 0$.
-- If buyer $i$ bids $b < v_i$ and someone else bids more than $b$, buyer $i$ loses the auction and gets no surplus value.
-- To proceed, buyer $i$ wants to know the probability that she wins the auction as a function of her bid $v_i$
-   - this requires that she know a probability distribution of bids $v_j$ made by  prospective buyers $j \neq i$
-- Given her idea about that probability distribution, buyer $i$ wants to set a bid that maximizes the mathematical expectation of her surplus value.
+* 拍卖一件商品。
+* 潜在买家同时提交密封投标。
+* 每个投标者只知道自己的投标。
+* 商品分配给出价最高的人。
+* 中标者支付其投标价格。
 
 
-Bids are sealed, so no bidder knows bids submitted by other prospective buyers.
+**详细设定：**
 
-This means that bidders are in effect participating in  a game in which players do not know  **payoffs** of  other players.
+有$n>2$个潜在买家，编号为$i = 1, 2, \ldots, n$。
 
-This is   a **Bayesian game**, a Nash equilibrium of which is called a **Bayesian Nash equilibrium**.
+买家$i$对被拍卖商品的估值为$v_i$。
 
-To complete the specification of the situation, we'll  assume that  prospective buyers' valuations are independently and identically distributed according to a probability distribution that is known by all bidders.
+买家$i$想要最大化她的预期**剩余价值**，定义为$v_i - p$，其中$p$是她在赢得拍卖的情况下需要支付的价格。
 
-Bidder optimally chooses to bid less than $v_i$.
+显然，
 
-### Characterization of FPSB Auction
+- 如果$i$的出价恰好是$v_i$，她支付的正是她认为物品值得的价格，不会获得任何剩余价值。
+- 买家$i$永远不会想要出价高于$v_i$。
 
-A FPSB auction has a unique symmetric Bayesian Nash Equilibrium.
+- 如果买家 $i$ 出价 $b < v_i$ 并赢得拍卖，她获得的剩余价值为 $b - v_i > 0$。
+- 如果买家 $i$ 出价 $b < v_i$ 而其他人出价高于 $b$，买家 $i$ 就会输掉拍卖且没有剩余价值。
+- 要继续进行，买家 $i$ 需要知道她的出价 $v_i$ 作为函数时赢得拍卖的概率
+   - 这要求她知道其他潜在买家 $j \neq i$ 的出价 $v_j$ 的概率分布
+- 根据她对该概率分布的认知，买家 $i$ 希望设定一个能最大化其剩余价值数学期望的出价。
 
-The optimal  bid of buyer $i$ is
+出价是密封的，所以任何竞标者都不知道其他潜在买家提交的出价。
+
+这意味着竞标者实际上参与的是一个玩家不知道其他玩家**收益**的博弈。
+
+这是一个**贝叶斯博弈**，其纳什均衡被称为**贝叶斯纳什均衡**。
+
+为了完整描述这种情况，我们假设潜在买家的估值是独立且同分布的，其概率分布为所有投标者所知。
+
+投标者会选择低于$v_i$的最优投标价格。
+
+### 一价密封拍卖的特征
+
+一价密封拍卖具有唯一的对称贝叶斯纳什均衡。
+
+买家$i$的最优投标是
 
 $$
 \mathbf{E}[y_{i} | y_{i} < v_{i}]
 $$ (eq:optbid1)
 
-where $v_{i}$ is  the valuation of bidder $i$ and  $y_{i}$ is the maximum valuation of all other bidders:
+其中$v_{i}$是投标者$i$的估值，$y_{i}$是所有其他投标者的最高估值：
 
 $$
 y_{i} = \max_{j \neq i} v_{j}
 $$ (eq:optbid2)
 
-
-
-A proof for this assertion is available  at the [Wikepedia page](https://en.wikipedia.org/wiki/Vickrey_auction) about Vickrey auctions
+关于这个论断的证明可以在维基百科的[Vickrey拍卖页面](https://en.wikipedia.org/wiki/Vickrey_auction)找到
 
 +++
 
-## Second-Price Sealed-Bid Auction (SPSB)
+## 二价密封拍卖(SPSB)
 
 +++
 
-**Protocols:** In a  second-price sealed-bid (SPSB) auction,  the winner pays the second-highest bid.
+**规则：**在二价密封拍卖(SPSB)中，赢家支付第二高的投标价格。
 
-## Characterization of SPSB Auction
+## 二价密封拍卖的特征
 
-In a  SPSB auction  bidders optimally choose to bid their  values.
+在SPSB拍卖中，竞标者最优选择是按其真实价值出价。
 
-Formally, a dominant strategy profile in a SPSB auction with a single, indivisible item has each bidder  bidding its  value.
+形式上，在单一不可分物品的SPSB拍卖中，占优策略组合是每个竞标者按其价值出价。
 
-A proof is provided at [the Wikepedia
-        page](https://en.wikipedia.org/wiki/Vickrey_auction) about Vickrey auctions
-
-+++
-
-## Uniform Distribution of Private Values
+关于Vickrey拍卖的证明可在[维基百科页面](https://en.wikipedia.org/wiki/Vickrey_auction)找到
 
 +++
 
-We assume valuation $v_{i}$  of bidder $i$ is distributed $v_{i} \stackrel{\text{i.i.d.}}{\sim} U(0,1)$.
-
-Under this assumption, we can analytically compute probability  distributions of  prices bid in both  FPSB and SPSB.
-
-We'll  simulate outcomes and, by using  a law of large numbers, verify that the simulated outcomes agree with analytical ones.
-
-We can use our  simulation to illustrate   a  **Revenue Equivalence Theorem** that asserts that on average first-price and second-price sealed bid auctions  provide a seller the same revenue.
-
-To read about the revenue equivalence theorem, see [this Wikepedia page](https://en.wikipedia.org/wiki/Revenue_equivalence)
+## 私人价值的均匀分布
 
 +++
 
-##  Setup
+我们假设竞标者$i$的估值$v_{i}$服从分布$v_{i} \stackrel{\text{i.i.d.}}{\sim} U(0,1)$。
+
+在这个假设下，我们可以分析计算FPSB和SPSB中出价的概率分布。
+
+我们将模拟结果，并通过大数定律验证模拟结果与分析结果一致。
+
+我们可以用我们的模拟来说明**收益等价定理**，该定理断言平均而言，一价和二价密封拍卖为卖家提供相同的收益。
+
+要了解收入等价定理，请参阅[此维基百科页面](https://en.wikipedia.org/wiki/Revenue_equivalence)
 
 +++
 
-There are $n$ bidders.
+## 设置
 
-Each bidder knows that there are $n-1$ other bidders.
++++
 
-## First price sealed bid auction
+有 $n$ 个投标人。
 
-An optimal bid  for bidder $i$ in a **FPSB**  is described by equations {eq}`eq:optbid1` and {eq}`eq:optbid2`.
+每个投标人都知道有 $n-1$ 个其他投标人。
 
-When bids are i.i.d. draws from a uniform distribution, the CDF of $y_{i}$ is
+## 第一价格密封投标拍卖
+
+投标人 $i$ 在**第一价格密封投标拍卖**中的最优投标由方程 {eq}`eq:optbid1` 和 {eq}`eq:optbid2` 描述。
+
+当投标是从均匀分布中独立同分布抽取时，$y_{i}$ 的累积分布函数为
 
 $$
 \begin{aligned}
@@ -171,26 +163,27 @@ $$
 \end{aligned}
 $$
 
-and the PDF of $y_i$ is $\tilde{f}_{n-1}(y) = (n-1)y^{n-2}$.
+且 $y_i$ 的概率密度函数为 $\tilde{f}_{n-1}(y) = (n-1)y^{n-2}$。
 
-Then bidder $i$'s   optimal bid in a **FPSB** auction is:
+那么投标人 $i$ 在**第一价格密封投标拍卖**中的最优投标为：
 
 $$
 \begin{aligned}
 \mathbf{E}(y_{i} | y_{i} < v_{i}) &= \frac{\int_{0}^{v_{i}} y_{i}\tilde{f}_{n-1}(y_{i})dy_{i}}{\int_{0}^{v_{i}} \tilde{f}_{n-1}(y_{i})dy_{i}} \\
+
 &= \frac{\int_{0}^{v_{i}}(n-1)y_{i}^{n-1}dy_{i}}{\int_{0}^{v_{i}}(n-1)y_{i}^{n-2}dy_{i}} \\
 &= \frac{n-1}{n}y_{i}\bigg{|}_{0}^{v_{i}} \\
 &= \frac{n-1}{n}v_{i}
 \end{aligned}
 $$
 
-## Second Price Sealed Bid Auction
+## 第二价格密封拍卖
 
-In a  **SPSB**, it is optimal for bidder $i$ to bid $v_i$.
+在**第二价格密封拍卖**中，对竞价者$i$来说，出价$v_i$是最优选择。
 
 +++
 
-## Python Code
+## Python代码
 
 ```{code-cell} ipython3
 import numpy as np
@@ -199,17 +192,17 @@ import seaborn as sns
 import scipy.stats as stats
 import scipy.interpolate as interp
 
-# for plots
+# 用于绘图
 plt.rcParams.update({"text.usetex": True, 'font.size': 14})
 colors = plt. rcParams['axes.prop_cycle'].by_key()['color']
 
-# ensure the notebook generate the same randomess
+# 确保笔记本生成相同的随机数
 np.random.seed(1337)
 ```
 
-We repeat an auction with 5 bidders for 100,000 times.
+我们重复进行一个有5个投标人的拍卖100,000次。
 
-The valuations of each bidder is distributed $U(0,1)$.
+每个投标人的估值服从均匀分布$U(0,1)$。
 
 ```{code-cell} ipython3
 N = 5
@@ -217,39 +210,40 @@ R = 100_000
 
 v = np.random.uniform(0,1,(N,R))
 
-# BNE in first-price sealed bid
+# 第一价格密封拍卖的贝叶斯纳什均衡
 
 b_star = lambda vi,N :((N-1)/N) * vi
 b = b_star(v,N)
 ```
 
-We compute and sort bid price distributions   that emerge under both  FPSB and SPSB.
+我们计算并排序在一价密封拍卖（FPSB）和二价密封拍卖（SPSB）下产生的出价分布。
 
 ```{code-cell} ipython3
-idx = np.argsort(v, axis=0)  # Biders' values are sorted in ascending order in each auction.
-# We record the order because we want to apply it to bid price and their id.
+idx = np.argsort(v, axis=0)  # 在每次拍卖中，竞买人的估值按升序排列。
+# 我们记录这个顺序是因为我们要将其应用于出价价格和竞买人ID。
 
-v = np.take_along_axis(v, idx, axis=0)  # same as np.sort(v, axis=0), except now we retain the idx
+v = np.take_along_axis(v, idx, axis=0)  # 与np.sort(v, axis=0)相同，但保留了idx
 b = np.take_along_axis(b, idx, axis=0)
 
-ii = np.repeat(np.arange(1,N+1)[:,None], R, axis=1)  # the id for the bidders is created.
-ii = np.take_along_axis(ii, idx, axis=0)  # the id is sorted according to bid price as well.
+ii = np.repeat(np.arange(1,N+1)[:,None], R, axis=1)  # 创建竞买人的ID。
+ii = np.take_along_axis(ii, idx, axis=0)  # ID也按照出价价格进行排序。
 
-winning_player = ii[-1,:] # In FPSB and SPSB, winners are those with highest values.
+winning_player = ii[-1,:] # 在FPSB和SPSB中，最高估值者为赢家。
 
-winner_pays_fpsb = b[-1,:]  # highest bid
-winner_pays_spsb = v[-2,:]  # 2nd-highest valuation
+winner_pays_fpsb = b[-1,:]  # 最高出价
+winner_pays_spsb = v[-2,:]  # 第二高估值
+
 ```
 
-Let's now plot the _winning_ bids $b_{(n)}$ (i.e. the payment) against valuations, $v_{(n)}$ for both FPSB and SPSB.
+让我们绘制_获胜_出价 $b_{(n)}$（即支付金额）与估值 $v_{(n)}$ 的关系图，分别针对FPSB和SPSB。
 
-Note that
+注意：
 
-- FPSB: There is a unique bid corresponding to each valuation
-- SPSB: Because it  equals  the valuation of a second-highest bidder, what a winner pays varies even holding fixed the winner's valuation. So here there is a frequency distribution of payments for each valuation.
+- FPSB：每个估值对应一个唯一的出价
+- SPSB：因为支付金额等于第二高出价者的估值，即使固定获胜者的估值，支付金额也会有所变化。所以这里每个估值都对应一个支付金额的频率分布。
 
 ```{code-cell} ipython3
-# We intend to compute average payments of different groups of bidders
+# 我们打算计算不同群组投标者的平均支付金额
 
 binned = stats.binned_statistic(v[-1,:], v[-2,:], statistic='mean', bins=20)
 xx = binned.bin_edges
@@ -258,41 +252,39 @@ yy = binned.statistic
 
 fig, ax = plt.subplots(figsize=(6, 4))
 
-ax.plot(xx, yy, label='SPSB average payment')
-ax.plot(v[-1,:], b[-1,:], '--', alpha = 0.8, label = 'FPSB analytic')
-ax.plot(v[-1,:], v[-2,:], 'o', alpha = 0.05, markersize = 0.1, label = 'SPSB: actual bids')
+ax.plot(xx, yy, label='SPSB平均支付金额')
+ax.plot(v[-1,:], b[-1,:], '--', alpha = 0.8, label = 'FPSB解析解')
+ax.plot(v[-1,:], v[-2,:], 'o', alpha = 0.05, markersize = 0.1, label = 'SPSB：实际出价')
 
 ax.legend(loc='best')
-ax.set_xlabel('Valuation, $v_i$')
-ax.set_ylabel('Bid, $b_i$')
+ax.set_xlabel('估值, $v_i$')
+ax.set_ylabel('出价, $b_i$')
 sns.despine()
 ```
 
-## Revenue Equivalence Theorem
+## 收入等价定理
 
 +++
 
-We now compare  FPSB and a SPSB auctions from the point of view of the  revenues that a seller can expect to acquire.
+我们现在从卖方预期获得的收入角度比较第一价格密封拍卖(FPSB)和第二价格密封拍卖(SPSB)。
 
+**FPSB的预期收入：**
 
+估值为$y$的赢家支付$\frac{n-1}{n}*y$，其中n是投标者数量。
 
-**Expected Revenue FPSB:**
+我们之前计算得出CDF为$F_{n}(y) = y^{n}$，PDF为$f_{n} = ny^{n-1}$。
 
-The winner with valuation $y$ pays $\frac{n-1}{n}*y$, where n is the number of bidders.
-
-Above we computed that the  CDF is $F_{n}(y) = y^{n}$ and  the PDF is $f_{n} = ny^{n-1}$.
-
-Consequently,  expected revenue is
+因此，预期收入为
 
 $$
 \mathbf{R} = \int_{0}^{1}\frac{n-1}{n}v_{i}\times n v_{i}^{n-1}dv_{i} = \frac{n-1}{n+1}
 $$
 
-**Expected Revenue SPSB:**
+**SPSB的预期收入：**
 
-The expected revenue equals n $\times$ expected payment of a bidder.
+预期收入等于n乘以一个投标者的预期支付。
 
-Computing this we get
+计算得出
 
 $$
 \begin{aligned}
@@ -300,13 +292,14 @@ $$
 &= n\mathbf{E_{v_i}}\left[\mathbf{E_{y_i}}[y_{i}|y_{i} < v_{i}]\tilde{F}_{n-1}(v_{i})\right] \\
 &= n\mathbf{E_{v_i}}[\frac{n-1}{n} \times v_{i} \times v_{i}^{n-1}] \\
 &= (n-1)\mathbf{E_{v_i}}[v_{i}^{n}] \\
+
 &= \frac{n-1}{n+1}
 \end{aligned}
 $$
 
 +++
 
-Thus, while probability distributions of winning bids typically differ across the two types of auction, we deduce that  expected payments are identical in FPSB and SPSB.
+因此，虽然两种拍卖方式中的中标价格分布通常不同，但我们推断在FPSB和SPSB中的预期支付是相同的。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(6, 4))
@@ -319,85 +312,83 @@ ax.axvline(winner_pays_fpsb.mean(), ls='--', c='g', label='Mean')
 ax.axvline(winner_pays_spsb.mean(), ls='--', c='r', label='Mean')
 
 ax.legend(loc='best')
-ax.set_xlabel('Bid')
-ax.set_ylabel('Density')
+ax.set_xlabel('出价')
+ax.set_ylabel('密度')
 sns.despine()
 ```
 
-**<center>Summary of FPSB and SPSB results with uniform distribution on $[0,1]$</center>**
+**<center>在$[0,1]$上均匀分布的FPSB和SPSB结果总结</center>**
 
-|    Auction: Sealed-Bid    |             First-Price              |              Second-Price               |
+|    密封投标拍卖    |             一价拍卖              |             二价拍卖              |
 | :-----------------------: | :----------------------------------: | :-------------------------------------: |
-|          Winner           |        Agent with highest bid        |         Agent with highest bid          |
-|        Winner pays        |             Winner's bid             |           Second-highest bid            |
-|        Loser pays         |                  0                   |                    0                    |
-|     Dominant strategy     |         No dominant strategy         | Bidding truthfully is dominant strategy |
-| Bayesian Nash equilibrium | Bidder $i$ bids $\frac{n-1}{n}v_{i}$ |   Bidder $i$ truthfully bids $v_{i}$    |
-|   Auctioneer's revenue    |          $\frac {n-1}{n+1}$          |           $\frac {n-1}{n+1}$            |
+|          获胜者           |            最高出价者             |             最高出价者              |
+|        获胜者支付        |             获胜者出价             |             第二高出价              |
+|        失败者支付         |                  0                   |                    0                    |
+|     占优策略     |            无占优策略            |          如实出价是占优策略           |
+| 贝叶斯纳什均衡 | 投标人$i$出价$\frac{n-1}{n}v_{i}$ |    投标人$i$如实出价$v_{i}$     |
+|   拍卖者收益    |          $\frac {n-1}{n+1}$          |           $\frac {n-1}{n+1}$            |
 
 +++
 
-**Detour: Computing a Bayesian Nash Equibrium for  FPSB**
+**迂回：计算FPSB的贝叶斯纳什均衡**
 
-The Revenue Equivalence Theorem lets us an optimal bidding strategy for  a  FPSB auction  from outcomes of a SPSB auction.
+收入等价定理让我们可以从SPSB拍卖的结果推导出FPSB拍卖的最优投标策略。
 
-Let  $b(v_{i})$ be the optimal bid in a FPSB auction.
+设$b(v_{i})$为FPSB拍卖中的最优出价。
 
-The revenue equivalence  theorem tells us that a bidder agent with value $v_{i}$ on average receives the same  **payment** in the two  types of auction.
+收入等价定理告诉我们，价值为$v_{i}$的投标者在这两种拍卖中平均获得相同的**支付**。
 
-Consequently,
+因此，
 
 $$
 b(v_{i})\mathbf{P}(y_{i} < v_{i}) + 0 * \mathbf{P}(y_{i} \ge v_{i}) = \mathbf{E}_{y_{i}}[y_{i} | y_{i} < v_{i}]\mathbf{P}(y_{i} < v_{i}) + 0 * \mathbf{P}(y_{i} \ge v_{i})
 $$
 
-It follows that an optimal bidding strategy in a FPSB auction is $b(v_{i}) = \mathbf{E}_{y_{i}}[y_{i} | y_{i} < v_{i}]$.
+由此可得，FPSB拍卖中的最优投标策略是$b(v_{i}) = \mathbf{E}_{y_{i}}[y_{i} | y_{i} < v_{i}]$。
 
 +++
 
-##  Calculation of  Bid Price in FPSB
+## FPSB中出价的计算
 
 +++
 
-In equations {eq}`eq:optbid1` and {eq}`eq:optbid1`, we displayed formulas for
-optimal bids in a symmetric Bayesian Nash Equilibrium of a FPSB auction.
+在方程{eq}`eq:optbid1`和{eq}`eq:optbid1`中，我们展示了FPSB拍卖中对称贝叶斯纳什均衡的最优出价公式。
 
 $$
 \mathbf{E}[y_{i} | y_{i} < v_{i}]
 $$
 
-where
-- $v_{i} = $  value of bidder $i$
-- $y_{i} = $: maximum value of all bidders except $i$, i.e., $y_{i} = \max_{j \neq i} v_{j}$
+其中
+- $v_{i} = $ 投标者$i$的价值
 
+- $y_{i} = $：除了竞标者$i$以外所有竞标者的最大值，即$y_{i} = \max_{j \neq i} v_{j}$
 
-Above, we computed an optimal  bid price in a FPSB auction analytically for a case in which private values are uniformly distributed.
+我们之前已经为私人价值呈均匀分布的情况下分析计算出了FPSB拍卖中的最优出价。
 
+对于大多数私人价值的概率分布，解析解并不容易计算。
 
-For most probability distributions of private values, analytical solutions aren't  easy to compute.
-
-Instead, we can  compute  bid prices in FPSB auctions numerically as functions of the distribution of private values.
+相反，我们可以根据私人价值的分布情况，以数值方式计算FPSB拍卖中的出价。
 
 ```{code-cell} ipython3
 def evaluate_largest(v_hat, array, order=1):
     """
-    A method to estimate the largest (or certain-order largest) value of the other biders,
-    conditional on player 1 wins the auction.
+    一个用于估算其他竞标者的最大值（或特定顺序的最大值）的方法，
+    条件是玩家1赢得拍卖。
 
-    Parameters:
+    参数：
     ----------
-    v_hat : float, the value of player 1. The biggest value in the auction that player 1 wins.
+    v_hat：float，玩家1的价值。玩家1赢得拍卖时的最大值。
 
-    array: 2 dimensional array of bidders' values in shape of (N,R),
-           where N: number of players, R: number of auctions
+    array：二维数组，形状为(N,R)的竞标者价值，
+          其中N：玩家数量，R：拍卖次数
 
-    order: int. The order of largest number among bidders who lose.
-                e.g. the order for largest number beside winner is 1.
-                     the order for second-largest number beside winner is 2.
+    order：int。输家中最大数的顺序。
+                例如，除获胜者外最大数的顺序是1。
+                     除获胜者外第二大数的顺序是2。
 
     """
     N,R = array.shape
-    array_residual=array[1:,:].copy()  # drop the first row because we assume first row is the winner's bid
+    array_residual=array[1:,:].copy()  # 删除第一行，因为我们假设第一行是获胜者的出价
 
     index=(array_residual<v_hat).all(axis=0)
     array_conditional=array_residual[:,index].copy()
@@ -406,11 +397,11 @@ def evaluate_largest(v_hat, array, order=1):
     return array_conditional[-order,:].mean()
 ```
 
-We can check the accuracy of our `evaluate_largest` method by comparing it with an analytical solution.
+我们可以通过将其与解析解进行比较来检验`evaluate_largest`方法的准确性。
 
-We find that despite small discrepancy, the evaluate_largest method functions well.
+我们发现，尽管存在小的差异，evaluate_largest方法运行良好。
 
-Furthermore, if we take a very large number of auctions, say 1 million, the discrepancy disappears.
+此外，如果我们进行大量拍卖，比如100万次，这种差异就会消失。
 
 ```{code-cell} ipython3
 v_grid = np.linspace(0.3,1,8)
@@ -419,21 +410,21 @@ bid_simulated = [evaluate_largest(ii, v) for ii in v_grid]
 
 fig, ax = plt.subplots(figsize=(6, 4))
 
-ax.plot(v_grid, bid_analytical, '-', color='k', label='Analytical')
-ax.plot(v_grid, bid_simulated, '--', color='r', label='Simulated')
+ax.plot(v_grid, bid_analytical, '-', color='k', label='解析解')
+ax.plot(v_grid, bid_simulated, '--', color='r', label='模拟值')
 
 ax.legend(loc='best')
-ax.set_xlabel('Valuation, $v_i$')
-ax.set_ylabel('Bid, $b_i$')
-ax.set_title('Solution for FPSB')
+ax.set_xlabel('估值, $v_i$')
+ax.set_ylabel('出价, $b_i$')
+ax.set_title('FPSB的解')
 sns.despine()
 ```
 
-##  $\chi^2$ Distribution
+## $\chi^2$ 分布
 
-Let's try an example in which the distribution of private values is a $\chi^2$ distribution.
+让我们尝试一个例子，其中私有价值的分布是一个 $\chi^2$ 分布。
 
-We'll start by taking a look at a $\chi^2$ distribution with the help of the following Python code:
+我们先通过以下Python代码来了解 $\chi^2$ 分布：
 
 ```{code-cell} ipython3
 np.random.seed(1337)
@@ -444,30 +435,30 @@ plt.xlabel('Values: $v$')
 plt.show()
 ```
 
-Now we'll get Python to construct a bid price function
+现在我们让Python构建一个出价函数
 
 ```{code-cell} ipython3
 np.random.seed(1337)
 v = np.random.chisquare(df=2, size=(N,R))
 
 
-# we compute the quantile of v as our grid
+# 我们计算v的分位数作为我们的网格
 pct_quantile = np.linspace(0, 100, 101)[1:-1]
 v_grid = np.percentile(v.flatten(), q=pct_quantile)
 
 EV=[evaluate_largest(ii, v) for ii in v_grid]
-# nan values are returned for some low quantiles due to lack of observations
+# 由于缺乏观测值，某些低分位数会返回nan值
 ```
 
 ```{code-cell} ipython3
-# we insert 0 into our grid and bid price function as a complement
+# 我们在网格和出价函数中插入0作为补充
 EV=np.insert(EV,0,0)
 v_grid=np.insert(v_grid,0,0)
 
 b_star_num = interp.interp1d(v_grid, EV, fill_value="extrapolate")
 ```
 
-We check our bid price function by computing and visualizing the result.
+我们通过计算和可视化结果来检验我们的出价函数。
 
 ```{code-cell} ipython3
 pct_quantile_fine = np.linspace(0, 100, 1001)[1:-1]
@@ -475,22 +466,22 @@ v_grid_fine = np.percentile(v.flatten(), q=pct_quantile_fine)
 
 fig, ax = plt.subplots(figsize=(6, 4))
 
-ax.plot(v_grid, EV, 'or', label='Simulation on Grid')
-ax.plot(v_grid_fine, b_star_num(v_grid_fine) , '-', label='Interpolation Solution')
+ax.plot(v_grid, EV, 'or', label='网格上的模拟')
+ax.plot(v_grid_fine, b_star_num(v_grid_fine) , '-', label='插值解')
 
 ax.legend(loc='best')
-ax.set_xlabel('Valuation, $v_i$')
-ax.set_ylabel('Optimal Bid in FPSB')
+ax.set_xlabel('估值, $v_i$')
+ax.set_ylabel('一价密封拍卖中的最优出价')
 sns.despine()
 ```
 
-Now we can use Python to compute the probability distribution of the price paid by the winning bidder
+现在我们可以使用Python来计算中标者支付价格的概率分布
 
 ```{code-cell} ipython3
 b=b_star_num(v)
 
 idx = np.argsort(v, axis=0)
-v = np.take_along_axis(v, idx, axis=0)  # same as np.sort(v, axis=0), except now we retain the idx
+v = np.take_along_axis(v, idx, axis=0)  # 与np.sort(v, axis=0)相同，但保留了idx
 b = np.take_along_axis(b, idx, axis=0)
 
 ii = np.repeat(np.arange(1,N+1)[:,None], R, axis=1)
@@ -498,46 +489,46 @@ ii = np.take_along_axis(ii, idx, axis=0)
 
 winning_player = ii[-1,:]
 
-winner_pays_fpsb = b[-1,:]  # highest bid
-winner_pays_spsb = v[-2,:]  # 2nd-highest valuation
+winner_pays_fpsb = b[-1,:]  # 最高出价
+winner_pays_spsb = v[-2,:]  # 第二高估值
 ```
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(6, 4))
 
 for payment,label in zip([winner_pays_fpsb, winner_pays_spsb], ['FPSB', 'SPSB']):
-    print('The average payment of %s: %.4f. Std.: %.4f. Median: %.4f'% (label,payment.mean(),payment.std(),np.median(payment)))
+    print('%s的平均支付额：%.4f。标准差：%.4f。中位数：%.4f'% (label,payment.mean(),payment.std(),np.median(payment)))
     ax.hist(payment, density=True, alpha=0.6, label=label, bins=100)
 
-ax.axvline(winner_pays_fpsb.mean(), ls='--', c='g', label='Mean')
-ax.axvline(winner_pays_spsb.mean(), ls='--', c='r', label='Mean')
+ax.axvline(winner_pays_fpsb.mean(), ls='--', c='g', label='均值')
+ax.axvline(winner_pays_spsb.mean(), ls='--', c='r', label='均值')
 
 ax.legend(loc='best')
-ax.set_xlabel('Bid')
-ax.set_ylabel('Density')
+ax.set_xlabel('出价')
+ax.set_ylabel('密度')
 sns.despine()
 ```
 
-## 5 Code Summary
+## 5 代码总结
 
 +++
 
-We assemble the functions that we have used into a Python  class
+我们将使用过的函数整合成一个Python类
 
 ```{code-cell} ipython3
 class bid_price_solution:
 
     def __init__(self, array):
         """
-        A class that can plot the value distribution of bidders,
-        compute the optimal bid price for bidders in FPSB
-        and plot the distribution of winner's payment in both FPSB and SPSB
+        一个可以绘制投标者价值分布、
+        计算FPSB中投标者最优投标价格
+        并绘制FPSB和SPSB中赢家支付分布的类
 
-        Parameters:
+        参数:
         ----------
 
-        array: 2 dimensional array of bidders' values in shape of (N,R),
-               where N: number of players, R: number of auctions
+        array: 投标者价值的二维数组，形状为(N,R)，
+               其中N: 玩家数量, R: 拍卖次数
 
         """
         self.value_mat=array.copy()
@@ -546,7 +537,7 @@ class bid_price_solution:
 
     def plot_value_distribution(self):
         plt.hist(self.value_mat.flatten(), bins=50, edgecolor='w')
-        plt.xlabel('Values: $v$')
+        plt.xlabel('价值: $v$')
         plt.show()
 
         return None
@@ -554,7 +545,7 @@ class bid_price_solution:
     def evaluate_largest(self, v_hat, order=1):
         N,R = self.value_mat.shape
         array_residual = self.value_mat[1:,:].copy()
-        # drop the first row because we assume first row is the winner's bid
+        # 删除第一行因为我们假设第一行是赢家的投标
 
         index=(array_residual<v_hat).all(axis=0)
         array_conditional=array_residual[:,index].copy()
@@ -564,14 +555,14 @@ class bid_price_solution:
         return array_conditional[-order,:].mean()
 
     def compute_optimal_bid_FPSB(self):
-        # we compute the quantile of v as our grid
+        # 我们计算v的分位数作为网格
         pct_quantile = np.linspace(0, 100, 101)[1:-1]
         v_grid = np.percentile(self.value_mat.flatten(), q=pct_quantile)
 
         EV=[self.evaluate_largest(ii) for ii in v_grid]
-        # nan values are returned for some low quantiles due to lack of observations
+        # 由于缺乏观察值，某些低分位数会返回nan值
 
-        # we insert 0 into our grid and bid price function as a complement
+        # 我们在网格和投标价格函数中插入0作为补充
         EV=np.insert(EV,0,0)
         v_grid=np.insert(v_grid,0,0)
 
@@ -582,12 +573,12 @@ class bid_price_solution:
 
         fig, ax = plt.subplots(figsize=(6, 4))
 
-        ax.plot(v_grid, EV, 'or', label='Simulation on Grid')
-        ax.plot(v_grid_fine, self.b_star_num(v_grid_fine) , '-', label='Interpolation Solution')
+        ax.plot(v_grid, EV, 'or', label='网格上的模拟')
+        ax.plot(v_grid_fine, self.b_star_num(v_grid_fine) , '-', label='插值解')
 
         ax.legend(loc='best')
-        ax.set_xlabel('Valuation, $v_i$')
-        ax.set_ylabel('Optimal Bid in FPSB')
+        ax.set_xlabel('估值, $v_i$')
+        ax.set_ylabel('FPSB中的最优投标')
         sns.despine()
 
         return None
@@ -596,7 +587,7 @@ class bid_price_solution:
         self.b = self.b_star_num(self.value_mat)
 
         idx = np.argsort(self.value_mat, axis=0)
-        self.v = np.take_along_axis(self.value_mat, idx, axis=0)  # same as np.sort(v, axis=0), except now we retain the idx
+        self.v = np.take_along_axis(self.value_mat, idx, axis=0)  # 与np.sort(v, axis=0)相同，但保留了idx
         self.b = np.take_along_axis(self.b, idx, axis=0)
 
         self.ii = np.repeat(np.arange(1,N+1)[:,None], R, axis=1)
@@ -604,21 +595,21 @@ class bid_price_solution:
 
         winning_player = self.ii[-1,:]
 
-        winner_pays_fpsb = self.b[-1,:]  # highest bid
-        winner_pays_spsb = self.v[-2,:]  # 2nd-highest valuation
+        winner_pays_fpsb = self.b[-1,:]  # 最高投标
+        winner_pays_spsb = self.v[-2,:]  # 第二高估值
 
         fig, ax = plt.subplots(figsize=(6, 4))
 
         for payment,label in zip([winner_pays_fpsb, winner_pays_spsb], ['FPSB', 'SPSB']):
-            print('The average payment of %s: %.4f. Std.: %.4f. Median: %.4f'% (label,payment.mean(),payment.std(),np.median(payment)))
+            print('%s的平均支付: %.4f. 标准差: %.4f. 中位数: %.4f'% (label,payment.mean(),payment.std(),np.median(payment)))
             ax.hist(payment, density=True, alpha=0.6, label=label, bins=100)
 
-        ax.axvline(winner_pays_fpsb.mean(), ls='--', c='g', label='Mean')
-        ax.axvline(winner_pays_spsb.mean(), ls='--', c='r', label='Mean')
+        ax.axvline(winner_pays_fpsb.mean(), ls='--', c='g', label='均值')
+        ax.axvline(winner_pays_spsb.mean(), ls='--', c='r', label='均值')
 
         ax.legend(loc='best')
-        ax.set_xlabel('Bid')
-        ax.set_ylabel('Density')
+        ax.set_xlabel('投标')
+        ax.set_ylabel('密度')
         sns.despine()
 
         return None
@@ -643,13 +634,14 @@ chi_squ_case.compute_optimal_bid_FPSB()
 chi_squ_case.plot_winner_payment_distribution()
 ```
 
-## References
+## 参考文献
 
 +++
 
-1. Wikipedia for FPSB: https://en.wikipedia.org/wiki/First-price_sealed-bid_auction
-2. Wikipedia for SPSB: https://en.wikipedia.org/wiki/Vickrey_auction
-3. Chandra Chekuri's lecture note for algorithmic game theory: http://chekuri.cs.illinois.edu/teaching/spring2008/Lectures/scribed/Notes20.pdf
-4. Tim Salmon. ECO 4400 Supplemental Handout: All About Auctions: https://s2.smu.edu/tsalmon/auctions.pdf
-5. Auction Theory- Revenue Equivalence Theorem: https://michaellevet.wordpress.com/2015/07/06/auction-theory-revenue-equivalence-theorem/
-6. Order Statistics: https://online.stat.psu.edu/stat415/book/export/html/834
+1. 维基百科关于FPSB的条目：https://en.wikipedia.org/wiki/First-price_sealed-bid_auction
+2. 维基百科关于SPSB的条目：https://en.wikipedia.org/wiki/Vickrey_auction
+3. Chandra Chekuri的算法博弈论讲义：http://chekuri.cs.illinois.edu/teaching/spring2008/Lectures/scribed/Notes20.pdf
+4. Tim Salmon的ECO 4400补充讲义：关于拍卖的一切：https://s2.smu.edu/tsalmon/auctions.pdf
+5. 拍卖理论-收益等价定理：https://michaellevet.wordpress.com/2015/07/06/auction-theory-revenue-equivalence-theorem/
+6. 顺序统计量：https://online.stat.psu.edu/stat415/book/export/html/834
+

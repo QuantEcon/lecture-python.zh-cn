@@ -18,20 +18,20 @@ kernelspec:
 </div>
 ```
 
-# Linear Algebra
+# 线性代数
 
 ```{index} single: Linear Algebra
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-Linear algebra is one of the most useful branches of applied mathematics for economists to invest in.
+线性代数是经济学家最值得投入学习的应用数学分支之一。
 
-For example, many applied problems in economics and finance require the solution of a linear system of equations, such as
+例如，经济学和金融学中的许多应用问题都需要求解线性方程组，比如
 
 $$
 \begin{aligned}
@@ -40,66 +40,65 @@ $$
 \end{aligned}
 $$
 
-or, more generally,
+或者更一般地，
 
 ```{math}
 :label: la_se
 
 \begin{aligned}
-    y_1 = a_{11} x_1 + a_{12} x_2 + \cdots + a_{1k} x_k \\
+
+y_1 = a_{11} x_1 + a_{12} x_2 + \cdots + a_{1k} x_k \\
     \vdots  \\
     y_n = a_{n1} x_1 + a_{n2} x_2 + \cdots + a_{nk} x_k
 \end{aligned}
 ```
 
-The objective here is to solve for the "unknowns" $x_1, \ldots, x_k$ given $a_{11}, \ldots, a_{nk}$ and $y_1, \ldots, y_n$.
+这里的目标是在已知 $a_{11}, \ldots, a_{nk}$ 和 $y_1, \ldots, y_n$ 的情况下，求解"未知数" $x_1, \ldots, x_k$。
 
-When considering such problems, it is essential that we first consider at least some of the following questions
+在考虑这类问题时，我们首先必须考虑以下至少一些问题：
 
-* Does a solution actually exist?
-* Are there in fact many solutions, and if so how should we interpret them?
-* If no solution exists, is there a best "approximate" solution?
-* If a solution exists, how should we compute it?
+* 解是否真的存在？
+* 是否实际上存在多个解，如果是，我们应该如何解释它们？
+* 如果不存在解，是否存在最佳的"近似"解？
+* 如果解存在，我们应该如何计算它？
 
-These are the kinds of topics addressed by linear algebra.
+这些都是线性代数所要解决的问题。
 
-In this lecture we will cover the basics of linear and matrix algebra, treating both theory and computation.
+在本讲中，我们将介绍线性和矩阵代数的基础知识，包括理论和计算两个方面。
 
-We admit some overlap with [this lecture](https://python-programming.quantecon.org/numpy.html), where operations on NumPy arrays were first explained.
+我们承认这与[这篇讲座](https://python-programming.quantecon.org/numpy.html)有一些重叠，那里首次解释了NumPy数组的操作。
 
-Note that this lecture is more theoretical than most, and contains background
-material that will be used in applications as we go along.
+请注意，这节课比大多数课程更偏重理论，包含了我们在后续应用中将会用到的背景知识。
 
-Let's start with some imports:
+让我们先从一些导入语句开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.linalg import inv, solve, det, eig
 ```
 
-## {index}`Vectors <single: Vectors>`
+## {index}`向量 <single: Vectors>`
 
 ```{index} single: Linear Algebra; Vectors
 ```
 
-A *vector* of length $n$ is just a sequence (or array, or tuple) of $n$ numbers, which we write as $x = (x_1, \ldots, x_n)$ or  $x = [x_1, \ldots, x_n]$.
+长度为$n$的*向量*就是一个由$n$个数字组成的序列（或数组、元组），我们将其写作$x = (x_1, \ldots, x_n)$或$x = [x_1, \ldots, x_n]$。
 
-We will write these sequences either horizontally or vertically as we please.
+我们可以根据需要将这些序列横向或纵向书写。
 
-(Later, when we wish to perform certain matrix operations, it will become necessary to distinguish between the two)
+（稍后，当我们需要执行某些矩阵运算时，区分这两种写法将变得必要）
 
-The set of all $n$-vectors is denoted by $\mathbb R^n$.
+所有$n$维向量的集合用$\mathbb R^n$表示。
 
-For example, $\mathbb R ^2$ is the plane, and a vector in $\mathbb R^2$ is just a point in the plane.
+例如，$\mathbb R^2$是平面，而$\mathbb R^2$中的向量就是平面上的一个点。
 
-Traditionally, vectors are represented visually as arrows from the origin to
-the point.
+传统上，向量在视觉上被表示为从原点指向某点的箭头。
 
-The following figure represents three vectors in this manner
+下图以这种方式表示了三个向量
 
 ```{code-cell} ipython
 fig, ax = plt.subplots(figsize=(10, 8))
@@ -122,14 +121,14 @@ for v in vecs:
 plt.show()
 ```
 
-### Vector Operations
+### 向量运算
 
 ```{index} single: Vectors; Operations
 ```
 
-The two most common operators for vectors are addition and scalar multiplication, which we now describe.
+向量最常见的两种运算是加法和标量乘法，下面我们来介绍。
 
-As a matter of definition, when we add two vectors, we add them element-by-element
+根据定义，当我们对两个向量进行加法运算时，我们是按元素逐个相加
 
 $$
 x + y =
@@ -153,8 +152,7 @@ x + y =
 \end{bmatrix}
 $$
 
-Scalar multiplication is an operation that takes a number $\gamma$ and a
-vector $x$ and produces
+标量乘法是一种将数字 $\gamma$ 与向量 $x$ 相乘的运算，得到
 
 $$
 \gamma x :=
@@ -166,7 +164,7 @@ $$
 \end{bmatrix}
 $$
 
-Scalar multiplication is illustrated in the next figure
+下图展示了标量乘法
 
 ```{code-cell} python3
 ---
@@ -203,14 +201,13 @@ for s in scalars:
 plt.show()
 ```
 
-In Python, a vector can be represented as a list or tuple, such as `x = (2, 4, 6)`, but is more commonly
-represented as a [NumPy array](https://python-programming.quantecon.org/numpy.html#numpy-arrays).
+在Python中，向量可以用列表或元组来表示，例如 `x = (2, 4, 6)`，但更常见的是用[NumPy数组](https://python-programming.quantecon.org/numpy.html#numpy-arrays)来表示。
 
-One advantage of NumPy arrays is that scalar multiplication and addition have very natural syntax
+NumPy数组的一个优点是标量乘法和加法具有非常自然的语法
 
 ```{code-cell} python3
-x = np.ones(3)            # Vector of three ones
-y = np.array((2, 4, 6))   # Converts tuple (2, 4, 6) into array
+x = np.ones(3)            # 创建一个包含三个1的向量
+y = np.array((2, 4, 6))   # 将元组(2, 4, 6)转换为数组
 x + y
 ```
 
@@ -218,7 +215,7 @@ x + y
 4 * x
 ```
 
-### Inner Product and Norm
+### 内积和范数
 
 ```{index} single: Vectors; Inner Product
 ```
@@ -226,60 +223,59 @@ x + y
 ```{index} single: Vectors; Norm
 ```
 
-The *inner product* of vectors $x,y \in \mathbb R ^n$ is defined as
+向量 $x,y \in \mathbb R ^n$ 的*内积*定义为
 
 $$
 x' y := \sum_{i=1}^n x_i y_i
 $$
 
-Two vectors are called *orthogonal* if their inner product is zero.
+如果两个向量的内积为零，则称这两个向量*正交*。
 
-The *norm* of a vector $x$ represents its "length" (i.e., its distance from the zero vector) and is defined as
+向量 $x$ 的*范数*表示其"长度"（即其与零向量的距离），定义为
 
 $$
 \| x \| := \sqrt{x' x} := \left( \sum_{i=1}^n x_i^2 \right)^{1/2}
 $$
 
-The expression $\| x - y\|$ is thought of as the distance between $x$ and $y$.
+表达式 $\| x - y\|$ 被理解为 $x$ 和 $y$ 之间的距离。
 
-Continuing on from the previous example, the inner product and norm can be computed as
-follows
+继续前面的例子，内积和范数可以按如下方式计算
 
 ```{code-cell} python3
-np.sum(x * y)          # Inner product of x and y
+np.sum(x * y)          # x和y的内积
 ```
 
 ```{code-cell} python3
-np.sqrt(np.sum(x**2))  # Norm of x, take one
+np.sqrt(np.sum(x**2))  # x的范数，第一种方法
 ```
 
 ```{code-cell} python3
-np.linalg.norm(x)      # Norm of x, take two
+np.linalg.norm(x)      # x的范数，第二次计算
 ```
 
-### Span
+### 张成空间
 
 ```{index} single: Vectors; Span
 ```
 
-Given a set of vectors $A := \{a_1, \ldots, a_k\}$ in $\mathbb R ^n$, it's natural to think about the new vectors we can create by performing linear operations.
+给定$\mathbb R ^n$中的一组向量$A := \{a_1, \ldots, a_k\}$，我们自然会思考通过执行线性运算可以创建哪些新向量。
 
-New vectors created in this manner are called *linear combinations* of $A$.
+以这种方式创建的新向量被称为$A$的*线性组合*。
 
-In particular, $y \in \mathbb R ^n$ is a linear combination of $A := \{a_1, \ldots, a_k\}$ if
+具体来说，如果$y \in \mathbb R ^n$是$A := \{a_1, \ldots, a_k\}$的线性组合，那么
 
 $$
 y = \beta_1 a_1 + \cdots + \beta_k a_k
-\text{ for some scalars } \beta_1, \ldots, \beta_k
+\text{ 其中 } \beta_1, \ldots, \beta_k \text{ 为某些标量}
 $$
 
-In this context, the values $\beta_1, \ldots, \beta_k$ are called the *coefficients* of the linear combination.
+在这种情况下，值$\beta_1, \ldots, \beta_k$被称为线性组合的*系数*。
 
-The set of linear combinations of $A$ is called the *span* of $A$.
+$A$的所有线性组合构成的集合被称为$A$的*张成空间*。
 
-The next figure shows the span of $A = \{a_1, a_2\}$ in $\mathbb R ^3$.
+下图显示了$\mathbb R ^3$中$A = \{a_1, a_2\}$的张成空间。
 
-The span is a two-dimensional plane passing through these two points and the origin.
+张成空间是一个通过这两个点和原点的二维平面。
 
 (la_3dvec)=
 ```{code-cell} python3
@@ -335,12 +331,11 @@ ax.plot_surface(x2, y2, z2, rstride=1, cstride=1, cmap=cm.jet,
 plt.show()
 ```
 
-#### Examples
+#### 示例
 
-If $A$ contains only one vector $a_1 \in \mathbb R ^2$, then its
-span is just the scalar multiples of $a_1$, which is the unique line passing through both $a_1$ and the origin.
+如果 $A$ 只包含一个向量 $a_1 \in \mathbb R ^2$，那么它的张成只是 $a_1$ 的标量倍数，即通过 $a_1$ 和原点的唯一直线。
 
-If $A = \{e_1, e_2, e_3\}$ consists  of the *canonical basis vectors* of $\mathbb R ^3$, that is
+如果 $A = \{e_1, e_2, e_3\}$ 由 $\mathbb R ^3$ 的*标准基向量*组成，即
 
 $$
 e_1 :=
@@ -365,86 +360,81 @@ e_3 :=
 \end{bmatrix}
 $$
 
-then the span of $A$ is all of $\mathbb R ^3$, because, for any
-$x = (x_1, x_2, x_3) \in \mathbb R ^3$, we can write
+那么 $A$ 的张成就是整个 $\mathbb R ^3$，因为对于任意的 $x = (x_1, x_2, x_3) \in \mathbb R ^3$，我们可以写成
 
 $$
 x = x_1 e_1 + x_2 e_2 + x_3 e_3
 $$
 
-Now consider $A_0 = \{e_1, e_2, e_1 + e_2\}$.
+现在考虑 $A_0 = \{e_1, e_2, e_1 + e_2\}$。
 
-If $y = (y_1, y_2, y_3)$ is any linear combination of these vectors, then $y_3 = 0$ (check it).
+如果 $y = (y_1, y_2, y_3)$ 是这些向量的任意线性组合，那么 $y_3 = 0$（请验证）。
 
-Hence $A_0$ fails to span all of $\mathbb R ^3$.
+因此 $A_0$ 不能张成整个 $\mathbb R ^3$。
 
 (la_li)=
-### Linear Independence
+### 线性无关
 
 ```{index} single: Vectors; Linear Independence
 ```
 
-As we'll see, it's often desirable to find families of vectors with relatively large span, so that many vectors can be described by linear operators on a few vectors.
+正如我们将看到的，找到具有相对较大张成空间的向量族通常是很有必要的，这样许多向量就可以通过对少数向量进行线性运算来描述。
 
-The condition we need for a set of vectors to have a large span is what's called linear independence.
+对于一组向量要具有较大的张成空间，我们需要的条件就是所谓的线性无关。
 
-In particular, a collection of vectors $A := \{a_1, \ldots, a_k\}$ in $\mathbb R ^n$ is said to be
+具体来说，在$\mathbb R ^n$中的一组向量$A := \{a_1, \ldots, a_k\}$被称为
 
-* *linearly dependent* if some strict subset of $A$ has the same span as $A$.
-* *linearly independent* if it is not linearly dependent.
+* *线性相关的*，如果$A$的某个真子集与$A$具有相同的张成空间。
+* *线性无关的*，如果它不是线性相关的。
 
-Put differently, a set of vectors is linearly independent if no vector is redundant to the span and linearly dependent otherwise.
+换句话说，如果没有向量对张成空间是多余的，那么这组向量就是线性无关的，否则就是线性相关的。
 
-To illustrate the idea, recall {ref}`the figure <la_3dvec>` that showed the span of vectors $\{a_1, a_2\}$ in $\mathbb R ^3$ as a plane through the origin.
+为了说明这个概念，回想{ref}`图示<la_3dvec>`展示了$\mathbb R ^3$中向量$\{a_1, a_2\}$的张成空间是一个经过原点的平面。
 
-If we take a third vector $a_3$ and form the set $\{a_1, a_2, a_3\}$, this set will be
+如果我们再取第三个向量$a_3$并形成集合$\{a_1, a_2, a_3\}$，这个集合将会是
 
-* linearly dependent if $a_3$ lies in the plane
-* linearly independent otherwise
+* 如果$a_3$位于该平面内，则线性相关
+* 否则线性无关
 
-As another illustration of the concept, since $\mathbb R ^n$ can be spanned by $n$ vectors
-(see the discussion of canonical basis vectors above), any collection of
-$m > n$ vectors in $\mathbb R ^n$ must be linearly dependent.
+作为这个概念的另一个说明，由于$\mathbb R ^n$可以由$n$个向量张成（参见上文关于标准基向量的讨论），在$\mathbb R ^n$中任何包含$m > n$个向量的集合必定线性相关。
 
-The following statements are equivalent to linear independence of $A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$
+以下陈述等价于$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$的线性独立性：
 
-1. No vector in $A$ can be formed as a linear combination of the other elements.
-1. If $\beta_1 a_1 + \cdots \beta_k a_k = 0$ for scalars $\beta_1, \ldots, \beta_k$, then $\beta_1 = \cdots = \beta_k = 0$.
+1. $A$中的任何向量都不能由其他元素的线性组合表示。
+1. 如果对于标量$\beta_1, \ldots, \beta_k$，有$\beta_1 a_1 + \cdots \beta_k a_k = 0$，那么$\beta_1 = \cdots = \beta_k = 0$。
 
-(The zero in the first expression is the origin of $\mathbb R ^n$)
+（第一个表达式中的零是$\mathbb R ^n$的原点）
 
 (la_unique_reps)=
-### Unique Representations
+### 唯一表示
 
-Another nice thing about sets of linearly independent vectors is that each element in the span has a unique representation as a linear combination of these vectors.
+关于线性独立向量集合的另一个优点是，其张成空间中的每个元素都可以唯一地表示为这些向量的线性组合。
 
-In other words, if $A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$ is
-linearly independent and
+换句话说，如果$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$是线性独立的，且
 
 $$
 y = \beta_1 a_1 + \cdots \beta_k a_k
 $$
 
-then no other coefficient sequence $\gamma_1, \ldots, \gamma_k$ will produce
-the same vector $y$.
+那么其他任何系数序列 $\gamma_1, \ldots, \gamma_k$ 都不会产生相同的向量 $y$。
 
-Indeed, if we also have $y = \gamma_1 a_1 + \cdots \gamma_k a_k$,
-then
+事实上，如果我们也有 $y = \gamma_1 a_1 + \cdots \gamma_k a_k$，
+那么
 
 $$
 (\beta_1 - \gamma_1) a_1 + \cdots + (\beta_k - \gamma_k) a_k = 0
 $$
 
-Linear independence now implies $\gamma_i = \beta_i$ for all $i$.
+线性独立性现在意味着对所有 $i$ 都有 $\gamma_i = \beta_i$。
 
-## Matrices
+## 矩阵
 
 ```{index} single: Linear Algebra; Matrices
 ```
 
-Matrices are a neat way of organizing data for use in linear operations.
+矩阵是组织数据用于线性运算的一种简洁方式。
 
-An $n \times k$ matrix is a rectangular array $A$ of numbers with $n$ rows and $k$ columns:
+一个 $n \times k$ 矩阵是一个具有 $n$ 行和 $k$ 列的矩形数字数组 $A$：
 
 $$
 A =
@@ -456,38 +446,39 @@ A =
 \end{bmatrix}
 $$
 
-Often, the numbers in the matrix represent coefficients in a system of linear equations, as discussed at the start of this lecture.
+通常，矩阵中的数字表示线性方程组中的系数，正如本讲开始时所讨论的。
 
-For obvious reasons, the matrix $A$ is also called a vector if either $n = 1$ or $k = 1$.
+显然，当 $n = 1$ 或 $k = 1$ 时，矩阵 $A$ 也被称为向量。
 
-In the former case, $A$ is called a *row vector*, while in the latter it is called a *column vector*.
+在前一种情况下，$A$ 被称为*行向量*，而在后一种情况下被称为*列向量*。
 
-If $n = k$, then $A$ is called *square*.
+如果 $n = k$，则 $A$ 被称为*方阵*。
 
-The matrix formed by replacing $a_{ij}$ by $a_{ji}$ for every $i$ and $j$ is called the *transpose* of $A$ and denoted $A'$ or $A^{\top}$.
+将每个 $a_{ij}$ 替换为 $a_{ji}$ 所形成的矩阵被称为 $A$ 的*转置*，记作 $A'$ 或 $A^{\top}$。
 
-If $A = A'$, then $A$ is called *symmetric*.
+如果 $A = A'$，则 $A$ 被称为*对称矩阵*。
 
-For a square matrix $A$, the $i$ elements of the form $a_{ii}$ for $i=1,\ldots,n$ are called the *principal diagonal*.
+对于方阵 $A$，形如 $a_{ii}$ 的 $i$ 个元素（其中 $i=1,\ldots,n$）被称为*主对角线*。
 
-$A$ is called *diagonal* if the only nonzero entries are on the principal diagonal.
+如果只有主对角线上的元素非零，则 $A$ 被称为*对角矩阵*。
 
-If, in addition to being diagonal, each element along the principal diagonal is equal to 1, then $A$ is called the *identity matrix* and denoted by $I$.
+如果除了是对角矩阵外，主对角线上的每个元素都等于1，则 $A$ 被称为*单位矩阵*，记作 $I$。
 
-### Matrix Operations
+### 矩阵运算
 
 ```{index} single: Matrix; Operations
 ```
 
-Just as was the case for vectors, a number of algebraic operations are defined for matrices.
+与向量一样，矩阵也定义了许多代数运算。
 
-Scalar multiplication and addition are immediate generalizations of the vector case:
+标量乘法和加法是向量情况的直接推广：
 
 $$
 \gamma A =
 \gamma
 \begin{bmatrix}
-    a_{11} &  \cdots & a_{1k} \\
+
+a_{11} &  \cdots & a_{1k} \\
     \vdots & \vdots  & \vdots \\
     a_{n1} &  \cdots & a_{nk}
 \end{bmatrix} :=
@@ -498,7 +489,7 @@ $$
 \end{bmatrix}
 $$
 
-and
+以及
 
 $$
 A + B =
@@ -519,26 +510,23 @@ A + B =
 \end{bmatrix}
 $$
 
-In the latter case, the matrices must have the same shape in order for the definition to make sense.
+在后一种情况下，矩阵必须具有相同的形状才能使定义有意义。
 
-We also have a convention for *multiplying* two matrices.
+我们还有一个*相乘*两个矩阵的约定。
 
-The rule for matrix multiplication generalizes the idea of inner products discussed above
-and is designed to make multiplication play well with basic linear operations.
+矩阵乘法的规则推广了上面讨论的内积的概念。
 
-If $A$ and $B$ are two matrices, then their product $A B$ is formed by taking as its
-$i,j$-th element the inner product of the $i$-th row of $A$ and the
-$j$-th column of $B$.
+并且其设计使得乘法能够很好地配合基本线性运算。
 
-There are many tutorials to help you visualize this operation, such as [this one](https://www.mathsisfun.com/algebra/matrix-multiplying.html), or the discussion on the [Wikipedia page](https://en.wikipedia.org/wiki/Matrix_multiplication).
+如果$A$和$B$是两个矩阵，那么它们的乘积$A B$的第$i,j$个元素是由$A$的第$i$行与$B$的第$j$列的内积得到的。
 
-If $A$ is $n \times k$ and $B$ is $j \times m$, then
-to multiply $A$ and $B$ we require $k = j$, and the
-resulting matrix $A B$ is $n \times m$.
+有许多教程可以帮助你理解这个运算，比如[这个](https://www.mathsisfun.com/algebra/matrix-multiplying.html)，或者[维基百科页面](https://en.wikipedia.org/wiki/Matrix_multiplication)上的讨论。
 
-As perhaps the most important special case, consider multiplying $n \times k$ matrix $A$ and $k \times 1$ column vector $x$.
+如果$A$是$n \times k$矩阵，$B$是$j \times m$矩阵，那么要使$A$和$B$可以相乘，我们需要$k = j$，且得到的矩阵$A B$是$n \times m$的。
 
-According to the preceding rule, this gives us an $n \times 1$ column vector
+作为可能最重要的特例，考虑将$n \times k$矩阵$A$与$k \times 1$列向量$x$相乘。
+
+根据前面的规则，这会得到一个$n \times 1$列向量
 
 ```{math}
 :label: la_atx
@@ -548,6 +536,7 @@ A x =
     a_{11} &  \cdots & a_{1k} \\
     \vdots & \vdots  & \vdots \\
     a_{n1} &  \cdots & a_{nk}
+
 \end{bmatrix}
 \begin{bmatrix}
     x_{1}  \\
@@ -562,23 +551,23 @@ A x =
 ```
 
 ```{note}
-$A B$ and $B A$ are not generally the same thing.
+$A B$ 和 $B A$ 通常不是同一个东西。
 ```
 
-Another important special case is the identity matrix.
+另一个重要的特殊情况是单位矩阵。
 
-You should check that if $A$ is $n \times k$ and $I$ is the $k \times k$ identity matrix, then $AI = A$.
+你应该验证如果 $A$ 是 $n \times k$ 矩阵且 $I$ 是 $k \times k$ 单位矩阵，那么 $AI = A$。
 
-If $I$ is the $n \times n$ identity matrix, then $IA = A$.
+如果 $I$ 是 $n \times n$ 单位矩阵，那么 $IA = A$。
 
-### Matrices in NumPy
+### NumPy中的矩阵
 
 ```{index} single: Matrix; Numpy
 ```
 
-NumPy arrays are also used as matrices, and have fast, efficient functions and methods for all the standard matrix operations [^fn_mdt].
+NumPy数组也被用作矩阵，并且对所有标准矩阵运算都有快速、高效的函数和方法[^fn_mdt]。
 
-You can create them manually from tuples of tuples (or lists of lists) as follows
+你可以通过元组的元组（或列表的列表）手动创建它们，如下所示
 
 ```{code-cell} python3
 A = ((1, 2),
@@ -597,16 +586,13 @@ type(A)
 A.shape
 ```
 
-The `shape` attribute is a tuple giving the number of rows and columns ---
-see [here](https://python-programming.quantecon.org/numpy.html#shape-and-dimension)
-for more discussion.
+`shape` 属性是一个表示行数和列数的元组 --- 更多讨论请参见[这里](https://python-programming.quantecon.org/numpy.html#shape-and-dimension)。
 
-To get the transpose of `A`, use `A.transpose()` or, more simply, `A.T`.
+要获取 `A` 的转置，可以使用 `A.transpose()` 或更简单的 `A.T`。
 
-There are many convenient functions for creating common matrices (matrices of zeros,
-ones, etc.) --- see [here](https://python-programming.quantecon.org/numpy.html#creating-arrays).
+有许多便捷的函数可用于创建常见矩阵（零矩阵、全1矩阵等）--- 参见[这里](https://python-programming.quantecon.org/numpy.html#creating-arrays)。
 
-Since operations are performed elementwise by default, scalar multiplication and addition have very natural syntax
+由于运算默认按元素执行，标量乘法和加法具有非常自然的语法
 
 ```{code-cell} python3
 A = np.identity(3)
@@ -618,41 +604,42 @@ B = np.ones((3, 3))
 A + B
 ```
 
-To multiply matrices we use the `@` symbol.
+矩阵相乘我们使用`@`符号。
 
-In particular, `A @ B` is matrix multiplication, whereas `A * B` is element-by-element multiplication.
+具体来说，`A @ B`表示矩阵乘法，而`A * B`表示元素逐个相乘。
 
-See [here](https://python-programming.quantecon.org/numpy.html#matrix-multiplication) for more discussion.
+更多讨论请参见[这里](https://python-programming.quantecon.org/numpy.html#matrix-multiplication)。
 
 (la_linear_map)=
-### Matrices as Maps
+### 矩阵作为映射
 
 ```{index} single: Matrix; Maps
 ```
 
-Each $n \times k$ matrix $A$ can be identified with a function $f(x) = Ax$ that maps $x \in \mathbb R ^k$ into $y = Ax \in \mathbb R ^n$.
+每个$n \times k$矩阵$A$都可以被视为一个函数$f(x) = Ax$，该函数将$x \in \mathbb R ^k$映射到$y = Ax \in \mathbb R ^n$。
 
-These kinds of functions have a special property: they are *linear*.
+这类函数具有一个特殊性质：它们是*线性的*。
 
-A function $f \colon \mathbb R ^k \to \mathbb R ^n$ is called *linear* if, for all $x, y \in \mathbb R ^k$ and all scalars $\alpha, \beta$, we have
+如果对于所有的$x, y \in \mathbb R ^k$和所有标量$\alpha, \beta$，一个函数$f \colon \mathbb R ^k \to \mathbb R ^n$满足：
 
 $$
 f(\alpha x + \beta y) = \alpha f(x) + \beta f(y)
 $$
 
-You can check that this holds for the function $f(x) = A x + b$ when $b$ is the zero vector and fails when $b$ is nonzero.
+则称该函数为*线性*函数。
 
-In fact, it's [known](https://en.wikipedia.org/wiki/Linear_map#Matrices) that $f$ is linear if and *only if* there exists a matrix $A$ such that $f(x) = Ax$ for all $x$.
+你可以验证，当$b$为零向量时，函数$f(x) = A x + b$满足这个性质，而当$b$非零时则不满足。
 
-## Solving Systems of Equations
+事实上，已[知](https://en.wikipedia.org/wiki/Linear_map#Matrices)$f$是线性的，当且*仅当*存在矩阵$A$使得对所有的$x$都有$f(x) = Ax$。
+
+## 求解方程组
 
 ```{index} single: Matrix; Solving Systems of Equations
 ```
 
-Recall again the system of equations {eq}`la_se`.
+再次回顾方程组{eq}`la_se`。
 
-If we compare {eq}`la_se` and {eq}`la_atx`, we see that {eq}`la_se` can now be
-written more conveniently as
+如果我们比较{eq}`la_se`和{eq}`la_atx`，我们可以看到{eq}`la_se`现在可以更方便地写成
 
 ```{math}
 :label: la_se2
@@ -660,15 +647,15 @@ written more conveniently as
 y = Ax
 ```
 
-The problem we face is to determine a vector $x \in \mathbb R ^k$ that solves {eq}`la_se2`, taking $y$ and $A$ as given.
+我们面临的问题是确定一个向量$x \in \mathbb R ^k$来解{eq}`la_se2`，其中$y$和$A$是已知的。
 
-This is a special case of a more general problem: Find an $x$ such that $y = f(x)$.
+这是一个更一般问题的特例：找到一个$x$使得$y = f(x)$。
 
-Given an arbitrary function $f$ and a $y$, is there always an $x$ such that $y = f(x)$?
+给定任意函数$f$和一个$y$，是否总是存在一个$x$使得$y = f(x)$？
 
-If so, is it always unique?
+如果存在，它是否总是唯一的？
 
-The answer to both these questions is negative, as the next figure shows
+这两个问题的答案都是否定的，如下图所示
 
 ```{code-cell} python3
 ---
@@ -719,145 +706,131 @@ ax.text(0.04, 0.91 * ybar, '$y$', fontsize=16)
 plt.show()
 ```
 
-In the first plot, there are multiple solutions, as the function is not one-to-one, while
-in the second there are no solutions, since $y$ lies outside the range of $f$.
+在第一个图中，由于函数不是一一对应的，存在多个解，而
+在第二个图中，由于$y$在函数$f$的值域之外，所以没有解。
 
-Can we impose conditions on $A$ in {eq}`la_se2` that rule out these problems?
+我们能否对{eq}`la_se2`中的$A$施加条件来避免这些问题？
 
-In this context, the most important thing to recognize about the expression
-$Ax$ is that it corresponds to a linear combination of the columns of $A$.
+在这种情况下，最重要的是要认识到表达式$Ax$对应于$A$的列的线性组合。
 
-In particular, if $a_1, \ldots, a_k$ are the columns of $A$, then
+具体来说，如果$a_1, \ldots, a_k$是$A$的列，那么
 
 $$
 Ax = x_1 a_1 + \cdots + x_k a_k
 $$
 
-Hence the range of $f(x) = Ax$ is exactly the span of the columns of $A$.
+因此，$f(x) = Ax$的值域恰好是$A$的列的张成空间。
 
-We want the range to be large so that it contains arbitrary $y$.
+我们希望值域足够大，以包含任意的$y$。
 
-As you might recall, the condition that we want for the span to be large is {ref}`linear independence <la_li>`.
+你可能记得，我们希望张成空间足够大的条件是{ref}`线性独立<la_li>`。
 
-A happy fact is that linear independence of the columns of $A$ also gives us uniqueness.
+一个令人高兴的事实是，$A$的列的线性独立性也能给我们唯一性。
 
-Indeed, it follows from our {ref}`earlier discussion <la_unique_reps>` that if $\{a_1, \ldots, a_k\}$ are linearly independent and $y = Ax = x_1 a_1 + \cdots + x_k a_k$, then no $z \not= x$ satisfies $y = Az$.
+确实，根据我们{ref}`之前的讨论 <la_unique_reps>`，如果$\{a_1, \ldots, a_k\}$是线性无关的，且$y = Ax = x_1 a_1 + \cdots + x_k a_k$，那么不存在$z \not= x$满足$y = Az$。
 
-### The Square Matrix Case
+### 方阵的情况
 
-Let's discuss some more details, starting with the case where $A$ is $n \times n$.
+让我们讨论更多细节，首先从$A$是$n \times n$矩阵的情况开始。
 
-This is the familiar case where the number of unknowns equals the number of equations.
+这是我们熟悉的方程个数等于未知数个数的情况。
 
-For arbitrary $y \in \mathbb R ^n$, we hope to find a unique $x \in \mathbb R ^n$ such that $y = Ax$.
+对于任意的$y \in \mathbb R ^n$，我们希望找到唯一的$x \in \mathbb R ^n$使得$y = Ax$。
 
-In view of the observations immediately above, if the columns of $A$ are
-linearly independent, then their span, and hence the range of $f(x) =
-Ax$, is all of $\mathbb R ^n$.
+根据上面的观察，如果$A$的列向量是线性无关的，那么它们的张成空间，也就是函数$f(x) = Ax$的值域，就是整个$\mathbb R ^n$。
 
-Hence there always exists an $x$ such that $y = Ax$.
+因此总是存在$x$使得$y = Ax$。
 
-Moreover, the solution is unique.
+而且，这个解是唯一的。
 
-In particular, the following are equivalent
+特别地，以下陈述是等价的：
 
-1. The columns of $A$ are linearly independent.
-1. For any $y \in \mathbb R ^n$, the equation $y = Ax$ has a unique solution.
+1. $A$的列向量是线性无关的。
+1. 对于任意$y \in \mathbb R ^n$，方程$y = Ax$有唯一解。
 
-The property of having linearly independent columns is sometimes expressed as having *full column rank*.
+列向量线性独立的性质有时被表述为具有*满秩列*。
 
-#### Inverse Matrices
+#### 逆矩阵
 
 ```{index} single: Matrix; Inverse
 ```
 
-Can we give some sort of expression for the solution?
+我们能给出某种形式的解吗？
 
-If $y$ and $A$ are scalar with $A \not= 0$, then the
-solution is $x = A^{-1} y$.
+如果$y$和$A$是标量且$A \not= 0$，那么解为$x = A^{-1} y$。
 
-A similar expression is available in the matrix case.
+在矩阵的情况下也有类似的表达式。
 
-In particular, if square matrix $A$ has full column rank, then it possesses a multiplicative
-*inverse matrix* $A^{-1}$, with the property that $A A^{-1} = A^{-1} A = I$.
+特别地，如果方阵$A$具有满秩列，那么它就有一个乘法*逆矩阵*$A^{-1}$，具有性质$A A^{-1} = A^{-1} A = I$。
 
-As a consequence, if we pre-multiply both sides of $y = Ax$ by $A^{-1}$, we get $x = A^{-1} y$.
+因此，如果我们用$A^{-1}$左乘等式$y = Ax$的两边，就得到$x = A^{-1} y$。
 
-This is the solution that we're looking for.
+这就是我们要找的解。
 
-#### Determinants
+#### 行列式
 
 ```{index} single: Matrix; Determinants
 ```
 
-Another quick comment about square matrices is that to every such matrix we
-assign a unique number called the *determinant* of the matrix --- you can find
-the expression for it [here](https://en.wikipedia.org/wiki/Determinant).
+关于方阵的另一个简短说明是，每个这样的矩阵都有一个唯一的数，称为矩阵的*行列式*——你可以在[这里](https://en.wikipedia.org/wiki/Determinant)找到它的表达式。
 
-If the determinant of $A$ is not zero, then we say that $A$ is
-*nonsingular*.
+如果矩阵$A$的行列式不为零，我们就说$A$是*非奇异的*。
 
-Perhaps the most important fact about determinants is that $A$ is nonsingular if and only if $A$ is of full column rank.
+关于行列式最重要的事实可能是：$A$是非奇异的，当且仅当$A$具有满列秩。
 
-This gives us a useful one-number summary of whether or not a square matrix can be
-inverted.
+这为我们提供了一个有用的单一数值，用来概括一个方阵是否可逆。
 
-### More Rows than Columns
+### 行数多于列数
 
-This is the $n \times k$ case with $n > k$.
+这是$n \times k$的情况，其中$n > k$。
 
-This case is very important in many settings, not least in the setting of linear regression (where $n$ is the number of observations, and $k$ is the number of explanatory variables).
+这种情况在许多场合都非常重要，尤其是在线性回归中（其中$n$是观测数量，$k$是解释变量的数量）。
 
-Given arbitrary $y \in \mathbb R ^n$, we seek an $x \in \mathbb R ^k$ such that $y = Ax$.
+对于任意的$y \in \mathbb R ^n$，我们寻找一个$x \in \mathbb R ^k$使得$y = Ax$。
 
-In this setting, the existence of a solution is highly unlikely.
+在这种情况下，解的存在性是极不可能的。
 
-Without much loss of generality, let's go over the intuition focusing on the case where the columns of
-$A$ are linearly independent.
+在不失一般性的情况下，让我们着重讨论$A$的列向量线性独立的情况。
 
-It follows that the span of the columns of $A$ is a $k$-dimensional subspace of $\mathbb R ^n$.
+由此可知，$A$的列向量张成的空间是$\mathbb R ^n$中的一个$k$维子空间。
 
-This span is very "unlikely" to contain arbitrary $y \in \mathbb R ^n$.
+这个张成空间不太"可能"包含任意的 $y \in \mathbb R ^n$。
 
-To see why, recall the {ref}`figure above <la_3dvec>`, where $k=2$ and $n=3$.
+要理解原因，请回顾{ref}`上图<la_3dvec>`，其中 $k=2$ 且 $n=3$。
 
-Imagine an arbitrarily chosen $y \in \mathbb R ^3$, located somewhere in that three-dimensional space.
+想象一个任意选择的 $y \in \mathbb R ^3$，位于这个三维空间中的某处。
 
-What's the likelihood that $y$ lies in the span of $\{a_1, a_2\}$ (i.e., the two dimensional plane through these points)?
+$y$ 落在 $\{a_1, a_2\}$ 的张成空间中（即通过这些点的二维平面）的可能性有多大？
 
-In a sense, it must be very small, since this plane has zero "thickness".
+从某种意义上说，这个可能性一定很小，因为这个平面的"厚度"为零。
 
-As a result, in the $n > k$ case we usually give up on existence.
+因此，在 $n > k$ 的情况下，我们通常会放弃寻求精确解。
 
-However, we can still seek the best approximation, for example, an
-$x$ that makes the distance $\| y - Ax\|$ as small as possible.
+然而，我们仍然可以寻求最佳近似解，例如，找到一个使距离 $\| y - Ax\|$ 尽可能小的 $x$。
 
-To solve this problem, one can use either calculus or the theory of orthogonal
-projections.
+要解决这个问题，可以使用微积分或正交投影理论。
 
-The solution is known to be $\hat x = (A'A)^{-1}A'y$ --- see for example chapter 3 of [these notes](https://python.quantecon.org/_static/lecture_specific/linear_algebra/course_notes.pdf).
+解为 $\hat x = (A'A)^{-1}A'y$ --- 参见[这些笔记](https://python.quantecon.org/_static/lecture_specific/linear_algebra/course_notes.pdf)的第3章。
 
-### More Columns than Rows
+### 列数多于行数
 
-This is the $n \times k$ case with $n < k$, so there are fewer
-equations than unknowns.
+这是 $n \times k$ 的情况，其中 $n < k$，所以方程数少于未知数。
 
-In this case there are either no solutions or infinitely many --- in other words, uniqueness never holds.
+在这种情况下，要么没有解，要么有无穷多个解 --- 换句话说，解永远不会是唯一的。
 
-For example, consider the case where $k=3$ and $n=2$.
+例如，考虑 $k=3$ 且 $n=2$ 的情况。
 
-Thus, the columns of $A$ consists of 3 vectors in $\mathbb R ^2$.
+因此，$A$ 的列由 $\mathbb R ^2$ 中的3个向量组成。
 
-This set can never be linearly independent, since it is possible to find two vectors that span
-$\mathbb R ^2$.
+这组向量永远不可能线性独立，因为可以找到两个向量就能张成 $\mathbb R ^2$。
 
-(For example, use the canonical basis vectors)
+（例如，使用标准基向量）
 
-It follows that one column is a linear combination of the other two.
+由此可知，其中一列是其他两列的线性组合。
 
-For example, let's say that $a_1 = \alpha a_2 + \beta a_3$.
+例如，假设 $a_1 = \alpha a_2 + \beta a_3$。
 
-Then if $y = Ax = x_1 a_1 + x_2 a_2 + x_3 a_3$, we can also write
+那么如果 $y = Ax = x_1 a_1 + x_2 a_2 + x_3 a_3$，我们也可以写成
 
 $$
 y
@@ -865,46 +838,46 @@ y
 = (x_1 \alpha + x_2) a_2 + (x_1 \beta + x_3) a_3
 $$
 
-In other words, uniqueness fails.
+换句话说，解不具有唯一性。
 
-### Linear Equations with SciPy
+### 使用SciPy求解线性方程
 
 ```{index} single: Linear Algebra; SciPy
 ```
 
-Here's an illustration of how to solve linear equations with SciPy's `linalg` submodule.
+下面展示如何使用SciPy的`linalg`子模块求解线性方程。
 
-All of these routines are Python front ends to time-tested and highly optimized FORTRAN code
+所有这些程序都是经过时间检验和高度优化的FORTRAN代码的Python前端接口
 
 ```{code-cell} python3
 A = ((1, 2), (3, 4))
 A = np.array(A)
-y = np.ones((2, 1))  # Column vector
-det(A)  # Check that A is nonsingular, and hence invertible
+y = np.ones((2, 1))  # 列向量
+det(A)  # 检查A是非奇异的，因此是可逆的
 ```
 
 ```{code-cell} python3
-A_inv = inv(A)  # Compute the inverse
+A_inv = inv(A)  # 计算逆矩阵
 A_inv
 ```
 
 ```{code-cell} python3
-x = A_inv @ y  # Solution
-A @ x          # Should equal y
+x = A_inv @ y  # 解
+A @ x          # 应该等于y
 ```
 
 ```{code-cell} python3
-solve(A, y)  # Produces the same solution
+solve(A, y)  # 产生相同的解
 ```
 
-Observe how we can solve for $x = A^{-1} y$ by either via `inv(A) @ y`, or using `solve(A, y)`.
+观察我们如何通过`inv(A) @ y`或使用`solve(A, y)`来求解$x = A^{-1} y$。
 
-The latter method uses a different algorithm (LU decomposition) that is numerically more stable, and hence should almost always be preferred.
+后一种方法使用不同的算法（LU分解），在数值上更稳定，因此几乎总是应该优先选择。
 
-To obtain the least-squares solution $\hat x = (A'A)^{-1}A'y$, use `scipy.linalg.lstsq(A, y)`.
+要获得最小二乘解$\hat x = (A'A)^{-1}A'y$，使用`scipy.linalg.lstsq(A, y)`。
 
 (la_eigen)=
-## {index}`Eigenvalues <single: Eigenvalues>` and {index}`Eigenvectors <single: Eigenvectors>`
+## {index}`特征值 <single: Eigenvalues>`和{index}`特征向量 <single: Eigenvectors>`
 
 ```{index} single: Linear Algebra; Eigenvalues
 ```
@@ -912,22 +885,21 @@ To obtain the least-squares solution $\hat x = (A'A)^{-1}A'y$, use `scipy.linalg
 ```{index} single: Linear Algebra; Eigenvectors
 ```
 
-Let $A$ be an $n \times n$ square matrix.
+设$A$是一个$n \times n$的方阵。
 
-If $\lambda$ is scalar and $v$ is a non-zero vector in $\mathbb R ^n$ such that
+如果$\lambda$是一个标量，且$v$是$\mathbb R ^n$中的非零向量，满足
 
 $$
 A v = \lambda v
 $$
 
-then we say that $\lambda$ is an *eigenvalue* of $A$, and
-$v$ is an *eigenvector*.
+则我们称$\lambda$是$A$的*特征值*，而$v$是*特征向量*。
 
-Thus, an eigenvector of $A$ is a vector such that when the map $f(x) = Ax$ is applied, $v$ is merely scaled.
+因此，$A$的特征向量是指当应用映射$f(x) = Ax$时，$v$仅仅被缩放的向量。
 
-The next figure shows two eigenvectors (blue arrows) and their images under $A$ (red arrows).
+下图显示了两个特征向量（蓝色箭头）及其在$A$下的像（红色箭头）。
 
-As expected, the image $Av$ of each $v$ is just a scaled version of the original
+正如预期的那样，每个向量 $v$ 的像 $Av$ 只是原向量的缩放版本
 
 ```{code-cell} python3
 ---
@@ -940,7 +912,7 @@ evals, evecs = eig(A)
 evecs = evecs[:, 0], evecs[:, 1]
 
 fig, ax = plt.subplots(figsize=(10, 8))
-# Set the axes through the origin
+# 设置通过原点的坐标轴
 for spine in ['left', 'bottom']:
     ax.spines[spine].set_position('zero')
 for spine in ['right', 'top']:
@@ -951,7 +923,7 @@ xmin, xmax = -3, 3
 ymin, ymax = -3, 3
 ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))
 
-# Plot each eigenvector
+# 绘制每个特征向量
 for v in evecs:
     ax.annotate('', xy=v, xytext=(0, 0),
                 arrowprops=dict(facecolor='blue',
@@ -959,7 +931,7 @@ for v in evecs:
                 alpha=0.6,
                 width=0.5))
 
-# Plot the image of each eigenvector
+# 绘制每个特征向量的像
 for v in evecs:
     v = A @ v
     ax.annotate('', xy=v, xytext=(0, 0),
@@ -968,7 +940,7 @@ for v in evecs:
                 alpha=0.6,
                 width=0.5))
 
-# Plot the lines they run through
+# 绘制它们所在的直线
 x = np.linspace(xmin, xmax, 3)
 for v in evecs:
     a = v[1] / v[0]
@@ -977,32 +949,27 @@ for v in evecs:
 plt.show()
 ```
 
-The eigenvalue equation is equivalent to $(A - \lambda I) v = 0$, and
-this has a nonzero solution $v$ only when the columns of $A -
-\lambda I$ are linearly dependent.
+特征值方程等价于 $(A - \lambda I) v = 0$，只有当 $A - \lambda I$ 的列向量线性相关时，才存在非零解 $v$。
 
-This in turn is equivalent to stating that the determinant is zero.
+这反过来又等价于行列式为零。
 
-Hence to find all eigenvalues, we can look for $\lambda$ such that the
-determinant of $A - \lambda I$ is zero.
+因此，要找到所有特征值，我们可以寻找使 $A - \lambda I$ 的行列式为零的 $\lambda$ 值。
 
-This problem can be expressed as one of solving for the roots of a polynomial
-in $\lambda$ of degree $n$.
+这个问题可以表示为求解一个关于 $\lambda$ 的 $n$ 次多项式的根。
 
-This in turn implies the existence of $n$ solutions in the complex
-plane, although some might be repeated.
+这进而意味着在复平面上存在 $n$ 个解，尽管有些可能是重复的。
 
-Some nice facts about the eigenvalues of a square matrix $A$ are as follows
+关于方阵 $A$ 的特征值，有以下一些重要性质：
 
-1. The determinant of $A$ equals  the product of the eigenvalues.
-1. The trace of $A$ (the sum of the elements on the principal diagonal) equals the sum of the eigenvalues.
-1. If $A$ is symmetric, then all of its eigenvalues are real.
-1. If $A$ is invertible and $\lambda_1, \ldots, \lambda_n$ are its eigenvalues, then the eigenvalues of $A^{-1}$ are $1/\lambda_1, \ldots, 1/\lambda_n$.
+1. $A$ 的行列式等于所有特征值的乘积。
+1. $A$ 的迹（主对角线上元素的和）等于所有特征值的和。
+1. 如果 $A$ 是对称矩阵，那么它的所有特征值都是实数。
 
-A corollary of the first statement is that a matrix is invertible if and only if all its eigenvalues are nonzero.
+1. 如果$A$是可逆的，且$\lambda_1, \ldots, \lambda_n$是它的特征值，那么$A^{-1}$的特征值是$1/\lambda_1, \ldots, 1/\lambda_n$。
 
-Using SciPy, we can solve for the eigenvalues and eigenvectors of a matrix as
-follows
+第一个陈述的一个推论是：矩阵可逆当且仅当它的所有特征值都不为零。
+
+使用SciPy，我们可以按如下方式求解矩阵的特征值和特征向量
 
 ```{code-cell} python3
 A = ((1, 2),
@@ -1017,73 +984,66 @@ evals
 evecs
 ```
 
-Note that the *columns* of `evecs` are the eigenvectors.
+注意 `evecs` 的*列*是特征向量。
 
-Since any scalar multiple of an eigenvector is an eigenvector with the same
-eigenvalue (check it), the eig routine normalizes the length of each eigenvector
-to one.
+由于特征向量的任意标量倍数都是具有相同特征值的特征向量（可以验证），eig 程序会将每个特征向量的长度归一化为1。
 
-### Generalized Eigenvalues
+### 广义特征值
 
-It is sometimes useful to consider the *generalized eigenvalue problem*, which, for given
-matrices $A$ and $B$, seeks generalized eigenvalues
-$\lambda$ and eigenvectors $v$ such that
+有时考虑*广义特征值问题*很有用，即对给定的矩阵 $A$ 和 $B$，寻找广义特征值 $\lambda$ 和特征向量 $v$，使得
 
 $$
 A v = \lambda B v
 $$
 
-This can be solved in SciPy via `scipy.linalg.eig(A, B)`.
+这可以通过 SciPy 中的 `scipy.linalg.eig(A, B)` 求解。
 
-Of course, if $B$ is square and invertible, then we can treat the
-generalized eigenvalue problem as an ordinary eigenvalue problem $B^{-1}
-A v = \lambda v$, but this is not always the case.
+当然，如果 $B$ 是方阵且可逆，我们可以将广义特征值问题转化为普通特征值问题 $B^{-1} A v = \lambda v$，但情况并非总是如此。
 
-## Further Topics
+## 进阶主题
 
-We round out our discussion by briefly mentioning several other important
-topics.
+我们通过简要介绍几个其他重要主题来结束讨论。
 
-### Series Expansions
+### 级数展开
 
 ```{index} single: Linear Algebra; Series Expansions
 ```
 
-Recall the usual summation formula for a geometric progression, which states
-that if $|a| < 1$, then $\sum_{k=0}^{\infty} a^k = (1 - a)^{-1}$.
+回顾几何级数的常用求和公式，即
 
-A generalization of this idea exists in the matrix setting.
+如果 $|a| < 1$，那么 $\sum_{k=0}^{\infty} a^k = (1 - a)^{-1}$。
+
+这个思想在矩阵环境中有一个推广形式。
 
 (la_mn)=
-#### Matrix Norms
+#### 矩阵范数
 
 ```{index} single: Linear Algebra; Matrix Norms
 ```
 
-Let $A$ be a square matrix, and let
+设 $A$ 为方阵，定义
 
 $$
 \| A \| := \max_{\| x \| = 1} \| A x \|
 $$
 
-The norms on the right-hand side are ordinary vector norms, while the norm on
-the left-hand side is a *matrix norm* --- in this case, the so-called
-*spectral norm*.
+右边的范数是普通的向量范数，而左边的范数是*矩阵范数*——在这种情况下，称为*谱范数*。
 
-For example, for a square matrix $S$, the condition $\| S \| < 1$ means that $S$ is *contractive*, in the sense that it pulls all vectors towards the origin [^cfn].
+例如，对于方阵 $S$，条件 $\| S \| < 1$ 意味着 $S$ 是*压缩的*，即它将所有向量拉向原点[^cfn]。
 
 (la_neumann)=
-#### {index}`Neumann's Theorem <single: Neumann's Theorem>`
+#### {index}`诺伊曼定理 <single: Neumann's Theorem>`
 
 ```{index} single: Linear Algebra; Neumann's Theorem
 ```
 
-Let $A$ be a square matrix and let $A^k := A A^{k-1}$ with $A^1 := A$.
+设 $A$ 为方阵，令 $A^k := A A^{k-1}$，其中 $A^1 := A$。
 
-In other words, $A^k$ is the $k$-th power of $A$.
+换句话说，$A^k$ 是 $A$ 的 $k$ 次幂。
 
-Neumann's theorem states the following: If $\| A^k \| < 1$ for some
-$k \in \mathbb{N}$, then $I - A$ is invertible, and
+诺伊曼定理指出：如果对某个 $\| A^k \| < 1$
+
+$k \in \mathbb{N}$，则 $I - A$ 是可逆的，且
 
 ```{math}
 :label: la_neumann
@@ -1092,120 +1052,118 @@ $k \in \mathbb{N}$, then $I - A$ is invertible, and
 ```
 
 (la_neumann_remarks)=
-#### {index}`Spectral Radius <single: Spectral Radius>`
+#### {index}`谱半径 <single: Spectral Radius>`
 
 ```{index} single: Linear Algebra; Spectral Radius
 ```
 
-A result known as Gelfand's formula tells us that, for any square matrix $A$,
+Gelfand公式告诉我们，对于任意方阵 $A$，
 
 $$
 \rho(A) = \lim_{k \to \infty} \| A^k \|^{1/k}
 $$
 
-Here $\rho(A)$ is the *spectral radius*, defined as $\max_i |\lambda_i|$, where $\{\lambda_i\}_i$ is the set of eigenvalues of $A$.
+这里 $\rho(A)$ 是*谱半径*，定义为 $\max_i |\lambda_i|$，其中 $\{\lambda_i\}_i$ 是 $A$ 的特征值集合。
 
-As a consequence of Gelfand's formula, if all eigenvalues are strictly less than one in modulus,
-there exists a $k$ with $\| A^k \| < 1$.
+作为Gelfand公式的结果，如果所有特征值的模都严格小于1，
+则存在一个 $k$ 使得 $\| A^k \| < 1$。
 
-In which case {eq}`la_neumann` is valid.
+在这种情况下，{eq}`la_neumann` 是有效的。
 
-### {index}`Positive Definite Matrices <single: Positive Definite Matrices>`
+### {index}`正定矩阵 <single: Positive Definite Matrices>`
 
 ```{index} single: Linear Algebra; Positive Definite Matrices
 ```
 
-Let $A$ be a symmetric $n \times n$ matrix.
+设 $A$ 是一个 $n \times n$ 对称矩阵。
 
-We say that $A$ is
+我们称 $A$ 是
 
-1. *positive definite* if $x' A x > 0$ for every $x \in \mathbb R ^n \setminus \{0\}$
-1. *positive semi-definite* or *nonnegative definite* if $x' A x \geq 0$ for every $x \in \mathbb R ^n$
+1. 如果对于每个 $x \in \mathbb R ^n \setminus \{0\}$，都有 $x' A x > 0$，则称矩阵为*正定的*
+1. 如果对于每个 $x \in \mathbb R ^n$，都有 $x' A x \geq 0$，则称矩阵为*半正定的*或*非负定的*
 
-Analogous definitions exist for negative definite and negative semi-definite matrices.
+负定和半负定矩阵有类似的定义。
 
-It is notable that if $A$ is positive definite, then all of its eigenvalues
-are strictly positive, and hence $A$ is invertible (with positive
-definite inverse).
+值得注意的是，如果 $A$ 是正定的，那么它的所有特征值都严格为正，因此 $A$ 是可逆的（且其逆矩阵也是正定的）。
 
 (la_mcalc)=
-### Differentiating Linear and Quadratic Forms
+### 线性和二次型的求导
 
 ```{index} single: Linear Algebra; Differentiating Linear and Quadratic Forms
 ```
 
-The following formulas are useful in many economic contexts.  Let
+以下公式在许多经济学场景中都很有用。设
 
-* $z, x$ and $a$ all be $n \times 1$ vectors
-* $A$ be an $n  \times n$ matrix
-* $B$ be an $m \times n$ matrix and $y$ be an $m  \times 1$ vector
+* $z, x$ 和 $a$ 都是 $n \times 1$ 向量
+* $A$ 是 $n \times n$ 矩阵
+* $B$ 是 $m \times n$ 矩阵，$y$ 是 $m \times 1$ 向量
 
-Then
+则
 
 1. $\frac{\partial a' x}{\partial x} = a$
 1. $\frac{\partial A x}{\partial x} = A'$
 1. $\frac{\partial x'A x}{\partial x} = (A + A') x$
 1. $\frac{\partial y'B z}{\partial y} = B z$
+
 1. $\frac{\partial y'B z}{\partial B} = y z'$
 
-{ref}`la_ex1` below asks you to apply these formulas.
+下面的{ref}`la_ex1`要求你应用这些公式。
 
-### Further Reading
+### 延伸阅读
 
-The documentation of the `scipy.linalg` submodule can be found [here](https://docs.scipy.org/doc/scipy/reference/linalg.html).
+`scipy.linalg`子模块的文档可以在[这里](https://docs.scipy.org/doc/scipy/reference/linalg.html)找到。
 
-Chapters 2 and 3 of the [Econometric Theory](https://johnstachurski.net/emet.html) contains
-a discussion of linear algebra along the same lines as above, with solved exercises.
+[计量经济学理论](https://johnstachurski.net/emet.html)的第2章和第3章包含了与上述内容类似的线性代数讨论，并附有已解答的练习题。
 
-If you don't mind a slightly abstract approach, a nice intermediate-level text on linear algebra
-is {cite}`Janich1994`.
+如果你不介意稍微抽象的方法，{cite}`Janich1994`是一本不错的中级线性代数教材。
 
-## Exercises
+## 练习
 
 ```{exercise-start}
 :label: la_ex1
 ```
 
-Let $x$ be a given $n \times 1$ vector and consider the problem
+设$x$是一个给定的$n \times 1$向量，考虑以下问题
 
 $$
 v(x) =  \max_{y,u} \left\{ - y'P y - u' Q u \right\}
 $$
 
-subject to the linear constraint
+受限于线性约束
 
 $$
 y = A x + B u
 $$
 
-Here
+其中
 
-* $P$ is an $n \times n$ matrix and $Q$ is an $m \times m$ matrix
-* $A$ is an $n \times n$ matrix and $B$ is an $n \times m$ matrix
-* both $P$ and $Q$ are symmetric and positive semidefinite
+* $P$是一个$n \times n$矩阵，$Q$是一个$m \times m$矩阵
+* $A$是一个$n \times n$矩阵，$B$是一个$n \times m$矩阵
+* $P$和$Q$都是对称且半正定的
 
-(What must the dimensions of $y$ and $u$ be to make this a well-posed problem?)
+($y$ 和 $u$ 的维度必须是多少才能使这成为一个合理的问题？)
 
-One way to solve the problem is to form the Lagrangian
+解决这个问题的一种方法是构建拉格朗日函数
 
 $$
 \mathcal L = - y' P y - u' Q u + \lambda' \left[A x + B u - y\right]
 $$
 
-where $\lambda$ is an $n \times 1$ vector of Lagrange multipliers.
+其中 $\lambda$ 是一个 $n \times 1$ 的拉格朗日乘子向量。
 
-Try applying the formulas given above for differentiating quadratic and linear forms to obtain the first-order conditions for maximizing $\mathcal L$ with respect to $y, u$ and minimizing it with respect to $\lambda$.
+尝试应用上面给出的关于二次型和线性型求导的公式，得到关于 $y, u$ 的最大化和关于 $\lambda$ 的最小化的一阶条件。
 
-Show that these conditions imply that
+证明这些条件意味着：
 
-1. $\lambda = - 2 P y$.
-1. The optimizing choice of $u$ satisfies $u = - (Q + B' P B)^{-1} B' P A x$.
-1. The function $v$ satisfies $v(x) = - x' \tilde P x$ where $\tilde P = A' P A - A'P B (Q + B'P B)^{-1} B' P A$.
+1. $\lambda = - 2 P y$。
+1. $u$ 的最优选择满足 $u = - (Q + B' P B)^{-1} B' P A x$。
+1. 函数 $v$ 满足 $v(x) = - x' \tilde P x$，其中 $\tilde P = A' P A - A'P B (Q + B'P B)^{-1} B' P A$。
 
-As we will see, in economic contexts Lagrange multipliers often are shadow prices.
+正如我们将看到的，在经济学背景下，拉格朗日乘子通常是影子价格。
 
 ```{note}
-If we don't care about the Lagrange multipliers, we can substitute the constraint into the objective function, and then just maximize $-(Ax + Bu)'P (Ax + Bu) - u' Q u$ with respect to $u$.  You can verify that this leads to the same maximizer.
+
+如果我们不关心拉格朗日乘数，我们可以将约束条件代入目标函数，然后仅对$u$最大化$-(Ax + Bu)'P (Ax + Bu) - u' Q u$。你可以验证这会得到相同的最大值。
 ```
 
 ```{exercise-end}
@@ -1215,67 +1173,62 @@ If we don't care about the Lagrange multipliers, we can substitute the constrain
 :class: dropdown
 ```
 
-We have an optimization problem:
+我们有一个优化问题：
 
 $$
 v(x) = \max_{y,u} \{ -y'Py - u'Qu \}
 $$
 
-s.t.
+满足约束条件：
 
 $$
 y = Ax + Bu
 $$
 
-with primitives
+其中基本条件为：
 
-- $P$ be a symmetric and positive semidefinite $n \times n$
-  matrix
-- $Q$ be a symmetric and positive semidefinite $m \times m$
-  matrix
-- $A$ an $n \times n$ matrix
-- $B$ an $n \times m$ matrix
+- $P$是一个对称且半正定的$n \times n$矩阵
+- $Q$是一个对称且半正定的$m \times m$矩阵
+- $A$是一个$n \times n$矩阵
+- $B$是一个$n \times m$矩阵
 
-The associated Lagrangian is:
+相关的拉格朗日函数是：
 
 $$
 L = -y'Py - u'Qu + \lambda' \lbrack Ax + Bu - y \rbrack
 $$
 
-**Step 1.**
+**第1步：**
 
-Differentiating Lagrangian equation w.r.t y and setting its derivative
-equal to zero yields
+对拉格朗日方程关于y求导并令其导数等于零得到：
 
 $$
 \frac{ \partial L}{\partial y} = - (P + P') y - \lambda = - 2 P y - \lambda = 0 \:,
 $$
 
-since P is symmetric.
+因为P是对称的。
 
-Accordingly, the first-order condition for maximizing L w.r.t. y implies
+因此，关于y的拉格朗日方程最大化的一阶条件意味着
 
 $$
 \lambda = -2 Py \:
 $$
 
-**Step 2.**
+**第2步.**
 
-Differentiating Lagrangian equation w.r.t. u and setting its derivative
-equal to zero yields
+对拉格朗日方程关于u求导并令其导数等于零得到
 
 $$
 \frac{ \partial L}{\partial u} = - (Q + Q') u - B'\lambda = - 2Qu + B'\lambda = 0 \:
 $$
 
-Substituting $\lambda = -2 P y$ gives
+代入$\lambda = -2 P y$得到
 
 $$
 Qu + B'Py = 0 \:
 $$
 
-Substituting the linear constraint $y = Ax + Bu$ into above
-equation gives
+将线性约束$y = Ax + Bu$代入上式得到
 
 $$
 Qu + B'P(Ax + Bu) = 0
@@ -1285,34 +1238,32 @@ $$
 (Q + B'PB)u + B'PAx = 0
 $$
 
-which is the first-order condition for maximizing $L$ w.r.t. $u$.
+这是关于u的拉格朗日方程最大化的一阶条件。
 
-Thus, the optimal choice of u must satisfy
+因此，u的最优选择必须满足
 
 $$
 u = -(Q + B'PB)^{-1}B'PAx \:,
 $$
 
-which follows from the definition of the first-order conditions for
-Lagrangian equation.
+这是由拉格朗日方程的一阶条件定义得出的。
 
-**Step 3.**
+**第3步.**
 
-Rewriting our problem by substituting the constraint into the objective
-function, we get
+将约束代入目标函数，重写我们的问题，得到
 
 $$
 v(x) = \max_{u} \{ -(Ax+ Bu)'P(Ax+Bu) - u'Qu \} \:
 $$
 
-Since we know the optimal choice of u satisfies $u = -(Q +
-B'PB)^{-1}B'PAx$, then
+由于我们知道u的最优选择满足$u = -(Q + B'PB)^{-1}B'PAx$，那么
 
 $$
-v(x) =  -(Ax+ B u)'P(Ax+B u) - u'Q u  \,\,\,\, with \,\,\,\, u = -(Q + B'PB)^{-1}B'PAx
+
+v(x) =  -(Ax+ B u)'P(Ax+B u) - u'Q u  \,\,\,\, 其中 \,\,\,\, u = -(Q + B'PB)^{-1}B'PAx
 $$
 
-To evaluate the function
+计算函数
 
 $$
 \begin{aligned}
@@ -1323,9 +1274,9 @@ v(x) &=  -(Ax+ B u)'P(Ax+Bu) - u'Q u \\
 \end{aligned}
 $$
 
-For simplicity, denote by $S := (Q + B'PB)^{-1} B'PA$, then $u = -Sx$.
+为简化起见，令 $S := (Q + B'PB)^{-1} B'PA$，则 $u = -Sx$。
 
-Regarding the second term $- 2u'B'PAx$,
+对于第二项 $- 2u'B'PAx$，
 
 $$
 \begin{aligned}
@@ -1334,10 +1285,9 @@ $$
 \end{aligned}
 $$
 
-Notice that the term $(Q + B'PB)^{-1}$ is symmetric as both P and Q
-are symmetric.
+注意到项 $(Q + B'PB)^{-1}$ 是对称的，因为 P 和 Q 都是对称的。
 
-Regarding the third term $- u'(Q + B'PB) u$,
+对于第三项 $- u'(Q + B'PB) u$，
 
 $$
 \begin{aligned}
@@ -1346,27 +1296,31 @@ $$
 \end{aligned}
 $$
 
-Hence, the summation of second and third terms is
-$x'A'PB(Q + B'PB)^{-1}B'PAx$.
+因此，第二项和第三项的和为
+$x'A'PB(Q + B'PB)^{-1}B'PAx$。
 
-This implies that
+这意味着
 
 $$
 \begin{aligned}
  v(x) &= - x'A'PAx - 2u'B'PAx - u'(Q + B'PB) u\\
  &= - x'A'PAx + x'A'PB(Q + B'PB)^{-1}B'PAx \\
- &= -x'[A'PA - A'PB(Q + B'PB)^{-1}B'PA] x
+
+$$
+\begin{aligned}
+&= -x'[A'PA - A'PB(Q + B'PB)^{-1}B'PA] x
 \end{aligned}
 $$
 
-Therefore, the solution to the optimization problem
-$v(x) = -x' \tilde{P}x$ follows the above result by denoting
+因此，优化问题的解
+$v(x) = -x' \tilde{P}x$ 遵循上述结果，其中
 $\tilde{P} := A'PA - A'PB(Q + B'PB)^{-1}B'PA$
 
 ```{solution-end}
 ```
 
-[^fn_mdt]: Although there is a specialized matrix data type defined in NumPy, it's more standard to work with ordinary NumPy arrays.
-See [this discussion](https://python-programming.quantecon.org/numpy.html#matrix-multiplication).
+[^fn_mdt]: 虽然NumPy中定义了专门的矩阵数据类型，但使用普通的NumPy数组更为标准。
+参见[此讨论](https://python-programming.quantecon.org/numpy.html#matrix-multiplication)。
 
-[^cfn]: Suppose that $\|S \| < 1$. Take any nonzero vector $x$, and let $r := \|x\|$. We have $\| Sx \| = r \| S (x/r) \| \leq r \| S \| < r = \| x\|$. Hence every point is pulled towards the origin.
+[^cfn]: 假设 $\|S \| < 1$。取任意非零向量 $x$，令 $r := \|x\|$。我们有 $\| Sx \| = r \| S (x/r) \| \leq r \| S \| < r = \| x\|$。因此每个点都被拉向原点。
+

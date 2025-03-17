@@ -22,58 +22,47 @@ kernelspec:
 ```{index} single: python
 ```
 
-# Using Newton's Method to Solve Economic Models
+# 使用牛顿法求解经济模型
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
 ```{seealso}
-**GPU:** A version of this lecture which makes use of [jax](https://jax.readthedocs.io) to run the code
-on a `GPU` is [available here](https://jax.quantecon.org/newtons_method.html)
+**GPU:** 这个讲座的一个使用[jax](https://jax.readthedocs.io)在`GPU`上运行代码的版本[可在此处获得](https://jax.quantecon.org/newtons_method.html)
 ```
 
-## Overview
+## 概述
 
-Many economic problems involve finding [fixed
-points](https://en.wikipedia.org/wiki/Fixed_point_(mathematics)) or
-[zeros](https://en.wikipedia.org/wiki/Zero_of_a_function) (sometimes called
-"roots") of functions.
+许多经济问题涉及寻找[不动点
 
-For example, in a simple supply and demand model, an equilibrium price is one
-that makes excess demand zero.  
+[不动点](https://en.wikipedia.org/wiki/Fixed_point_(mathematics))或[零点](https://en.wikipedia.org/wiki/Zero_of_a_function)（有时也称为"根"）。
 
-In other words, an equilibrium is a zero of the excess demand function.
+例如，在简单的供需模型中，均衡价格是使超额需求为零的价格。
 
-There are various computational techniques for solving for fixed points and
-zeros.
+换句话说，均衡是超额需求函数的零点。
 
-In this lecture we study an important gradient-based technique called [Newton's
-method](https://en.wikipedia.org/wiki/Newton%27s_method).
+有各种计算技术可用于求解不动点和零点。
 
-Newton's method does not always work but, in situations where it does,
-convergence is often fast when compared to other methods.
+在本讲中，我们将学习一种重要的基于梯度的技术，称为[牛顿法](https://en.wikipedia.org/wiki/Newton%27s_method)。
 
-The lecture will apply Newton's method in one-dimensional and
-multi-dimensional settings to solve fixed-point and zero-finding problems. 
+牛顿法并不总是有效，但在适用的情况下，与其他方法相比，收敛速度通常较快。
 
-* When finding the fixed point of a function $f$, Newton's method updates
-  an existing guess of the fixed point by solving for the fixed point of a
-  linear approximation to the function $f$.
+本讲将在一维和多维环境中应用牛顿法来解决不动点和零点查找问题。
 
-* When finding the zero of a function $f$, Newton's method updates
-  an existing guess by solving for the zero of a linear approximation to
-  the function $f$.
+* 在寻找函数$f$的不动点时，牛顿法通过求解一个
 
-To build intuition, we first consider an easy, one-dimensional fixed point
-problem where we know the solution and solve it using both successive
-approximation and Newton's method.
+函数 $f$ 的线性近似。
 
-Then we apply Newton's method to multi-dimensional settings to solve
-market for equilibria with multiple goods.
+* 在寻找函数 $f$ 的零点时，牛顿法通过求解函数 $f$ 的线性近似的零点来更新
+  现有的猜测值。
 
-At the end of the lecture we leverage the power of automatic
-differentiation in [`autograd`](https://github.com/HIPS/autograd) to solve a very high-dimensional equilibrium problem
+为了建立直观认识，我们首先考虑一个简单的一维不动点问题，其中我们已知解，并使用连续
+近似和牛顿法来求解。
+
+然后我们将牛顿法应用到多维环境中，求解多种商品的市场均衡。
+
+在讲座最后，我们利用 [`autograd`](https://github.com/HIPS/autograd) 中自动微分的强大功能来求解一个非常高维的均衡问题。
 
 ```{code-cell} ipython3
 :tags: [hide-output]
@@ -81,33 +70,29 @@ differentiation in [`autograd`](https://github.com/HIPS/autograd) to solve a ver
 !pip install autograd
 ```
 
-We use the following imports in this lecture
+我们在本讲中使用以下导入语句
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
 from collections import namedtuple
 from scipy.optimize import root
 from autograd import jacobian
-# Thinly-wrapped numpy to enable automatic differentiation
+# 经过简单封装的numpy，以支持自动微分
 import autograd.numpy as np
 
 plt.rcParams["figure.figsize"] = (10, 5.7)
 ```
 
-## Fixed Point Computation Using Newton's Method
+## 用牛顿法计算不动点
 
-In this section we solve the fixed point of the law of motion for capital in
-the setting of the [Solow growth
-model](https://en.wikipedia.org/wiki/Solow%E2%80%93Swan_model).
+在本节中，我们将在[索洛增长模型](https://en.wikipedia.org/wiki/Solow%E2%80%93Swan_model)的框架下求解资本运动规律的不动点。
 
-We will inspect the fixed point visually, solve it by successive
-approximation, and then apply Newton's method to achieve faster convergence.
+我们将通过可视化方式检查不动点，用连续逼近法求解，然后应用牛顿法来实现更快的收敛。
 
 (solow)=
-### The Solow Model
+### 索洛模型
 
-In the Solow growth model, assuming Cobb-Douglas production technology and
-zero population growth, the law of motion for capital is
+在索洛增长模型中，假设采用柯布-道格拉斯生产技术且人口零增长，资本的运动规律为
 
 ```{math}
 :label: motion_law
@@ -115,42 +100,41 @@ zero population growth, the law of motion for capital is
     g(k) := sAk^\alpha + (1-\delta) k
 ```
 
-Here
+其中
 
-- $k_t$ is capital stock per worker,
-- $A, \alpha>0$ are production parameters, $\alpha<1$
-- $s>0$ is a savings rate, and
-- $\delta \in(0,1)$ is a rate of depreciation
+- $k_t$ 是人均资本存量
+- $A, \alpha>0$ 是生产参数，$\alpha<1$
+- $s>0$ 是储蓄率
+- $\delta \in(0,1)$ 是折旧率
 
-In this example, we wish to calculate the unique strictly positive fixed point
-of $g$, the law of motion for capital.
+在这个例子中，我们希望计算资本运动规律$g$的唯一严格正不动点。
 
-In other words, we seek a $k^* > 0$ such that $g(k^*)=k^*$.
+换句话说，我们要寻找一个 $k^* > 0$ 使得 $g(k^*)=k^*$。
 
-* such a $k^*$ is called a [steady state](https://en.wikipedia.org/wiki/Steady_state),
-  since $k_t = k^*$ implies $k_{t+1} = k^*$.
+* 这样的 $k^*$ 被称为[稳态](https://en.wikipedia.org/wiki/Steady_state)，
+  因为当 $k_t = k^*$ 时意味着 $k_{t+1} = k^*$。
 
-Using pencil and paper to solve $g(k)=k$, you will be able to confirm that
+用纸笔解方程 $g(k)=k$，你可以验证
 
 $$ k^* = \left(\frac{s A}{δ}\right)^{1/(1 - α)}  $$
 
-### Implementation
+### 实现
 
-Let's store our parameters in [`namedtuple`](https://docs.python.org/3/library/collections.html#collections.namedtuple) to help us keep our code clean and concise.
+让我们使用 [`namedtuple`](https://docs.python.org/3/library/collections.html#collections.namedtuple) 来存储我们的参数，这有助于保持代码的整洁和简洁。
 
 ```{code-cell} ipython3
 SolowParameters = namedtuple("SolowParameters", ('A', 's', 'α', 'δ'))
 ```
 
-This function creates a suitable `namedtuple` with default parameter values.
+此函数创建一个带有默认参数值的适当的`namedtuple`。
 
 ```{code-cell} ipython3
 def create_solow_params(A=2.0, s=0.3, α=0.3, δ=0.4):
-    "Creates a Solow model parameterization with default values."
+    "创建一个带有默认值的索洛模型参数化。"
     return SolowParameters(A=A, s=s, α=α, δ=δ)
 ```
 
-The next two functions implement the law of motion [](motion_law) and store the true fixed point $k^*$.
+接下来的两个函数实现运动定律[](motion_law)并存储真实的不动点$k^*$。
 
 ```{code-cell} ipython3
 def g(k, params):
@@ -162,7 +146,7 @@ def exact_fixed_point(params):
     return ((s * A) / δ)**(1/(1 - α))
 ```
 
-Here is a function to provide a 45 degree plot of the dynamics.
+这是一个用于绘制45度动态图的函数。
 
 ```{code-cell} ipython3
 def plot_45(params, ax, fontsize=14):
@@ -170,12 +154,12 @@ def plot_45(params, ax, fontsize=14):
     k_min, k_max = 0.0, 3.0
     k_grid = np.linspace(k_min, k_max, 1200)
 
-    # Plot the functions
+    # 绘制函数
     lb = r"$g(k) = sAk^{\alpha} + (1 - \delta)k$"
     ax.plot(k_grid, g(k_grid, params),  lw=2, alpha=0.6, label=lb)
     ax.plot(k_grid, k_grid, "k--", lw=1, alpha=0.7, label="45")
 
-    # Show and annotate the fixed point
+    # 显示并标注固定点
     kstar = exact_fixed_point(params)
     fps = (kstar,)
     ax.plot(fps, fps, "go", ms=10, alpha=0.6)
@@ -195,7 +179,7 @@ def plot_45(params, ax, fontsize=14):
     ax.set_ylabel("$k_{t+1}$", fontsize=fontsize)
 ```
 
-Let's look at the 45 degree diagram for two parameterizations.
+让我们看看两个参数化的45度图。
 
 ```{code-cell} ipython3
 params = create_solow_params()
@@ -211,21 +195,20 @@ plot_45(params, ax)
 plt.show()
 ```
 
-We see that $k^*$ is indeed the unique positive fixed point.
+我们看到 $k^*$ 确实是唯一的正固定点。
 
 
-#### Successive Approximation
+#### 连续近似法
 
-First let's compute the fixed point using successive approximation.
+首先让我们用连续近似法来计算固定点。
 
-In this case, successive approximation means repeatedly updating capital
-from some initial state $k_0$ using the law of motion.
+在这种情况下，连续近似法意味着从某个初始状态 $k_0$ 开始，使用运动规律反复更新资本。
 
-Here's a time series from a particular choice of $k_0$.
+这里是从特定选择的 $k_0$ 得到的时间序列。
 
 ```{code-cell} ipython3
 def compute_iterates(k_0, f, params, n=25):
-    "Compute time series of length n generated by arbitrary function f."
+    "计算由任意函数f生成的长度为n的时间序列。"
     k = k_0
     k_iterates = []
     for t in range(n):
@@ -247,7 +230,7 @@ ax.set_ylim(0, 3)
 plt.show()
 ```
 
-Let's see the output for a long time series.
+让我们看看长时间序列的输出。
 
 ```{code-cell} ipython3
 k_series = compute_iterates(k_0, g, params, n=10_000)
@@ -255,7 +238,7 @@ k_star_approx = k_series[-1]
 k_star_approx
 ```
 
-This is close to the true value.
+这接近真实值。
 
 (solved_k)=
 
@@ -263,16 +246,11 @@ This is close to the true value.
 k_star
 ```
 
-#### Newton's Method 
+#### 牛顿法
 
-In general, when applying Newton's fixed point method to some function $g$, 
-we start with a guess $x_0$ of the fixed
-point and then update by solving for the fixed point of a tangent line at
-$x_0$.
+一般来说，当对某个函数$g$应用牛顿不动点法时，我们从一个不动点的猜测值$x_0$开始，然后通过求解$x_0$处切线的不动点来更新。
 
-To begin with, we recall that the first-order approximation of $g$ at $x_0$
-(i.e., the first order Taylor approximation of $g$ at $x_0$) is
-the function
+首先，我们回顾一下$g$在$x_0$处的一阶近似（即$g$在$x_0$处的一阶泰勒近似）是以下函数：
 
 ```{math}
 :label: motivation
@@ -280,23 +258,22 @@ the function
 \hat g(x) \approx g(x_0)+g'(x_0)(x-x_0)
 ```
 
-We solve for the fixed point of $\hat g$ by calculating the $x_1$ that solves
+我们通过计算满足以下等式的$x_1$来求解$\hat g$的不动点：
 
 $$
 x_1=\frac{g(x_0)-g'(x_0) x_0}{1-g'(x_0)}
 $$
 
-Generalising the process above, Newton's fixed point method iterates on 
+推广上述过程，牛顿不动点法的迭代公式为：
 
 ```{math}
 :label: newtons_method
 
 x_{t+1} = \frac{g(x_t) - g'(x_t) x_t}{ 1 - g'(x_t) },
-\quad x_0 \text{ given}
+\quad x_0 \text{ 给定}
 ```
 
-
-To implement Newton's method we observe that the derivative of the law of motion for capital [](motion_law) is
+要实现牛顿法，我们观察到资本运动定律[](motion_law)的导数为：
 
 ```{math}
 :label: newton_method2
@@ -305,7 +282,7 @@ g'(k) = \alpha s A k^{\alpha-1} + (1-\delta)
 
 ```
 
-Let's define this:
+让我们定义这个：
 
 ```{code-cell} ipython3
 def Dg(k, params):
@@ -313,36 +290,36 @@ def Dg(k, params):
     return α * A * s * k**(α-1) + (1 - δ)
 ```
 
-Here's a function $q$ representing [](newtons_method).
+这里有一个函数 $q$ 表示 [](newtons_method)。
 
 ```{code-cell} ipython3
 def q(k, params):
     return (g(k, params) - Dg(k, params) * k) / (1 - Dg(k, params))
 ```
 
-Now let's plot some trajectories.
+现在让我们绘制一些轨迹。
 
 ```{code-cell} ipython3
 def plot_trajectories(params, 
-                      k0_a=0.8,  # first initial condition
-                      k0_b=3.1,  # second initial condition
-                      n=20,      # length of time series
-                      fs=14):    # fontsize
+                      k0_a=0.8,  # 第一个初始条件
+                      k0_b=3.1,  # 第二个初始条件
+                      n=20,      # 时间序列长度
+                      fs=14):    # 字体大小
 
     fig, axes = plt.subplots(2, 1, figsize=(10, 6))
     ax1, ax2 = axes
 
     ks1 = compute_iterates(k0_a, g, params, n)
-    ax1.plot(ks1, "-o", label="successive approximation")
+    ax1.plot(ks1, "-o", label="连续近似")
 
     ks2 = compute_iterates(k0_b, g, params, n)
-    ax2.plot(ks2, "-o", label="successive approximation")
+    ax2.plot(ks2, "-o", label="连续近似")
 
     ks3 = compute_iterates(k0_a, q, params, n)
-    ax1.plot(ks3, "-o", label="newton steps")
+    ax1.plot(ks3, "-o", label="牛顿步骤")
 
     ks4 = compute_iterates(k0_b, q, params, n)
-    ax2.plot(ks4, "-o", label="newton steps")
+    ax2.plot(ks4, "-o", label="牛顿步骤")
 
     for ax in axes:
         ax.plot(k_star * np.ones(n), "k--")
@@ -360,52 +337,49 @@ params = create_solow_params()
 plot_trajectories(params)
 ```
 
-We can see that Newton's method converges faster than successive approximation.
+我们可以看到牛顿法比连续逼近法收敛得更快。
 
 
-## Root-Finding in One Dimension
+## 一维寻根
 
-In the previous section we computed fixed points.
+在上一节中我们计算了不动点。
 
-In fact Newton's method is more commonly associated with the problem of
-finding zeros of functions.
+事实上，牛顿法更常与寻找函数零点的问题相关联。
 
-Let's discuss this "root-finding" problem and then show how it is connected to
-the problem of finding fixed points.
+让我们讨论这个"寻根"问题，然后说明它与寻找不动点的问题是如何联系的。
 
 
 
-### Newton's Method for Zeros
+### 牛顿法求零点
 
-Let's suppose we want to find an $x$ such that $f(x)=0$ for some smooth
-function $f$ mapping real numbers to real numbers.
+假设我们想要找到一个 $x$ 使得对某个光滑函数 $f$ (从实数映射到实数)有 $f(x)=0$。
 
-Suppose we have a guess $x_0$ and we want to update it to a new point $x_1$.
+假设我们有一个猜测值 $x_0$ 并且想要将其更新为新的点 $x_1$。
 
-As a first step, we take the first-order approximation of $f$ around $x_0$:
+作为第一步，我们取 $f$ 在 $x_0$ 处的一阶近似：
 
 $$
 \hat f(x) \approx f\left(x_0\right)+f^{\prime}\left(x_0\right)\left(x-x_0\right)
 $$
 
-Now we solve for the zero of $\hat f$.  
+现在我们求解 $\hat f$ 的零点。
 
-In particular, we set $\hat{f}(x_1) = 0$ and solve for $x_1$ to get
+具体来说，我们令 $\hat{f}(x_1) = 0$ 并求解 $x_1$，得到
 
 $$
 x_1 = x_0 - \frac{ f(x_0) }{ f'(x_0) },
-\quad x_0 \text{ given}
+\quad x_0 \text{ 已知}
 $$
 
-Generalizing the formula above, for one-dimensional zero-finding problems, Newton's method iterates on
+对于一维零点查找问题，牛顿法的迭代公式可以概括为
 
 ```{math}
 :label: oneD-newton
 x_{t+1} = x_t - \frac{ f(x_t) }{ f'(x_t) },
-\quad x_0 \text{ given}
+\quad x_0 \text{ 给定}
 ```
 
-The following code implements the iteration [](oneD-newton)
+以下代码实现了迭代公式 [](oneD-newton)
 
 (first_newton_attempt)=
 
@@ -413,7 +387,7 @@ The following code implements the iteration [](oneD-newton)
 def newton(f, Df, x_0, tol=1e-7, max_iter=100_000):
     x = x_0
 
-    # Implement the zero-finding formula
+    # 实现零点查找公式
     def q(x):
         return x - f(x) / Df(x)
 
@@ -422,32 +396,27 @@ def newton(f, Df, x_0, tol=1e-7, max_iter=100_000):
     while error > tol:
         n += 1
         if(n > max_iter):
-            raise Exception('Max iteration reached without convergence')
+            raise Exception('达到最大迭代次数但未收敛')
         y = q(x)
         error = np.abs(x - y)
         x = y
-        print(f'iteration {n}, error = {error:.5f}')
+        print(f'迭代 {n}, 误差 = {error:.5f}')
     return x
 ```
 
-Numerous libraries implement Newton's method in one dimension, including
-SciPy, so the code is just for illustrative purposes.
+许多库都实现了一维牛顿法，包括SciPy，所以这里的代码仅作说明用途。
 
-(That said, when we want to apply Newton's method using techniques such as
-automatic differentiation or GPU acceleration, it will be helpful to know how
-to implement Newton's method ourselves.)
+（话虽如此，当我们想要使用自动微分或GPU加速等技术来应用牛顿法时，了解如何自己实现牛顿法会很有帮助。）
 
+### 在寻找不动点中的应用
 
-### Application to Finding Fixed Points
+现在再次考虑索洛不动点计算，我们要求解满足$g(k) = k$的$k$值。
 
-Now consider again the Solow fixed-point calculation, where we solve for $k$
-satisfying $g(k) = k$.
+我们可以通过设定$f(x) := g(x)-x$将其转换为零点寻找问题。
 
-We can convert to this to a zero-finding problem by setting $f(x) := g(x)-x$.
+显然，$f$的任何零点都是$g$的不动点。
 
-Any zero of $f$ is clearly a fixed point of $g$.
-
-Let's apply this idea to the Solow problem
+让我们将这个想法应用到索洛问题中
 
 ```{code-cell} ipython3
 params = create_solow_params()
@@ -457,60 +426,54 @@ k_star_approx_newton = newton(f=lambda x: g(x, params) - x,
 ```
 
 ```{code-cell} ipython3
-k_star_approx_newton
+k_star_近似牛顿法
 ```
 
-The result confirms the descent we saw in the graphs above: a very accurate result is reached with only 5 iterations.
+结果证实了我们在上面图表中看到的收敛情况：仅需5次迭代就达到了非常精确的结果。
 
 
 
-## Multivariate Newton’s Method
+## 多元牛顿法
 
-In this section, we introduce a two-good problem, present a
-visualization of the problem, and solve for the equilibrium of the two-good market
-using both a zero finder in `SciPy` and Newton's method.
+在本节中，我们将介绍一个双商品问题，展示问题的可视化，并使用`SciPy`中的零点查找器和牛顿法来求解这个双商品市场的均衡。
 
-We then expand the idea to a larger market with 5,000 goods and compare the
-performance of the two methods again.
+然后，我们将这个概念扩展到一个包含5,000种商品的更大市场，并再次比较这两种方法的性能。
 
-We will see a significant performance gain when using Netwon's method.
+我们将看到使用牛顿法时能获得显著的性能提升。
 
 
 (two_goods_market)=
-### A Two Goods Market Equilibrium
+### 双商品市场均衡
 
-Let's start by computing the market equilibrium of a two-good problem.
+让我们从计算双商品问题的市场均衡开始。
 
-We consider a market for two related products, good 0 and good 1, with
-price vector $p = (p_0, p_1)$
+我们考虑一个包含两种相关产品的市场，商品0和商品1，价格向量为$p = (p_0, p_1)$
 
-Supply of good $i$ at price $p$,
+在价格$p$下，商品$i$的供给为，
 
 $$ 
 q^s_i (p) = b_i \sqrt{p_i} 
 $$
 
-Demand of good $i$ at price $p$ is,
+在价格$p$下，商品$i$的需求为，
 
 $$ 
 q^d_i (p) = \exp(-(a_{i0} p_0 + a_{i1} p_1)) + c_i
 $$
 
-Here $c_i$, $b_i$ and $a_{ij}$ are parameters.
+这里的$c_i$、$b_i$和$a_{ij}$都是参数。
 
-For example, the two goods might be computer components that are typically used together, in which case they are complements. Hence demand depends on the price of both components.
+例如，这两种商品可能是通常一起使用的计算机组件，在这种情况下它们是互补品。因此需求取决于两种组件的价格。
 
-The excess demand function is,
+超额需求函数为，
 
 $$
 e_i(p) = q^d_i(p) - q^s_i(p), \quad i = 0, 1
 $$
 
+均衡价格向量$p^*$满足$e_i(p^*) = 0$。
 
-An equilibrium price vector $p^*$ satisfies $e_i(p^*) = 0$.
-
-
-We set
+我们设定
 
 $$
 A = \begin{pmatrix}
@@ -522,20 +485,20 @@ A = \begin{pmatrix}
             b_0 \\
             b_1
         \end{pmatrix}
-    \qquad \text{and} \qquad
+    \qquad \text{和} \qquad
     c = \begin{pmatrix}
             c_0 \\
             c_1
         \end{pmatrix}
 $$
 
-for this particular question.
+用于这个特定问题。
 
-#### A Graphical Exploration
+#### 图形化探索
 
-Since our problem is only two-dimensional, we can use graphical analysis to visualize and help understand the problem.
+由于我们的问题只是二维的，我们可以使用图形分析来可视化并帮助理解这个问题。
 
-Our first step is to define the excess demand function
+我们的第一步是定义超额需求函数
 
 $$
 e(p) = 
@@ -545,14 +508,14 @@ e(p) =
     \end{pmatrix}
 $$
 
-The function below calculates the excess demand for given parameters
+下面的函数计算给定参数的超额需求
 
 ```{code-cell} ipython3
 def e(p, A, b, c):
     return np.exp(- A @ p) + c - b * np.sqrt(p)
 ```
 
-Our default parameter values will be
+我们的默认参数值将是
 
 
 $$
@@ -565,7 +528,7 @@ A = \begin{pmatrix}
             1 \\
             1
         \end{pmatrix}
-    \qquad \text{and} \qquad
+    \qquad \text{和} \qquad
     c = \begin{pmatrix}
             1 \\
             1
@@ -581,18 +544,18 @@ b = np.ones(2)
 c = np.ones(2)
 ```
 
-At a price level of $p = (1, 0.5)$, the excess demand is
+在价格水平 $p = (1, 0.5)$ 时，超额需求为
 
 ```{code-cell} ipython3
 ex_demand = e((1.0, 0.5), A, b, c)
 
-print(f'The excess demand for good 0 is {ex_demand[0]:.3f} \n'
-      f'The excess demand for good 1 is {ex_demand[1]:.3f}')
+print(f'商品0的超额需求为 {ex_demand[0]:.3f} \n'
+      f'商品1的超额需求为 {ex_demand[1]:.3f}')
 ```
 
-Next we plot the two functions $e_0$ and $e_1$ on a grid of $(p_0, p_1)$ values, using contour surfaces and lines.
+接下来我们在$(p_0, p_1)$值的网格上绘制两个函数$e_0$和$e_1$的等高线图和曲面。
 
-We will use the following function to build the contour plots
+我们将使用以下函数来构建等高线图
 
 ```{code-cell} ipython3
 def plot_excess_demand(ax, good=0, grid_size=100, grid_max=4, surface=True):
@@ -616,7 +579,7 @@ def plot_excess_demand(ax, good=0, grid_size=100, grid_max=4, surface=True):
     plt.clabel(ctr1, inline=1, fontsize=13)
 ```
 
-Here's our plot of $e_0$:
+这是我们对 $e_0$ 的绘图：
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
@@ -624,7 +587,7 @@ plot_excess_demand(ax, good=0)
 plt.show()
 ```
 
-Here's our plot of $e_1$:
+这是我们对 $e_1$ 的绘图：
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
@@ -632,11 +595,11 @@ plot_excess_demand(ax, good=1)
 plt.show()
 ```
 
-We see the black contour line of zero, which tells us when $e_i(p)=0$.
+我们看到黑色的零等高线，它告诉我们何时$e_i(p)=0$。
 
-For a price vector $p$ such that $e_i(p)=0$ we know that good $i$ is in equilibrium (demand equals supply).
+对于使得$e_i(p)=0$的价格向量$p$，我们知道商品$i$处于均衡状态（需求等于供给）。
 
-If these two contour lines cross at some price vector $p^*$, then $p^*$ is an equilibrium price vector.
+如果这两条等高线在某个价格向量$p^*$处相交，那么$p^*$就是一个均衡价格向量。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(10, 5.7))
@@ -645,47 +608,46 @@ for good in (0, 1):
 plt.show()
 ```
 
-It seems there is an equilibrium close to $p = (1.6, 1.5)$.
+看起来在 $p = (1.6, 1.5)$ 附近存在一个均衡点。
 
+#### 使用多维根查找器
 
-#### Using a Multidimensional Root Finder
+为了更精确地求解 $p^*$，我们使用 `scipy.optimize` 中的零点查找算法。
 
-To solve for $p^*$ more precisely, we use a zero-finding algorithm from `scipy.optimize`.
-
-We supply $p = (1, 1)$ as our initial guess.
+我们以 $p = (1, 1)$ 作为初始猜测值。
 
 ```{code-cell} ipython3
 init_p = np.ones(2)
 ```
 
-This uses the [modified Powell method](https://docs.scipy.org/doc/scipy/reference/optimize.root-hybr.html#optimize-root-hybr) to find the zero
+这使用[改进的Powell方法](https://docs.scipy.org/doc/scipy/reference/optimize.root-hybr.html#optimize-root-hybr)来寻找零点
 
 ```{code-cell} ipython3
 %%time
 solution = root(lambda p: e(p, A, b, c), init_p, method='hybr')
 ```
 
-Here's the resulting value:
+这是得到的值：
 
 ```{code-cell} ipython3
 p = solution.x
 p
 ```
 
-This looks close to our guess from observing the figure. We can plug it back into $e$ to test that $e(p) \approx 0$:
+这个结果看起来和我们从图中观察到的猜测很接近。我们可以把它代回到 $e$ 中验证 $e(p) \approx 0$：
 
 ```{code-cell} ipython3
 np.max(np.abs(e(p, A, b, c)))
 ```
 
-This is indeed a very small error.
+这确实是一个很小的误差。
 
 
-#### Adding Gradient Information
+#### 添加梯度信息
 
-In many cases, for zero-finding algorithms applied to smooth functions, supplying the [Jacobian](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant) of the function leads to better convergence properties.
+在许多情况下，对于应用于光滑函数的零点查找算法，提供函数的[雅可比矩阵](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant)可以带来更好的收敛性质。
 
-Here we manually calculate the elements of the Jacobian
+这里我们手动计算雅可比矩阵的元素
 
 $$
 J(p) = 
@@ -717,16 +679,16 @@ solution = root(lambda p: e(p, A, b, c),
                 method='hybr')
 ```
 
-Now the solution is even more accurate (although, in this low-dimensional problem, the difference is quite small):
+现在的解更加精确了（尽管在这个低维问题中，差异非常小）：
 
 ```{code-cell} ipython3
 p = solution.x
 np.max(np.abs(e(p, A, b, c)))
 ```
 
-#### Using Newton's Method
+#### 使用牛顿法
 
-Now let's use Newton's method to compute the equilibrium price using the multivariate version of Newton's method
+现在让我们使用牛顿法来计算均衡价格，采用多变量版本的牛顿法
 
 ```{math}
 :label: multi-newton
@@ -734,15 +696,15 @@ Now let's use Newton's method to compute the equilibrium price using the multiva
 p_{n+1} = p_n - J_e(p_n)^{-1} e(p_n)
 ```
 
-This is a multivariate version of [](oneD-newton)
+这是[](oneD-newton)的多变量版本
 
-(Here $J_e(p_n)$ is the Jacobian of $e$ evaluated at $p_n$.)
+（这里的$J_e(p_n)$是在$p_n$处计算的$e$的雅可比矩阵。）
 
-The iteration starts from some initial guess of the price vector $p_0$. 
+迭代从价格向量$p_0$的某个初始猜测开始。
 
-Here, instead of coding Jacobian by hand, We use the `jacobian()` function in the `autograd` library to auto-differentiate and calculate the Jacobian.
+在这里，我们不手动编写雅可比矩阵，而是使用`autograd`库中的`jacobian()`函数来自动求导并计算雅可比矩阵。
 
-With only slight modification, we can generalize [our previous attempt](first_newton_attempt) to multi-dimensional problems
+只需稍作修改，我们就可以将[我们之前的尝试](first_newton_attempt)推广到多维问题
 
 ```{code-cell} ipython3
 def newton(f, x_0, tol=1e-5, max_iter=10):
@@ -769,7 +731,7 @@ def e(p, A, b, c):
     return np.exp(- np.dot(A, p)) + c - b * np.sqrt(p)
 ```
 
-We find the algorithm terminates in 4 steps
+我们发现算法在4步内终止
 
 ```{code-cell} ipython3
 %%time
@@ -780,36 +742,34 @@ p = newton(lambda p: e(p, A, b, c), init_p)
 np.max(np.abs(e(p, A, b, c)))
 ```
 
-The result is very accurate. 
+结果非常准确。
 
-With the larger overhead, the speed is not better than the optimized `scipy` function.
+由于较大的开销，速度并不比优化后的 `scipy` 函数更好。
 
+### 高维问题
 
-### A High-Dimensional Problem
+我们的下一步是研究一个有3,000种商品的大型市场。
 
-Our next step is to investigate a large market with 3,000 goods.
+使用GPU加速线性代数和自动微分的JAX版本可在[此处](https://jax.quantecon.org/newtons_method.html#application)获取
 
-A JAX version of this section using GPU accelerated linear algebra and
-automatic differentiation is available [here](https://jax.quantecon.org/newtons_method.html#application)
-
-The excess demand function is essentially the same, but now the matrix $A$ is $3000 \times 3000$ and the parameter vectors $b$ and $c$ are $3000 \times 1$.
+超额需求函数基本相同，但现在矩阵 $A$ 是 $3000 \times 3000$ 的，参数向量 $b$ 和 $c$ 是 $3000 \times 1$ 的。
 
 ```{code-cell} ipython3
 dim = 3000
 np.random.seed(123)
 
-# Create a random matrix A and normalize the rows to sum to one
+# 创建随机矩阵A并将行归一化使其和为1
 A = np.random.rand(dim, dim)
 A = np.asarray(A)
 s = np.sum(A, axis=0)
 A = A / s
 
-# Set up b and c
+# 设置b和c
 b = np.ones(dim)
 c = np.ones(dim)
 ```
 
-Here's our initial condition
+这是我们的初始条件
 
 ```{code-cell} ipython3
 init_p = np.ones(dim)
@@ -824,7 +784,7 @@ p = newton(lambda p: e(p, A, b, c), init_p)
 np.max(np.abs(e(p, A, b, c)))
 ```
 
-With the same tolerance, we compare the runtime and accuracy of Newton's method to SciPy's `root` function
+在相同的容差条件下，我们比较牛顿法与SciPy的`root`函数的运行时间和精确度
 
 ```{code-cell} ipython3
 %%time
@@ -840,14 +800,13 @@ p = solution.x
 np.max(np.abs(e(p, A, b, c)))
 ```
 
-
-## Exercises
+## 练习
 
 ```{exercise-start}
 :label: newton_ex1
 ```
 
-Consider a three-dimensional extension of the Solow fixed point problem with
+考虑索洛固定点问题的三维扩展，其中
 
 $$
 A = \begin{pmatrix}
@@ -859,16 +818,16 @@ A = \begin{pmatrix}
 s = 0.2, \quad α = 0.5, \quad δ = 0.8
 $$
 
-As before the law of motion is
+和之前一样，运动方程为
 
 ```{math}
     k_{t+1} = g(k_t) \quad \text{where} \quad
     g(k) := sAk^\alpha + (1-\delta) k
 ```
 
-However $k_t$ is now a $3 \times 1$ vector.
+但现在 $k_t$ 是一个 $3 \times 1$ 向量。
 
-Solve for the fixed point using Newton's method with the following initial values:
+使用牛顿法求解固定点，初始值如下：
 
 $$
 \begin{aligned}
@@ -878,29 +837,29 @@ $$
 \end{aligned}
 $$
 
-````{hint} 
+````{hint}
 :class: dropdown
 
-- The computation of the fixed point is equivalent to computing $k^*$ such that $f(k^*) - k^* = 0$.
+- 固定点的计算等价于计算满足 $f(k^*) - k^* = 0$ 的 $k^*$。
 
-- If you are unsure about your solution, you can start with the solved example:
+- 如果你对你的解决方案不确定，可以从已解决的示例开始：
 
 ```{math}
 A = \begin{pmatrix}
             2 & 0 & 0 \\
             0 & 2 & 0 \\
-            0 & 0 & 2 \\
+
+0 & 0 & 2 \\
         \end{pmatrix}
 ```
 
-with $s = 0.3$, $α = 0.3$, and $δ = 0.4$ and starting value: 
-
+其中 $s = 0.3$、$α = 0.3$ 和 $δ = 0.4$，初始值为：
 
 ```{math}
 k_0 = (1, 1, 1)
 ```
 
-The result should converge to the [analytical solution](solved_k).
+结果应该收敛到[解析解](solved_k)。
 ````
 
 ```{exercise-end}
@@ -911,7 +870,7 @@ The result should converge to the [analytical solution](solved_k).
 :class: dropdown
 ```
 
-Let's first define the parameters for this problem
+让我们首先定义这个问题的参数
 
 ```{code-cell} ipython3
 A = np.array([[2.0, 3.0, 3.0],
@@ -927,38 +886,38 @@ initLs = [np.ones(3),
           np.repeat(50.0, 3)]
 ```
 
-Then define the multivariate version of the formula for the [law of motion of captial](motion_law)
+然后定义[资本运动定律](motion_law)的多元版本
 
 ```{code-cell} ipython3
 def multivariate_solow(k, A=A, s=s, α=α, δ=δ):
     return (s * np.dot(A, k**α) + (1 - δ) * k)
 ```
 
-Let's run through each starting value and see the output
+让我们遍历每个初始值并查看输出结果
 
 ```{code-cell} ipython3
 attempt = 1
 for init in initLs:
-    print(f'Attempt {attempt}: Starting value is {init} \n')
+    print(f'尝试 {attempt}: 初始值为 {init} \n')
     %time k = newton(lambda k: multivariate_solow(k) - k, \
                     init)
     print('-'*64)
     attempt += 1
 ```
 
-We find that the results are invariant to the starting values given the well-defined property of this question.
+我们发现，由于这个问题具有明确定义的性质，结果与初始值无关。
 
-But the number of iterations it takes to converge is dependent on the starting values.
+但是收敛所需的迭代次数取决于初始值。
 
-Let substitute the output back to the formulate to check our last result
+让我们把输出结果代回公式中验证我们的最终结果
 
 ```{code-cell} ipython3
 multivariate_solow(k) - k
 ```
 
-Note the error is very small.
+注意误差非常小。
 
-We can also test our results on the known solution
+我们也可以在已知解上测试我们的结果
 
 ```{code-cell} ipython3
 A = np.array([[2.0, 0.0, 0.0],
@@ -976,7 +935,7 @@ init = np.repeat(1.0, 3)
                  init)
 ```
 
-The result is very close to the ground truth but still slightly different.
+结果与真实值非常接近，但仍有细微差异。
 
 ```{code-cell} python3
 %time k = newton(lambda k: multivariate_solow(k, A=A, s=s, α=α, δ=δ) - k, \
@@ -984,7 +943,7 @@ The result is very close to the ground truth but still slightly different.
                  tol=1e-7)
 ```
 
-We can see it steps towards a more accurate solution.
+我们可以看到它正在朝着更精确的解决方案迈进。
 
 ```{solution-end}
 ```
@@ -994,9 +953,9 @@ We can see it steps towards a more accurate solution.
 :label: newton_ex2
 ```
 
-In this exercise, let's try different initial values and check how Newton's method responds to different starting points.
+在这个练习中，让我们尝试不同的初始值，看看牛顿法对不同起始点的反应如何。
 
-Let's define a three-good problem with the following default values:
+让我们定义一个具有以下默认值的三商品问题：
 
 $$
 A = \begin{pmatrix}
@@ -1010,7 +969,7 @@ b = \begin{pmatrix}
             1 \\
             1
         \end{pmatrix}
-    \qquad \text{and} \qquad
+    \qquad \text{和} \qquad
 c = \begin{pmatrix}
             1 \\
             1 \\
@@ -1018,7 +977,7 @@ c = \begin{pmatrix}
         \end{pmatrix}
 $$
 
-For this exercise, use the following extreme price vectors as initial values:
+对于这个练习，使用以下极端价格向量作为初始值：
 
 $$
 
@@ -1029,16 +988,17 @@ $$
 \end{aligned}
 $$
 
-Set the tolerance to $0.0$ for more accurate output.
+将容差设置为$0.0$以获得更精确的输出。
 
 ```{exercise-end}
 ```
 
 ```{solution-start} newton_ex2
+
 :class: dropdown
 ```
 
-Define parameters and initial values
+定义参数和初始值
 
 ```{code-cell} ipython3
 A = np.array([
@@ -1055,7 +1015,7 @@ initLs = [np.repeat(5.0, 3),
           np.array([4.5, 0.1, 4.0])] 
 ```
 
-Let’s run through each initial guess and check the output
+让我们检查每个初始猜测值并查看输出结果
 
 ```{code-cell} ipython3
 ---
@@ -1064,7 +1024,7 @@ tags: [raises-exception]
 
 attempt = 1
 for init in initLs:
-    print(f'Attempt {attempt}: Starting value is {init} \n')
+    print(f'尝试 {attempt}: 初始值为 {init} \n')
     %time p = newton(lambda p: e(p, A, b, c), \
                 init, \
                 tol=1e-15, \
@@ -1073,17 +1033,18 @@ for init in initLs:
     attempt += 1
 ```
 
-We can find that Newton's method may fail for some starting values.
+我们可以发现牛顿法对某些初始值可能会失败。
 
-Sometimes it may take a few initial guesses to achieve convergence.
+有时可能需要尝试几个初始猜测值才能实现收敛。
 
-Substitute the result back to the formula to check our result
+将结果代回公式中检验我们的结果
 
 ```{code-cell} ipython3
 e(p, A, b, c)
 ```
 
-We can see the result is very accurate.
+我们可以看到结果非常精确。
 
 ```{solution-end}
 ```
+

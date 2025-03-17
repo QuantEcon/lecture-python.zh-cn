@@ -17,83 +17,76 @@ kernelspec:
 </div>
 ```
 
-# {index}`Modeling COVID 19 <single: Modeling COVID 19>`
+# {index}`新冠病毒建模 <single: Modeling COVID 19>`
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-This is a Python version of the code for analyzing the COVID-19 pandemic
-provided by [Andrew Atkeson](https://sites.google.com/site/andyatkeson/).
+这是由[Andrew Atkeson](https://sites.google.com/site/andyatkeson/)提供的用于分析新冠疫情的代码的Python版本。
 
-See, in particular
+特别参见
 
-* [NBER Working Paper No. 26867](https://www.nber.org/papers/w26867)
-* [COVID-19 Working papers and code](https://sites.google.com/site/andyatkeson/home?authuser=0)
+* [NBER工作论文第26867号](https://www.nber.org/papers/w26867)
+* [COVID-19工作论文和代码](https://sites.google.com/site/andyatkeson/home?authuser=0)
 
-The purpose of his notes is to introduce economists to quantitative modeling
-of infectious disease dynamics.
+他的这些笔记的目的是向经济学家介绍定量建模
 
-Dynamics are modeled using a standard SIR (Susceptible-Infected-Removed) model
-of disease spread.
+传染病动态研究。
 
-The model dynamics are represented by a system of ordinary differential
-equations.
+疾病传播使用标准SIR（易感者-感染者-移除者）模型进行建模。
 
-The main objective is to study the impact of suppression through social
-distancing on the spread of the infection.
+模型动态用常微分方程组表示。
 
-The focus is on US outcomes but the parameters can be adjusted to study
-other countries.
+主要目标是研究通过社交距离实施的抑制措施对感染传播的影响。
 
-We will use the following standard imports:
+研究重点是美国的结果，但可以调整参数来研究其他国家。
+
+我们将使用以下标准导入：
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from numpy import exp
 ```
 
-We will also use SciPy's numerical routine odeint for solving differential
-equations.
+我们还将使用SciPy的数值例程odeint来求解微分方程。
 
 ```{code-cell} ipython3
 from scipy.integrate import odeint
 ```
 
-This routine calls into compiled code from the FORTRAN library odepack.
+这个程序调用了FORTRAN库odepack中的编译代码。
 
-## The SIR Model
+## SIR模型
 
-In the version of the SIR model we will analyze there are four states.
+在我们将要分析的SIR模型版本中有四个状态。
 
-All individuals in the population are assumed to be in one of these four states.
+假设人群中的所有个体都处于这四种状态之一。
 
-The states are: susceptible (S), exposed (E), infected (I) and removed (R).
+这些状态是：易感者(S)、潜伏者(E)、感染者(I)和移除者(R)。
 
-Comments:
+说明：
 
-* Those in state R have been infected and either recovered or died.
-* Those who have recovered are assumed to have acquired immunity.
-* Those in the exposed group are not yet infectious.
+* 处于R状态的人已经被感染并且已经康复或死亡。
+* 康复的人被假定已获得免疫力。
+* 处于潜伏期的群体尚未具有传染性。
 
-### Time Path
+### 时间路径
 
-The flow across states follows the path $S \to E \to I \to R$.
+状态之间的流动遵循路径 $S \to E \to I \to R$。
 
-All individuals in the population are eventually infected when
-the transmission rate is positive and $i(0) > 0$.
+当传播率为正且$i(0) > 0$时，人群中的所有个体最终都会被感染。
 
-The interest is primarily in
+主要关注的是
 
-* the number of infections at a given time (which determines whether or not the health care system is overwhelmed) and
-* how long the caseload can be deferred (hopefully until a vaccine arrives)
+* 在给定时间的感染人数（这决定了医疗系统是否会被压垮）以及
+* 病例负荷可以推迟多长时间（希望能够推迟到疫苗出现）
 
-Using lower case letters for the fraction of the population in each state, the
-dynamics are
+使用小写字母表示处于各状态的人口比例，其动态方程为
 
 ```{math}
 :label: sir_system
@@ -107,21 +100,22 @@ dynamics are
 \end{aligned}
 ```
 
-In these equations,
+在这些方程中，
 
-* $\beta(t)$ is called the *transmission rate* (the rate at which individuals bump into others and expose them to the virus).
-* $\sigma$ is called the *infection rate* (the rate at which those who are exposed become infected)
-* $\gamma$ is called the *recovery rate* (the rate at which infected people recover or die).
-* the dot symbol $\dot y$ represents the time derivative $dy/dt$.
+* $\beta(t)$ 被称为*传播率*（个体与他人接触并使其暴露于病毒的速率）。
+* $\sigma$ 被称为*感染率*（暴露者转变为感染者的速率）
+* $\gamma$ 被称为*恢复率*（感染者康复或死亡的速率）。
+* 点符号 $\dot y$ 表示时间导数 $dy/dt$。
 
-We do not need to model the fraction $r$ of the population in state $R$ separately because the states form a partition.
+我们不需要单独建模处于 $R$ 状态的人口比例 $r$，因为这些状态构成一个分区。
 
-In particular, the "removed" fraction of the population is $r = 1 - s - e - i$.
+具体来说，"已移除"的人口比例为 $r = 1 - s - e - i$。
 
-We will also track $c = i + r$, which is the cumulative caseload
-(i.e., all those who have or have had the infection).
+我们还将追踪累计病例数 $c = i + r$
 
-The system {eq}`sir_system` can be written in vector form as
+(即所有已感染或曾经感染的人)。
+
+系统{eq}`sir_system`可以用向量形式表示为
 
 ```{math}
 :label: dfcv
@@ -129,58 +123,57 @@ The system {eq}`sir_system` can be written in vector form as
 \dot x = F(x, t),  \qquad x := (s, e, i)
 ```
 
-for suitable definition of $F$ (see the code below).
+对于适当定义的$F$(见下面的代码)。
 
-### Parameters
+### 参数
 
-Both $\sigma$ and $\gamma$ are thought of as fixed, biologically determined parameters.
+$\sigma$和$\gamma$都被视为固定的、由生物学决定的参数。
 
-As in Atkeson's note, we set
+按照Atkeson的说明，我们设定
 
-* $\sigma = 1/5.2$ to reflect an average incubation period of 5.2 days.
-* $\gamma = 1/18$ to match an average illness duration of 18 days.
+* $\sigma = 1/5.2$，反映平均潜伏期为5.2天。
+* $\gamma = 1/18$，对应平均病程18天。
 
-The transmission rate is modeled as
+传播率被建模为
 
-* $\beta(t) := R(t) \gamma$ where $R(t)$ is the *effective reproduction number* at time $t$.
+* $\beta(t) := R(t) \gamma$，其中$R(t)$是时间$t$时的*有效再生数*。
 
-(The notation is slightly confusing, since $R(t)$ is different to
-$R$, the symbol that represents the removed state.)
+(这个符号表示有点令人困惑，因为$R(t)$与表示已移除状态的符号$R$不同。)
 
-## Implementation
+## 实现
 
-First we set the population size to match the US.
+首先我们将人口规模设置为与美国相匹配。
 
 ```{code-cell} ipython3
 pop_size = 3.3e8
 ```
 
-Next we fix parameters as described above.
+接下来我们按照上述方法固定参数。
 
 ```{code-cell} ipython3
 γ = 1 / 18
 σ = 1 / 5.2
 ```
 
-Now we construct a function that represents $F$ in {eq}`dfcv`
+现在我们构建一个函数来表示{eq}`dfcv`中的$F$
 
 ```{code-cell} ipython3
 def F(x, t, R0=1.6):
     """
-    Time derivative of the state vector.
+    状态向量的时间导数。
 
-        * x is the state vector (array_like)
-        * t is time (scalar)
-        * R0 is the effective transmission rate, defaulting to a constant
+        * x是状态向量（类数组）
+        * t是时间（标量）
+        * R0是有效传播率，默认为常数
 
     """
     s, e, i = x
 
-    # New exposure of susceptibles
+    # 易感人群的新暴露
     β = R0(t) * γ if callable(R0) else R0 * γ
     ne = β * s * i
 
-    # Time derivatives
+    # 时间导数
     ds = - ne
     de = ne - σ * e
     di = σ * e - γ * i
@@ -188,9 +181,9 @@ def F(x, t, R0=1.6):
     return ds, de, di
 ```
 
-Note that `R0` can be either constant or a given function of time.
+注意 `R0` 可以是常数或给定的时间函数。
 
-The initial conditions are set to
+初始条件设置为
 
 ```{code-cell} ipython3
 # initial conditions of s, e, i
@@ -199,34 +192,33 @@ e_0 = 4 * i_0
 s_0 = 1 - i_0 - e_0
 ```
 
-In vector form the initial condition is
+用向量形式表示的初始条件是
 
 ```{code-cell} ipython3
 x_0 = s_0, e_0, i_0
 ```
 
-We solve for the time path numerically using odeint, at a sequence of dates
-`t_vec`.
+我们使用odeint在一系列时间点`t_vec`上通过数值积分求解时间路径。
 
 ```{code-cell} ipython3
 def solve_path(R0, t_vec, x_init=x_0):
     """
-    Solve for i(t) and c(t) via numerical integration,
-    given the time path for R0.
+    通过数值积分求解i(t)和c(t)，
+    给定R0的时间路径。
 
     """
     G = lambda x, t: F(x, t, R0)
     s_path, e_path, i_path = odeint(G, x_init, t_vec).transpose()
 
-    c_path = 1 - s_path - e_path       # cumulative cases
+    c_path = 1 - s_path - e_path       # 累计病例
     return i_path, c_path
 ```
 
-## Experiments
+## 实验
 
-Let's run some experiments using this code.
+让我们用这段代码进行一些实验。
 
-The time period we investigate will be 550 days, or around 18 months:
+我们要研究的时间段为550天，大约18个月：
 
 ```{code-cell} ipython3
 t_length = 550
@@ -234,11 +226,11 @@ grid_size = 1000
 t_vec = np.linspace(0, t_length, grid_size)
 ```
 
-### Experiment 1: Constant R0 Case
+### 实验1：固定R0的情况
 
-Let's start with the case where `R0` is constant.
+让我们从`R0`为常数的情况开始。
 
-We calculate the time path of infected people under different assumptions for `R0`:
+我们在不同`R0`值的假设下计算感染人数的时间路径：
 
 ```{code-cell} ipython3
 R0_vals = np.linspace(1.6, 3.0, 6)
@@ -251,7 +243,7 @@ for r in R0_vals:
     c_paths.append(c_path)
 ```
 
-Here's some code to plot the time paths.
+这是一些用于绘制时间路径的代码。
 
 ```{code-cell} ipython3
 def plot_paths(paths, labels, times=t_vec):
@@ -266,28 +258,27 @@ def plot_paths(paths, labels, times=t_vec):
     plt.show()
 ```
 
-Let's plot current cases as a fraction of the population.
+让我们绘制当前病例数占人口的比例。
 
 ```{code-cell} ipython3
 plot_paths(i_paths, labels)
 ```
 
-As expected, lower effective transmission rates defer the peak of infections.
+正如预期的那样，较低的有效传播率会推迟感染高峰。
 
-They also lead to a lower peak in current cases.
+它们也会导致当前病例的峰值降低。
 
-Here are cumulative cases, as a fraction of population:
+以下是累计病例数（占总人口的比例）：
 
 ```{code-cell} ipython3
 plot_paths(c_paths, labels)
 ```
 
-### Experiment 2: Changing Mitigation
+### 实验2：改变缓解措施
 
-Let's look at a scenario where mitigation (e.g., social distancing) is
-successively imposed.
+让我们来看一个逐步实施缓解措施（例如社交距离）的场景。
 
-Here's a specification for `R0` as a function of time.
+以下是一个关于`R0`随时间变化的函数规范。
 
 ```{code-cell} ipython3
 def R0_mitigating(t, r0=3, η=1, r_bar=1.6):
@@ -295,21 +286,20 @@ def R0_mitigating(t, r0=3, η=1, r_bar=1.6):
     return R0
 ```
 
-The idea is that `R0` starts off at 3 and falls to 1.6.
+`R0` 从 3 开始下降到 1.6。
 
-This is due to progressive adoption of stricter mitigation measures.
+这是由于逐步采取更严格的缓解措施所致。
 
-The parameter `η` controls the rate, or the speed at which restrictions are
-imposed.
+参数 `η` 控制限制措施实施的速率或速度。
 
-We consider several different rates:
+我们考虑几个不同的速率：
 
 ```{code-cell} ipython3
 η_vals = 1/5, 1/10, 1/20, 1/50, 1/100
 labels = [fr'$\eta = {η:.2f}$' for η in η_vals]
 ```
 
-This is what the time path of `R0` looks like at these alternative rates:
+以下是在这些不同速率下 `R0` 的时间路径：
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
@@ -321,7 +311,7 @@ ax.legend()
 plt.show()
 ```
 
-Let's calculate the time path of infected people:
+让我们计算感染者人数的时间路径：
 
 ```{code-cell} ipython3
 i_paths, c_paths = [], []
@@ -333,45 +323,45 @@ for η in η_vals:
     c_paths.append(c_path)
 ```
 
-These are current cases under the different scenarios:
+以下是不同场景下的当前案例：
 
 ```{code-cell} ipython3
 plot_paths(i_paths, labels)
 ```
 
-Here are cumulative cases, as a fraction of population:
+以下是累计病例数（占总人口的比例）：
 
 ```{code-cell} ipython3
 plot_paths(c_paths, labels)
 ```
 
-## Ending Lockdown
+## 解除封锁
 
-The following replicates [additional results](https://drive.google.com/file/d/1uS7n-7zq5gfSgrL3S0HByExmpq4Bn3oh/view) by Andrew Atkeson on the timing of lifting lockdown.
+以下复现了Andrew Atkeson关于解除封锁时机的[额外研究结果](https://drive.google.com/file/d/1uS7n-7zq5gfSgrL3S0HByExmpq4Bn3oh/view)。
 
-Consider these two mitigation scenarios:
+考虑以下两种缓解情景：
 
-1. $R_t = 0.5$ for 30 days and then $R_t = 2$ for the remaining 17 months. This corresponds to lifting lockdown in 30 days.
-1. $R_t = 0.5$ for 120 days and then $R_t = 2$ for the remaining 14 months. This corresponds to lifting lockdown in 4 months.
+1. 前30天$R_t = 0.5$，之后17个月$R_t = 2$。这相当于30天后解除封锁。
+1. 前120天$R_t = 0.5$，之后14个月$R_t = 2$。这相当于4个月后解除封锁。
 
-The parameters considered here start the model with 25,000 active infections
-and 75,000 agents already exposed to the virus and thus soon to be contagious.
+这里考虑的参数设置模型的初始状态为25,000个活跃感染者，以及75,000个已经接触病毒因此即将具有传染性的个体。
 
 ```{code-cell} ipython3
-# initial conditions
+# 初始条件
 i_0 = 25_000 / pop_size
 e_0 = 75_000 / pop_size
 s_0 = 1 - i_0 - e_0
 x_0 = s_0, e_0, i_0
 ```
 
-Let's calculate the paths:
+
+让我们计算路径：
 
 ```{code-cell} ipython3
 R0_paths = (lambda t: 0.5 if t < 30 else 2,
             lambda t: 0.5 if t < 120 else 2)
 
-labels = [f'scenario {i}' for i in (1, 2)]
+labels = [f'场景 {i}' for i in (1, 2)]
 
 i_paths, c_paths = [], []
 
@@ -381,33 +371,33 @@ for R0 in R0_paths:
     c_paths.append(c_path)
 ```
 
-Here is the number of active infections:
+这是活跃感染病例数：
 
 ```{code-cell} ipython3
 plot_paths(i_paths, labels)
 ```
 
-What kind of mortality can we expect under these scenarios?
+在这些场景下我们可以预期什么样的死亡率？
 
-Suppose that 1% of cases result in death
+假设1%的病例会导致死亡
 
 ```{code-cell} ipython3
 ν = 0.01
 ```
 
-This is the cumulative number of deaths:
+这是累计死亡人数：
 
 ```{code-cell} ipython3
 paths = [path * ν * pop_size for path in c_paths]
 plot_paths(paths, labels)
 ```
 
-This is the daily death rate:
+这是每日死亡率：
 
 ```{code-cell} ipython3
 paths = [path * ν * γ * pop_size for path in i_paths]
 plot_paths(paths, labels)
 ```
 
-Pushing the peak of curve further into the future may reduce cumulative deaths
-if a vaccine is found.
+如果能找到疫苗，将曲线峰值推迟到更远的未来可能会减少累计死亡人数。
+

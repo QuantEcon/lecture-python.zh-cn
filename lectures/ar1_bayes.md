@@ -11,17 +11,15 @@ kernelspec:
   name: python3
 ---
 
-# Posterior Distributions for  AR(1) Parameters
+# AR(1)参数的后验分布
 
-We'll begin with some Python imports.
-
+我们先从导入一些Python包开始。
 
 ```{code-cell} ipython3
 :tags: [hide-output]
 
 !pip install arviz pymc numpyro jax
 ```
-
 ```{code-cell} ipython3
 
 import arviz as az
@@ -40,47 +38,39 @@ logger = logging.getLogger('pymc')
 logger.setLevel(logging.CRITICAL)
 
 ```
+本讲座使用[pymc](https://www.pymc.io/projects/docs/en/stable/)和[numpyro](https://num.pyro.ai/en/stable/)提供的贝叶斯方法对一元一阶自回归的两个参数进行统计推断。
 
-This lecture uses Bayesian methods offered by [pymc](https://www.pymc.io/projects/docs/en/stable/) and [numpyro](https://num.pyro.ai/en/stable/) to make statistical inferences about two parameters of a univariate first-order autoregression.
+该模型是一个很好的实验室，用于说明对初始值$y_0$分布建模的不同方式所带来的影响：
 
+- 作为一个固定数值
 
-The model is a good laboratory for illustrating
-consequences of alternative ways of modeling the distribution of the initial  $y_0$:
+- 作为从$\{y_t\}$随机过程的平稳分布中抽取的随机变量
 
-- As a fixed number
-
-- As a random variable drawn from the stationary distribution of the $\{y_t\}$ stochastic process
-
-
-The first component of the statistical model is
+统计模型的第一个组成部分是
 
 $$
 y_{t+1} = \rho y_t + \sigma_x \epsilon_{t+1}, \quad t \geq 0
 $$ (eq:themodel)
 
-where the scalars $\rho$ and $\sigma_x$ satisfy $|\rho| < 1$ and $\sigma_x > 0$;
-$\{\epsilon_{t+1}\}$ is a sequence of i.i.d. normal random variables with mean $0$ and variance $1$.
+其中标量$\rho$和$\sigma_x$满足$|\rho| < 1$和$\sigma_x > 0$；
+$\{\epsilon_{t+1}\}$是一个均值为$0$、方差为$1$的独立同分布正态随机变量序列。
 
-The second component of the statistical model is
+统计模型的第二个组成部分是
 
 $$
 y_0 \sim {\cal N}(\mu_0, \sigma_0^2)
 $$ (eq:themodel_2)
 
-
-
-Consider a sample $\{y_t\}_{t=0}^T$ governed by this statistical model.
-
-The model
-implies that the likelihood function of $\{y_t\}_{t=0}^T$ can be **factored**:
+考虑由该统计模型生成的样本$\{y_t\}_{t=0}^T$。
+该模型表明 $\{y_t\}_{t=0}^T$ 的似然函数可以被**分解**为：
 
 $$
 f(y_T, y_{T-1}, \ldots, y_0) = f(y_T| y_{T-1}) f(y_{T-1}| y_{T-2}) \cdots f(y_1 | y_0 ) f(y_0)
 $$
 
-where we use $f$ to denote a generic probability density.
+这里我们用 $f$ 表示一般的概率密度。
 
-The  statistical model {eq}`eq:themodel`-{eq}`eq:themodel_2` implies
+统计模型 {eq}`eq:themodel`-{eq}`eq:themodel_2` 表明
 
 $$
 \begin{aligned}
@@ -89,50 +79,42 @@ f(y_t | y_{t-1})  & \sim {\mathcal N}(\rho y_{t-1}, \sigma_x^2) \\
 \end{aligned}
 $$
 
-We want to study how inferences about the unknown parameters $(\rho, \sigma_x)$ depend on what is assumed about the parameters $\mu_0, \sigma_0$  of the distribution of $y_0$.
+我们想研究关于未知参数 $(\rho, \sigma_x)$ 的推断如何依赖于对 $y_0$ 分布的参数 $\mu_0, \sigma_0$ 的假设。
 
-Below, we study two widely used alternative assumptions:
+下面，我们研究两种广泛使用的替代假设：
 
--  $(\mu_0,\sigma_0) = (y_0, 0)$ which means  that $y_0$ is  drawn from the distribution ${\mathcal N}(y_0, 0)$; in effect, we are **conditioning on an observed initial value**.
+- $(\mu_0,\sigma_0) = (y_0, 0)$ 意味着 $y_0$ 是从分布 ${\mathcal N}(y_0, 0)$ 中抽取的；实际上，我们是在**基于观察到的初始值进行条件化**。
+-  $\mu_0,\sigma_0$ 是 $\rho, \sigma_x$ 的函数，因为 $y_0$ 是从由 $\rho, \sigma_x$ 决定的平稳分布中抽取的。
 
--  $\mu_0,\sigma_0$ are functions of $\rho, \sigma_x$ because $y_0$ is drawn from the stationary distribution implied by $\rho, \sigma_x$.
+**注意：** 我们**不**考虑第三种可能的情况，即将 $\mu_0,\sigma_0$ 作为需要估计的自由参数。
 
+未知参数是 $\rho, \sigma_x$。
 
+我们有 $\rho, \sigma_x$ 的独立**先验概率分布**，并希望在观察到样本 $\{y_{t}\}_{t=0}^T$ 后计算后验概率分布。
 
-**Note:** We do **not** treat a third possible case in which  $\mu_0,\sigma_0$ are free parameters to be estimated.
+这个笔记本使用 `pymc4` 和 `numpyro` 来计算 $\rho, \sigma_x$ 的后验分布。我们将使用 NUTS 采样器在链中生成后验分布的样本。这两个库都支持 NUTS 采样器。
+NUTS是一种蒙特卡洛马尔可夫链（MCMC）算法，它避免了随机游走行为，能更快地收敛到目标分布。这不仅具有速度上的优势，还允许在不需要掌握那些拟合方法背后专门理论知识的情况下，拟合复杂模型。
 
-Unknown parameters are $\rho, \sigma_x$.
+因此，我们探讨对$y_0$分布做出这些替代假设的后果：
 
-We have  independent **prior probability distributions** for $\rho, \sigma_x$ and want to compute a posterior probability distribution after observing a sample $\{y_{t}\}_{t=0}^T$.
+- 第一种方法是以观察到的$y_0$值为条件。这相当于假设随机变量$y_0$的概率分布是一个狄拉克德尔塔函数，它在观察到的$y_0$值上的概率为1。
 
-The notebook uses `pymc4` and `numpyro` to compute a posterior distribution of $\rho, \sigma_x$. We will use NUTS samplers to generate samples from the posterior in a chain. Both of these libraries support NUTS samplers.
+- 第二种方法假设$y_0$是从{eq}`eq:themodel`所描述过程的平稳分布中抽取的，
+因此$y_0 \sim {\cal N} \left(0, {\sigma_x^2\over (1-\rho)^2} \right)$
+当初始值$y_0$位于平稳分布尾部较远处时，对初始值进行条件化会得到一个**更准确的**后验分布，我们将对此进行解释。
 
-NUTS is a form of Monte Carlo Markov Chain (MCMC) algorithm that bypasses random walk behaviour and allows for convergence to a target distribution more quickly. This not only has the advantage of speed, but allows for complex models to be fitted without having to employ specialised knowledge regarding the theory underlying those fitting methods.
+基本上，当$y_0$恰好位于平稳分布的尾部，而我们**不对$y_0$进行条件化**时，$\{y_t\}_{t=0}^T$的似然函数会调整参数对$\rho, \sigma_x$的后验分布，使得观测到的$y_0$值在平稳分布下比实际情况更可能出现，从而在短样本中对后验分布产生不利的扭曲。
 
-Thus, we explore consequences of making these alternative assumptions about the distribution of $y_0$:
+下面的例子展示了不对$y_0$进行条件化是如何不利地将$\rho$的后验概率分布向更大的值偏移的。
 
-- A first procedure is to condition on whatever value of $y_0$ is observed. This amounts to assuming that the probability distribution of the random variable  $y_0$ is a Dirac delta function that puts probability one on the observed value of $y_0$.
+我们首先通过求解一个**直接问题**来模拟AR(1)过程。
 
-- A second procedure  assumes that $y_0$ is drawn from the stationary distribution of a process described by {eq}`eq:themodel`
-so that  $y_0 \sim {\cal N} \left(0, {\sigma_x^2\over (1-\rho)^2} \right) $
+我们如何选择初始值$y_0$是很重要的。
+* 如果我们认为 $y_0$ 是从平稳分布 ${\mathcal N}(0, \frac{\sigma_x^{2}}{1-\rho^2})$ 中抽取的，那么使用这个分布作为 $f(y_0)$ 是个好主意。为什么？因为 $y_0$ 包含了关于 $\rho, \sigma_x$ 的信息。
 
-When the initial value $y_0$ is far out in a tail of the stationary distribution, conditioning on an initial value gives a posterior that is **more accurate** in a sense that we'll explain.
+* 如果我们怀疑 $y_0$ 位于平稳分布的尾部很远的位置——以至于样本中早期观测值的变化具有显著的**瞬态成分**——最好通过设置 $f(y_0) = 1$ 来对 $y_0$ 进行条件化。
 
-Basically, when $y_0$ happens to be  in a tail of the stationary distribution and we **don't condition on $y_0$**, the likelihood function for $\{y_t\}_{t=0}^T$ adjusts the posterior distribution of the parameter pair $\rho, \sigma_x $ to make the observed value of $y_0$  more likely than it really is under the stationary distribution, thereby adversely twisting the posterior in short samples.
-
-An example below shows how not conditioning on $y_0$ adversely shifts the posterior probability distribution of $\rho$ toward larger values.
-
-
-We begin by solving a **direct problem** that simulates an AR(1) process.
-
-How we select the initial value $y_0$ matters.
-
-   * If we think $y_0$ is drawn from the stationary distribution ${\mathcal N}(0, \frac{\sigma_x^{2}}{1-\rho^2})$, then it is a good idea to use this distribution as $f(y_0)$.  Why? Because $y_0$ contains information about $\rho, \sigma_x$.
-
-   * If we suspect that $y_0$ is far in the tails of the stationary distribution -- so that variation in early observations in the sample have a significant **transient component** -- it is better to condition on $y_0$ by setting $f(y_0) = 1$.
-
-
-To illustrate the issue, we'll begin by choosing an initial $y_0$ that is far out in a tail of the stationary distribution.
+为了说明这个问题，我们将从选择一个位于平稳分布尾部很远的初始值 $y_0$ 开始。
 
 ```{code-cell} ipython3
 
@@ -156,22 +138,20 @@ T = 50
 np.random.seed(145353452)
 y = ar1_simulate(rho, sigma, 10, T)
 ```
-
 ```{code-cell} ipython3
 plt.plot(y)
 plt.tight_layout()
 ```
+现在我们将使用贝叶斯定理来构建后验分布，以初始值$y_0$为条件。
 
-Now we shall use Bayes' law to construct a posterior distribution, conditioning on the initial value of $y_0$.
+(稍后我们会假设$y_0$是从平稳分布中抽取的，但现在不作此假设。)
 
-(Later we'll assume that $y_0$ is drawn from the stationary distribution, but not now.)
+首先我们将使用**pymc4**。
 
-First we'll use **pymc4**.
+## PyMC实现
 
-## PyMC Implementation
-
-For a normal distribution in `pymc`,
-$var = 1/\tau = \sigma^{2}$.
+对于`pymc`中的正态分布，
+$var = 1/\tau = \sigma^{2}$。
 
 ```{code-cell} ipython3
 
@@ -179,18 +159,17 @@ AR1_model = pmc.Model()
 
 with AR1_model:
 
-    # Start with priors
-    rho = pmc.Uniform('rho', lower=-1., upper=1.) # Assume stable rho
+    # 首先设定先验分布
+    rho = pmc.Uniform('rho', lower=-1., upper=1.) # 假设rho是稳定的
     sigma = pmc.HalfNormal('sigma', sigma = np.sqrt(10))
 
-    # Expected value of y at the next period (rho * y)
+    # 下一期y的期望值(rho * y)
     yhat = rho * y[:-1]
 
-    # Likelihood of the actual realization
+    # 实际值的似然函数
     y_like = pmc.Normal('y_obs', mu=yhat, sigma=sigma, observed=y[1:])
 ```
-
-[pmc.sample](https://www.pymc.io/projects/docs/en/v5.10.0/api/generated/pymc.sample.html#pymc-sample) by default uses the NUTS samplers to generate samples as shown in the below cell:
+[pmc.sample](https://www.pymc.io/projects/docs/en/v5.10.0/api/generated/pymc.sample.html#pymc-sample) 默认使用NUTS采样器来生成样本，如下面的代码单元所示：
 
 ```{code-cell} ipython3
 :tag: [hide-output]
@@ -198,20 +177,17 @@ with AR1_model:
 with AR1_model:
     trace = pmc.sample(50000, tune=10000, return_inferencedata=True)
 ```
-
 ```{code-cell} ipython3
 with AR1_model:
     az.plot_trace(trace, figsize=(17,6))
 ```
+显然，后验分布并没有以我们用来生成数据的真实值 $.5, 1$ 为中心。
 
-Evidently, the posteriors aren't centered on the true values of $.5, 1$ that we used to generate the data.
+这是一阶自回归过程中经典的**赫维奇偏差**（Hurwicz bias）的表现（参见 Leonid Hurwicz {cite}`hurwicz1950least`）。
 
-This is a symptom of the classic **Hurwicz bias** for first order autoregressive processes (see Leonid Hurwicz {cite}`hurwicz1950least`.)
+赫维奇偏差在样本量越小时表现得越明显（参见 {cite}`Orcutt_Winokur_69`）。
 
-The Hurwicz bias is worse the smaller is the sample (see {cite}`Orcutt_Winokur_69`).
-
-
-Be that as it may, here is more information about the posterior.
+不管怎样，这里是关于后验分布的更多信息。
 
 ```{code-cell} ipython3
 with AR1_model:
@@ -219,27 +195,26 @@ with AR1_model:
 
 summary
 ```
+现在我们将计算在观察到相同数据但假设 $y_0$ 是从平稳分布中抽取的情况下的后验分布。
 
-Now we shall compute a posterior distribution after seeing the same data but instead assuming that $y_0$ is drawn from the stationary distribution.
-
-This means that
+这意味着
 
 $$
 y_0 \sim N \left(0, \frac{\sigma_x^{2}}{1 - \rho^{2}} \right)
 $$
 
-We alter the code as follows:
+我们按如下方式修改代码：
 
 ```{code-cell} ipython3
 AR1_model_y0 = pmc.Model()
 
 with AR1_model_y0:
 
-    # Start with priors
-    rho = pmc.Uniform('rho', lower=-1., upper=1.) # Assume stable rho
+    # 首先设定先验分布
+    rho = pmc.Uniform('rho', lower=-1., upper=1.) # 假设 rho 是稳定的
     sigma = pmc.HalfNormal('sigma', sigma=np.sqrt(10))
 
-    # Standard deviation of ergodic y
+    # 平稳 y 的标准差
     y_sd = sigma / np.sqrt(1 - rho**2)
 
     # yhat
@@ -247,61 +222,56 @@ with AR1_model_y0:
     y_data = pmc.Normal('y_obs', mu=yhat, sigma=sigma, observed=y[1:])
     y0_data = pmc.Normal('y0_obs', mu=0., sigma=y_sd, observed=y[0])
 ```
-
 ```{code-cell} ipython3
 :tag: [hide-output]
 
 with AR1_model_y0:
     trace_y0 = pmc.sample(50000, tune=10000, return_inferencedata=True)
 
-# Grey vertical lines are the cases of divergence
+# 灰色垂直线表示发散的情况
 ```
-
 ```{code-cell} ipython3
 with AR1_model_y0:
     az.plot_trace(trace_y0, figsize=(17,6))
 ```
-
 ```{code-cell} ipython3
 with AR1_model:
     summary_y0 = az.summary(trace_y0, round_to=4)
 
 summary_y0
 ```
+请注意当我们基于$y_0$进行条件化而不是假设$y_0$来自平稳分布时，$\rho$的后验分布相对向右偏移。
 
-Please note how the posterior for $\rho$ has shifted to the right relative to when we conditioned on $y_0$ instead of assuming that $y_0$ is drawn from the stationary distribution.
-
-Think about why this happens.
+思考一下为什么会发生这种情况。
 
 ```{hint}
-It is connected to how Bayes Law (conditional probability) solves an **inverse problem** by putting high probability on parameter values
-that make observations more likely.
+这与贝叶斯定律(条件概率)如何通过对使观测值更可能出现的参数值赋予高概率来解决**逆问题**有关。
 ```
 
-We'll return to this issue after we use `numpyro` to compute posteriors under our two alternative assumptions about the distribution of $y_0$.
+在我们使用`numpyro`来计算这两种关于$y_0$分布的假设下的后验分布之前,我们会回到这个问题。
 
-We'll now repeat the calculations using `numpyro`.
+我们现在用`numpyro`重复这些计算。
 
-## Numpyro Implementation
+## Numpyro实现
 
 ```{code-cell} ipython3
 
 
 def plot_posterior(sample):
     """
-    Plot trace and histogram
+    绘制轨迹和直方图
     """
-    # To np array
+    # 转换为np数组
     rhos = sample['rho']
     sigmas = sample['sigma']
     rhos, sigmas, = np.array(rhos), np.array(sigmas)
 
     fig, axs = plt.subplots(2, 2, figsize=(17, 6))
-    # Plot trace
+    # 绘制轨迹
     axs[0, 0].plot(rhos)   # rho
     axs[1, 0].plot(sigmas) # sigma
 
-    # Plot posterior
+    # 绘制后验分布
     axs[0, 1].hist(rhos, bins=50, density=True, alpha=0.7)
     axs[0, 1].set_xlim([0, 1])
     axs[1, 1].hist(sigmas, bins=50, density=True, alpha=0.7)
@@ -312,82 +282,75 @@ def plot_posterior(sample):
     axs[1, 1].set_title("sigma")
     plt.show()
 ```
-
 ```{code-cell} ipython3
 def AR1_model(data):
-    # set prior
+    # 设置先验分布
     rho = numpyro.sample('rho', dist.Uniform(low=-1., high=1.))
     sigma = numpyro.sample('sigma', dist.HalfNormal(scale=np.sqrt(10)))
 
-    # Expected value of y at the next period (rho * y)
+    # 下一期y的期望值 (rho * y)
     yhat = rho * data[:-1]
 
-    # Likelihood of the actual realization.
+    # 实际值的似然函数
     y_data = numpyro.sample('y_obs', dist.Normal(loc=yhat, scale=sigma), obs=data[1:])
 
 ```
-
 ```{code-cell} ipython3
 :tag: [hide-output]
 
-# Make jnp array
+# 创建 jnp 数组
 y = jnp.array(y)
 
-# Set NUTS kernal
+# 设置 NUTS 核心
 NUTS_kernel = numpyro.infer.NUTS(AR1_model)
 
-# Run MCMC
+# 运行 MCMC
 mcmc = numpyro.infer.MCMC(NUTS_kernel, num_samples=50000, num_warmup=10000, progress_bar=False)
 mcmc.run(rng_key=random.PRNGKey(1), data=y)
 ```
-
 ```{code-cell} ipython3
 plot_posterior(mcmc.get_samples())
 ```
-
 ```{code-cell} ipython3
 mcmc.print_summary()
 ```
-
-Next, we again compute the posterior under the assumption that $y_0$ is drawn from the stationary distribution, so that
+接下来，我们再次计算后验分布，这次假设 $y_0$ 是从平稳分布中抽取的，因此
 
 $$
 y_0 \sim N \left(0, \frac{\sigma_x^{2}}{1 - \rho^{2}} \right)
 $$
 
-Here's the new code to achieve this.
+以下是实现这一目的的新代码。
 
 ```{code-cell} ipython3
 def AR1_model_y0(data):
-    # Set prior
+    # 设置先验分布
     rho = numpyro.sample('rho', dist.Uniform(low=-1., high=1.))
     sigma = numpyro.sample('sigma', dist.HalfNormal(scale=np.sqrt(10)))
 
-    # Standard deviation of ergodic y
+    # 平稳y的标准差
     y_sd = sigma / jnp.sqrt(1 - rho**2)
 
-    # Expected value of y at the next period (rho * y)
+    # 下一期y的期望值(rho * y)
     yhat = rho * data[:-1]
 
-    # Likelihood of the actual realization.
+    # 实际实现值的似然
     y_data = numpyro.sample('y_obs', dist.Normal(loc=yhat, scale=sigma), obs=data[1:])
     y0_data = numpyro.sample('y0_obs', dist.Normal(loc=0., scale=y_sd), obs=data[0])
 ```
-
 ```{code-cell} ipython3
 :tag: [hide-output]
 
-# Make jnp array
+# 创建jnp数组
 y = jnp.array(y)
 
-# Set NUTS kernal
+# 设置NUTS核心
 NUTS_kernel = numpyro.infer.NUTS(AR1_model_y0)
 
-# Run MCMC
+# 运行MCMC
 mcmc2 = numpyro.infer.MCMC(NUTS_kernel, num_samples=50000, num_warmup=10000, progress_bar=False)
 mcmc2.run(rng_key=random.PRNGKey(1), data=y)
 ```
-
 ```{code-cell} ipython3
 plot_posterior(mcmc2.get_samples())
 ```
@@ -396,11 +359,10 @@ plot_posterior(mcmc2.get_samples())
 mcmc2.print_summary()
 ```
 
-Look what happened to the posterior!
+看看后验分布发生了什么！
 
-It has moved far from the true values of the parameters used to generate the data because of how Bayes' Law (i.e., conditional probability)
-is telling `numpyro` to explain what it interprets as  "explosive" observations early in the sample.
+由于贝叶斯定律（即条件概率）告诉`numpyro`要解释样本早期它认为是"爆炸性"的观测值，后验分布已经远离了用于生成数据的参数真实值。
 
-Bayes' Law is able to generate a plausible likelihood for the first observation by driving $\rho \rightarrow 1$ and $\sigma \uparrow$ in order to raise the variance of the stationary distribution.
+贝叶斯定律通过驱使$\rho \rightarrow 1$和$\sigma \uparrow$来提高平稳分布的方差，从而能够为第一个观测值生成一个合理的似然。
 
-Our example illustrates the importance of what you assume about the distribution of initial conditions.
+我们的例子说明了你对初始条件分布的假设有多么重要。

@@ -18,20 +18,20 @@ kernelspec:
 </div>
 ```
 
-# Linear State Space Models
+# 线性状态空间模型
 
-```{index} single: Linear State Space Models
+```{index} single: 线性状态空间模型
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
 ```{epigraph}
-"We may regard the present state of the universe as the effect of its past and the cause of its future" -- Marquis de Laplace
+"我们可以将宇宙的现状视为其过去的结果和未来的原因" -- 拉普拉斯侯爵
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -40,30 +40,30 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-This lecture introduces the **linear state space** dynamic system.
+本讲座介绍**线性状态空间**动态系统。
 
-The linear state space system is a generalization of the scalar AR(1) process {doc}`we studied before <intro:ar1_processes>`.
+线性状态空间系统是{doc}`我们之前学习过的 <intro:ar1_processes>`标量AR(1)过程的推广。
 
-This model is a workhorse that carries a powerful theory of prediction.
+这个模型是一个具有强大预测理论的重要工具。
 
-Its many applications include:
+它的许多应用包括：
 
-* representing dynamics of higher-order linear systems
-* predicting the position of a system $j$ steps into the future
-* predicting a geometric sum of future values of a variable like
-    * non-financial income
-    * dividends on a stock
-    * the money supply
-    * a government deficit or surplus, etc.
-* key ingredient of useful models
-    * Friedman's permanent income model of consumption smoothing.
-    * Barro's model of smoothing total tax collections.
-    * Rational expectations version of Cagan's model of hyperinflation.
-    * Sargent and Wallace's "unpleasant monetarist arithmetic," etc.
+* 表示高阶线性系统的动态特性
+* 预测系统在未来$j$步后的位置
+* 预测变量未来值的几何和，例如
+    * 非金融收入
+    * 股票股息
+    * 货币供应量
+    * 政府赤字或盈余等
+* 实用模型的关键要素
+    * 弗里德曼的永久收入消费平滑模型
+    * 巴罗的总税收平滑模型
+    * 卡根超通货膨胀模型的理性预期版本
+    * 萨金特和华莱士的"令人不快的货币主义算术"等
 
-Let's start with some imports:
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
@@ -74,21 +74,21 @@ from scipy.stats import norm
 import random
 ```
 
-## The Linear State Space Model
+## 线性状态空间模型
 
 ```{index} single: Models; Linear State Space
 ```
 
-The objects in play are:
+涉及的对象包括：
 
-* An $n \times 1$ vector $x_t$ denoting the **state** at time $t = 0, 1, 2, \ldots$.
-* An IID sequence of $m \times 1$ random vectors $w_t \sim N(0,I)$.
-* A $k \times 1$ vector $y_t$ of **observations** at time $t = 0, 1, 2, \ldots$.
-* An $n \times n$ matrix $A$  called the **transition matrix**.
-* An $n \times m$ matrix $C$  called the **volatility matrix**.
-* A $k \times n$ matrix $G$ sometimes called the **output matrix**.
+* 一个 $n \times 1$ 向量 $x_t$ 表示时间 $t = 0, 1, 2, \ldots$ 的**状态**。
+* 一个 $m \times 1$ 独立同分布随机向量序列 $w_t \sim N(0,I)$。
+* 一个 $k \times 1$ 向量 $y_t$ 表示时间 $t = 0, 1, 2, \ldots$ 的**观测值**。
+* 一个 $n \times n$ 矩阵 $A$ 称为**转移矩阵**。
+* 一个 $n \times m$ 矩阵 $C$ 称为**波动矩阵**。
+* 一个 $k \times n$ 矩阵 $G$ 有时称为**输出矩阵**。
 
-Here is the linear state-space system
+以下是线性状态空间系统
 
 ```{math}
 :label: st_space_rep
@@ -101,62 +101,63 @@ Here is the linear state-space system
 ```
 
 (lss_pgs)=
-### Primitives
+### 基本要素
 
-The primitives of the model are
+模型的基本要素是
 
-1. the matrices $A, C, G$
-1. shock distribution, which we have specialized to $N(0,I)$
-1. the distribution of the initial condition $x_0$, which we have set to $N(\mu_0, \Sigma_0)$
+1. 矩阵 $A, C, G$
+1. 冲击分布，我们将其特定为 $N(0,I)$
 
-Given $A, C, G$ and draws of $x_0$ and $w_1, w_2, \ldots$, the
-model {eq}`st_space_rep` pins down the values of the sequences $\{x_t\}$ and $\{y_t\}$.
+1. 初始条件$x_0$的分布，我们已设定为$N(\mu_0, \Sigma_0)$
 
-Even without these draws, the primitives 1--3 pin down the *probability distributions* of $\{x_t\}$ and $\{y_t\}$.
+给定$A, C, G$以及$x_0$和$w_1, w_2, \ldots$的抽样值，模型{eq}`st_space_rep`确定了序列$\{x_t\}$和$\{y_t\}$的值。
 
-Later we'll see how to compute these distributions and their moments.
+即使没有这些抽样值，基本要素1--3也确定了$\{x_t\}$和$\{y_t\}$的*概率分布*。
 
-#### Martingale Difference Shocks
+稍后我们将看到如何计算这些分布及其矩。
+
+#### 鞅差异冲击
 
 ```{index} single: Linear State Space Models; Martingale Difference Shocks
 ```
 
-We've made the common assumption that the shocks are independent standardized normal vectors.
+我们做出了一个常见的假设，即冲击是独立的标准化正态向量。
 
-But some of what we say will be valid under the assumption that $\{w_{t+1}\}$ is a **martingale difference sequence**.
+但我们所说的一些内容在假设$\{w_{t+1}\}$是**鞅差序列**的条件下也是有效的。
 
-A martingale difference sequence is a sequence that is zero mean when conditioned on past information.
+鞅差序列是指在给定过去信息条件下均值为零的序列。
 
-In the present case, since $\{x_t\}$ is our state sequence, this means that it satisfies
+在当前情况下，由于$\{x_t\}$是我们的状态序列，这意味着它满足
 
 $$
+
 \mathbb{E} [w_{t+1} | x_t, x_{t-1}, \ldots ] = 0
 $$
 
-This is a weaker condition than that $\{w_t\}$ is IID with $w_{t+1} \sim N(0,I)$.
+这个条件比 $\{w_t\}$ 是独立同分布且 $w_{t+1} \sim N(0,I)$ 的条件要弱。
 
-### Examples
+### 示例
 
-By appropriate choice of the primitives, a variety of dynamics can be represented in terms of the linear state space model.
+通过适当选择基本要素，各种动态系统都可以用线性状态空间模型来表示。
 
-The following examples help to highlight this point.
+以下示例有助于突出这一点。
 
-They also illustrate the wise dictum *finding the state is an art*.
+这些示例也说明了"找到状态是一门艺术"这一智慧格言。
 
 (lss_sode)=
-#### Second-order Difference Equation
+#### 二阶差分方程
 
-Let $\{y_t\}$ be a deterministic sequence that satisfies
+设 $\{y_t\}$ 是满足以下条件的确定性序列
 
 ```{math}
 :label: st_ex_1
 
 y_{t+1} =  \phi_0 + \phi_1 y_t + \phi_2 y_{t-1}
 \quad \text{s.t.} \quad
-y_0, y_{-1} \text{ given}
+y_0, y_{-1} \text{ 给定}
 ```
 
-To map {eq}`st_ex_1` into our state space system {eq}`st_space_rep`, we set
+为了将 {eq}`st_ex_1` 映射到我们的状态空间系统 {eq}`st_space_rep`，我们设
 
 $$
 x_t=
@@ -178,12 +179,13 @@ C= \begin{bmatrix}
     0
     \end{bmatrix}
 \qquad
+
 G = \begin{bmatrix} 0 & 1 & 0 \end{bmatrix}
 $$
 
-You can confirm that under these definitions, {eq}`st_space_rep` and {eq}`st_ex_1` agree.
+你可以确认在这些定义下，{eq}`st_space_rep`和{eq}`st_ex_1`是一致的。
 
-The next figure shows the dynamics of this process when $\phi_0 = 1.1, \phi_1=0.8, \phi_2 = -0.8, y_0 = y_{-1} = 1$.
+下图显示了当$\phi_0 = 1.1, \phi_1=0.8, \phi_2 = -0.8, y_0 = y_{-1} = 1$时，这个过程的动态变化。
 
 (lss_sode_fig)=
 ```{code-cell} python3
@@ -200,7 +202,7 @@ def plot_lss(A,
     y = y.flatten()
     ax.plot(y, 'b-', lw=2, alpha=0.7)
     ax.grid()
-    ax.set_xlabel('time', fontsize=12)
+    ax.set_xlabel('时间', fontsize=12)
     ax.set_ylabel('$y_t$', fontsize=12)
     plt.show()
 ```
@@ -218,14 +220,14 @@ G = [0, 1, 0]
 plot_lss(A, C, G)
 ```
 
-Later you'll be asked to recreate this figure.
+稍后将要求您重新创建这个图形。
 
-#### Univariate Autoregressive Processes
+#### 单变量自回归过程
 
 ```{index} single: Linear State Space Models; Univariate Autoregressive Processes
 ```
 
-We can use {eq}`st_space_rep` to represent the model
+我们可以使用{eq}`st_space_rep`来表示这个模型
 
 ```{math}
 :label: eq_ar_rep
@@ -233,9 +235,9 @@ We can use {eq}`st_space_rep` to represent the model
 y_{t+1} = \phi_1 y_{t} + \phi_2 y_{t-1} + \phi_3 y_{t-2} + \phi_4  y_{t-3} + \sigma w_{t+1}
 ```
 
-where $\{w_t\}$ is IID and standard normal.
+其中$\{w_t\}$是独立同分布的标准正态分布。
 
-To put this in the linear state space format we take $x_t = \begin{bmatrix} y_t & y_{t-1} &  y_{t-2} &  y_{t-3} \end{bmatrix}'$ and
+为了将其转换为线性状态空间格式，我们取$x_t = \begin{bmatrix} y_t & y_{t-1} &  y_{t-2} &  y_{t-3} \end{bmatrix}'$和
 
 $$
 A =
@@ -258,15 +260,16 @@ C = \begin{bmatrix}
      \end{bmatrix}
 $$
 
-The matrix $A$ has the form of the *companion matrix* to the vector
-$\begin{bmatrix}\phi_1 &  \phi_2 & \phi_3 & \phi_4 \end{bmatrix}$.
+矩阵$A$具有向量$\begin{bmatrix}\phi_1 &  \phi_2 & \phi_3 & \phi_4 \end{bmatrix}$的*伴随矩阵*形式。
 
-The next figure shows the dynamics of this process when
+下图显示了当
 
 $$
 \phi_1 = 0.5, \phi_2 = -0.2, \phi_3 = 0, \phi_4 = 0.5, \sigma = 0.2, y_0 = y_{-1} = y_{-2} =
 y_{-3} = 1
 $$
+
+时该过程的动态变化
 
 (lss_uap_fig)=
 ```{code-cell} python3
@@ -288,20 +291,20 @@ G_1 = [1, 0, 0, 0]
 plot_lss(A_1, C_1, G_1, n=4, ts_length=200)
 ```
 
-#### Vector Autoregressions
+#### 向量自回归
 
-```{index} single: Linear State Space Models; Vector Autoregressions
+```{index} single: 线性状态空间模型; 向量自回归
 ```
 
-Now suppose that
+现假设
 
-* $y_t$ is a $k \times 1$ vector
-* $\phi_j$ is a $k \times k$ matrix and
-* $w_t$ is $k \times 1$
+* $y_t$ 是一个 $k \times 1$ 向量
+* $\phi_j$ 是一个 $k \times k$ 矩阵且
+* $w_t$ 是 $k \times 1$
 
-Then {eq}`eq_ar_rep` is termed a *vector autoregression*.
+那么{eq}`eq_ar_rep`被称为*向量自回归*。
 
-To map this into {eq}`st_space_rep`, we set
+要将其映射到{eq}`st_space_rep`中，我们设
 
 $$
 x_t =
@@ -334,21 +337,21 @@ G =
  \end{bmatrix}
 $$
 
-where $I$ is the $k \times k$ identity matrix and $\sigma$ is a $k \times k$ matrix.
+其中 $I$ 是 $k \times k$ 单位矩阵，$\sigma$ 是一个 $k \times k$ 矩阵。
 
-#### Seasonals
+#### 季节性
 
-```{index} single: Linear State Space Models; Seasonals
+```{index} single: 线性状态空间模型; 季节性
 ```
 
-We can use {eq}`st_space_rep` to represent
+我们可以使用{eq}`st_space_rep`来表示
 
-1. the *deterministic seasonal* $y_t = y_{t-4}$
-1. the *indeterministic seasonal* $y_t = \phi_4 y_{t-4} + w_t$
+1. *确定性季节性* $y_t = y_{t-4}$
+1. *非确定性季节性* $y_t = \phi_4 y_{t-4} + w_t$
 
-In fact, both are special cases of {eq}`eq_ar_rep`.
+事实上，这两种情况都是{eq}`eq_ar_rep`的特例。
 
-With the deterministic seasonal, the transition matrix becomes
+对于确定性季节性，转移矩阵变为
 
 $$
 A = \begin{bmatrix}
@@ -359,24 +362,24 @@ A = \begin{bmatrix}
     \end{bmatrix}
 $$
 
-It is easy to check that $A^4 = I$, which implies that $x_t$ is strictly periodic with period 4:[^foot1]
+容易验证$A^4 = I$，这意味着$x_t$是严格周期的，周期为4：[^foot1]
 
 $$
 x_{t+4} = x_t
 $$
 
-Such an $x_t$ process can be used to model deterministic seasonals in quarterly time series.
+这样的$x_t$过程可用于对季度时间序列中的确定性季节性进行建模。
 
-The *indeterministic* seasonal produces recurrent, but aperiodic, seasonal fluctuations.
+*非确定性*季节性产生循环但非周期性的季节波动。
 
-#### Time Trends
+#### 时间趋势
 
 ```{index} single: Linear State Space Models; Time Trends
 ```
 
-The model $y_t = a t + b$ is known as a *linear time trend*.
+模型$y_t = a t + b$被称为*线性时间趋势*。
 
-We can represent this model in the linear state space form by taking
+我们可以通过以下方式将该模型表示为线性状态空间形式
 
 ```{math}
 :label: lss_ltt
@@ -388,6 +391,7 @@ A
   \end{bmatrix}
 \qquad
 C
+
 = \begin{bmatrix}
         0 \\
         0
@@ -399,11 +403,11 @@ G
   \end{bmatrix}
 ```
 
-and starting at initial condition $x_0 = \begin{bmatrix} 0 & 1\end{bmatrix}'$.
+并从初始条件 $x_0 = \begin{bmatrix} 0 & 1\end{bmatrix}'$ 开始。
 
-In fact, it's possible to use the state-space system to represent polynomial trends of any order.
+实际上，可以使用状态空间系统来表示任何阶数的多项式趋势。
 
-For instance, we can represent the model $y_t = a t^2 + bt + c$ in the linear state space form by taking
+例如，我们可以通过以下方式将模型 $y_t = a t^2 + bt + c$ 表示为线性状态空间形式：
 
 $$
 A
@@ -426,9 +430,9 @@ G
   \end{bmatrix}
 $$
 
-and starting at initial condition $x_0 = \begin{bmatrix} 0 & 0 & 1 \end{bmatrix}'$.
+并从初始条件 $x_0 = \begin{bmatrix} 0 & 0 & 1 \end{bmatrix}'$ 开始。
 
-It follows that
+由此可得：
 
 $$
 A^t =
@@ -439,15 +443,14 @@ A^t =
 \end{bmatrix}
 $$
 
-Then $x_t^\prime = \begin{bmatrix} t(t-1)/2 &t & 1 \end{bmatrix}$. You can now confirm that $y_t = G x_t$ has the correct form.
+则 $x_t^\prime = \begin{bmatrix} t(t-1)/2 &t & 1 \end{bmatrix}$。现在你可以验证 $y_t = G x_t$ 具有正确的形式。
 
-### Moving Average Representations
+### 移动平均表示
 
 ```{index} single: Linear State Space Models; Moving Average Representations
 ```
 
-A nonrecursive expression for $x_t$ as a function of
-$x_0, w_1, w_2, \ldots,  w_t$ can be found by using {eq}`st_space_rep` repeatedly to obtain
+通过重复使用{eq}`st_space_rep`，可以找到一个表示$x_t$作为$x_0, w_1, w_2, \ldots, w_t$函数的非递归表达式：
 
 ```{math}
 :label: eqob5
@@ -460,14 +463,14 @@ $x_0, w_1, w_2, \ldots,  w_t$ can be found by using {eq}`st_space_rep` repeatedl
 \end{aligned}
 ```
 
-Representation {eq}`eqob5` is a  *moving average* representation.
+表达式{eq}`eqob5`是一个*移动平均*表示。
 
-It expresses $\{x_t\}$ as a linear function of
+它将$\{x_t\}$表示为以下内容的线性函数：
 
-1. current and past values of the  process $\{w_t\}$ and
-1. the initial condition $x_0$
+1. 过程$\{w_t\}$的当前值和过去值
+1. 初始条件$x_0$
 
-As an example of a moving average representation, let the model be
+作为移动平均表示的一个例子，设模型为
 
 $$
 A
@@ -483,9 +486,9 @@ C
   \end{bmatrix}
 $$
 
-You will be able to show that $A^t = \begin{bmatrix} 1 & t \cr 0 & 1 \end{bmatrix}$ and  $A^j C = \begin{bmatrix} 1 & 0 \end{bmatrix}'$.
+你将能够证明 $A^t = \begin{bmatrix} 1 & t \cr 0 & 1 \end{bmatrix}$ 和 $A^j C = \begin{bmatrix} 1 & 0 \end{bmatrix}'$。
 
-Substituting into the moving average representation {eq}`eqob5`, we obtain
+将其代入移动平均表示式 {eq}`eqob5`，我们得到
 
 $$
 x_{1t} = \sum_{j=0}^{t-1} w_{t-j} +
@@ -495,15 +498,15 @@ x_{1t} = \sum_{j=0}^{t-1} w_{t-j} +
 x_0
 $$
 
-where $x_{1t}$ is the first entry of $x_t$.
+其中 $x_{1t}$ 是 $x_t$ 的第一个元素。
 
-The first term on the right is a cumulated sum of martingale differences and is therefore a [martingale](https://en.wikipedia.org/wiki/Martingale_%28probability_theory%29).
+右边的第一项是鞅差的累积和，因此是一个[鞅](https://en.wikipedia.org/wiki/Martingale_%28probability_theory%29)。
 
-The second term is a translated linear function of time.
+第二项是时间的平移线性函数。
 
-For this reason, $x_{1t}$ is called a *martingale with drift*.
+因此，$x_{1t}$ 被称为*带漂移的鞅*。
 
-## Distributions and Moments
+## 分布和矩
 
 ```{index} single: Linear State Space Models; Distributions
 ```
@@ -511,15 +514,13 @@ For this reason, $x_{1t}$ is called a *martingale with drift*.
 ```{index} single: Linear State Space Models; Moments
 ```
 
-### Unconditional Moments
+### 无条件矩
 
-Using {eq}`st_space_rep`, it's easy to obtain expressions for the
-(unconditional) means of $x_t$ and $y_t$.
+使用 {eq}`st_space_rep`，我们可以很容易地得到 $x_t$ 和 $y_t$ 的（无条件）均值表达式。
 
-We'll explain what *unconditional* and *conditional* mean soon.
+我们将很快解释什么是*无条件*和*条件*均值。
 
-Letting $\mu_t := \mathbb{E} [x_t]$ and using linearity of expectations, we
-find that
+令 $\mu_t := \mathbb{E} [x_t]$ 并使用期望的线性性质，我们得到
 
 ```{math}
 :label: lss_mut_linear_models
@@ -528,12 +529,11 @@ find that
 \quad \text{with} \quad \mu_0 \text{ given}
 ```
 
-Here $\mu_0$ is a primitive given in {eq}`st_space_rep`.
+这里的 $\mu_0$ 是在 {eq}`st_space_rep` 中给出的初始值。
 
-The variance-covariance matrix of $x_t$ is $\Sigma_t := \mathbb{E} [ (x_t - \mu_t) (x_t - \mu_t)']$.
+$x_t$ 的方差-协方差矩阵是 $\Sigma_t := \mathbb{E} [ (x_t - \mu_t) (x_t - \mu_t)']$。
 
-Using $x_{t+1} - \mu_{t+1} = A (x_t - \mu_t) + C w_{t+1}$, we can
-determine this matrix recursively via
+使用 $x_{t+1} - \mu_{t+1} = A (x_t - \mu_t) + C w_{t+1}$，我们可以通过以下递归方式确定这个矩阵
 
 ```{math}
 :label: eqsigmalaw_linear_models
@@ -542,22 +542,20 @@ determine this matrix recursively via
 \quad \text{with} \quad \Sigma_0 \text{ given}
 ```
 
-As with $\mu_0$, the matrix $\Sigma_0$ is a primitive given in {eq}`st_space_rep`.
+与 $\mu_0$ 一样，矩阵 $\Sigma_0$ 是在 {eq}`st_space_rep` 中给出的初始值。
 
-As a matter of terminology, we will sometimes call
+在术语方面，我们有时会称
 
-* $\mu_t$ the *unconditional mean*  of $x_t$
-* $\Sigma_t$ the *unconditional variance-covariance matrix*  of $x_t$
+* $\mu_t$ 为 $x_t$ 的*无条件均值*
+* $\Sigma_t$ 为 $x_t$ 的*无条件方差-协方差矩阵*
 
-This is to distinguish $\mu_t$ and $\Sigma_t$ from related objects that use conditioning
-information, to be defined below.
+这是为了将 $\mu_t$ 和 $\Sigma_t$ 与使用条件信息的相关对象区分开来，这些对象将在下面定义。
 
-However, you should be aware that these "unconditional" moments do depend on
-the initial distribution $N(\mu_0, \Sigma_0)$.
+但是，你应该注意到这些"无条件"矩确实依赖于初始分布 $N(\mu_0, \Sigma_0)$。
 
-#### Moments of the Observables
+#### 可观测变量的矩
 
-Using linearity of expectations again we have
+再次利用期望的线性性，我们有
 
 ```{math}
 :label: lss_umy
@@ -565,7 +563,7 @@ Using linearity of expectations again we have
 \mathbb{E} [y_t] = \mathbb{E} [G x_t] = G \mu_t
 ```
 
-The variance-covariance matrix of $y_t$ is easily shown to be
+$y_t$ 的方差-协方差矩阵可以很容易地证明为
 
 ```{math}
 :label: lss_uvy
@@ -573,51 +571,43 @@ The variance-covariance matrix of $y_t$ is easily shown to be
 \textrm{Var} [y_t] = \textrm{Var} [G x_t] = G \Sigma_t G'
 ```
 
-### Distributions
+### 分布
 
 ```{index} single: Linear State Space Models; Distributions
 ```
 
-In general, knowing the mean and variance-covariance matrix of a random vector
-is not quite as good as knowing the full distribution.
+一般来说，知道随机向量的均值和方差-协方差矩阵并不如知道完整的分布那么好。
 
-However, there are some situations where these moments alone tell us all we
-need to know.
+然而，在某些情况下，仅仅这些矩就能告诉我们所需要知道的一切。
 
-These are situations in which the mean vector and covariance matrix are all of the  **parameters** that pin down the population distribution.
+这些情况是指均值向量和协方差矩阵是确定总体分布的所有**参数**的情况。
 
+其中一种情况是当所讨论的向量服从高斯分布（即正态分布）时。
 
-One such situation is when the vector in question is Gaussian (i.e., normally
-distributed).
+在这种情况下，考虑到
 
-This is the case here, given
+1. 我们对基本量的高斯分布假设
+1. 正态性在线性运算下得以保持
 
-1. our Gaussian assumptions on the primitives
-1. the fact that normality is preserved under linear operations
-
-In fact, it's [well-known](https://en.wikipedia.org/wiki/Multivariate_normal_distribution#Affine_transformation) that
+事实上，[众所周知](https://en.wikipedia.org/wiki/Multivariate_normal_distribution#Affine_transformation)
 
 ```{math}
 :label: lss_glig
 
 u \sim N(\bar u, S)
-\quad \text{and} \quad
+\quad \text{和} \quad
 v = a + B u
 \implies
 v \sim N(a + B \bar u, B S B')
 ```
 
-In particular, given our Gaussian assumptions on the primitives and the
-linearity of {eq}`st_space_rep` we can see immediately that  both $x_t$ and
-$y_t$ are  Gaussian for all $t \geq 0$ [^fn_ag].
+特别是，基于我们对基本量的高斯分布假设和{eq}`st_space_rep`的线性特性，我们可以立即看出$x_t$和$y_t$对所有$t \geq 0$都是高斯分布的[^fn_ag]。
 
-Since $x_t$ is Gaussian, to find the distribution, all we need to do is
-find its mean and variance-covariance matrix.
+由于$x_t$是高斯分布的，要找到其分布，我们只需要确定其均值和方差-协方差矩阵。
 
-But in fact we've already done this, in {eq}`lss_mut_linear_models` and {eq}`eqsigmalaw_linear_models`.
+但实际上我们已经在{eq}`lss_mut_linear_models`和{eq}`eqsigmalaw_linear_models`中完成了这项工作。
 
-Letting $\mu_t$ and $\Sigma_t$ be as defined by these equations,
-we have
+令$\mu_t$和$\Sigma_t$如这些方程所定义，我们有
 
 ```{math}
 :label: lss_mgs_x
@@ -625,7 +615,7 @@ we have
 x_t \sim N(\mu_t, \Sigma_t)
 ```
 
-By similar reasoning combined with {eq}`lss_umy` and {eq}`lss_uvy`,
+通过与{eq}`lss_umy`和{eq}`lss_uvy`类似的推理，
 
 ```{math}
 :label: lss_mgs_y
@@ -633,33 +623,31 @@ By similar reasoning combined with {eq}`lss_umy` and {eq}`lss_uvy`,
 y_t \sim N(G \mu_t, G \Sigma_t G')
 ```
 
-### Ensemble Interpretations
+### 集合解释
 
-How should we interpret the distributions defined by {eq}`lss_mgs_x`--{eq}`lss_mgs_y`?
+我们应该如何解释{eq}`lss_mgs_x`--{eq}`lss_mgs_y`定义的分布？
 
-Intuitively, the probabilities in a distribution correspond to relative frequencies in a large population drawn from that distribution.
+直观上，分布中的概率对应于从该分布中抽取的大量样本中的相对频率。
 
-Let's apply this idea to our setting, focusing on the distribution of $y_T$ for fixed $T$.
+让我们将这个想法应用到我们的设定中，重点关注固定 $T$ 时 $y_T$ 的分布。
 
-We can generate independent draws of $y_T$ by repeatedly simulating the
-evolution of the system up to time $T$, using an independent set of
-shocks each time.
+我们可以通过重复模拟系统直到时间 $T$ 的演化来生成 $y_T$ 的独立抽样，每次使用一组独立的冲击。
 
-The next figure shows 20 simulations, producing 20 time series for $\{y_t\}$, and hence 20 draws of $y_T$.
+下图显示了20次模拟，产生了20个 $\{y_t\}$ 的时间序列，因此得到了20个 $y_T$ 的抽样。
 
-The system in question is the univariate autoregressive model {eq}`eq_ar_rep`.
+所考虑的系统是单变量自回归模型{eq}`eq_ar_rep`。
 
-The values of $y_T$ are represented by black dots in the left-hand figure
+左图中的黑点表示 $y_T$ 的值
 
 ```{code-cell} python3
 def cross_section_plot(A,
                    C,
                    G,
-                   T=20,                 # Set the time
+                   T=20,                 # 设置时间
                    ymin=-0.8,
                    ymax=1.25,
-                   sample_size = 20,     # 20 observations/simulations
-                   n=4):                 # The number of dimensions for the initial x0
+                   sample_size = 20,     # 20个观测值/模拟
+                   n=4):                 # 初始x0的维度数
 
     ar = LinearStateSpace(A, C, G, mu_0=np.ones(n))
 
@@ -711,17 +699,16 @@ G_2 = [1, 0, 0, 0]
 cross_section_plot(A_2, C_2, G_2)
 ```
 
-In the right-hand figure, these values are converted into a rotated histogram
-that shows relative frequencies from our sample of 20 $y_T$'s.
+在右侧图中，这些数值被转换成一个旋转的直方图，显示了我们从20个$y_T$样本中得到的相对频率。
 
-Here is another figure, this time with 100 observations
+这是另一个图，这次有100个观测值
 
 ```{code-cell} python3
 t = 100
 cross_section_plot(A_2, C_2, G_2, T=t)
 ```
 
-Let's now try with 500,000 observations, showing only the histogram (without rotation)
+让我们现在尝试用500,000个观测值，只显示直方图（不旋转）
 
 ```{code-cell} python3
 T = 100
@@ -738,42 +725,39 @@ y = y.flatten()
 ygrid = np.linspace(ymin, ymax, 150)
 
 ax.hist(y, bins=50, density=True, alpha=0.4)
-ax.plot(ygrid, f_y.pdf(ygrid), 'k-', lw=2, alpha=0.8, label=r'true density')
+ax.plot(ygrid, f_y.pdf(ygrid), 'k-', lw=2, alpha=0.8, label='true density')
 ax.set_xlim(ymin, ymax)
 ax.set_xlabel('$y_t$', fontsize=12)
-ax.set_ylabel('relative frequency', fontsize=12)
+ax.set_ylabel('相对频率', fontsize=12)
 ax.legend(fontsize=12)
 plt.show()
 ```
 
-The black line is the population density of $y_T$ calculated from {eq}`lss_mgs_y`.
+黑线是根据{eq}`lss_mgs_y`计算的$y_T$的总体密度。
 
-The histogram and population distribution are close, as expected.
+直方图和总体分布很接近，这是符合预期的。
 
-By looking at the figures and experimenting with parameters, you will gain a
-feel for how the population distribution depends on the model primitives {ref}`listed above <lss_pgs>`, as intermediated by the distribution's parameters.
+通过观察图形并尝试不同的参数，你可以理解总体分布是如何依赖于{ref}`上面列出的<lss_pgs>`模型基本要素的，这种依赖关系是通过分布的参数体现的。
 
-#### Ensemble Means
+#### 集合均值
 
-In the preceding figure, we approximated the population distribution of $y_T$ by
+在前面的图中，我们通过以下方式近似了$y_T$的总体分布：
 
-1. generating $I$ sample paths (i.e., time series) where $I$ is a large number
-1. recording each observation $y^i_T$
-1. histogramming this sample
+1. 生成$I$条样本路径（即时间序列），其中$I$是一个很大的数
+1. 记录每个观测值$y^i_T$
+1. 对这个样本制作直方图
 
-Just as the histogram approximates the population distribution, the *ensemble* or
-*cross-sectional average*
+正如直方图近似总体分布一样，*集合*或*横截面*平均值
 
 $$
 \bar y_T := \frac{1}{I} \sum_{i=1}^I y_T^i
 $$
 
-approximates the expectation $\mathbb{E} [y_T] = G \mu_T$ (as implied by the law of large numbers).
+近似期望值$\mathbb{E} [y_T] = G \mu_T$（这是由大数定律所暗示的）。
 
-Here's a simulation comparing the ensemble averages and population means at time points $t=0,\ldots,50$.
+这里是一个模拟，比较了在时间点$t=0,\ldots,50$处的集合平均值和总体均值。
 
-The parameters are the same as for the preceding figures,
-and the sample size is relatively small ($I=20$).
+参数与前面的图表相同，样本量相对较小（$I=20$）。
 
 (lss_em_fig)=
 ```{code-cell} python3
@@ -802,72 +786,72 @@ for t in range(T):
     μ_x, μ_y, Σ_x, Σ_y = next(m)
     population_means.append(float(μ_y))
 
-ax.plot(population_means, color='g', lw=2, alpha=0.8, label='$G\mu_t$')
+ax.plot(population_means, color='g', lw=2, alpha=0.8, label=r'$G\mu_t$')
 ax.set_ylim(ymin, ymax)
-ax.set_xlabel('time', fontsize=12)
+ax.set_xlabel('时间', fontsize=12)
 ax.set_ylabel('$y_t$', fontsize=12)
 ax.legend(ncol=2)
 plt.show()
 ```
 
-The ensemble mean for $x_t$ is
+$x_t$ 的集成均值为
 
 $$
 \bar x_T := \frac{1}{I} \sum_{i=1}^I x_T^i \to \mu_T
 \qquad (I \to \infty)
 $$
 
-The limit $\mu_T$ is a  "long-run average".
+极限 $\mu_T$ 是一个"长期平均值"。
 
-(By *long-run average* we mean the average for an infinite ($I = \infty$)  number of sample $x_T$'s)
+(这里的*长期平均值*指的是无限多个($I = \infty$)样本 $x_T$ 的平均值)
 
-Another application of the law of large numbers assures us that
+大数定律的另一个应用向我们保证
 
 $$
 \frac{1}{I} \sum_{i=1}^I (x_T^i - \bar x_T) (x_T^i - \bar x_T)' \to \Sigma_T
 \qquad (I \to \infty)
 $$
 
-### Joint Distributions
+### 联合分布
 
-In the preceding discussion, we looked at the distributions of $x_t$ and
-$y_t$ in isolation.
+在前面的讨论中，我们单独研究了 $x_t$ 和 $y_t$ 的分布。
 
-This gives us useful information but doesn't allow us to answer questions like
+这给了我们有用的信息，但不足以回答以下问题：
 
-* what's the probability that $x_t \geq 0$ for all $t$?
-* what's the probability that the process $\{y_t\}$ exceeds some value $a$ before falling below $b$?
-* etc., etc.
+* $x_t$ 在所有 $t$ 时刻都大于等于0的概率是多少？
+* 过程 $\{y_t\}$ 在降到 $b$ 以下之前超过某个值 $a$ 的概率是多少？
+* 等等
 
-Such questions concern the *joint distributions* of these sequences.
+这些问题涉及这些序列的*联合分布*。
 
-To compute the joint distribution of $x_0, x_1, \ldots, x_T$, recall
-that joint and conditional densities are linked by the rule
+要计算 $x_0, x_1, \ldots, x_T$ 的联合分布，回想
+
+联合密度和条件密度通过以下规则相关联
 
 $$
 p(x, y) = p(y \, | \, x) p(x)
-\qquad \text{(joint }=\text{ conditional }\times\text{ marginal)}
+\qquad \text{(联合密度 }=\text{ 条件密度 }\times\text{ 边际密度)}
 $$
 
-From this rule we get $p(x_0, x_1) = p(x_1 \,|\, x_0) p(x_0)$.
+由此规则可得 $p(x_0, x_1) = p(x_1 \,|\, x_0) p(x_0)$。
 
-The Markov property $p(x_t \,|\, x_{t-1}, \ldots, x_0) =  p(x_t \,|\, x_{t-1})$ and repeated applications of the preceding rule lead us to
+马尔可夫性质 $p(x_t \,|\, x_{t-1}, \ldots, x_0) =  p(x_t \,|\, x_{t-1})$ 和反复应用前述规则使我们得到
 
 $$
 p(x_0, x_1, \ldots, x_T) =  p(x_0) \prod_{t=0}^{T-1} p(x_{t+1} \,|\, x_t)
 $$
 
-The marginal $p(x_0)$ is just the primitive $N(\mu_0, \Sigma_0)$.
+边际密度 $p(x_0)$ 就是原始的 $N(\mu_0, \Sigma_0)$。
 
-In view of {eq}`st_space_rep`, the conditional densities are
+根据{eq}`st_space_rep`，条件密度为
 
 $$
 p(x_{t+1} \,|\, x_t) = N(Ax_t, C C')
 $$
 
-#### Autocovariance Functions
+#### 自协方差函数
 
-An important object related to the joint distribution is the *autocovariance function*
+与联合分布相关的一个重要对象是*自协方差函数*
 
 ```{math}
 :label: eqnautodeff
@@ -875,7 +859,7 @@ An important object related to the joint distribution is the *autocovariance fun
 \Sigma_{t+j, t} := \mathbb{E} [ (x_{t+j} - \mu_{t+j})(x_t - \mu_t)' ]
 ```
 
-Elementary calculations show that
+基本计算表明
 
 ```{math}
 :label: eqnautocov
@@ -883,9 +867,9 @@ Elementary calculations show that
 \Sigma_{t+j,t} = A^j \Sigma_t
 ```
 
-Notice that $\Sigma_{t+j,t}$ in general depends on both $j$, the gap between the two dates, and $t$, the earlier date.
+注意 $\Sigma_{t+j,t}$ 通常取决于两个日期之间的间隔 $j$ 和较早的日期 $t$。
 
-## Stationarity and Ergodicity
+## 平稳性和遍历性
 
 ```{index} single: Linear State Space Models; Stationarity
 ```
@@ -893,16 +877,15 @@ Notice that $\Sigma_{t+j,t}$ in general depends on both $j$, the gap between the
 ```{index} single: Linear State Space Models; Ergodicity
 ```
 
-Stationarity and ergodicity are two properties  that, when they hold,  greatly aid analysis of linear state space models.
+平稳性和遍历性是两个重要性质，当它们成立时，能极大地帮助线性状态空间模型的分析。
 
-Let's start with the intuition.
+让我们从直观理解开始。
 
-### Visualizing Stability
+### 可视化稳定性
 
-Let's look at some more time series from the same model that we analyzed above.
+让我们看看来自我们上面分析的相同模型的更多时间序列。
 
-This picture shows cross-sectional distributions for $y$ at times
-$T, T', T''$
+这张图显示了 $y$ 在时间点 $T, T', T''$ 的横截面分布
 
 ```{code-cell} python3
 def cross_plot(A,
@@ -948,113 +931,108 @@ def cross_plot(A,
 cross_plot(A_2, C_2, G_2)
 ```
 
-Note how the time series "settle down" in the sense that the distributions at
-$T'$ and $T''$ are relatively similar to each other --- but unlike
-the distribution at $T$.
+注意时间序列如何"稳定下来"，即在 $T'$ 和 $T''$ 时的分布相对相似 --- 但与 $T$ 时的分布不同。
 
-Apparently, the distributions of $y_t$  converge to a fixed long-run
-distribution as $t \to \infty$.
+显然，当 $t \to \infty$ 时，$y_t$ 的分布收敛到一个固定的长期分布。
 
-When such a distribution exists it is called a *stationary distribution*.
+当这样的分布存在时，它被称为*平稳分布*。
 
-### Stationary Distributions
+### 平稳分布
 
-In our setting, a distribution $\psi_{\infty}$ is said to be *stationary* for $x_t$ if
+在我们的设定中，如果分布 $\psi_{\infty}$ 对于 $x_t$ 满足以下条件，则称其为*平稳的*：
 
 $$
 x_t \sim \psi_{\infty}
-\quad \text{and} \quad
+\quad \text{和} \quad
 x_{t+1} = A x_t + C w_{t+1}
 \quad \implies \quad
 x_{t+1} \sim \psi_{\infty}
 $$
 
-Since
+由于
 
-1. in the present case, all distributions are Gaussian
-1. a Gaussian distribution is pinned down by its mean and variance-covariance matrix
+1. 在当前情况下，所有分布都是高斯分布
+1. 高斯分布由其均值和方差-协方差矩阵确定
 
-we can restate the definition as follows: $\psi_{\infty}$ is stationary for $x_t$ if
+我们可以将定义重述如下：如果 $\psi_{\infty}$ 满足以下条件，则它对于 $x_t$ 是平稳的
 
 $$
 \psi_{\infty}
 = N(\mu_{\infty}, \Sigma_{\infty})
 $$
 
-where $\mu_{\infty}$ and $\Sigma_{\infty}$ are fixed points of {eq}`lss_mut_linear_models` and {eq}`eqsigmalaw_linear_models` respectively.
+其中 $\mu_{\infty}$ 和 $\Sigma_{\infty}$ 分别是 {eq}`lss_mut_linear_models` 和 {eq}`eqsigmalaw_linear_models` 的不动点。
 
-### Covariance Stationary Processes
+### 协方差平稳过程
 
-Let's see what happens to the preceding figure if we start $x_0$ at the stationary distribution.
+让我们看看当我们从平稳分布开始 $x_0$ 时，前面的图形会发生什么变化。
 
 (lss_s_fig)=
 ```{code-cell} python3
 cross_plot(A_2, C_2, G_2, steady_state='True')
 ```
 
-Now the  differences in the observed distributions at $T, T'$ and $T''$ come entirely from random fluctuations due to the finite sample size.
+现在在 $T, T'$ 和 $T''$ 观察到的分布差异完全来自于有限样本量导致的随机波动。
 
-By
+通过
 
-* our choosing $x_0 \sim N(\mu_{\infty}, \Sigma_{\infty})$
-* the definitions of $\mu_{\infty}$ and $\Sigma_{\infty}$ as fixed points of {eq}`lss_mut_linear_models` and {eq}`eqsigmalaw_linear_models` respectively
+* 我们选择 $x_0 \sim N(\mu_{\infty}, \Sigma_{\infty})$
+* 将 $\mu_{\infty}$ 和 $\Sigma_{\infty}$ 定义为 {eq}`lss_mut_linear_models` 和 {eq}`eqsigmalaw_linear_models` 的不动点
 
-we've ensured that
+我们确保了
 
 $$
 \mu_t = \mu_{\infty}
-\quad \text{and} \quad
+\quad \text{和} \quad
 \Sigma_t = \Sigma_{\infty}
-\quad \text{for all } t
+\quad \text{对所有 } t
 $$
 
-Moreover, in view of {eq}`eqnautocov`, the autocovariance function takes the form $\Sigma_{t+j,t} = A^j \Sigma_\infty$, which depends on $j$ but not on $t$.
+此外，根据 {eq}`eqnautocov`，自协方差函数形式为 $\Sigma_{t+j,t} = A^j \Sigma_\infty$，它依赖于 $j$ 而不依赖于 $t$。
 
-This motivates the following definition.
+这启发我们给出以下定义。
 
-A  process $\{x_t\}$ is said to be *covariance stationary* if
+如果一个过程 $\{x_t\}$ 满足以下条件，则称其为*协方差平稳的*：
 
-* both $\mu_t$ and $\Sigma_t$ are constant in $t$
-* $\Sigma_{t+j,t}$ depends on the time gap $j$ but not on time $t$
+* $\mu_t$ 和 $\Sigma_t$ 都不随 $t$ 变化
+* $\Sigma_{t+j,t}$ 依赖于时间间隔 $j$ 而不依赖于时间 $t$
 
-In our setting, $\{x_t\}$ will be covariance stationary if $\mu_0, \Sigma_0, A, C$  assume values that  imply that none of $\mu_t, \Sigma_t, \Sigma_{t+j,t}$ depends on $t$.
+在我们的设定中，如果$\mu_0, \Sigma_0, A, C$的取值使得$\mu_t, \Sigma_t, \Sigma_{t+j,t}$都不依赖于$t$，那么$\{x_t\}$将是协方差平稳的。
 
-### Conditions for Stationarity
+### 平稳性条件
 
-#### The Globally Stable Case
+#### 全局稳定情况
 
-The difference equation $\mu_{t+1} = A \mu_t$ is known to have *unique*
-fixed point $\mu_{\infty} = 0$ if all eigenvalues of $A$ have moduli strictly less than unity.
+如果$A$的所有特征值的模都严格小于1，那么差分方程$\mu_{t+1} = A \mu_t$就有*唯一*的不动点$\mu_{\infty} = 0$。
 
-That is, if  `(np.absolute(np.linalg.eigvals(A)) < 1).all() == True`.
+也就是说，如果`(np.absolute(np.linalg.eigvals(A)) < 1).all() == True`。
 
-The difference equation {eq}`eqsigmalaw_linear_models` also has a unique fixed point in this case, and, moreover
+在这种情况下，差分方程{eq}`eqsigmalaw_linear_models`也有唯一的不动点，而且
 
 $$
 \mu_t \to \mu_{\infty} = 0
-\quad \text{and} \quad
+\quad \text{和} \quad
 \Sigma_t \to \Sigma_{\infty}
-\quad \text{as} \quad t \to \infty
+\quad \text{当} \quad t \to \infty
 $$
 
-regardless of the initial conditions $\mu_0$ and $\Sigma_0$.
+无论初始条件$\mu_0$和$\Sigma_0$如何。
 
-This is the *globally stable case* --- see [these notes](https://python.quantecon.org/_static/lecture_specific/linear_models/iteration_notes.pdf) for more a theoretical treatment.
+这就是*全局稳定情况*——更多理论内容请参见[这些笔记](https://python.quantecon.org/_static/lecture_specific/linear_models/iteration_notes.pdf)。
 
-However, global stability is more than we need for stationary solutions, and often more than we want.
+然而，全局稳定性对于平稳解来说过于严格，而且通常也超出我们的需求。
 
-To illustrate, consider {ref}`our second order difference equation example <lss_sode>`.
+为了说明这一点，让我们考虑{ref}`二阶差分方程的例子 <lss_sode>`。
 
-Here the state is $x_t = \begin{bmatrix} 1 & y_t & y_{t-1} \end{bmatrix}'$.
+在这里，状态是 $x_t = \begin{bmatrix} 1 & y_t & y_{t-1} \end{bmatrix}'$。
 
-Because of the constant first component in the state vector, we will never have $\mu_t \to 0$.
+由于状态向量中的第一个分量是常数，我们永远不会有 $\mu_t \to 0$。
 
-How can we find stationary solutions that respect a constant state component?
+我们如何找到满足常数状态分量的平稳解？
 
-#### Processes with a Constant State Component
+#### 具有常数状态分量的过程
 
-To investigate such a process, suppose that $A$ and $C$ take the
-form
+为了研究这样的过程，假设 $A$ 和 $C$ 具有如下形式
 
 $$
 A
@@ -1069,14 +1047,14 @@ A
 \end{bmatrix}
 $$
 
-where
+其中
 
-* $A_1$ is an $(n-1) \times (n-1)$ matrix
-* $a$ is an $(n-1) \times 1$ column vector
+* $A_1$ 是一个 $(n-1) \times (n-1)$ 矩阵
+* $a$ 是一个 $(n-1) \times 1$ 列向量
 
-Let $x_t = \begin{bmatrix} x_{1t}' & 1 \end{bmatrix}'$ where $x_{1t}$ is $(n-1) \times 1$.
+令 $x_t = \begin{bmatrix} x_{1t}' & 1 \end{bmatrix}'$，其中 $x_{1t}$ 是 $(n-1) \times 1$。
 
-It follows  that
+因此可得
 
 $$
 \begin{aligned}
@@ -1084,7 +1062,7 @@ x_{1,t+1} & = A_1 x_{1t} + a + C_1 w_{t+1}
 \end{aligned}
 $$
 
-Let $\mu_{1t} = \mathbb{E} [x_{1t}]$ and take expectations on both sides of this expression to get
+令 $\mu_{1t} = \mathbb{E} [x_{1t}]$ 并对该表达式两边取期望得到
 
 ```{math}
 :label: eqob29
@@ -1092,18 +1070,18 @@ Let $\mu_{1t} = \mathbb{E} [x_{1t}]$ and take expectations on both sides of this
 \mu_{1,t+1} = A_1 \mu_{1,t} + a
 ```
 
-Assume now that the moduli of the eigenvalues of $A_1$ are all strictly less than one.
+现假设 $A_1$ 的所有特征值的模都严格小于1。
 
-Then {eq}`eqob29` has a unique stationary solution, namely,
+那么 {eq}`eqob29` 有唯一的平稳解，即：
 
 $$
 \mu_{1\infty} = (I-A_1)^{-1} a
 $$
 
-The stationary value of $\mu_t$ itself is then $\mu_\infty := \begin{bmatrix}
-\mu_{1\infty}' & 1 \end{bmatrix}'$.
+$\mu_t$ 本身的平稳值则为 $\mu_\infty := \begin{bmatrix}
+\mu_{1\infty}' & 1 \end{bmatrix}'$。
 
-The stationary values of $\Sigma_t$ and $\Sigma_{t+j,t}$ satisfy
+$\Sigma_t$ 和 $\Sigma_{t+j,t}$ 的平稳值满足
 
 ```{math}
 :label: eqnSigmainf
@@ -1114,73 +1092,68 @@ The stationary values of $\Sigma_t$ and $\Sigma_{t+j,t}$ satisfy
 \end{aligned}
 ```
 
-Notice that here $\Sigma_{t+j,t}$ depends on the time gap $j$ but not on calendar time $t$.
+注意这里 $\Sigma_{t+j,t}$ 依赖于时间间隔 $j$ 但不依赖于日历时间 $t$。
 
-In conclusion, if
+总之，如果
 
-* $x_0 \sim N(\mu_{\infty}, \Sigma_{\infty})$ and
-* the moduli of the eigenvalues of $A_1$ are all strictly less than unity
+* $x_0 \sim N(\mu_{\infty}, \Sigma_{\infty})$ 且
+* $A_1$ 的所有特征值的模都严格小于1
 
-then the $\{x_t\}$ process is covariance stationary, with constant state
-component.
+那么 $\{x_t\}$ 过程是协方差平稳的，具有常数状态分量。
 
 ```{note}
-If the eigenvalues of $A_1$ are less than unity in modulus, then
-(a) starting from any initial value, the mean and variance-covariance
-matrix both converge to their stationary values; and (b)
-iterations on {eq}`eqsigmalaw_linear_models` converge to the fixed point of the *discrete
-Lyapunov equation* in the first line of {eq}`eqnSigmainf`.
+如果 $A_1$ 的特征值的模小于1，那么
+(a) 从任何初始值开始，均值和方差-协方差矩阵都会收敛到它们的平稳值；并且
+(b) 对{eq}`eqsigmalaw_linear_models`的迭代会收敛到{eq}`eqnSigmainf`第一行中*离散李雅普诺夫方程*的不动点。
 ```
 
-### Ergodicity
+### 遍历性
 
-Let's suppose that we're working with a covariance stationary process.
+假设我们正在处理一个协方差平稳过程。
 
-In this case, we know that the ensemble mean will converge to $\mu_{\infty}$ as the sample size $I$ approaches infinity.
+在这种情况下，我们知道当样本量 $I$ 趋向无穷时，整体均值将收敛到 $\mu_{\infty}$。
 
-#### Averages over Time
+#### 时间平均
 
-Ensemble averages across simulations are interesting theoretically, but in real life, we usually observe only a *single* realization $\{x_t, y_t\}_{t=0}^T$.
+理论上，跨模拟的整体平均很有趣，但在现实生活中，我们通常只观察到*单个*实现 $\{x_t, y_t\}_{t=0}^T$。
 
-So now let's take a single realization and form the time-series averages
+因此现在让我们取一个单独的实现并形成时间序列平均值
 
 $$
 \bar x := \frac{1}{T} \sum_{t=1}^T x_t
-\quad \text{and} \quad
+\quad \text{和} \quad
+
 \bar y := \frac{1}{T} \sum_{t=1}^T y_t
 $$
 
-Do these time series averages converge to something interpretable in terms of our basic state-space representation?
+这些时间序列平均值是否会收敛到我们基本状态空间表示中可解释的内容？
 
-The answer depends on something called *ergodicity*.
+答案取决于所谓的*遍历性*。
 
-Ergodicity is the property that time series and ensemble averages coincide.
+遍历性是时间序列平均值和整体平均值相一致的性质。
 
-More formally, ergodicity implies that time series sample averages converge to their
-expectation under the stationary distribution.
+更正式地说，遍历性意味着时间序列样本平均值会收敛到其在平稳分布下的期望值。
 
-In particular,
+具体来说：
 
 * $\frac{1}{T} \sum_{t=1}^T x_t \to \mu_{\infty}$
 * $\frac{1}{T} \sum_{t=1}^T (x_t -\bar x_T) (x_t - \bar x_T)' \to \Sigma_\infty$
 * $\frac{1}{T} \sum_{t=1}^T (x_{t+j} -\bar x_T) (x_t - \bar x_T)' \to A^j \Sigma_\infty$
 
-In our linear Gaussian setting, any covariance stationary process is also ergodic.
+在我们的线性高斯设定中，任何协方差平稳过程都是遍历的。
 
-## Noisy Observations
+## 含噪声的观测
 
-In some settings, the observation equation $y_t = Gx_t$ is modified to
-include an error term.
+在某些情况下，观测方程 $y_t = Gx_t$ 会被修改以包含一个误差项。
 
-Often this error term represents the idea that the true state can only be
-observed imperfectly.
+这个误差项通常表示真实状态只能被不完美地观测到这一概念。
 
-To include an error term in the observation we introduce
+为了在观测中引入误差项，我们引入
 
-* An IID sequence of $\ell \times 1$ random vectors $v_t \sim N(0,I)$.
-* A $k \times \ell$ matrix $H$.
+* 一个由$\ell \times 1$随机向量组成的IID序列 $v_t \sim N(0,I)$。
+* 一个$k \times \ell$矩阵$H$。
 
-and extend the linear state-space system to
+并将线性状态空间系统扩展为
 
 ```{math}
 :label: st_space_rep_noisy
@@ -1192,13 +1165,11 @@ and extend the linear state-space system to
 \end{aligned}
 ```
 
-The sequence $\{v_t\}$ is assumed to be independent of $\{w_t\}$.
+序列$\{v_t\}$被假定与$\{w_t\}$相互独立。
 
-The process $\{x_t\}$ is not modified by noise in the observation
-equation and its moments, distributions and stability properties remain the same.
+过程$\{x_t\}$不会被观测方程中的噪声所修改，其矩、分布和稳定性特征保持不变。
 
-The unconditional moments of $y_t$ from {eq}`lss_umy` and {eq}`lss_uvy`
-now become
+$y_t$的无条件矩从{eq}`lss_umy`和{eq}`lss_uvy`现在变为
 
 ```{math}
 :label: lss_umy_2
@@ -1206,7 +1177,7 @@ now become
 \mathbb{E} [y_t] = \mathbb{E} [G x_t + H v_t] = G \mu_t
 ```
 
-The variance-covariance matrix of $y_t$ is easily shown to be
+$y_t$的方差-协方差矩阵可以很容易地证明为
 
 ```{math}
 :label: lss_uvy_2
@@ -1214,68 +1185,67 @@ The variance-covariance matrix of $y_t$ is easily shown to be
 \textrm{Var} [y_t] = \textrm{Var} [G x_t + H v_t] = G \Sigma_t G' + HH'
 ```
 
-The distribution of $y_t$ is therefore
+$y_t$ 的分布因此为
 
 $$
 y_t \sim N(G \mu_t, G \Sigma_t G' + HH')
 $$
 
-## Prediction
+## 预测
 
 ```{index} single: Linear State Space Models; Prediction
 ```
 
-The theory of prediction for linear state space systems is elegant and
-simple.
+线性状态空间系统的预测理论优雅而简单。
 
 (ff_cm)=
-### Forecasting Formulas -- Conditional Means
+### 预测公式 -- 条件均值
 
-The natural way to predict variables is to use conditional distributions.
+预测变量的自然方法是使用条件分布。
 
-For example, the optimal forecast of $x_{t+1}$ given information known at time $t$ is
+例如，基于时间 t 已知信息对 $x_{t+1}$ 的最优预测是
 
 $$
 \mathbb{E}_t [x_{t+1}] := \mathbb{E} [x_{t+1} \mid x_t, x_{t-1}, \ldots, x_0 ] = Ax_t
 $$
 
-The right-hand side follows from $x_{t+1} = A x_t + C w_{t+1}$ and the
-fact that $w_{t+1}$ is zero mean and independent of $x_t, x_{t-1}, \ldots, x_0$.
+右边的等式来自 $x_{t+1} = A x_t + C w_{t+1}$ 以及 $w_{t+1}$ 均值为零且独立于 $x_t, x_{t-1}, \ldots, x_0$ 的事实。
 
-That $\mathbb{E}_t [x_{t+1}] = \mathbb{E}[x_{t+1} \mid x_t]$ is an implication of $\{x_t\}$ having the *Markov property*.
+$\mathbb{E}_t [x_{t+1}] = \mathbb{E}[x_{t+1} \mid x_t]$ 是 $\{x_t\}$ 具有*马尔可夫性质*的一个推论。
 
-The one-step-ahead forecast error is
+一步预测误差为
 
 $$
 x_{t+1} - \mathbb{E}_t [x_{t+1}] = Cw_{t+1}
 $$
 
-The covariance matrix of the forecast error is
+预测误差的协方差矩阵为
 
 $$
+
 \mathbb{E} [ (x_{t+1} - \mathbb{E}_t [ x_{t+1}] ) (x_{t+1} - \mathbb{E}_t [ x_{t+1}])'] = CC'
 $$
 
-More generally, we'd like to compute the $j$-step ahead forecasts $\mathbb{E}_t [x_{t+j}]$ and $\mathbb{E}_t [y_{t+j}]$.
+更一般地，我们想要计算$j$步超前预测$\mathbb{E}_t [x_{t+j}]$和$\mathbb{E}_t [y_{t+j}]$。
 
-With a bit of algebra, we obtain
+通过一些代数运算，我们得到
 
 $$
 x_{t+j} = A^j x_t + A^{j-1} C w_{t+1} + A^{j-2} C w_{t+2} +
 \cdots + A^0 C w_{t+j}
 $$
 
-In view of the IID property, current and past state values provide no information about future values of the shock.
+根据IID特性，当前和过去的状态值不能提供关于未来冲击值的任何信息。
 
-Hence $\mathbb{E}_t[w_{t+k}] = \mathbb{E}[w_{t+k}] = 0$.
+因此$\mathbb{E}_t[w_{t+k}] = \mathbb{E}[w_{t+k}] = 0$。
 
-It now follows from linearity of expectations that the $j$-step ahead forecast of $x$ is
+由期望的线性性可知，$x$的$j$步超前预测为
 
 $$
 \mathbb{E}_t [x_{t+j}] = A^j x_t
 $$
 
-The $j$-step ahead forecast of $y$ is therefore
+因此$y$的$j$步超前预测为
 
 $$
 \mathbb{E}_t [y_{t+j}]
@@ -1283,9 +1253,9 @@ $$
 = G A^j x_t
 $$
 
-### Covariance of Prediction Errors
+### 预测误差的协方差
 
-It is useful to obtain the covariance matrix of the vector of  $j$-step-ahead prediction errors
+计算$j$步超前预测误差向量的协方差矩阵是很有用的
 
 ```{math}
 :label: eqob8
@@ -1293,7 +1263,7 @@ It is useful to obtain the covariance matrix of the vector of  $j$-step-ahead pr
 x_{t+j} - \mathbb{E}_t [ x_{t+j}] = \sum^{j-1}_{s=0} A^s C w_{t-s+j}
 ```
 
-Evidently,
+显然，
 
 ```{math}
 :label: eqob9a
@@ -1301,7 +1271,7 @@ Evidently,
 V_j := \mathbb{E}_t [ (x_{t+j} - \mathbb{E}_t [x_{t+j}] ) (x_{t+j} - \mathbb{E}_t [x_{t+j}] )^\prime ] =   \sum^{j-1}_{k=0} A^k C C^\prime A^{k^\prime}
 ```
 
-$V_j$ defined in {eq}`eqob9a` can be calculated recursively via $V_1 = CC'$ and
+{eq}`eqob9a`中定义的$V_j$可以通过$V_1 = CC'$和以下递归方式计算：
 
 ```{math}
 :label: eqob9b
@@ -1309,10 +1279,9 @@ $V_j$ defined in {eq}`eqob9a` can be calculated recursively via $V_1 = CC'$ and
 V_j = CC^\prime + A V_{j-1} A^\prime, \quad j \geq 2
 ```
 
-$V_j$ is the *conditional covariance matrix* of the errors in forecasting
-$x_{t+j}$, conditioned on time $t$ information $x_t$.
+$V_j$是预测$x_{t+j}$的误差的*条件协方差矩阵*，条件是基于时间$t$的信息$x_t$。
 
-Under particular conditions, $V_j$ converges to
+在特定条件下，$V_j$收敛到：
 
 ```{math}
 :label: eqob10
@@ -1320,77 +1289,77 @@ Under particular conditions, $V_j$ converges to
 V_\infty = CC' + A V_\infty A'
 ```
 
-Equation {eq}`eqob10` is an example of a *discrete Lyapunov* equation in the covariance matrix $V_\infty$.
+方程{eq}`eqob10`是协方差矩阵$V_\infty$的*离散李雅普诺夫*方程的一个例子。
 
-A sufficient condition for $V_j$ to converge is that the eigenvalues of $A$ be strictly less than one in modulus.
+$V_j$收敛的一个充分条件是$A$的特征值的模都严格小于1。
 
-Weaker sufficient conditions for convergence  associate eigenvalues equaling or exceeding one in modulus with elements of $C$ that equal $0$.
+收敛的较弱充分条件将模等于或大于1的特征值与$C$中等于$0$的元素相关联。
 
 (lm_fgs)=
-## Code
+## 代码
 
-Our preceding simulations and calculations are based on code in
-the file [lss.py](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py) from the [QuantEcon.py](http://quantecon.org/quantecon-py) package.
+我们之前的模拟和计算都基于[QuantEcon.py](http://quantecon.org/quantecon-py)包中的[lss.py](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)文件。
 
-The code implements a class for handling linear state space models (simulations, calculating moments, etc.).
+该代码实现了一个用于处理线性状态空间模型的类(包括模拟、计算矩等功能)。
 
-One Python construct you might not be familiar with is the use of a generator function in the method `moment_sequence()`.
+你可能不太熟悉的一个Python结构是在`moment_sequence()`方法中使用生成器函数。
 
-Go back and [read the relevant documentation](https://python-programming.quantecon.org/python_advanced_features.html#generators) if you've forgotten how generator functions work.
+如果你忘记了生成器函数是如何工作的，请回去[阅读相关文档](https://python-programming.quantecon.org/python_advanced_features.html#generators)。
 
-Examples of usage are given in the solutions to the exercises.
+使用示例在练习的解答中给出。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: lss_ex1
 
-In several contexts, we want to compute forecasts of  geometric sums of future random variables governed by the linear state-space system {eq}`st_space_rep`.
+在多个场景中，我们需要计算由线性状态空间系统{eq}`st_space_rep`所控制的未来随机变量的几何和的预测值。
 
-We want the following objects
+我们需要以下对象：
 
-* Forecast of a geometric sum of future $x$'s, or $\mathbb{E}_t \left[ \sum_{j=0}^\infty \beta^j x_{t+j} \right]$.
-* Forecast of a geometric sum of future $y$'s, or $\mathbb{E}_t \left[\sum_{j=0}^\infty \beta^j y_{t+j} \right]$.
+* 未来$x$的几何和的预测值，即$\mathbb{E}_t \left[ \sum_{j=0}^\infty \beta^j x_{t+j} \right]$。
+* 未来$y$的几何和的预测值，即$\mathbb{E}_t \left[\sum_{j=0}^\infty \beta^j y_{t+j} \right]$。
 
-These objects are important components of some famous and  interesting dynamic models.
+这些对象是一些著名且有趣的动态模型的重要组成部分。
 
-For example,
+例如：
 
-* if $\{y_t\}$ is a stream of dividends, then $\mathbb{E} \left[\sum_{j=0}^\infty \beta^j y_{t+j} | x_t \right]$ is a model of a stock price
-* if $\{y_t\}$ is  the money supply, then $\mathbb{E} \left[\sum_{j=0}^\infty \beta^j y_{t+j} | x_t \right]$ is a  model of the price level
+* 如果$\{y_t\}$是股息流，那么$\mathbb{E} \left[\sum_{j=0}^\infty \beta^j y_{t+j} | x_t \right]$是一个股票价格模型
+* 如果$\{y_t\}$是货币供应量，那么$\mathbb{E} \left[\sum_{j=0}^\infty \beta^j y_{t+j} | x_t \right]$是一个价格水平模型
 
-Show that:
+证明：
 
 $$
 \mathbb{E}_t \left[\sum_{j=0}^\infty \beta^j x_{t+j} \right] = [I - \beta A]^{-1} x_t
 $$
 
-and
+和
 
 $$
+
 \mathbb{E}_t \left[\sum_{j=0}^\infty \beta^j y_{t+j} \right] = G[I - \beta A]^{-1} x_t
 $$
 
-what must the modulus for every eigenvalue of $A$ be less than?
+$A$ 的每个特征值的模必须小于多少？
 ```
 
 ```{solution} lss_ex1
 :class: dropdown
 
-Suppose that every eigenvalue of $A$ has modulus strictly less than $\frac{1}{\beta}$.
+假设 $A$ 的每个特征值的模都严格小于 $\frac{1}{\beta}$。
 
-It {ref}`then follows <la_neumann_remarks>` that $I + \beta A + \beta^2 A^2 + \cdots = \left[I - \beta A \right]^{-1}$.
+根据{ref}`这个结论<la_neumann_remarks>`，我们有 $I + \beta A + \beta^2 A^2 + \cdots = \left[I - \beta A \right]^{-1}$。
 
-This leads to our formulas:
+这导致我们的公式：
 
-* Forecast of a geometric sum of future $x$'s
+* 未来 $x$ 几何和的预测
 
 $$
 \mathbb{E}_t \left[\sum_{j=0}^\infty \beta^j x_{t+j} \right]
 = [I + \beta A + \beta^2 A^2 + \cdots \ ] x_t = [I - \beta A]^{-1} x_t
 $$
 
-* Forecast of a geometric sum of future $y$'s
+* 未来 $y$ 几何和的预测
 
 $$
 \mathbb{E}_t \left[\sum_{j=0}^\infty \beta^j y_{t+j} \right]
@@ -1400,10 +1369,10 @@ $$
 
 ```
 
-[^foot1]: The eigenvalues of $A$ are $(1,-1, i,-i)$.
+[^foot1]: $A$ 的特征值是 $(1,-1, i,-i)$。
 
-[^fn_ag]: The correct way to argue this is by induction.  Suppose that
-$x_t$ is Gaussian.  Then {eq}`st_space_rep` and
-{eq}`lss_glig` imply that $x_{t+1}$ is Gaussian.  Since $x_0$
-is assumed to be Gaussian, it follows that every $x_t$ is Gaussian.
-Evidently, this implies that each $y_t$ is Gaussian.
+[^fn_ag]: 正确的论证方法是通过归纳法。假设 $x_t$ 是高斯分布的。那么 {eq}`st_space_rep` 和
+
+
+{eq}`lss_glig` 表明 $x_{t+1}$ 是高斯分布的。由于假设 $x_0$ 是高斯分布的，因此可以推导出每个 $x_t$ 都是高斯分布的。显然，这也意味着每个 $y_t$ 都是高斯分布的。
+

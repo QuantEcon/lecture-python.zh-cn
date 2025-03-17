@@ -18,71 +18,71 @@ kernelspec:
 </div>
 ```
 
-# Uncertainty Traps
+# 不确定性陷阱
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-In this lecture, we study a simplified version of an uncertainty traps model of Fajgelbaum, Schaal and Taschereau-Dumouchel {cite}`fun`.
+在本讲座中，我们将学习Fajgelbaum、Schaal和Taschereau-Dumouchel {cite}`fun`提出的不确定性陷阱模型的简化版本。
 
-The model features self-reinforcing uncertainty that has big impacts on economic activity.
+该模型展示了自我强化的不确定性如何对经济活动产生重大影响。
 
-In the model,
+在模型中，
 
-* Fundamentals  vary stochastically and are not fully observable.
-* At any moment there are both active and inactive entrepreneurs; only active entrepreneurs produce.
-* Agents -- active and inactive entrepreneurs --  have beliefs about the fundamentals expressed as probability distributions.
-* Greater uncertainty means greater dispersions of these distributions.
-* Entrepreneurs are risk-averse and hence less inclined to be active  when uncertainty is high.
-* The output of active entrepreneurs is observable, supplying a noisy signal that helps everyone inside the model infer fundamentals.
-* Entrepreneurs update their beliefs about fundamentals using Bayes' Law, implemented via {doc}`Kalman filtering <kalman>`.
+* 基本面随机变化且不能被完全观察。
+* 在任何时刻都有活跃和不活跃的企业家；只有活跃的企业家进行生产。
 
-Uncertainty traps emerge because:
+* 代理人（包括活跃和非活跃的企业家）对基本面持有以概率分布表示的信念。
+* 更大的不确定性意味着这些分布的离散程度更高。
+* 企业家具有风险规避特性，因此在不确定性高时较少倾向于保持活跃。
+* 活跃企业家的产出是可观察的，提供了一个带噪声的信号，帮助模型内的所有人推断基本面。
+* 企业家通过贝叶斯法则更新他们对基本面的信念，这通过{doc}`卡尔曼滤波<kalman>`来实现。
 
-* High uncertainty discourages entrepreneurs from becoming active.
-* A low level of participation -- i.e., a smaller number of active entrepreneurs -- diminishes the flow of information about fundamentals.
-* Less information translates to higher uncertainty, further discouraging entrepreneurs from choosing to be active, and so on.
+不确定性陷阱之所以出现，是因为：
 
-Uncertainty traps stem from a positive externality: high aggregate economic activity levels generates valuable information.
+* 高度不确定性使企业家不愿保持活跃。
+* 低参与度（即活跃企业家数量较少）减少了关于基本面的信息流。
+* 信息减少转化为更高的不确定性，进一步阻碍企业家选择保持活跃，如此循环。
 
-Let's start with some standard imports:
+不确定性陷阱源于一种正外部性：高水平的总体经济活动会产生有价值的信息。
+
+让我们从一些标准导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 ```
 
-## The Model
+## 模型
 
-The original model described in {cite}`fun` has many interesting moving parts.
+{cite}`fun`中描述的原始模型有许多有趣的组成部分。
 
-Here we examine a simplified version that nonetheless captures many of the key ideas.
+我们将研究一个简化版本，但它仍然包含了许多关键思想。
 
-### Fundamentals
+### 基本原理
 
-The evolution of the fundamental process $\{\theta_t\}$ is given by
+基本过程$\{\theta_t\}$的演变由以下公式给出：
 
 $$
 \theta_{t+1} = \rho \theta_t + \sigma_{\theta} w_{t+1}
 $$
 
-where
+其中
 
-* $\sigma_\theta > 0$ and $0 < \rho < 1$
-* $\{w_t\}$ is IID and standard normal
+* $\sigma_\theta > 0$ 且 $0 < \rho < 1$
+* $\{w_t\}$是独立同分布的标准正态分布
 
-The random variable $\theta_t$ is not observable at any time.
+随机变量$\theta_t$在任何时间点都是不可观察的。
 
-### Output
+### 产出
 
-There is a total $\bar M$ of risk-averse entrepreneurs.
+总共有$\bar M$个风险规避的企业家。
 
-Output of the $m$-th entrepreneur, conditional on being active in the market at
-time $t$, is equal to
+第$m$个企业家在$t$时刻处于活跃状态时的条件产出等于
 
 ```{math}
 :label: xgt
@@ -92,34 +92,33 @@ x_m = \theta + \epsilon_m
 \epsilon_m \sim N \left(0, \gamma_x^{-1} \right)
 ```
 
-Here the time subscript has been dropped to simplify notation.
+这里为了简化符号省略了时间下标。
 
-The inverse of the shock variance, $\gamma_x$, is called the shock's **precision**.
+冲击方差的倒数$\gamma_x$被称为冲击的**精确度**。
 
-The higher is the precision, the more informative $x_m$ is about the fundamental.
+精度越高，$x_m$ 对基本面的信息含量就越大。
 
-Output shocks are independent across time and firms.
+输出冲击在时间和企业之间是相互独立的。
 
-### Information and Beliefs
+### 信息和信念
 
-All entrepreneurs start with identical beliefs about $\theta_0$.
+所有企业家最初对 $\theta_0$ 都持有相同的信念。
 
-Signals are publicly observable and hence all agents have identical beliefs always.
+信号是公开可观察的，因此所有主体始终持有相同的信念。
 
-Dropping time subscripts, beliefs for current $\theta$ are represented by the normal
-distribution $N(\mu, \gamma^{-1})$.
+省略时间下标后，对当前 $\theta$ 的信念用正态分布 $N(\mu, \gamma^{-1})$ 表示。
 
-Here $\gamma$ is the precision of beliefs; its inverse is the degree of uncertainty.
+这里 $\gamma$ 是信念的精度；其倒数是不确定性的程度。
 
-These parameters are updated by Kalman filtering.
+这些参数通过卡尔曼滤波进行更新。
 
-Let
+令
 
-* $\mathbb M \subset \{1, \ldots, \bar M\}$ denote the set of currently active firms.
-* $M := |\mathbb M|$ denote the number of currently active firms.
-* $X$ be the average output $\frac{1}{M} \sum_{m \in \mathbb M} x_m$ of the active firms.
+* $\mathbb M \subset \{1, \ldots, \bar M\}$ 表示当前活跃企业的集合。
+* $M := |\mathbb M|$ 表示当前活跃企业的数量。
+* $X$ 是活跃企业的平均产出 $\frac{1}{M} \sum_{m \in \mathbb M} x_m$。
 
-With this notation and primes for next period values, we can write the updating of the mean and precision via
+使用这些符号，并用撇号表示下一期的值，我们可以将均值和精度的更新写作
 
 ```{math}
 :label: update_mean
@@ -136,33 +135,30 @@ With this notation and primes for next period values, we can write the updating 
     \right)^{-1}
 ```
 
-These are standard Kalman filtering results applied to the current setting.
+这些是标准卡尔曼滤波结果应用于当前设置。
 
-Exercise 1 provides more details on how {eq}`update_mean` and {eq}`update_prec` are derived and then asks you to fill in remaining steps.
+练习1提供了关于{eq}`update_mean`和{eq}`update_prec`如何推导的更多细节，然后要求你填写剩余的步骤。
 
-The next figure plots the law of motion for the precision in {eq}`update_prec`
-as a 45 degree diagram, with one curve for each $M \in \{0, \ldots, 6\}$.
+下图以45度图的形式绘制了{eq}`update_prec`中精度的运动规律，每条曲线对应一个$M \in \{0, \ldots, 6\}$。
 
-The other parameter values are $\rho = 0.99, \gamma_x = 0.5, \sigma_\theta =0.5$
+其他参数值为$\rho = 0.99, \gamma_x = 0.5, \sigma_\theta =0.5$
 
 ```{figure} /_static/lecture_specific/uncertainty_traps/uncertainty_traps_45.png
 
 ```
 
-Points where the curves hit the 45 degree lines are  long-run steady
-states for precision for different values of $M$.
+曲线与45度线相交的点是不同$M$值对应的精度的长期稳态。
 
-Thus, if one of these values for $M$ remains fixed, a corresponding steady state is the equilibrium level of precision
+因此，如果这些$M$值中的一个保持固定，相应的稳态就是精度的均衡水平。
 
-* high values of $M$ correspond to greater information about the
-  fundamental, and hence more precision in steady state
-* low values of $M$ correspond to less information and more uncertainty in steady state
+* 较高的 $M$ 值对应着对基本面有更多的信息，因此在稳态下有更高的精确度
+* 较低的 $M$ 值对应着较少的信息，在稳态下有更多的不确定性
 
-In practice, as we'll see, the number of active firms fluctuates stochastically.
+实际上，正如我们将看到的，活跃企业的数量会随机波动。
 
-### Participation
+### 参与
 
-Omitting time subscripts once more, entrepreneurs enter the market in the current period if
+再次省略时间下标，如果满足以下条件，企业家会在当前期进入市场：
 
 ```{math}
 :label: pref1
@@ -170,15 +166,15 @@ Omitting time subscripts once more, entrepreneurs enter the market in the curren
 \mathbb E [ u(x_m - F_m) ] > c
 ```
 
-Here
+这里
 
-* the mathematical expectation of $x_m$ is based on {eq}`xgt` and beliefs $N(\mu, \gamma^{-1})$ for $\theta$
-* $F_m$ is a stochastic but pre-visible fixed cost, independent across time and firms
-* $c$ is a constant reflecting opportunity costs
+* $x_m$ 的数学期望基于 {eq}`xgt` 和对 $\theta$ 的信念 $N(\mu, \gamma^{-1})$
+* $F_m$ 是一个随机但可预见的固定成本，在时间和企业间相互独立
+* $c$ 是反映机会成本的常数
 
-The statement that $F_m$ is pre-visible means that it is realized at the start of the period and treated as a constant in {eq}`pref1`.
+$F_m$ 是可预见的这一说法意味着它在期初就已实现，并在 {eq}`pref1` 中被视为常数。
 
-The utility function has the constant absolute risk aversion form
+效用函数具有常数绝对风险厌恶形式：
 
 ```{math}
 :label: pref2
@@ -186,9 +182,9 @@ The utility function has the constant absolute risk aversion form
 u(x) = \frac{1}{a} \left(1 - \exp(-a x) \right)
 ```
 
-where $a$ is a positive parameter.
+其中 $a$ 是一个正参数。
 
-Combining {eq}`pref1` and {eq}`pref2`, entrepreneur $m$ participates in the market (or is said to be active) when
+将{eq}`pref1`和{eq}`pref2`结合，当满足以下条件时，企业家 $m$ 参与市场(或称为活跃):
 
 $$
 \frac{1}{a}
@@ -200,7 +196,7 @@ $$
         > c
 $$
 
-Using standard formulas for expectations of [lognormal](https://en.wikipedia.org/wiki/Log-normal_distribution) random variables, this is equivalent to the condition
+使用[对数正态](https://en.wikipedia.org/wiki/Log-normal_distribution)随机变量期望的标准公式，这等价于以下条件
 
 ```{math}
 :label: firm_test
@@ -215,44 +211,43 @@ Using standard formulas for expectations of [lognormal](https://en.wikipedia.org
     \right) - c  > 0
 ```
 
-## Implementation
+## 实现
 
-We want to simulate this economy.
+我们要模拟这个经济。
 
-As a first step, let's put together a class that bundles
+作为第一步，让我们创建一个类来整合
 
-* the parameters, the current value of $\theta$ and the current values of the
-  two belief parameters $\mu$ and $\gamma$
-* methods to update $\theta$, $\mu$ and $\gamma$, as well as to determine the number of active firms and their outputs
+* 参数、$\theta$ 的当前值以及两个信念参数 $\mu$ 和 $\gamma$ 的当前值
 
-The updating methods follow the laws of motion for $\theta$, $\mu$ and $\gamma$ given above.
+* 更新 $\theta$、$\mu$ 和 $\gamma$ 的方法，以及确定活跃企业数量及其产出的方法
 
-The method to evaluate the number of active firms generates $F_1,
-\ldots, F_{\bar M}$ and tests condition {eq}`firm_test` for each firm.
+更新方法遵循上述 $\theta$、$\mu$ 和 $\gamma$ 的运动规律。
 
-The __init__ method encodes as default values the parameters we'll use in the simulations below
+评估活跃企业数量的方法会生成 $F_1, \ldots, F_{\bar M}$ 并对每个企业测试条件 {eq}`firm_test`。
+
+__init__ 方法将我们在下面模拟中使用的参数编码为默认值
 
 ```{code-cell} python3
 class UncertaintyTrapEcon:
 
     def __init__(self,
-                a=1.5,          # Risk aversion
-                γ_x=0.5,        # Production shock precision
-                ρ=0.99,         # Correlation coefficient for θ
-                σ_θ=0.5,        # Standard dev of θ shock
-                num_firms=100,  # Number of firms
-                σ_F=1.5,        # Standard dev of fixed costs
-                c=-420,         # External opportunity cost
-                μ_init=0,       # Initial value for μ
-                γ_init=4,       # Initial value for γ
-                θ_init=0):      # Initial value for θ
+                a=1.5,          # 风险厌恶
+                γ_x=0.5,        # 生产冲击精度
+                ρ=0.99,         # θ的相关系数
+                σ_θ=0.5,        # θ冲击的标准差
+                num_firms=100,  # 企业数量
+                σ_F=1.5,        # 固定成本的标准差
+                c=-420,         # 外部机会成本
+                μ_init=0,       # μ的初始值
+                γ_init=4,       # γ的初始值
+                θ_init=0):      # θ的初始值
 
-        # == Record values == #
+        # == 记录值 == #
         self.a, self.γ_x, self.ρ, self.σ_θ = a, γ_x, ρ, σ_θ
         self.num_firms, self.σ_F, self.c, = num_firms, σ_F, c
         self.σ_x = np.sqrt(1/γ_x)
 
-        # == Initialize states == #
+        # == 初始化状态 == #
         self.γ, self.μ, self.θ = γ_init, μ_init, θ_init
 
     def ψ(self, F):
@@ -262,30 +257,30 @@ class UncertaintyTrapEcon:
 
     def update_beliefs(self, X, M):
         """
-        Update beliefs (μ, γ) based on aggregates X and M.
+        基于总量X和M更新信念(μ, γ)。
         """
-        # Simplify names
+        # 简化名称
         γ_x, ρ, σ_θ = self.γ_x, self.ρ, self.σ_θ
-        # Update μ
+        # 更新μ
         temp1 = ρ * (self.γ * self.μ + M * γ_x * X)
         temp2 = self.γ + M * γ_x
         self.μ = temp1 / temp2
-        # Update γ
+        # 更新γ
         self.γ = 1 / (ρ**2 / (self.γ + M * γ_x) + σ_θ**2)
 
     def update_θ(self, w):
         """
-        Update the fundamental state θ given shock w.
+        根据冲击w更新基本状态θ。
         """
         self.θ = self.ρ * self.θ + self.σ_θ * w
 
     def gen_aggregates(self):
         """
-        Generate aggregates based on current beliefs (μ, γ). This
-        is a simulation step that depends on the draws for F.
+        基于当前信念(μ, γ)生成总量。这是一个
+        依赖于F抽样的模拟步骤。
         """
         F_vals = self.σ_F * np.random.randn(self.num_firms)
-        M = np.sum(self.ψ(F_vals) > 0)  # Counts number of active firms
+        M = np.sum(self.ψ(F_vals) > 0)  # 计算活跃企业数量
         if M > 0:
             x_vals = self.θ + self.σ_x * np.random.randn(M)
             X = x_vals.mean()
@@ -294,61 +289,54 @@ class UncertaintyTrapEcon:
         return X, M
 ```
 
-In the results below we use this code to simulate time series for the major variables.
+在下面的结果中，我们使用这段代码来模拟主要变量的时间序列。
 
-## Results
+## 结果
 
-Let's look first at the dynamics of $\mu$, which the agents use to track $\theta$
+让我们首先看看$\mu$的动态变化，这是代理用来追踪$\theta$的
 
 ```{figure} /_static/lecture_specific/uncertainty_traps/uncertainty_traps_mu.png
 
 ```
 
-We see that $\mu$ tracks $\theta$ well when there are sufficient firms in the market.
+我们可以看到，当市场中有足够多的企业时，$\mu$能很好地追踪$\theta$。
 
-However, there are times when $\mu$ tracks $\theta$ poorly due to
-insufficient information.
+然而，有时由于信息不足，$\mu$对$\theta$的追踪效果很差。
 
-These are episodes where the uncertainty traps take hold.
+这些就是不确定性陷阱发生的时期。
 
-During these episodes
+在这些时期
 
-* precision is low and uncertainty is high
-* few firms are in the market
+* 精确度低，不确定性高
+* 市场中的企业数量很少
 
-To get a clearer idea of the dynamics, let's look at all the main time series
-at once, for a given set of shocks
+为了更清楚地了解这种动态变化，让我们一次性查看所有主要时间序列在给定冲击下的表现
 
 ```{figure} /_static/lecture_specific/uncertainty_traps/uncertainty_traps_sim.png
 ```
 
-Notice how the traps only take hold after a sequence of bad draws for the fundamental.
+注意观察这些陷阱是如何在基本面经历一系列不利冲击后才形成的。
 
-Thus, the model gives us a *propagation mechanism* that maps bad random draws into long downturns in economic activity.
+因此，该模型为我们提供了一个*传播机制*，将不良的随机抽样映射为经济活动的长期下滑。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: uncertainty_traps_ex1
 
-Fill in the details behind {eq}`update_mean` and {eq}`update_prec` based on
-the following standard result (see, e.g., p. 24 of {cite}`young2005`).
+根据以下标准结果（参见{cite}`young2005`第24页），填写{eq}`update_mean`和{eq}`update_prec`背后的详细内容。
 
-**Fact** Let $\mathbf x = (x_1, \ldots, x_M)$ be a vector of IID draws
-from common distribution $N(\theta, 1/\gamma_x)$
-and let $\bar x$ be the sample mean.  If $\gamma_x$
-is known and the prior for $\theta$ is $N(\mu, 1/\gamma)$, then the posterior
-distribution of $\theta$ given $\mathbf x$ is
+**事实** 设$\mathbf x = (x_1, \ldots, x_M)$是来自共同分布$N(\theta, 1/\gamma_x)$的独立同分布抽样向量，$\bar x$为样本均值。如果已知$\gamma_x$，且$\theta$的先验分布为$N(\mu, 1/\gamma)$，则给定$\mathbf x$时$\theta$的后验分布为
 
 $$
 \pi(\theta \,|\, \mathbf x) = N(\mu_0, 1/\gamma_0)
 $$
 
-where
+其中
 
 $$
 \mu_0 = \frac{\mu \gamma + M \bar x \gamma_x}{\gamma + M \gamma_x}
-\quad \text{and} \quad
+\quad \text{和} \quad
 \gamma_0 = \gamma + M \gamma_x
 $$
 ```
@@ -356,62 +344,55 @@ $$
 ```{solution} uncertainty_traps_ex1
 :class: dropdown
 
-This exercise asked you to validate the laws of motion for
-$\gamma$ and $\mu$ given in the lecture, based on the stated
-result about Bayesian updating in a scalar Gaussian setting. The stated
-result tells us that after observing average output $X$ of the
-$M$ firms, our posterior beliefs will be
+本练习要求你根据所述内容验证讲座中给出的$\gamma$和$\mu$的运动规律
+
+关于标量高斯设置中贝叶斯更新的结果。所述结果告诉我们，在观察了 $M$ 个公司的平均输出 $X$ 后，我们的后验信念将是
 
 $$
 N(\mu_0, 1/\gamma_0)
 $$
 
-where
+其中
 
 $$
 \mu_0 = \frac{\mu \gamma + M X \gamma_x}{\gamma + M \gamma_x}
-\quad \text{and} \quad
+\quad \text{和} \quad
 \gamma_0 = \gamma + M \gamma_x
 $$
 
-If we take a random variable $\theta$ with this distribution and
-then evaluate the distribution of $\rho \theta + \sigma_\theta w$
-where $w$ is independent and standard normal, we get the
-expressions for $\mu'$ and $\gamma'$ given in the lecture.
+如果我们取一个具有这种分布的随机变量 $\theta$，然后评估 $\rho \theta + \sigma_\theta w$ 的分布，其中 $w$ 是独立的标准正态分布，我们就能得到讲座中给出的 $\mu'$ 和 $\gamma'$ 的表达式。
 ```
 
 ```{exercise}
 :label: uncertainty_traps_ex2
 
-Modulo randomness, replicate the simulation figures shown above.
+除去随机性，复现上面显示的模拟图。
 
-* Use the parameter values listed as defaults in the __init__ method of the UncertaintyTrapEcon class.
+* 使用 UncertaintyTrapEcon 类的 __init__ 方法中列出的默认参数值。
 ```
 
 ```{solution-start} uncertainty_traps_ex2
 :class: dropdown
 ```
 
-First, let's replicate the plot that illustrates the law of motion for
-precision, which is
+首先，让我们复现说明精度运动规律的图，即
 
 $$
 \gamma_{t+1} =
     \left(
-    \frac{\rho^2}{\gamma_t + M \gamma_x} + \sigma_\theta^2
+
+\frac{\rho^2}{\gamma_t + M \gamma_x} + \sigma_\theta^2
     \right)^{-1}
 $$
 
-Here $M$ is the number of active firms. The next figure plots
-$\gamma_{t+1}$ against $\gamma_t$ on a 45 degree diagram for
-different values of $M$
+这里的 $M$ 是活跃企业的数量。下图在45度图上绘制了不同 $M$ 值下 $\gamma_{t+1}$ 对 $\gamma_t$ 的关系
 
 ```{code-cell} python3
 econ = UncertaintyTrapEcon()
-ρ, σ_θ, γ_x = econ.ρ, econ.σ_θ, econ.γ_x    # Simplify names
-γ = np.linspace(1e-10, 3, 200)              # γ grid
+ρ, σ_θ, γ_x = econ.ρ, econ.σ_θ, econ.γ_x    # 简化名称
+γ = np.linspace(1e-10, 3, 200)              # γ 网格
 fig, ax = plt.subplots(figsize=(9, 9))
-ax.plot(γ, γ, 'k-')                         # 45 degree line
+ax.plot(γ, γ, 'k-')                         # 45度线
 
 for M in range(7):
     γ_next = 1 / (ρ**2 / (γ + M * γ_x) + σ_θ**2)
@@ -424,13 +405,9 @@ ax.grid()
 plt.show()
 ```
 
-The points where the curves hit the 45 degree lines are the long-run
-steady states corresponding to each $M$, if that value of
-$M$ was to remain fixed. As the number of firms falls, so does the
-long-run steady state of precision.
+曲线与45度线相交的点是对应每个$M$的长期稳态，这是在$M$值保持固定的情况下。随着企业数量的减少，精确度的长期稳态也随之下降。
 
-Next let's generate time series for beliefs and the aggregates -- that
-is, the number of active firms and average output
+接下来让我们生成信念和总量的时间序列数据——即活跃企业数量和平均产出
 
 ```{code-cell} python3
 sim_length=2000
@@ -459,14 +436,13 @@ for t in range(sim_length-1):
     γ_vec[t+1] = econ.γ
     θ_vec[t+1] = econ.θ
 
-# Record final values of aggregates
+# 记录总量的最终值
 X, M = econ.gen_aggregates()
 X_vec[-1] = X
 M_vec[-1] = M
 ```
 
-First, let's see how well $\mu$ tracks $\theta$ in these
-simulations
+首先，让我们看看在这些模拟中 $\mu$ 是如何跟踪 $\theta$ 的
 
 ```{code-cell} python3
 fig, ax = plt.subplots(figsize=(9, 6))
@@ -477,39 +453,38 @@ ax.grid()
 plt.show()
 ```
 
-Now let's plot the whole thing together
+现在让我们把所有内容一起绘制出来
 
 ```{code-cell} python3
 fig, axes = plt.subplots(4, 1, figsize=(12, 20))
-# Add some spacing
+# 添加一些间距
 fig.subplots_adjust(hspace=0.3)
 
 series = (θ_vec, μ_vec, γ_vec, M_vec)
 names = r'$\theta$', r'$\mu$', r'$\gamma$', r'$M$'
 
 for ax, vals, name in zip(axes, series, names):
-    # Determine suitable y limits
+    # 确定合适的y轴范围
     s_max, s_min = max(vals), min(vals)
     s_range = s_max - s_min
     y_max = s_max + s_range * 0.1
     y_min = s_min - s_range * 0.1
     ax.set_ylim(y_min, y_max)
-    # Plot series
+    # 绘制序列
     ax.plot(range(sim_length), vals, alpha=0.6, lw=2)
-    ax.set_title(f"time series for {name}", fontsize=16)
+    ax.set_title(f"{name}的时间序列", fontsize=16)
     ax.grid()
 
 plt.show()
 ```
 
-If you run the code above you'll get different plots, of course.
 
-Try experimenting with different parameters to see the effects on the time
-series.
+如果你运行上面的代码，当然会得到不同的图表。
 
-(It would also be interesting to experiment with non-Gaussian
-distributions for the shocks, but this is a big exercise since it takes
-us outside the world of the standard Kalman filter)
+尝试使用不同的参数来观察它们对时间序列的影响。
+
+（尝试对冲击使用非高斯分布也会很有趣，但这是一个较大的练习，因为这会超出标准卡尔曼滤波器的范畴）
 
 ```{solution-end}
 ```
+

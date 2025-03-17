@@ -11,35 +11,33 @@ kernelspec:
   name: python3
 ---
 
-# Forecasting  an AR(1) Process
+# 预测 AR(1) 过程
 
 ```{code-cell} ipython3
 :tags: [hide-output]
 
 !pip install arviz pymc
 ```
+本讲座介绍了用于预测单变量自回归过程未来值函数的统计方法。
 
-This lecture describes methods for forecasting statistics that are functions of future values of a univariate autogressive process.  
+这些方法旨在考虑这些统计数据的两个可能的不确定性来源：
 
-The methods are designed to take into account two possible sources of uncertainty about these statistics:
+- 影响转换规律的随机冲击
 
-- random shocks that impinge of the transition law
+- AR(1)过程参数值的不确定性
 
-- uncertainty about the parameter values of the AR(1) process
+我们考虑两类统计量：
 
-We consider two sorts of statistics:
+- 由AR(1)过程控制的随机过程{y_t}的预期值y_{t+j}
 
-- prospective values $y_{t+j}$ of a random process $\{y_t\}$ that is governed by the AR(1) process
+- 在时间t定义为未来值{y_{t+j}}_{j ≥ 1}的非线性函数的样本路径特性
 
-- sample path properties that are defined as non-linear functions of future values $\{y_{t+j}\}_{j \geq 1}$ at time $t$
+**样本路径特性**是指诸如"到下一个转折点的时间"或"到下一次衰退的时间"之类的特征。
 
-**Sample path properties** are things like "time to next turning point" or "time to next recession".
+为研究样本路径特性，我们将使用Wecker {cite}`wecker1979predicting`推荐的模拟程序。
 
-To investigate sample path properties we'll use a simulation procedure recommended by Wecker {cite}`wecker1979predicting`.
-
-To acknowledge uncertainty about parameters, we'll deploy `pymc` to construct a Bayesian joint posterior distribution for unknown parameters.
-
-Let's start with some imports.
+为了考虑参数的不确定性，我们将使用`pymc`构建未知参数的贝叶斯联合后验分布。
+让我们从一些导入开始。
 
 ```{code-cell} ipython3
 import numpy as np
@@ -56,80 +54,77 @@ logging.basicConfig()
 logger = logging.getLogger('pymc')
 logger.setLevel(logging.CRITICAL)
 ```
+## 一元一阶自回归过程
 
-## A Univariate First-Order Autoregressive Process
-
-Consider the univariate AR(1) model: 
+考虑一元AR(1)模型：
 
 $$ 
 y_{t+1} = \rho y_t + \sigma \epsilon_{t+1}, \quad t \geq 0 
 $$ (ar1-tp-eq1) 
 
-where the scalars $\rho$ and $\sigma$ satisfy $|\rho| < 1$ and $\sigma > 0$; 
-$\{\epsilon_{t+1}\}$ is a sequence of i.i.d. normal random variables with mean $0$ and variance $1$. 
+其中标量$\rho$和$\sigma$满足$|\rho| < 1$和$\sigma > 0$；
+$\{\epsilon_{t+1}\}$是一个均值为$0$、方差为$1$的独立同分布正态随机变量序列。
 
-The initial condition $y_{0}$ is a known number. 
+初始条件$y_{0}$是一个已知数。
 
-Equation {eq}`ar1-tp-eq1` implies that for $t \geq 0$, the conditional density of $y_{t+1}$ is
+方程{eq}`ar1-tp-eq1`表明对于$t \geq 0$，$y_{t+1}$的条件密度为
 
 $$
 f(y_{t+1} | y_{t}; \rho, \sigma) \sim {\mathcal N}(\rho y_{t}, \sigma^2) \
 $$ (ar1-tp-eq2)
 
-Further, equation {eq}`ar1-tp-eq1` also implies that for $t \geq 0$, the conditional density of $y_{t+j}$ for $j \geq 1$ is
+此外，方程{eq}`ar1-tp-eq1`还表明对于$t \geq 0$，$y_{t+j}$（其中$j \geq 1$）的条件密度为
 
 $$
 f(y_{t+j} | y_{t}; \rho, \sigma) \sim {\mathcal N}\left(\rho^j y_{t}, \sigma^2 \frac{1 - \rho^{2j}}{1 - \rho^2} \right) 
 $$ (ar1-tp-eq3)
 
-The predictive distribution {eq}`ar1-tp-eq3` that assumes that the parameters $\rho, \sigma$ are known, which we express
-by conditioning on them.
+预测分布{eq}`ar1-tp-eq3`假设参数$\rho, \sigma$是已知的，我们表示
+通过对它们进行条件化。
 
-We also want to compute a  predictive distribution that does not condition on $\rho,\sigma$ but instead takes account of our uncertainty about them.
+我们还想计算一个不对$\rho,\sigma$进行条件化，而是考虑到它们的不确定性的预测分布。
 
-We form this predictive distribution by integrating {eq}`ar1-tp-eq3` with respect to a joint posterior distribution $\pi_t(\rho,\sigma | y^t)$ 
-that conditions on an observed history $y^t = \{y_s\}_{s=0}^t$:
+我们通过将{eq}`ar1-tp-eq3`对联合后验分布$\pi_t(\rho,\sigma | y^t)$进行积分来形成这个预测分布，该后验分布基于观测历史$y^t = \{y_s\}_{s=0}^t$：
 
 $$ 
 f(y_{t+j} | y^t)  = \int f(y_{t+j} | y_{t}; \rho, \sigma) \pi_t(\rho,\sigma | y^t ) d \rho d \sigma
 $$ (ar1-tp-eq4)
 
-Predictive distribution {eq}`ar1-tp-eq3` assumes that parameters $(\rho,\sigma)$ are known.
+预测分布{eq}`ar1-tp-eq3`假设参数$(\rho,\sigma)$是已知的。
 
-Predictive distribution {eq}`ar1-tp-eq4` assumes that parameters $(\rho,\sigma)$ are uncertain, but have known probability distribution $\pi_t(\rho,\sigma | y^t )$.
+预测分布{eq}`ar1-tp-eq4`假设参数$(\rho,\sigma)$是不确定的，但有已知的概率分布$\pi_t(\rho,\sigma | y^t )$。
 
-We also want to compute some  predictive distributions of "sample path statistics" that might  include, for example
+我们还想计算一些"样本路径统计量"的预测分布，这可能包括
 
-- the time until the next "recession",
-- the minimum value of $Y$ over the next 8 periods,
-- "severe recession", and
-- the time until the next turning point (positive or negative).
+- 到下一次"衰退"的时间，
+- 未来8个周期内Y的最小值，
+- "严重衰退"，以及
+- 到下一个转折点（正或负）的时间。
 
-To accomplish that for situations in which we are uncertain about parameter values, we shall extend Wecker's {cite}`wecker1979predicting` approach in the following way.
+为了在我们不确定参数值的情况下实现这一点，我们将按以下方式扩展Wecker的{cite}`wecker1979predicting`方法。
 
-- first simulate an initial path of length $T_0$;
-- for a given prior, draw a sample of size $N$ from the posterior joint distribution of parameters $\left(\rho,\sigma\right)$ after observing the initial path;
-- for each draw $n=0,1,...,N$, simulate a "future path" of length $T_1$ with parameters $\left(\rho_n,\sigma_n\right)$ and compute our three "sample path statistics";
-- finally, plot the desired statistics from the $N$ samples as an empirical distribution.
+- 首先模拟一个长度为$T_0$的初始路径；
+- 对于给定的先验分布，在观察初始路径后从参数$\left(\rho,\sigma\right)$的后验联合分布中抽取大小为$N$的样本；
+- 对于每个抽样$n=0,1,...,N$，用参数$\left(\rho_n,\sigma_n\right)$模拟长度为$T_1$的"未来路径"，并计算我们的三个"样本路径统计量"；
+- 最后，将$N$个样本的所需统计量绘制为经验分布。
 
-## Implementation
+## 实现
 
-First, we'll simulate a  sample path from which to launch our forecasts.  
+首先，我们将模拟一个样本路径，从这个路径开始进行预测。
 
-In addition to plotting the sample path, under the assumption that the true parameter values are known,
-we'll plot $.9$ and $.95$ coverage intervals using conditional distribution
-{eq}`ar1-tp-eq3` described above. 
+除了绘制样本路径外，在假设已知真实参数值的情况下，我们将使用条件分布绘制$.9$和$.95$的覆盖区间
+上述{eq}`ar1-tp-eq3`所描述的。
 
-We'll also plot a bunch of samples of sequences of future values and watch where they fall relative to the coverage interval.  
+我们还将绘制一系列未来值序列的样本，并观察它们相对于覆盖区间的分布情况。
 
 ```{code-cell} ipython3
 def AR1_simulate(rho, sigma, y0, T):
 
-    # Allocate space and draw epsilons
+    # 分配空间并生成随机误差项
     y = np.empty(T)
     eps = np.random.normal(0, sigma, T)
 
-    # Initial condition and step forward
+    # 初始条件并向前推进
     y[0] = y0
     for t in range(1, T):
         y[t] = rho * y[t-1] + eps[t]
@@ -139,31 +134,31 @@ def AR1_simulate(rho, sigma, y0, T):
 
 def plot_initial_path(initial_path):
     """
-    Plot the initial path and the preceding predictive densities
+    绘制初始路径和前面的预测密度
     """
-    # Compute .9 confidence interval]
+    # 计算0.9置信区间
     y0 = initial_path[-1]
     center = np.array([rho**j * y0 for j in range(T1)])
     vars = np.array([sigma**2 * (1 - rho**(2 * j)) / (1 - rho**2) for j in range(T1)])
     y_bounds1_c95, y_bounds2_c95 = center + 1.96 * np.sqrt(vars), center - 1.96 * np.sqrt(vars)
     y_bounds1_c90, y_bounds2_c90 = center + 1.65 * np.sqrt(vars), center - 1.65 * np.sqrt(vars)
 
-    # Plot
+    # 绘图
     fig, ax = plt.subplots(1, 1, figsize=(12, 6))
-    ax.set_title("Initial Path and Predictive Densities", fontsize=15)
+    ax.set_title("初始路径和预测密度", fontsize=15)
     ax.plot(np.arange(-T0 + 1, 1), initial_path)
     ax.set_xlim([-T0, T1])
     ax.axvline(0, linestyle='--', alpha=.4, color='k', lw=1)
 
-    # Simulate future paths
+    # 模拟未来路径
     for i in range(10):
         y_future = AR1_simulate(rho, sigma, y0, T1)
         ax.plot(np.arange(T1), y_future, color='grey', alpha=.5)
     
-    # Plot 90% CI
-    ax.fill_between(np.arange(T1), y_bounds1_c95, y_bounds2_c95, alpha=.3, label='95% CI')
-    ax.fill_between(np.arange(T1), y_bounds1_c90, y_bounds2_c90, alpha=.35, label='90% CI')
-    ax.plot(np.arange(T1), center, color='red', alpha=.7, label='expected mean')
+    # 绘制90%置信区间
+    ax.fill_between(np.arange(T1), y_bounds1_c95, y_bounds2_c95, alpha=.3, label='95%置信区间')
+    ax.fill_between(np.arange(T1), y_bounds1_c90, y_bounds2_c90, alpha=.35, label='90%置信区间')
+    ax.plot(np.arange(T1), center, color='red', alpha=.7, label='期望均值')
     ax.legend(fontsize=12)
     plt.show()
 
@@ -173,31 +168,28 @@ rho = 0.9
 T0, T1 = 100, 100
 y0 = 10
 
-# Simulate
+# 模拟
 np.random.seed(145)
 initial_path = AR1_simulate(rho, sigma, y0, T0)
 
-# Plot
+# 绘图
 plot_initial_path(initial_path)
 ```
+作为预测期的函数，置信区间的形状类似于 https://python.quantecon.org/perm_income_cons.html 中所描述的。
 
-As functions of forecast horizon, the coverage intervals have shapes like those described in 
-https://python.quantecon.org/perm_income_cons.html
+## 路径属性的预测分布
 
+Wecker {cite}`wecker1979predicting` 提出使用模拟技术来表征某些统计量的预测分布,这些统计量是 $y$ 的非线性函数。
 
-## Predictive Distributions of Path Properties
+他将这些函数称为"路径属性",以区别于单个数据点的属性。
 
-Wecker {cite}`wecker1979predicting` proposed using simulation techniques to characterize  predictive distribution of some statistics that are  non-linear functions of $y$. 
+他研究了给定序列 $\{y_t\}$ 的两个特殊的前瞻性路径属性。
 
-He called these functions "path properties" to contrast them with properties of single data points.
+第一个是**到下一个转折点的时间**。
 
-He studied two special  prospective path properties of a given series $\{y_t\}$. 
+* 他将**"转折点"**定义为 $y$ 连续两次下降中的第二个时间点。
 
-The first was **time until the next turning point**.
-
-* he defined a **"turning point"** to be the date of the  second of two successive declines in  $y$. 
-
-To examine this statistic, let $Z$ be an indicator process
+为了研究这个统计量,让 $Z$ 作为一个指示过程
 
 <!-- $$
 Z_t(Y(\omega)) := \left\{ 
@@ -207,39 +199,36 @@ Z_t(Y(\omega)) := \left\{
 \end{array} \right.
 $$ -->
 
-
-
 $$
 Z_t(Y(\omega)) :=  
-\begin{cases} 
-\ 1 & \text{if } Y_t(\omega)< Y_{t-1}(\omega)< Y_{t-2}(\omega) \geq Y_{t-3}(\omega) \\
-0 & \text{otherwise}
+\begin{cases}
+\ 1 & \text{如果 } Y_t(\omega)< Y_{t-1}(\omega)< Y_{t-2}(\omega) \geq Y_{t-3}(\omega) \\
+0 & \text{其他情况}
 \end{cases} 
 $$
 
-Then the random variable **time until the next turning point**  is defined as the following **stopping time** with respect to $Z$:
+那么**到下一个转折点的时间**这个随机变量被定义为关于$Z$的以下**停时**:
 
 $$
 W_t(\omega):= \inf \{ k\geq 1 \mid Z_{t+k}(\omega) = 1\}
 $$
 
-Wecker  {cite}`wecker1979predicting` also studied **the minimum value of $Y$ over the next 8 quarters**
-which can be defined as the random variable.
+Wecker {cite}`wecker1979predicting`还研究了**未来8个季度$Y$的最小值**,可以定义为随机变量:
 
 $$ 
 M_t(\omega) := \min \{ Y_{t+1}(\omega); Y_{t+2}(\omega); \dots; Y_{t+8}(\omega)\}
 $$
 
-It is interesting to study yet another possible concept of a **turning point**.
+研究另一个可能的**转折点**概念也很有意思。
 
-Thus, let
+因此,令
 <!-- 
 $$
 T_t(Y(\omega)) := \left\{ 
 \begin{array}{c}
-\ 1 & \text{if } Y_{t-2}(\omega)> Y_{t-1}(\omega) > Y_{t}(\omega) \ \text{and } \ Y_{t}(\omega) < Y_{t+1}(\omega) < Y_{t+2}(\omega) \\
-\ -1 & \text{if } Y_{t-2}(\omega)< Y_{t-1}(\omega) < Y_{t}(\omega) \ \text{and } \ Y_{t}(\omega) > Y_{t+1}(\omega) > Y_{t+2}(\omega) \\
-0 & \text{otherwise}
+\ 1 & \text{如果 } Y_{t-2}(\omega)> Y_{t-1}(\omega) > Y_{t}(\omega) \ \text{且 } \ Y_{t}(\omega) < Y_{t+1}(\omega) < Y_{t+2}(\omega) \\
+\ -1 & \text{如果 } Y_{t-2}(\omega)< Y_{t-1}(\omega) < Y_{t}(\omega) \ \text{且 } \ Y_{t}(\omega) > Y_{t+1}(\omega) > Y_{t+2}(\omega) \\
+0 & \text{其他情况}
 \end{array} \right.
 $$ -->
 
@@ -247,21 +236,19 @@ $$ -->
 $$
 T_t(Y(\omega)) := 
 \begin{cases}
-\ 1 & \text{if } Y_{t-2}(\omega)> Y_{t-1}(\omega) > Y_{t}(\omega) \ \text{and } \ Y_{t}(\omega) < Y_{t+1}(\omega) < Y_{t+2}(\omega) \\
-\ -1 & \text{if } Y_{t-2}(\omega)< Y_{t-1}(\omega) < Y_{t}(\omega) \ \text{and } \ Y_{t}(\omega) > Y_{t+1}(\omega) > Y_{t+2}(\omega) \\
-0 & \text{otherwise}
+\ 1 & \text{如果 } Y_{t-2}(\omega)> Y_{t-1}(\omega) > Y_{t}(\omega) \ \text{且 } \ Y_{t}(\omega) < Y_{t+1}(\omega) < Y_{t+2}(\omega) \\
+\ -1 & \text{如果 } Y_{t-2}(\omega)< Y_{t-1}(\omega) < Y_{t}(\omega) \ \text{且 } \ Y_{t}(\omega) > Y_{t+1}(\omega) > Y_{t+2}(\omega) \\
+0 & \text{其他情况}
 \end{cases}
 $$
 
-
-
-Define a **positive turning point today or tomorrow** statistic as 
+定义**今天或明天的正转折点**统计量为
 
 <!-- $$
 P_t(\omega) := \left\{ 
 \begin{array}{c}
-\ 1 & \text{if } T_t(\omega)=1 \ \text{or} \ T_{t+1}(\omega)=1 \\
-0 & \text{otherwise}
+\ 1 & \text{如果 } T_t(\omega)=1 \ \text{或} \ T_{t+1}(\omega)=1 \\
+0 & \text{其他情况}
 \end{array} \right.
 $$ -->
 
@@ -269,64 +256,62 @@ $$ -->
 $$
 P_t(\omega) := 
 \begin{cases}
-\ 1 & \text{if } T_t(\omega)=1 \ \text{or} \ T_{t+1}(\omega)=1 \\
-0 & \text{otherwise}
+\ 1 & \text{如果 } T_t(\omega)=1 \ \text{或} \ T_{t+1}(\omega)=1 \\
+0 & \text{其他情况}
 \end{cases}
 $$
 
-This is designed to express the event
+这被设计用来表示以下事件：
 
-- ``after one or two decrease(s), $Y$ will grow for two consecutive quarters'' 
+- "在一次或两次下降之后，$Y$ 将连续两个季度增长"
 
-Following {cite}`wecker1979predicting`, we can use simulations to calculate  probabilities of $P_t$ and $N_t$ for each period $t$. 
+根据{cite}`wecker1979predicting`，我们可以通过模拟来计算每个时期 $t$ 的 $P_t$ 和 $N_t$ 的概率。
+## 类韦克算法
 
-## A Wecker-Like Algorithm
+该过程包含以下步骤：
 
-The procedure consists of the following steps: 
+* 用 $\omega_i$ 标记样本路径
 
-* index a sample path by $\omega_i$ 
-
-* for a given date $t$, simulate $I$ sample paths of length $N$ 
+* 对于给定日期 $t$，模拟 $I$ 条长度为 $N$ 的样本路径
 
 $$
 Y(\omega_i) = \left\{ Y_{t+1}(\omega_i), Y_{t+2}(\omega_i), \dots, Y_{t+N}(\omega_i)\right\}_{i=1}^I
 $$
 
-* for each path $\omega_i$, compute the associated value of $W_t(\omega_i), W_{t+1}(\omega_i), \dots$
+* 对每条路径 $\omega_i$，计算相应的 $W_t(\omega_i), W_{t+1}(\omega_i), \dots$ 值
 
-* consider the sets $\{W_t(\omega_i)\}^{T}_{i=1}, \ \{W_{t+1}(\omega_i)\}^{T}_{i=1}, \ \dots, \ \{W_{t+N}(\omega_i)\}^{T}_{i=1}$ as samples from the predictive distributions $f(W_{t+1} \mid \mathcal y_t, \dots)$, $f(W_{t+2} \mid y_t, y_{t-1}, \dots)$, $\dots$, $f(W_{t+N} \mid y_t, y_{t-1}, \dots)$.
+* 将集合 $\{W_t(\omega_i)\}^{T}_{i=1}, \ \{W_{t+1}(\omega_i)\}^{T}_{i=1}, \ \dots, \ \{W_{t+N}(\omega_i)\}^{T}_{i=1}$ 视为来自预测分布 $f(W_{t+1} \mid \mathcal y_t, \dots)$, $f(W_{t+2} \mid y_t, y_{t-1}, \dots)$, $\dots$, $f(W_{t+N} \mid y_t, y_{t-1}, \dots)$ 的样本。
 
+## 使用模拟来近似后验分布
 
-## Using Simulations to Approximate a Posterior Distribution
+下面的代码单元使用 `pymc` 计算时间 $t$ 时 $\rho, \sigma$ 的后验分布。
 
-The next code cells use `pymc` to compute the time $t$ posterior distribution of $\rho, \sigma$.
-
-Note that in defining the likelihood function, we choose to condition on the initial value $y_0$.
+注意在定义似然函数时，我们选择以初始值 $y_0$ 为条件。
 
 ```{code-cell} ipython3
 def draw_from_posterior(sample):
     """
-    Draw a sample of size N from the posterior distribution.
+    从后验分布中抽取大小为N的样本。
     """
 
     AR1_model = pmc.Model()
 
     with AR1_model:
         
-        # Start with priors
-        rho = pmc.Uniform('rho',lower=-1.,upper=1.)  # Assume stable rho
+        # 从先验开始
+        rho = pmc.Uniform('rho',lower=-1.,upper=1.)  # 假设rho稳定
         sigma = pmc.HalfNormal('sigma', sigma = np.sqrt(10))
 
-        # Expected value of y at the next period (rho * y)
+        # 下一期y的期望值(rho * y)
         yhat = rho * sample[:-1]
 
-        # Likelihood of the actual realization.
+        # 实际实现值的似然
         y_like = pmc.Normal('y_obs', mu=yhat, sigma=sigma, observed=sample[1:])
 
     with AR1_model:
         trace = pmc.sample(10000, tune=5000)
 
-    # check condition
+    # 检查条件
     with AR1_model:
         az.plot_trace(trace, figsize=(17, 6))
     
@@ -342,15 +327,14 @@ def draw_from_posterior(sample):
 
 post_samples = draw_from_posterior(initial_path)
 ```
+左侧的图表展示了后验边际分布。
 
-The graphs on the left portray posterior marginal distributions.
+## 计算样本路径统计量
 
-## Calculating Sample Path Statistics
-
-Our next step is to prepare Python code to compute our sample path statistics.
+接下来我们准备Python代码来计算我们的样本路径统计量。
 
 ```{code-cell} ipython3
-# define statistics
+# 定义统计量
 def next_recession(omega):
     n = omega.shape[0] - 3
     z = np.zeros(n, dtype=int)
@@ -380,11 +364,11 @@ def severe_recession(omega):
 
 def next_turning_point(omega):
     """
-    Suppose that omega is of length 6
+    假设omega的长度为6
     
         y_{t-2}, y_{t-1}, y_{t}, y_{t+1}, y_{t+2}, y_{t+3}
     
-    that is sufficient for determining the value of P/N    
+    这足以确定P/N的值    
     """
     
     n = np.asarray(omega).shape[0] - 4
@@ -403,42 +387,40 @@ def next_turning_point(omega):
 
     return up_turn, down_turn
 ```
+## 原始韦克方法
 
-## Original Wecker Method
-
-Now we  apply Wecker's original  method by simulating future paths and compute predictive distributions, conditioning
-on the true  parameters associated with the data-generating model.
+现在我们通过模拟未来路径并计算预测分布来应用韦克的原始方法，这些预测分布以数据生成模型相关的真实参数为条件。
 
 ```{code-cell} ipython3
 def plot_Wecker(initial_path, N, ax):
     """
-    Plot the predictive distributions from "pure" Wecker's method.
+    绘制"纯"韦克方法的预测分布。
     """
-    # Store outcomes
+    # 存储结果
     next_reces = np.zeros(N)
     severe_rec = np.zeros(N)
     min_vals = np.zeros(N)
     next_up_turn, next_down_turn = np.zeros(N), np.zeros(N)
     
-    # Compute .9 confidence interval]
+    # 计算0.9置信区间
     y0 = initial_path[-1]
     center = np.array([rho**j * y0 for j in range(T1)])
     vars = np.array([sigma**2 * (1 - rho**(2 * j)) / (1 - rho**2) for j in range(T1)])
     y_bounds1_c95, y_bounds2_c95 = center + 1.96 * np.sqrt(vars), center - 1.96 * np.sqrt(vars)
     y_bounds1_c90, y_bounds2_c90 = center + 1.65 * np.sqrt(vars), center - 1.65 * np.sqrt(vars)
 
-    # Plot
-    ax[0, 0].set_title("Initial path and predictive densities", fontsize=15)
+    # 绘图
+    ax[0, 0].set_title("初始路径和预测密度", fontsize=15)
     ax[0, 0].plot(np.arange(-T0 + 1, 1), initial_path)
     ax[0, 0].set_xlim([-T0, T1])
     ax[0, 0].axvline(0, linestyle='--', alpha=.4, color='k', lw=1)
 
-    # Plot 90% CI
+    # 绘制90%置信区间
     ax[0, 0].fill_between(np.arange(T1), y_bounds1_c95, y_bounds2_c95, alpha=.3)
     ax[0, 0].fill_between(np.arange(T1), y_bounds1_c90, y_bounds2_c90, alpha=.35)
     ax[0, 0].plot(np.arange(T1), center, color='red', alpha=.7)
 
-    # Simulate future paths
+    # 模拟未来路径
     for n in range(N):
         sim_path = AR1_simulate(rho, sigma, initial_path[-1], T1)
         next_reces[n] = next_recession(np.hstack([initial_path[-3:-1], sim_path]))
@@ -449,57 +431,55 @@ def plot_Wecker(initial_path, N, ax):
         if n%(N/10) == 0:
             ax[0, 0].plot(np.arange(T1), sim_path, color='gray', alpha=.3, lw=1)
             
-    # Return next_up_turn, next_down_turn
-    sns.histplot(next_reces, kde=True, stat='density', ax=ax[0, 1], alpha=.8, label='True parameters')
-    ax[0, 1].set_title("Predictive distribution of time until the next recession", fontsize=13)
+    # 返回next_up_turn, next_down_turn
+    sns.histplot(next_reces, kde=True, stat='density', ax=ax[0, 1], alpha=.8, label='真实参数')
+    ax[0, 1].set_title("下一次衰退时间的预测分布", fontsize=13)
 
-    sns.histplot(severe_rec, kde=False, stat='density', ax=ax[1, 0], binwidth=0.9, alpha=.7, label='True parameters')
-    ax[1, 0].set_title(r"Predictive distribution of stopping time of growth$<-2\%$", fontsize=13)
+    sns.histplot(severe_rec, kde=False, stat='density', ax=ax[1, 0], binwidth=0.9, alpha=.7, label='真实参数')
+    ax[1, 0].set_title(r"增长率<-2%的停止时间预测分布", fontsize=13)
 
-    sns.histplot(min_vals, kde=True, stat='density', ax=ax[1, 1], alpha=.8, label='True parameters')
-    ax[1, 1].set_title("Predictive distribution of minimum value in the next 8 periods", fontsize=13)
+    sns.histplot(min_vals, kde=True, stat='density', ax=ax[1, 1], alpha=.8, label='真实参数')
+    ax[1, 1].set_title("未来8个周期最小值的预测分布", fontsize=13)
 
-    sns.histplot(next_up_turn, kde=True, stat='density', ax=ax[2, 0], alpha=.8, label='True parameters')
-    ax[2, 0].set_title("Predictive distribution of time until the next positive turn", fontsize=13)
+    sns.histplot(next_up_turn, kde=True, stat='density', ax=ax[2, 0], alpha=.8, label='真实参数')
+    ax[2, 0].set_title("下一个正向转折点时间的预测分布", fontsize=13)
 
-    sns.histplot(next_down_turn, kde=True, stat='density', ax=ax[2, 1], alpha=.8, label='True parameters')
-    ax[2, 1].set_title("Predictive distribution of time until the next negative turn", fontsize=13)
+    sns.histplot(next_down_turn, kde=True, stat='density', ax=ax[2, 1], alpha=.8, label='真实参数')
+    ax[2, 1].set_title("下一个负向转折点时间的预测分布", fontsize=13)
 
 fig, ax = plt.subplots(3, 2, figsize=(15,12))
 plot_Wecker(initial_path, 1000, ax)
 plt.show()
 ```
+## 扩展 Wecker 方法
 
-## Extended Wecker Method
+现在我们应用基于 {eq}`ar1-tp-eq4` 定义的 $y$ 的预测密度的"扩展" Wecker 方法，该方法考虑了参数 $\rho, \sigma$ 的后验不确定性。
 
-Now we apply we apply our  "extended" Wecker method based on  predictive densities of $y$ defined by
-{eq}`ar1-tp-eq4` that acknowledge posterior uncertainty in the parameters $\rho, \sigma$.
-
-To approximate  the intergration on the right side of {eq}`ar1-tp-eq4`, we  repeatedly draw parameters from the joint posterior distribution each time we simulate a sequence of future values from model {eq}`ar1-tp-eq1`.
+为了近似 {eq}`ar1-tp-eq4` 右侧的积分，我们每次从联合后验分布中重复抽取参数，同时从模型 {eq}`ar1-tp-eq1` 中模拟未来值序列。
 
 ```{code-cell} ipython3
 def plot_extended_Wecker(post_samples, initial_path, N, ax):
     """
-    Plot the extended Wecker's predictive distribution
+    绘制扩展 Wecker 的预测分布
     """
-    # Select a sample
+    # 选择样本
     index = np.random.choice(np.arange(len(post_samples['rho'])), N + 1, replace=False)
     rho_sample = post_samples['rho'][index]
     sigma_sample = post_samples['sigma'][index]
 
-    # Store outcomes
+    # 存储结果
     next_reces = np.zeros(N)
     severe_rec = np.zeros(N)
     min_vals = np.zeros(N)
     next_up_turn, next_down_turn = np.zeros(N), np.zeros(N)
 
-    # Plot
-    ax[0, 0].set_title("Initial path and future paths simulated from posterior draws", fontsize=15)
+    # 绘图
+    ax[0, 0].set_title("初始路径和从后验抽样模拟的未来路径", fontsize=15)
     ax[0, 0].plot(np.arange(-T0 + 1, 1), initial_path)
     ax[0, 0].set_xlim([-T0, T1])
     ax[0, 0].axvline(0, linestyle='--', alpha=.4, color='k', lw=1)
 
-    # Simulate future paths
+    # 模拟未来路径
     for n in range(N):
         sim_path = AR1_simulate(rho_sample[n], sigma_sample[n], initial_path[-1], T1)
         next_reces[n] = next_recession(np.hstack([initial_path[-3:-1], sim_path]))
@@ -510,30 +490,30 @@ def plot_extended_Wecker(post_samples, initial_path, N, ax):
         if n % (N / 10) == 0:
             ax[0, 0].plot(np.arange(T1), sim_path, color='gray', alpha=.3, lw=1)
         
-    # Return next_up_turn, next_down_turn
-    sns.histplot(next_reces, kde=True, stat='density', ax=ax[0, 1], alpha=.6, color=colors[1], label='Sampling from posterior')
-    ax[0, 1].set_title("Predictive distribution of time until the next recession", fontsize=13)
+    # 返回 next_up_turn, next_down_turn
+    sns.histplot(next_reces, kde=True, stat='density', ax=ax[0, 1], alpha=.6, color=colors[1], label='从后验分布抽样')
+    ax[0, 1].set_title("下一次衰退时间的预测分布", fontsize=13)
 
-    sns.histplot(severe_rec, kde=False, stat='density', ax=ax[1, 0], binwidth=.9, alpha=.6, color=colors[1], label='Sampling from posterior')
-    ax[1, 0].set_title(r"Predictive distribution of stopping time of growth$<-2\%$", fontsize=13)
+    sns.histplot(severe_rec, kde=False, stat='density', ax=ax[1, 0], binwidth=.9, alpha=.6, color=colors[1], label='从后验分布抽样')
+    ax[1, 0].set_title(r"增长率<-2%的停止时间预测分布", fontsize=13)
 
-    sns.histplot(min_vals, kde=True, stat='density', ax=ax[1, 1], alpha=.6, color=colors[1], label='Sampling from posterior')
-    ax[1, 1].set_title("Predictive distribution of minimum value in the next 8 periods", fontsize=13)
+    sns.histplot(min_vals, kde=True, stat='density', ax=ax[1, 1], alpha=.6, color=colors[1], label='从后验分布抽样')
+    ax[1, 1].set_title("未来8个周期最小值的预测分布", fontsize=13)
 
-    sns.histplot(next_up_turn, kde=True, stat='density', ax=ax[2, 0], alpha=.6, color=colors[1], label='Sampling from posterior')
-    ax[2, 0].set_title("Predictive distribution of time until the next positive turn", fontsize=13)
+    sns.histplot(next_up_turn, kde=True, stat='density', ax=ax[2, 0], alpha=.6, color=colors[1], label='从后验分布抽样')
+    ax[2, 0].set_title("下一个正向转折点时间的预测分布", fontsize=13)
 
-    sns.histplot(next_down_turn, kde=True, stat='density', ax=ax[2, 1], alpha=.6, color=colors[1], label='Sampling from posterior')
-    ax[2, 1].set_title("Predictive distribution of time until the next negative turn", fontsize=13)
+    sns.histplot(next_down_turn, kde=True, stat='density', ax=ax[2, 1], alpha=.6, color=colors[1], label='从后验分布抽样')
+    ax[2, 1].set_title("下一个负向转折点时间的预测分布", fontsize=13)
 
 fig, ax = plt.subplots(3, 2, figsize=(15, 12))
 plot_extended_Wecker(post_samples, initial_path, 1000, ax)
 plt.show()
 ```
 
-## Comparison
+## 比较
 
-Finally, we plot both the original Wecker method and the extended method with parameter values drawn from the posterior together to compare the differences that emerge from pretending to know parameter values when they are actually uncertain.  
+最后，我们将原始的Wecker方法和从后验分布中抽取参数值的扩展方法一起绘制，以比较在参数实际不确定时假装知道参数值所产生的差异。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(3, 2, figsize=(15,12))

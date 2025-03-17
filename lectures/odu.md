@@ -18,13 +18,13 @@ kernelspec:
 </div>
 ```
 
-# Job Search VII: Search with Learning
+# 求职搜索 VII: 带学习的搜索
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what’s in Anaconda, this lecture deploys the libraries:
+除了Anaconda中包含的库外，本讲座还需要安装以下库：
 
 ```{code-cell} ipython
 ---
@@ -33,28 +33,23 @@ tags: [hide-output]
 !pip install interpolation
 ```
 
-## Overview
+## 概述
 
-In this lecture, we consider an extension of the [previously studied](https://python.quantecon.org/mccall_model.html) job search model of McCall
-{cite}`McCall1970`.
+在本讲中，我们考虑对[之前研究过的](https://python.quantecon.org/mccall_model.html) McCall求职模型{cite}`McCall1970`的扩展。
 
-We'll build on a model of Bayesian learning discussed in [this lecture](https://python.quantecon.org/exchangeable.html) on the topic of exchangeability and its relationship to
-the concept of IID (identically and independently distributed) random variables and to  Bayesian updating.
+我们将基于[这节课](https://python.quantecon.org/exchangeable.html)讨论的贝叶斯学习模型，该课程涉及可交换性及其与IID（独立同分布）随机变量和贝叶斯更新概念的关系。
 
-In the McCall model, an unemployed worker decides when to accept a
-permanent job at a specific fixed wage, given
+在McCall模型中，失业工人需要决定何时接受一份固定工资的永久工作，这取决于：
 
-- his or her discount factor
-- the level of unemployment compensation
-- the distribution from which wage offers are drawn
+- 他或她的贴现因子
+- 失业补助金水平
+- 工资报价的分布
 
-In the version considered below, the wage distribution is unknown and
-must be learned.
+在下面考虑的版本中，工资分布是未知的，需要通过学习来了解。
 
-- The following is based on the presentation in
-  {cite}`Ljungqvist2012`, section 6.6.
+- 以下内容基于{cite}`Ljungqvist2012`第6.6节的介绍。
 
-Let’s start with some imports
+让我们从一些导入开始
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
@@ -67,39 +62,33 @@ import scipy.optimize as op
 from scipy.stats import cumfreq, beta
 ```
 
-### Model Features
+### 模型特点
 
-- Infinite horizon dynamic programming with two states and one binary
-  control.
-- Bayesian updating to learn the unknown distribution.
+- 具有两种状态和一个二元控制的无限期动态规划。
+- 使用贝叶斯更新来学习未知分布。
 
-## Model
+## 模型
 
-Let’s first review the basic McCall model
-{cite}`McCall1970` and then add the variation we
-want to consider.
+让我们首先回顾基本的McCall模型{cite}`McCall1970`，然后添加我们想要考虑的变化。
 
-### The Basic McCall Model
+### 基本McCall模型
 
-Recall that, {doc}`in the baseline model <mccall_model>`, an
-unemployed worker is presented in each period with a permanent job offer
-at wage $W_t$.
+回想一下，{doc}`在基准模型中 <mccall_model>`，失业工人在每个时期都会收到一份永久工作机会，工资为$W_t$。
 
-At time $t$, our worker either
+在时间$t$，我们的工人可以：
 
-1. accepts the offer and works permanently at constant wage $W_t$
-1. rejects the offer, receives unemployment compensation $c$ and
-   reconsiders next period
+1. 接受工作机会并以固定工资$W_t$永久工作
+1. 拒绝工作机会，获得失业补助$c$并在下一期重新考虑
 
-The wage sequence ${W_t}$ is IID and generated from known density $q$.
+工资序列${W_t}$是独立同分布的，由已知密度$q$生成。
 
-The worker aims to maximize the expected discounted sum of earnings
-$\mathbb{E} \sum_{t=0}^{\infty}\beta^t y_t$.
+工人的目标是最大化预期贴现收益总和$\mathbb{E} \sum_{t=0}^{\infty}\beta^t y_t$。
 
-Let $v(w)$ be the optimal value of the problem for a previously unemployed worker who has just received offer $w$ and is
-yet to decide whether to accept or reject the offer.
+让$v(w)$表示刚收到工资为$w$的工作机会的失业工人的最优价值，并且正在
 
-The value  function $v$ satisfies the recursion
+尚未决定是接受还是拒绝这个报价。
+
+值函数 $v$ 满足递归关系
 
 ```{math}
 :label: odu_odu_pv
@@ -110,49 +99,43 @@ v(w)
 \right\}
 ```
 
-The optimal policy has the form $\mathbf{1}\{w \geq \bar w\}$, where
-$\bar w$ is a constant called the *reservation wage*.
+最优策略具有形式 $\mathbf{1}\{w \geq \bar w\}$，其中
+$\bar w$ 是一个称为*保留工资*的常数。
 
-### Offer Distribution Unknown
+### 报价分布未知
 
-Now let’s extend the model by considering the variation presented in
-{cite}`Ljungqvist2012`, section 6.6.
+现在让我们通过考虑{cite}`Ljungqvist2012`第6.6节中提出的变体来扩展这个模型。
 
-The model is as above, apart from the fact that
+除了以下几点外，模型与上述相同：
 
-- the density $q$ is unknown
-- the worker learns about $q$ by starting with a prior and updating
-  based on wage offers that he/she observes
+- 密度 $q$ 是未知的
+- 工人通过从先验开始，并根据他/她观察到的工资报价来更新来了解 $q$
 
-The worker knows there are two possible distributions $F$ and $G$.
+工人知道有两种可能的分布 $F$ 和 $G$。
 
-These two distributions have  densities $f$ and $g$, repectively.
+这两个分布分别具有密度 $f$ 和 $g$。
 
-Just before time starts,  “nature” selects $q$ to be either $f$ or $g$.
+就在时间开始之前，"自然"选择 $q$ 为 $f$ 或 $g$ 之一。
 
-This is then the wage distribution from which the entire sequence ${W_t}$ will be
-drawn.
+这就是整个序列 ${W_t}$ 将从中抽取的工资分布。
 
-The worker does not know which distribution nature has drawn, but the worker does know
-the two possible distributions $f$ and $g$.
+工人不知道自然选择了哪个分布，但工人知道两个可能的分布 $f$ 和 $g$。
 
-The worker  puts a (subjective) prior probability $\pi_0$ on $f$ having been  chosen.
+工人对 $f$ 被选中的主观先验概率为 $\pi_0$。
 
-The worker's time $0$ subjective distribution for the distribution of $W_0$ is
+工人在时间 $0$ 时对 $W_0$ 分布的主观分布是
 
 $$
 \pi_0 f + (1 - \pi_0) g
 $$
 
-
-
-The  worker's time $t$ subjective belief about the  the distribution of $W_t$  is
+工人在时间 $t$ 时对 $W_t$ 分布的主观信念是
 
 $$
 \pi_t f + (1 - \pi_t) g,
 $$
 
-where $\pi_t$ updates via
+其中 $\pi_t$ 通过以下方式更新
 
 ```{math}
 :label: odu_pi_rec_2
@@ -161,7 +144,7 @@ where $\pi_t$ updates via
 = \frac{\pi_t f(w_{t+1})}{\pi_t f(w_{t+1}) + (1 - \pi_t) g(w_{t+1})}
 ```
 
-This last expression follows from Bayes’ rule, which tells us that
+这个最后的表达式来自贝叶斯法则，该法则告诉我们
 
 $$
 \mathbb{P}\{q = f \,|\, W = w\}
@@ -169,29 +152,29 @@ $$
 {\mathbb{P}\{W = w\}}
 $$
 
-and 
+且
 
 $$
 \mathbb{P}\{W = w\} = \sum_{\omega \in \{f, g\}} \mathbb{P}\{W = w \,|\, q = \omega\} \mathbb{P}\{q = \omega\}
 $$
 
-The fact that {eq}`odu_pi_rec_2` is recursive allows us to
-progress to a recursive solution method.
+{eq}`odu_pi_rec_2` 的递归性使我们能够
 
-Letting
+让我们进展到递归解法。
+
+令
 
 $$
 q_{\pi}(w) := \pi f(w) + (1 - \pi) g(w)
 $$
 
-and 
+且
 
 $$
 \kappa(w, \pi) := \frac{\pi f(w)}{\pi f(w) + (1 - \pi) g(w)}
 $$
 
-we can express the value function for the unemployed worker recursively
-as follows
+我们可以将失业工人的价值函数递归表示如下
 
 ```{math}
 :label: odu_mvf
@@ -204,20 +187,17 @@ v(w, \pi)
 \pi' = \kappa(w', \pi)
 ```
 
-Notice that the current guess $\pi$ is a state variable,
-since it affects the worker’s perception of probabilities for future
-rewards.
+注意当前的猜测值 $\pi$ 是一个状态变量，因为它影响工人对未来报酬概率的感知。
 
-### Parameterization
+### 参数化
 
-Following section 6.6 of {cite}`Ljungqvist2012`,
-our baseline parameterization will be
+遵循 {cite}`Ljungqvist2012` 第6.6节，我们的基准参数化将是：
 
-- $f$ is $\operatorname{Beta}(1, 1)$
-- $g$ is $\operatorname{Beta}(3, 1.2)$
-- $\beta = 0.95$ and $c = 0.3$
+- $f$ 是 $\operatorname{Beta}(1, 1)$
+- $g$ 是 $\operatorname{Beta}(3, 1.2)$
+- $\beta = 0.95$ 且 $c = 0.3$
 
-The densities $f$ and $g$ have the following shape
+密度函数 $f$ 和 $g$ 具有以下形状
 
 ```{code-cell} python3
 @vectorize
@@ -239,60 +219,46 @@ plt.show()
 ```
 
 (looking-forward)=
-### Looking Forward
+### 展望未来
 
-What kind of optimal policy might result from
-{eq}`odu_mvf` and the parameterization specified above?
+从{eq}`odu_mvf`和上述参数化可能会得到什么样的最优策略？
 
-Intuitively, if we accept at $w_a$ and $w_a\leq w_b$,
-then — all other things being given — we should also accept at $w_b$.
+从直觉上讲，如果我们在$w_a$接受且$w_a\leq w_b$，那么在其他条件相同的情况下，我们也应该在$w_b$接受。
 
-This suggests a policy of accepting whenever $w$ exceeds some
-threshold value $\bar w$.
+这表明策略应该是当$w$超过某个阈值$\bar w$时就接受。
 
-But $\bar w$ should depend on $\pi$ — in
-fact, it should be decreasing in $\pi$ because
+但是$\bar w$应该依赖于$\pi$ — 实际上，它应该随着$\pi$的增加而减少，因为
 
-- $f$ is a less attractive offer distribution than $g$
-- larger $\pi$ means more weight on $f$ and less on
-  $g$
+- $f$是一个不如$g$有吸引力的分布
+- 较大的$\pi$意味着$f$的权重更大，$g$的权重更小
 
-Thus,  larger $\pi$ depresses the worker’s assessment of
-her future prospects, so relatively low current offers become more
-attractive.
+因此，较大的$\pi$会降低工人对未来前景的评估，所以相对较低的当前报价变得更有吸引力。
 
-**Summary:** We conjecture that the optimal policy is of the form
-$\mathbb 1{w\geq \bar w(\pi) }$ for some
-decreasing function $\bar w$.
+**总结：** 我们推测最优策略的形式是$\mathbb 1{w\geq \bar w(\pi) }$，其中$\bar w$是某个递减函数。
 
 (take-1-solution-by-vfi)=
-## Take 1: Solution by VFI
+## 方法一：通过值函数迭代求解
 
-Let’s set about solving the model and see how our results match with our
-intuition.
+让我们着手解决这个模型，看看我们的结果是否符合我们的直觉。
 
-We begin by solving via value function iteration (VFI), which is natural
-but ultimately turns out to be second best.
+我们首先通过值函数迭代(VFI)来求解，这是一种自然的方法，但最终证明是次优的。
 
-The class `SearchProblem` is used to store parameters and methods
-needed to compute optimal actions.
+`SearchProblem`类用于存储计算最优行为所需的参数和方法。
 
 ```{code-cell} python3
 class SearchProblem:
     """
-    A class to store a given parameterization of the "offer distribution
-    unknown" model.
-
+    一个用于存储"报价分布未知"模型特定参数化的类。
     """
 
     def __init__(self,
-                 β=0.95,            # Discount factor
-                 c=0.3,             # Unemployment compensation
+                 β=0.95,            # 贴现因子
+                 c=0.3,             # 失业补偿
                  F_a=1,
                  F_b=1,
                  G_a=3,
                  G_b=1.2,
-                 w_max=1,           # Maximum wage possible
+                 w_max=1,           # 最高可能工资
                  w_grid_size=100,
                  π_grid_size=100,
                  mc_size=500):
@@ -302,7 +268,7 @@ class SearchProblem:
         self.f = jit(lambda x: p(x, F_a, F_b))
         self.g = jit(lambda x: p(x, G_a, G_b))
 
-        self.π_min, self.π_max = 1e-3, 1-1e-3    # Avoids instability
+        self.π_min, self.π_max = 1e-3, 1-1e-3    # 避免不稳定性
         self.w_grid = np.linspace(0, w_max, w_grid_size)
         self.π_grid = np.linspace(self.π_min, self.π_max, π_grid_size)
 
@@ -312,10 +278,7 @@ class SearchProblem:
         self.w_g = np.random.beta(G_a, G_b, mc_size)
 ```
 
-The following function takes an instance of this class and returns
-jitted versions of the Bellman operator `T`, and a `get_greedy()`
-function to compute the approximate optimal policy from a guess `v` of
-the value function
+以下函数接收这个类的实例，并返回贝尔曼算子`T`的即时编译版本，以及一个`get_greedy()`函数，用于根据值函数的猜测值`v`计算近似最优策略
 
 ```{code-cell} python3
 def operator_factory(sp, parallel_flag=True):
@@ -333,7 +296,7 @@ def operator_factory(sp, parallel_flag=True):
     @jit
     def κ(w, π):
         """
-        Updates π using Bayes' rule and the current wage observation w.
+        使用贝叶斯法则和当前工资观测值w更新π。
         """
         pf, pg = π * f(w), (1 - π) * g(w)
         π_new = pf / (pf + pg)
@@ -343,7 +306,7 @@ def operator_factory(sp, parallel_flag=True):
     @jit(parallel=parallel_flag)
     def T(v):
         """
-        The Bellman operator.
+        贝尔曼算子。
 
         """
         v_new = np.empty_like(v)
@@ -369,7 +332,7 @@ def operator_factory(sp, parallel_flag=True):
     @jit(parallel=parallel_flag)
     def get_greedy(v):
         """"
-        Compute optimal actions taking v as the value function.
+        以v作为值函数计算最优行动。
 
         """
         σ = np.empty_like(v)
@@ -389,18 +352,16 @@ def operator_factory(sp, parallel_flag=True):
 
                 v_2 = c + β * integral
 
-                σ[i, j] = v_1 > v_2  # Evaluates to 1 or 0
+                σ[i, j] = v_1 > v_2  # 计算结果为1或0
 
         return σ
 
     return T, get_greedy
 ```
 
-We will omit a detailed discussion of the code because there is a more
-efficient solution method that we will use later.
+我们将省略对代码的详细讨论，因为后面我们会使用一个更高效的解决方案。
 
-To solve the model we will use the following function that iterates
-using T to find a fixed point
+为了求解这个模型，我们将使用以下函数，该函数通过T进行迭代来寻找不动点
 
 ```{code-cell} python3
 def solve_model(sp,
@@ -411,19 +372,19 @@ def solve_model(sp,
                 print_skip=5):
 
     """
-    Solves for the value function
+    求解价值函数
 
-    * sp is an instance of SearchProblem
+    * sp是SearchProblem的一个实例
     """
 
     T, _ = operator_factory(sp, use_parallel)
 
-    # Set up loop
+    # 设置循环
     i = 0
     error = tol + 1
     m, n = len(sp.w_grid), len(sp.π_grid)
 
-    # Initialize v
+    # 初始化v
     v = np.zeros((m, n)) + sp.c / (1 - sp.β)
 
     while i < max_iter and error > tol:
@@ -431,19 +392,19 @@ def solve_model(sp,
         error = np.max(np.abs(v - v_new))
         i += 1
         if verbose and i % print_skip == 0:
-            print(f"Error at iteration {i} is {error}.")
+            print(f"第{i}次迭代的误差是{error}。")
         v = v_new
 
     if error > tol:
-        print("Failed to converge!")
+        print("未能收敛！")
     elif verbose:
-        print(f"\nConverged in {i} iterations.")
+        print(f"\n在第{i}次迭代后收敛。")
 
 
     return v_new
 ```
 
-Let’s look at solutions computed from value function iteration
+让我们看看从值函数迭代计算得出的解
 
 ```{code-cell} python3
 sp = SearchProblem()
@@ -457,7 +418,7 @@ ax.set(xlabel=r'$\pi$', ylabel='$w$')
 plt.show()
 ```
 
-We will also plot the optimal policy
+我们还将绘制最优策略
 
 ```{code-cell} python3
 T, get_greedy = operator_factory(sp)
@@ -468,49 +429,45 @@ ax.contourf(sp.π_grid, sp.w_grid, σ_star, 1, alpha=0.6, cmap=cm.jet)
 ax.contour(sp.π_grid, sp.w_grid, σ_star, 1, colors="black")
 ax.set(xlabel=r'$\pi$', ylabel='$w$')
 
-ax.text(0.5, 0.6, 'reject')
-ax.text(0.7, 0.9, 'accept')
+ax.text(0.5, 0.6, '拒绝')
+ax.text(0.7, 0.9, '接受')
 
 plt.show()
 ```
 
-The results fit well with our intuition from section [looking
-forward](looking-forward).
+结果与我们在[展望未来](looking-forward)部分的直觉相符。
 
-- The black line in the figure above corresponds to the function
-  $\bar w(\pi)$ introduced there.
-- It is decreasing as expected.
+- 上图中的黑线对应于那里介绍的函数$\bar w(\pi)$。
+- 它如预期般呈下降趋势。
 
-## Take 2: A More Efficient Method
+## 方案二：一个更高效的方法
 
-Let’s consider another method to solve for the optimal policy.
+让我们考虑另一种求解最优策略的方法。
 
-We will use iteration with an operator that has the same contraction
-rate as the Bellman operator, but
+我们将使用一个算子进行迭代，该算子具有与贝尔曼算子相同的收缩率，但是
 
-- one dimensional rather than two dimensional
-- no maximization step
+- 一维而不是二维
+- 没有最大化步骤
 
-As a consequence, the algorithm is orders of magnitude faster than VFI.
+因此，该算法比值函数迭代快几个数量级。
 
-This section illustrates the point that when it comes to programming, a
-bit of mathematical analysis goes a long way.
+本节说明了在编程时，一点数学分析可以带来很大帮助。
 
-## Another Functional Equation
+## 另一个泛函方程
 
-To begin, note that when $w = \bar w(\pi)$, the worker is indifferent
-between accepting and rejecting.
+首先，注意当$w = \bar w(\pi)$时，工人对接受和拒绝是无差异的。
 
-Hence the two choices on the right-hand side of {eq}`odu_mvf` have equal value:
+因此，{eq}`odu_mvf`右侧的两个选择具有相等的值：
 
 ```{math}
 :label: odu_mvf2
 
 \frac{\bar w(\pi)}{1 - \beta}
+
 = c + \beta \int v(w', \pi') \, q_{\pi}(w') \, dw'
 ```
 
-Together, {eq}`odu_mvf` and {eq}`odu_mvf2` give
+将{eq}`odu_mvf`和{eq}`odu_mvf2`结合得到
 
 ```{math}
 :label: odu_mvf3
@@ -522,7 +479,7 @@ v(w, \pi) =
 \right\}
 ```
 
-Combining {eq}`odu_mvf2` and {eq}`odu_mvf3`, we obtain
+将{eq}`odu_mvf2`和{eq}`odu_mvf3`结合,我们得到
 
 $$
 \frac{\bar w(\pi)}{1 - \beta}
@@ -532,8 +489,7 @@ $$
 \, q_{\pi}(w') \, dw'
 $$
 
-Multiplying by $1 - \beta$, substituting in $\pi' = \kappa(w', \pi)$
-and using $\circ$ for composition of functions yields
+两边同乘以$1 - \beta$,代入$\pi' = \kappa(w', \pi)$,并用$\circ$表示函数复合,得到
 
 ```{math}
 :label: odu_mvf4
@@ -543,22 +499,21 @@ and using $\circ$ for composition of functions yields
 \beta \int \max \left\{ w', \bar w \circ \kappa(w', \pi) \right\} \, q_{\pi}(w') \, dw'
 ```
 
-Equation {eq}`odu_mvf4` can be understood as a functional equation, where $\bar w$ is the unknown function.
+方程{eq}`odu_mvf4`可以理解为一个泛函方程,其中$\bar w$是未知函数。
 
-* Let's call it the *reservation wage functional equation* (RWFE).
-* The solution $\bar w$ to the RWFE is the object that we wish to compute.
+* 我们称之为*保留工资泛函方程*(RWFE)。
+* RWFE的解$\bar w$就是我们想要计算的对象。
 
-## Solving the RWFE
+## 求解RWFE
 
-To solve the RWFE, we will first show that its solution is the
-fixed point of a [contraction mapping](https://en.wikipedia.org/wiki/Contraction_mapping).
+为了求解RWFE，我们首先要证明其解是一个[压缩映射](https://en.wikipedia.org/wiki/Contraction_mapping)的不动点。
 
-To this end, let
+为此，令
 
-* $b[0,1]$ be the bounded real-valued functions on $[0,1]$
+* $b[0,1]$为定义在$[0,1]$上的有界实值函数
 * $\| \omega \| := \sup_{x \in [0,1]} | \omega(x) |$
 
-Consider the operator $Q$ mapping $\omega \in b[0,1]$ into $Q\omega \in b[0,1]$ via
+考虑算子$Q$，它将$\omega \in b[0,1]$映射到$Q\omega \in b[0,1]$，通过
 
 ```{math}
 :label: odu_dq
@@ -568,12 +523,11 @@ Consider the operator $Q$ mapping $\omega \in b[0,1]$ into $Q\omega \in b[0,1]$ 
 \beta \int \max \left\{ w', \omega \circ \kappa(w', \pi) \right\} \, q_{\pi}(w') \, dw'
 ```
 
-Comparing {eq}`odu_mvf4` and {eq}`odu_dq`, we see that the set of fixed points of $Q$ exactly coincides with the set of solutions to the RWFE.
+比较{eq}`odu_mvf4`和{eq}`odu_dq`，我们可以看到$Q$的不动点集恰好与RWFE的解集重合。
 
-* If $Q \bar w = \bar w$ then $\bar w$ solves {eq}`odu_mvf4` and vice versa.
+* 如果$Q \bar w = \bar w$，则$\bar w$是{eq}`odu_mvf4`的解，反之亦然。
 
-Moreover, for any $\omega, \omega' \in b[0,1]$, basic algebra and the
-triangle inequality for integrals tells us that
+此外，对于任意$\omega, \omega' \in b[0,1]$，基本代数运算和积分的三角不等式告诉我们
 
 ```{math}
 :label: odu_nt
@@ -581,13 +535,14 @@ triangle inequality for integrals tells us that
 |(Q \omega)(\pi) - (Q \omega')(\pi)|
 \leq \beta \int
 \left|
+
 \max \left\{w', \omega \circ \kappa(w', \pi) \right\} -
 \max \left\{w', \omega' \circ \kappa(w', \pi) \right\}
 \right|
 \, q_{\pi}(w') \, dw'
 ```
 
-Working case by case, it is easy to check that for real numbers $a, b, c$ we always have
+对于实数 $a, b, c$，通过逐个情况分析，很容易验证以下不等式始终成立：
 
 ```{math}
 :label: odu_nt2
@@ -595,7 +550,7 @@ Working case by case, it is easy to check that for real numbers $a, b, c$ we alw
 | \max\{a, b\} - \max\{a, c\}| \leq | b - c|
 ```
 
-Combining {eq}`odu_nt` and {eq}`odu_nt2` yields
+结合 {eq}`odu_nt` 和 {eq}`odu_nt2` 得到
 
 ```{math}
 :label: odu_nt3
@@ -607,7 +562,7 @@ Combining {eq}`odu_nt` and {eq}`odu_nt2` yields
 \leq \beta \| \omega - \omega' \|
 ```
 
-Taking the supremum over $\pi$ now gives us
+现在对 $\pi$ 取上确界得到
 
 ```{math}
 :label: odu_rwc
@@ -616,18 +571,16 @@ Taking the supremum over $\pi$ now gives us
 \leq \beta \| \omega - \omega' \|
 ```
 
-In other words, $Q$ is a contraction of modulus $\beta$ on the
-complete metric space $(b[0,1], \| \cdot \|)$.
+换句话说，$Q$ 是完备度量空间 $(b[0,1], \| \cdot \|)$ 上的一个模为 $\beta$ 的压缩映射。
 
-Hence
+因此
 
-* A unique solution $\bar w$ to the RWFE exists in $b[0,1]$.
-* $Q^k \omega \to \bar w$ uniformly as $k \to \infty$, for any $\omega \in b[0,1]$.
+* RWFE 在 $b[0,1]$ 中存在唯一解 $\bar w$。
+* 对任意 $\omega \in b[0,1]$，当 $k \to \infty$ 时，$Q^k \omega$ 一致收敛到 $\bar w$。
 
-## Implementation
+## 实现
 
-The following function takes an instance of `SearchProblem` and
-returns the operator `Q`
+以下函数接收一个`SearchProblem`实例并返回算子`Q`
 
 ```{code-cell} python3
 def Q_factory(sp, parallel_flag=True):
@@ -645,7 +598,7 @@ def Q_factory(sp, parallel_flag=True):
     @jit
     def κ(w, π):
         """
-        Updates π using Bayes' rule and the current wage observation w.
+        使用贝叶斯法则和当前工资观测值w更新π。
         """
         pf, pg = π * f(w), (1 - π) * g(w)
         π_new = pf / (pf + pg)
@@ -656,8 +609,7 @@ def Q_factory(sp, parallel_flag=True):
     def Q(ω):
         """
 
-        Updates the reservation wage function guess ω via the operator
-        Q.
+        通过算子Q更新保留工资函数猜测值ω。
 
         """
         ω_new = np.empty_like(ω)
@@ -678,38 +630,31 @@ def Q_factory(sp, parallel_flag=True):
     return Q
 ```
 
-In the next exercise, you are asked to compute an approximation to
-$\bar w$.
+在下一个练习中，你需要计算$\bar w$的近似值。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: odu_ex1
 
-Use the default parameters and `Q_factory` to compute an optimal
-policy.
+使用默认参数和`Q_factory`来计算最优策略。
 
-Your result should coincide closely with the figure for the optimal
-policy [shown above](take-1-solution-by-vfi).
+你的结果应该与[上面所示](take-1-solution-by-vfi)的最优策略图表非常接近。
 
-Try experimenting with different parameters, and confirm that the change
-in the optimal policy coincides with your intuition.
+尝试使用不同的参数进行实验，并确认最优策略的变化与你的直觉相符。
 ```
 
-## Solutions
+## 解答
 
 ```{solution-start} odu_ex1
 :class: dropdown
 ```
 
-This code solves the “Offer Distribution Unknown” model by iterating on
-a guess of the reservation wage function.
+这段代码通过对保留工资函数的猜测值进行迭代来求解"报价分布未知"模型。
 
-You should find that the run time is shorter than that of the value
-function approach.
+你会发现，与价值函数方法相比，运行时间更短。
 
-Similar to above, we set up a function to iterate with `Q` to find the
-fixed point
+与上面类似，我们设置一个函数来使用`Q`进行迭代以找到不动点
 
 ```{code-cell} python3
 def solve_wbar(sp,
@@ -721,12 +666,12 @@ def solve_wbar(sp,
 
     Q = Q_factory(sp, use_parallel)
 
-    # Set up loop
+    # 设置循环
     i = 0
     error = tol + 1
     m, n = len(sp.w_grid), len(sp.π_grid)
 
-    # Initialize w
+    # 初始化 w
     w = np.ones_like(sp.π_grid)
 
     while i < max_iter and error > tol:
@@ -734,18 +679,18 @@ def solve_wbar(sp,
         error = np.max(np.abs(w - w_new))
         i += 1
         if verbose and i % print_skip == 0:
-            print(f"Error at iteration {i} is {error}.")
+            print(f"第{i}次迭代的误差是{error}。")
         w = w_new
 
     if error > tol:
-        print("Failed to converge!")
+        print("未能收敛！")
     elif verbose:
-        print(f"\nConverged in {i} iterations.")
+        print(f"\n在{i}次迭代后收敛。")
 
     return w_new
 ```
 
-The solution can be plotted as follows
+解决方案可以按如下方式绘制
 
 ```{code-cell} python3
 sp = SearchProblem()
@@ -756,8 +701,8 @@ fig, ax = plt.subplots(figsize=(9, 7))
 ax.plot(sp.π_grid, w_bar, color='k')
 ax.fill_between(sp.π_grid, 0, w_bar, color='blue', alpha=0.15)
 ax.fill_between(sp.π_grid, w_bar, sp.w_max, color='green', alpha=0.15)
-ax.text(0.5, 0.6, 'reject')
-ax.text(0.7, 0.9, 'accept')
+ax.text(0.5, 0.6, '拒绝')
+ax.text(0.7, 0.9, '接受')
 ax.set(xlabel=r'$\pi$', ylabel='$w$')
 ax.grid()
 plt.show()
@@ -766,18 +711,15 @@ plt.show()
 ```{solution-end}
 ```
 
-## Appendix A
+## 附录A
 
-The next piece of code generates a fun simulation to see what the effect
-of a change in the underlying distribution on the unemployment rate is.
+下面这段代码生成了一个有趣的模拟,用来观察失业率受底层分布变化的影响。
 
-At a point in the simulation, the distribution becomes significantly
-worse.
+在模拟的某个时点,分布发生了显著恶化。
 
-It takes a while for agents to learn this, and in the meantime, they are
-too optimistic and turn down too many jobs.
+代理人需要一段时间才能意识到这一点,在此期间,他们过于乐观并拒绝了太多工作机会。
 
-As a result, the unemployment rate spikes
+结果导致失业率激增。
 
 ```{code-cell} python3
 F_a, F_b, G_a, G_b = 1, 1, 3, 1.2
@@ -785,21 +727,21 @@ F_a, F_b, G_a, G_b = 1, 1, 3, 1.2
 sp = SearchProblem(F_a=F_a, F_b=F_b, G_a=G_a, G_b=G_b)
 f, g = sp.f, sp.g
 
-# Solve for reservation wage
+# 求解保留工资
 w_bar = solve_wbar(sp, verbose=False)
 
-# Interpolate reservation wage function
+# 插值保留工资函数
 π_grid = sp.π_grid
 w_func = jit(lambda x: np.interp(x, π_grid, w_bar))
 
 @jit
 def update(a, b, e, π):
-    "Update e and π by drawing wage offer from beta distribution with parameters a and b"
+    "通过从参数为a和b的beta分布中抽取工资报价来更新e和π"
 
     if e == False:
-        w = np.random.beta(a, b)       # Draw random wage
+        w = np.random.beta(a, b)       # 随机抽取工资
         if w >= w_func(π):
-            e = True                   # Take new job
+            e = True                   # 接受新工作
         else:
             π = 1 / (1 + ((1 - π) * g(w)) / (π * f(w)))
 
@@ -810,28 +752,28 @@ def simulate_path(F_a=F_a,
                   F_b=F_b,
                   G_a=G_a,
                   G_b=G_b,
-                  N=5000,       # Number of agents
-                  T=600,        # Simulation length
-                  d=200,        # Change date
-                  s=0.025):     # Separation rate
+                  N=5000,       # 代理人数量
+                  T=600,        # 模拟长度
+                  d=200,        # 变化时点
+                  s=0.025):     # 分离率
 
-    """Simulates path of employment for N number of works over T periods"""
+    """模拟N个工人在T个时期的就业路径"""
 
     e = np.ones((N, T+1))
     π = np.full((N, T+1), 1e-3)
 
-    a, b = G_a, G_b   # Initial distribution parameters
+    a, b = G_a, G_b   # 初始分布参数
 
     for t in range(T+1):
 
         if t == d:
-            a, b = F_a, F_b  # Change distribution parameters
+            a, b = F_a, F_b  # 改变分布参数
 
-        # Update each agent
+        # 更新每个代理人
         for n in range(N):
-            if e[n, t] == 1:                    # If agent is currently employment
+            if e[n, t] == 1:                    # 如果代理人当前就业
                 p = np.random.uniform(0, 1)
-                if p <= s:                      # Randomly separate with probability s
+                if p <= s:                      # 以概率s随机分离
                     e[n, t] = 0
 
             new_e, new_π = update(a, b, e[n, t], π[n, t])
@@ -840,85 +782,77 @@ def simulate_path(F_a=F_a,
 
     return e[:, 1:]
 
-d = 200  # Change distribution at time d
+d = 200  # 在时点d改变分布
 unemployment_rate = 1 - simulate_path(d=d).mean(axis=0)
 
 fig, ax = plt.subplots(figsize=(10, 6))
 ax.plot(unemployment_rate)
-ax.axvline(d, color='r', alpha=0.6, label='Change date')
-ax.set_xlabel('Time')
-ax.set_title('Unemployment rate')
+ax.axvline(d, color='r', alpha=0.6, label='变化时点')
+ax.set_xlabel('时间')
+ax.set_title('失业率')
 ax.legend()
 plt.show()
 ```
 
-## Appendix B
+## 附录B
 
-In this appendix we provide more details about how Bayes' Law contributes to the workings of the model.
+在本附录中，我们将详细说明贝叶斯定律如何影响模型的运作。
 
-We present some graphs that bring out additional insights about how learning works.
+我们展示一些图表，以带来关于学习如何运作的额外见解。
 
-We build on graphs proposed in [this lecture](https://python.quantecon.org/exchangeable.html).
+我们基于[这个讲座](https://python.quantecon.org/exchangeable.html)中提出的图表进行扩展。
 
-In particular, we'll add actions of  our searching worker to a key graph
-presented in that lecture.
+特别是，我们将在该讲座中展示的关键图表中加入求职者的行为。
 
-To begin, we first define two functions for computing the
-empirical distributions of unemployment duration and π at the time of
-employment.
+首先，我们定义两个函数来计算失业持续时间和就业时π的经验分布。
 
 ```{code-cell} python3
 @jit
 def empirical_dist(F_a, F_b, G_a, G_b, w_bar, π_grid,
                    N=10000, T=600):
     """
-    Simulates population for computing empirical cumulative
-    distribution of unemployment duration and π at time when
-    the worker accepts the wage offer. For each job searching
-    problem, we simulate for two cases that either f or g is
-    the true offer distribution.
+    模拟人群以计算失业持续时间的经验累积分布和工人接受工资报价时的π值。
+    对于每个求职问题，我们模拟两种情况：f或g是真实的报价分布。
 
-    Parameters
+    参数
     ----------
 
-    F_a, F_b, G_a, G_b : parameters of beta distributions F and G.
-    w_bar : the reservation wage
-    π_grid : grid points of π, for interpolation
-    N : number of workers for simulation, optional
-    T : maximum of time periods for simulation, optional
+    F_a, F_b, G_a, G_b : beta分布F和G的参数
+    w_bar : 保留工资
+    π_grid : π的网格点，用于插值
+    N : 模拟的工人数量，可选
+    T : 模拟的最大时间段，可选
 
-    Returns
+    返回值
     -------
-    accpet_t : 2 by N ndarray. the empirical distribution of
-               unemployment duration when f or g generates offers.
-    accept_π : 2 by N ndarray. the empirical distribution of
-               π at the time of employment when f or g generates offers.
+    accpet_t : 2 x N ndarray。当f或g生成报价时的失业持续时间的经验分布。
+    accept_π : 2 x N ndarray。当f或g生成报价时就业时π的经验分布。
     """
 
     accept_t = np.empty((2, N))
     accept_π = np.empty((2, N))
 
-    # f or g generates offers
+    # f或g生成报价
     for i, (a, b) in enumerate([(F_a, F_b), (G_a, G_b)]):
-        # update each agent
+        # 更新每个代理
         for n in range(N):
 
-            # initial priori
+            # 初始先验
             π = 0.5
 
             for t in range(T+1):
 
-                # Draw random wage
+                # 抽取随机工资
                 w = np.random.beta(a, b)
                 lw = p(w, F_a, F_b) / p(w, G_a, G_b)
                 π = π * lw / (π * lw + 1 - π)
 
-                # move to next agent if accepts
+                # 如果接受则移至下一个代理
                 if w >= np.interp(π, π_grid, w_bar):
                     break
 
-            # record the unemployment duration
-            # and π at the time of acceptance
+            # 记录失业持续时间
+            # 和接受时的π值
             accept_t[i, n] = t
             accept_π[i, n] = π
 
@@ -926,8 +860,7 @@ def empirical_dist(F_a, F_b, G_a, G_b, w_bar, π_grid,
 
 def cumfreq_x(res):
     """
-    A helper function for calculating the x grids of
-    the cumulative frequency histogram.
+    用于计算累积频率直方图的x网格的辅助函数。
     """
 
     cumcount = res.cumcount
@@ -938,41 +871,37 @@ def cumfreq_x(res):
     return x
 ```
 
-Now we define a wrapper function for analyzing job search models with
-learning under different parameterizations.
+现在我们定义一个包装函数，用于分析不同参数化条件下带有学习的工作搜索模型。
 
-The wrapper takes parameters of beta distributions and  unemployment
-compensation as inputs  and then displays various things we want to know
-to interpret the solution of our search model.
+这个包装函数接收贝塔分布的参数和失业补偿作为输入，然后显示我们想要了解的各种信息，以解释我们搜索模型的解。
 
-In addition, it computes empirical cumulative distributions of two key objects.
+此外，它还计算两个关键对象的经验累积分布。
 
 ```{code-cell} python3
 def job_search_example(F_a=1, F_b=1, G_a=3, G_b=1.2, c=0.3):
     """
-    Given the parameters that specify F and G distributions,
-    calculate and display the rejection and acceptance area,
-    the evolution of belief π, and the probability of accepting
-    an offer at different π level, and simulate and calculate
-    the empirical cumulative distribution of the duration of
-    unemployment and π at the time the worker accepts the offer.
+    给定指定F和G分布的参数，
+    计算并显示拒绝和接受区域，
+    信念π的演变，以及在不同π水平下接受offer的概率，
+    并模拟计算失业持续时间的经验累积分布，
+    以及工人接受offer时π的经验累积分布。
     """
 
-    # construct a search problem
+    # 构建搜索问题
     sp = SearchProblem(F_a=F_a, F_b=F_b, G_a=G_a, G_b=G_b, c=c)
     f, g = sp.f, sp.g
     π_grid = sp.π_grid
 
-    # Solve for reservation wage
+    # 求解保留工资
     w_bar = solve_wbar(sp, verbose=False)
 
     # l(w) = f(w) / g(w)
     l = lambda w: f(w) / g(w)
-    # objective function for solving l(w) = 1
+    # 求解l(w) = 1的目标函数
     obj = lambda w: l(w) - 1.
 
-    # the mode of beta distribution
-    # use this to divide w into two intervals for root finding
+    # 贝塔分布的众数
+    # 用它将w分成两个区间进行根查找
     G_mode = (G_a - 1) / (G_a + G_b - 2)
     roots = np.empty(2)
     roots[0] = op.root_scalar(obj, bracket=[1e-10, G_mode]).root
@@ -980,7 +909,7 @@ def job_search_example(F_a=1, F_b=1, G_a=3, G_b=1.2, c=0.3):
 
     fig, axs = plt.subplots(2, 2, figsize=(12, 9))
 
-    # part 1: display the details of the model settings and some results
+    # 第1部分：显示模型设置的细节和一些结果
     w_grid = np.linspace(1e-12, 1-1e-12, 100)
 
     axs[0, 0].plot(l(w_grid), w_grid, label='$l$', lw=2)
@@ -993,8 +922,8 @@ def job_search_example(F_a=1, F_b=1, G_a=3, G_b=1.2, c=0.3):
     axs[0, 1].plot(sp.π_grid, w_bar, color='k')
     axs[0, 1].fill_between(sp.π_grid, 0, w_bar, color='blue', alpha=0.15)
     axs[0, 1].fill_between(sp.π_grid, w_bar, sp.w_max, color='green', alpha=0.15)
-    axs[0, 1].text(0.5, 0.6, 'reject')
-    axs[0, 1].text(0.7, 0.9, 'accept')
+    axs[0, 1].text(0.5, 0.6, '拒绝')
+    axs[0, 1].text(0.7, 0.9, '接受')
 
     W = np.arange(0.01, 0.99, 0.08)
     Π = np.arange(0.01, 0.99, 0.08)
@@ -1028,7 +957,7 @@ def job_search_example(F_a=1, F_b=1, G_a=3, G_b=1.2, c=0.3):
 
     plt.show()
 
-    # part 2: simulate empirical cumulative distribution
+    # 第2部分：模拟经验累积分布
     accept_t, accept_π = empirical_dist(F_a, F_b, G_a, G_b, w_bar, π_grid)
     N = accept_t.shape[1]
 
@@ -1040,35 +969,34 @@ def job_search_example(F_a=1, F_b=1, G_a=3, G_b=1.2, c=0.3):
 
     fig, axs = plt.subplots(2, 1, figsize=(12, 9))
 
-    axs[0].plot(cumfreq_x(cfq_t_F), cfq_t_F.cumcount/N, label="f generates")
-    axs[0].plot(cumfreq_x(cfq_t_G), cfq_t_G.cumcount/N, label="g generates")
+    axs[0].plot(cumfreq_x(cfq_t_F), cfq_t_F.cumcount/N, label="f生成")
+    axs[0].plot(cumfreq_x(cfq_t_G), cfq_t_G.cumcount/N, label="g生成")
     axs[0].grid(linestyle='--')
     axs[0].legend(loc=4)
-    axs[0].title.set_text('CDF of duration of unemployment')
-    axs[0].set(xlabel='time', ylabel='Prob(time)')
+    axs[0].title.set_text('失业持续时间的CDF')
+    axs[0].set(xlabel='时间', ylabel='概率(时间)')
 
-    axs[1].plot(cumfreq_x(cfq_π_F), cfq_π_F.cumcount/N, label="f generates")
-    axs[1].plot(cumfreq_x(cfq_π_G), cfq_π_G.cumcount/N, label="g generates")
+    axs[1].plot(cumfreq_x(cfq_π_F), cfq_π_F.cumcount/N, label="f生成")
+    axs[1].plot(cumfreq_x(cfq_π_G), cfq_π_G.cumcount/N, label="g生成")
     axs[1].grid(linestyle='--')
     axs[1].legend(loc=4)
-    axs[1].title.set_text('CDF of π at time worker accepts wage and leaves unemployment')
-    axs[1].set(xlabel='π', ylabel='Prob(π)')
+    axs[1].title.set_text('工人接受工资并离开失业状态时π的CDF')
+    axs[1].set(xlabel='π', ylabel='概率(π)')
 
     plt.show()
 ```
 
-We now provide some examples that provide insights about how the model works.
+我们现在提供一些示例，帮助理解模型的工作原理。
 
-## Examples
+## 示例
 
-### Example 1 (Baseline)
+### 示例1（基准）
 
 $F$ ~ Beta(1, 1), $G$ ~ Beta(3, 1.2), $c$=0.3.
 
-In the graphs below, the red arrows in the upper right figure show how $\pi_t$ is updated in response to the
-new information $w_t$.
+在下面的图中，右上图中的红色箭头显示了$\pi_t$如何根据新信息$w_t$进行更新。
 
-Recall the following formula from [this lecture](https://python.quantecon.org/exchangeable.html)
+回顾[本讲](https://python.quantecon.org/exchangeable.html)中的以下公式
 
 $$
 \frac{\pi_{t+1}}{\pi_{t}}=\frac{l\left(w_{t+1}\right)}{\pi_{t}l\left(w_{t+1}\right)+\left(1-\pi_{t}\right)}\begin{cases}
@@ -1077,109 +1005,85 @@ $$
 \end{cases}
 $$
 
-The formula implies that  the direction of motion of $\pi_t$ is determined by the relationship between
-$l(w_t)$ and $1$.
+该公式表明$\pi_t$的变动方向取决于$l(w_t)$与1之间的关系。
 
-The magnitude is small if
+变动幅度在以下情况下会很小：
 
-- $l(w)$ is close to $1$, which means the new $w$ is
-  not very informative for distinguishing two distributions,
-- $\pi_{t-1}$ is close to either $0$ or $1$, which
-  means the priori is strong.
+- 当$l(w)$接近1时，这意味着新的$w$对区分两个分布的信息量不大
+- 当$\pi_{t-1}$接近0或1时，这意味着先验很强
 
-Will an unemployed  worker accept an offer earlier or
-not, when the actual ruling distribution is $g$ instead of
-$f$?
+当实际的分布是 $g$ 而不是 $f$ 时，失业工人会更早接受工作机会还是不会？
 
-Two countervailing effects are at work.
+这里存在两个相互抵消的效应。
 
-- if $f$ generates successive wage offers, then $w$ is more likely to be low, but
-  $\pi$ is moving up toward to 1, which lowers the reservation wage,
-  i.e., the worker becomes  less selective the longer he or she remains unemployed.
-- if $g$ generates wage offers, then $w$ is more likely to be high, but
-  $\pi$ is moving downward toward 0, increasing the reservation wage, i.e., the worker becomes  more selective
-  the longer he or she remains unemployed.
+- 如果 $f$ 产生连续的工资报价，那么 $w$ 更可能偏低，但 $\pi$ 会向 1 移动，这会降低保留工资，
+  也就是说，工人失业时间越长就越不挑剔。
+- 如果 $g$ 产生工资报价，那么 $w$ 更可能偏高，但 $\pi$ 会向 0 移动，这会提高保留工资，也就是说，工人失业时间越长就越挑剔。
 
-Quantitatively, the lower right figure sheds light on which effect dominates in this example.
+从定量角度来看，右下图说明了在这个例子中哪个效应占主导地位。
 
-It shows the probability that a previously unemployed  worker
-accepts an offer at different values of $\pi$ when $f$ or $g$ generates
-wage offers.
+它显示了当 $f$ 或 $g$ 产生工资报价时，之前失业的工人在不同 $\pi$ 值下接受工作机会的概率。
 
-That graph shows that for the particular $f$ and $g$ in this example, the
-worker is always more likely to accept an offer when $f$ generates the data  even when $\pi$ is close to zero so
-that  the worker believes the true distribution is $g$ and therefore is relatively
-more selective.
+该图表明，对于这个例子中特定的 $f$ 和 $g$，
 
-The empirical cumulative distribution of the duration of
-unemployment verifies our conjecture.
+即使当 $\pi$ 接近零时，当 $f$ 生成数据时，工人也更有可能接受offer，尽管此时工人相信真实分布是 $g$ 并因此相对更具选择性。
+
+失业持续时间的经验累积分布验证了我们的推测。
 
 ```{code-cell} python3
 job_search_example()
 ```
 
-### Example 2
+### 示例 2
 
-$F$ ~ Beta(1, 1), $G$ ~ Beta(1.2, 1.2), $c$=0.3.
+$F$ ~ Beta(1, 1), $G$ ~ Beta(1.2, 1.2), $c$=0.3。
 
-Now $G$ has the same mean as $F$ with a smaller variance.
+现在$G$与$F$具有相同的均值但方差更小。
 
-Since the unemployment compensation $c$ serves as a lower bound
-for bad wage offers, $G$ is now an “inferior” distribution to
-$F$.
+由于失业补助金$c$作为不良工资报价的下限，$G$现在是相对于$F$的一个"劣等"分布。
 
-Consequently, we observe that the optimal policy
-$\overline{w}(\pi)$ is increasing in $\pi$.
+因此，我们观察到最优策略$\overline{w}(\pi)$随$\pi$增加而增加。
 
 ```{code-cell} python3
 job_search_example(1, 1, 1.2, 1.2, 0.3)
 ```
 
-### Example 3
+### 示例 3
 
 $F$ ~ Beta(1, 1), $G$ ~ Beta(2, 2), $c$=0.3.
 
-If the variance of $G$ is smaller, we observe in the result that
-$G$ is even more “inferior” and the slope of
-$\overline{w}(\pi)$ is larger.
+如果$G$的方差更小，我们在结果中观察到$G$甚至更加"劣势"，且$\overline{w}(\pi)$的斜率更大。
 
 ```{code-cell} python3
 job_search_example(1, 1, 2, 2, 0.3)
 ```
 
-### Example 4
+### 示例 4
 
-$F$ ~ Beta(1, 1), $G$ ~ Beta(3, 1.2), and $c$=0.8.
+$F$ ~ Beta(1, 1)，$G$ ~ Beta(3, 1.2)，且 $c$=0.8。
 
-In this example, we keep the parameters of beta distributions to be the
-same with the baseline case but increase the unemployment compensation
-$c$.
+在这个示例中，我们保持贝塔分布的参数与基准情况相同，但增加了失业补助金 $c$。
 
-Comparing outcomes to the baseline case (example 1) in which
-unemployment compensation if low ($c$=0.3), now the worker can
-afford a longer  learning period.
+与基准情况（示例1）相比，在失业补助金较低（$c$=0.3）的情况下，现在工人可以承担更长的学习期。
 
-As a result, the worker tends to accept
-wage offers much later.
+因此，工人倾向于更晚接受工资报价。
 
-Furthermore, at the time of accepting employment, the belief
-$\pi$ is closer to either $0$ or $1$.
+此外，在接受就业时，信念 $\pi$ 更接近于 0 或 1。
 
-That means that
-the worker has a better  idea about what the true distribution is
-when he eventually chooses to accept a wage offer.
+这意味着当工人最终选择接受工资报价时，他对真实分布有了更好的认识。
 
 ```{code-cell} python3
 job_search_example(1, 1, 3, 1.2, c=0.8)
 ```
 
-### Example 5
 
-$F$ ~ Beta(1, 1), $G$ ~ Beta(3, 1.2), and $c$=0.1.
+### 示例 5
 
-As expected, a smaller $c$ makes an unemployed worker  accept wage offers earlier
-after having acquired less information about the wage distribution.
+$F$ ~ Beta(1, 1), $G$ ~ Beta(3, 1.2), 且 $c$=0.1。
+
+正如预期的那样，较小的 $c$ 使失业工人在获取较少的工资分布信息后就更早地接受工资offer。
 
 ```{code-cell} python3
 job_search_example(1, 1, 3, 1.2, c=0.1)
 ```
+

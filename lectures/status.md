@@ -11,14 +11,14 @@ kernelspec:
 
 # 执行统计
 
-此表包含最新的执行统计信息。
+此表格包含最新的执行统计数据。
 
 ```{nb-exec-table}
 ```
 
 (status:machine-details)=
 
-这些讲座是在通过`github actions`的`linux`实例上构建的。
+这些讲座是通过`github actions`在`linux`实例上构建的。
 
 这些讲座使用以下Python版本
 
@@ -33,8 +33,9 @@ kernelspec:
 !conda list
 ```
 
-本讲座系列还可以访问以下GPU
+本讲座系列还可以使用以下GPU
 
 ```{code-cell} ipython
 !nvidia-smi
 ```
+
