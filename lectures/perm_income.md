@@ -48,6 +48,11 @@ Robert Hall在线性二次框架下重新阐述了Friedman的模型{cite}`Hall19
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 import random

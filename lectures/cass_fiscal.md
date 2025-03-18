@@ -261,6 +261,11 @@ $$ (eq:terminal_final)
 import numpy as np
 from scipy.optimize import root
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 from collections import namedtuple
 from mpmath import mp, mpf
 from warnings import warn

@@ -74,6 +74,11 @@ y_1 = a_{11} x_1 + a_{12} x_2 + \cdots + a_{1k} x_k \\
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from matplotlib import cm

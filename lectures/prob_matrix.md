@@ -48,6 +48,11 @@ tags: [hide-output]
 ```{code-cell} ipython3
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import prettytable as pt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib_inline.backend_inline import set_matplotlib_formats

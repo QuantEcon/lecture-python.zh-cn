@@ -3,6 +3,11 @@ import scipy as sp
 import scipy.linalg as la
 import quantecon as qe
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 from scipy.stats import norm, lognorm
 
 

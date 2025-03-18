@@ -58,6 +58,11 @@ import numpy as np
 import pandas as pd
 import prettytable as pt
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 from scipy.stats import binom
 import scipy.stats as st
 ```
@@ -374,6 +379,11 @@ $L(\theta|x) = \binom{n}{k}\theta^k(1-\theta)^{n-k}$
 import numpy as np
 from scipy.stats import beta
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 
 class BayesianCoinFlip:
     def __init__(self, true_theta=0.4, alpha=0.5, beta=0.5):
