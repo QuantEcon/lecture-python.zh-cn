@@ -426,7 +426,7 @@ k_star_approx_newton = newton(f=lambda x: g(x, params) - x,
 ```
 
 ```{code-cell} ipython3
-k_star_近似牛顿法
+k_star_approx_newton
 ```
 
 结果证实了我们在上面图表中看到的收敛情况：仅需5次迭代就达到了非常精确的结果。
