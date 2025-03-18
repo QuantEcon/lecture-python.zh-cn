@@ -403,8 +403,8 @@ arr = np.arange(m+n)
 ```
 
 ```{code-cell} ipython3
-已找到解 = []
-成本 = []
+sol_found = []
+cost = []
 
 # 模拟1000次
 for i in range(1000):
@@ -414,9 +414,9 @@ for i in range(1000):
 
     # 如果找到新解
     sol = tuple(res_shuffle.x)
-    if sol not in 已找到解:
-        已找到解.append(sol)
-        成本.append(res_shuffle.fun)
+    if sol not in sol_found:
+        sol_found.append(sol)
+        cost.append(res_shuffle.fun)
 ```
 
 ```{code-cell} ipython3
