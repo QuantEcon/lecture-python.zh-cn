@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.16.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -63,8 +63,18 @@ from quantecon import Kalman, LinearStateSpace
 from collections import namedtuple
 from scipy.stats import multivariate_normal
 import matplotlib as mpl
-mpl.rcParams['text.usetex'] = True
-mpl.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
+# Configure Matplotlib to use pdfLaTeX and CJKutf8
+mpl.rcParams.update({
+    'text.usetex': True,
+    'text.latex.preamble': r'''
+        \usepackage{{CJKutf8}}
+        \usepackage{{amsmath}}
+    '''
+})
+
+# Function to wrap Chinese text in CJK environment
+def cjk(text):
+    return rf'\begin{{CJK}}{{UTF8}}{{gbsn}}{text}\end{{CJK}}'
 ```
 
 ## 工人的产出
@@ -252,21 +262,20 @@ u_hat_t = x_hat_t[1, :]
 我们可以观察公司对工人工作伦理的推断 $E [u_0 | y^{t-1}]$ 如何逐渐收敛于隐藏的 $u_0$，而 $u_0$ 是公司无法直接观察到的。
 
 ```{code-cell} ipython3
-
 fig, ax = plt.subplots(1, 2)
 
 ax[0].plot(y_hat_t, label=r'$E[y_t| y^{t-1}]$')
-ax[0].set_xlabel('时间')
+ax[0].set_xlabel(cjk('时间'))
 ax[0].set_ylabel(r'$E[y_t]$')
-ax[0].set_title(r'$E[y_t]$ 随时间变化')
+ax[0].set_title(cjk('$E[y_t]$ 随时间变化'))
 ax[0].legend()
 
 ax[1].plot(u_hat_t, label=r'$E[u_t|y^{t-1}]$')
 ax[1].axhline(y=u_0, color='grey', 
             linestyle='dashed', label=fr'$u_0={u_0:.2f}$')
-ax[1].set_xlabel('时间')
+ax[1].set_xlabel(cjk('时间'))
 ax[1].set_ylabel(r'$E[u_t|y^{t-1}]$')
-ax[1].set_title('推断的工作伦理随时间变化')
+ax[1].set_title(cjk('推断的工作伦理随时间变化'))
 ax[1].legend()
 
 fig.tight_layout()
@@ -290,7 +299,6 @@ print(Σ_t[:, :, -1])
 通过在不同时间 $t$ 绘制 $E [x_t |y^{t-1}] $ 周围的置信椭圆，我们可以生动地展示条件协方差矩阵 $\Sigma_t$ 如何演化。
 
 ```{code-cell} ipython3
-
 # 创建用于等高线绘制的点网格
 h_range = np.linspace(x_hat_t[0, :].min()-0.5*Σ_t[0, 0, 1], 
                       x_hat_t[0, :].max()+0.5*Σ_t[0, 0, 1], 100)
@@ -314,7 +322,7 @@ for i, t in enumerate(np.linspace(0, T-1, 3, dtype=int)):
     # 创建 PDF 的等高线图
     con = axs[i].contour(h, u, pdf_values, cmap='viridis')
     axs[i].clabel(con, inline=1, fontsize=10)
-    axs[i].set_title(f'时间步 {t+1}')
+    axs[i].set_title(cjk('时间步')+f'{t+1}')
     axs[i].set_xlabel(r'$h_{{{}}}$'.format(str(t+1)))
     axs[i].set_ylabel(r'$u_{{{}}}$'.format(str(t+1)))
     
@@ -337,7 +345,6 @@ plt.show()
 这是实现这个目标的一种方式：
 
 ```{code-cell} ipython3
-
 # 例如，我们可能想要 h_0 = 0 和 u_0 = 4
 mu_0 = np.array([0.0, 4.0])
 
@@ -360,7 +367,6 @@ print('u_0 =', u_0)
 实现相同目标的另一种方式是使用以下代码：
 
 ```{code-cell} ipython3
-
 # 如果我们想要设置初始 
 # h_0 = hhat_0 = 0 和 u_0 = uhhat_0 = 4.0:
 worker = create_worker(hhat_0=0.0, uhat_0=4.0)
@@ -405,17 +411,17 @@ for t in range(1, T):
 fig, ax = plt.subplots(1, 2)
 
 ax[0].plot(y_hat_t, label=r'$E[y_t| y^{t-1}]$')
-ax[0].set_xlabel('时间')
+ax[0].set_xlabel(cjk('时间'))
 ax[0].set_ylabel(r'$E[y_t]$')
-ax[0].set_title(r'$E[y_t]$ 随时间变化')
+ax[0].set_title(cjk('$E[y_t]$ 随时间变化'))
 ax[0].legend()
 
 ax[1].plot(u_hat_t, label=r'$E[u_t|y^{t-1}]$')
 ax[1].axhline(y=u_0, color='grey', 
             linestyle='dashed', label=fr'$u_0={u_0:.2f}$')
-ax[1].set_xlabel('时间')
+ax[1].set_xlabel(cjk('时间'))
 ax[1].set_ylabel(r'$E[u_t|y^{t-1}]$')
-ax[1].set_title('推断的工作伦理随时间变化')
+ax[1].set_title(cjk('推断的工作伦理随时间变化'))
 ax[1].legend()
 
 fig.tight_layout()
@@ -427,7 +433,6 @@ plt.show()
 这是一个例子：
 
 ```{code-cell} ipython3
-
 # 我们可以在创建工人时设置这些参数 -- 就像类一样！
 hard_working_worker =  create_worker(α=.4, β=.8, 
                         hhat_0=7.0, uhat_0=100, σ_h=2.5, σ_u=3.2)
@@ -477,31 +482,30 @@ def simulate_workers(worker, T, ax, mu_0=None, Sigma_0=None,
         u_hat_t[i] = x_hat[1]
 
     if diff == True:
-        title = ('推断的工作伦理与真实工作伦理的差异随时间变化' 
+        title = (cjk('推断的工作伦理与真实工作伦理的差异随时间变化') 
                  if title == None else title)
         
         ax.plot(u_hat_t - u_0, alpha=.5)
         ax.axhline(y=0, color='grey', linestyle='dashed')
-        ax.set_xlabel('时间')
+        ax.set_xlabel(cjk('时间'))
         ax.set_ylabel(r'$E[u_t|y^{t-1}] - u_0$')
         ax.set_title(title)
         
     else:
         label_line = (r'$E[u_t|y^{t-1}]$' if name == None 
                       else name)
-        title = ('推断的工作伦理随时间变化' 
+        title = (cjk('推断的工作伦理随时间变化')
                 if title == None else title)
         
         u_hat_plot = ax.plot(u_hat_t, label=label_line)
         ax.axhline(y=u_0, color=u_hat_plot[0].get_color(), 
                     linestyle='dashed', alpha=0.5)
-        ax.set_xlabel('时间')
+        ax.set_xlabel(cjk('时间'))
         ax.set_ylabel(r'$E[u_t|y^{t-1}]$')
         ax.set_title(title)
 ```
 
 ```{code-cell} ipython3
-
 num_workers = 3
 T = 50
 fig, ax = plt.subplots(figsize=(7, 7))
@@ -514,7 +518,6 @@ plt.show()
 ```
 
 ```{code-cell} ipython3
-
 # 我们还可以生成 u_t 的图：
 
 T = 50
@@ -537,7 +540,6 @@ plt.show()
 ```
 
 ```{code-cell} ipython3
-
 # 我们还可以为所有工人使用精确的 u_0=1 和 h_0=2
 
 T = 50
@@ -566,7 +568,6 @@ plt.show()
 ```
 
 ```{code-cell} ipython3
-
 # 我们可以只为其中一个工人生成图：
 
 T = 50
@@ -584,11 +585,11 @@ uhat_0s = 100
 
 worker = create_worker(uhat_0=uhat_0, α=α, β=β)
 simulate_workers(worker, T, ax, mu_0=mu_0_1, Sigma_0=Sigma_0, 
-                 diff=False, name=r'勤奋的工人')
+                 diff=False, name=cjk('勤奋的工人'))
 simulate_workers(worker, T, ax, mu_0=mu_0_2, Sigma_0=Sigma_0, 
                  diff=False, 
-                 title='一个勤奋的工人和一个不太勤奋的工人',
-                 name=r'普通工人')
+                 title=cjk('一个勤奋的工人和一个不太勤奋的工人'),
+                 name=cjk('普通工人'))
 ax.axhline(y=u_0, xmin=0, xmax=0, color='grey', 
            linestyle='dashed', label=r'$u_{i, 0}$')
 ax.legend(bbox_to_anchor=(1, 0.5))
@@ -597,4 +598,4 @@ plt.show()
 
 ## 未来扩展
 
-我们可以通过创建新类型的工人，并让公司仅通过观察他们的产出历史来了解他们的隐藏（对公司来说）状态，来进行许多富有启发性的实验。 
+我们可以通过创建新类型的工人，并让公司仅通过观察他们的产出历史来了解他们的隐藏（对公司来说）状态，来进行许多富有启发性的实验。
