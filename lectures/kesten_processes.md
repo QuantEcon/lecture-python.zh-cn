@@ -104,7 +104,7 @@ GARCH模型在金融应用中很常见，其中时间序列（如资产收益）
 ```{code-cell} python3
 import yfinance as yf
 
-s = yf.download('^IXIC', '2006-1-1', '2019-11-1')['Adj Close']
+s = yf.download('^IXIC', '2006-1-1', '2019-11-1', auto_adjust=False)['Adj Close']
 
 r = s.pct_change()
 
