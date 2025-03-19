@@ -905,7 +905,6 @@ d
 和之前一样，消费者试图最小化
 
 ```{math}
-
 :label: lq_pip
 
 \mathbb E \,
