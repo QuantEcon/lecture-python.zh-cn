@@ -42,6 +42,11 @@ EGM是由[Chris Carroll](http://www.econ2.jhu.edu/people/ccarroll/)发明的一�
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from numba import jit
 ```

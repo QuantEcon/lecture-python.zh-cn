@@ -53,6 +53,11 @@ El-Shanawany, Ardron 和 Walker {cite}`Ardron_2018` 以及 Greenfield 和 Sargen
 ```{code-cell} ipython3
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 from scipy.signal import fftconvolve
 from tabulate import tabulate
 import time

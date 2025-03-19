@@ -45,6 +45,11 @@ VFI和这个插值步骤的组合被称为**拟合值函数迭代**（fitted VFI
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from numba import jit, float64
 from numba.experimental import jitclass

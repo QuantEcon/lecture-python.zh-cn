@@ -75,6 +75,11 @@ from numba.experimental import jitclass
 from quantecon.distributions import BetaBinomial
 
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 
 np.random.seed(123)
 ```
