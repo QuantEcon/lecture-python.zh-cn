@@ -711,7 +711,6 @@ $$
 因此
 
 ```{math}
-
 :label: sprob120
 
 \mathbb{E}_{t+1} [y_{t+j}] - \mathbb{E}_t [y_{t+j}] = d_{j-1} w_{t+1}
