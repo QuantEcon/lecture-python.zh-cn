@@ -17,13 +17,13 @@ kernelspec:
 </div>
 ```
 
-# Linear Regression in Python
+# Python线性回归
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -32,34 +32,39 @@ tags: [hide-output]
 !pip install linearmodels
 ```
 
-## Overview
+## 概述
 
-Linear regression is a standard tool for analyzing the relationship between two or more variables.
+线性回归是分析两个或多个变量之间关系的标准工具。
 
-In this lecture, we'll use the Python package `statsmodels` to estimate, interpret, and visualize linear regression models.
+在本讲中，我们将使用Python包`statsmodels`来估计、解释和可视化线性回归模型。
 
-Along the way, we'll discuss a variety of topics, including
+在此过程中，我们将讨论多个主题，包括
 
-- simple and multivariate linear regression
-- visualization
-- endogeneity and omitted variable bias
-- two-stage least squares
+- 简单和多元线性回归
+- 可视化
+- 内生性和遗漏变量偏差
+- 两阶段最小二乘法
 
-As an example, we will replicate results from Acemoglu, Johnson and Robinson's seminal paper {cite}`Acemoglu2001`.
+作为示例，我们将复现Acemoglu、Johnson和Robinson具有开创性意义的论文{cite}`Acemoglu2001`中的结果。
 
-* You can download a copy [here](https://economics.mit.edu/research/publications/colonial-origins-comparative-development-empirical-investigation).
+* 您可以在[这里](https://economics.mit.edu/research/publications/colonial-origins-comparative-development-empirical-investigation)下载论文。
 
-In the paper, the authors emphasize the importance of institutions in economic development.
+在这篇论文中，作者强调了制度在经济发展中的重要性。
 
-The main contribution is the use of settler mortality rates as a source of *exogenous* variation in institutional differences.
+该论文的主要贡献是使用殖民者死亡率作为制度差异的*外生*变异来源。
 
-Such variation is needed to determine whether it is institutions that give rise to greater economic growth, rather than the other way around.
+这种变化对于确定是制度导致更大的经济增长，而不是反过来，是必要的。
 
-Let's start with some imports:
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -69,228 +74,202 @@ import seaborn as sns
 sns.set_theme()
 ```
 
-### Prerequisites
+### 预备知识
 
-This lecture assumes you are familiar with basic econometrics.
+本讲座假定您熟悉基础计量经济学。
 
-For an introductory text covering these topics, see, for example,
-{cite}`Wooldridge2015`.
+关于这些主题的入门教材，请参见例如{cite}`Wooldridge2015`。
 
-## Simple Linear Regression
+## 简单线性回归
 
-{cite}`Acemoglu2001` wish to determine whether or not differences in institutions can help to explain observed economic outcomes.
+{cite}`Acemoglu2001`希望确定制度差异是否可以帮助解释观察到的经济结果。
 
-How do we measure *institutional differences* and *economic outcomes*?
+我们如何衡量*制度差异*和*经济结果*？
 
-In this paper,
+在这篇论文中，
 
-- economic outcomes are proxied by log GDP per capita in 1995, adjusted for exchange rates.
-- institutional differences are proxied by an index of protection against expropriation on average over 1985-95, constructed by the [Political Risk Services Group](https://www.prsgroup.com/).
+- 经济结果用1995年经汇率调整的人均GDP对数表示。
+- 制度差异用[政治风险服务集团](https://www.prsgroup.com/)构建的1985-95年间平均防止征用指数表示。
 
-These variables and other data used in the paper are available for download on Daron Acemoglu's [webpage](https://economics.mit.edu/people/faculty/daron-acemoglu/data-archive).
+这些变量和论文中使用的其他数据可以在Daron Acemoglu的[网页](https://economics.mit.edu/people/faculty/daron-acemoglu/data-archive)上下载。
 
-We will use pandas' `.read_stata()` function to read in data contained in the `.dta` files to dataframes
+我们将使用pandas的`.read_stata()`函数将`.dta`文件中的数据读入数据框
 
-```{code-cell} python3
+```{code-cell} ipython3
 df1 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable1.dta?raw=true')
 df1.head()
 ```
 
-Let's use a scatterplot to see whether any obvious relationship exists
-between GDP per capita and the protection against
-expropriation index
+让我们使用散点图来观察人均GDP和防止征用指数之间是否存在明显的关系
 
-```{code-cell} python3
+```{code-cell} ipython3
 df1.plot(x='avexpr', y='logpgp95', kind='scatter')
 plt.show()
 ```
 
-The plot shows a fairly strong positive relationship between
-protection against expropriation and log GDP per capita.
+该图显示了防止征用保护与人均GDP对数之间存在相当强的正相关关系。
 
-Specifically, if higher protection against expropriation is a measure of
-institutional quality, then better institutions appear to be positively
-correlated with better economic outcomes (higher GDP per capita).
+具体来说，如果更高的防止征用保护是衡量制度质量的指标，那么更好的制度似乎与更好的经济成果（更高的人均GDP）呈正相关。
 
-Given the plot, choosing a linear model to describe this relationship
-seems like a reasonable assumption.
+根据图表，选择线性模型来描述这种关系似乎是一个合理的假设。
 
-We can write our model as
+我们可以将模型写作
 
 $$
 {logpgp95}_i = \beta_0 + \beta_1 {avexpr}_i + u_i
 $$
 
-where:
+其中：
 
-- $\beta_0$ is the intercept of the linear trend line on the
-  y-axis
-- $\beta_1$ is the slope of the linear trend line, representing
-  the *marginal effect* of protection against risk on log GDP per
-  capita
-- $u_i$ is a random error term (deviations of observations from
-  the linear trend due to factors not included in the model)
+- $\beta_0$ 是线性趋势线在y轴上的截距
+- $\beta_1$ 是线性趋势线的斜率，表示防止风险保护对人均GDP对数的*边际效应*
+- $u_i$ 是随机误差项（由于模型未包含的因素导致观测值偏离线性趋势）
 
-Visually, this linear model involves choosing a straight line that best
-fits the data, as in the following plot (Figure 2 in {cite}`Acemoglu2001`)
+从视觉上看，这个线性模型涉及选择一条最佳的直线
 
-```{code-cell} python3
-# Dropping NA's is required to use numpy's polyfit
+拟合数据，如下图所示（图2，引用自{cite}`Acemoglu2001`）
+
+```{code-cell} ipython3
+# 删除NA值是使用numpy的polyfit所必需的
 df1_subset = df1.dropna(subset=['logpgp95', 'avexpr'])
 
-# Use only 'base sample' for plotting purposes
+# 仅使用"基础样本"用于绘图目的
 df1_subset = df1_subset[df1_subset['baseco'] == 1]
 
 X = df1_subset['avexpr']
 y = df1_subset['logpgp95']
 labels = df1_subset['shortnam']
 
-# Replace markers with country labels
+# 用国家标签替换标记点
 fig, ax = plt.subplots()
 ax.scatter(X, y, marker='')
 
 for i, label in enumerate(labels):
     ax.annotate(label, (X.iloc[i], y.iloc[i]))
 
-# Fit a linear trend line
+# 拟合线性趋势线
 ax.plot(np.unique(X),
          np.poly1d(np.polyfit(X, y, 1))(np.unique(X)),
          color='black')
 
 ax.set_xlim([3.3,10.5])
 ax.set_ylim([4,10.5])
-ax.set_xlabel('Average Expropriation Risk 1985-95')
-ax.set_ylabel('Log GDP per capita, PPP, 1995')
-ax.set_title('Figure 2: OLS relationship between expropriation \
-    risk and income')
+ax.set_xlabel('1985-95年平均征收风险')
+ax.set_ylabel('1995年人均GDP对数（PPP）')
+ax.set_title('图2：征收风险与收入之间的OLS关系')
 plt.show()
 ```
 
-The most common technique to estimate the parameters ($\beta$'s)
-of the linear model is Ordinary Least Squares (OLS).
+估计线性模型参数（$\beta$值）最常用的技术是普通最小二乘法（OLS）。
 
-As the name implies, an OLS model is solved by finding the parameters
-that minimize *the sum of squared residuals*, i.e.
+顾名思义，OLS模型是通过寻找能使*残差平方和*最小化的参数来求解的，即：
 
 $$
 \underset{\hat{\beta}}{\min} \sum^N_{i=1}{\hat{u}^2_i}
 $$
 
-where $\hat{u}_i$ is the difference between the observation and
-the predicted value of the dependent variable.
+其中$\hat{u}_i$是观测值与因变量预测值之间的差异。
 
-To estimate the constant term $\beta_0$, we need to add a column
-of 1's to our dataset (consider the equation if $\beta_0$ was
-replaced with $\beta_0 x_i$ and $x_i = 1$)
+为了估计常数项$\beta_0$，我们需要在数据集中添加一列1（考虑如果将$\beta_0$替换为$\beta_0 x_i$且$x_i = 1$时的方程）
 
-```{code-cell} python3
+```{code-cell} ipython3
 df1['const'] = 1
 ```
 
-Now we can construct our model in `statsmodels` using the OLS function.
+现在我们可以使用OLS函数在`statsmodels`中构建我们的模型。
 
-We will use `pandas` dataframes with `statsmodels`, however standard arrays can also be used as arguments
+我们将在`statsmodels`中使用`pandas`数据框，不过标准数组也可以作为参数使用
 
-```{code-cell} python3
+```{code-cell} ipython3
 reg1 = sm.OLS(endog=df1['logpgp95'], exog=df1[['const', 'avexpr']], \
     missing='drop')
 type(reg1)
 ```
 
-So far we have simply constructed our model.
+到目前为止，我们只是构建了模型。
 
-We need to use `.fit()` to obtain parameter estimates
-$\hat{\beta}_0$ and $\hat{\beta}_1$
+我们需要使用`.fit()`来获得参数估计值
+$\hat{\beta}_0$ 和 $\hat{\beta}_1$
 
-```{code-cell} python3
+```{code-cell} ipython3
 results = reg1.fit()
 type(results)
 ```
 
-We now have the fitted regression model stored in `results`.
+我们现在已将拟合的回归模型存储在`results`中。
 
-To view the OLS regression results, we can call the `.summary()`
-method.
+要查看OLS回归结果，我们可以调用`.summary()`方法。
 
-Note that an observation was mistakenly dropped from the results in the
-original paper (see the note located in `maketable2.do` from Acemoglu's webpage), and thus the
-coefficients differ slightly.
+请注意，在原始论文中一个观测值被错误地删除了（参见Acemoglu网页中`maketable2.do`文件中的注释），因此系数略有不同。
 
-```{code-cell} python3
+```{code-cell} ipython3
 print(results.summary())
 ```
 
-From our results, we see that
+从我们的结果中，我们看到
 
-- The intercept $\hat{\beta}_0 = 4.63$.
-- The slope $\hat{\beta}_1 = 0.53$.
-- The positive $\hat{\beta}_1$ parameter estimate implies that.
-  institutional quality has a positive effect on economic outcomes, as
-  we saw in the figure.
-- The p-value of 0.000 for $\hat{\beta}_1$ implies that the
-  effect of institutions on GDP is statistically significant (using p <
-  0.05 as a rejection rule).
-- The R-squared value of 0.611 indicates that around 61% of variation
-  in log GDP per capita is explained by protection against
-  expropriation.
+- 截距 $\hat{\beta}_0 = 4.63$。
+- 斜率 $\hat{\beta}_1 = 0.53$。
+- 正的 $\hat{\beta}_1$ 参数估计值表明，
+  制度质量对经济结果有正面影响，正如
+  我们在图中所看到的。
+- $\hat{\beta}_1$ 的p值为0.000，表明
+  制度对GDP的影响在统计上显著（使用p < 
+  0.05作为拒绝规则）。
+- R方值为0.611表明约61%的人均GDP对数
+  变异可由防止征收保护来解释。
 
-Using our parameter estimates, we can now write our estimated
-relationship as
+使用我们的参数估计，我们现在可以将估计关系写为
 
 $$
 \widehat{logpgp95}_i = 4.63 + 0.53 \ {avexpr}_i
 $$
 
-This equation describes the line that best fits our data, as shown in
-Figure 2.
+这个方程描述了最适合我们数据的直线，如图2所示。
 
-We can use this equation to predict the level of log GDP per capita for
-a value of the index of expropriation protection.
+我们可以使用这个方程来预测特定征收保护指数值
+对应的人均GDP对数水平。
 
-For example, for a country with an index value of 7.07 (the average for
-the dataset), we find that their predicted level of log GDP per capita
-in 1995 is 8.38.
+例如，对于一个指数值为7.07的国家（这是
 
-```{code-cell} python3
+在数据集中），我们发现他们预测的1995年人均GDP对数值为8.38。
+
+```{code-cell} ipython3
 mean_expr = np.mean(df1_subset['avexpr'])
 mean_expr
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 predicted_logpdp95 = 4.63 + 0.53 * 7.07
 predicted_logpdp95
 ```
 
-An easier (and more accurate) way to obtain this result is to use
-`.predict()` and set $constant = 1$ and
+获得这个结果有一个更简单（也更准确）的方法，就是使用
+`.predict()` 并设置 $constant = 1$ 和
 ${avexpr}_i = mean\_expr$
 
-```{code-cell} python3
+```{code-cell} ipython3
 results.predict(exog=[1, mean_expr])
 ```
 
-We can obtain an array of predicted ${logpgp95}_i$ for every value
-of ${avexpr}_i$ in our dataset by calling `.predict()` on our
-results.
+我们可以通过在结果上调用`.predict()`来获取数据集中每个${avexpr}_i$值对应的预测${logpgp95}_i$数组。
 
-Plotting the predicted values against ${avexpr}_i$ shows that the
-predicted values lie along the linear line that we fitted above.
+将预测值与${avexpr}_i$绘制在图上显示，预测值都落在我们之前拟合的直线上。
 
-The observed values of ${logpgp95}_i$ are also plotted for
-comparison purposes
+同时也绘制了${logpgp95}_i$的观测值以作比较。
 
-```{code-cell} python3
-# Drop missing observations from whole sample
+```{code-cell} ipython3
+# 从整个样本中删除缺失观测值
 
 df1_plot = df1.dropna(subset=['logpgp95', 'avexpr'])
 
-# Plot predicted values
+# 绘制预测值
 
 fix, ax = plt.subplots()
 ax.scatter(df1_plot['avexpr'], results.predict(), alpha=0.5,
         label='predicted')
 
-# Plot observed values
+# 绘制观测值
 
 ax.scatter(df1_plot['avexpr'], df1_plot['logpgp95'], alpha=0.5,
         label='observed')
@@ -302,49 +281,41 @@ ax.set_ylabel('logpgp95')
 plt.show()
 ```
 
-## Extending the Linear Regression Model
+## 扩展线性回归模型
 
-So far we have only accounted for institutions affecting economic
-performance - almost certainly there are numerous other factors
-affecting GDP that are not included in our model.
+到目前为止，我们只考虑了制度对经济表现的影响 - 几乎可以肯定还有许多其他因素影响着GDP，但这些因素尚未包含在我们的模型中。
 
-Leaving out variables that affect $logpgp95_i$ will result in **omitted variable bias**, yielding biased and inconsistent parameter estimates.
+忽略影响$logpgp95_i$的变量将导致**遗漏变量偏差**，从而产生有偏和不一致的参数估计。
 
-We can extend our bivariate regression model to a **multivariate regression model** by adding in other factors that may affect $logpgp95_i$.
+我们可以通过添加其他可能影响$logpgp95_i$的因素，将双变量回归模型扩展为**多变量回归模型**。
 
-{cite}`Acemoglu2001` consider other factors such as:
+{cite}`Acemoglu2001`考虑了其他因素，如：
 
-- the effect of climate on economic outcomes; latitude is used to proxy
-  this
-- differences that affect both economic performance and institutions,
-  eg. cultural, historical, etc.; controlled for with the use of
-  continent dummies
+- 气候对经济结果的影响；使用纬度作为代理变量
+- 影响经济表现和制度的其他差异，如文化、历史等；通过使用大陆虚拟变量来控制
 
-Let's estimate some of the extended models considered in the paper
-(Table 2) using data from `maketable2.dta`
+让我们使用`maketable2.dta`中的数据来估计论文中考虑的一些扩展模型（表2）
 
-```{code-cell} python3
+```{code-cell} ipython3
 df2 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable2.dta?raw=true')
 
-# Add constant term to dataset
+# 向数据集添加常数项
 df2['const'] = 1
 
-# Create lists of variables to be used in each regression
+# 创建每个回归要使用的变量列表
 X1 = ['const', 'avexpr']
 X2 = ['const', 'avexpr', 'lat_abst']
 X3 = ['const', 'avexpr', 'lat_abst', 'asia', 'africa', 'other']
 
-# Estimate an OLS regression for each set of variables
+# 对每组变量估计OLS回归
 reg1 = sm.OLS(df2['logpgp95'], df2[X1], missing='drop').fit()
 reg2 = sm.OLS(df2['logpgp95'], df2[X2], missing='drop').fit()
 reg3 = sm.OLS(df2['logpgp95'], df2[X3], missing='drop').fit()
 ```
 
-Now that we have fitted our model, we will use `summary_col` to
-display the results in a single table (model numbers correspond to those
-in the paper)
+现在我们已经拟合了模型，我们将使用`summary_col`在一个表格中显示结果（模型编号与论文中的相对应）
 
-```{code-cell} python3
+```{code-cell} ipython3
 info_dict={'R-squared' : lambda x: f"{x.rsquared:.2f}",
            'No. observations' : lambda x: f"{int(x.nobs):d}"}
 
@@ -361,55 +332,37 @@ results_table = summary_col(results=[reg1,reg2,reg3],
                                              'asia',
                                              'africa'])
 
-results_table.add_title('Table 2 - OLS Regressions')
+results_table.add_title('表2 - OLS回归')
 
 print(results_table)
 ```
 
-## Endogeneity
+## 内生性
 
-As {cite}`Acemoglu2001` discuss, the OLS models likely suffer from
-**endogeneity** issues, resulting in biased and inconsistent model
-estimates.
+正如 {cite}`Acemoglu2001` 所讨论的，OLS模型可能存在**内生性**问题，导致模型估计有偏差且不一致。
 
-Namely, there is likely a two-way relationship between institutions and
-economic outcomes:
+具体来说，制度和经济结果之间可能存在双向关系：
 
-- richer countries may be able to afford or prefer better institutions
-- variables that affect income may also be correlated with
-  institutional differences
-- the construction of the index may be biased; analysts may be biased
-  towards seeing countries with higher income having better
-  institutions
+- 较富裕的国家可能有能力负担或倾向于选择更好的制度
+- 影响收入的变量可能也与制度差异相关
+- 指数的构建可能存在偏差；分析师可能倾向于认为收入较高的国家拥有更好的制度
 
-To deal with endogeneity, we can use **two-stage least squares (2SLS)
-regression**, which is an extension of OLS regression.
+为了解决内生性问题，我们可以使用**两阶段最小二乘法(2SLS回归)**，这是OLS回归的扩展。
 
-This method requires replacing the endogenous variable
-${avexpr}_i$ with a variable that is:
+这种方法需要用一个变量来替代内生变量${avexpr}_i$，该变量必须：
 
-1. correlated with ${avexpr}_i$
-1. not correlated with the error term (ie. it should not directly affect
-   the dependent variable, otherwise it would be correlated with
-   $u_i$ due to omitted variable bias)
+1. 与${avexpr}_i$相关
+1. 与误差项不相关（即不应直接影响因变量，否则由于遗漏变量偏差会与$u_i$相关）
 
-The new set of regressors is called an **instrument**, which aims to
-remove endogeneity in our proxy of institutional differences.
+这组新的回归变量被称为**工具变量**，其目的是消除我们在衡量制度差异时的内生性问题。
 
-The main contribution of {cite}`Acemoglu2001` is the use of settler mortality
-rates to instrument for institutional differences.
+{cite}`Acemoglu2001`的主要贡献在于使用殖民者死亡率作为制度差异的工具变量。
 
-They hypothesize that higher mortality rates of colonizers led to the
-establishment of institutions that were more extractive in nature (less
-protection against expropriation), and these institutions still persist
-today.
+他们假设殖民者较高的死亡率导致了更具掠夺性质的制度建立（对征收的保护较少），而这些制度一直延续至今。
 
-Using a scatterplot (Figure 3 in {cite}`Acemoglu2001`), we can see protection
-against expropriation is negatively correlated with settler mortality
-rates, coinciding with the authors' hypothesis and satisfying the first
-condition of a valid instrument.
+通过散点图（{cite}`Acemoglu2001`中的图3），我们可以看到防止征收风险与殖民者死亡率呈负相关，这与作者的假设相符，满足了有效工具变量的第一个条件。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # Dropping NA's is required to use numpy's polyfit
 df1_subset2 = df1.dropna(subset=['logem4', 'avexpr'])
 
@@ -431,79 +384,69 @@ ax.plot(np.unique(X),
 
 ax.set_xlim([1.8,8.4])
 ax.set_ylim([3.3,10.4])
-ax.set_xlabel('Log of Settler Mortality')
-ax.set_ylabel('Average Expropriation Risk 1985-95')
-ax.set_title('Figure 3: First-stage relationship between settler mortality \
-    and expropriation risk')
+ax.set_xlabel('殖民者死亡率对数')
+ax.set_ylabel('1985-95年平均征收风险')
+ax.set_title('图3：殖民者死亡率与征收风险之间的一阶关系')
 plt.show()
 ```
 
-The second condition may not be satisfied if settler mortality rates in the 17th to 19th centuries have a direct effect on current GDP (in addition to their indirect effect through institutions).
+如果17至19世纪的殖民者死亡率对当前GDP有直接影响（除了通过制度产生的间接影响外），第二个条件可能就不成立。
 
-For example, settler mortality rates may be related to the current disease environment in a country, which could affect current economic performance.
+例如，殖民者死亡率可能与一个国家当前的疾病环境有关，这可能会影响当前的经济表现。
 
-{cite}`Acemoglu2001` argue this is unlikely because:
+{cite}`Acemoglu2001`认为这种情况不太可能，因为：
 
-- The majority of settler deaths were due to malaria and yellow fever
-  and had a limited effect on local people.
-- The disease burden on local people in Africa or India, for example,
-  did not appear to be higher than average, supported by relatively
-  high population densities in these areas before colonization.
+- 大多数殖民者死亡是由疟疾和黄热病引起的，
+  对当地人的影响有限。
+- 非洲或印度等地区的当地人的疾病负担似乎并不高于平均水平，
+  这一点从殖民前这些地区相对较高的人口密度可以得到证实。
 
-As we appear to have a valid instrument, we can use 2SLS regression to
-obtain consistent and unbiased parameter estimates.
+由于我们似乎有了一个有效的工具变量，我们可以使用二阶段最小二乘法（2SLS）回归来获得一致且无偏的参数估计。
 
-**First stage**
+**第一阶段**
 
-The first stage involves regressing the endogenous variable
-(${avexpr}_i$) on the instrument.
+第一阶段包括对内生变量（${avexpr}_i$）进行工具变量回归。
 
-The instrument is the set of all exogenous variables in our model (and
-not just the variable we have replaced).
+工具变量是我们模型中所有外生变量的集合（而不仅仅是我们替换的变量）。
 
-Using model 1 as an example, our instrument is simply a constant and
-settler mortality rates ${logem4}_i$.
+以模型1为例，我们的工具变量仅包含一个常数项和殖民者死亡率${logem4}_i$。
 
-Therefore, we will estimate the first-stage regression as
+因此，我们将估计如下的第一阶段回归：
 
 $$
 {avexpr}_i = \delta_0 + \delta_1 {logem4}_i + v_i
 $$
 
-The data we need to estimate this equation is located in
-`maketable4.dta` (only complete data, indicated by `baseco = 1`, is
-used for estimation)
+估计这个方程所需的数据位于`maketable4.dta`文件中（仅使用完整数据进行估计，由`baseco = 1`标识）
 
-```{code-cell} python3
-# Import and select the data
+```{code-cell} ipython3
+# 导入并选择数据
 df4 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable4.dta?raw=true')
 df4 = df4[df4['baseco'] == 1]
 
-# Add a constant variable
+# 添加常数变量
 df4['const'] = 1
 
-# Fit the first stage regression and print summary
+# 拟合第一阶段回归并打印摘要
 results_fs = sm.OLS(df4['avexpr'],
                     df4[['const', 'logem4']],
                     missing='drop').fit()
 print(results_fs.summary())
 ```
 
-**Second stage**
+**第二阶段**
 
-We need to retrieve the predicted values of ${avexpr}_i$ using
-`.predict()`.
+我们需要使用`.predict()`来获取${avexpr}_i$的预测值。
 
-We then replace the endogenous variable ${avexpr}_i$ with the
-predicted values $\widehat{avexpr}_i$ in the original linear model.
+然后在原始线性模型中，用预测值$\widehat{avexpr}_i$替换内生变量${avexpr}_i$。
 
-Our second stage regression is thus
+因此，我们的第二阶段回归为
 
 $$
 {logpgp95}_i = \beta_0 + \beta_1 \widehat{avexpr}_i + u_i
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 df4['predicted_avexpr'] = results_fs.predict()
 
 results_ss = sm.OLS(df4['logpgp95'],
@@ -511,24 +454,17 @@ results_ss = sm.OLS(df4['logpgp95'],
 print(results_ss.summary())
 ```
 
-The second-stage regression results give us an unbiased and consistent
-estimate of the effect of institutions on economic outcomes.
+第二阶段回归结果为我们提供了制度对经济结果影响的无偏且一致的估计。
 
-The result suggests a stronger positive relationship than what the OLS
-results indicated.
+结果显示出比OLS结果更强的正相关关系。
 
-Note that while our parameter estimates are correct, our standard errors
-are not and for this reason, computing 2SLS 'manually' (in stages with
-OLS) is not recommended.
+请注意，虽然我们的参数估计是正确的，但我们的标准误差并不准确，因此不建议"手动"（通过分阶段OLS）计算2SLS。
 
-We can correctly estimate a 2SLS regression in one step using the
-[linearmodels](https://github.com/bashtage/linearmodels) package, an extension of `statsmodels`
+我们可以使用[linearmodels](https://github.com/bashtage/linearmodels)包（statsmodels的扩展）在一步中正确估计2SLS回归。
 
-Note that when using `IV2SLS`, the exogenous and instrument variables
-are split up in the function arguments (whereas before the instrument
-included exogenous variables)
+注意，在使用`IV2SLS`时，外生变量和工具变量在函数参数中是分开的（而之前工具变量包含了外生变量）
 
-```{code-cell} python3
+```{code-cell} ipython3
 iv = IV2SLS(dependent=df4['logpgp95'],
             exog=df4['const'],
             endog=df4['avexpr'],
@@ -537,87 +473,74 @@ iv = IV2SLS(dependent=df4['logpgp95'],
 print(iv.summary)
 ```
 
-Given that we now have consistent and unbiased estimates, we can infer
-from the model we have estimated that institutional differences
-(stemming from institutions set up during colonization) can help
-to explain differences in income levels across countries today.
+鉴于我们现在已经获得了一致且无偏的估计，我们可以从所估计的模型中推断出，制度差异（源于殖民时期建立的制度）可以帮助解释当今各国之间的收入水平差异。
 
-{cite}`Acemoglu2001` use a marginal effect of 0.94 to calculate that the
-difference in the index between Chile and Nigeria (ie. institutional
-quality) implies up to a 7-fold difference in income, emphasizing the
-significance of institutions in economic development.
+{cite}`Acemoglu2001`使用0.94的边际效应来计算，智利和尼日利亚之间的指数差异（即制度质量）意味着收入可能相差高达7倍，这强调了制度在经济发展中的重要性。
 
-## Summary
+## 总结
 
-We have demonstrated basic OLS and 2SLS regression in `statsmodels` and `linearmodels`.
+我们已经演示了在`statsmodels`和`linearmodels`中的基本OLS和2SLS回归。
 
-If you are familiar with R, you may want to use the [formula interface](https://www.statsmodels.org/dev/example_formulas.html) to `statsmodels`, or consider using [r2py](https://rpy2.github.io/) to call R from within Python.
+如果你熟悉R语言，你可能想要使用`statsmodels`的[公式接口](https://www.statsmodels.org/dev/example_formulas.html)，或考虑使用[r2py](https://rpy2.github.io/)在Python中调用R。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: ols_ex1
 
-In the lecture, we think the original model suffers from endogeneity
-bias due to the likely effect income has on institutional development.
+在讲座中，我们认为原始模型存在内生性问题
 
-Although endogeneity is often best identified by thinking about the data
-and model, we can formally test for endogeneity using the **Hausman
-test**.
+由于收入可能对制度发展产生影响而导致的偏差。
 
-We want to test for correlation between the endogenous variable,
-$avexpr_i$, and the errors, $u_i$
+虽然内生性最好通过思考数据和模型来识别，但我们可以使用**豪斯曼检验**来正式检验内生性。
+
+我们要检验内生变量$avexpr_i$和误差项$u_i$之间是否存在相关性
 
 $$
 \begin{aligned}
- H_0 : Cov(avexpr_i, u_i) = 0  \quad (no\ endogeneity) \\
- H_1 : Cov(avexpr_i, u_i) \neq 0 \quad (endogeneity)
+ H_0 : Cov(avexpr_i, u_i) = 0  \quad (无内生性) \\
+ H_1 : Cov(avexpr_i, u_i) \neq 0 \quad (存在内生性)
  \end{aligned}
 $$
 
-This test is running in two stages.
+这个检验分两个阶段进行。
 
-First, we regress $avexpr_i$ on the instrument, $logem4_i$
+首先，我们对工具变量$logem4_i$回归$avexpr_i$
 
 $$
 avexpr_i = \pi_0 + \pi_1 logem4_i + \upsilon_i
 $$
 
-Second, we retrieve the residuals $\hat{\upsilon}_i$ and include
-them in the original equation
+其次，我们获取残差$\hat{\upsilon}_i$并将其纳入原方程
 
 $$
 logpgp95_i = \beta_0 + \beta_1 avexpr_i + \alpha \hat{\upsilon}_i + u_i
 $$
 
-If $\alpha$ is statistically significant (with a p-value < 0.05),
-then we reject the null hypothesis and conclude that $avexpr_i$ is
-endogenous.
+如果$\alpha$在统计上显著（p值<0.05），那么我们就拒绝原假设，得出$avexpr_i$是内生的结论。
 
-Using the above information, estimate a Hausman test and interpret your
-results.
-```
+使用上述信息，估算豪斯曼检验并解释你的结果。
 
 ```{solution-start} ols_ex1
 :class: dropdown
 ```
 
-```{code-cell} python3
-# Load in data
+```{code-cell} ipython3
+# 加载数据
 df4 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable4.dta?raw=true')
 
-# Add a constant term
+# 添加常数项
 df4['const'] = 1
 
-# Estimate the first stage regression
+# 估算第一阶段回归
 reg1 = sm.OLS(endog=df4['avexpr'],
               exog=df4[['const', 'logem4']],
               missing='drop').fit()
 
-# Retrieve the residuals
+# 获取残差
 df4['resid'] = reg1.resid
 
-# Estimate the second stage residuals
+# 估算第二阶段残差
 reg2 = sm.OLS(endog=df4['logpgp95'],
               exog=df4[['const', 'avexpr', 'resid']],
               missing='drop').fit()
@@ -625,8 +548,7 @@ reg2 = sm.OLS(endog=df4['logpgp95'],
 print(reg2.summary())
 ```
 
-The output shows that the coefficient on the residuals is statistically
-significant, indicating $avexpr_i$ is endogenous.
+输出结果显示残差系数具有统计显著性，表明 $avexpr_i$ 是内生的。
 
 ```{solution-end}
 ```
@@ -634,70 +556,66 @@ significant, indicating $avexpr_i$ is endogenous.
 ```{exercise}
 :label: ols_ex2
 
-The OLS parameter $\beta$ can also be estimated using matrix
-algebra and `numpy` (you may need to review the
-[numpy](https://python-programming.quantecon.org/numpy.html) lecture to
-complete this exercise).
+OLS参数 $\beta$ 也可以使用矩阵代数和 `numpy` 来估计（你可能需要复习
+[numpy](https://python-programming.quantecon.org/numpy.html) 课程来
+完成这个练习）。
 
-The linear equation we want to estimate is (written in matrix form)
+我们要估计的线性方程（用矩阵形式表示）是
 
 $$
 y = X\beta + u
 $$
 
-To solve for the unknown parameter $\beta$, we want to minimize
-the sum of squared residuals
+为了求解未知参数 $\beta$，我们要最小化
+残差平方和
 
 $$
 \underset{\hat{\beta}}{\min} \hat{u}'\hat{u}
 $$
 
-Rearranging the first equation and substituting into the second
-equation, we can write
+重新整理第一个方程并代入第二个
+方程，我们可以写成
 
 $$
 \underset{\hat{\beta}}{\min} \ (Y - X\hat{\beta})' (Y - X\hat{\beta})
 $$
 
-Solving this optimization problem gives the solution for the
-$\hat{\beta}$ coefficients
+解这个优化问题得到 $\hat{\beta}$ 系数的解为
 
 $$
 \hat{\beta} = (X'X)^{-1}X'y
 $$
 
-Using the above information, compute $\hat{\beta}$ from model 1
-using `numpy` - your results should be the same as those in the
-`statsmodels` output from earlier in the lecture.
-```
+使用上述信息，计算模型1中的 $\hat{\beta}$
+
+使用 `numpy` - 你的结果应该与讲座前面 `statsmodels` 的输出结果相同。
 
 ```{solution-start} ols_ex2
 :class: dropdown
 ```
 
-```{code-cell} python3
-# Load in data
+```{code-cell} ipython3
+# 加载数据
 df1 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable1.dta?raw=true')
 df1 = df1.dropna(subset=['logpgp95', 'avexpr'])
 
-# Add a constant term
+# 添加常数项
 df1['const'] = 1
 
-# Define the X and y variables
+# 定义 X 和 y 变量
 y = np.asarray(df1['logpgp95'])
 X = np.asarray(df1[['const', 'avexpr']])
 
-# Compute β_hat
+# 计算 β_hat
 β_hat = np.linalg.solve(X.T @ X, X.T @ y)
 
-# Print out the results from the 2 x 1 vector β_hat
+# 打印 2 x 1 向量 β_hat 的结果
 print(f'β_0 = {β_hat[0]:.2}')
 print(f'β_1 = {β_hat[1]:.2}')
 ```
 
-It is also possible to use `np.linalg.inv(X.T @ X) @ X.T @ y` to solve
-for $\beta$, however `.solve()` is preferred as it involves fewer
-computations.
+也可以使用 `np.linalg.inv(X.T @ X) @ X.T @ y` 来求解 $\beta$，但是推荐使用 `.solve()`，因为它涉及的计算更少。
 
 ```{solution-end}
 ```
+

@@ -9,44 +9,43 @@ kernelspec:
   name: python3
 ---
 
-# Cake Eating II: Numerical Methods
+# 蛋糕食用问题 II：数值方法
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-In this lecture we continue the study of {doc}`the cake eating problem <cake_eating_problem>`.
+在本讲中，我们继续研究{doc}`蛋糕食用问题 <cake_eating_problem>`。
 
-The aim of this lecture is to solve the problem using numerical
-methods.
+本讲的目标是使用数值方法求解该问题。
 
-At first this might appear unnecessary, since we already obtained the optimal
-policy analytically.
+起初这可能看起来没有必要，因为我们已经通过分析方法得到了最优策略。
 
-However, the cake eating problem is too simple to be useful without
-modifications, and once we start modifying the problem, numerical methods become essential.
+然而，蛋糕食用问题过于简单，如果不加修改就不太实用，而一旦我们开始修改问题，数值方法就变得必不可少。
 
-Hence it makes sense to introduce numerical methods now, and test them on this
-simple problem.
+因此，现在引入数值方法并在这个简单问题上测试它们是有意义的。
 
-Since we know the analytical solution, this will allow us to assess the
-accuracy of alternative numerical methods.
+由于我们知道分析解，这将使我们能够评估不同数值方法的准确性。
 
-We will use the following imports:
+我们将使用以下导入：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from scipy.optimize import minimize_scalar, bisect
 ```
+## 回顾模型
 
-## Reviewing the Model
+在开始之前，你可能想要{doc}`回顾详细内容 <cake_eating_problem>`。
 
-You might like to {doc}`review the details <cake_eating_problem>` before we start.
-
-Recall in particular that the Bellman equation is
+特别要回顾的是贝尔曼方程：
 
 ```{math}
 :label: bellman-cen
@@ -55,100 +54,85 @@ v(x) = \max_{0\leq c \leq x} \{u(c) + \beta v(x-c)\}
 \quad \text{for all } x \geq 0.
 ```
 
-where $u$ is the CRRA utility function.
+其中$u$是CRRA效用函数。
 
-The analytical solutions for the value function and optimal policy were found
-to be as follows.
+价值函数和最优策略的解析解如下所示。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/cake_eating_numerical/analytical.py
 ```
+我们的首要目标是以数值方式获得这些解析解。
 
-Our first aim is to obtain these analytical solutions numerically.
+## 值函数迭代
 
-## Value Function Iteration
+我们将采用的第一种方法是**值函数迭代**。
 
-The first approach we will take is **value function iteration**.
+这是一种**连续逼近**的方法，在我们的{doc}`求职搜索讲座 <mccall_model>`中已经讨论过。
 
-This is a form of **successive approximation**, and was discussed in our {doc}`lecture on job search <mccall_model>`.
+基本思路是：
 
-The basic idea is:
-
-1. Take an arbitary intial guess of $v$.
-1. Obtain an update $w$ defined by
+1. 对$v$取一个任意的初始猜测值。
+1. 获得一个更新值$w$，定义为
 
    $$
    w(x) = \max_{0\leq c \leq x} \{u(c) + \beta v(x-c)\}
    $$
 
-1. Stop if $w$ is approximately equal to $v$, otherwise set
-   $v=w$ and go back to step 2.
+1. 如果$w$与$v$近似相等则停止，否则令$v=w$并返回步骤2。
 
-Let's write this a bit more mathematically.
+让我们用更数学的方式来表述这个过程。
 
-### The Bellman Operator
+### 贝尔曼算子
 
-We introduce the **Bellman operator** $T$ that takes a function v as an
-argument and returns a new function $Tv$ defined by
+我们引入**贝尔曼算子**$T$，它以函数v为参数，返回一个新函数$Tv$，定义为
 
 $$
 Tv(x) = \max_{0 \leq c \leq x} \{u(c) + \beta v(x - c)\}
 $$
 
-From $v$ we get $Tv$, and applying $T$ to this yields
-$T^2 v := T (Tv)$ and so on.
+从$v$我们得到$Tv$，将$T$应用于此得到$T^2 v := T (Tv)$，依此类推。
 
-This is called **iterating with the Bellman operator** from initial guess
-$v$.
+这被称为从初始猜测值$v$开始**迭代贝尔曼算子**。
+正如我们在后面的讲座中详细讨论的那样，可以使用Banach收缩映射定理来证明函数序列$T^n v$收敛到Bellman方程的解。
 
-As we discuss in more detail in later lectures, one can use Banach's
-contraction mapping theorem to prove that the sequence of functions $T^n
-v$ converges to the solution to the Bellman equation.
+### 拟合值函数迭代
 
-### Fitted Value Function Iteration
+消费$c$和状态变量$x$都是连续的。
 
-Both consumption $c$ and the state variable $x$ are continuous.
+这在数值计算方面造成了一些复杂性。
 
-This causes complications when it comes to numerical work.
+例如，我们需要存储每个函数$T^n v$以计算下一个迭代值$T^{n+1} v$。
 
-For example, we need to store each function $T^n v$ in order to
-compute the next iterate $T^{n+1} v$.
+但这意味着我们必须在无限多个$x$处存储$T^n v(x)$，这通常是不可能的。
 
-But this means we have to store $T^n v(x)$ at infinitely many $x$, which is, in general, impossible.
+为了解决这个问题，我们将使用拟合值函数迭代，这在之前关于{doc}`求职搜索的讲座 <mccall_fitted_vfi>`中已经讨论过。
 
-To circumvent this issue we will use fitted value function iteration, as
-discussed previously in {doc}`one of the lectures <mccall_fitted_vfi>` on job
-search.
+这个过程如下：
 
-The process looks like this:
+1. 从一组值$\{ v_0, \ldots, v_I \}$开始，这些值表示初始函数$v$在网格点$\{ x_0, \ldots, x_I \}$上的值。
+1. 通过以下方式在状态空间$\mathbb R_+$上构建函数$\hat v$：
+基于这些数据点的线性插值。
+1. 通过反复求解贝尔曼方程中的最大化问题，获取并记录每个网格点
+   $x_i$ 上的值 $T \hat v(x_i)$。
+1. 除非满足某些停止条件，否则设置
+   $\{ v_0, \ldots, v_I \} = \{ T \hat v(x_0), \ldots, T \hat v(x_I) \}$ 并返回步骤2。
 
-1. Begin with an array of values $\{ v_0, \ldots, v_I \}$  representing
-   the values of some initial function $v$ on the grid points $\{ x_0, \ldots, x_I \}$.
-1. Build a function $\hat v$ on the state space $\mathbb R_+$ by
-   linear interpolation, based on these data points.
-1. Obtain and record the value $T \hat v(x_i)$ on each grid point
-   $x_i$ by repeatedly solving the maximization problem in the Bellman
-   equation.
-1. Unless some stopping condition is satisfied, set
-   $\{ v_0, \ldots, v_I \} = \{ T \hat v(x_0), \ldots, T \hat v(x_I) \}$ and go to step 2.
+在步骤2中，我们将使用连续分段线性插值。
 
-In step 2 we'll use continuous piecewise linear interpolation.
+### 实现
 
-### Implementation
+下面的`maximize`函数是一个小型辅助函数，它将SciPy的最小化程序转换为最大化程序。
 
-The `maximize` function below is a small helper function that converts a
-SciPy minimization routine into a maximization routine.
-
-```{code-cell} python3
+```{code-cell} ipython3
 def maximize(g, a, b, args):
     """
-    Maximize the function g over the interval [a, b].
+    在区间[a, b]上最大化函数g。
 
-    We use the fact that the maximizer of g on any interval is
-    also the minimizer of -g.  The tuple args collects any extra
-    arguments to g.
+    我们利用了在任何区间上g的最大化器
+    也是-g的最小化器这一事实。元组args收集了g的任何额外
+    参数。
 
-    Returns the maximal value and the maximizer.
+    返回最大值和最大化器。
     """
 
     objective = lambda x: -g(x, *args)
@@ -156,30 +140,26 @@ def maximize(g, a, b, args):
     maximizer, maximum = result.x, -result.fun
     return maximizer, maximum
 ```
+我们将参数 $\beta$ 和 $\gamma$ 存储在一个名为 `CakeEating` 的类中。
 
-We'll store the parameters $\beta$ and $\gamma$ in a
-class called `CakeEating`.
+这个类还将提供一个名为 `state_action_value` 的方法，该方法根据特定状态和对 $v$ 的猜测返回消费选择的价值。
 
-The same class will also provide a method called `state_action_value` that
-returns the value of a consumption choice given a particular state and guess
-of $v$.
-
-```{code-cell} python3
+```{code-cell} ipython3
 class CakeEating:
 
     def __init__(self,
-                 β=0.96,           # discount factor
-                 γ=1.5,            # degree of relative risk aversion
-                 x_grid_min=1e-3,  # exclude zero for numerical stability
-                 x_grid_max=2.5,   # size of cake
+                 β=0.96,           # 贴现因子
+                 γ=1.5,            # 相对风险厌恶程度
+                 x_grid_min=1e-3,  # 为了数值稳定性排除零
+                 x_grid_max=2.5,   # 蛋糕大小
                  x_grid_size=120):
 
         self.β, self.γ = β, γ
 
-        # Set up grid
+        # 设置网格
         self.x_grid = np.linspace(x_grid_min, x_grid_max, x_grid_size)
 
-    # Utility function
+    # 效用函数
     def u(self, c):
 
         γ = self.γ
@@ -189,14 +169,14 @@ class CakeEating:
         else:
             return (c ** (1 - γ)) / (1 - γ)
 
-    # first derivative of utility function
+    # 效用函数的一阶导数
     def u_prime(self, c):
 
         return c ** (-self.γ)
 
     def state_action_value(self, c, x, v_array):
         """
-        Right hand side of the Bellman equation given x and c.
+        给定x和c时贝尔曼方程的右侧。
         """
 
         u, β = self.u, self.β
@@ -204,75 +184,68 @@ class CakeEating:
 
         return u(c) + β * v(x - c)
 ```
+现在我们定义贝尔曼算子：
 
-We now define the Bellman operation:
-
-```{code-cell} python3
+```{code-cell} ipython3
 def T(v, ce):
     """
-    The Bellman operator.  Updates the guess of the value function.
+    贝尔曼算子。更新值函数的估计值。
 
-    * ce is an instance of CakeEating
-    * v is an array representing a guess of the value function
+    * ce 是 CakeEating 类的一个实例
+    * v 是一个数组，表示值函数的估计值
 
     """
     v_new = np.empty_like(v)
 
     for i, x in enumerate(ce.x_grid):
-        # Maximize RHS of Bellman equation at state x
+        # 在状态 x 下最大化贝尔曼方程的右侧
         v_new[i] = maximize(ce.state_action_value, 1e-10, x, (x, v))[1]
 
     return v_new
 ```
+在定义了贝尔曼算子之后，我们就可以开始求解这个模型了。
 
-After defining the Bellman operator, we are ready to solve the model.
+让我们先用默认参数创建一个`CakeEating`实例。
 
-Let's start by creating a `CakeEating` instance using the default parameterization.
-
-```{code-cell} python3
+```{code-cell} ipython3
 ce = CakeEating()
 ```
+现在让我们看看值函数的迭代过程。
 
-Now let's see the iteration of the value function in action.
+我们从初始猜测值$v$开始，对每个网格点$x$，令$v(x) = u(x)$。
 
-We start from guess $v$ given by $v(x) = u(x)$ for every
-$x$ grid point.
-
-```{code-cell} python3
+```{code-cell} ipython3
 x_grid = ce.x_grid
-v = ce.u(x_grid)       # Initial guess
-n = 12                 # Number of iterations
+v = ce.u(x_grid)       # 初始猜测
+n = 12                 # 迭代次数
 
 fig, ax = plt.subplots()
 
 ax.plot(x_grid, v, color=plt.cm.jet(0),
-        lw=2, alpha=0.6, label='Initial guess')
+        lw=2, alpha=0.6, label='初始猜测')
 
 for i in range(n):
-    v = T(v, ce)  # Apply the Bellman operator
+    v = T(v, ce)  # 应用贝尔曼算子
     ax.plot(x_grid, v, color=plt.cm.jet(i / n), lw=2, alpha=0.6)
 
 ax.legend()
-ax.set_ylabel('value', fontsize=12)
-ax.set_xlabel('cake size $x$', fontsize=12)
-ax.set_title('Value function iterations')
+ax.set_ylabel('值', fontsize=12)
+ax.set_xlabel('蛋糕大小 $x$', fontsize=12)
+ax.set_title('值函数迭代')
 
 plt.show()
 ```
+为了更系统地完成这项工作，我们引入一个名为`compute_value_function`的包装函数，该函数会一直迭代直到满足某些收敛条件。
 
-To do this more systematically, we introduce a wrapper function called
-`compute_value_function` that iterates until some convergence conditions are
-satisfied.
-
-```{code-cell} python3
+```{code-cell} ipython3
 def compute_value_function(ce,
                            tol=1e-4,
                            max_iter=1000,
                            verbose=True,
                            print_skip=25):
 
-    # Set up loop
-    v = np.zeros(len(ce.x_grid)) # Initial guess
+    # 设置循环
+    v = np.zeros(len(ce.x_grid)) # 初始猜测
     i = 0
     error = tol + 1
 
@@ -294,106 +267,95 @@ def compute_value_function(ce,
 
     return v_new
 ```
+现在让我们调用它，注意运行需要一点时间。
 
-Now let's call it, noting that it takes a little while to run.
-
-```{code-cell} python3
+```{code-cell} ipython3
 v = compute_value_function(ce)
 ```
+现在我们可以绘图查看收敛后的值函数是什么样子。
 
-Now we can plot and see what the converged value function looks like.
-
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
-ax.plot(x_grid, v, label='Approximate value function')
+ax.plot(x_grid, v, label='近似值函数')
 ax.set_ylabel('$V(x)$', fontsize=12)
 ax.set_xlabel('$x$', fontsize=12)
-ax.set_title('Value function')
+ax.set_title('值函数')
 ax.legend()
 plt.show()
 ```
+接下来让我们将其与解析解进行比较。
 
-Next let's compare it to the analytical solution.
-
-```{code-cell} python3
+```{code-cell} ipython3
 v_analytical = v_star(ce.x_grid, ce.β, ce.γ)
 ```
-
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
-ax.plot(x_grid, v_analytical, label='analytical solution')
-ax.plot(x_grid, v, label='numerical solution')
+ax.plot(x_grid, v_analytical, label='解析解')
+ax.plot(x_grid, v, label='数值解')
 ax.set_ylabel('$V(x)$', fontsize=12)
 ax.set_xlabel('$x$', fontsize=12)
 ax.legend()
-ax.set_title('Comparison between analytical and numerical value functions')
+ax.set_title('解析值函数与数值值函数的比较')
 plt.show()
 ```
+对于较大的 $x$ 值,近似的质量相当好,但在接近下边界时则不太理想。
 
-The quality of approximation is reasonably good for large $x$, but
-less so near the lower boundary.
+这是因为效用函数以及由此产生的价值函数在接近下边界时非常陡峭,因此很难进行近似。
 
-The reason is that the utility function and hence value function is very
-steep near the lower boundary, and hence hard to approximate.
+### 策略函数
 
-### Policy Function
+让我们看看这在计算最优策略时会如何表现。
 
-Let's see how this plays out in terms of computing the optimal policy.
-
-In the {doc}`first lecture on cake eating <cake_eating_problem>`, the optimal
-consumption policy was shown to be
+在{doc}`蛋糕食用问题的第一讲 <cake_eating_problem>`中,最优消费策略被证明为
 
 $$
 \sigma^*(x) = \left(1-\beta^{1/\gamma} \right) x
 $$
 
-Let's see if our numerical results lead to something similar.
+让我们看看我们的数值结果是否能得到类似的结果。
 
-Our numerical strategy will be to compute
+我们的数值策略将是在一系列 $x$ 点上计算
 
 $$
 \sigma(x) = \arg \max_{0 \leq c \leq x} \{u(c) + \beta v(x - c)\}
 $$
 
-on a grid of $x$ points and then interpolate.
+然后进行插值。
 
-For $v$ we will use the approximation of the value function we obtained
-above.
+对于 $v$,我们将使用我们上面获得的价值函数的近似值。
 
-Here's the function:
+这是相关函数:
 
-```{code-cell} python3
+```{code-cell} ipython3
 def σ(ce, v):
     """
-    The optimal policy function. Given the value function,
-    it finds optimal consumption in each state.
+    最优策略函数。给定价值函数,
+    它找到每个状态下的最优消费。
 
-    * ce is an instance of CakeEating
-    * v is a value function array
+    * ce 是 CakeEating 的一个实例
+    * v 是一个价值函数数组
 
     """
     c = np.empty_like(v)
 
     for i in range(len(ce.x_grid)):
         x = ce.x_grid[i]
-        # Maximize RHS of Bellman equation at state x
+        # 在状态 x 下最大化贝尔曼方程的右侧
         c[i] = maximize(ce.state_action_value, 1e-10, x, (x, v))[0]
 
     return c
 ```
+现在让我们传入近似值函数并计算最优消费：
 
-Now let's pass the approximate value function and compute optimal consumption:
-
-```{code-cell} python3
+```{code-cell} ipython3
 c = σ(ce, v)
 ```
-
 (pol_an)=
-Let's plot this next to the true analytical solution
+让我们将其与真实的解析解进行对比绘图
 
-```{code-cell} python3
+```{code-cell} ipython3
 c_analytical = c_star(ce.x_grid, ce.β, ce.γ)
 
 fig, ax = plt.subplots()
@@ -406,24 +368,21 @@ ax.legend()
 
 plt.show()
 ```
+拟合结果还算合理，但并不完美。
 
-The fit is reasonable but not perfect.
+我们可以通过增加网格大小或降低值函数迭代程序中的误差容限来改进它。
 
-We can improve it by increasing the grid size or reducing the
-error tolerance in the value function iteration routine.
+但这两种改变都会导致计算时间变长。
 
-However, both changes will lead to a longer compute time.
+另一种可能是使用替代算法，这可以实现更快的计算时间，同时获得更高的精确度。
 
-Another possibility is to use an alternative algorithm, which offers the
-possibility of faster compute time and, at the same time, more accuracy.
+接下来我们将探讨这一点。
 
-We explore this next.
+## 时间迭代
 
-## Time Iteration
+现在让我们看看计算最优策略的另一种方法。
 
-Now let's look at a different strategy to compute the optimal policy.
-
-Recall that the optimal policy satisfies the Euler equation
+回想一下，最优策略满足欧拉方程
 
 ```{math}
 :label: euler-cen
@@ -432,85 +391,78 @@ u' (\sigma(x)) = \beta u' ( \sigma(x - \sigma(x)))
 \quad \text{for all } x > 0
 ```
 
-Computationally, we can start with any initial guess of
-$\sigma_0$ and now choose $c$ to solve
+从计算角度来看，我们可以从任意初始猜测值 $\sigma_0$ 开始，然后选择 $c$ 来求解
 
 $$
 u^{\prime}( c ) = \beta u^{\prime} (\sigma_0(x - c))
 $$
 
-Choosing $c$ to satisfy this equation at all $x > 0$ produces a function of $x$.
+在所有 $x > 0$ 处选择 $c$ 来满足这个方程会产生一个关于 $x$ 的函数。
 
-Call this new function $\sigma_1$, treat it as the new guess and
-repeat.
+将这个新函数称为 $\sigma_1$，把它作为新的猜测值并重复这个过程。
+这被称为**时间迭代**。
 
-This is called **time iteration**.
+与值函数迭代一样，我们可以将更新步骤视为一个算子的作用，这次用$K$表示。
 
-As with value function iteration, we can view the update step as action of an
-operator, this time denoted by $K$.
+* 特别地，$K\sigma$是使用刚才描述的程序从$\sigma$更新得到的策略。
+* 我们将在下面的练习中使用这个术语。
 
-* In particular, $K\sigma$ is the policy updated from $\sigma$
-  using the procedure just described.
-* We will use this terminology in the exercises below.
+相对于值函数迭代，时间迭代的主要优势在于它在策略空间而不是值函数空间中运作。
 
-The main advantage of time iteration relative to value function iteration is that it operates in policy space rather than value function space.
+这很有帮助，因为策略函数的曲率较小，因此更容易近似。
 
-This is helpful because the policy function has less curvature, and hence is easier to approximate.
+在练习中，你需要实现时间迭代并将其与值函数迭代进行比较。
 
-In the exercises you are asked to implement time iteration and compare it to
-value function iteration.
+你应该会发现这个方法更快且更准确。
 
-You should find that the method is faster and more accurate.
+这是由于
 
-This is due to
+1. 刚才提到的曲率问题，以及
+1. 我们使用了更多信息——在这种情况下是一阶条件。
 
-1. the curvature issue mentioned just above  and
-1. the fact that we are using more information --- in this case, the first order conditions.
-
-## Exercises
+## 练习
 
 ```{exercise}
 :label: cen_ex1
 
-Try the following modification of the problem.
-
-Instead of the cake size changing according to $x_{t+1} = x_t - c_t$,
-let it change according to
+尝试以下问题的修改。
+让蛋糕大小不再按照 $x_{t+1} = x_t - c_t$ 变化，
+而是按照
 
 $$
 x_{t+1} = (x_t - c_t)^{\alpha}
 $$
 
-where $\alpha$ is a parameter satisfying $0 < \alpha < 1$.
+变化，其中 $\alpha$ 是一个满足 $0 < \alpha < 1$ 的参数。
 
-(We will see this kind of update rule when we study optimal growth models.)
+(我们在学习最优增长模型时会看到这种更新规则。)
 
-Make the required changes to value function iteration code and plot the value and policy functions.
+对值函数迭代代码进行必要的修改并绘制值函数和策略函数。
 
-Try to reuse as much code as possible.
+尽可能多地重用现有代码。
 ```
 
 ```{solution-start} cen_ex1
 :class: dropdown
 ```
 
-We need to create a class to hold our primitives and return the right hand side of the Bellman equation.
+我们需要创建一个类来保存我们的基本参数并返回贝尔曼方程的右侧。
 
-We will use [inheritance](https://en.wikipedia.org/wiki/Inheritance_%28object-oriented_programming%29) to maximize code reuse.
+我们将使用[继承](https://en.wikipedia.org/wiki/Inheritance_%28object-oriented_programming%29)来最大化代码重用。
 
-```{code-cell} python3
+```{code-cell} ipython3
 class OptimalGrowth(CakeEating):
     """
-    A subclass of CakeEating that adds the parameter α and overrides
-    the state_action_value method.
+    CakeEating的一个子类，添加了参数α并重写了
+    state_action_value方法。
     """
 
     def __init__(self,
-                 β=0.96,           # discount factor
-                 γ=1.5,            # degree of relative risk aversion
-                 α=0.4,            # productivity parameter
-                 x_grid_min=1e-3,  # exclude zero for numerical stability
-                 x_grid_max=2.5,   # size of cake
+                 β=0.96,           # 贴现因子
+                 γ=1.5,            # 相对风险厌恶度
+                 α=0.4,            # 生产力参数
+                 x_grid_min=1e-3,  # 为了数值稳定性排除零
+                 x_grid_max=2.5,   # 蛋糕大小
                  x_grid_size=120):
 
         self.α = α
@@ -518,7 +470,7 @@ class OptimalGrowth(CakeEating):
 
     def state_action_value(self, c, x, v_array):
         """
-        Right hand side of the Bellman equation given x and c.
+        给定x和c时贝尔曼方程的右侧。
         """
 
         u, β, α = self.u, self.β, self.α
@@ -526,45 +478,40 @@ class OptimalGrowth(CakeEating):
 
         return u(c) + β * v((x - c)**α)
 ```
-
-```{code-cell} python3
+```{code-cell} ipython3
 og = OptimalGrowth()
 ```
+这是计算得到的值函数。
 
-Here's the computed value function.
-
-```{code-cell} python3
+```{code-cell} ipython3
 v = compute_value_function(og, verbose=False)
 
 fig, ax = plt.subplots()
 
 ax.plot(x_grid, v, lw=2, alpha=0.6)
-ax.set_ylabel('value', fontsize=12)
-ax.set_xlabel('state $x$', fontsize=12)
+ax.set_ylabel('值', fontsize=12)
+ax.set_xlabel('状态 $x$', fontsize=12)
 
 plt.show()
 ```
+这是计算得出的策略，与我们之前推导的标准蛋糕食用情况（$\alpha=1$）的解决方案相结合。
 
-Here's the computed policy, combined with the solution we derived above for
-the standard cake eating case $\alpha=1$.
-
-```{code-cell} python3
+```{code-cell} ipython3
 c_new = σ(og, v)
 
 fig, ax = plt.subplots()
 
-ax.plot(ce.x_grid, c_analytical, label=r'$\alpha=1$ solution')
-ax.plot(ce.x_grid, c_new, label=fr'$\alpha={og.α}$ solution')
+ax.plot(ce.x_grid, c_analytical, label=r'$\alpha=1$ 解')
+ax.plot(ce.x_grid, c_new, label=fr'$\alpha={og.α}$ 解')
 
-ax.set_ylabel('consumption', fontsize=12)
+ax.set_ylabel('消费', fontsize=12)
 ax.set_xlabel('$x$', fontsize=12)
 
 ax.legend(fontsize=12)
 
 plt.show()
 ```
-
-Consumption is higher when $\alpha < 1$ because, at least for large $x$, the return to savings is lower.
+当 $\alpha < 1$ 时消费更高,因为至少对于较大的 $x$ 而言,储蓄的回报率更低。
 
 ```{solution-end}
 ```
@@ -573,8 +520,7 @@ Consumption is higher when $\alpha < 1$ because, at least for large $x$, the ret
 ```{exercise}
 :label: cen_ex2
 
-Implement time iteration, returning to the original case (i.e., dropping the
-modification in the exercise above).
+实现时间迭代法,回到原始情况(即,去掉上述练习中的修改)。
 ```
 
 
@@ -582,16 +528,16 @@ modification in the exercise above).
 :class: dropdown
 ```
 
-Here's one way to implement time iteration.
+这是实现时间迭代的一种方法。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def K(σ_array, ce):
     """
-    The policy function operator. Given the policy function,
-    it updates the optimal consumption using Euler equation.
+    策略函数算子。给定策略函数,
+    使用欧拉方程更新最优消费。
 
-    * σ_array is an array of policy function values on the grid
-    * ce is an instance of CakeEating
+    * σ_array 是网格上策略函数值的数组
+    * ce 是 CakeEating 的一个实例
 
     """
 
@@ -605,18 +551,17 @@ def K(σ_array, ce):
 
     for i, x in enumerate(x_grid):
 
-        # handle small x separately --- helps numerical stability
+        # 单独处理小的 x --- 有助于数值稳定性
         if x < 1e-12:
             σ_new[i] = 0.0
 
-        # handle other x
+        # 处理其他 x
         else:
             σ_new[i] = bisect(euler_diff, 1e-10, x - 1e-10, x)
 
     return σ_new
 ```
-
-```{code-cell} python3
+```{code-cell} ipython3
 def iterate_euler_equation(ce,
                            max_iter=500,
                            tol=1e-5,
@@ -625,7 +570,7 @@ def iterate_euler_equation(ce,
 
     x_grid = ce.x_grid
 
-    σ = np.copy(x_grid)        # initial guess
+    σ = np.copy(x_grid)        # 初始猜测
 
     i = 0
     error = tol + 1
@@ -637,30 +582,29 @@ def iterate_euler_equation(ce,
         i += 1
 
         if verbose and i % print_skip == 0:
-            print(f"Error at iteration {i} is {error}.")
+            print(f"第{i}次迭代的误差是{error}。")
 
         σ = σ_new
 
     if error > tol:
-        print("Failed to converge!")
+        print("未能收敛！")
     elif verbose:
-        print(f"\nConverged in {i} iterations.")
+        print(f"\n在{i}次迭代后收敛。")
 
     return σ
 ```
-
-```{code-cell} python3
+```{code-cell} ipython3
 ce = CakeEating(x_grid_min=0.0)
 c_euler = iterate_euler_equation(ce)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
-ax.plot(ce.x_grid, c_analytical, label='analytical solution')
-ax.plot(ce.x_grid, c_euler, label='time iteration solution')
+ax.plot(ce.x_grid, c_analytical, label='解析解')
+ax.plot(ce.x_grid, c_euler, label='时间迭代解')
 
-ax.set_ylabel('consumption')
+ax.set_ylabel('消费')
 ax.set_xlabel('$x$')
 ax.legend(fontsize=12)
 

@@ -9,32 +9,33 @@ kernelspec:
   name: python3
 ---
 
-# Execution Statistics
+# 执行统计
 
-This table contains the latest execution statistics.
+此表格包含最新的执行统计数据。
 
 ```{nb-exec-table}
 ```
 
 (status:machine-details)=
 
-These lectures are built on `linux` instances through `github actions`. 
+这些讲座是通过`github actions`在`linux`实例上构建的。
 
-These lectures are using the following python version
+这些讲座使用以下Python版本
 
 ```{code-cell} ipython
 !python --version
 ```
 
-and the following package versions
+以及以下软件包版本
 
 ```{code-cell} ipython
 :tags: [hide-output]
 !conda list
 ```
 
-This lecture series also has access to the following GPU
+本讲座系列还可以使用以下GPU
 
 ```{code-cell} ipython
 !nvidia-smi
 ```
+

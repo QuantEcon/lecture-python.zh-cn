@@ -20,142 +20,129 @@ kernelspec:
 </div>
 ```
 
-# Cass-Koopmans Model
+# Cass-Koopmans模型
 
-## Overview
+## 概述
 
-This lecture and {doc}`Cass-Koopmans Competitive Equilibrium <cass_koopmans_2>` describe a model that Tjalling Koopmans {cite}`Koopmans`
-and David Cass {cite}`Cass` used to analyze optimal growth.
+本讲座和{doc}`Cass-Koopmans竞争均衡 <cass_koopmans_2>`描述了Tjalling Koopmans {cite}`Koopmans`和David Cass {cite}`Cass`用来分析最优增长的模型。
 
-The model extends  the model of Robert Solow
-described in [an earlier lecture](https://python-programming.quantecon.org/python_oop.html).
+该模型扩展了[早前讲座](https://python-programming.quantecon.org/python_oop.html)中描述的Robert Solow模型。
+它通过将储蓄率作为一个决策变量，而不是一个固定的常数来实现这一点。
 
-It does so by making  saving rate be a  decision, instead of a hard-wired constant.
+（索洛假设储蓄率是模型外部决定的常数。）
 
-(Solow assumed a constant saving rate determined outside the model.)
+我们将描述该模型的两个版本，本讲中的规划问题，以及在{doc}`Cass-Koopmans 竞争均衡 <cass_koopmans_2>`讲中的竞争均衡。
 
-We describe two versions of the model, a planning problem  in this lecture, and a competitive equilibrium   in this lecture  {doc}`Cass-Koopmans Competitive Equilibrium <cass_koopmans_2>`.
+这两节课共同说明了**计划经济**和以**竞争均衡**形式组织的分散经济之间实际上存在的更普遍联系。
 
-Together, the two lectures  illustrate what is, in fact, a
-more general connection between a **planned economy** and a decentralized economy
-organized as a **competitive equilibrium**.
+本讲重点讨论计划经济版本。
 
-This lecture is devoted to the planned economy version.
+在计划经济中，
 
-In the planned economy, there are
+- 没有价格
+- 没有预算约束
 
-- no prices
-- no budget constraints
+相反，有一个决策者告诉人们
 
-Instead there is a dictator that tells people
+- 生产什么
+- 在实物资本中投资什么
+- 谁在什么时候消费什么
 
-- what to produce
-- what to invest in physical capital
-- who is to consume what  and when
+本讲使用的重要概念包括
 
-The lecture uses important ideas including
+- 用于解决规划问题的极小极大问题
+- 用于求解差分方程的**射击算法**
+对初始和终端条件。
+- 对于长期但有限期限经济的最优路径的**收费公路**性质。
+- **稳定流形**和**相位平面**
 
-- A min-max problem for solving a planning problem.
-- A **shooting algorithm** for solving difference equations subject
-  to initial and terminal conditions.
-- A **turnpike** property of  optimal paths for
-  long but finite-horizon economies.
-- A **stable manifold** and a **phase plane**
-
-Let's start with some standard imports:
+让我们从一些标准导入开始：
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 from numba import jit, float64
 from numba.experimental import jitclass
 import numpy as np
 from quantecon.optimize import brentq
 ```
+## 模型
 
-## The Model
+时间是离散的，取值为 $t = 0, 1 , \ldots, T$，其中 $T$ 是有限的。
 
-Time is discrete and takes values $t = 0, 1 , \ldots, T$ where $T$ is  finite.
+(我们最终会研究 $T = + \infty$ 的极限情况)
 
-(We'll eventually study a limiting case in which  $T = + \infty$)
+单一商品可以被消费或投资于实物资本。
 
-A single good can either be consumed or invested in physical capital.
+消费品不耐用，如果不立即消费就会完全折旧。
 
-The consumption good is not durable and depreciates completely if not
-consumed immediately.
+资本品是耐用的，但会折旧。
 
-The capital good is durable but depreciates.
+我们用 $C_t$ 表示在时间 $t$ 的非耐用消费品的总消费量。
 
-We let $C_t$ be the total consumption of a nondurable  consumption good at time $t$.
+用 $K_t$ 表示在时间 $t$ 的实物资本存量。
 
-Let $K_t$ be the stock of physical capital at time $t$.
+令 $\vec{C}$ = $\{C_0,\dots, C_T\}$ 且
+$\vec{K}$ = $\{K_0,\dots,K_{T+1}\}$。
 
-Let $\vec{C}$ = $\{C_0,\dots, C_T\}$ and
-$\vec{K}$ = $\{K_0,\dots,K_{T+1}\}$.
+### 插话：聚合理论
 
-### Digression: Aggregation Theory
+我们使用代表性消费者的概念，可以理解如下。
 
-We use a concept of a representative consumer to be thought of as follows.
+有一个单位质量的相同消费者，用 $\omega \in [0,1]$ 索引。
 
-There is a unit mass of identical consumers indexed by $\omega \in [0,1]$.
+消费者 $\omega$ 的消费量为 $c(\omega)$。
 
-Consumption of consumer $\omega$ is $c(\omega)$.
-
-Aggregate consumption is
+总消费量为
 
 $$
 C = \int_0^1 c(\omega) d \omega
 $$
 
-Consider  a welfare problem that chooses an allocation $\{c(\omega)\}$ across consumers to maximize
-
+考虑一个福利问题，选择消费者之间的分配 $\{c(\omega)\}$ 以最大化
 $$
  \int_0^1 u(c(\omega)) d \omega
 $$
 
-where $u(\cdot)$ is a concave utility function with $u' >0, u'' < 0$ and  maximization is subject to
+其中 $u(\cdot)$ 是一个凹效用函数，满足 $u' >0, u'' < 0$，且最大化受约束于
 
 $$
 C = \int_0^1 c(\omega) d \omega .
 $$ (eq:feas200)
 
-Form a Lagrangian $L = \int_0^1 u(c(\omega)) d \omega + \lambda [C - \int_0^1 c(\omega) d \omega ] $.
+构建拉格朗日函数 $L = \int_0^1 u(c(\omega)) d \omega + \lambda [C - \int_0^1 c(\omega) d \omega ] $。
 
-Differentiate under the integral signs with respect to each $\omega$ to  obtain the first-order
-necessary conditions
+对每个 $\omega$ 在积分号下求导，得到一阶必要条件
 
 $$
 u'(c(\omega)) = \lambda.
 $$
 
-These conditions imply that $c(\omega)$ equals a constant $c$ that is independent
-of $\omega$.  
+这些条件意味着 $c(\omega)$ 等于一个与 $\omega$ 无关的常数 $c$。
 
-To find $c$, use feasibility constraint {eq}`eq:feas200` to conclude that
+要找到 $c$，使用可行性约束 {eq}`eq:feas200` 可以得出
 
 $$
 c(\omega) = c = C.
 $$
 
-This line of argument indicates the special *aggregation theory* that lies beneath outcomes in which a representative consumer
-consumes amount $C$.
+这种推导过程揭示了代表性消费者消费量为 $C$ 背后的特殊*聚合理论*。
 
-It appears often in aggregate economics.
+这在宏观经济学中经常出现。
 
-We shall use this aggregation theory here and also  in  this lecture  {doc}`Cass-Koopmans Competitive Equilibrium <cass_koopmans_2>`.
+我们将在这里以及在这篇讲座 {doc}`Cass-Koopmans 竞争均衡 <cass_koopmans_2>` 中使用这个聚合理论。
 
+#### 一个经济体
+代表性家庭在每个时期$t$都拥有一单位的劳动力，并且喜欢在每个时期消费商品。
 
-#### An  Economy
+代表性家庭在每个时期$t$非弹性地供应一单位劳动力$N_t$，因此
+$N_t =1 \text{ 对所有 } t \in \{0, 1, \ldots,  T\}$。
 
-
-A representative household is endowed with one unit of labor at each
-$t$ and likes the consumption good at each $t$.
-
-The representative household inelastically supplies a single unit of
-labor $N_t$ at each $t$, so that
-$N_t =1 \text{ for all } t \in \{0, 1, \ldots,  T\}$.
-
-The representative household has preferences over consumption bundles
-ordered by the utility functional:
+代表性家庭对消费组合的偏好由以下效用函数排序：
 
 ```{math}
 :label: utility-functional
@@ -163,12 +150,12 @@ ordered by the utility functional:
 U(\vec{C}) = \sum_{t=0}^{T} \beta^t \frac{C_t^{1-\gamma}}{1-\gamma}
 ```
 
-where $\beta \in (0,1)$ is a discount factor and $\gamma >0$
-governs the curvature of the one-period utility function.
+其中$\beta \in (0,1)$是贴现因子，$\gamma >0$
+决定单期效用函数的曲率。
 
-Larger $\gamma$'s imply more curvature.
+较大的$\gamma$意味着更大的曲率。
 
-Note that
+注意
 
 ```{math}
 :label: utility-oneperiod
@@ -176,17 +163,14 @@ Note that
 u(C_t) = \frac{C_t^{1-\gamma}}{1-\gamma}
 ```
 
-satisfies $u'>0,u''<0$.
+满足$u'>0,u''<0$。
 
-$u' > 0$ asserts that the consumer prefers more to less.
+$u' > 0$表明消费者偏好更多而不是更少。
 
-$u''< 0$ asserts that marginal utility declines with increases
-in $C_t$.
+$u''< 0$表明随着$C_t$的增加，边际效用递减。
 
-We assume that $K_0 > 0$ is an  exogenous  initial
-capital stock.
-
-There is an economy-wide production function
+我们假设$K_0 > 0$是一个外生的初始资本存量。
+存在一个全经济范围的生产函数
 
 ```{math}
 :label: production-function
@@ -194,9 +178,9 @@ There is an economy-wide production function
 F(K_t,N_t) = A K_t^{\alpha}N_t^{1-\alpha}
 ```
 
-with $0 < \alpha<1$, $A > 0$.
+其中 $0 < \alpha<1$，$A > 0$。
 
-A feasible allocation $\vec{C}, \vec{K}$ satisfies
+一个可行的配置 $\vec{C}, \vec{K}$ 满足
 
 ```{math}
 :label: allocation
@@ -204,17 +188,17 @@ A feasible allocation $\vec{C}, \vec{K}$ satisfies
 C_t + K_{t+1} \leq F(K_t,N_t) + (1-\delta) K_t \quad \text{for all } t \in \{0, 1, \ldots,  T\}
 ```
 
-where $\delta \in (0,1)$ is a depreciation rate of capital.
+其中 $\delta \in (0,1)$ 是资本的折旧率。
 
-## Planning Problem
+## 规划问题
 
-A planner chooses an allocation $\{\vec{C},\vec{K}\}$ to
-maximize {eq}`utility-functional` subject to {eq}`allocation`.
+规划者选择配置 $\{\vec{C},\vec{K}\}$ 以
+最大化 {eq}`utility-functional`，同时受制于 {eq}`allocation`。
 
-Let $\vec{\mu}=\{\mu_0,\dots,\mu_T\}$ be a sequence of
-nonnegative **Lagrange multipliers**.
+令 $\vec{\mu}=\{\mu_0,\dots,\mu_T\}$ 为一个
+非负的**拉格朗日乘数**序列。
 
-To find an optimal allocation, form a Lagrangian
+为了找到最优配置，构建拉格朗日函数
 
 $$
 \mathcal{L}(\vec{C} ,\vec{K} ,\vec{\mu} ) =
@@ -222,43 +206,42 @@ $$
 \left(F(K_t,1) + (1-\delta) K_t- C_t - K_{t+1} \right)\right\}
 $$ (eq:Lagrangian201)
 
-and  pose the following min-max problem:
+并提出以下极小极大问题：
 
 ```{math}
 :label: min-max-prob
-
 \min_{\vec{\mu}} \max_{\vec{C},\vec{K}} \mathcal{L}(\vec{C},\vec{K},\vec{\mu} )
 ```
 
-- **Extremization** means
-  maximization with respect to $\vec{C}, \vec{K}$ and
-  minimization with respect to $\vec{\mu}$.
-- Our problem satisfies
-  conditions that assure that  second-order
-  conditions are satisfied at an allocation that satisfies the
-  first-order necessary conditions that we are about to compute.
+- **极值化**意味着
+  对$\vec{C}, \vec{K}$求最大值，
+  对$\vec{\mu}$求最小值。
+- 我们的问题满足
+  确保在满足我们即将计算的
+  一阶必要条件的配置下，
+  二阶条件得到满足的条件。
 
-Before computing first-order conditions, we present some handy formulas.
+在计算一阶条件之前，我们先介绍一些实用的公式。
 
-### Useful Properties of Linearly Homogeneous Production Function
+### 线性齐次生产函数的有用性质
 
-The following technicalities will help us.
+以下技术细节将对我们有帮助。
 
-Notice that
+注意到
 
 $$
 F(K_t,N_t) = A K_t^\alpha N_t^{1-\alpha} = N_t A\left(\frac{K_t}{N_t}\right)^\alpha
 $$
 
-Define the **output per-capita production function**
+定义**人均产出生产函数**
 
 $$
 \frac{F(K_t,N_t)}{N_t} \equiv f\left(\frac{K_t}{N_t}\right) = A\left(\frac{K_t}{N_t}\right)^\alpha
 $$
 
-whose argument is **capital per-capita**.
+其参数是**人均资本**。
 
-It is useful to recall the following calculations for the marginal product of capital
+回顾以下关于资本边际产出的计算是很有用的
 
 ```{math}
 :label: useful-calc1
@@ -268,22 +251,22 @@ It is useful to recall the following calculations for the marginal product of ca
 & =
 \frac{\partial N_t f\left( \frac{K_t}{N_t}\right)}{\partial K_t}
 \\ &=
-N_t f'\left(\frac{K_t}{N_t}\right)\frac{1}{N_t} \quad \text{(Chain rule)}
+N_t f'\left(\frac{K_t}{N_t}\right)\frac{1}{N_t} \quad \text{(链式法则)}
 \\ &=
 f'\left.\left(\frac{K_t}{N_t}\right)\right|_{N_t=1}
 \\ &= f'(K_t)
 \end{aligned}
 ```
 
-and the marginal product of labor
+以及劳动力的边际产出
 
 $$
 \begin{aligned}
 \frac{\partial F(K_t,N_t)}{\partial N_t}
 &=
-\frac{\partial N_t f\left( \frac{K_t}{N_t}\right)}{\partial N_t} \quad \text{(Product rule)}
+\frac{\partial N_t f\left( \frac{K_t}{N_t}\right)}{\partial N_t} \quad \text{(乘积法则)}
 \\ &=
-f\left(\frac{K_t}{N_t}\right){+} N_t f'\left(\frac{K_t}{N_t}\right) \frac{-K_t}{N_t^2} \quad \text{(Chain rule)}
+f\left(\frac{K_t}{N_t}\right){+} N_t f'\left(\frac{K_t}{N_t}\right) \frac{-K_t}{N_t^2} \quad \text{(链式法则)}
 \\ &=
 f\left(\frac{K_t}{N_t}\right){-}\frac{K_t}{N_t}f'\left.\left(\frac{K_t}{N_t}\right)\right|_{N_t=1}
 \\ &=
@@ -291,11 +274,10 @@ f(K_t) - f'(K_t) K_t
 \end{aligned}
 $$
 
-(Here we are using that $N_t = 1$ for all $t$, so that $K_t = \frac{K_t}{N_t}$.)
+(这里我们使用了对所有 $t$ 都有 $N_t = 1$ 的条件，因此 $K_t = \frac{K_t}{N_t}$。)
 
-### First-order necessary conditions
-
-We now compute **first-order necessary conditions** for extremization of  Lagrangian {eq}`eq:Lagrangian201`:
+### 一阶必要条件
+我们现在计算拉格朗日函数{eq}`eq:Lagrangian201`的**一阶必要条件**：
 
 ```{math}
 :label: constraint1
@@ -321,12 +303,10 @@ K_t: \qquad \beta \mu_t\left[(1-\delta)+f'(K_t)\right] - \mu_{t-1}=0 \qquad \tex
 K_{T+1}: \qquad -\mu_T \leq 0, \ \leq 0 \text{ if } K_{T+1}=0; \ =0 \text{ if } K_{T+1}>0
 ```
 
-In computing  {eq}`constraint2` we recognize that $K_t$ appears
-in both the time  $t$ and time $t-1$ feasibility constraints {eq}`allocation`.
+在计算{eq}`constraint2`时，我们注意到$K_t$同时出现在时间$t$和时间$t-1$的可行性约束{eq}`allocation`中。
 
-Restrictions {eq}`constraint4` come from differentiating with respect
-to $K_{T+1}$ and applying the following **Karush-Kuhn-Tucker condition** (KKT)
-(see [Karush-Kuhn-Tucker conditions](https://en.wikipedia.org/wiki/Karush-Kuhn-Tucker_conditions)):
+限制条件{eq}`constraint4`来自对$K_{T+1}$求导，并应用以下**卡鲁什-库恩-塔克条件**（KKT）
+(参见[Karush-Kuhn-Tucker条件](https://en.wikipedia.org/wiki/Karush-Kuhn-Tucker_conditions)):
 
 ```{math}
 :label: kkt
@@ -334,14 +314,14 @@ to $K_{T+1}$ and applying the following **Karush-Kuhn-Tucker condition** (KKT)
 \mu_T K_{T+1}=0
 ```
 
-Combining {eq}`constraint1` and {eq}`constraint2` gives
+将{eq}`constraint1`和{eq}`constraint2`结合得到
 
 $$
 \beta u'\left(C_t\right)\left[(1-\delta)+f'\left(K_t\right)\right]-u'\left(C_{t-1}\right)=0
 \quad \text{ for all } t=1,2,\dots, T+1
 $$
 
-which can be rearranged to become
+可以重新整理为
 
 ```{math}
 :label: l12
@@ -350,15 +330,13 @@ which can be rearranged to become
 u'\left(C_{t}\right) \quad \text{ for all } t=0,1,\dots, T
 ```
 
-Applying  the inverse  marginal utility  of consumption  function on both sides of the above
-equation gives
+对上述等式两边应用消费的边际效用的反函数得到
 
 $$
 C_{t+1} =u'^{-1}\left(\left(\frac{\beta}{u'(C_t)}[f'(K_{t+1}) +(1-\delta)]\right)^{-1}\right)
 $$
 
-which for our utility function {eq}`utility-oneperiod` becomes the consumption **Euler
-equation**
+对于我们的效用函数{eq}`utility-oneperiod`，这就变成了消费的**欧拉方程**
 
 $$
 \begin{aligned} C_{t+1} =\left(\beta C_t^{\gamma}[f'(K_{t+1}) +
@@ -368,7 +346,7 @@ $$
 \end{aligned}
 $$ (eq:consn_euler)
 
-which we can  combine with the feasibility constraint {eq}`allocation` to get
+我们可以将其与可行性约束{eq}`allocation`结合得到
 
 $$ 
 \begin{aligned}
@@ -378,23 +356,21 @@ K_{t+1}  & = F(K_t,1)+ (1-\delta) K_t  - C_t .
 \end{aligned}
 $$ (eq:systemdynamics)
 
-This is a pair of non-linear first-order difference equations that map $C_t, K_t$ into $C_{t+1}, K_{t+1}$ and that  an optimal sequence $\vec C , \vec K$ must satisfy.
+这是一对非线性一阶差分方程，将$C_t, K_t$映射到$C_{t+1}, K_{t+1}$，最优序列$\vec C , \vec K$必须满足这些方程。
 
-It must also satisfy the initial condition that $K_0$ is given and $K_{T+1} = 0$.
+它还必须满足初始条件:给定$K_0$且$K_{T+1} = 0$。
 
-Below we define a `jitclass` that stores parameters and functions
-that define our economy.
+下面我们定义一个`jitclass`来存储定义我们经济的参数和函数。
 
 ```{code-cell} ipython3
 planning_data = [
-    ('γ', float64),    # Coefficient of relative risk aversion
-    ('β', float64),    # Discount factor
-    ('δ', float64),    # Depreciation rate on capital
-    ('α', float64),    # Return to capital per capita
-    ('A', float64)     # Technology
+    ('γ', float64),    # 相对风险厌恶系数
+    ('β', float64),    # 贴现因子
+    ('δ', float64),    # 资本折旧率
+    ('α', float64),    # 人均资本回报率
+    ('A', float64)     # 技术水平
 ]
 ```
-
 ```{code-cell} ipython3
 @jitclass(planning_data)
 class PlanningProblem():
@@ -406,50 +382,50 @@ class PlanningProblem():
 
     def u(self, c):
         '''
-        Utility function
-        ASIDE: If you have a utility function that is hard to solve by hand
-        you can use automatic or symbolic differentiation
-        See https://github.com/HIPS/autograd
+        效用函数
+        注意：如果你有一个难以手动求解的效用函数
+        你可以使用自动或符号微分
+        参见 https://github.com/HIPS/autograd
         '''
         γ = self.γ
 
         return c ** (1 - γ) / (1 - γ) if γ!= 1 else np.log(c)
 
     def u_prime(self, c):
-        'Derivative of utility'
+        '效用函数的导数'
         γ = self.γ
 
         return c ** (-γ)
 
     def u_prime_inv(self, c):
-        'Inverse of derivative of utility'
+        '效用函数导数的逆函数'
         γ = self.γ
 
         return c ** (-1 / γ)
 
     def f(self, k):
-        'Production function'
+        '生产函数'
         α, A = self.α, self.A
 
         return A * k ** α
 
     def f_prime(self, k):
-        'Derivative of production function'
+        '生产函数的导数'
         α, A = self.α, self.A
 
         return α * A * k ** (α - 1)
 
     def f_prime_inv(self, k):
-        'Inverse of derivative of production function'
+        '生产函数导数的逆函数'
         α, A = self.α, self.A
 
         return (k / (A * α)) ** (1 / (α - 1))
 
     def next_k_c(self, k, c):
         ''''
-        Given the current capital Kt and an arbitrary feasible
-        consumption choice Ct, computes Kt+1 by state transition law
-        and optimal Ct+1 by Euler equation.
+        给定当前资本Kt和任意可行的
+        消费选择Ct，通过状态转移定律计算Kt+1
+        并通过欧拉方程计算最优Ct+1。
         '''
         β, δ = self.β, self.δ
         u_prime, u_prime_inv = self.u_prime, self.u_prime_inv
@@ -460,84 +436,73 @@ class PlanningProblem():
 
         return k_next, c_next
 ```
-
-We can construct an economy with the Python code:
+我们可以用Python代码构建一个经济模型：
 
 ```{code-cell} ipython3
 pp = PlanningProblem()
 ```
+## 打靶算法
 
-## Shooting Algorithm
+我们使用**打靶法**来计算最优配置
+$\vec{C}, \vec{K}$ 和相关的拉格朗日乘数序列
+$\vec{\mu}$。
 
-We use  **shooting** to compute an optimal allocation
-$\vec{C}, \vec{K}$ and an associated Lagrange multiplier sequence
-$\vec{\mu}$.
+规划问题的一阶必要条件
+{eq}`constraint1`, {eq}`constraint2`, 和
+{eq}`constraint3` 构成了一个具有两个边界条件的**差分方程**系统：
 
-First-order necessary conditions
-{eq}`constraint1`, {eq}`constraint2`, and
-{eq}`constraint3`  for the planning problem form a system of **difference equations** with
-two boundary conditions:
+- $K_0$ 是资本的给定**初始条件**
+- $K_{T+1} =0$ 是资本的**终端条件**，这是我们从
+  $K_{T+1}$ 的一阶必要条件KKT条件 {eq}`kkt` 推导出来的
 
-- $K_0$ is a given **initial condition** for capital
-- $K_{T+1} =0$ is a **terminal condition** for capital that we
-  deduced from the first-order necessary condition for $K_{T+1}$
-  the KKT condition {eq}`kkt`
+我们没有拉格朗日乘数 $\mu_0$ 的初始条件。
 
-We have no initial condition for the Lagrange multiplier
-$\mu_0$.
+如果我们有初始条件，我们的工作就会很简单：
 
-If we did, our job would be easy:
+- 给定 $\mu_0$ 和 $k_0$，我们可以从方程 {eq}`constraint1` 计算出 $c_0$，
+  然后从方程 {eq}`constraint3` 计算出 $k_1$，从方程
+  {eq}`constraint2` 计算出 $\mu_1$。
+- 我们可以用这种方式继续计算
+  $\vec{C}, \vec{K}, \vec{\mu}$ 的其余元素。
+然而，我们无法确保 Kuhn-Tucker 条件 {eq}`kkt` 会得到满足。
 
-- Given $\mu_0$ and $k_0$, we could compute $c_0$ from
-  equation {eq}`constraint1` and then $k_1$ from equation
-  {eq}`constraint3` and $\mu_1$ from equation
-  {eq}`constraint2`.
-- We could continue in this way to compute the remaining elements of
-  $\vec{C}, \vec{K}, \vec{\mu}$.
+此外，我们没有 $\mu_0$ 的初始条件。
 
-However, we woujld not be assured that the Kuhn-Tucker condition {eq}`kkt` would be satisfied.
+所以这种方法行不通。
 
-Furthermore,  we don't have an initial condition for $\mu_0$.
+实际上，我们的任务之一就是计算 $\mu_0$ 的**最优**值。
 
-So this won't work.
+为了计算 $\mu_0$ 和其他我们想要的对象，对上述程序做一个简单的修改就可以了。
 
-Indeed, part of our task is to compute the **optimal** value of $\mu_0$.
+这被称为**射击算法**。
 
-To compute $\mu_0$ and the other objects we want, a  simple modification of the above procedure will work.
+这是一个**猜测和验证**算法的实例，包含以下步骤：
 
-It is  called the **shooting algorithm**.
+- 猜测一个初始拉格朗日乘数 $\mu_0$。
+- 应用上述描述的**简单算法**。
+- 计算 $K_{T+1}$ 并检查它是否等于零。
+- 如果 $K_{T+1} =0$，我们就解决了这个问题。
+- 如果 $K_{T+1} > 0$，降低 $\mu_0$ 并重试。
+- 如果 $K_{T+1} < 0$，提高 $\mu_0$ 并重试。
 
-It is  an instance of a **guess and verify**
-algorithm that consists of the following steps:
+以下 Python 代码为规划问题实现了射击算法。
 
-- Guess an initial Lagrange multiplier $\mu_0$.
-- Apply the **simple algorithm** described above.
-- Compute $K_{T+1}$ and check whether it
-  equals zero.
-- If  $K_{T+1} =0$, we have solved the problem.
-- If $K_{T+1} > 0$, lower $\mu_0$ and try again.
-- If $K_{T+1} < 0$, raise $\mu_0$ and try again.
-
-The following Python code implements the shooting algorithm for the
-planning problem.
-
-(Actually, we modified the preceding  algorithm slightly by starting with a guess for
-$c_0$ instead of $\mu_0$ in the following code.)
+（实际上，我们稍微修改了前面的算法，从一个猜测开始
+在以下代码中使用 $c_0$ 而不是 $\mu_0$。
 
 ```{code-cell} ipython3
 @jit
 def shooting(pp, c0, k0, T=10):
     '''
-    Given the initial condition of capital k0 and an initial guess
-    of consumption c0, computes the whole paths of c and k
-    using the state transition law and Euler equation for T periods.
+    给定资本的初始条件k0和消费的初始猜测值c0，
+    使用状态转移方程和欧拉方程计算T期内c和k的完整路径。
     '''
     if c0 > pp.f(k0) + (1 - pp.δ) * k0:
-        print("initial consumption is not feasible")
+        print("初始消费不可行")
 
         return None
 
-    # initialize vectors of c and k
+    # 初始化c和k的向量
     c_vec = np.empty(T+1)
     k_vec = np.empty(T+2)
 
@@ -551,18 +516,16 @@ def shooting(pp, c0, k0, T=10):
 
     return c_vec, k_vec
 ```
-
-We’ll start with an incorrect guess.
+我们先从一个错误的猜测开始。
 
 ```{code-cell} ipython3
 paths = shooting(pp, 0.2, 0.3, T=10)
 ```
-
 ```{code-cell} ipython3
 fig, axs = plt.subplots(1, 2, figsize=(14, 5))
 
 colors = ['blue', 'red']
-titles = ['Consumption', 'Capital']
+titles = ['消费', '资本']
 ylabels = ['$c_t$', '$k_t$']
 
 T = paths[0].size - 1
@@ -575,39 +538,29 @@ axs[1].axvline(T+1, color='k', ls='--', lw=1)
 
 plt.show()
 ```
+显然，我们对$\mu_0$的初始猜测值太高了，所以初始消费太低。
 
-Evidently, our initial guess for $\mu_0$ is too high, so
-initial consumption too low.
+我们知道这一点是因为我们超过了目标$K_{T+1}=0$。
 
-We know this because we miss our $K_{T+1}=0$ target on the high
-side.
+现在我们用一个搜索合适$\mu_0$的算法来自动化这个过程，当我们达到目标$K_{t+1} = 0$时停止。
 
-Now we automate things with a search-for-a-good $\mu_0$
-algorithm that stops when we hit the target $K_{t+1} = 0$.
+我们使用**二分法**。
 
-We use a **bisection method**.
+我们对$C_0$做一个初始猜测（我们可以消除$\mu_0$，因为$C_0$是$\mu_0$的精确函数）。
 
-We make an initial guess for $C_0$ (we can eliminate
-$\mu_0$ because $C_0$ is an exact function of
-$\mu_0$).
+我们知道$C_0$的最小值只能是$0$，最大值是初始产出$f(K_0)$。
 
-We know that the lowest $C_0$ can ever be is $0$ and that the
-largest it can be is initial output $f(K_0)$.
+猜测$C_0$并向前推算到$T+1$。
 
-Guess $C_0$  and shoot forward to $T+1$.
+如果$K_{T+1}>0$，我们将其作为$C_0$的新**下**界。
 
-If $K_{T+1}>0$, we take it to be our new **lower** bound
-on $C_0$.
+如果$K_{T+1}<0$，我们将其作为新的**上**界。
 
-If $K_{T+1}<0$, we take  it to be our new **upper** bound.
+对$C_0$做一个新的猜测，取新的上下界的中间值。
 
-Make a new guess for $C_0$ that is  halfway between our new
-upper and lower bounds.
+再次向前推算，重复这些步骤直到收敛。
 
-Shoot forward again, iterating on these steps until we converge.
-
-When $K_{T+1}$ gets close enough to $0$ (i.e., within an error
-tolerance bounds), we stop.
+当$K_{T+1}$足够接近$0$（即在误差容限范围内）时，我们停止。
 
 ```{code-cell} ipython3
 @jit
@@ -642,14 +595,13 @@ def bisection(pp, c0, k0, T=10, tol=1e-4, max_iter=500, k_ter=0, verbose=True):
 
         c0 = (c0_lower + c0_upper) / 2
 ```
-
 ```{code-cell} ipython3
 def plot_paths(pp, c0, k0, T_arr, k_ter=0, k_ss=None, axs=None):
 
     if axs is None:
         fix, axs = plt.subplots(1, 3, figsize=(16, 4))
     ylabels = ['$c_t$', '$k_t$', '$\mu_t$']
-    titles = ['Consumption', 'Capital', 'Lagrange Multiplier']
+    titles = ['消费', '资本', '拉格朗日乘数']
 
     c_paths = []
     k_paths = []
@@ -665,7 +617,7 @@ def plot_paths(pp, c0, k0, T_arr, k_ter=0, k_ss=None, axs=None):
             axs[i].plot(paths[i])
             axs[i].set(xlabel='t', ylabel=ylabels[i], title=titles[i])
 
-        # Plot steady state value of capital
+        # 绘制资本的稳态值
         if k_ss is not None:
             axs[1].axhline(k_ss, c='k', ls='--', lw=1)
 
@@ -674,25 +626,21 @@ def plot_paths(pp, c0, k0, T_arr, k_ter=0, k_ss=None, axs=None):
 
     return c_paths, k_paths
 ```
-
-Now we can solve the model and plot the paths of consumption, capital, and Lagrange multiplier.
+现在我们可以求解模型并绘制消费、资本和拉格朗日乘数的路径。
 
 ```{code-cell} ipython3
 plot_paths(pp, 0.3, 0.3, [10]);
 ```
+## 将初始资本设定为稳态资本
 
-## Setting Initial Capital to Steady State Capital
+当 $T \rightarrow +\infty$ 时，最优配置收敛到
+$C_t$ 和 $K_t$ 的稳态值。
 
-When  $T \rightarrow +\infty$, the optimal allocation converges to
-steady state values of $C_t$ and $K_t$.
+将 $K_0$ 设定为 $\lim_{T \rightarrow + \infty } K_t$ 是很有启发性的，我们称之为稳态资本。
 
-It is instructive to set $K_0$ equal
-to the $\lim_{T \rightarrow + \infty } K_t$, which we'll call  steady state capital.
+在稳态下，对于所有很大的 $t$ 都有 $K_{t+1} = K_t=\bar{K}$。
 
-In a steady state $K_{t+1} = K_t=\bar{K}$ for all very
-large $t$.
-
-Evalauating  feasibility constraint {eq}`allocation` at $\bar K$ gives
+在 $\bar{K}$ 处评估可行性约束 {eq}`allocation` 得到
 
 ```{math}
 :label: feasibility-constraint
@@ -700,47 +648,46 @@ Evalauating  feasibility constraint {eq}`allocation` at $\bar K$ gives
 f(\bar{K})-\delta \bar{K} = \bar{C}
 ```
 
-Substituting $K_t = \bar K$ and $C_t=\bar C$ for
-all $t$ into {eq}`l12` gives
+将所有 $t$ 的 $K_t = \bar K$ 和 $C_t=\bar C$ 
+代入 {eq}`l12` 得到
 
 $$
 1=\beta \frac{u'(\bar{C})}{u'(\bar{C})}[f'(\bar{K})+(1-\delta)]
 $$
 
-Defining $\beta = \frac{1}{1+\rho}$, and cancelling gives
+定义 $\beta = \frac{1}{1+\rho}$，并消去得到
 
 $$
 1+\rho = 1[f'(\bar{K}) + (1-\delta)]
 $$
 
-Simplifying gives
+化简得到
 
 $$
 f'(\bar{K}) = \rho +\delta
 $$
 
-and
+和
 
 $$
 \bar{K} = f'^{-1}(\rho+\delta)
 $$
 
-For   production function {eq}`production-function`, this becomes
+对于生产函数 {eq}`production-function`，这变为
 
 $$
 \alpha \bar{K}^{\alpha-1} = \rho + \delta
 $$
-
-As an example, after setting $\alpha= .33$,
-$\rho = 1/\beta-1 =1/(19/20)-1 = 20/19-19/19 = 1/19$, $\delta = 1/50$,
-we get
+例如，在设定 $\alpha= .33$，
+$\rho = 1/\beta-1 =1/(19/20)-1 = 20/19-19/19 = 1/19$，$\delta = 1/50$ 后，
+我们得到
 
 $$
 \bar{K} = \left(\frac{\frac{33}{100}}{\frac{1}{50}+\frac{1}{19}}\right)^{\frac{67}{100}} \approx 9.57583
 $$
 
-Let's verify this with Python and then use this steady state
-$\bar K$ as our initial capital stock $K_0$.
+让我们用Python验证这个结果，然后使用这个稳态值
+$\bar K$ 作为我们的初始资本存量 $K_0$。
 
 ```{code-cell} ipython3
 ρ = 1 / pp.β - 1
@@ -748,70 +695,55 @@ k_ss = pp.f_prime_inv(ρ+pp.δ)
 
 print(f'steady state for capital is: {k_ss}')
 ```
-
-Now we plot
+现在我们绘制图形
 
 ```{code-cell} ipython3
 plot_paths(pp, 0.3, k_ss, [150], k_ss=k_ss);
 ```
+显然，当 $T$ 值较大时，$K_t$ 会一直保持在接近 $K_0$ 的水平，直到 $t$ 接近 $T$ 时才会发生变化。
 
-Evidently,  with a large value of
-$T$, $K_t$ stays near $K_0$ until $t$ approaches $T$ closely.
-
-Let's see what the planner does when we set
-$K_0$ below $\bar K$.
+让我们看看当我们将 $K_0$ 设置为低于 $\bar K$ 时，规划者会做什么。
 
 ```{code-cell} ipython3
 plot_paths(pp, 0.3, k_ss/3, [150], k_ss=k_ss);
 ```
+注意观察规划者如何将资本推向稳态，在那里停留一段时间，然后当 $t$ 接近 $T$ 时，将 $K_t$ 推向终值 $K_{T+1} =0$。
 
-Notice how the planner pushes capital toward the steady state, stays
-near there for a while, then pushes $K_t$ toward the terminal
-value $K_{T+1} =0$ when $t$ closely approaches $T$.
-
-The following graphs compare optimal outcomes as we vary $T$.
+下面的图表比较了在不同的 $T$ 值下的最优结果。
 
 ```{code-cell} ipython3
 plot_paths(pp, 0.3, k_ss/3, [150, 75, 50, 25], k_ss=k_ss);
 ```
+## 收费公路性质
 
-## A Turnpike Property
-
-The following calculation indicates that when  $T$ is very large,
-the optimal capital stock stays close to
-its steady state value most of the time.
+以下计算表明，当 $T$ 非常大时，最优资本存量在大部分时间里都会保持在接近其稳态值的水平。
 
 ```{code-cell} ipython3
 plot_paths(pp, 0.3, k_ss/3, [250, 150, 50, 25], k_ss=k_ss);
 ```
+在上图中，不同的颜色对应着不同的规划期限 $T$。
 
-In the above graphs, different colors  are associated with
-different horizons $T$.
+注意，随着规划期限的增加，规划者会让 $K_t$ 在更长时间内保持接近稳态值 $\bar K$。
 
-Notice that as the horizon increases, the planner keeps $K_t$
-closer to the steady state value $\bar K$ for longer.
+这种模式反映了稳态的**转pike**特性。
 
-This pattern reflects a **turnpike** property of the steady state.
+对规划者来说，一个经验法则是：
 
-A rule of thumb for the planner is
+- 从 $K_0$ 开始，将 $K_t$ 推向
+  稳态，并在接近时间 $T$ 之前保持在稳态附近。
 
-- from $K_0$, push $K_t$ toward
-  the steady state and stay close to the steady state until time approaches $T$.
+规划者通过调整储蓄率 $\frac{f(K_t) - C_t}{f(K_t)}$ 来实现这一目标。
 
-The planner accomplishes this by adjusting the saving rate $\frac{f(K_t) - C_t}{f(K_t)}$
-over time.
-
-Let's calculate and  plot the saving rate.
+让我们计算并绘制储蓄率。
 
 ```{code-cell} ipython3
 @jit
 def saving_rate(pp, c_path, k_path):
-    'Given paths of c and k, computes the path of saving rate.'
+    '给定 c 和 k 的路径，计算储蓄率的路径。'
     production = pp.f(k_path[:-1])
 
     return (production - c_path) / production
 ```
-
 ```{code-cell} ipython3
 def plot_saving_rate(pp, c0, k0, T_arr, k_ter=0, k_ss=None, s_ss=None):
 
@@ -823,84 +755,68 @@ def plot_saving_rate(pp, c0, k0, T_arr, k_ter=0, k_ss=None, s_ss=None):
         s_path = saving_rate(pp, c_paths[i], k_paths[i])
         axs[1, 1].plot(s_path)
 
-    axs[1, 1].set(xlabel='t', ylabel='$s_t$', title='Saving rate')
+    axs[1, 1].set(xlabel='t', ylabel='$s_t$', title='储蓄率')
 
     if s_ss is not None:
         axs[1, 1].hlines(s_ss, 0, np.max(T_arr), linestyle='--')
 ```
-
 ```{code-cell} ipython3
 plot_saving_rate(pp, 0.3, k_ss/3, [250, 150, 75, 50], k_ss=k_ss)
 ```
+## 极限无限期经济
 
-## A Limiting Infinite Horizon Economy
+我们要设定 $T = +\infty$。
 
-We want to set $T = +\infty$.
-
-The appropriate thing to do is to replace terminal condition
-{eq}`constraint4` with
+合适的做法是将终端条件{eq}`constraint4`替换为
 
 $$
 \lim_{T \rightarrow +\infty} \beta^T u'(C_T) K_{T+1} = 0 ,
 $$
 
-a condition that will be satisfied by a path that converges to an
-optimal steady state.
+这个条件将被收敛到最优稳态的路径所满足。
 
-We can approximate the optimal path by starting from an arbitrary initial
-$K_0$ and shooting towards the optimal steady state
-$K$ at a large but finite $T+1$.
+我们可以通过从任意初始值$K_0$开始，向一个较大但有限的$T+1$时期的最优稳态$K$推进来近似最优路径。
 
-In the following code, we do this for a large $T$ and plot consumption, capital, and the
-saving rate.
+在下面的代码中，我们对一个较大的$T$进行这样的计算，并绘制消费、资本和储蓄率。
 
-We know that in the steady state that the saving rate is constant
-and that $\bar s= \frac{f(\bar K)-\bar C}{f(\bar K)}$.
+我们知道在稳态时储蓄率是恒定的，且$\bar s= \frac{f(\bar K)-\bar C}{f(\bar K)}$。
 
-From {eq}`feasibility-constraint` the steady state saving rate equals
+根据{eq}`feasibility-constraint`，稳态储蓄率等于
 
 $$
 \bar s =\frac{ \delta \bar{K}}{f(\bar K)}
 $$
 
-The steady state saving rate $\bar S = \bar s f(\bar K)$ is
-the amount required to offset capital depreciation each period.
-
-We first study optimal capital paths that start below the steady
-state.
+稳态储蓄量$\bar S = \bar s f(\bar K)$是每期用于抵消资本折旧所需的数量。
+我们首先研究从稳态水平以下开始的最优资本路径。
 
 ```{code-cell} ipython3
-# steady state of saving rate
+# 稳态储蓄率
 s_ss = pp.δ * k_ss / pp.f(k_ss)
 
 plot_saving_rate(pp, 0.3, k_ss/3, [130], k_ter=k_ss, k_ss=k_ss, s_ss=s_ss)
 ```
+由于$K_0<\bar K$，所以$f'(K_0)>\rho +\delta$。
 
-Since $K_0<\bar K$, $f'(K_0)>\rho +\delta$.
+规划者选择一个高于稳态储蓄率的正储蓄率。
 
-The planner chooses a positive saving rate that is higher than  the steady state
-saving rate.
+注意$f''(K)<0$，因此随着$K$的增加，$f'(K)$下降。
 
-Note that $f''(K)<0$, so as $K$ rises, $f'(K)$ declines.
+规划者逐渐降低储蓄率，直到达到$f'(K)=\rho +\delta$的稳态。
 
-The planner slowly lowers the saving rate until reaching a steady
-state in which $f'(K)=\rho +\delta$.
+## 稳定流形和相图
 
+现在我们描述一个经典图表，用来描述最优的$(K_{t+1}, C_t)$路径。
 
-## Stable Manifold and Phase Diagram 
+图表的纵轴是$K$，横轴是$C$。
 
-We now describe a classic diagram that describes an optimal $(K_{t+1}, C_t)$ path.
-
-The diagram has $K$ on the ordinate axis and $C$ on the coordinate axis.  
-
-Given an arbitrary and fixed  $K$, a fixed point $C$ of the consumption Euler equation  {eq}`eq:consn_euler`
-satisfies 
+对于任意固定的$K$，消费欧拉方程{eq}`eq:consn_euler`的固定点$C$满足
 
 $$
 C=C\left(\beta\left[f^{\prime}\left(f\left(K\right)+\left(1-\delta\right)K-C\right)+\left(1-\delta\right)\right]\right)^{1/\gamma}
 $$
 
-which implies
+这意味着
 
 $$
 \begin{aligned}
@@ -908,8 +824,7 @@ C &=f\left(K\right)+\left(1-\delta\right)K-f^{\prime-1}\left(\frac{1}{\beta}-\le
  &\equiv \tilde{C} \left(K\right)
 \end{aligned}
 $$ (eq:tildeC)
-
-A positive fixed point  $C = \tilde C(K)$ exists only if $f\left(K\right)+\left(1-\delta\right)K-f^{\prime-1}\left(\frac{1}{\beta}-\left(1-\delta\right)\right)>0$
+正固定点 $C = \tilde C(K)$ 仅在 $f\left(K\right)+\left(1-\delta\right)K-f^{\prime-1}\left(\frac{1}{\beta}-\left(1-\delta\right)\right)>0$ 时存在
 
 ```{code-cell} ipython3
 @jit
@@ -917,14 +832,13 @@ def C_tilde(K, pp):
 
     return pp.f(K) + (1 - pp.δ) * K - pp.f_prime_inv(1 / pp.β - 1 + pp.δ)
 ```
-
-Next note that given a time-invariant  arbitrary $C$,  a fixed point $K$ of the feasibility condition  {eq}`allocation` solves the following equation
+接下来注意,给定一个时不变的任意 $C$,可行性条件 {eq}`allocation` 的不动点 $K$ 满足以下方程
 
 $$
     K = f(K) + (1 - \delta K) - C .
 $$
 
-A fixed point of the above equation is described by  a function
+上述方程的不动点可以用函数表示为
 
 $$
 K = \tilde K(C)
@@ -942,13 +856,11 @@ def K_tilde(C, pp):
 
     return res.root
 ```
+稳态 $\left(K_s, C_s\right)$ 是满足方程 {eq}`eq:tildeC` 和 {eq}`eq:tildeK` 的一对 $(K,C)$ 值。
 
-A  steady state $\left(K_s, C_s\right)$ is a pair $(K,C)$ that  satisfies both equations {eq}`eq:tildeC` and {eq}`eq:tildeK`. 
+它是我们将在下面图 {numref}`stable_manifold` 中绘制的两条曲线 $\tilde{C}$ 和 $\tilde{K}$ 的交点。
 
-
-It is thus the intersection of the two curves $\tilde{C}$ and $\tilde{K}$ that we'll plot in Figure {numref}`stable_manifold` below.
-
-We can compute $K_s$ by solving the equation $K_s = \tilde{K}\left(\tilde{C}\left(K_s\right)\right)$
+我们可以通过求解方程 $K_s = \tilde{K}\left(\tilde{C}\left(K_s\right)\right)$ 来计算 $K_s$
 
 ```{code-cell} ipython3
 @jit
@@ -958,7 +870,6 @@ def K_tilde_diff(K, pp):
 
     return K - K_out
 ```
-
 ```{code-cell} ipython3
 res = brentq(K_tilde_diff, 8, 10, args=(pp,))
 
@@ -967,43 +878,41 @@ Cs = C_tilde(Ks, pp)
 
 Ks, Cs
 ```
+我们可以使用打靶算法来计算趋近于$\left(K_s, C_s\right)$的轨迹。
 
-We can use the shooting algorithm to  compute  trajectories that approach $\left(K_s, C_s\right)$.
+对于给定的$K$，让我们计算一个较大$T$（例如$=200$）时的$\vec{C}$和$\vec{K}$。
 
-For a given $K$, let's compute $\vec{C}$ and $\vec{K}$ for a large $T$ , e.g., $=200$.
+我们通过二分法算法计算$C_0$，确保$K_T=K_s$。
 
-We compute  $C_0$ by the bisection algorithm that assures that  $K_T=K_s$.
-
-Let's compute  two trajectories towards $\left(K_s, C_s\right)$ that  start from different sides of $K_s$: $\bar{K}_0=1e-3<K_s<\bar{K}_1=15$.
+让我们计算两条朝向$\left(K_s, C_s\right)$的轨迹，这两条轨迹从$K_s$的不同侧开始：$\bar{K}_0=1e-3<K_s<\bar{K}_1=15$。
 
 ```{code-cell} ipython3
 c_vec1, k_vec1 = bisection(pp, 5, 15, T=200, k_ter=Ks)
 c_vec2, k_vec2 = bisection(pp, 1e-3, 1e-3, T=200, k_ter=Ks)
 ```
+以下代码生成图 {numref}`stable_manifold`，这是仿照 {cite}`intriligator2002mathematical` 第411页的一个图表制作的。
 
-The following code generates Figure {numref}`stable_manifold`, which is patterned on a graph that appears  on  page 411 of {cite}`intriligator2002mathematical`. 
+图 {numref}`stable_manifold` 是一个经典的"相平面"，其中"状态"变量 $K$ 在纵轴上，"协态"变量 $C$ 在横轴上。
 
-Figure {numref}`stable_manifold` is a classic "phase plane" with  "state" variable $K$ on the ordinate axis and "co-state" variable $C$ on the coordinate axis.  
+图 {numref}`stable_manifold` 绘制了三条曲线：
 
-Figure {numref}`stable_manifold` plots   three curves:
+  * 蓝线表示方程 {eq}`eq:tildeC` 所描述的固定点 $C = \tilde C (K)$ 的图像。
+  * 红线表示方程 {eq}`eq:tildeK` 所描述的固定点 $K = \tilde K(C)$ 的图像。
+  * 绿线表示从时间0时任意 $K_0$ 开始收敛到稳态的稳定流形。
+     * 对于给定的 $K_0$，射击算法将 $C_0$ 设置为绿线上的坐标，以启动一条收敛到最优稳态的路径。
+* 绿线上的箭头显示了动态方程{eq}`eq:systemdynamics`推动连续$(K_{t+1}, C_t)$对的方向。
+
+图{numref}`stable_manifold`除了显示三条曲线外，还绘制了箭头来指示当给定$K_0$时，$C_0$不在绿线所示稳定流形上时，动态方程{eq}`eq:systemdynamics`驱动系统的方向。
+
+  * 如果对给定的$K_0$，$C_0$设置在绿线以下，则积累了过多的资本
   
-  * the blue line  graphs $C = \tilde C (K)$ of fixed points described by equation {eq}`eq:tildeC`. 
-  * the red line graphs $K = \tilde K(C)$ of fixed points described by equation {eq}`eq:tildeK`
-  * the green line graphs the stable traced out by paths that converge to the steady state starting from an arbitrary $K_0$ at time $0$.
-     * for a given $K_0$, the shooting algorithm sets $C_0$ to the coordinate on the green line in order to initiate a path that converges to the optimal steady state
-     * the arrows on the green line show the direction in which  dynamics {eq}`eq:systemdynamics` push successive $(K_{t+1}, C_t)$ pairs. 
-     
-In addition to the three curves, Figure {numref}`stable_manifold` plots  arrows that point where the  dynamics {eq}`eq:systemdynamics` drive the system  when, for a given $K_0$, $C_0$ is  not on the stable manifold depicted in the green line.
-
-  * If $C_0$ is set below the green line for a given $K_0$, too much capital is accumulated
-  
-  * If $C_0$ is set above the green line for a given $K_0$, too little capital is accumulated
+  * 如果对给定的$K_0$，$C_0$设置在绿线以上，则积累的资本太少
 
 ```{code-cell} ipython3
 ---
 mystnb:
   figure:
-    caption: Stable Manifold and Phase Plane
+    caption: 稳定流形和相平面
     name: stable_manifold
 tags: [hide-input]
 ---
@@ -1029,7 +938,7 @@ ax.quiver(k_vec1[5], c_vec1[5],
 ax.quiver(k_vec2[5], c_vec2[5],
           k_vec2[6]-k_vec2[5], c_vec2[6]-c_vec2[5],
           color='g')
-ax.text(12, 2.5, r'stable branch', color='g')
+ax.text(12, 2.5, r'稳定分支', color='g')
 
 # (Ks, Cs)
 ax.scatter(Ks, Cs)
@@ -1044,7 +953,7 @@ next_K, next_C = pp.next_k_c(K_mesh, C_mesh)
 ax.quiver(K_range, C_range, next_K-K_mesh, next_C-C_mesh)
 
 # infeasible consumption area
-ax.text(0.5, 5, "infeasible\n consumption")
+ax.text(0.5, 5, "不可行\n消费区")
 
 ax.set_ylim([0, 7.5])
 ax.set_xlim([0, 15])
@@ -1054,33 +963,27 @@ ax.set_ylabel('$C$')
 
 plt.show()
 ```
+## 结论
 
-## Concluding Remarks
+在{doc}`Cass-Koopmans 竞争均衡 <cass_koopmans_2>`中，我们研究了一个去中心化的经济版本，其技术和偏好结构与本讲完全相同。
 
-In {doc}`Cass-Koopmans Competitive Equilibrium <cass_koopmans_2>`,  we study a decentralized version of an economy with exactly the same
-technology and preference structure as deployed here.
+在那一讲中，我们用亚当·斯密的**看不见的手**替代了本讲中的规划者。
 
-In that lecture, we replace the  planner of this lecture with Adam Smith's **invisible hand**.
+取代规划者做出的数量选择的是市场价格，这些价格由模型外部的一个"机械神"(即所谓的看不见的手)设定。
 
-In place of quantity choices made by the planner, there are market prices that are set by a *deus ex machina* from outside the model, a so-called invisible hand.
+均衡市场价格必须协调由代表性家庭和代表性企业独立做出的不同决策。
 
-Equilibrium market prices must reconcile distinct decisions that are made independently
-by a representative household and a representative firm.
+像本讲所研究的计划经济与{doc}`Cass-Koopmans 竞争均衡 <cass_koopmans_2>`中研究的市场经济之间的关系是一般均衡理论和福利经济学的基础性主题。
 
-The relationship between a command economy like the one studied in this lecture and a market economy like that
-studied in {doc}`Cass-Koopmans Competitive Equilibrium <cass_koopmans_2>` is a foundational topic in general equilibrium theory and welfare economics.
-
-
-
-### Exercise
+### 练习
 
 ```{exercise}
 :label: ck1_ex1
 
-- Plot the optimal consumption, capital, and saving paths when the
-  initial capital level begins at 1.5 times the steady state level
-  as we shoot towards the steady state at $T=130$.
-- Why does the saving rate respond as it does?
+- 当以下条件时，绘制最优消费、资本和储蓄路径
+初始资本水平从稳态水平的1.5倍开始，
+当我们向着$T=130$的稳态推进时。
+- 储蓄率为什么会这样响应？
 ```
 
 ```{solution-start} ck1_ex1

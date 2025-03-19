@@ -18,15 +18,20 @@ kernelspec:
 </div>
 ```
 
-# Bayesian versus Frequentist Decision Rules
+# 贝叶斯与频率主义决策规则的比较
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from numba import jit, prange, float64, int64
 from numba.experimental import jitclass
@@ -34,113 +39,84 @@ from math import gamma
 from scipy.optimize import minimize
 ```
 
-## Overview
+## 概述
 
-This lecture follows up on ideas presented in the following lectures:
+本讲座延续了以下讲座中提出的观点：
 
-* {doc}`A Problem that Stumped Milton Friedman <wald_friedman>`
-* {doc}`Exchangeability and Bayesian Updating <exchangeable>`
-* {doc}`Likelihood Ratio Processes <likelihood_ratio_process>`
+* {doc}`令米尔顿·弗里德曼困惑的问题 <wald_friedman>`
+* {doc}`可交换性和贝叶斯更新 <exchangeable>`
+* {doc}`似然比过程 <likelihood_ratio_process>`
 
-In {doc}`A Problem that Stumped Milton Friedman <wald_friedman>`  we described a problem
-that a Navy Captain presented to Milton Friedman during World War II.
+在{doc}`令米尔顿·弗里德曼困惑的问题 <wald_friedman>`中，我们描述了二战期间一位海军上尉向米尔顿·弗里德曼提出的问题。
 
-The Navy had instructed the Captain to use a decision rule for quality control that the Captain suspected
-could be dominated by a better rule.
+海军要求上尉使用一个质量控制决策规则，但上尉怀疑可能存在更好的规则。
 
-(The Navy had ordered the  Captain  to use  an instance of a **frequentist decision rule**.)
+（海军命令上尉使用一个**频率主义决策规则**的实例。）
 
-Milton Friedman recognized the Captain's conjecture as posing a challenging statistical problem that he and other
-members of the US Government's Statistical Research Group at Columbia University proceeded to try to solve.
+米尔顿·弗里德曼认识到上尉的推测提出了一个具有挑战性的统计问题，他和哥伦比亚大学美国政府统计研究小组的其他成员随后试图解决这个问题。
 
-One of the members of the group, the great mathematician Abraham Wald, soon solved the problem.
+该小组的成员之一，伟大的数学家亚伯拉罕·瓦尔德很快就解决了这个问题。
 
-A good way to formulate the problem is to use some ideas from Bayesian statistics that we describe in
-this lecture {doc}`Exchangeability and Bayesian Updating <exchangeable>` and in this lecture
-{doc}`Likelihood Ratio Processes <likelihood_ratio_process>`, which describes the link between Bayesian
-updating and likelihood ratio processes.
+用贝叶斯统计中的一些思想来阐述这个问题是一个很好的方法,这些思想我们在讲座{doc}`可交换性和贝叶斯更新 <exchangeable>`和讲座{doc}`似然比过程 <likelihood_ratio_process>`中有所描述,后者阐述了贝叶斯更新和似然比过程之间的联系。
 
-The present lecture uses Python to generate simulations that evaluate expected losses under **frequentist** and **Bayesian**
-decision rules for an instance of the Navy Captain's decision problem.
+本讲座使用Python生成模拟,评估在海军上尉决策问题的一个实例中,**频率主义**和**贝叶斯**决策规则下的期望损失。
 
-The simulations validate the Navy Captain's hunch that there is a better rule than the one the Navy had ordered him
-to use.
+这些模拟验证了海军上尉的直觉,即存在一个比海军命令他使用的规则更好的规则。
 
-## Setup
+## 设置
 
-To formalize the problem of the Navy Captain whose questions posed the
-problem that Milton Friedman and Allan Wallis handed over to Abraham
-Wald, we consider a setting with the following parts.
+为了形式化米尔顿·弗里德曼和艾伦·沃利斯交给亚伯拉罕·瓦尔德的海军上尉问题,我们考虑一个包含以下部分的设定。
 
-- Each period a decision maker draws a non-negative random variable
-  $Z$ from a probability distribution that he does not completely
-  understand. He knows that two probability distributions are possible,
-  $f_{0}$ and $f_{1}$, and that which ever distribution it
-  is remains fixed over time. The decision maker believes that before
-  the beginning of time, nature once and for all selected either
-  $f_{0}$ or $f_1$ and that the probability that it
-  selected $f_0$ is probability $\pi^{*}$.
-- The decision maker observes a sample
-  $\left\{ z_{i}\right\} _{i=0}^{t}$ from the the distribution
-  chosen by nature.
+- 每个时期决策者都会抽取一个非负随机变量
 
-The decision maker wants to decide which distribution actually governs
-$Z$ and is worried by two types of errors and the losses that they
-impose on him.
+决策者从一个他并不完全理解的概率分布中获得$Z$。他知道可能存在两种概率分布，$f_{0}$和$f_{1}$，并且无论是哪种分布都会随时间保持不变。决策者认为在时间开始之前，自然界一次性地选择了$f_{0}$或$f_1$，且选择$f_0$的概率为$\pi^{*}$。
+- 决策者从自然界选择的分布中观察到样本$\left\{ z_{i}\right\} _{i=0}^{t}$。
 
-- a loss $\bar L_{1}$ from a **type I error** that occurs when he decides that
-  $f=f_{1}$ when actually $f=f_{0}$
-- a loss  $\bar L_{0}$ from a **type II error** that occurs when he decides that
-  $f=f_{0}$ when actually $f=f_{1}$
+决策者想要确定究竟是哪个分布在支配$Z$，并且担心两种类型的错误及其带来的损失。
 
-The decision maker pays  a cost $c$ for drawing
-another  $z$
+- **第一类错误**造成的损失$\bar L_{1}$，即当实际分布为$f=f_{0}$时却判定$f=f_{1}$
+- **第二类错误**造成的损失$\bar L_{0}$，即当实际分布为$f=f_{1}$时却判定$f=f_{0}$
 
-We mainly borrow parameters from the quantecon lecture
-{doc}`A Problem that Stumped Milton Friedman <wald_friedman>` except that we increase both $\bar L_{0}$
-and $\bar L_{1}$ from $25$ to $100$ to encourage the
-frequentist Navy Captain to take more draws before deciding.
+决策者需要支付成本$c$来获取另一个$z$
 
-We set the cost $c$ of taking one more draw  at $1.25$.
+我们主要借鉴了quantecon讲座中{doc}`一个让弗里德曼困惑的问题 <wald_friedman>`的参数，不过我们将$\bar L_{0}$和$\bar L_{1}$都从$25$增加到了$100$，以鼓励频率学派的海军上尉在做决定前进行更多次抽样。
 
-We set the probability distributions $f_{0}$ and $f_{1}$ to
-be beta distributions with $a_{0}=b_{0}=1$, $a_{1}=3$, and
-$b_{1}=1.2$, respectively.
+我们将每次额外抽样的成本$c$设为$1.25$。
 
-Below is some Python code that sets up these objects.
+我们将概率分布$f_{0}$和$f_{1}$设定为贝塔分布，其中$a_{0}=b_{0}=1$，$a_{1}=3$，且$b_{1}=1.2$。
 
-```{code-cell} python3
+下面是设置这些对象的Python代码。
+
+```{code-cell} ipython3
 @jit
 def p(x, a, b):
-    "Beta distribution."
+    "贝塔分布。"
 
     r = gamma(a + b) / (gamma(a) * gamma(b))
 
     return r * x**(a-1) * (1 - x)**(b-1)
 ```
 
-We start with defining a `jitclass` that stores parameters and
-functions we need to solve problems for both the Bayesian and
-frequentist Navy Captains.
+我们首先定义一个`jitclass`，用于存储参数和函数，这些参数和函数将用于解决贝叶斯派和频率派海军上尉的问题。
 
-```{code-cell} python3
+```{code-cell} ipython3
 wf_data = [
-    ('c', float64),           # unemployment compensation
-    ('a0', float64),          # parameters of beta distribution
+    ('c', float64),           # 失业补偿
+    ('a0', float64),          # beta分布的参数
     ('b0', float64),
     ('a1', float64),
     ('b1', float64),
-    ('L0', float64),          # cost of selecting f0 when f1 is true
-    ('L1', float64),          # cost of selecting f1 when f0 is true
-    ('π_grid', float64[:]),   # grid of beliefs π
+    ('L0', float64),          # 当f1为真时选择f0的成本
+    ('L1', float64),          # 当f0为真时选择f1的成本
+    ('π_grid', float64[:]),   # 信念π的网格
     ('π_grid_size', int64),
-    ('mc_size', int64),       # size of Monto Carlo simulation
-    ('z0', float64[:]),       # sequence of random values
-    ('z1', float64[:])        # sequence of random values
+    ('mc_size', int64),       # 蒙特卡洛模拟的规模
+    ('z0', float64[:]),       # 随机值序列
+    ('z1', float64[:])        # 随机值序列
 ]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jitclass(wf_data)
 class WaldFriedman:
 
@@ -174,7 +150,7 @@ class WaldFriedman:
 
     def κ(self, z, π):
         """
-        Updates π using Bayes' rule and the current observation z
+        使用贝叶斯法则和当前观测值z更新π
         """
 
         a0, b0, a1, b1 = self.a0, self.b0, self.a1, self.b1
@@ -185,57 +161,49 @@ class WaldFriedman:
         return π_new
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 wf = WaldFriedman()
 
 grid = np.linspace(0, 1, 50)
 
 plt.figure()
 
-plt.title("Two Distributions")
+plt.title("两个分布")
 plt.plot(grid, wf.f0(grid), lw=2, label="$f_0$")
 plt.plot(grid, wf.f1(grid), lw=2, label="$f_1$")
 
 plt.legend()
-plt.xlabel("$z$ values")
-plt.ylabel("density of $z_k$")
+plt.xlabel("$z$ 值")
+plt.ylabel("$z_k$ 的密度")
 
 plt.tight_layout()
 plt.show()
 ```
 
-Above, we plot the two possible probability densities $f_0$ and
-$f_1$
+上面，我们绘制了两个可能的概率密度 $f_0$ 和 $f_1$
 
-## Frequentist Decision Rule
+## 频率主义决策规则
 
-The Navy told the Captain to use a  frequentist decision rule.
+海军要求舰长使用频率主义决策规则。
 
-In particular, it gave him a decision rule that the Navy had designed  by using
-frequentist statistical theory to minimize an
-expected loss function.
+具体来说，海军给他一个决策规则，这个规则是海军通过使用频率主义统计理论来最小化预期损失函数而设计的。
 
-That decision rule is characterized by a sample size $t$ and a
-cutoff $d$ associated with a likelihood ratio.
+该决策规则的特征是由样本量 $t$ 和与似然比相关的临界值 $d$ 来确定。
 
-Let
-$L\left(z^{t}\right)=\prod_{i=0}^{t}\frac{f_{0}\left(z_{i}\right)}{f_{1}\left(z_{i}\right)}$
-be the likelihood ratio associated with observing the sequence
-$\left\{ z_{i}\right\} _{i=0}^{t}$.
+令 $L\left(z^{t}\right)=\prod_{i=0}^{t}\frac{f_{0}\left(z_{i}\right)}{f_{1}\left(z_{i}\right)}$ 为观察序列 $\left\{ z_{i}\right\} _{i=0}^{t}$ 的似然比。
 
-The decision rule associated with a sample size $t$ is:
+与样本量 $t$ 相关的决策规则是：
 
-- decide that $f_0$ is the distribution if the likelihood ratio
-  is greater than $d$
+- 如果似然比大于 $d$，则判定 $f_0$ 是分布
 
-To understand how that rule was engineered, let null and alternative
-hypotheses be
+为了理解这个规则是如何设计的，让我们设定零假设和备择假设为：
 
-- null: $H_{0}$: $f=f_{0}$,
-- alternative $H_{1}$: $f=f_{1}$.
+- 零假设：$H_{0}$：$f=f_{0}$
+- 备择假设 $H_{1}$：$f=f_{1}$
 
-Given sample size $t$ and cutoff $d$, under the model
-described above, the mathematical expectation of total loss is
+在给定样本量 $t$ 和临界值 $d$ 的情况下，在模型中
+
+如上所述，总损失的数学期望为
 
 ```{math}
 :label: val1
@@ -247,53 +215,53 @@ described above, the mathematical expectation of total loss is
 
 $$
 \begin{aligned}
-\textrm{where} \quad PFA & =\Pr\left\{ L\left(z^{t}\right)<d\mid q=f_{0}\right\} \\
+\textrm{其中} \quad PFA & =\Pr\left\{ L\left(z^{t}\right)<d\mid q=f_{0}\right\} \\
 PD & =\Pr\left\{ L\left(z^{t}\right)<d\mid q=f_{1}\right\}
 \end{aligned}
 $$
 
-Here
+这里
 
-- $PFA$ denotes the probability of a **false alarm**, i.e.,
-  rejecting $H_0$ when it is true
-- $PD$ denotes the probability of a **detection error**, i.e.,
-  not rejecting $H_0$ when $H_1$ is true
+- $PFA$ 表示**虚警**的概率，即
+  当 $H_0$ 为真时却拒绝它
+- $PD$ 表示**检测错误**的概率，即
+  当 $H_1$ 为真时却没有拒绝 $H_0$
 
-For a given sample size $t$, the pairs $\left(PFA,PD\right)$
-lie on a **receiver operating characteristic curve** and can be uniquely
-pinned down by choosing $d$.
+对于给定的样本量 $t$，$\left(PFA,PD\right)$ 对
+位于**接收者操作特征曲线**上，可以通过选择 $d$ 来
+唯一确定。
 
-To see some receiver operating characteristic curves, please see this
-lecture {doc}`Likelihood Ratio Processes <likelihood_ratio_process>`.
+要查看一些接收者操作特征曲线，请参阅本课程
+{doc}`似然比过程 <likelihood_ratio_process>`。
 
-To solve for $\bar{V}_{fre}\left(t,d\right)$ numerically, we first
-simulate sequences of $z$ when either $f_0$ or $f_1$
-generates data.
+要数值求解 $\bar{V}_{fre}\left(t,d\right)$，我们首先
 
-```{code-cell} python3
+模拟当$f_0$或$f_1$生成数据时的$z$序列。
+
+```{code-cell} ipython3
 N = 10000
 T = 100
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 z0_arr = np.random.beta(wf.a0, wf.b0, (N, T))
 z1_arr = np.random.beta(wf.a1, wf.b1, (N, T))
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.hist(z0_arr.flatten(), bins=50, alpha=0.4, label='f0')
 plt.hist(z1_arr.flatten(), bins=50, alpha=0.4, label='f1')
 plt.legend()
 plt.show()
 ```
 
-We can compute sequences of likelihood ratios using simulated samples.
+我们可以使用模拟样本计算似然比序列。
 
-```{code-cell} python3
+```{code-cell} ipython3
 l = lambda z: wf.f0(z) / wf.f1(z)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 l0_arr = l(z0_arr)
 l1_arr = l(z1_arr)
 
@@ -301,11 +269,9 @@ L0_arr = np.cumprod(l0_arr, 1)
 L1_arr = np.cumprod(l1_arr, 1)
 ```
 
-With an empirical distribution of likelihood ratios in hand, we can draw
-**receiver operating characteristic curves** by enumerating
-$\left(PFA,PD\right)$ pairs given each sample size $t$.
+有了似然比的经验分布后，我们可以通过列举每个样本量 $t$ 下的 $\left(PFA,PD\right)$ 对来绘制**接收者操作特征曲线**。
 
-```{code-cell} python3
+```{code-cell} ipython3
 PFA = np.arange(0, 100, 1)
 
 for t in range(1, 15, 4):
@@ -319,33 +285,33 @@ plt.plot([0, 1], [0, 1], color='k', ls='--', label="random detection")
 
 plt.arrow(0.5, 0.5, -0.15, 0.15, head_width=0.03)
 plt.text(0.35, 0.7, "better")
-plt.xlabel("Probability of false alarm")
-plt.ylabel("Probability of detection")
+plt.xlabel("虚警概率")
+plt.ylabel("检测概率")
 plt.legend()
-plt.title("Receiver Operating Characteristic Curve")
+plt.title("接收者操作特征曲线")
 plt.show()
 ```
 
-Our frequentist minimizes the expected total loss presented in equation
-{eq}`val1` by choosing $\left(t,d\right)$.
+我们的频率学派通过选择$\left(t,d\right)$来最小化方程{eq}`val1`中给出的预期总损失。
 
-Doing that delivers an expected loss
+这样做会得到预期损失
 
 $$
 \bar{V}_{fre}=\min_{t,d}\bar{V}_{fre}\left(t,d\right).
 $$
 
-We first consider the case in which
-$\pi^{*}=\Pr\left\{ \text{nature selects }f_{0}\right\} =0.5$.
+我们首先考虑
+$\pi^{*}=\Pr\left\{ \text{自然选择}f_{0}\right\} =0.5$
+的情况。
 
-We can solve the minimization problem in two steps.
+我们可以通过两个步骤来解决这个最小化问题。
 
-First, we fix $t$ and find the optimal cutoff $d$ and
-consequently the minimal $\bar{V}_{fre}\left(t\right)$.
+首先，我们固定$t$并找到最优截断值$d$，
+从而得到最小值$\bar{V}_{fre}\left(t\right)$。
 
-Here is Python code that does that and then plots a useful graph.
+以下是执行该操作并绘制有用图表的Python代码。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def V_fre_d_t(d, t, L0_arr, L1_arr, π_star, wf):
 
@@ -359,7 +325,7 @@ def V_fre_d_t(d, t, L0_arr, L1_arr, π_star, wf):
     return V
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 def V_fre_t(t, L0_arr, L1_arr, π_star, wf):
 
     res = minimize(V_fre_d_t, 1, args=(t, L0_arr, L1_arr, π_star, wf), method='Nelder-Mead')
@@ -372,13 +338,13 @@ def V_fre_t(t, L0_arr, L1_arr, π_star, wf):
     return V, PFA, PD
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 def compute_V_fre(L0_arr, L1_arr, π_star, wf):
 
     T = L0_arr.shape[1]
 
     V_fre_arr = np.empty(T)
-    PFA_arr = np.empty(T)
+    PFA_arr = np.empty(T) 
     PD_arr = np.empty(T)
 
     for t in range(1, T+1):
@@ -390,30 +356,29 @@ def compute_V_fre(L0_arr, L1_arr, π_star, wf):
     return V_fre_arr, PFA_arr, PD_arr
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_star = 0.5
 V_fre_arr, PFA_arr, PD_arr = compute_V_fre(L0_arr, L1_arr, π_star, wf)
 
-plt.plot(range(T), V_fre_arr, label='$\min_{d} \overline{V}_{fre}(t,d)$')
-plt.xlabel('t')
-plt.title('$\pi^*=0.5$')
+plt.plot(range(T), V_fre_arr, label=r'$\min_{d} \overline{V}_{fre}(t,d)$')
+plt.xlabel('时间t')
+plt.title(r'$\pi^*=0.5$')
 plt.legend()
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 t_optimal = np.argmin(V_fre_arr) + 1
 ```
 
-```{code-cell} python3
-msg = f"The above graph indicates that minimizing over t tells the frequentist to draw {t_optimal} observations and then decide."
+```{code-cell} ipython3
+msg = f"上图表明，对t进行最小化告诉频率学家要抽取{t_optimal}个观测值然后做出决定。"
 print(msg)
 ```
 
-Let’s now change the value of $\pi^{*}$ and watch how the decision
-rule changes.
+现在让我们改变 $\pi^{*}$ 的值，观察决策规则如何变化。
 
-```{code-cell} python3
+```{code-cell} ipython3
 n_π = 20
 π_star_arr = np.linspace(0.1, 0.9, n_π)
 
@@ -432,49 +397,41 @@ for i, π_star in enumerate(π_star_arr):
     PD_optimal_arr[i] = PD_arr[t_idx]
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.plot(π_star_arr, V_fre_bar_arr)
-plt.xlabel('$\pi^*$')
-plt.title('$\overline{V}_{fre}$')
+plt.xlabel(r'$\pi^*$')
+plt.title(r'$\overline{V}_{fre}$')
 
 plt.show()
 ```
 
-The following shows how optimal sample size $t$ and targeted
-$\left(PFA,PD\right)$ change as $\pi^{*}$ varies.
+下图展示了当 $\pi^{*}$ 变化时，最优样本量 $t$ 和目标 $\left(PFA,PD\right)$ 如何变化。
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axs = plt.subplots(1, 2, figsize=(14, 5))
 
 axs[0].plot(π_star_arr, t_optimal_arr)
-axs[0].set_xlabel('$\pi^*$')
+axs[0].set_xlabel(r'$\pi^*$')
 axs[0].set_title('optimal sample size given $\pi^*$')
 
 axs[1].plot(π_star_arr, PFA_optimal_arr, label='$PFA^*(\pi^*)$')
 axs[1].plot(π_star_arr, PD_optimal_arr, label='$PD^*(\pi^*)$')
-axs[1].set_xlabel('$\pi^*$')
+axs[1].set_xlabel(r'$\pi^*$')
 axs[1].legend()
 axs[1].set_title('optimal PFA and PD given $\pi^*$')
 
 plt.show()
 ```
 
-## Bayesian Decision Rule
+## 贝叶斯决策规则
 
-In  {doc}`A Problem that Stumped Milton Friedman <wald_friedman>`,
-we learned how Abraham Wald confirmed the Navy
-Captain’s hunch that there is a better decision rule.
+在{doc}`一个让米尔顿·弗里德曼困惑的问题 <wald_friedman>`中，我们了解到亚伯拉罕·瓦尔德如何证实了海军上尉的直觉，即存在一个更好的决策规则。
 
-We presented a Bayesian procedure that instructed the Captain to makes
-decisions by comparing his current Bayesian posterior probability
-$\pi$ with two cutoff probabilities called $\alpha$ and
-$\beta$.
+我们提出了一个贝叶斯程序，指导上尉通过比较他当前的贝叶斯后验概率$\pi$与两个临界概率$\alpha$和$\beta$来做出决策。
 
-To proceed, we borrow some Python code from the quantecon
-lecture {doc}`A Problem that Stumped Milton Friedman <wald_friedman>`
-that computes $\alpha$ and $\beta$.
+为了继续，我们从quantecon讲座{doc}`一个让米尔顿·弗里德曼困惑的问题 <wald_friedman>`中借用一些Python代码，用于计算$\alpha$和$\beta$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit(parallel=True)
 def Q(h, wf):
 
@@ -507,16 +464,16 @@ def Q(h, wf):
     return h_new
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def solve_model(wf, tol=1e-4, max_iter=1000):
     """
-    Compute the continuation value function
+    计算延续值函数
 
-    * wf is an instance of WaldFriedman
+    * wf 是 WaldFriedman 的一个实例
     """
 
-    # Set up loop
+    # 设置循环
     h = np.zeros(len(wf.π_grid))
     i = 0
     error = tol + 1
@@ -528,34 +485,33 @@ def solve_model(wf, tol=1e-4, max_iter=1000):
         h = h_new
 
     if error > tol:
-        print("Failed to converge!")
+        print("未能收敛！")
 
     return h_new
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 h_star = solve_model(wf)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def find_cutoff_rule(wf, h):
 
     """
-    This function takes a continuation value function and returns the
-    corresponding cutoffs of where you transition between continuing and
-    choosing a specific model
+    此函数接收一个延续值函数并返回相应的临界点，
+    这些临界点表示在继续和选择特定模型之间的转换位置
     """
 
     π_grid = wf.π_grid
     L0, L1 = wf.L0, wf.L1
 
-    # Evaluate cost at all points on grid for choosing a model
+    # 在网格上所有点评估选择模型的成本
     payoff_f0 = (1 - π_grid) * L0
     payoff_f1 = π_grid * L1
 
-    # The cutoff points can be found by differencing these costs with
-    # The Bellman equation (J is always less than or equal to p_c_i)
+    # 通过将这些成本与贝尔曼方程的差值可以找到临界点
+    # (J始终小于或等于p_c_i)
     β = π_grid[np.searchsorted(
                               payoff_f1 - np.minimum(h, payoff_f0),
                               1e-10)
@@ -573,12 +529,12 @@ cost_L1 = wf.π_grid * wf.L1
 
 fig, ax = plt.subplots(figsize=(10, 6))
 
-ax.plot(wf.π_grid, h_star, label='continuation value')
-ax.plot(wf.π_grid, cost_L1, label='choose f1')
-ax.plot(wf.π_grid, cost_L0, label='choose f0')
+ax.plot(wf.π_grid, h_star, label='延续值')
+ax.plot(wf.π_grid, cost_L1, label='选择f1')
+ax.plot(wf.π_grid, cost_L0, label='选择f0')
 ax.plot(wf.π_grid,
         np.amin(np.column_stack([h_star, cost_L0, cost_L1]),axis=1),
-        lw=15, alpha=0.1, color='b', label='minimum cost')
+        lw=15, alpha=0.1, color='b', label='最小成本')
 
 ax.annotate(r"$\beta$", xy=(β + 0.01, 0.5), fontsize=14)
 ax.annotate(r"$\alpha$", xy=(α + 0.01, 0.5), fontsize=14)
@@ -586,30 +542,26 @@ ax.annotate(r"$\alpha$", xy=(α + 0.01, 0.5), fontsize=14)
 plt.vlines(β, 0, β * wf.L0, linestyle="--")
 plt.vlines(α, 0, (1 - α) * wf.L1, linestyle="--")
 
-ax.set(xlim=(0, 1), ylim=(0, 0.5 * max(wf.L0, wf.L1)), ylabel="cost",
-       xlabel="$\pi$", title="Value function")
+ax.set(xlim=(0, 1), ylim=(0, 0.5 * max(wf.L0, wf.L1)), ylabel="成本",
+       xlabel=r"$\pi$", title="值函数")
 
 plt.legend(borderpad=1.1)
 plt.show()
 ```
 
-The above figure portrays the value function plotted against the decision
-maker’s Bayesian posterior.
+上图描绘了价值函数对决策者贝叶斯后验概率的关系。
 
-It also shows the probabilities $\alpha$ and $\beta$.
+图中还显示了概率 $\alpha$ 和 $\beta$。
 
-The Bayesian decision rule is:
+贝叶斯决策规则是：
 
-- accept $H_0$ if $\pi \geq \alpha$
-- accept $H_1$ if $\pi \leq \beta$
-- delay deciding and draw another $z$ if
-  $\beta \leq \pi \leq \alpha$
+- 当 $\pi \geq \alpha$ 时接受 $H_0$
+- 当 $\pi \leq \beta$ 时接受 $H_1$
+- 当 $\beta \leq \pi \leq \alpha$ 时延迟决定并抽取另一个 $z$
 
-We can calculate two “objective” loss functions under this situation
-conditioning on knowing for sure that nature has selected $f_{0}$,
-in the first case, or $f_{1}$, in the second case.
+在这种情况下，我们可以计算两个"客观"损失函数，分别基于确知自然选择了 $f_{0}$ 或 $f_{1}$ 的条件。
 
-1. under $f_{0}$,
+1. 在 $f_{0}$ 下，
 
    $$
    V^{0}\left(\pi\right)=\begin{cases}
@@ -619,7 +571,7 @@ in the first case, or $f_{1}$, in the second case.
    \end{cases}
    $$
 
-1. under $f_{1}$
+1. 在 $f_{1}$ 下，
 
    $$
    V^{1}\left(\pi\right)=\begin{cases}
@@ -629,22 +581,19 @@ in the first case, or $f_{1}$, in the second case.
    \end{cases}
    $$
 
+其中
 
-where
-$\pi^{\prime}=\frac{\pi f_{0}\left(z^{\prime}\right)}{\pi f_{0}\left(z^{\prime}\right)+\left(1-\pi\right)f_{1}\left(z^{\prime}\right)}$.
+$\pi^{\prime}=\frac{\pi f_{0}\left(z^{\prime}\right)}{\pi f_{0}\left(z^{\prime}\right)+\left(1-\pi\right)f_{1}\left(z^{\prime}\right)}$。
 
-Given a prior probability $\pi_{0}$, the expected loss for the
-Bayesian is
+给定先验概率 $\pi_{0}$，贝叶斯方法的期望损失为
 
 $$
 \bar{V}_{Bayes}\left(\pi_{0}\right)=\pi^{*}V^{0}\left(\pi_{0}\right)+\left(1-\pi^{*}\right)V^{1}\left(\pi_{0}\right).
 $$
 
-Below we write some Python code that computes
-$V^{0}\left(\pi\right)$ and $V^{1}\left(\pi\right)$
-numerically.
+下面我们编写一些 Python 代码来数值计算 $V^{0}\left(\pi\right)$ 和 $V^{1}\left(\pi\right)$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit(parallel=True)
 def V_q(wf, flag):
     V = np.zeros(wf.π_grid_size)
@@ -679,7 +628,7 @@ def V_q(wf, flag):
     return V
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 V0 = V_q(wf, 0)
 V1 = V_q(wf, 1)
 
@@ -689,25 +638,25 @@ plt.vlines(β, 0, wf.L0, linestyle='--')
 plt.text(β+0.01, wf.L0/2, 'β')
 plt.vlines(α, 0, wf.L0, linestyle='--')
 plt.text(α+0.01, wf.L0/2, 'α')
-plt.xlabel('$\pi$')
-plt.title('Objective value function $V(\pi)$')
+plt.xlabel(r'$\pi$')
+plt.title('目标值函数 $V(\pi)$')
 plt.legend()
 plt.show()
 ```
 
-Given an assumed value for
-$\pi^{*}=\Pr\left\{ \text{nature selects }f_{0}\right\}$, we can
-then compute $\bar{V}_{Bayes}\left(\pi_{0}\right)$.
+给定一个假设值
+$\pi^{*}=\Pr\left\{ \text{自然选择 }f_{0}\right\}$，我们就可以
+计算 $\bar{V}_{Bayes}\left(\pi_{0}\right)$。
 
-We can then determine an initial Bayesian prior $\pi_{0}^{*}$ that
-minimizes this objective concept of expected loss.
+然后我们可以确定一个初始贝叶斯先验概率 $\pi_{0}^{*}$，使其
+最小化这个期望损失的客观概念。
 
-The figure 9 below plots four cases corresponding to
-$\pi^{*}=0.25,0.3,0.5,0.7$.
+下面的图9展示了四种情况，分别对应
+$\pi^{*}=0.25,0.3,0.5,0.7$。
 
-We observe that in each case $\pi_{0}^{*}$ equals $\pi^{*}$.
+我们观察到在每种情况下 $\pi_{0}^{*}$ 都等于 $\pi^{*}$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def compute_V_baye_bar(π_star, V0, V1, wf):
 
     V_baye = π_star * V0 + (1 - π_star) * V1
@@ -718,7 +667,7 @@ def compute_V_baye_bar(π_star, V0, V1, wf):
     return V_baye, π_optimal, V_baye_bar
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_star_arr = [0.25, 0.3, 0.5, 0.7]
 
 fig, axs = plt.subplots(2, 2, figsize=(15, 10))
@@ -734,21 +683,19 @@ for i, π_star in enumerate(π_star_arr):
     axs[row_i, col_i].vlines(π_optimal, V_baye_bar, V_baye.max(), linestyle='--')
     axs[row_i, col_i].text(π_optimal+0.05, (V_baye_bar + V_baye.max()) / 2,
                         '${\pi_0^*}=$'+f'{π_optimal:0.2f}')
-    axs[row_i, col_i].set_xlabel('$\pi$')
-    axs[row_i, col_i].set_ylabel('$\overline{V}_{baye}(\pi)$')
-    axs[row_i, col_i].set_title('$\pi^*=$' + f'{π_star}')
+    axs[row_i, col_i].set_xlabel(r'$\pi$')
+    axs[row_i, col_i].set_ylabel(r'$\overline{V}_{baye}(\pi)$')
+    axs[row_i, col_i].set_title(r'$\pi^*=$' + f'{π_star}')
 
-fig.suptitle('$\overline{V}_{baye}(\pi)=\pi^*V^0(\pi) + (1-\pi^*)V^1(\pi)$', fontsize=16)
+fig.suptitle(r'$\overline{V}_{baye}(\pi)=\pi^*V^0(\pi) + (1-\pi^*)V^1(\pi)$', fontsize=16)
 plt.show()
 ```
 
-This pattern of outcomes holds more generally.
+这种结果模式具有普遍性。
 
-Thus, the following Python code generates the associated graph that
-verifies the equality of $\pi_{0}^{*}$ to $\pi^{*}$ holds
-for all $\pi^{*}$.
+因此，以下Python代码生成相关图表，验证了对于所有的$\pi^{*}$值，$\pi_{0}^{*}$等于$\pi^{*}$这一等式都成立。
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_star_arr = np.linspace(0.1, 0.9, n_π)
 V_baye_bar_arr = np.empty_like(π_star_arr)
 π_optimal_arr = np.empty_like(π_star_arr)
@@ -763,120 +710,104 @@ for i, π_star in enumerate(π_star_arr):
 fig, axs = plt.subplots(1, 2, figsize=(14, 5))
 
 axs[0].plot(π_star_arr, V_baye_bar_arr)
-axs[0].set_xlabel('$\pi^*$')
-axs[0].set_title('$\overline{V}_{baye}$')
+axs[0].set_xlabel(r'$\pi^*$')
+axs[0].set_title(r'$\overline{V}_{baye}$')
 
 axs[1].plot(π_star_arr, π_optimal_arr, label='optimal prior')
 axs[1].plot([π_star_arr.min(), π_star_arr.max()],
             [π_star_arr.min(), π_star_arr.max()],
             c='k', linestyle='--', label='45 degree line')
-axs[1].set_xlabel('$\pi^*$')
+axs[1].set_xlabel(r'$\pi^*$')
 axs[1].set_title('optimal prior given $\pi^*$')
 axs[1].legend()
 
 plt.show()
 ```
 
-## Was the Navy Captain’s Hunch Correct?
+## 海军上尉的直觉是否正确？
 
-We now compare average (i.e., frequentist) losses obtained by the
-frequentist and Bayesian decision rules.
+现在我们比较频率主义和贝叶斯决策规则所得到的平均（即频率主义）损失。
 
-As a starting point, let’s compare average loss functions when
-$\pi^{*}=0.5$.
+让我们先从比较$\pi^{*}=0.5$时的平均损失函数开始。
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_star = 0.5
 ```
 
-```{code-cell} python3
-# frequentist
+```{code-cell} ipython3
+# 频率派
 V_fre_arr, PFA_arr, PD_arr = compute_V_fre(L0_arr, L1_arr, π_star, wf)
 
-# bayesian
+# 贝叶斯派
 V_baye = π_star * V0 + π_star * V1
 V_baye_bar = V_baye.min()
 ```
 
-```{code-cell} python3
-plt.plot(range(T), V_fre_arr, label='$\min_{d} \overline{V}_{fre}(t,d)$')
-plt.plot([0, T], [V_baye_bar, V_baye_bar], label='$\overline{V}_{baye}$')
+```{code-cell} ipython3
+plt.plot(range(T), V_fre_arr, label=r'$\min_{d} \overline{V}_{fre}(t,d)$')
+plt.plot([0, T], [V_baye_bar, V_baye_bar], label=r'$\overline{V}_{baye}$')
 plt.xlabel('t')
-plt.title('$\pi^*=0.5$')
+plt.title(r'$\pi^*=0.5$')
 plt.legend()
 plt.show()
 ```
 
-Evidently, there is no sample size $t$ at which the frequentist
-decision rule attains a lower loss function than does the Bayesian rule.
+显然，在任何样本量 $t$ 下，频率派决策规则都无法获得比贝叶斯规则更低的损失函数。
 
-Furthermore, the following graph indicates that the Bayesian decision
-rule does better on average for all values of $\pi^{*}$.
+此外，下图表明贝叶斯决策规则在所有 $\pi^{*}$ 值上平均表现都更好。
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axs = plt.subplots(1, 2, figsize=(14, 5))
 
-axs[0].plot(π_star_arr, V_fre_bar_arr, label='$\overline{V}_{fre}$')
-axs[0].plot(π_star_arr, V_baye_bar_arr, label='$\overline{V}_{baye}$')
+axs[0].plot(π_star_arr, V_fre_bar_arr, label=r'$\overline{V}_{fre}$')
+axs[0].plot(π_star_arr, V_baye_bar_arr, label=r'$\overline{V}_{baye}$')
 axs[0].legend()
-axs[0].set_xlabel('$\pi^*$')
+axs[0].set_xlabel(r'$\pi^*$')
 
 axs[1].plot(π_star_arr, V_fre_bar_arr - V_baye_bar_arr, label='$diff$')
 axs[1].legend()
-axs[1].set_xlabel('$\pi^*$')
+axs[1].set_xlabel(r'$\pi^*$')
 
 plt.show()
 ```
 
-The right panel of the above graph plots the difference
-$\bar{V}_{fre}-\bar{V}_{Bayes}$.
+上图右侧面板绘制了差值$\bar{V}_{fre}-\bar{V}_{Bayes}$。
 
-It is always positive.
+这个差值始终为正值。
 
-## More Details
+## 更多细节
 
-We can provide more insights by focusing on the case in which
-$\pi^{*}=0.5=\pi_{0}$.
+我们可以通过聚焦于$\pi^{*}=0.5=\pi_{0}$的情况来提供更多见解。
 
-```{code-cell} python3
+```{code-cell} ipython3
 π_star = 0.5
 ```
 
-Recall that when $\pi^*=0.5$, the frequentist decision rule sets a
-sample size `t_optimal` **ex ante**.
+回顾当$\pi^*=0.5$时，频率派决策规则会**事先**设定一个样本量`t_optimal`。
 
-For our parameter settings, we can compute its value:
+对于我们的参数设置，我们可以计算它的值：
 
-```{code-cell} python3
+```{code-cell} ipython3
 t_optimal
 ```
 
-For convenience, let’s define `t_idx` as the Python array index
-corresponding to `t_optimal` sample size.
+为了方便，让我们将 `t_idx` 定义为对应于 `t_optimal` 样本量的 Python 数组索引。
 
-```{code-cell} python3
+```{code-cell} ipython3
 t_idx = t_optimal - 1
 ```
 
-## Distribution of Bayesian Decision Rule’s Time to Decide
+## 贝叶斯决策规则的决策时间分布
 
-By using simulations, we compute the frequency distribution of time to
-deciding for the Bayesian decision rule and compare that time to the
-frequentist rule’s fixed $t$.
+通过模拟，我们计算贝叶斯决策规则的决策时间频率分布，并将该时间与频率派规则的固定$t$进行比较。
 
-The following Python code creates a graph that shows the frequency
-distribution of Bayesian times to decide of Bayesian decision maker,
-conditional on distribution $q=f_{0}$ or $q= f_{1}$
-generating the data.
+以下Python代码创建了一个图表，显示了贝叶斯决策者的贝叶斯决策时间的频率分布，条件是数据由分布$q=f_{0}$或$q=f_{1}$生成。
 
-The blue and red dotted lines show averages for the Bayesian decision
-rule, while the black dotted line shows the frequentist optimal sample
-size $t$.
+蓝色和红色虚线显示了贝叶斯决策规则的平均值，而黑色虚线显示了频率派的最优样本量$t$。
 
-On average the Bayesian rule decides **earlier** than the frequentist
-rule when $q= f_0$ and **later** when $q = f_1$.
+当$q=f_0$时，贝叶斯规则平均比频率派规则**更早**做出决定，而当$q=f_1$时则**更晚**做出决定。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit(parallel=True)
 def check_results(L_arr, α, β, flag, π0):
 
@@ -897,89 +828,76 @@ def check_results(L_arr, α, β, flag, π0):
     return time_arr, correctness
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 time_arr0, correctness0 = check_results(L0_arr, α, β, 0, π_star)
 time_arr1, correctness1 = check_results(L1_arr, α, β, 1, π_star)
 
-# unconditional distribution
+# 无条件分布
 time_arr_u = np.concatenate((time_arr0, time_arr1))
 correctness_u = np.concatenate((correctness0, correctness1))
 ```
 
-```{code-cell} python3
-n1 = plt.hist(time_arr0, bins=range(1, 30), alpha=0.4, label='f0 generates')[0]
-n2 = plt.hist(time_arr1, bins=range(1, 30), alpha=0.4, label='f1 generates')[0]
-plt.vlines(t_optimal, 0, max(n1.max(), n2.max()), linestyle='--', label='frequentist')
+```{code-cell} ipython3
+n1 = plt.hist(time_arr0, bins=range(1, 30), alpha=0.4, label='f0生成')[0]
+n2 = plt.hist(time_arr1, bins=range(1, 30), alpha=0.4, label='f1生成')[0]
+plt.vlines(t_optimal, 0, max(n1.max(), n2.max()), linestyle='--', label='频率派')
 plt.vlines(np.mean(time_arr0), 0, max(n1.max(), n2.max()),
-           linestyle='--', color='b', label='E(t) under f0')
+           linestyle='--', color='b', label='f0下的E(t)')
 plt.vlines(np.mean(time_arr1), 0, max(n1.max(), n2.max()),
-           linestyle='--', color='r', label='E(t) under f1')
+           linestyle='--', color='r', label='f1下的E(t)')
 plt.legend();
 
 plt.xlabel('t')
 plt.ylabel('n')
-plt.title('Conditional frequency distribution of times')
+plt.title('时间的条件频率分布')
 
 plt.show()
 ```
 
-Later we’ll figure out how these distributions ultimately affect
-objective expected values under the two decision rules.
+稍后我们将弄清这些分布最终如何影响两种决策规则下的客观期望值。
 
-To begin, let’s look at simulations of the Bayesian’s beliefs over time.
+首先，让我们看看贝叶斯信念随时间的模拟。
 
-We can easily compute the updated beliefs at any time $t$ using
-the one-to-one mapping from $L_{t}$ to $\pi_{t}$ given
-$\pi_0$ described in this lecture {doc}`Likelihood Ratio Processes <likelihood_ratio_process>`.
+利用本讲{doc}`似然比过程 <likelihood_ratio_process>`中描述的从$L_{t}$到$\pi_{t}$的一一映射（给定$\pi_0$），我们可以轻松计算任意时间$t$的更新信念。
 
-```{code-cell} python3
+```{code-cell} ipython3
 π0_arr = π_star * L0_arr / (π_star * L0_arr + 1 - π_star)
 π1_arr = π_star * L1_arr / (π_star * L1_arr + 1 - π_star)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axs = plt.subplots(1, 2, figsize=(14, 4))
 
-axs[0].plot(np.arange(1, π0_arr.shape[1]+1), np.mean(π0_arr, 0), label='f0 generates')
-axs[0].plot(np.arange(1, π1_arr.shape[1]+1), 1 - np.mean(π1_arr, 0), label='f1 generates')
+axs[0].plot(np.arange(1, π0_arr.shape[1]+1), np.mean(π0_arr, 0), label='f0生成')
+axs[0].plot(np.arange(1, π1_arr.shape[1]+1), 1 - np.mean(π1_arr, 0), label='f1生成')
 axs[0].set_xlabel('t')
-axs[0].set_ylabel('$E(\pi_t)$ or ($1 - E(\pi_t)$)')
-axs[0].set_title('Expectation of beliefs after drawing t observations')
+axs[0].set_ylabel('$E(\pi_t)$ 或 ($1 - E(\pi_t)$)')
+axs[0].set_title('抽取t个观测值后信念的期望')
 axs[0].legend()
 
-axs[1].plot(np.arange(1, π0_arr.shape[1]+1), np.var(π0_arr, 0), label='f0 generates')
-axs[1].plot(np.arange(1, π1_arr.shape[1]+1), np.var(π1_arr, 0), label='f1 generates')
+axs[1].plot(np.arange(1, π0_arr.shape[1]+1), np.var(π0_arr, 0), label='f0生成')
+axs[1].plot(np.arange(1, π1_arr.shape[1]+1), np.var(π1_arr, 0), label='f1生成')
 axs[1].set_xlabel('t')
 axs[1].set_ylabel('var($\pi_t$)')
-axs[1].set_title('Variance of beliefs after drawing t observations')
+axs[1].set_title('抽取t个观测值后信念的方差')
 axs[1].legend()
 
 plt.show()
 ```
 
-The above figures compare averages and variances of updated Bayesian
-posteriors after $t$ draws.
+上图比较了经过$t$次抽样后贝叶斯后验分布的均值和方差。
 
-The left graph compares $E\left(\pi_{t}\right)$ under
-$f_{0}$ to $1-E\left(\pi_{t}\right)$ under $f_{1}$:
-they lie on top of each other.
+左图比较了$f_{0}$下的$E\left(\pi_{t}\right)$和$f_{1}$下的$1-E\left(\pi_{t}\right)$：它们完全重合。
 
-However, as the right hand size graph shows, there is significant
-difference in variances when $t$ is small: the variance is lower
-under $f_{1}$.
+然而,如右图所示,当$t$较小时方差存在显著差异：在$f_{1}$下方差更小。
 
-The difference in variances is the reason that the Bayesian decision
-maker waits longer to decide when $f_{1}$ generates the data.
+方差的差异是贝叶斯决策者在$f_{1}$生成数据时等待更长时间才做出决定的原因。
 
-The code below plots outcomes of constructing an unconditional
-distribution by simply pooling the simulated data across the two
-possible distributions $f_0$ and $f_1$.
+下面的代码通过简单地将两个可能分布$f_0$和$f_1$的模拟数据合并,绘制了无条件分布的结果。
 
-The pooled distribution describes a sense in which on average the
-Bayesian decides earlier, an outcome that seems at least partly to
-confirm the Navy Captain’s hunch.
+这个合并分布从某种意义上描述了贝叶斯决策者平均会更早做出决定,这似乎在一定程度上证实了海军上尉的直觉判断。
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = plt.hist(time_arr_u, bins=range(1, 30), alpha=0.4, label='bayesian')[0]
 plt.vlines(np.mean(time_arr_u), 0, n.max(), linestyle='--',
            color='b', label='bayesian E(t)')
@@ -993,91 +911,79 @@ plt.title('Unconditional distribution of times')
 plt.show()
 ```
 
-## Probability of Making Correct Decision
+## 做出正确决策的概率
 
-Now we use simulations to compute the fraction of samples in which the
-Bayesian and the frequentist decision rules decide correctly.
+现在我们使用模拟来计算贝叶斯和频率主义决策规则做出正确决定的样本比例。
 
-For the frequentist rule, the probability of making the correct decision
-under $f_{1}$ is the optimal probability of detection given
-$t$ that we defined earlier, and similarly it equals $1$
-minus the optimal probability of a false alarm under $f_{0}$.
+对于频率主义规则，在$f_{1}$下做出正确决定的概率是我们之前定义的给定$t$时的最优检测概率，同样地，在$f_{0}$下它等于1减去最优虚警概率。
 
-Below we plot these two probabilities for the frequentist rule, along
-with the conditional probabilities that the Bayesian rule decides before
-$t$ *and* that the decision is correct.
+下面我们绘制频率主义规则的这两个概率，以及贝叶斯规则在$t$之前做出决定*且*决定正确的条件概率。
 
-```{code-cell} python3
-# optimal PFA and PD of frequentist with optimal sample size
+```{code-cell} ipython3
+# 频率主义最优样本量下的最优虚警概率和检测概率
 V, PFA, PD = V_fre_t(t_optimal, L0_arr, L1_arr, π_star, wf)
 ```
 
-```{code-cell} python3
-plt.plot([1, 20], [PD, PD], linestyle='--', label='PD: fre. chooses f1 correctly')
-plt.plot([1, 20], [1-PFA, 1-PFA], linestyle='--', label='1-PFA: fre. chooses f0 correctly')
-plt.vlines(t_optimal, 0, 1, linestyle='--', label='frequentist optimal sample size')
+```{code-cell} ipython3
+plt.plot([1, 20], [PD, PD], linestyle='--', label='PD: 正确选择f1的频率')
+plt.plot([1, 20], [1-PFA, 1-PFA], linestyle='--', label='1-PFA: 正确选择f0的频率')
+plt.vlines(t_optimal, 0, 1, linestyle='--', label='频率论最优样本量')
 
 N = time_arr0.size
 T_arr = np.arange(1, 21)
 plt.plot(T_arr, [np.sum(correctness0[time_arr0 <= t] == 1) / N for t in T_arr],
-        label='q=f0 and baye. choose f0')
+        label='q=f0且贝叶斯选择f0')
 plt.plot(T_arr, [np.sum(correctness1[time_arr1 <= t] == 1) / N for t in T_arr],
-        label='q=f1 and baye. choose f1')
+        label='q=f1且贝叶斯选择f1')
 plt.legend(loc=4)
 
 plt.xlabel('t')
-plt.ylabel('Probability')
-plt.title('Cond. probability of making correct decisions before t')
+plt.ylabel('概率')
+plt.title('t之前做出正确决定的条件概率')
 
 plt.show()
 ```
 
-By averaging using $\pi^{*}$, we also plot the unconditional
-distribution.
+通过使用 $\pi^{*}$ 进行平均，我们还绘制了无条件分布。
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.plot([1, 20], [(PD + 1 - PFA) / 2, (PD + 1 - PFA) / 2],
-        linestyle='--', label='fre. makes correct decision')
-plt.vlines(t_optimal, 0, 1, linestyle='--', label='frequentist optimal sample size')
+        linestyle='--', label='频率派正确决策')
+plt.vlines(t_optimal, 0, 1, linestyle='--', label='频率派最优样本量')
 
 N = time_arr_u.size
 plt.plot(T_arr, [np.sum(correctness_u[time_arr_u <= t] == 1) / N for t in T_arr],
-        label="bayesian makes correct decision")
+        label="贝叶斯派正确决策")
 plt.legend()
 
 plt.xlabel('t')
-plt.ylabel('Probability')
-plt.title('Uncond. probability of making correct decisions before t')
+plt.ylabel('概率')
+plt.title('t时刻前做出正确决策的无条件概率')
 
 plt.show()
 ```
 
-## Distribution of Likelihood Ratios at Frequentist’s $t$
+## 在频率学家的 $t$ 处的似然比分布
 
-Next we use simulations to construct distributions of likelihood ratios
-after $t$ draws.
+接下来我们使用模拟来构建在 $t$ 次抽样后的似然比分布。
 
-To serve as useful reference points, we also show likelihood ratios that
-correspond to the Bayesian cutoffs $\alpha$ and $\beta$.
+作为有用的参考点，我们还展示了对应于贝叶斯截断值 $\alpha$ 和 $\beta$ 的似然比。
 
-In order to exhibit the distribution more clearly, we report logarithms
-of likelihood ratios.
+为了更清晰地展示分布，我们报告似然比的对数值。
 
-The graphs below reports two distributions, one conditional on
-$f_0$ generating the data, the other conditional on $f_1$
-generating the data.
+下面的图表报告了两个分布，一个是在 $f_0$ 生成数据的条件下的分布，另一个是在 $f_1$ 生成数据的条件下的分布。
 
-```{code-cell} python3
+```{code-cell} ipython3
 Lα = (1 - π_star) *  α / (π_star - π_star * α)
 Lβ = (1 - π_star) *  β / (π_star - π_star * β)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 L_min = min(L0_arr[:, t_idx].min(), L1_arr[:, t_idx].min())
 L_max = max(L0_arr[:, t_idx].max(), L1_arr[:, t_idx].max())
 bin_range = np.linspace(np.log(L_min), np.log(L_max), 50)
-n0 = plt.hist(np.log(L0_arr[:, t_idx]), bins=bin_range, alpha=0.4, label='f0 generates')[0]
-n1 = plt.hist(np.log(L1_arr[:, t_idx]), bins=bin_range, alpha=0.4, label='f1 generates')[0]
+n0 = plt.hist(np.log(L0_arr[:, t_idx]), bins=bin_range, alpha=0.4, label='f0生成')[0]
+n1 = plt.hist(np.log(L1_arr[:, t_idx]), bins=bin_range, alpha=0.4, label='f1生成')[0]
 
 plt.vlines(np.log(Lβ), 0, max(n0.max(), n1.max()), linestyle='--', color='r', label='log($L_β$)')
 plt.vlines(np.log(Lα), 0, max(n0.max(), n1.max()), linestyle='--', color='b', label='log($L_α$)')
@@ -1085,25 +991,24 @@ plt.legend()
 
 plt.xlabel('log(L)')
 plt.ylabel('n')
-plt.title('Cond. distribution of log likelihood ratio at frequentist  t')
+plt.title('频率学派t时对数似然比的条件分布')
 
 plt.show()
 ```
 
-The next graph plots the unconditional distribution of Bayesian times to
-decide, constructed as earlier by pooling the two conditional
-distributions.
+下一个图表绘制了贝叶斯决策时间的无条件分布，这是通过将两个条件分布合并而构建的。
 
-```{code-cell} python3
+```{code-cell} ipython3
 plt.hist(np.log(np.concatenate([L0_arr[:, t_idx], L1_arr[:, t_idx]])),
-        bins=50, alpha=0.4, label='unconditional dist. of log(L)')
+        bins=50, alpha=0.4, label='log(L)的无条件分布')
 plt.vlines(np.log(Lβ), 0, max(n0.max(), n1.max()), linestyle='--', color='r', label='log($L_β$)')
 plt.vlines(np.log(Lα), 0, max(n0.max(), n1.max()), linestyle='--', color='b', label='log($L_α$)')
 plt.legend()
 
 plt.xlabel('log(L)')
 plt.ylabel('n')
-plt.title('Uncond. distribution of log likelihood ratio at frequentist  t')
+plt.title('频率论者t时刻的对数似然比的无条件分布')
 
 plt.show()
 ```
+

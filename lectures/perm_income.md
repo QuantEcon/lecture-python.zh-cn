@@ -18,96 +18,95 @@ kernelspec:
 </div>
 ```
 
-# {index}`The Permanent Income Model <single: The Permanent Income Model>`
+# {index}`永久收入模型 <single: The Permanent Income Model>`
 
 ```{index} single: Models; Permanent Income
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-This lecture describes a rational expectations version of the famous permanent income model of Milton Friedman {cite}`Friedman1956`.
+本讲座介绍了Milton Friedman著名的永久收入模型{cite}`Friedman1956`的理性预期版本。
 
-Robert Hall cast Friedman's model within a linear-quadratic setting {cite}`Hall1978`.
+Robert Hall在线性二次框架下重新阐述了Friedman的模型{cite}`Hall1978`。
 
-Like Hall, we formulate an infinite-horizon linear-quadratic savings problem.
+与Hall一样，我们将构建一个无限期线性二次储蓄问题。
 
-We use the model as a vehicle for illustrating
+我们使用这个模型来说明
 
-* alternative formulations of the *state* of a dynamic system
-* the idea of *cointegration*
-* impulse response functions
-* the idea that changes in consumption are useful as predictors of movements in income
+* 动态系统*状态*的不同表述方式
+* *协整*的概念
+* 脉冲响应函数
+* 消费变化作为收入变动预测指标的观点
 
-Background readings on the linear-quadratic-Gaussian permanent income model are Hall's  {cite}`Hall1978`  and chapter 2 of  {cite}`Ljungqvist2012`.
+关于线性二次高斯永久收入模型的背景阅读材料包括Hall的{cite}`Hall1978`和{cite}`Ljungqvist2012`的第2章。
 
-Let's start with some imports
+让我们从一些导入开始
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 import random
 from numba import jit
 ```
 
-## The Savings Problem
+## 储蓄问题
 
-```{index} single: Permanent Income Model; Savings Problem
+```{index} single: 永久收入模型; 储蓄问题
 ```
 
-In this section, we state and solve the savings and consumption problem faced
-by the consumer.
+在本节中，我们将阐述并解决消费者面临的储蓄和消费问题。
 
-### Preliminaries
+### 预备知识
 
-We use a class of stochastic processes called
-[martingales](https://en.wikipedia.org/wiki/Martingale_%28probability_theory%29).
+我们使用一类称为[鞅](https://en.wikipedia.org/wiki/Martingale_%28probability_theory%29)的随机过程。
 
-A discrete-time martingale is a stochastic process (i.e., a  sequence of random variables)
-$\{X_t\}$ with finite mean at each $t$ and satisfying
+离散时间鞅是一个随机过程（即随机变量序列）$\{X_t\}$，在每个$t$时刻具有有限均值，并满足
 
 $$
 \mathbb{E}_t [X_{t+1} ] = X_t, \qquad t = 0, 1, 2, \ldots
 $$
 
-Here $\mathbb{E}_t := \mathbb{E}[ \cdot \,|\, \mathcal{F}_t]$ is a conditional mathematical  expectation conditional on the time $t$
-*information set* $\mathcal{F}_t$.
+这里$\mathbb{E}_t := \mathbb{E}[ \cdot \,|\, \mathcal{F}_t]$是基于时间$t$的*信息集*$\mathcal{F}_t$的条件数学期望。
 
-The latter is just a collection of random variables that the modeler declares
-to be visible at $t$.
+后者只是建模者声明在$t$时刻可见的随机变量的集合。
 
-* When not explicitly defined, it is usually understood that $\mathcal{F}_t = \{X_t, X_{t-1}, \ldots, X_0\}$.
+* 当没有明确定义时，通常认为$\mathcal{F}_t = \{X_t, X_{t-1}, \ldots, X_0\}$。
 
-Martingales have the feature that the history of past outcomes provides no predictive power for changes between current and future outcomes.
+鞅具有这样的特性：过去结果的历史对当前和未来结果之间的变化没有预测能力。
 
-For example, the current wealth of a gambler engaged in a "fair game" has this
-property.
+例如，参与"公平游戏"的赌徒的当前财富就具有这种特性。
 
-One common class of martingales is the family of *random walks*.
+鞅的一个常见类别是*随机游走*族。
 
-A **random walk** is  a stochastic process $\{X_t\}$ that satisfies
+**随机游走**是满足以下条件的随机过程 $\{X_t\}$：
 
 $$
 X_{t+1} = X_t + w_{t+1}
 $$
 
-for some IID zero mean *innovation* sequence $\{w_t\}$.
+其中 $\{w_t\}$ 是某个独立同分布的零均值*创新*序列。
 
-Evidently, $X_t$ can also be expressed as
+显然，$X_t$ 也可以表示为
 
 $$
 X_t = \sum_{j=1}^t w_j + X_0
 $$
 
-Not every martingale arises as a random walk (see, for example, [Wald's martingale](https://en.wikipedia.org/wiki/Wald%27s_martingale)).
+并非所有鞅都源自随机游走（例如，参见[瓦尔德鞅](https://en.wikipedia.org/wiki/Wald%27s_martingale)）。
 
-### The Decision Problem
+### 决策问题
 
-A consumer has preferences over consumption streams that are ordered by the utility functional
+消费者对消费流的偏好由以下效用泛函排序
 
 ```{math}
 :label: sprob1
@@ -115,14 +114,15 @@ A consumer has preferences over consumption streams that are ordered by the util
 \mathbb{E}_0 \left[ \sum_{t=0}^\infty \beta^t u(c_t) \right]
 ```
 
-where
+其中
 
-* $\mathbb{E}_t$ is the mathematical expectation conditioned on the consumer's time $t$ information
-* $c_t$ is time $t$ consumption
-* $u$ is a strictly concave one-period utility function
-* $\beta \in (0,1)$ is a discount factor
+* $\mathbb{E}_t$ 是基于消费者在时间 $t$ 的信息的条件数学期望
 
-The consumer maximizes {eq}`sprob1` by choosing a consumption, borrowing plan $\{c_t, b_{t+1}\}_{t=0}^\infty$ subject to the sequence of budget constraints
+* $c_t$ 是时间 $t$ 的消费
+* $u$ 是严格凹的单期效用函数
+* $\beta \in (0,1)$ 是贴现因子
+
+消费者通过选择消费和借贷计划 $\{c_t, b_{t+1}\}_{t=0}^\infty$ 来最大化 {eq}`sprob1`，同时受到一系列预算约束
 
 ```{math}
 :label: sprob2
@@ -130,19 +130,19 @@ The consumer maximizes {eq}`sprob1` by choosing a consumption, borrowing plan $\
 c_t + b_t = \frac{1}{1 + r} b_{t+1} +  y_t   \quad t \geq 0
 ```
 
-Here
+其中
 
-* $y_t$ is an exogenous endowment process.
-* $r > 0$ is a time-invariant risk-free net interest rate.
-* $b_t$ is one-period risk-free debt maturing at $t$.
+* $y_t$ 是外生禀赋过程
+* $r > 0$ 是时间不变的无风险净利率
+* $b_t$ 是在 $t$ 时到期的一期无风险债务
 
-The consumer also faces initial conditions $b_0$ and $y_0$, which can be fixed or random.
+消费者还面临初始条件 $b_0$ 和 $y_0$，这些可以是固定的或随机的。
 
-### Assumptions
+### 假设
 
-For the remainder of this lecture, we follow Friedman and Hall in assuming that $(1 + r)^{-1} = \beta$.
+在本讲座的剩余部分，我们遵循 Friedman 和 Hall 的假设，即 $(1 + r)^{-1} = \beta$。
 
-Regarding the endowment process, we assume it has the {doc}`state-space representation <linear_models>`
+关于禀赋过程，我们假设它具有{doc}`状态空间表示 <linear_models>`
 
 ```{math}
 :label: sprob15ab
@@ -154,27 +154,27 @@ Regarding the endowment process, we assume it has the {doc}`state-space represen
 \end{aligned}
 ```
 
-where
+其中
 
-* $\{w_t\}$ is an IID vector process with $\mathbb{E} w_t = 0$ and $\mathbb{E} w_t w_t' = I$.
-* The {ref}`spectral radius <la_neumann_remarks>` of $A$ satisfies $\rho(A) < \sqrt{1/\beta}$.
-* $U$ is a selection vector that pins down $y_t$ as a particular linear combination of components of $z_t$.
+* $\{w_t\}$ 是一个独立同分布的向量过程，其中 $\mathbb{E} w_t = 0$ 且 $\mathbb{E} w_t w_t' = I$。
+* $A$ 的{ref}`谱半径 <la_neumann_remarks>` 满足 $\rho(A) < \sqrt{1/\beta}$。
+* $U$ 是一个选择向量，它将 $y_t$ 确定为 $z_t$ 分量的特定线性组合。
 
-The restriction on $\rho(A)$ prevents income from growing so fast that discounted geometric sums of some quadratic forms to be described below become infinite.
+对 $\rho(A)$ 的限制防止收入增长过快，以致下文将要描述的某些二次型的贴现几何和变为无穷大。
 
-Regarding preferences, we assume the quadratic utility function
+关于偏好，我们假设二次效用函数
 
 $$
 u(c_t) =  - (c_t - \gamma)^2
 $$
 
-where $\gamma$ is a bliss level of consumption.
+其中 $\gamma$ 是消费的极乐水平。
 
 ```{note}
-Along with this quadratic utility specification, we allow consumption to be negative.  However, by choosing parameters appropriately, we can make the probability that the model generates negative consumption paths over finite time horizons as low as desired.
+在这个二次效用函数设定下，我们允许消费为负值。然而，通过适当选择参数，我们可以使模型在有限时间范围内产生负消费路径的概率降低到所需水平。
 ```
 
-Finally, we impose the *no Ponzi scheme* condition
+最后，我们施加*无庞氏骗局*条件
 
 ```{math}
 :label: sprob3
@@ -182,11 +182,11 @@ Finally, we impose the *no Ponzi scheme* condition
 \mathbb{E}_0 \left[ \sum_{t=0}^\infty \beta^t b_t^2 \right] < \infty
 ```
 
-This condition rules out an always-borrow scheme that would allow the consumer to enjoy bliss consumption forever.
+这个条件排除了一种永久借贷的方案，即消费者不能通过持续借贷来永远维持最理想的消费水平。
 
-### First-Order Conditions
+### 一阶条件
 
-First-order conditions for maximizing {eq}`sprob1` subject to {eq}`sprob2` are
+对{eq}`sprob1`求最大值（受限于{eq}`sprob2`）的一阶条件是
 
 ```{math}
 :label: sprob4
@@ -194,12 +194,11 @@ First-order conditions for maximizing {eq}`sprob1` subject to {eq}`sprob2` are
 \mathbb{E}_t [u'(c_{t+1})] = u'(c_t) , \qquad t = 0, 1, \ldots
 ```
 
-These optimality conditions are also known as  *Euler equations*.
+这些最优条件也被称为*欧拉方程*。
 
-If you're not sure where they come from, you can find a proof sketch in the
-{ref}`appendix <perm_income_appendix>`.
+如果你不确定这些条件是如何得出的，可以在{ref}`附录 <perm_income_appendix>`中找到证明概要。
 
-With our quadratic preference specification, {eq}`sprob4` has the striking implication that consumption follows a martingale:
+在我们的二次效用函数设定下，{eq}`sprob4`有一个显著的推论，即消费遵循鞅的性质：
 
 ```{math}
 :label: sprob5
@@ -207,34 +206,30 @@ With our quadratic preference specification, {eq}`sprob4` has the striking impli
 \mathbb{E}_t [c_{t+1}] = c_t
 ```
 
-(In fact, quadratic preferences are *necessary* for this conclusion [^f2].)
+（事实上，二次效用函数对于得出这个结论是*必要的*[^f2]。）
 
-One way to interpret {eq}`sprob5` is that consumption will change only when
-"new information" about permanent income is revealed.
+解释{eq}`sprob5`的一种方式是，只有当关于永久收入的"新信息"出现时，消费才会发生变化。
 
-These ideas will be clarified below.
+以下将对这些观点进行阐述。
 
 (odr_pi)=
-### The Optimal Decision Rule
+### 最优决策规则
 
-Now let's deduce the optimal decision rule [^fod].
+现在让我们推导最优决策规则[^fod]。
 
 ```{note}
-One way to solve the consumer's problem is to apply *dynamic programming*
-as in {doc}`this lecture <lqcontrol>`.  We do this later. But first we use
-an alternative approach that is revealing and shows the work that dynamic
-programming does for us behind the scenes.
+解决消费者问题的一种方法是像{doc}`这节课 <lqcontrol>`中那样应用*动态规划*。我们稍后会这样做。但首先我们使用另一种方法，这种方法能揭示动态规划在幕后为我们做的工作。
 ```
 
-In doing so, we need to combine
+在此过程中，我们需要结合
 
-1. the optimality condition {eq}`sprob5`
-1. the period-by-period budget constraint {eq}`sprob2`, and
-1. the boundary condition {eq}`sprob3`
+1. 最优条件{eq}`sprob5`
+1. 逐期预算约束{eq}`sprob2`，以及
+1. 边界条件{eq}`sprob3`
 
-To accomplish this, observe first that {eq}`sprob3` implies $\lim_{t \to \infty} \beta^{\frac{t}{2}} b_{t+1}= 0$.
+为了实现这一点，首先注意到{eq}`sprob3`意味着$\lim_{t \to \infty} \beta^{\frac{t}{2}} b_{t+1}= 0$。
 
-Using this restriction on the debt path and solving {eq}`sprob2` forward yields
+使用这个对债务路径的限制条件，并向前求解{eq}`sprob2`得到
 
 ```{math}
 :label: sprob6
@@ -242,7 +237,7 @@ Using this restriction on the debt path and solving {eq}`sprob2` forward yields
 b_t = \sum_{j=0}^\infty \beta^j (y_{t+j} - c_{t+j})
 ```
 
-Take conditional expectations on both sides of {eq}`sprob6` and use the martingale property of consumption and the *law of iterated expectations* to deduce
+对{eq}`sprob6`两边取条件期望，并使用消费的鞅性质和*迭代期望法则*，可以推导出
 
 ```{math}
 :label: sprob7
@@ -250,7 +245,7 @@ Take conditional expectations on both sides of {eq}`sprob6` and use the martinga
 b_t = \sum_{j=0}^\infty \beta^j \mathbb{E}_t [y_{t+j}] - \frac{c_t}{1-\beta}
 ```
 
-Expressed in terms of $c_t$ we get
+用$c_t$表示可得
 
 ```{math}
 :label: sprob8
@@ -260,35 +255,35 @@ c_t
  = {r \over 1+r} \left[ \sum_{j=0}^\infty \beta^j \mathbb{E}_t [y_{t+j}] - b_t\right]
 ```
 
-where the last equality uses $(1 + r) \beta = 1$.
+其中最后一个等式使用了$(1 + r) \beta = 1$。
 
-These last two equations assert that consumption equals *economic income*
+这最后两个方程表明消费等于*经济收入*
 
-* **financial wealth** equals $-b_t$
-* **non-financial wealth** equals $\sum_{j=0}^\infty \beta^j \mathbb{E}_t [y_{t+j}]$
-* **total wealth** equals the sum of financial and non-financial wealth
-* a **marginal propensity to consume out of total wealth** equals the  interest factor $\frac{r}{1+r}$
-* **economic income** equals
-    * a constant marginal propensity to consume  times the sum of non-financial wealth and financial wealth
-    * the amount the consumer can consume while leaving its wealth intact
+* **金融财富**等于$-b_t$
+* **非金融财富**等于$\sum_{j=0}^\infty \beta^j \mathbb{E}_t [y_{t+j}]$
+* **总财富**等于金融财富和非金融财富之和
+* **总财富的边际消费倾向**等于利息因子$\frac{r}{1+r}$
+* **经济收入**等于
 
-#### Responding to the State
+* 边际消费倾向常数乘以非金融财富和金融财富的总和
+    * 消费者在保持其财富不变的情况下可以消费的金额
 
-The *state* vector confronting the consumer at $t$ is $\begin{bmatrix} b_t & z_t \end{bmatrix}$.
+#### 对状态的响应
 
-Here
+消费者在 $t$ 时面临的*状态*向量是 $\begin{bmatrix} b_t & z_t \end{bmatrix}$。
 
-* $z_t$ is an *exogenous* component, unaffected by consumer behavior.
-* $b_t$ is an *endogenous* component (since it depends on the decision rule).
+其中
 
-Note that $z_t$ contains all variables useful for forecasting the consumer's future endowment.
+* $z_t$ 是一个*外生*组成部分，不受消费者行为影响。
+* $b_t$ 是一个*内生*组成部分（因为它取决于决策规则）。
 
-It is plausible that current decisions $c_t$ and $b_{t+1}$ should
-be expressible as functions of $z_t$ and $b_t$.
+注意，$z_t$ 包含所有用于预测消费者未来禀赋的有用变量。
 
-This is indeed the case.
+当前决策 $c_t$ 和 $b_{t+1}$ 应该可以表示为 $z_t$ 和 $b_t$ 的函数，这是合理的。
 
-In fact, from {ref}`this discussion <lm_fgs>`, we see that
+事实确实如此。
+
+实际上，根据{ref}`这个讨论 <lm_fgs>`，我们可以看到
 
 $$
 \sum_{j=0}^\infty \beta^j \mathbb{E}_t [y_{t+j}]
@@ -296,19 +291,20 @@ $$
 = U(I - \beta A)^{-1} z_t
 $$
 
-Combining this with {eq}`sprob8` gives
+将这个结果与{eq}`sprob8`结合得到
 
 ```{math}
 :label: pi_cpa
 
 c_t
  = {r \over 1+r}
-     \left[
+
+\left[
          U(I - \beta A)^{-1} z_t - b_t
      \right]
 ```
 
-Using this equality to eliminate $c_t$ in the budget constraint {eq}`sprob2` gives
+使用这个等式在预算约束{eq}`sprob2`中消去$c_t$得到
 
 $$
 \begin{aligned}
@@ -323,28 +319,29 @@ $$
 \end{aligned}
 $$
 
-To get from the second last to the last expression in this chain of equalities is not trivial.
+从倒数第二个表达式到最后一个表达式的推导并不简单。
 
-A key is to use the fact that $(1 + r) \beta = 1$ and $(I - \beta A)^{-1} = \sum_{j=0}^{\infty} \beta^j A^j$.
+关键是要使用$(1 + r) \beta = 1$和$(I - \beta A)^{-1} = \sum_{j=0}^{\infty} \beta^j A^j$这两个事实。
 
-We've now successfully written $c_t$ and $b_{t+1}$ as functions of $b_t$ and $z_t$.
+现在我们已经成功地将$c_t$和$b_{t+1}$表示为$b_t$和$z_t$的函数。
 
-#### A State-Space Representation
+#### 状态空间表示
 
-We can summarize our dynamics in the form of a linear state-space system governing consumption, debt and income:
+我们可以用线性状态空间系统的形式来总结消费、债务和收入的动态:
 
 ```{math}
 :label: pi_ssr
 
 \begin{aligned}
   z_{t+1} & = A z_t + C w_{t+1} \\
-  b_{t+1} & = b_t + U [ (I -\beta A)^{-1} (A - I) ] z_t \\
+
+b_{t+1} & = b_t + U [ (I -\beta A)^{-1} (A - I) ] z_t \\
       y_t & = U z_t \\
       c_t & = (1-\beta) [ U(I-\beta A)^{-1} z_t - b_t ]
 \end{aligned}
 ```
 
-To write this more succinctly, let
+更简洁地写，令
 
 $$
 x_t =
@@ -366,7 +363,7 @@ x_t =
 \end{bmatrix}
 $$
 
-and
+且
 
 $$
 \tilde U =
@@ -381,7 +378,7 @@ $$
   \end{bmatrix}
 $$
 
-Then we can express equation  {eq}`pi_ssr` as
+那么我们可以将方程 {eq}`pi_ssr` 表示为
 
 ```{math}
 :label: pi_stsp
@@ -392,7 +389,7 @@ Then we can express equation  {eq}`pi_ssr` as
 \end{aligned}
 ```
 
-We can use the following formulas from {doc}`linear state space models <linear_models>` to compute population mean $\mu_t = \mathbb{E}    x_t$ and covariance $\Sigma_t := \mathbb{E} [ (x_t - \mu_t) (x_t - \mu_t)']$
+我们可以使用{doc}`线性状态空间模型<linear_models>`中的以下公式来计算总体均值 $\mu_t = \mathbb{E} x_t$ 和协方差 $\Sigma_t := \mathbb{E} [ (x_t - \mu_t) (x_t - \mu_t)']$
 
 ```{math}
 :label: lss_mut_perm_income
@@ -408,7 +405,7 @@ We can use the following formulas from {doc}`linear state space models <linear_m
 \quad \text{with} \quad \Sigma_0 \text{ given}
 ```
 
-We can then compute the mean and covariance of $\tilde y_t$ from
+然后我们可以通过以下公式计算 $\tilde y_t$ 的均值和协方差
 
 ```{math}
 :label: eqymoments
@@ -419,13 +416,13 @@ We can then compute the mean and covariance of $\tilde y_t$ from
 \end{aligned}
 ```
 
-#### A Simple Example with IID Income
+#### 一个简单的独立同分布收入示例
 
-To gain some preliminary intuition on the implications of {eq}`pi_ssr`, let's look at a highly stylized example where income is just IID.
+为了对{eq}`pi_ssr`的含义有初步的直观认识，让我们看一个高度简化的示例，其中收入是独立同分布的。
 
-(Later examples will investigate more realistic income streams.)
+(后面的示例将研究更现实的收入流。)
 
-In particular, let $\{w_t\}_{t = 1}^{\infty}$ be IID and scalar standard normal, and let
+特别地，令 $\{w_t\}_{t = 1}^{\infty}$ 为独立同分布的标准正态分布标量，并令
 
 $$
 z_t =
@@ -452,11 +449,11 @@ C =
 \end{bmatrix}
 $$
 
-Finally, let $b_0 = z^1_0 = 0$.
+最后，令 $b_0 = z^1_0 = 0$。
 
-Under these assumptions, we have $y_t = \mu + \sigma w_t \sim N(\mu, \sigma^2)$.
+在这些假设下，我们有 $y_t = \mu + \sigma w_t \sim N(\mu, \sigma^2)$。
 
-Further, if you work through the state space representation, you will see that
+此外，如果你推导状态空间表示，你会发现
 
 $$
 \begin{aligned}
@@ -466,13 +463,13 @@ $$
 \end{aligned}
 $$
 
-Thus, income is IID and debt and consumption are both Gaussian random walks.
+因此，收入是独立同分布的，而债务和消费都是高斯随机游走。
 
-Defining assets as $-b_t$, we see that assets are just the cumulative sum of unanticipated incomes prior to the present date.
+将资产定义为 $-b_t$，我们可以看到资产就是当前日期之前未预期收入的累积和。
 
-The next figure shows a typical realization with $r = 0.05$, $\mu = 1$, and $\sigma = 0.15$
+下图显示了一个典型的实现，其中 $r = 0.05$，$\mu = 1$，且 $\sigma = 0.15$
 
-```{code-cell} python3
+```{code-cell} ipython3
 r = 0.05
 β = 1 / (1 + r)
 σ = 0.15
@@ -504,11 +501,11 @@ ax.set_xlabel('Time')
 plt.show()
 ```
 
-Observe that consumption is considerably smoother than income.
+观察到消费比收入更加平稳。
 
-The figure below shows the consumption paths of 250 consumers with independent income streams
+下图显示了250个具有独立收入流的消费者的消费路径
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(10, 6))
 
 b_sum = np.zeros(T+1)
@@ -523,26 +520,25 @@ ax.set(xlabel='Time', ylabel='Consumption')
 plt.show()
 ```
 
-## Alternative Representations
+## 替代表示方法
 
-In this section, we shed more light on the evolution of savings, debt and
-consumption by representing their dynamics in several different ways.
+在本节中，我们通过几种不同的方式来表示储蓄、债务和消费的动态变化，以更清晰地展示它们的演变。
 
-### Hall's Representation
+### 霍尔的表示方法
 
-```{index} single: Permanent Income Model; Hall's Representation
+```{index} single: 永久收入模型; 霍尔的表示方法
 ```
 
-Hall {cite}`Hall1978` suggested an insightful way to summarize the implications of LQ permanent income theory.
+霍尔 {cite}`Hall1978` 提出了一种富有洞察力的方法来总结LQ永久收入理论的含义。
 
-First, to represent the solution for $b_t$, shift {eq}`sprob8` forward one period and eliminate $b_{t+1}$ by using {eq}`sprob2` to obtain
+首先，为了表示$b_t$的解，将{eq}`sprob8`向前移动一个时期，并使用{eq}`sprob2`消除$b_{t+1}$，得到
 
 $$
 c_{t+1} = (1-\beta)\sum_{j=0}^\infty \beta^j  \mathbb{E}_{t+1} [y_{t+j+1}] -
 (1-\beta) \left[ \beta^{-1} (c_t + b_t - y_t) \right]
 $$
 
-If we add and subtract $\beta^{-1} (1-\beta) \sum_{j=0}^\infty \beta^j \mathbb{E}_t y_{t+j}$ from the right side of the preceding equation and rearrange, we obtain
+如果我们在上述方程的右侧加上并减去$\beta^{-1} (1-\beta) \sum_{j=0}^\infty \beta^j \mathbb{E}_t y_{t+j}$，并重新整理，我们得到
 
 ```{math}
 :label: sprob11
@@ -551,9 +547,9 @@ c_{t+1} - c_t = (1-\beta) \sum_{j=0}^\infty \beta^j
     \left\{ \mathbb{E}_{t+1} [y_{t+j+1}] - \mathbb{E}_t [y_{t+j+1}] \right\}
 ```
 
-The right side is the time $t+1$ *innovation to the expected present value* of the endowment process $\{y_t\}$.
+右边是禀赋过程 $\{y_t\}$ 的期望现值在时刻 $t+1$ 的*创新*。
 
-We can represent the optimal decision rule for $(c_t, b_{t+1})$ in the form of {eq}`sprob11` and {eq}`sprob7`, which we repeat:
+我们可以用 {eq}`sprob11` 和 {eq}`sprob7` 的形式表示 $(c_t, b_{t+1})$ 的最优决策规则，我们重复如下：
 
 ```{math}
 :label: sprob7aa
@@ -561,11 +557,11 @@ We can represent the optimal decision rule for $(c_t, b_{t+1})$ in the form of {
 b_t = \sum_{j=0}^\infty \beta^j \mathbb{E}_t [y_{t+j}] - {1 \over 1-\beta} c_t
 ```
 
-Equation {eq}`sprob7aa` asserts that the consumer's debt due at $t$ equals the expected present value of its endowment minus the expected present value of its consumption stream.
+方程 {eq}`sprob7aa` 表明，消费者在 $t$ 时刻到期的债务等于其禀赋的期望现值减去其消费流的期望现值。
 
-A high debt thus indicates a large expected present value of surpluses $y_t - c_t$.
+因此，高债务表明预期有较大的盈余 $y_t - c_t$ 现值。
 
-Recalling again our discussion on {ref}`forecasting geometric sums <lm_fgs>`, we have
+回顾我们在 {ref}`预测几何和 <lm_fgs>` 中的讨论，我们有：
 
 $$
 \begin{aligned}
@@ -575,7 +571,7 @@ $$
 \end{aligned}
 $$
 
-Using  these formulas together with {eq}`sprob15ab` and substituting  into {eq}`sprob11` and {eq}`sprob7aa`  gives the following representation for the consumer's optimum decision rule:
+将这些公式与{eq}`sprob15ab`结合使用，并代入{eq}`sprob11`和{eq}`sprob7aa`，可得到消费者最优决策规则的以下表示：
 
 ```{math}
 :label: sprob16abcd
@@ -588,28 +584,28 @@ Using  these formulas together with {eq}`sprob15ab` and substituting  into {eq}`
 \end{aligned}
 ```
 
-Representation {eq}`sprob16abcd` makes clear that
+表示{eq}`sprob16abcd`清楚地表明：
 
-* The state can be taken as $(c_t, z_t)$.
-    * The endogenous part is $c_t$ and the exogenous part is $z_t$.
-    * Debt $b_t$ has disappeared as a component of the state because it is encoded in $c_t$.
-* Consumption is a random walk with innovation $(1-\beta) U  (I-\beta A)^{-1} C w_{t+1}$.
-    * This is a more explicit representation of the martingale result in {eq}`sprob5`.
+* 状态可以表示为$(c_t, z_t)$。
+    * 内生部分是$c_t$，外生部分是$z_t$。
+    * 债务$b_t$作为状态的组成部分消失了，因为它已编码在$c_t$中。
+* 消费是一个随机游走，其创新项为$(1-\beta) U  (I-\beta A)^{-1} C w_{t+1}$。
+    * 这是对{eq}`sprob5`中鞅结果的更明确表示。
 
 (coint_pi)=
-### Cointegration
+### 协整
 
-Representation {eq}`sprob16abcd` reveals that the joint process $\{c_t, b_t\}$ possesses the property that Engle and Granger {cite}`EngleGranger1987` called [cointegration](https://en.wikipedia.org/wiki/Cointegration).
+表达式 {eq}`sprob16abcd` 揭示了联合过程 $\{c_t, b_t\}$ 具有 Engle 和 Granger {cite}`EngleGranger1987` 所称的[协整](https://en.wikipedia.org/wiki/Cointegration)特性。
 
-Cointegration is a tool that allows us to apply powerful results from the theory of stationary stochastic processes to (certain transformations of) nonstationary models.
+协整是一种工具，它使我们能够将平稳随机过程理论中的强大结果应用于（某些变换后的）非平稳模型。
 
-To apply cointegration in the present context, suppose that $z_t$ is asymptotically stationary [^fn_as].
+要在当前情况下应用协整，假设 $z_t$ 是渐近平稳的[^fn_as]。
 
-Despite this, both $c_t$ and $b_t$ will be non-stationary because they have unit roots (see {eq}`pi_ssr` for $b_t$).
+尽管如此，$c_t$ 和 $b_t$ 都将是非平稳的，因为它们具有单位根（参见 {eq}`pi_ssr` 中关于 $b_t$ 的部分）。
 
-Nevertheless, there is a linear combination of $c_t, b_t$ that *is* asymptotically stationary.
+然而，$c_t, b_t$ 的某个线性组合*是*渐近平稳的。
 
-In particular, from the second equality in {eq}`sprob16abcd` we have
+特别地，从 {eq}`sprob16abcd` 的第二个等式中，我们有
 
 ```{math}
 :label: pi_spr
@@ -617,13 +613,13 @@ In particular, from the second equality in {eq}`sprob16abcd` we have
 (1-\beta) b_t + c_t = (1 - \beta) U (I-\beta A)^{-1} z_t
 ```
 
-Hence the linear combination $(1-\beta) b_t + c_t$ is asymptotically stationary.
+因此，线性组合 $(1-\beta) b_t + c_t$ 是渐近平稳的。
 
-Accordingly, Granger and Engle would call $\begin{bmatrix} (1-\beta) & 1 \end{bmatrix}$ a **cointegrating vector** for the state.
+因此，Granger 和 Engle 会将 $\begin{bmatrix} (1-\beta) & 1 \end{bmatrix}$ 称为状态的**协整向量**。
 
-When applied to the nonstationary vector process $\begin{bmatrix} b_t  & c_t \end{bmatrix}'$, it yields a process that is asymptotically stationary.
+当应用于非平稳向量过程 $\begin{bmatrix} b_t  & c_t \end{bmatrix}'$ 时，它产生一个渐近平稳的过程。
 
-Equation {eq}`pi_spr` can be rearranged to take the form
+方程 {eq}`pi_spr` 可以重新排列为以下形式
 
 ```{math}
 :label: sprob77
@@ -631,14 +627,13 @@ Equation {eq}`pi_spr` can be rearranged to take the form
 (1-\beta) b_t + c_t = (1-\beta) \mathbb{E}_t \sum_{j=0}^\infty \beta^j y_{t+j}
 ```
 
-Equation {eq}`sprob77`  asserts that the *cointegrating residual*  on the left side equals the conditional expectation of the geometric sum of future incomes on the right [^f8].
+方程 {eq}`sprob77` 表明左边的*协整残差*等于右边未来收入几何和的条件期望 [^f8]。
 
-### Cross-Sectional Implications
+### 横截面含义
 
-Consider again {eq}`sprob16abcd`, this time in light of our discussion of
-distribution dynamics in the {doc}`lecture on linear systems <linear_models>`.
+再次考虑 {eq}`sprob16abcd`，这次是基于我们在{doc}`线性系统讲座 <linear_models>`中关于分布动态的讨论。
 
-The dynamics of $c_t$ are given by
+$c_t$ 的动态由下式给出
 
 ```{math}
 :label: pi_crw
@@ -646,17 +641,18 @@ The dynamics of $c_t$ are given by
 c_{t+1} = c_t + (1-\beta) U  (I-\beta A)^{-1} C w_{t+1}
 ```
 
-or
+或
 
 $$
 c_t = c_0 + \sum_{j=1}^t \hat w_j
-\quad \text{for} \quad
+
+\quad \text{对于} \quad
 \hat w_{t+1} := (1-\beta) U  (I-\beta A)^{-1} C w_{t+1}
 $$
 
-The unit root affecting $c_t$ causes the time $t$ variance of $c_t$ to grow linearly with $t$.
+影响$c_t$的单位根导致$c_t$在时间$t$的方差随$t$线性增长。
 
-In particular, since $\{ \hat w_t \}$ is IID, we have
+特别地，由于$\{ \hat w_t \}$是独立同分布的，我们有
 
 ```{math}
 :label: pi_vt
@@ -664,36 +660,36 @@ In particular, since $\{ \hat w_t \}$ is IID, we have
 \mathrm{Var}[c_t] = \mathrm{Var}[c_0] + t \, \hat \sigma^2
 ```
 
-where
+其中
 
 $$
 \hat \sigma^2 := (1-\beta)^2 U  (I-\beta A)^{-1} CC' (I-\beta A')^{-1} U'
 $$
 
-When $\hat \sigma > 0$, $\{c_t\}$ has no asymptotic distribution.
+当$\hat \sigma > 0$时，$\{c_t\}$没有渐近分布。
 
-Let's consider what this means for a cross-section of ex-ante identical consumers born at time $0$.
+让我们考虑这对于在时间$0$出生的事前相同的消费者横截面意味着什么。
 
-Let the distribution of $c_0$ represent the cross-section of initial consumption values.
+让$c_0$的分布代表初始消费值的横截面。
 
-Equation {eq}`pi_vt` tells us that the variance of $c_t$ increases over time at a rate proportional to $t$.
+方程{eq}`pi_vt`告诉我们$c_t$的方差随时间以与$t$成比例的速率增加。
 
-A number of different studies have investigated this prediction and found some support for it
-(see, e.g., {cite}`DeatonPaxton1994`, {cite}`STY2004`).
+许多不同的研究已经调查了这个预测并找到了一些支持证据
+（参见，例如，{cite}`DeatonPaxton1994`，{cite}`STY2004`）。
 
-### Impulse Response Functions
+### 脉冲响应函数
 
-Impulse response functions measure responses  to various  impulses (i.e., temporary shocks).
+脉冲响应函数测量对各种脉冲（即临时冲击）的响应。
 
-The impulse response function of $\{c_t\}$ to the innovation $\{w_t\}$ is a box.
+$\{c_t\}$对创新$\{w_t\}$的脉冲响应函数是一个方框。
 
-In particular, the response of $c_{t+j}$ to a unit increase in the innovation $w_{t+1}$ is $(1-\beta) U (I -\beta A)^{-1} C$ for all $j \geq 1$.
+特别地，对于所有$j \geq 1$，$c_{t+j}$对创新$w_{t+1}$的单位增加的响应是$(1-\beta) U (I -\beta A)^{-1} C$。
 
-### Moving Average Representation
+### 移动平均表示
 
-It's useful to express the innovation to the expected present value of the endowment process in terms of a moving average representation for income $y_t$.
+用收入$y_t$的移动平均表示来表达禀赋过程预期现值的创新是很有用的。
 
-The endowment process defined by {eq}`sprob15ab` has the moving average representation
+由{eq}`sprob15ab`定义的禀赋过程具有移动平均表示
 
 ```{math}
 :label: sprob12
@@ -701,18 +697,18 @@ The endowment process defined by {eq}`sprob15ab` has the moving average represen
 y_{t+1} = d(L) w_{t+1}
 ```
 
-where
+其中
 
-* $d(L) = \sum_{j=0}^\infty d_j L^j$ for some sequence $d_j$, where $L$ is the lag operator [^f4]
-* at time $t$, the consumer has an information set [^f5] $w^t = [w_t, w_{t-1}, \ldots ]$
+* $d(L) = \sum_{j=0}^\infty d_j L^j$，对某个序列$d_j$成立，这里$L$是滞后算子[^f4]
+* 在时间$t$，消费者有信息集[^f5] $w^t = [w_t, w_{t-1}, \ldots ]$
 
-Notice that
+注意到
 
 $$
 y_{t+j} - \mathbb{E}_t [y_{t+j}] = d_0 w_{t+j} + d_1 w_{t+j-1} + \cdots + d_{j-1} w_{t+1}
 $$
 
-It follows that
+因此
 
 ```{math}
 :label: sprob120
@@ -720,7 +716,7 @@ It follows that
 \mathbb{E}_{t+1} [y_{t+j}] - \mathbb{E}_t [y_{t+j}] = d_{j-1} w_{t+1}
 ```
 
-Using {eq}`sprob120` in {eq}`sprob11` gives
+将{eq}`sprob120`代入{eq}`sprob11`得到
 
 ```{math}
 :label: sprob13
@@ -728,14 +724,14 @@ Using {eq}`sprob120` in {eq}`sprob11` gives
 c_{t+1} - c_t = (1-\beta) d(\beta) w_{t+1}
 ```
 
-The object $d(\beta)$ is the **present value of the moving average coefficients** in the representation for the endowment process $y_t$.
+对象$d(\beta)$是禀赋过程$y_t$表示中的**移动平均系数的现值**。
 
 (sub_classic_consumption)=
-## Two Classic Examples
+## 两个经典例子
 
-We illustrate some of the preceding ideas with two examples.
+我们用两个例子来说明前面的一些概念。
 
-In both examples, the endowment follows the process $y_t = z_{1t} + z_{2t}$ where
+在这两个例子中,禀赋都遵循过程$y_t = z_{1t} + z_{2t}$,其中
 
 $$
 \begin{bmatrix}
@@ -759,17 +755,18 @@ $$
   \end{bmatrix}
 $$
 
-Here
+这里
 
-* $w_{t+1}$ is an IID $2 \times 1$ process distributed as $N(0,I)$.
-* $z_{1t}$ is a permanent component of $y_t$.
-* $z_{2t}$ is a purely transitory component of $y_t$.
+* $w_{t+1}$是一个IID $2 \times 1$过程,服从$N(0,I)$分布。
+* $z_{1t}$是$y_t$的永久性成分。
 
-### Example 1
+* $z_{2t}$ 是 $y_t$ 的纯暂时性组成部分。
 
-Assume as before that the consumer observes the state $z_t$ at time $t$.
+### 示例1
 
-In view of {eq}`sprob16abcd` we have
+假设和之前一样，消费者在t时刻观察到状态 $z_t$。
+
+根据公式 {eq}`sprob16abcd`，我们有
 
 ```{math}
 :label: consexample1
@@ -777,16 +774,16 @@ In view of {eq}`sprob16abcd` we have
 c_{t+1} - c_t = \sigma_1 w_{1t+1} + (1-\beta) \sigma_2 w_{2t+1}
 ```
 
-Formula {eq}`consexample1` shows how an increment $\sigma_1 w_{1t+1}$ to the permanent component of income $z_{1t+1}$ leads to
+公式 {eq}`consexample1` 显示了收入永久性组成部分 $z_{1t+1}$ 的增量 $\sigma_1 w_{1t+1}$ 如何导致：
 
-* a permanent one-for-one increase in consumption and
-* no increase in savings $-b_{t+1}$
+* 消费的一对一永久性增加
+* 储蓄 $-b_{t+1}$ 没有增加
 
-But the purely transitory component of income $\sigma_2 w_{2t+1}$ leads to a permanent increment in consumption by a fraction $1-\beta$ of transitory income.
+但收入的纯暂时性组成部分 $\sigma_2 w_{2t+1}$ 导致消费永久性增加了暂时性收入的 $1-\beta$ 部分。
 
-The remaining fraction $\beta$ is saved, leading to a permanent increment in $-b_{t+1}$.
+剩余的 $β$ 部分被储蓄，导致 $-b_{t+1}$ 的永久性增加。
 
-Application of the formula for debt in {eq}`pi_ssr` to this example shows that
+将 {eq}`pi_ssr` 中的债务公式应用于这个例子，显示：
 
 ```{math}
 :label: consexample1a
@@ -794,22 +791,19 @@ Application of the formula for debt in {eq}`pi_ssr` to this example shows that
 b_{t+1} - b_t = - z_{2t} = - \sigma_2 w_{2t}
 ```
 
-This confirms that none of $\sigma_1 w_{1t}$ is saved, while all of $\sigma_2 w_{2t}$ is saved.
+这证实了 $\sigma_1 w_{1t}$ 完全不被储蓄，而 $\sigma_2 w_{2t}$ 则全部被储蓄。
 
-The next figure displays impulse-response functions that  illustrates these very different reactions to transitory and
-permanent income shocks.
+下图展示了脉冲响应函数，说明了对暂时性和永久性收入冲击的这些非常不同的反应。
 
-
-
-```{code-cell} python3
+```{code-cell} ipython3
 r = 0.05
 β = 1 / (1 + r)
-S = 5   # Impulse date
+S = 5   # 脉冲日期
 σ1 = σ2 = 0.15
 
 @jit
 def time_path(T, permanent=False):
-    "Time path of consumption and debt given shock sequence"
+    "给定冲击序列的消费和债务时间路径"
     w1 = np.zeros(T+1)
     w2 = np.zeros(T+1)
     b = np.zeros(T+1)
@@ -825,18 +819,18 @@ def time_path(T, permanent=False):
 
 
 fig, axes = plt.subplots(2, 1, figsize=(10, 8))
-titles = ['permanent', 'transitory']
+titles = ['永久性', '暂时性']
 
 L = 0.175
 
 for ax, truefalse, title in zip(axes, (True, False), titles):
     b, c = time_path(T=20, permanent=truefalse)
-    ax.set_title(f'Impulse reponse: {title} income shock')
-    ax.plot(c, 'g-', label="consumption")
-    ax.plot(b, 'b-', label="debt")
+    ax.set_title(f'脉冲响应：{title}收入冲击')
+    ax.plot(c, 'g-', label="消费")
+    ax.plot(b, 'b-', label="债务")
     ax.plot((S, S), (-L, L), 'k-', lw=0.5)
     ax.grid(alpha=0.5)
-    ax.set(xlabel=r'Time', ylim=(-L, L))
+    ax.set(xlabel=r'时间', ylim=(-L, L))
 
 axes[0].legend(loc='lower right')
 
@@ -844,19 +838,19 @@ plt.tight_layout()
 plt.show()
 ```
 
-Notice how the permanent income shock provokes no change in  assets $-b_{t+1}$ and an immediate  permanent change in consumption equal to the permanent increment in non-financial income.
+注意永久性收入冲击如何不会改变资产 $-b_{t+1}$，而是导致消费立即发生与非金融收入永久性增量相等的永久性变化。
 
-In contrast, notice how most of a transitory income shock is saved and only a small amount is saved.
+相比之下，注意暂时性收入冲击大部分被储蓄，只有很小一部分被消费。
 
-The box-like impulse responses of consumption to both types of shock reflect the random walk property of the optimal consumption decision.
+消费对这两种冲击的方框状脉冲响应反映了最优消费决策的随机游走特性。
 
-### Example 2
+### 示例2
 
-Assume now that at time $t$ the consumer observes $y_t$, and its history up to $t$, but not $z_t$.
+现在假设在时间 $t$，消费者观察到 $y_t$ 及其直到 $t$ 的历史，但没有观察到 $z_t$。
 
-Under this assumption, it is appropriate to use an *innovation representation* to form $A, C, U$ in {eq}`sprob16abcd`.
+在这个假设下，使用*创新表示*来构建{eq}`sprob16abcd`中的 $A, C, U$ 是合适的。
 
-The discussion in sections 2.9.1 and 2.11.3 of {cite}`Ljungqvist2012` shows that the pertinent state space representation for $y_t$ is
+{cite}`Ljungqvist2012`第2.9.1和2.11.3节的讨论表明，$y_t$ 的相关状态空间表示为
 
 $$
 \begin{aligned}
@@ -870,7 +864,8 @@ $$
         0 & 0
     \end{bmatrix}
     \begin{bmatrix}
-        y_t \\
+
+y_t \\
         a_t
     \end{bmatrix} +
     \begin{bmatrix}
@@ -891,18 +886,18 @@ $$
 \end{aligned}
 $$
 
-where
+其中
 
-* $K :=$ the stationary Kalman gain
+* $K :=$ 稳态卡尔曼增益
 * $a_t := y_t - E [ y_t \,|\, y_{t-1}, \ldots, y_0]$
 
-In the same discussion in {cite}`Ljungqvist2012` it is shown that $K \in [0,1]$ and that $K$ increases as $\sigma_1/\sigma_2$ does.
+在{cite}`Ljungqvist2012`的相同讨论中表明$K \in [0,1]$，且$K$随着$\sigma_1/\sigma_2$的增加而增加。
 
-In other words, $K$ increases as the ratio of the standard deviation of the permanent shock to that of the transitory shock increases.
+换句话说，$K$随着永久性冲击的标准差与暂时性冲击的标准差之比的增加而增加。
 
-Please see  {doc}`first look at the Kalman filter <kalman>`.
+请参见{doc}`first look at the Kalman filter <kalman>`。
 
-Applying formulas {eq}`sprob16abcd` implies
+应用公式{eq}`sprob16abcd`可得
 
 ```{math}
 :label: consexample2
@@ -910,30 +905,31 @@ Applying formulas {eq}`sprob16abcd` implies
 c_{t+1} - c_t = [1-\beta(1-K) ] a_{t+1}
 ```
 
-where the endowment process can now be represented in terms of the univariate innovation to $y_t$ as
+其中禀赋过程现在可以用$y_t$的单变量创新表示为
 
 ```{math}
 :label: incomemaar
 
 y_{t+1} - y_t = a_{t+1} - (1-K) a_t
+
 ```
 
-Equation {eq}`incomemaar` indicates that the consumer regards
+方程 {eq}`incomemaar` 表明消费者认为
 
-* fraction $K$ of an innovation $a_{t+1}$ to $y_{t+1}$ as *permanent*
-* fraction $1-K$ as purely transitory
+* 创新 $a_{t+1}$ 中的 $K$ 部分是*永久性的*
+* $1-K$ 部分是纯粹暂时性的
 
-The consumer permanently increases his consumption by the full amount of his estimate of the permanent part of $a_{t+1}$, but by only $(1-\beta)$ times his estimate of the purely transitory part of $a_{t+1}$.
+消费者会根据他对 $a_{t+1}$ 永久部分的估计,永久性地增加相应数额的消费,但对于他估计的纯粹暂时性部分,只增加 $(1-\beta)$ 倍。
 
-Therefore, in total, he permanently increments his consumption by a fraction $K + (1-\beta) (1-K) = 1 - \beta (1-K)$ of $a_{t+1}$.
+因此,总的来说,他会永久性地增加消费 $a_{t+1}$ 的 $K + (1-\beta) (1-K) = 1 - \beta (1-K)$ 部分。
 
-He saves the remaining fraction $\beta (1-K)$.
+他会储蓄剩余的 $\beta (1-K)$ 部分。
 
-According to equation {eq}`incomemaar`, the first difference of income is a first-order moving average.
+根据方程 {eq}`incomemaar`,收入的一阶差分是一阶移动平均。
 
-Equation  {eq}`consexample2` asserts that the first difference of consumption is IID.
+方程 {eq}`consexample2` 表明消费的一阶差分是独立同分布的。
 
-Application of formula to this example shows that
+将公式应用于这个例子可得:
 
 ```{math}
 :label: consexample1b
@@ -941,41 +937,40 @@ Application of formula to this example shows that
 b_{t+1} - b_t = (K-1) a_t
 ```
 
-This indicates how the fraction $K$ of the innovation to $y_t$ that is regarded as permanent influences the fraction of the innovation that is saved.
+这表明创新 $y_t$ 中被视为永久性的部分 $K$ 如何影响被储蓄的创新比例。
 
-## Further Reading
+## 延伸阅读
 
-The model described above significantly changed how economists think about
-consumption.
+上述模型显著改变了经济学家对消费的思考方式。
 
-While Hall's model does a remarkably good job as a first approximation to consumption data, it's widely believed that it doesn't capture important aspects of some consumption/savings data.
+虽然霍尔的模型作为消费数据的首次近似表现出色，但人们普遍认为它并未捕捉到某些消费/储蓄数据的重要方面。
 
-For example, liquidity constraints and precautionary savings appear to be present sometimes.
+例如，流动性约束和预防性储蓄有时似乎会出现。
 
-Further discussion can be found in, e.g., {cite}`HallMishkin1982`, {cite}`Parker1999`, {cite}`Deaton1991`, {cite}`Carroll2001`.
+更多讨论可以在以下文献中找到：{cite}`HallMishkin1982`、{cite}`Parker1999`、{cite}`Deaton1991`、{cite}`Carroll2001`。
 
 (perm_income_appendix)=
-## Appendix: The Euler Equation
+## 附录：欧拉方程
 
-Where does the first-order condition {eq}`sprob4` come from?
+一阶条件{eq}`sprob4`是从何而来的？
 
-Here we'll give a proof for the two-period case, which is representative of
-the general argument.
+这里我们将给出两期情况的证明，这代表了一般论证的典型。
 
-The finite horizon equivalent of the no-Ponzi condition is that the agent
-cannot end her life in debt, so $b_2 = 0$.
+有限期限等价的无庞氏条件是代理人
 
-From the budget constraint {eq}`sprob2` we then have
+她不能带着债务结束生命，所以 $b_2 = 0$。
+
+从预算约束 {eq}`sprob2` 我们可得
 
 $$
 c_0 = \frac{b_1}{1 + r} - b_0 + y_0
-\quad \text{and} \quad
+\quad \text{和} \quad
 c_1 = y_1 - b_1
 $$
 
-Here $b_0$ and $y_0$ are given constants.
+这里 $b_0$ 和 $y_0$ 是给定的常数。
 
-Substituting these constraints into our two-period objective $u(c_0) + \beta \mathbb{E}_0 [u(c_1)]$ gives
+将这些约束代入我们的两期目标函数 $u(c_0) + \beta \mathbb{E}_0 [u(c_1)]$ 得到
 
 $$
 \max_{b_1}
@@ -985,24 +980,25 @@ $$
 \right\}
 $$
 
-You will be able to verify that the first-order condition is
+你可以验证一阶条件是
 
 $$
 u'(c_0) = \beta R  \,\mathbb{E}_0 [u'(c_1)]
 $$
 
-Using $\beta R = 1$ gives {eq}`sprob4` in the two-period case.
+使用 $\beta R = 1$ 得到两期情况下的 {eq}`sprob4`。
 
-The proof for the general case is similar.
+一般情况下的证明类似。
 
-[^f2]: A linear marginal utility is essential for deriving {eq}`sprob5` from {eq}`sprob4`.  Suppose instead that we had imposed the following more standard assumptions on the utility function: $u'(c) >0, u''(c)<0, u'''(c) > 0$ and required that $c \geq 0$.  The Euler equation remains {eq}`sprob4`. But the fact that $u''' <0$ implies via Jensen's inequality that $\mathbb{E}_t [u'(c_{t+1})] >  u'(\mathbb{E}_t [c_{t+1}])$.  This inequality together with {eq}`sprob4` implies that $\mathbb{E}_t [c_{t+1}] > c_t$ (consumption is said to be a 'submartingale'), so that consumption stochastically diverges to $+\infty$.  The consumer's savings also diverge to $+\infty$.
+[^f2]: 线性边际效用对于从{eq}`sprob4`推导出{eq}`sprob5`至关重要。假设我们对效用函数施加以下更标准的假设：$u'(c) >0, u''(c)<0, u'''(c) > 0$并要求$c \geq 0$。欧拉方程仍然是{eq}`sprob4`。但是$u''' <0$通过延森不等式意味着$\mathbb{E}_t [u'(c_{t+1})] >  u'(\mathbb{E}_t [c_{t+1}])$。这个不等式与{eq}`sprob4`一起意味着$\mathbb{E}_t [c_{t+1}] > c_t$（消费被称为"次鞅"），因此消费随机发散到$+\infty$。消费者的储蓄也发散到$+\infty$。
 
-[^fod]: An optimal decision rule is a map from the current state into current actions---in this case, consumption.
+[^fod]: 最优决策规则是从当前状态到当前行动（在这种情况下是消费）的映射。
 
-[^f4]: Representation {eq}`sprob15ab` implies that $d(L) = U (I - A L)^{-1} C$.
+[^f4]: 表示{eq}`sprob15ab`意味着$d(L) = U (I - A L)^{-1} C$。
 
-[^fn_as]: This would be the case if, for example, the {ref}`spectral radius <la_neumann_remarks>` of $A$ is strictly less than one.
+[^fn_as]: 例如，如果$A$的{ref}`谱半径<la_neumann_remarks>`严格小于1，就会出现这种情况。
 
-[^f5]: A moving average representation for a process $y_t$ is said to be **fundamental** if the linear space spanned by $y^t$ is equal to the linear space spanned by $w^t$.  A time-invariant innovations representation, attained via the Kalman filter, is by construction fundamental.
+[^f5]: 如果由$y^t$张成的线性空间等于由$w^t$张成的线性空间，则过程$y_t$的移动平均表示被称为**基本的**。通过卡尔曼滤波获得的时不变创新表示在构造上是基本的。
 
-[^f8]: See {cite}`CampbellShiller88`, {cite}`LettLud2001`, {cite}`LettLud2004` for interesting applications of related ideas.
+[^f8]: 相关思想的有趣应用请参见{cite}`CampbellShiller88`、{cite}`LettLud2001`、{cite}`LettLud2004`。
+

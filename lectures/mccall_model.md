@@ -18,21 +18,20 @@ kernelspec:
 </div>
 ```
 
-# Job Search I: The McCall Search Model
+# 工作搜寻 I: McCall搜寻模型
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
 ```{epigraph}
-"Questioning a McCall worker is like having a conversation with an out-of-work friend:
-'Maybe you are setting your sights too high', or 'Why did you quit your old job before you
-had a new one lined up?' This is real social science: an attempt to model, to understand,
-human behavior by visualizing the situation people find themselves in, the options they face
-and the pros and cons as they themselves see them." -- Robert E. Lucas, Jr.
+"询问一个McCall工人就像与一个失业的朋友对话：
+'也许你的期望值定得太高了'，或者'为什么你在找到新工作之前就辞掉了原来的工作？'这就是真正的社会科学：试图通过观察人们所处的情况、他们面临的选择来建模，以理解人类行为
+
+"以及他们自己所认为的优缺点。" -- 罗伯特·卢卡斯（小）
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的内容外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -41,26 +40,31 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-The McCall search model {cite}`McCall1970` helped transform economists' way of thinking about labor markets.
+McCall 搜索模型 {cite}`McCall1970` 帮助改变了经济学家思考劳动力市场的方式。
 
-To clarify  notions such as "involuntary" unemployment, McCall modeled the decision problem of an unemployed worker  in terms of factors including
+为了阐明"非自愿"失业等概念，McCall 从以下因素建模了失业工人的决策问题：
 
-* current and likely future wages
-* impatience
-* unemployment compensation
+* 当前和可能的未来工资
+* 不耐心程度
+* 失业补助
 
-To solve the decision problem McCall used dynamic programming.
+为了解决这个决策问题，McCall 使用了动态规划。
 
-Here we set up McCall's model and use dynamic programming to analyze it.
+在这里，我们将建立 McCall 的模型并使用动态规划来分析它。
 
-As we'll see, McCall's model is not only interesting in its own right but also an excellent vehicle for learning dynamic programming.
+我们将看到，McCall 的模型不仅本身很有趣，而且也是学习动态规划的绝佳载体。
 
-Let's start with some imports:
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
 import numpy as np
 from numba import jit, float64
@@ -69,88 +73,78 @@ import quantecon as qe
 from quantecon.distributions import BetaBinomial
 ```
 
-## The McCall Model
+## McCall模型
 
 ```{index} single: Models; McCall
 ```
 
-An unemployed agent receives in each period a job offer at wage $w_t$.
+一个失业者在每个时期都会收到工资为$w_t$的工作机会。
 
-In this lecture, we adopt the following simple environment:
+在本讲中，我们采用以下简单环境：
 
-* The offer sequence $\{w_t\}_{t \geq 0}$ is IID, with $q(w)$ being the probability of observing wage $w$ in finite set $\mathbb{W}$.
-* The agent observes $w_t$ at the start of $t$.
-* The agent knows that $\{w_t\}$ is IID with common distribution $q$ and can use this when computing expectations.
+* 工资序列$\{w_t\}_{t \geq 0}$是独立同分布的，其中$q(w)$是在有限集合$\mathbb{W}$中观察到工资$w$的概率。
+* 代理人在$t$期开始时观察到$w_t$。
+* 代理人知道$\{w_t\}$是具有共同分布$q$的独立同分布序列，并可以利用这一点计算期望值。
 
-(In later lectures, we will relax these assumptions.)
+（在后续讲座中，我们将放宽这些假设。）
 
-At time $t$, our agent has two choices:
+在时间$t$，我们的代理人有两个选择：
 
-1. Accept the offer and work permanently at constant wage $w_t$.
-1. Reject the offer, receive unemployment compensation $c$, and reconsider next period.
+1. 接受工作机会并以固定工资$w_t$永久工作。
+1. 拒绝工作机会，获得失业补助$c$，并在下一期重新考虑。
 
-The agent is infinitely lived and aims to maximize the expected discounted
-sum of earnings
+代理人具有无限生命，目标是最大化预期的折现收益总和
 
 $$
 \mathbb{E} \sum_{t=0}^{\infty} \beta^t y_t
 $$
 
-The constant $\beta$ lies in $(0, 1)$ and is called a **discount factor**.
+常数$\beta$位于$(0, 1)$之间，被称为**折现因子**。
 
-The smaller is $\beta$, the more the agent discounts future utility relative to current utility.
+$\beta$ 越小，代理人对未来效用的折现程度相对于当前效用就越高。
 
-The variable  $y_t$ is income, equal to
+变量 $y_t$ 是收入，等于
 
-* his/her wage $w_t$ when employed
-* unemployment compensation $c$ when unemployed
+* 就业时的工资 $w_t$
+* 失业时的失业补助金 $c$
 
 
-### A Trade-Off
+### 权衡取舍
 
-The worker faces a trade-off:
+工人面临一个权衡：
 
-* Waiting too long for a good offer is costly, since the future is discounted.
-* Accepting too early is costly, since better offers might arrive in the future.
+* 等待太久以获得好的工作机会是有代价的，因为未来会被折现。
+* 过早接受工作机会也是有代价的，因为将来可能会出现更好的机会。
 
-To decide optimally in the face of this trade-off, we use dynamic programming.
+为了在这种权衡中做出最优决策，我们使用动态规划。
 
-Dynamic programming can be thought of as a two-step procedure that
+动态规划可以被视为一个两步骤的过程：
 
-1. first assigns values to "states" and
-1. then deduces optimal actions given those values
+1. 首先为"状态"赋值
+1. 然后根据这些值推导出最优行动
 
-We'll go through these steps in turn.
+我们将依次讨论这些步骤。
 
-### The Value Function
+### 价值函数
 
-In order to optimally trade-off current and future rewards, we need to think about two things:
+为了在当前和未来回报之间进行最优权衡，我们需要考虑两个方面：
 
-1. the current payoffs we get from different choices
-1. the different states that those choices will lead to in next period
+1. 不同选择带来的当前收益
+1. 这些选择在下一期会导致的不同状态
 
-To weigh these two aspects of the decision problem, we need to assign *values*
-to states.
+为了权衡决策问题的这两个方面，我们需要给状态赋予*价值*。
 
-To this end, let $v^*(w)$ be the total lifetime *value* accruing to an
-unemployed worker who enters the current period unemployed when the wage is
-$w \in \mathbb{W}$.
+为此，让$v^*(w)$表示当工资为$w \in \mathbb{W}$时，一个失业工人在当前时期开始时的总生命周期*价值*。
 
-In particular, the agent has wage offer $w$ in hand.
+具体来说，该个体手头有工资offer $w$。
 
-More precisely, $v^*(w)$ denotes the value of the objective function
-{eq}`objective` when an agent in this situation makes *optimal* decisions now
-and at all future points in time.
+更准确地说，$v^*(w)$表示当处于这种情况下的个体在当前和未来所有时间点做出*最优*决策时，目标函数{eq}`objective`的价值。
 
-Of course $v^*(w)$ is not trivial to calculate because we don't yet know
-what decisions are optimal and what aren't!
+当然，计算$v^*(w)$并不简单，因为我们还不知道哪些决策是最优的，哪些不是！
 
-But think of $v^*$ as a function that assigns to each possible wage
-$s$ the maximal lifetime value that can be obtained with that offer in
-hand.
+但是可以将$v^*$看作一个函数，它为每个可能的工资$s$分配在手头有该offer时可获得的最大生命周期价值。
 
-A crucial observation is that this function $v^*$ must satisfy the
-recursion
+一个关键的观察是，这个函数$v^*$必须满足以下递归关系
 
 ```{math}
 :label: odu_pv
@@ -162,44 +156,41 @@ v^*(w)
     \right\}
 ```
 
-for every possible $w$  in $\mathbb{W}$.
+对于 $\mathbb{W}$ 中的每一个可能的 $w$。
 
-This important equation is a version of the **Bellman equation**, which is
-ubiquitous in economic dynamics and other fields involving planning over time.
+这个重要的方程是**贝尔曼方程**的一个版本，这个方程在经济动态学和其他涉及长期规划的领域中无处不在。
 
-The intuition behind it is as follows:
+其背后的直观理解如下：
 
-* the first term inside the max operation is the lifetime payoff from accepting current offer, since
+* max运算中的第一项是接受当前报价的终身收益，因为
 
 $$
     \frac{w}{1 - \beta} = w + \beta w + \beta^2 w + \cdots
 $$
 
-* the second term inside the max operation is the **continuation value**, which is the lifetime payoff from rejecting the current offer and then behaving optimally in all subsequent periods
+* max运算中的第二项是**延续价值**，即拒绝当前报价并在随后所有时期做出最优行为的终身收益
 
-If we optimize and pick the best of these two options, we obtain maximal lifetime value from today, given current offer $w$.
+如果我们优化并从这两个选项中选择最佳选项，我们就能获得当前报价 $w$ 下的最大终身价值。
 
-But this is precisely $v^*(w)$, which is the left-hand side of {eq}`odu_pv`.
+但这恰恰就是 {eq}`odu_pv` 左边的 $v^*(w)$。
 
+### 最优策略
 
-### The Optimal Policy
+假设现在我们能够求解 {eq}`odu_pv` 得到未知函数 $v^*$。
 
-Suppose for now that we are able to solve {eq}`odu_pv` for the unknown function $v^*$.
+一旦我们掌握了这个函数，我们就可以做出最优行为（即做出
 
-Once we have this function in hand we can behave optimally (i.e., make the
-right choice between accept and reject).
+在右侧选择最大值（在接受和拒绝之间）。
 
-All we have to do is select the maximal choice on the right-hand side of {eq}`odu_pv`.
+我们只需要在{eq}`odu_pv`右侧选择最大值即可。
 
-The optimal action is best thought of as a **policy**, which is, in general, a map from
-states to actions.
+最优行动最好被理解为一个**策略**，它通常是一个从状态到行动的映射。
 
-Given *any* $w$, we can read off the corresponding best choice (accept or
-reject) by picking the max on the right-hand side of {eq}`odu_pv`.
+对于*任何*$w$，我们都可以通过在{eq}`odu_pv`右侧选择最大值来得到相应的最佳选择（接受或拒绝）。
 
-Thus, we have a map from $\mathbb R$ to $\{0, 1\}$, with 1 meaning accept and 0 meaning reject.
+因此，我们有一个从$\mathbb R$到$\{0, 1\}$的映射，其中1表示接受，0表示拒绝。
 
-We can write the policy as follows
+我们可以将策略写作如下
 
 $$
 \sigma(w) := \mathbf{1}
@@ -209,15 +200,15 @@ $$
     \right\}
 $$
 
-Here $\mathbf{1}\{ P \} = 1$ if statement $P$ is true and equals 0 otherwise.
+这里$\mathbf{1}\{ P \}$在语句$P$为真时等于1，否则等于0。
 
-We can also write this as
+我们也可以将其写作
 
 $$
     \sigma(w) := \mathbf{1} \{ w \geq \bar w \}
 $$
 
-where
+其中
 
 ```{math}
 :label: reswage
@@ -225,31 +216,28 @@ where
     \bar w := (1 - \beta) \left\{ c + \beta \sum_{w'} v^*(w') q (w') \right\}
 ```
 
-Here $\bar w$ (called the *reservation wage*) is a constant depending on
-$\beta, c$ and the wage distribution.
+这里的 $\bar w$（称为*保留工资*）是一个取决于 $\beta, c$ 和工资分布的常数。
 
-The agent should accept if and only if the current wage offer exceeds the reservation wage.
+代理应当当且仅当当前工资报价超过保留工资时接受。
 
-In view of {eq}`reswage`, we can compute this reservation wage if we can compute the value function.
+根据{eq}`reswage`，如果我们能计算出价值函数，就能计算出这个保留工资。
 
 
-## Computing the Optimal Policy: Take 1
+## 计算最优策略：第一种方法
 
-To put the above ideas into action, we need to compute the value function at
-each possible state $w \in \mathbb W$.
+为了将上述想法付诸实践，我们需要计算每个可能状态 $w \in \mathbb W$ 下的价值函数。
 
-To simplify notation, let's set
+为了简化符号，让我们设定
 
 $$
 \mathbb W := \{w_1, \ldots, w_n  \}
-    \quad \text{and} \quad
+    \quad \text{和} \quad
     v^*(i) := v^*(w_i)
 $$
 
-The value function is then represented by the vector
-$v^* = (v^*(i))_{i=1}^n$.
+价值函数则由向量 $v^* = (v^*(i))_{i=1}^n$ 表示。
 
-In view of {eq}`odu_pv`, this vector satisfies the nonlinear system of equations
+根据{eq}`odu_pv`，这个向量满足如下非线性方程组
 
 ```{math}
 :label: odu_pv2
@@ -260,18 +248,18 @@ v^*(i)
             v^*(j) q (j)
     \right\}
 \quad
-\text{for } i = 1, \ldots, n
+\text{对于 } i = 1, \ldots, n
 ```
 
 
 
-### The Algorithm
+### 算法
 
-To compute this vector, we use successive approximations:
+为了计算这个向量，我们使用连续逼近法：
 
-Step 1: pick an arbitrary initial guess $v \in \mathbb R^n$.
+第1步：选择一个任意的初始猜测值 $v \in \mathbb R^n$。
 
-Step 2: compute a new vector $v' \in \mathbb R^n$ via
+第2步：通过以下方式计算新向量 $v' \in \mathbb R^n$
 
 ```{math}
 :label: odu_pv2p
@@ -285,108 +273,100 @@ v'(i)
 \text{for } i = 1, \ldots, n
 ```
 
-Step 3: calculate a measure of a discrepancy between $v$ and $v'$, such as $\max_i |v(i)- v'(i)|$.
+第3步：计算 $v$ 和 $v'$ 之间的差异度量，例如 $\max_i |v(i)- v'(i)|$。
 
-Step 4: if the deviation is larger than some fixed tolerance, set $v = v'$ and go to step 2, else continue.
+第4步：如果偏差大于某个固定的容差，则令 $v = v'$ 并返回第2步，否则继续。
 
-Step 5: return $v$.
+第5步：返回 $v$。
 
-For a small tolerance, the returned function $v$ is a close approximation to the value function $v^*$.
+对于较小的容差，返回的函数 $v$ 是值函数 $v^*$ 的近似值。
 
-The theory below elaborates on this point.
+下面的理论将详细说明这一点。
 
-### Fixed Point Theory
+### 不动点理论
 
-What's the mathematics behind these ideas?
+这些想法背后的数学原理是什么？
 
-First, one defines a mapping $T$ from $\mathbb R^n$ to
-itself via
+首先，通过以下方式定义从 $\mathbb R^n$ 到自身的映射 $T$：
 
 ```{math}
 :label: odu_pv3
 
 (Tv)(i)
 = \max \left\{
-        \frac{w(i)}{1 - \beta}, \, c + \beta \sum_{1 \leq j \leq n}
+
+\frac{w(i)}{1 - \beta}, \, c + \beta \sum_{1 \leq j \leq n}
             v(j) q (j)
     \right\}
 \quad
-\text{for } i = 1, \ldots, n
+\text{对于 } i = 1, \ldots, n
 ```
 
-(A new vector $Tv$ is obtained from given vector $v$ by evaluating
-the r.h.s. at each $i$.)
+(通过在每个 $i$ 处计算右侧的值，从给定向量 $v$ 得到新向量 $Tv$。)
 
-The element $v_k$ in the sequence $\{v_k\}$ of successive
-approximations corresponds to $T^k v$.
+连续近似序列 $\{v_k\}$ 中的元素 $v_k$ 对应于 $T^k v$。
 
-* This is $T$ applied $k$ times, starting at the initial guess
-  $v$
+* 这是从初始猜测 $v$ 开始，应用 $k$ 次 $T$ 的结果
 
-One can show that the conditions of the [Banach fixed point theorem](https://en.wikipedia.org/wiki/Banach_fixed-point_theorem) are
-satisfied by $T$ on $\mathbb R^n$.
+可以证明，$T$ 在 $\mathbb R^n$ 上满足[巴拿赫不动点定理](https://en.wikipedia.org/wiki/Banach_fixed-point_theorem)的条件。
 
-One implication is that $T$ has a unique fixed point in $\mathbb R^n$.
+其中一个推论是 $T$ 在 $\mathbb R^n$ 中有唯一的不动点。
 
-* That is, a unique vector $\bar v$ such that $T \bar v = \bar v$.
+* 即存在唯一的向量 $\bar v$ 使得 $T \bar v = \bar v$。
 
-Moreover, it's immediate from the definition of $T$ that this fixed
-point is $v^*$.
+此外，从 $T$ 的定义可以直接得出这个不动点就是 $v^*$。
 
-A second implication of the  Banach contraction mapping theorem is that
-$\{ T^k v \}$ converges to the fixed point $v^*$ regardless of
-$v$.
+巴拿赫收缩映射定理的第二个推论是，无论 $v$ 取何值，序列 $\{ T^k v \}$ 都会收敛到不动点 $v^*$。
 
-### Implementation
+### 实现
 
-Our default for $q$, the distribution of the state process, will be
-[Beta-binomial](https://en.wikipedia.org/wiki/Beta-binomial_distribution).
+对于状态过程的分布 $q$，我们的默认选择是[Beta-二项分布](https://en.wikipedia.org/wiki/Beta-binomial_distribution)。
 
-```{code-cell} python3
-n, a, b = 50, 200, 100                        # default parameters
-q_default = BetaBinomial(n, a, b).pdf()       # default choice of q
+```{code-cell} ipython3
+n, a, b = 50, 200, 100                        # 默认参数
+q_default = BetaBinomial(n, a, b).pdf()       # q的默认选择
 ```
 
-Our default set of values for wages will be
+我们的工资默认值设置为
 
-```{code-cell} python3
+```{code-cell} ipython3
 w_min, w_max = 10, 60
 w_default = np.linspace(w_min, w_max, n+1)
 ```
 
-Here's a plot of the probabilities of different wage outcomes:
+这是不同工资结果的概率分布图：
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 ax.plot(w_default, q_default, '-o', label='$q(w(i))$')
-ax.set_xlabel('wages')
-ax.set_ylabel('probabilities')
+ax.set_xlabel('工资')
+ax.set_ylabel('概率')
 
 plt.show()
 ```
 
-We are going to use Numba to accelerate our code.
+我们将使用Numba来加速我们的代码。
 
-* See, in particular, the discussion of `@jitclass` in [our lecture on Numba](https://python-programming.quantecon.org/numba.html).
+* 特别参见[我们关于Numba的讲座](https://python-programming.quantecon.org/numba.html)中对`@jitclass`的讨论。
 
-The following helps Numba by providing some type
+以下内容通过提供一些类型来帮助Numba
 
-```{code-cell} python3
+```{code-cell} ipython3
 mccall_data = [
-    ('c', float64),      # unemployment compensation
-    ('β', float64),      # discount factor
-    ('w', float64[:]),   # array of wage values, w[i] = wage at state i
-    ('q', float64[:])    # array of probabilities
+    ('c', float64),      # 失业补偿
+    ('β', float64),      # 贴现因子
+    ('w', float64[:]),   # 工资值数组，w[i] = 状态i下的工资
+    ('q', float64[:])    # 概率数组
 ]
 ```
 
-Here's a class that stores the data and computes the values of state-action pairs,
-i.e. the value in the maximum bracket on the right hand side of the Bellman equation {eq}`odu_pv2p`,
-given the current state and an arbitrary feasible action.
+这是一个用于存储数据并计算状态-动作对值的类，
+即计算贝尔曼方程 {eq}`odu_pv2p` 右侧最大括号中的值，
+基于当前状态和任意可行动作。
 
-Default parameter values are embedded in the class.
+类中包含了默认参数值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jitclass(mccall_data)
 class McCallModel:
 
@@ -397,32 +377,31 @@ class McCallModel:
 
     def state_action_values(self, i, v):
         """
-        The values of state-action pairs.
+        状态-动作对的值。
         """
-        # Simplify names
+        # 简化名称
         c, β, w, q = self.c, self.β, self.w, self.q
-        # Evaluate value for each state-action pair
-        # Consider action = accept or reject the current offer
+        # 评估每个状态-动作对的值
+        # 考虑动作 = 接受或拒绝当前报价
         accept = w[i] / (1 - β)
         reject = c + β * np.sum(v * q)
 
         return np.array([accept, reject])
 ```
 
-Based on these defaults, let's try plotting the first few approximate value functions
-in the sequence $\{ T^k v \}$.
+根据这些默认值，让我们尝试绘制序列 $\{ T^k v \}$ 中最初几个近似值函数。
 
-We will start from guess $v$ given by $v(i) = w(i) / (1 - β)$, which is the value of accepting at every given wage.
+我们将从猜测值 $v$ 开始，其中 $v(i) = w(i) / (1 - β)$，这是在每个给定工资下都接受的价值。
 
-Here's a function to implement this:
+这里有一个实现该功能的函数：
 
-```{code-cell} python3
+```{code-cell} ipython3
 def plot_value_function_seq(mcm, ax, num_plots=6):
     """
-    Plot a sequence of value functions.
+    绘制一系列值函数。
 
-        * mcm is an instance of McCallModel
-        * ax is an axes object that implements a plot method.
+        * mcm 是 McCallModel 的一个实例
+        * ax 是实现了 plot 方法的轴对象
 
     """
 
@@ -431,48 +410,47 @@ def plot_value_function_seq(mcm, ax, num_plots=6):
     v_next = np.empty_like(v)
     for i in range(num_plots):
         ax.plot(mcm.w, v, '-', alpha=0.4, label=f"iterate {i}")
-        # Update guess
+        # 更新猜测值
         for j in range(n):
             v_next[j] = np.max(mcm.state_action_values(j, v))
-        v[:] = v_next  # copy contents into v
+        v[:] = v_next  # 将内容复制到 v 中
 
     ax.legend(loc='lower right')
 ```
 
-Now let's create an instance of `McCallModel` and watch iterations  $T^k v$ converge from below:
+现在让我们创建一个 `McCallModel` 实例，并观察迭代 $T^k v$ 从下方收敛的过程：
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcm = McCallModel()
 
 fig, ax = plt.subplots()
-ax.set_xlabel('wage')
-ax.set_ylabel('value')
+ax.set_xlabel('工资')
+ax.set_ylabel('价值')
 plot_value_function_seq(mcm, ax)
 plt.show()
 ```
 
-You can see that convergence is occurring: successive iterates are getting closer together.
+你可以看到收敛正在发生：连续的迭代值越来越接近。
 
-Here's a more serious iteration effort to compute the limit, which continues until measured deviation between successive iterates is below tol.
+这里有一个更严谨的迭代计算极限的方法，它会持续计算直到连续迭代之间的测量偏差小于容差值。
 
-Once we obtain a good approximation to the limit, we will use it to calculate
-the reservation wage.
+一旦我们获得了对极限的良好近似，我们将用它来计算保留工资。
 
-We'll be using JIT compilation via Numba to turbocharge our loops.
+我们将通过Numba的JIT编译来加速我们的循环。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def compute_reservation_wage(mcm,
                              max_iter=500,
                              tol=1e-6):
 
-    # Simplify names
+    # 简化名称
     c, β, w, q = mcm.c, mcm.β, mcm.w, mcm.q
 
-    # == First compute the value function == #
+    # == 首先计算价值函数 == #
 
     n = len(w)
-    v = w / (1 - β)          # initial guess
+    v = w / (1 - β)          # 初始猜测
     v_next = np.empty_like(v)
     j = 0
     error = tol + 1
@@ -484,28 +462,26 @@ def compute_reservation_wage(mcm,
         error = np.max(np.abs(v_next - v))
         j += 1
 
-        v[:] = v_next  # copy contents into v
+        v[:] = v_next  # 将内容复制到v中
 
-    # == Now compute the reservation wage == #
+    # == 现在计算保留工资 == #
 
     return (1 - β) * (c + β * np.sum(v * q))
 ```
 
-The next line computes the reservation wage at  default parameters
+下一行计算在默认参数下的保留工资
 
-```{code-cell} python3
+```{code-cell} ipython3
 compute_reservation_wage(mcm)
 ```
 
-### Comparative Statics
+### 比较静态分析
 
-Now that we know how to compute the reservation wage, let's see how it varies with
-parameters.
+现在我们知道如何计算保留工资，让我们来看看它如何随参数变化。
 
-In particular, let's look at what happens when we change $\beta$ and
-$c$.
+具体来说，让我们看看当我们改变$\beta$和$c$时会发生什么。
 
-```{code-cell} python3
+```{code-cell} ipython3
 grid_size = 25
 R = np.empty((grid_size, grid_size))
 
@@ -518,7 +494,7 @@ for i, c in enumerate(c_vals):
         R[i, j] = compute_reservation_wage(mcm)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 cs1 = ax.contourf(c_vals, β_vals, R.T, alpha=0.75)
@@ -528,7 +504,7 @@ plt.clabel(ctr1, inline=1, fontsize=13)
 plt.colorbar(cs1, ax=ax)
 
 
-ax.set_title("reservation wage")
+ax.set_title("保留工资")
 ax.set_xlabel("$c$", fontsize=16)
 ax.set_ylabel("$β$", fontsize=16)
 
@@ -537,19 +513,16 @@ ax.ticklabel_format(useOffset=False)
 plt.show()
 ```
 
-As expected, the reservation wage increases both with patience and with
-unemployment compensation.
+如预期所示，保留工资随着耐心程度和失业补助的增加而增加。
 
 (mm_op2)=
-## Computing an Optimal Policy: Take 2
+## 计算最优策略：方法二
 
-The approach to dynamic programming just described is standard and
-broadly applicable.
+刚才描述的动态规划方法是标准且广泛适用的。
 
-But for our McCall search model there's also an easier way that  circumvents the
-need to compute the value function.
+但对于我们的McCall搜索模型来说，还有一个更简单的方法，可以避免计算价值函数。
 
-Let $h$ denote the continuation value:
+让 $h$ 表示继续值：
 
 ```{math}
 :label: j1
@@ -560,14 +533,14 @@ h
 \quad
 ```
 
-The Bellman equation can now be written as
+贝尔曼方程现在可以写作
 
 $$
 v^*(s')
 = \max \left\{ \frac{w(s')}{1 - \beta}, \, h \right\}
 $$
 
-Substituting this last equation into {eq}`j1` gives
+将这个等式代入 {eq}`j1` 得到
 
 ```{math}
 :label: j2
@@ -581,18 +554,19 @@ h
 \quad
 ```
 
-This is a nonlinear equation that we can solve for $h$.
+这是一个我们可以求解 $h$ 的非线性方程。
 
-As before, we will use successive approximations:
+和之前一样，我们将使用连续近似法：
 
-Step 1: pick an initial guess $h$.
+第1步：选择一个初始猜测值 $h$。
 
-Step 2: compute the update $h'$ via
+第2步：通过以下公式计算更新值 $h'$
 
 ```{math}
 :label: j3
 
 h'
+
 = c + \beta
     \sum_{s' \in \mathbb S}
     \max \left\{
@@ -601,26 +575,26 @@ h'
 \quad
 ```
 
-Step 3: calculate the deviation $|h - h'|$.
+第3步：计算偏差 $|h - h'|$。
 
-Step 4: if the deviation is larger than some fixed tolerance, set $h = h'$ and go to step 2, else return $h$.
+第4步：如果偏差大于某个固定的容差，则设置 $h = h'$ 并返回第2步，否则返回 $h$。
 
-One can again use the Banach contraction mapping theorem to show that this process always converges.
+我们可以再次使用巴拿赫不动点定理来证明这个过程总是收敛的。
 
-The big difference here, however, is that we're iterating on a scalar $h$, rather than an $n$-vector, $v(i), i = 1, \ldots, n$.
+这里的一个重大区别是，我们是在对一个标量 $h$ 进行迭代，而不是对一个 $n$ 维向量 $v(i), i = 1, \ldots, n$ 进行迭代。
 
-Here's an implementation:
+以下是实现代码：
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def compute_reservation_wage_two(mcm,
                                  max_iter=500,
                                  tol=1e-5):
 
-    # Simplify names
+    # 简化名称
     c, β, w, q = mcm.c, mcm.β, mcm.w, mcm.q
 
-    # == First compute h == #
+    # == 首先计算h == #
 
     h = np.sum(w * q) / (1 - β)
     i = 0
@@ -635,38 +609,36 @@ def compute_reservation_wage_two(mcm,
 
         h = h_next
 
-    # == Now compute the reservation wage == #
+    # == 现在计算保留工资 == #
 
     return (1 - β) * h
 ```
 
-You can use this code to solve the exercise below.
+你可以使用以下代码来解决下面的练习。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: mm_ex1
 
-Compute the average duration of unemployment when $\beta=0.99$ and
-$c$ takes the following values
+当 $\beta=0.99$ 且 $c$ 取以下值时，计算失业的平均持续时间
 
 > `c_vals = np.linspace(10, 40, 25)`
 
-That is, start the agent off as unemployed, compute their reservation wage
-given the parameters, and then simulate to see how long it takes to accept.
+也就是说，让代理人从失业状态开始，根据给定参数计算其保留工资，然后模拟看需要多长时间才能接受工作。
 
-Repeat a large number of times and take the average.
+重复多次并取平均值。
 
-Plot mean unemployment duration as a function of $c$ in `c_vals`.
+绘制平均失业持续时间与 `c_vals` 中的 $c$ 值的函数关系图。
 ```
 
 ```{solution-start} mm_ex1
 :class: dropdown
 ```
 
-Here's one solution
+这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 cdf = np.cumsum(q_default)
 
 @jit
@@ -675,9 +647,9 @@ def compute_stopping_time(w_bar, seed=1234):
     np.random.seed(seed)
     t = 1
     while True:
-        # Generate a wage draw
+        # 生成工资抽样
         w = w_default[qe.random.draw(cdf)]
-        # Stop when the draw is above the reservation wage
+        # 当抽样值高于保留工资时停止
         if w >= w_bar:
             stopping_time = t
             break
@@ -701,8 +673,8 @@ for i, c in enumerate(c_vals):
 
 fig, ax = plt.subplots()
 
-ax.plot(c_vals, stop_times, label="mean unemployment duration")
-ax.set(xlabel="unemployment compensation", ylabel="months")
+ax.plot(c_vals, stop_times, label="平均失业持续时间")
+ax.set(xlabel="失业补助", ylabel="月数")
 ax.legend()
 
 plt.show()
@@ -715,18 +687,15 @@ plt.show()
 :label: mm_ex2
 ```
 
-The purpose of this exercise is to show how to replace the discrete wage
-offer distribution used above with a continuous distribution.
+本练习的目的是展示如何将上文使用的离散工资分布替换为连续分布。
 
-This is a significant topic because many convenient distributions are
-continuous (i.e., have a density).
+这是一个重要的主题，因为许多常用的分布都是连续的(即具有密度函数)。
 
-Fortunately, the theory changes little in our simple model.
+幸运的是，在我们的简单模型中理论变化很小。
 
-Recall that $h$ in {eq}`j1` denotes the value of not accepting a job in this period but
-then behaving optimally in all subsequent periods:
+回想一下，{eq}`j1`中的$h$表示在本期不接受工作但在随后所有期间表现最优的价值：
 
-To shift to a continuous offer distribution, we can replace {eq}`j1` by
+要转换为连续分布，我们可以用以下式子替换{eq}`j1`：
 
 ```{math}
 :label: j1c
@@ -737,7 +706,7 @@ h
 \quad
 ```
 
-Equation {eq}`j2` becomes
+方程{eq}`j2`变为：
 
 ```{math}
 :label: j2c
@@ -751,22 +720,20 @@ h
 \quad
 ```
 
-The aim is to solve this nonlinear equation by iteration, and from it obtain
-the reservation wage.
+目标是通过迭代求解这个非线性方程，并从中得到保留工资。
 
-Try to carry this out, setting
+尝试实现这一点，设置
 
-* the state sequence $\{ s_t \}$ to be IID and standard normal and
-* the wage function to be $w(s) = \exp(\mu + \sigma s)$.
+* 状态序列 $\{ s_t \}$ 为独立同分布的标准正态分布，且
+* 工资函数为 $w(s) = \exp(\mu + \sigma s)$。
 
-You will need to implement a new version of the `McCallModel` class that
-assumes a lognormal wage distribution.
+你需要实现一个新版本的 `McCallModel` 类，该类假设工资为对数正态分布。
 
-Calculate the integral by Monte Carlo, by averaging over a large number of wage draws.
+通过蒙特卡洛方法计算积分，即对大量工资抽样进行平均。
 
-For default parameters, use `c=25, β=0.99, σ=0.5, μ=2.5`.
+对于默认参数，使用 `c=25, β=0.99, σ=0.5, μ=2.5`。
 
-Once your code is working, investigate how the reservation wage changes with $c$ and $\beta$.
+当你的代码可以运行后，研究保留工资如何随 $c$ 和 $\beta$ 变化。
 
 ```{exercise-end}
 ```
@@ -775,15 +742,15 @@ Once your code is working, investigate how the reservation wage changes with $c$
 :class: dropdown
 ```
 
-Here is one solution:
+这是一个解决方案：
 
-```{code-cell} python3
+```{code-cell} ipython3
 mccall_data_continuous = [
-    ('c', float64),          # unemployment compensation
-    ('β', float64),          # discount factor
-    ('σ', float64),          # scale parameter in lognormal distribution
-    ('μ', float64),          # location parameter in lognormal distribution
-    ('w_draws', float64[:])  # draws of wages for Monte Carlo
+    ('c', float64),          # 失业补助
+    ('β', float64),          # 贴现因子
+    ('σ', float64),          # 对数正态分布的尺度参数
+    ('μ', float64),          # 对数正态分布的位置参数
+    ('w_draws', float64[:])  # 蒙特卡洛的工资抽样
 ]
 
 @jitclass(mccall_data_continuous)
@@ -793,7 +760,7 @@ class McCallModelContinuous:
 
         self.c, self.β, self.σ, self.μ = c, β, σ, μ
 
-        # Draw and store shocks
+        # 抽样并存储随机冲击
         np.random.seed(1234)
         s = np.random.randn(mc_size)
         self.w_draws = np.exp(μ+ σ * s)
@@ -804,7 +771,7 @@ def compute_reservation_wage_continuous(mcmc, max_iter=500, tol=1e-5):
 
     c, β, σ, μ, w_draws = mcmc.c, mcmc.β, mcmc.σ, mcmc.μ, mcmc.w_draws
 
-    h = np.mean(w_draws) / (1 - β)  # initial guess
+    h = np.mean(w_draws) / (1 - β)  # 初始猜测
     i = 0
     error = tol + 1
     while i < max_iter and error > tol:
@@ -817,17 +784,16 @@ def compute_reservation_wage_continuous(mcmc, max_iter=500, tol=1e-5):
 
         h = h_next
 
-    # == Now compute the reservation wage == #
+    # == 现在计算保留工资 == #
 
     return (1 - β) * h
 ```
 
-Now we investigate how the reservation wage changes with $c$ and
-$\beta$.
+现在我们研究保留工资如何随着 $c$ 和 $\beta$ 变化。
 
-We will do this using a contour plot.
+我们将使用等高线图来进行这项研究。
 
-```{code-cell} python3
+```{code-cell} ipython3
 grid_size = 25
 R = np.empty((grid_size, grid_size))
 
@@ -840,7 +806,7 @@ for i, c in enumerate(c_vals):
         R[i, j] = compute_reservation_wage_continuous(mcmc)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 cs1 = ax.contourf(c_vals, β_vals, R.T, alpha=0.75)
@@ -850,7 +816,7 @@ plt.clabel(ctr1, inline=1, fontsize=13)
 plt.colorbar(cs1, ax=ax)
 
 
-ax.set_title("reservation wage")
+ax.set_title("保留工资")
 ax.set_xlabel("$c$", fontsize=16)
 ax.set_ylabel("$β$", fontsize=16)
 
@@ -861,3 +827,4 @@ plt.show()
 
 ```{solution-end}
 ```
+

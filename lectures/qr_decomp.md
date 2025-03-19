@@ -11,146 +11,142 @@ kernelspec:
   name: python3
 ---
 
-# QR Decomposition
+# QR分解
 
-## Overview
+## 概述
 
-This lecture describes the QR decomposition and how it relates to
+本讲解释QR分解及其与以下内容的关系：
 
- * Orthogonal projection and least squares
+* 正交投影和最小二乘法
 
- * A Gram-Schmidt process
+* Gram-Schmidt正交化过程
 
- * Eigenvalues and eigenvectors
+* 特征值和特征向量
 
+我们将编写一些Python代码来帮助巩固理解。
 
-We'll write some Python code to help consolidate our understandings.
+## 矩阵分解
 
-## Matrix Factorization
+QR分解（也称为QR因式分解）是将一个矩阵分解为一个正交矩阵和一个三角矩阵的乘积。
 
-The QR decomposition (also called the QR factorization) of a matrix is a decomposition of a matrix into the product of  an orthogonal matrix and a triangular matrix.
-
-A QR decomposition of a real  matrix $A$ 
-takes the form 
+对于一个实矩阵$A$，其QR分解形式为：
 
 $$
 A=QR
 $$
 
-where 
+其中：
 
-* $Q$ is an orthogonal matrix (so that  $Q^TQ = I$)
+* $Q$是正交矩阵（满足$Q^TQ = I$）
 
-* $R$ is an upper triangular matrix 
+* $R$是上三角矩阵
 
+我们将使用**Gram-Schmidt正交化过程**来计算QR分解
 
-We'll use a **Gram-Schmidt process** to compute a  QR decomposition 
+由于这个过程很有教育意义，我们将编写自己的Python代码来完成这项工作
 
-Because doing so is so educational, we'll  write our own Python code to do the job
+## 格拉姆-施密特正交化过程
 
-## Gram-Schmidt process
+我们从一个**方阵**$A$开始。
 
-We'll start with a **square** matrix $A$.
+如果方阵$A$是非奇异的，那么$QR$分解是唯一的。
 
-If a square matrix $A$ is nonsingular, then a $QR$ factorization is unique.
+我们稍后会处理矩形矩阵$A$。
 
-We'll deal with a rectangular matrix $A$ later.
+实际上，我们的算法也适用于非方阵的矩形矩阵$A$。
 
-Actually, our algorithm will work with a rectangular $A$ that is not square.
+### 方阵$A$的格拉姆-施密特过程
 
-### Gram-Schmidt process for square $A$
+这里我们对矩阵$A$的**列**应用格拉姆-施密特过程。
 
-Here we apply a Gram-Schmidt  process to the  **columns**  of matrix $A$.
-
-In particular, let
+具体来说，令
 
 $$
 A= \left[ \begin{array}{c|c|c|c} a_1 & a_2 & \cdots & a_n \end{array} \right]
 $$
 
-Let $|| · ||$ denote the L2 norm.
+令$|| · ||$表示L2范数。
 
-The Gram-Schmidt algorithm repeatedly combines the following  two steps in a particular order
+格拉姆-施密特算法按特定顺序重复以下两个步骤
 
-*  **normalize** a vector to have unit norm
+* **标准化**向量使其具有单位范数
 
-*  **orthogonalize** the next vector
+* **正交化**下一个向量
 
-To begin, we set $u_1 = a_1$ and then **normalize**:
+首先，我们设$u_1 = a_1$然后进行**标准化**：
 
 $$
 u_1=a_1, \ \ \ e_1=\frac{u_1}{||u_1||}
 $$
 
-We **orgonalize** first to compute $u_2$ and then **normalize** to create $e_2$:
+我们先**正交化**计算$u_2$，然后**标准化**得到$e_2$：
 
 $$
 u_2=a_2-(a_2· e_1)e_1, \ \ \  e_2=\frac{u_2}{||u_2||}
 $$
 
-We invite the reader to verify that $e_1$ is orthogonal to $e_2$ by checking that
-$e_1 \cdot e_2 = 0$.
+我们邀请读者通过验证 $e_1 \cdot e_2 = 0$ 来确认 $e_1$ 与 $e_2$ 正交。
 
-The Gram-Schmidt procedure continues iterating.
+Gram-Schmidt过程继续迭代。
 
-Thus,  for $k= 2, \ldots, n-1$ we construct
+因此，对于 $k= 2, \ldots, n-1$，我们构造
 
 $$
 u_{k+1}=a_{k+1}-(a_{k+1}· e_1)e_1-\cdots-(a_{k+1}· e_k)e_k, \ \ \ e_{k+1}=\frac{u_{k+1}}{||u_{k+1}||}
 $$
 
+这里的 $(a_j \cdot e_i)$ 可以被解释为 $a_j$ 在 $e_i$ 上的线性最小二乘**回归系数**
 
-Here $(a_j \cdot e_i)$ can be interpreted as the linear least squares **regression coefficient** of $a_j$ on $e_i$ 
-
-* it is the inner product of $a_j$ and $e_i$ divided by the inner product of $e_i$ where 
-    $e_i \cdot e_i = 1$, as *normalization* has assured us.
+* 它是 $a_j$ 和 $e_i$ 的内积除以 $e_i$ 的内积，其中
+    由于*标准化*，我们知道 $e_i \cdot e_i = 1$
     
-* this regression coefficient has an interpretation as being  a **covariance** divided by a **variance**
-   
+* 这个回归系数可以解释为**协方差**除以**方差**
 
-It can  be verified that
+可以验证
 
 $$
 A= \left[ \begin{array}{c|c|c|c} a_1 & a_2 & \cdots & a_n \end{array} \right]=
 \left[ \begin{array}{c|c|c|c} e_1 & e_2 & \cdots & e_n \end{array} \right]
-\left[ \begin{matrix} a_1·e_1 & a_2·e_1 & \cdots & a_n·e_1\\ 0 & a_2·e_2 & \cdots & a_n·e_2 
+\left[ \begin{matrix} a_1·e_1 & a_2·e_1 & \cdots & a_n·e_1\\ 0 & a_2·e_2 & \cdots & a_n·e_2
+
 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & a_n·e_n \end{matrix} \right]
 $$
 
-Thus, we have constructed the decomposision
+因此，我们构造了分解
 
 $$ 
 A = Q R
 $$
 
-where 
+其中
 
 $$ 
 Q = \left[ \begin{array}{c|c|c|c} a_1 & a_2 & \cdots & a_n \end{array} \right]=
 \left[ \begin{array}{c|c|c|c} e_1 & e_2 & \cdots & e_n \end{array} \right]
 $$
 
-and 
+且
 
 $$
 R = \left[ \begin{matrix} a_1·e_1 & a_2·e_1 & \cdots & a_n·e_1\\ 0 & a_2·e_2 & \cdots & a_n·e_2 
 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & a_n·e_n \end{matrix} \right]
 $$
 
-### $A$ not square 
+### $A$ 非方阵
 
-Now suppose that $A$ is an $n \times m$ matrix where $m > n$.  
+现在假设 $A$ 是一个 $n \times m$ 矩阵，其中 $m > n$。
 
-Then a $QR$ decomposition is
+那么 $QR$ 分解为
 
 $$
 A= \left[ \begin{array}{c|c|c|c} a_1 & a_2 & \cdots & a_m \end{array} \right]=\left[ \begin{array}{c|c|c|c} e_1 & e_2 & \cdots & e_n \end{array} \right]
 \left[ \begin{matrix} a_1·e_1 & a_2·e_1 & \cdots & a_n·e_1 & a_{n+1}\cdot e_1 & \cdots & a_{m}\cdot e_1 \\
+
 0 & a_2·e_2 & \cdots & a_n·e_2 & a_{n+1}\cdot e_2 & \cdots & a_{m}\cdot e_2 \\ \vdots & \vdots & \ddots & \quad  \vdots & \vdots & \ddots & \vdots
 \\ 0 & 0 & \cdots & a_n·e_n & a_{n+1}\cdot e_n & \cdots & a_{m}\cdot e_n \end{matrix} \right]
 $$
 
-which implies that
+这意味着
 
 \begin{align*}
 a_1 & = (a_1\cdot e_1) e_1 \cr
@@ -162,9 +158,9 @@ a_{n+1} & = (a_{n+1}\cdot e_1) e_1 + (a_{n+1}\cdot e_2) e_2 + \cdots + (a_{n+1}\
 a_m & = (a_m\cdot e_1) e_1 + (a_m\cdot e_2) e_2 + \cdots + (a_m \cdot e_n) e_n  \cr
 \end{align*}
 
-## Some Code
+## 一些代码
 
-Now let's write some homemade Python code to implement a QR decomposition by deploying the  Gram-Schmidt process described above.
+现在让我们编写一些自制的Python代码，通过部署上述的Gram-Schmidt过程来实现QR分解。
 
 ```{code-cell} ipython3
 import numpy as np
@@ -173,10 +169,10 @@ from scipy.linalg import qr
 
 ```{code-cell} ipython3
 def QR_Decomposition(A):
-    n, m = A.shape # get the shape of A
+    n, m = A.shape # 获取A的形状
 
-    Q = np.empty((n, n)) # initialize matrix Q
-    u = np.empty((n, n)) # initialize matrix u
+    Q = np.empty((n, n)) # 初始化矩阵Q
+    u = np.empty((n, n)) # 初始化矩阵u
 
     u[:, 0] = A[:, 0]
     Q[:, 0] = u[:, 0] / np.linalg.norm(u[:, 0])
@@ -185,9 +181,9 @@ def QR_Decomposition(A):
 
         u[:, i] = A[:, i]
         for j in range(i):
-            u[:, i] -= (A[:, i] @ Q[:, j]) * Q[:, j] # get each u vector
+            u[:, i] -= (A[:, i] @ Q[:, j]) * Q[:, j] # 获取每个u向量
 
-        Q[:, i] = u[:, i] / np.linalg.norm(u[:, i]) # compute each e vetor
+        Q[:, i] = u[:, i] / np.linalg.norm(u[:, i]) # 计算每个e向量
 
     R = np.zeros((n, m))
     for i in range(n):
@@ -197,23 +193,23 @@ def QR_Decomposition(A):
     return Q, R
 ```
 
-The preceding code is fine but can benefit from some further housekeeping.
+前面的代码没问题，但可以进行一些进一步的整理。
 
-We want to do this because later in this notebook we want to compare results from using our homemade code above with the code for a QR that the Python `scipy` package delivers.
+我们这样做是因为在本notebook后面部分，我们想要比较使用上面的自制代码与Python `scipy`包提供的QR代码所得到的结果。
 
-There can be be sign differences between the $Q$ and $R$ matrices produced by different numerical algorithms.
+不同的数值算法产生的$Q$和$R$矩阵之间可能存在符号差异。
 
-All of these are valid QR decompositions because of how the  sign differences cancel out when we compute $QR$.
+由于在计算$QR$时这些符号差异会相互抵消，所以这些都是有效的QR分解。
 
-However, to make the results from  our homemade function and the QR module in `scipy` comparable, let's require that $Q$ have positive diagonal entries.
+但是，为了使我们自制函数和`scipy`中的QR模块的结果具有可比性，让我们要求$Q$具有正对角线元素。
 
-We do this by adjusting  the signs of the columns in $Q$ and the rows in $R$ appropriately.
+我们通过适当调整$Q$中列的符号和$R$中行的符号来实现这一点。
 
-To accomplish this we'll define a pair of functions.
+为了实现这个目标，我们将定义一对函数。
 
 ```{code-cell} ipython3
 def diag_sign(A):
-    "Compute the signs of the diagonal of matrix A"
+    "计算矩阵A对角线元素的符号"
 
     D = np.diag(np.sign(np.diag(A)))
 
@@ -221,8 +217,8 @@ def diag_sign(A):
 
 def adjust_sign(Q, R):
     """
-    Adjust the signs of the columns in Q and rows in R to
-    impose positive diagonal of Q
+    调整Q中列的符号和R中行的符号，
+    以确保Q的对角线为正
     """
 
     D = diag_sign(Q)
@@ -233,9 +229,9 @@ def adjust_sign(Q, R):
     return Q, R
 ```
 
-## Example
+## 示例
 
-Now let's do an example.
+现在让我们做一个例子。
 
 ```{code-cell} ipython3
 A = np.array([[1.0, 1.0, 0.0], [1.0, 0.0, 1.0], [0.0, 1.0, 1.0]])
@@ -257,30 +253,27 @@ Q
 R
 ```
 
-Let's compare outcomes  with what the `scipy` package produces
+让我们将结果与 `scipy` 包产生的结果进行比较
 
 ```{code-cell} ipython3
 Q_scipy, R_scipy = adjust_sign(*qr(A))
 ```
 
 ```{code-cell} ipython3
-print('Our Q: \n', Q)
+print('我们的 Q: \n', Q)
 print('\n')
-print('Scipy Q: \n', Q_scipy)
+print('Scipy 的 Q: \n', Q_scipy)
 ```
 
 ```{code-cell} ipython3
-print('Our R: \n', R)
+print('我们的 R: \n', R)
 print('\n')
-print('Scipy R: \n', R_scipy)
+print('Scipy 的 R: \n', R_scipy)
 ```
 
-The above outcomes give us the good news that our homemade function agrees with what
-scipy produces.
+上述结果给我们带来好消息，我们自制的函数与scipy产生的结果一致。
 
-
-Now let's do a QR decomposition for a rectangular matrix $A$ that is $n \times m$ with 
-$m > n$.
+现在让我们对一个矩形矩阵$A$进行QR分解，这个矩阵是$n \times m$的，其中$m > n$。
 
 ```{code-cell} ipython3
 A = np.array([[1, 3, 4], [2, 0, 9]])
@@ -296,38 +289,37 @@ Q_scipy, R_scipy = adjust_sign(*qr(A))
 Q_scipy, R_scipy
 ```
 
-## Using QR Decomposition to Compute Eigenvalues
+## 使用QR分解计算特征值
 
-Now for a useful  fact about the QR algorithm.  
+现在介绍一个关于QR算法的有用事实。
 
-The following iterations on the QR decomposition can be used to compute **eigenvalues**
-of a **square** matrix $A$.
+以下基于QR分解的迭代可用于计算**方阵** $A$ 的**特征值**。
 
-Here is the algorithm:
+算法如下：
 
-1. Set $A_0 = A$ and form $A_0 = Q_0 R_0$
+1. 设 $A_0 = A$ 并形成 $A_0 = Q_0 R_0$
 
-2. Form $A_1 = R_0 Q_0 $ . Note that $A_1$ is similar to $A_0$ (easy to verify) and so has the same eigenvalues.
+2. 形成 $A_1 = R_0 Q_0$。注意 $A_1$ 与 $A_0$ 相似(易于验证)，因此具有相同的特征值。
 
-3. Form $A_1 = Q_1 R_1$ (i.e., form the $QR$ decomposition of $A_1$).
+3. 形成 $A_1 = Q_1 R_1$ (即，形成 $A_1$ 的 $QR$ 分解)。
 
-4. Form $ A_2 = R_1 Q_1 $ and then $A_2 = Q_2 R_2$  .
+4. 形成 $A_2 = R_1 Q_1$ 然后 $A_2 = Q_2 R_2$。
 
-5. Iterate to convergence.
+5. 迭代直至收敛。
 
-6. Compute eigenvalues of $A$ and compare them to the diagonal values of the limiting $A_n$ found from this process.
+6. 计算 $A$ 的特征值，并将其与从该过程得到的极限 $A_n$ 的对角线值进行比较。
 
 ```{todo}
 @mmcky to migrate this to use [sphinx-proof](https://sphinx-proof.readthedocs.io/en/latest/syntax.html#algorithms)
 ```
 
-**Remark:** this algorithm is close to one of the most efficient ways of computing eigenvalues!
+**注意：** 这个算法接近于计算特征值最有效的方法之一！
 
-Let's write some Python code to try out the algorithm
+让我们编写一些Python代码来尝试这个算法
 
 ```{code-cell} ipython3
 def QR_eigvals(A, tol=1e-12, maxiter=1000):
-    "Find the eigenvalues of A using QR decomposition."
+    "使用QR分解找到A的特征值。"
 
     A_old = np.copy(A)
     A_new = np.copy(A)
@@ -348,12 +340,12 @@ def QR_eigvals(A, tol=1e-12, maxiter=1000):
     return eigvals
 ```
 
-Now let's try the code and compare the results with what `scipy.linalg.eigvals` gives us
+现在让我们试试这段代码，并将结果与`scipy.linalg.eigvals`给出的结果进行比较
 
-Here goes
+开始吧
 
 ```{code-cell} ipython3
-# experiment this with one random A matrix
+# 用一个随机A矩阵做实验
 A = np.random.random((3, 3))
 ```
 
@@ -361,48 +353,44 @@ A = np.random.random((3, 3))
 sorted(QR_eigvals(A))
 ```
 
-Compare with the `scipy` package.
+与 `scipy` 包进行比较。
 
 ```{code-cell} ipython3
 sorted(np.linalg.eigvals(A))
 ```
 
-## $QR$ and PCA
+## $QR$ 分解与主成分分析（PCA）
 
-There are interesting connections between the $QR$ decomposition and principal components analysis (PCA).
+$QR$ 分解与主成分分析（PCA）之间存在一些有趣的联系。
 
-Here are  some.
+以下是一些联系：
 
-1.  Let $X'$ be a $k \times n$ random matrix where the $j$th column is a random draw
-from ${\mathcal N}(\mu, \Sigma)$ where $\mu$ is $k \times 1$ vector of means and $\Sigma$ is a $k \times k$
-covariance matrix.  We want $n > > k$ -- this is an "econometrics example".
+1. 设 $X'$ 是一个 $k \times n$ 的随机矩阵，其中第 $j$ 列是从 ${\mathcal N}(\mu, \Sigma)$ 分布中随机抽取的样本，这里 $\mu$ 是 $k \times 1$ 的均值向量，$\Sigma$ 是 $k \times k$ 的协方差矩阵。我们需要 $n > > k$ —— 这是一个"计量经济学的例子"。
 
-2. Form $X' = Q R $ where $Q $ is $k \times k$ and $R$ is $k \times n$.
+2. 将 $X'$ 分解为 $X' = Q R$，其中 $Q$ 是 $k \times k$ 矩阵，$R$ 是 $k \times n$ 矩阵。
 
-3. Form the eigenvalues of $ R R'$, i.e., we'll compute $R R' = \tilde P \Lambda \tilde P' $.
+3. 计算 $R R'$ 的特征值，即我们将计算 $R R' = \tilde P \Lambda \tilde P'$。
 
-4. Form $X' X = Q \tilde P \Lambda \tilde P' Q'$ and compare it with the eigen decomposition
-$ X'X = P \hat \Lambda P'$.  
+4. 构造 $X' X = Q \tilde P \Lambda \tilde P' Q'$ 并与特征分解 $X'X = P \hat \Lambda P'$ 进行比较。
 
-5. It will turn out that  that $\Lambda = \hat \Lambda$ and that $P = Q \tilde P$.
+5. 我们将发现 $\Lambda = \hat \Lambda$ 且 $P = Q \tilde P$。
 
+让我们用Python代码来验证推测5。
 
-Let's verify conjecture 5 with some Python code.
-
-Start by simulating a random $\left(n, k\right)$ matrix $X$.
+首先模拟一个随机的 $\left(n, k\right)$ 矩阵 $X$。
 
 ```{code-cell} ipython3
 k = 5
 n = 1000
 
-# generate some random moments
+# 生成一些随机矩
 𝜇 = np.random.random(size=k)
 C = np.random.random((k, k))
 Σ = C.T @ C
 ```
 
 ```{code-cell} ipython3
-# X is random matrix where each column follows multivariate normal dist.
+# X 是一个随机矩阵，其中每一列都遵循多元正态分布
 X = np.random.multivariate_normal(𝜇, Σ, size=n)
 ```
 
@@ -410,19 +398,20 @@ X = np.random.multivariate_normal(𝜇, Σ, size=n)
 X.shape
 ```
 
-Let's apply the QR decomposition to $X^{\prime}$.
+让我们对$X^{\prime}$进行QR分解。
 
 ```{code-cell} ipython3
 Q, R = adjust_sign(*QR_Decomposition(X.T))
 ```
 
-Check the shapes of $Q$ and $R$.
+检查 $Q$ 和 $R$ 的形状。
 
 ```{code-cell} ipython3
 Q.shape, R.shape
 ```
 
-Now we can construct $R R^{\prime}=\tilde{P} \Lambda \tilde{P}^{\prime}$ and form an eigen decomposition.
+
+现在我们可以构造 $R R^{\prime}=\tilde{P} \Lambda \tilde{P}^{\prime}$ 并形成特征分解。
 
 ```{code-cell} ipython3
 RR = R @ R.T
@@ -431,7 +420,7 @@ RR = R @ R.T
 Λ = np.diag(𝜆)
 ```
 
-We can also apply the decomposition to $X^{\prime} X=P \hat{\Lambda} P^{\prime}$.
+我们也可以对 $X^{\prime} X=P \hat{\Lambda} P^{\prime}$ 进行分解。
 
 ```{code-cell} ipython3
 XX = X.T @ X
@@ -440,15 +429,15 @@ XX = X.T @ X
 Λ_hat = np.diag(𝜆_hat)
 ```
 
-Compare the eigenvalues that are on the diagonals of $\Lambda$ and $\hat{\Lambda}$.
+比较 $\Lambda$ 和 $\hat{\Lambda}$ 对角线上的特征值。
 
 ```{code-cell} ipython3
 𝜆, 𝜆_hat
 ```
 
-Let's compare $P$ and $Q \tilde{P}$. 
+让我们比较 $P$ 和 $Q \tilde{P}$。
 
-Again we need to be careful about sign differences between the columns of $P$ and $Q\tilde{P}$. 
+同样，我们需要注意 $P$ 和 $Q\tilde{P}$ 的列之间的符号差异。
 
 ```{code-cell} ipython3
 QP_tilde = Q @ P_tilde
@@ -456,7 +445,7 @@ QP_tilde = Q @ P_tilde
 np.abs(P @ diag_sign(P) - QP_tilde @ diag_sign(QP_tilde)).max()
 ```
 
-Let's verify that $X^{\prime}X$ can be decomposed as $Q \tilde{P} \Lambda \tilde{P}^{\prime} Q^{\prime}$.
+让我们验证 $X^{\prime}X$ 可以被分解为 $Q \tilde{P} \Lambda \tilde{P}^{\prime} Q^{\prime}$。
 
 ```{code-cell} ipython3
 QPΛPQ = Q @ P_tilde @ Λ @ P_tilde.T @ Q.T
@@ -465,3 +454,4 @@ QPΛPQ = Q @ P_tilde @ Λ @ P_tilde.T @ Q.T
 ```{code-cell} ipython3
 np.abs(QPΛPQ - XX).max()
 ```
+

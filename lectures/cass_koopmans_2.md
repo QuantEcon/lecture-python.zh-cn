@@ -18,236 +18,211 @@ kernelspec:
 </div>
 ```
 
-# Cass-Koopmans Competitive Equilibrium
+# Cass-Koopmans竞争均衡
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-This lecture continues our analysis in this  lecture
-{doc}`Cass-Koopmans Planning Model <cass_koopmans_1>` about the  model that Tjalling Koopmans {cite}`Koopmans`
-and David Cass {cite}`Cass` used to study optimal capital accumulation.
+本讲座继续我们在{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`中关于Tjalling Koopmans {cite}`Koopmans`和David Cass {cite}`Cass`用来研究最优资本积累的模型的分析。
 
-This lecture illustrates what is, in fact, a
-more general connection between a **planned economy** and an economy
-organized as a competitive equilibrium or a **market economy**.
+本讲座说明了**计划经济**和以**竞争均衡**或**市场经济**形式组织的经济之间实际上存在的更普遍联系。
 
-The earlier  lecture {doc}`Cass-Koopmans Planning Model <cass_koopmans_1>` studied a planning problem and used ideas including
+在{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`中，我们研究了规划问题并使用了以下思想：
 
-- A Lagrangian formulation of the  planning problem that leads to a system of difference equations.
-- A **shooting algorithm** for solving difference equations subject
-  to initial and terminal conditions.
-- A **turnpike** property that describes optimal paths for
-  long-but-finite horizon economies.
+- 规划问题的拉格朗日公式，它导出了一个差分方程组。
+- 用于求解受初始和终端条件约束的差分方程的**射击算法**。
+- 描述长期但有限期限经济最优路径的**收费公路**性质。
 
-The present lecture uses  additional  ideas including
+本讲座使用了额外的思想，包括：
 
-- Hicks-Arrow prices, named after John R. Hicks and Kenneth Arrow.
-- A connection between some Lagrange multipliers from the planning
-  problem and the Hicks-Arrow prices.
-- A **Big** $K$ **, little** $k$ trick widely used in
-  macroeconomic dynamics.
-    * We shall encounter this trick in [this lecture](https://python.quantecon.org/rational_expectations.html)
-      and also in [this lecture](https://python-advanced.quantecon.org/dyn_stack.html).
-- A non-stochastic version of a theory of the **term structure of
-  interest rates**.
-- An intimate connection between  two
-   ways to organize an economy, namely:
-    * **socialism** in which a central planner commands the
-      allocation of resources, and
-    * **competitive markets** in
-      which competitive equilibrium **prices** induce individual
-      consumers and producers to choose a socially optimal allocation
-      as  unintended consequences of their selfish
-      decisions
+- Hicks-Arrow价格，以John R. Hicks和Kenneth Arrow命名。
+- 规划问题中的一些拉格朗日乘数与Hicks-Arrow价格之间的联系。
+- 在宏观经济学动态中广泛使用的**大**$K$**，小**$k$**技巧**。
+    * 我们将在[这篇讲座](https://python.quantecon.org/rational_expectations.html)和[这篇讲座](https://python-advanced.quantecon.org/dyn_stack.html)中遇到这个技巧。
+- 利率期限结构的非随机版本。
+- 两种组织经济方式之间的密切联系，即：
+    * **社会主义**，其中中央计划者指挥资源分配，和
+    * **竞争市场**，其中竞争均衡**价格**诱导个人消费者和生产者选择社会最优分配，作为他们自私决策的无意后果
 
-Let's start with some standard imports:
+让我们从一些标准导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
 from numba import jit, float64
 from numba.experimental import jitclass
 import numpy as np
 ```
 
-## Review of Cass-Koopmans Model
+## Cass-Koopmans模型回顾
 
-The physical setting is identical with that in {doc}`Cass-Koopmans Planning Model <cass_koopmans_1>`.
+物理环境与{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`完全相同。
 
-Time is discrete and takes values $t = 0, 1 , \ldots, T$.
+时间是离散的，取值为 $t = 0, 1 , \ldots, T$。
 
-Output of a single good can either be consumed or invested in physical capital.
+单一商品可以被消费或投资于实物资本。
 
-The capital good is durable but partially depreciates each period at a constant rate.
+资本品是耐用的，但每期以恒定比率折旧。
 
-We let $C_t$ be a nondurable consumption good at time t.
+我们用 $C_t$ 表示时间 t 的非耐用消费品。
 
-Let $K_t$ be the stock of physical capital at time t.
+用 $K_t$ 表示时间 t 的实物资本存量。
 
-Let $\vec{C}$ = $\{C_0,\dots, C_T\}$ and
-$\vec{K}$ = $\{K_0,\dots,K_{T+1}\}$.
+令 $\vec{C}$ = $\{C_0,\dots, C_T\}$ 且
+$\vec{K}$ = $\{K_0,\dots,K_{T+1}\}$。
 
-A representative household is endowed with one unit of labor at each
-$t$ and likes the consumption good at each $t$.
+代表性家庭在每个时期$t$都拥有一单位的劳动力，并且喜欢在每个时期消费商品。
 
-The representative household inelastically supplies a single unit of
-labor $N_t$ at each $t$, so that
-$N_t =1 \text{ for all } t \in \{0, 1, \ldots, T\}$.
+代表性家庭在每个时期$t$非弹性地供应一单位劳动力$N_t$，因此
+$N_t =1 \text{ 对所有 } t \in \{0, 1, \ldots, T\}$。
 
-The representative household has preferences over consumption bundles
-ordered by the utility functional:
+代表性家庭对消费组合的偏好由以下效用函数排序：
 
 $$
 U(\vec{C}) = \sum_{t=0}^{T} \beta^t \frac{C_t^{1-\gamma}}{1-\gamma}
 $$
 
-where $\beta \in (0,1)$ is a discount factor and $\gamma >0$
-governs the curvature of the one-period utility function.
+其中$\beta \in (0,1)$是贴现因子，$\gamma >0$
+决定单期效用函数的曲率。
 
-We assume that $K_0 > 0$.
+我们假设$K_0 > 0$。
 
-There is an economy-wide production function
+存在一个全经济范围的生产函数
 
 $$
 F(K_t,N_t) = A K_t^{\alpha}N_t^{1-\alpha}
 $$
 
-with $0 < \alpha<1$, $A > 0$.
+其中 $0 < \alpha<1$，$A > 0$。
 
-A feasible allocation $\vec{C}, \vec{K}$ satisfies
+一个可行的配置 $\vec{C}, \vec{K}$ 满足
 
 $$
 C_t + K_{t+1} \leq F(K_t,N_t) + (1-\delta) K_t \quad \text{for all } t \in \{0, 1, \ldots, T\}
 $$
 
-where $\delta \in (0,1)$ is a depreciation rate of capital.
+其中 $\delta \in (0,1)$ 是资本的折旧率。
 
-### Planning Problem
+### 规划问题
 
-In this lecture {doc}`Cass-Koopmans Planning Model <cass_koopmans_1>`, we studied a problem in which a planner chooses an allocation $\{\vec{C},\vec{K}\}$ to
-maximize {eq}`utility-functional` subject to {eq}`allocation`.
+在{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`中，我们研究了规划者选择配置 $\{\vec{C},\vec{K}\}$ 以
+最大化 {eq}`utility-functional`，同时受制于 {eq}`allocation`。
 
-The allocation that solves the planning problem reappears in a competitive equilibrium, as we shall see below.
+规划问题求解的配置将在竞争均衡中重现，我们将在下面看到。
 
-## Competitive Equilibrium
+## 竞争均衡
 
-We now study a decentralized version of the  economy.
+我们现在研究经济的去中心化版本。
 
-It shares  the same
-technology and preference structure as the planned economy studied in this lecture {doc}`Cass-Koopmans Planning Model <cass_koopmans_1>`.
+它与{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`中研究的计划经济具有相同的技术和偏好结构。
 
-But now there is no planner.
+但现在没有计划者。
 
-There are (unit masses of) price-taking consumers and firms.
+有（单位质量的）价格接受型消费者和企业。
 
-Market prices are set to reconcile distinct decisions that are made
-separately by a representative consumer and a representative firm.
+市场价格被设定为协调代表性消费者和代表性企业独立做出的不同决策。
 
-There is a representative consumer who has the same preferences over
-consumption plans as did a consumer in the planned economy.
+有一个代表性消费者，其对消费计划的偏好与计划经济中的消费者相同。
 
-Instead of being told what to consume and save by a planner, a
-consumer (also known as a *household*) chooses for itself subject to a budget constraint.
+消费者（也称为*家庭*）不再由计划者告诉消费和储蓄什么，而是自己选择，但受预算约束。
 
-- At each time $t$, the consumer receives wages and rentals
-  of capital from a firm -- these comprise its **income** at
-  time $t$.
-- The consumer decides how much income to allocate to consumption or
-  to savings.
-- The household can save either by acquiring additional physical
-  capital (it trades one for one with time $t$ consumption)
-  or by acquiring claims on consumption at dates other
-  than $t$.
-- The household owns  physical capital and labor
-  and rents them to the firm.
-- The household consumes, supplies labor, and invests in physical
-  capital.
-- A profit-maximizing representative firm operates the production
-  technology.
-- The firm rents labor and capital each period from the
-  representative household and sells its output each period to the
-  household.
-- The representative household and the representative firm are both
-  **price takers** who believe that prices are not affected by their choices
+- 在每个时期$t$，消费者从企业获得工资和资本租金
+  -- 这些构成其在时间$t$的**收入**。
+- 消费者决定将多少收入用于消费或
+  储蓄。
+- 家庭可以通过获得额外的实物资本（它与时间$t$的消费一比一交换）
+  或通过在非$t$时期获得消费权来储蓄。
+- 家庭拥有实物资本和劳动力
+  并将它们出租给企业。
+- 家庭消费、供应劳动力并投资于实物
+  资本。
+- 一个利润最大化的代表性企业运营生产
+  技术。
+- 企业每个时期从代表性家庭租用劳动力和资本，每个时期将其产出出售给
+  家庭。
+- 代表性家庭和代表性企业都是
+  **价格接受者**，他们认为价格不会受到他们选择的影响
 
 ```{note}
-Again, we can think of there being  unit measures of identical representative consumers and
-identical representative firms.
+同样，我们可以认为有单位质量的相同代表性消费者和
+相同代表性企业。
 ```
 
-## Market Structure
+## 市场结构
 
-The representative household and the representative firm are both price takers.
+代表性家庭和代表性企业都是价格接受者。
 
-The household owns both factors of production, namely, labor and physical capital.
+家庭拥有两种生产要素，即劳动力和实物资本。
 
-Each period, the firm rents both factors from the household.
+每个时期，企业从家庭租用这两种要素。
 
-There is a **single** grand competitive market in which a
-household  trades date $0$ goods for goods at
-all other dates $t=1, 2, \ldots, T$.
+有一个**单一**的大型竞争市场，其中家庭
+用时间$0$的商品交换所有其他时间$t=1, 2, \ldots, T$的商品。
 
-### Prices
+### 价格
 
-There are  sequences of prices
+有价格序列
 $\{w_t,\eta_t\}_{t=0}^T= \{\vec{w}, \vec{\eta} \}$
-where
+其中
 
-- $w_t$ is a wage, i.e., a rental rate, for labor at time $t$
+- $w_t$ 是时间$t$的工资，即劳动力的租赁率
 
-- $\eta_t$ is a rental rate for capital at time $t$
+- $\eta_t$ 是时间$t$资本的租赁率
 
-In addition there is a vector $\{q_t^0\}$ of  intertemporal prices where
+此外，还有一个跨期价格向量 $\{q_t^0\}$，其中
 
-- $q^0_t$ is the price at time $0$ of one unit of the  good at date $t$.
+- $q^0_t$ 是时间$0$时一单位时间$t$商品的价格。
 
-We call $\{q^0_t\}_{t=0}^T$  a vector of **Hicks-Arrow prices**,
-named after the 1972 economics Nobel prize winners.
+我们称 $\{q^0_t\}_{t=0}^T$ 为**Hicks-Arrow价格**向量，
+以1972年经济学诺贝尔奖获得者命名。
 
+因为 $q_t^0$ 是一个**相对价格**，$q_t^0$ 的计价单位是；我们可以通过将它们全部乘以一个正标量，比如 $\lambda > 0$，来重新标准化它们。
 
-
-Because  is a **relative price**. the unit of account  in terms of which the prices $q^0_t$ are stated is; we are free to re-normalize them by multiplying  all of them by a positive scalar, say $\lambda > 0$.
-
-Units of $q_t^0$ could be set so that they are
+$q_t^0$ 的单位可以设置为
 
 $$
-\frac{\text{number of time 0 goods}}{\text{number of time t goods}}
+\frac{\text{时间0商品数量}}{\text{时间t商品数量}}
 $$
 
-In this case, we would be taking the time $0$ consumption good to be the **numeraire**.
+在这种情况下，我们将时间$0$的消费品作为**计价单位**。
 
-## Firm Problem
+## 企业问题
 
-At time $t$ a representative firm hires labor
-$\tilde n_t$ and capital $\tilde k_t$.
+在时间$t$，代表性企业雇佣劳动力
+$\tilde n_t$ 和资本 $\tilde k_t$。
 
-The firm's profits at time $t$ are
+企业在时间$t$的利润为
 
 $$
 F(\tilde k_t, \tilde n_t)-w_t \tilde n_t -\eta_t \tilde k_t
 $$
 
-where $w_t$ is a wage rate at $t$
-and $\eta_t$ is the rental rate on capital at $t$.
+其中$w_t$是时间$t$的工资率
+而$\eta_t$是时间$t$资本的租赁率。
 
-As in the planned economy model
+与计划经济模型一样
 
 $$
 F(\tilde k_t, \tilde n_t) = A \tilde k_t^\alpha \tilde n_t^{1-\alpha}
 $$
 
-### Zero Profit Conditions
+### 零利润条件
 
-Zero-profits conditions for capital and labor are
+资本和劳动力的零利润条件为
 
 $$
 F_k(\tilde k_t, \tilde n_t) =\eta_t
 $$
 
-and
+和
 
 ```{math}
 :label: Zero-profits
@@ -255,187 +230,173 @@ and
 F_n(\tilde k_t, \tilde n_t) =w_t
 ```
 
-These conditions emerge from a no-arbitrage requirement.
+这些条件来自无套利要求。
 
-To describe this no-arbitrage profits  reasoning, we begin by applying a theorem of
-Euler about linearly homogenous functions.
+为了描述这个无套利利润推理，我们首先应用关于线性齐次函数的欧拉定理。
 
-The theorem applies to the Cobb-Douglas production function because
-we it  displays constant returns to scale:
+该定理适用于Cobb-Douglas生产函数，因为
+它显示规模报酬不变：
 
 $$
 \alpha F(\tilde k_t, \tilde n_t) =  F(\alpha  \tilde k_t, \alpha \tilde n_t)
 $$
 
-for $\alpha \in (0,1)$.
+对于 $\alpha \in (0,1)$。
 
-Taking  partial derivatives
-$\frac{\partial  }{\partial \alpha}$ on both sides of the
-above equation gives
+对上述方程两边取
+$\frac{\partial  }{\partial \alpha}$ 的偏导数得到
 
 $$
 F(\tilde k_t,\tilde n_t) =  \frac{\partial F}{\partial \tilde k_t}
 \tilde k_t + \frac{\partial F}{\partial \tilde  n_t} \tilde n_t
 $$
 
-Rewrite the firm's profits as
+重写企业的利润为
 
 $$
 \frac{\partial F}{\partial \tilde k_t} \tilde k_t +
 \frac{\partial F}{\partial \tilde  n_t} \tilde n_t-w_t \tilde n_t -\eta_t k_t
 $$
 
-or
+或
 
 $$
 \left(\frac{\partial F}{\partial \tilde k_t}-\eta_t\right) \tilde k_t +
 \left(\frac{\partial F}{\partial \tilde  n_t}-w_t\right) \tilde n_t
 $$
 
-Because $F$ is homogeneous of degree $1$, it follows
-that $\frac{\partial F}{\partial \tilde k_t}$ and
-$\frac{\partial F}{\partial \tilde n_t}$ are homogeneous of
-degree $0$ and therefore fixed with respect to
-$\tilde k_t$ and $\tilde n_t$.
+因为$F$是1次齐次的，所以
+$\frac{\partial F}{\partial \tilde k_t}$和
+$\frac{\partial F}{\partial \tilde n_t}$是0次齐次的，因此相对于
+$\tilde k_t$和$\tilde n_t$是固定的。
 
-If $\frac{\partial F}{\partial \tilde k_t}> \eta_t$, then the
-firm makes positive profits on each additional unit of
-$\tilde k_t$, so it would want to make $\tilde k_t$
-arbitrarily large.
+如果$\frac{\partial F}{\partial \tilde k_t}> \eta_t$，那么企业
+在每个额外的$\tilde k_t$单位上获得正利润，所以它想要使$\tilde k_t$
+任意大。
 
-But setting $\tilde k_t = + \infty$ is not physically feasible,
-so  **equilibrium** prices must take  values that present
-the firm with no such arbitrage opportunity.
+但设置$\tilde k_t = + \infty$在物理上是不可行的，
+所以**均衡**价格必须取使企业没有这种套利机会的值。
 
-A similar argument applies if
-$\frac{\partial F}{\partial \tilde n_t}> w_t$.
+类似的论证适用于
+$\frac{\partial F}{\partial \tilde n_t}> w_t$的情况。
 
-If $\frac{\partial \tilde k_t}{\partial \tilde k_t}< \eta_t$,
-the firm would want to set  $\tilde k_t$ to zero, which is not feasible.
+如果$\frac{\partial \tilde k_t}{\partial \tilde k_t}< \eta_t$，
+企业会想要将$\tilde k_t$设为零，这是不可行的。
 
-It is convenient to define
-$\vec{w} =\{w_0, \dots,w_T\}$ and $\vec{\eta}= \{\eta_0, \dots, \eta_T\}$.
+定义
+$\vec{w} =\{w_0, \dots,w_T\}$和$\vec{\eta}= \{\eta_0, \dots, \eta_T\}$会很方便。
 
-## Household Problem
+## 家庭问题
 
-A representative household lives at $t=0,1,\dots, T$.
+代表性家庭生活在$t=0,1,\dots, T$。
 
-At $t$, the household rents $1$ unit of labor
-and $k_t$ units of capital to a firm and receives income
+在$t$时，家庭出租$1$单位劳动力
+和$k_t$单位资本给企业并获得收入
 
 $$
 w_t 1+ \eta_t k_t
 $$
 
-At $t$ the household allocates its income to the following
-purchases between the following two categories:
+在$t$时，家庭将其收入分配于以下
+两个类别的购买：
 
-* consumption $c_t$
+* 消费 $c_t$
 
-* net investment $k_{t+1} -(1-\delta)k_t$
+* 净投资 $k_{t+1} -(1-\delta)k_t$
 
 
-Here $\left(k_{t+1} -(1-\delta)k_t\right)$ is the household's
-net investment in physical capital and $\delta \in (0,1)$ is
-again a depreciation rate of capital.
+这里$\left(k_{t+1} -(1-\delta)k_t\right)$是家庭的
+实物资本净投资，$\delta \in (0,1)$是
+资本的折旧率。
 
-In period $t$, the consumer is free to purchase more goods to be consumed and
-invested in physical capital than its income from supplying capital
-and labor to the firm, provided that in some other periods its income
-exceeds its purchases.
+在时期$t$，消费者可以自由购买比其从向企业供应资本
+和劳动力获得的收入更多的商品用于消费和
+投资于实物资本，只要在其他时期其收入超过其购买。
 
-A consumer's net excess demand for time $t$ consumption goods
-is the gap
+消费者在时间$t$消费品的净超额需求是缺口
 
 $$
 e_t \equiv \left(c_t + (k_{t+1} -(1-\delta)k_t)\right)-(w_t 1 + \eta_t k_t)
 $$
 
-Let $\vec{c} = \{c_0,\dots,c_T\}$ and let $\vec{k} = \{k_1,\dots,k_{T+1}\}$.
+令$\vec{c} = \{c_0,\dots,c_T\}$且令$\vec{k} = \{k_1,\dots,k_{T+1}\}$。
 
-$k_0$ is given to the household.
+$k_0$是给家庭的。
 
-The household faces a **single** budget constraint
-that requires that the present value of the household's net excess
-demands must be zero:
+家庭面临一个**单一**预算约束
+，要求家庭净超额需求的现值必须为零：
 
 $$
 \sum_{t=0}^T q^0_t e_t  \leq 0
 $$
 
-or
+或
 
 $$
 \sum_{t=0}^T q^0_t  \left(c_t + (k_{t+1} -(1-\delta)k_t)\right) \leq \sum_{t=0}^T q^0_t(w_t 1 + \eta_t k_t)  \
 $$
 
-The household faces price system $\{q^0_t, w_t, \eta_t\}$ as a price-taker and  chooses an allocation to solve the constrained optimization problem:
+家庭面临价格体系$\{q^0_t, w_t, \eta_t\}$作为价格接受者，并选择一个配置来解决受约束的优化问题：
 
 $$
 \begin{aligned}& \max_{\vec{c}, \vec{k} }  \sum_{t=0}^T \beta^t u(c_t) \\ \text{subject to} \ \   & \sum_{t=0}^T q_t^0\left(c_t +\left(k_{t+1}-(1-\delta) k_t \right) - (w_t -\eta_t k_t) \right)\leq 0  \notag \end{aligned}
 $$
 
-Components of a  **price system** have the following units:
+**价格体系**的组成部分有以下单位：
 
-* $w_t$ is measured in units of the  time $t$ good per unit of time $t$ labor hired
+* $w_t$ 以时间$t$商品每单位时间$t$雇佣劳动力计量
 
-* $\eta_t$ is measured in  units of the time $t$ good per unit of time $t$ capital  hired
+* $\eta_t$ 以时间$t$商品每单位时间$t$雇佣资本计量
 
-* $q_t^0$ is measured in units of a numeraire  per unit of the time $t$ good
-
-
-### Definitions
-
-- A **price system** is a sequence
-  $\{q_t^0,\eta_t,w_t\}_{t=0}^T= \{\vec{q}, \vec{\eta}, \vec{w}\}$.
-- An **allocation** is a sequence
-  $\{c_t,k_{t+1},n_t=1\}_{t=0}^T = \{\vec{c}, \vec{k}, \vec{n}\}$.
-- A **competitive equilibrium** is a price system and an allocation
-  with the following properties:
-    - Given the price system, the allocation solves the household's
-      problem.
-    - Given the price system, the allocation solves the firm's
-      problem.
+* $q_t^0$ 以计价单位每单位时间$t$商品计量
 
 
-The vision here is that an equilibrium price system and allocation are determined once and for all.
+### 定义
 
-In effect, we imagine that all trades occur just before time $0$.
-
-## Computing a Competitive Equilibrium
-
-We compute a competitive equilibrium by using a **guess and
-verify** approach.
-
-- We  **guess** equilibrium price sequences
-  $\{\vec{q}, \vec{\eta}, \vec{w}\}$.
-- We then **verify** that at those prices, the household and
-  the firm choose the same allocation.
-
-### Guess for Price System
-
-In this lecture {doc}`Cass-Koopmans Planning Model <cass_koopmans_1>`, we  computed an allocation $\{\vec{C}, \vec{K}, \vec{N}\}$
-that solves a planning problem.
+- **价格体系**是一个序列
+  $\{q_t^0,\eta_t,w_t\}_{t=0}^T= \{\vec{q}, \vec{\eta}, \vec{w}\}$。
+- **配置**是一个序列
+  $\{c_t,k_{t+1},n_t=1\}_{t=0}^T = \{\vec{c}, \vec{k}, \vec{n}\}$。
+- **竞争均衡**是一个价格体系和一个配置
+  ，具有以下性质：
+    - 给定价格体系，该配置解决家庭的问题。
+    - 给定价格体系，该配置解决企业的问题。
 
 
-We use that allocation to construct a guess for the equilibrium
-price system.
+这里的愿景是均衡价格体系和配置一次性确定。
+
+实际上，我们想象所有交易都在时间$0$之前发生。
+
+## 计算竞争均衡
+
+我们使用**猜测和验证**方法来计算竞争均衡。
+
+- 我们**猜测**均衡价格序列
+  $\{\vec{q}, \vec{\eta}, \vec{w}\}$。
+- 然后我们**验证**在这些价格下，家庭和
+  企业选择相同的配置。
+
+### 价格体系的猜测
+
+在{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`中，我们计算了一个配置 $\{\vec{C}, \vec{K}, \vec{N}\}$
+，它解决了规划问题。
+
+
+我们使用该配置来构造均衡价格体系的猜测。
 
 
 ```{note}
-This allocation will constitute the **Big** $K$  to be in the present instance of the **Big** $K$ **, little** $k$ trick
-that we'll apply to  a competitive equilibrium in the spirit of [this lecture](https://python.quantecon.org/rational_expectations.html)
-and  [this lecture](https://python-advanced.quantecon.org/dyn_stack.html).
+这个配置将构成**大**$K$，在我们将应用于竞争均衡的**大**$K$**，小**$k$**技巧**的当前实例中，类似于[这篇讲座](https://python.quantecon.org/rational_expectations.html)和[这篇讲座](https://python-advanced.quantecon.org/dyn_stack.html)中的情况。
 ```
 
-In particular, we shall use the following procedure:
+特别是，我们将使用以下程序：
 
-* obtain first-order conditions for the representative firm and the representative consumer.
-* from these equations, obtain a new set of equations by replacing the firm's choice variables $\tilde k, \tilde n$ and the consumer's choice variables with the quantities $\vec C, \vec K$ that solve the planning problem.
-* solve the resulting equations for  $\{\vec{q}, \vec{\eta}, \vec{w}\}$ as functions of $\vec C, \vec K$.
-* verify that at these prices, $c_t = C_t, k_t = \tilde k_t = K_t, \tilde n_t = 1$ for $t = 0, 1, \ldots, T$.
+* 获得代表性企业和代表性消费者的一阶条件。
+* 从这些方程中，通过用解决规划问题的数量$\vec C, \vec K$替换企业的选择变量$\tilde k, \tilde n$和消费者的选择变量，获得一组新方程。
+* 求解所得方程，得到$\{\vec{q}, \vec{\eta}, \vec{w}\}$作为$\vec C, \vec K$的函数。
+* 验证在这些价格下，$c_t = C_t, k_t = \tilde k_t = K_t, \tilde n_t = 1$对于$t = 0, 1, \ldots, T$。
 
-Thus, we guess that for $t=0,\dots,T$:
+因此，我们猜测对于$t=0,\dots,T$：
 
 ```{math}
 :label: eq-price
@@ -455,7 +416,7 @@ w_t = f(K_t) -K_t f'(K_t)
 \eta_t = f'(K_t)
 ```
 
-At these prices, let  capital chosen by the household be
+在这些价格下，让家庭选择的资本为
 
 ```{math}
 :label: eq-pr4
@@ -463,16 +424,15 @@ At these prices, let  capital chosen by the household be
 k^*_t(\vec {q}, \vec{w}, \vec{\eta)} , \quad t \geq 0
 ```
 
-and let the allocation chosen by the firm be
+让企业选择的配置为
 
 $$
 \tilde k^*_t(\vec{q}, \vec{w}, \vec{\eta}), \quad t \geq 0
 $$
 
-and so on.
+等等。
 
-If our guess for the equilibrium price system is correct, then it
-must occur that
+如果我们对均衡价格体系的猜测是正确的，那么必须
 
 ```{math}
 :label: ge1
@@ -490,9 +450,7 @@ $$
 c_t^* + k_{t+1}^* - (1-\delta) k_t^*  = F(\tilde k_t^*, \tilde n_t^*)
 $$
 
-We shall verify that for $t=0,\dots,T$  allocations chosen
-by the household and the firm both equal the allocation that solves
-the planning problem:
+我们将验证对于$t=0,\dots,T$，家庭和企业选择的配置都等于解决规划问题的配置：
 
 ```{math}
 :label: eq-pl
@@ -500,31 +458,28 @@ the planning problem:
 k^*_t = \tilde k^*_t=K_t, \tilde n_t=1, c^*_t=C_t
 ```
 
-### Verification Procedure
+### 验证程序
 
-Our approach is firsts to stare at first-order necessary conditions for 
-optimization problems of the household and the firm.
+我们的方法是首先研究家庭和企业优化问题的一阶必要条件。
 
-At the price system we have guessed, we'll then verify that both sets of first-order
-conditions are satisfied at the allocation that solves the planning
-problem.
+在我们猜测的价格体系下，我们将验证这两组一阶条件在解决规划问题的配置下都得到满足。
 
-### Household's Lagrangian
+### 家庭的拉格朗日函数
 
-To solve the household's problem, we formulate the Lagrangian
+为了求解家庭的问题，我们构建拉格朗日函数
 
 $$
 \mathcal{L}(\vec{c},\vec{k},\lambda) = \sum_{t=0}^T \beta^t u(c_t)+ \lambda \left(\sum_{t=0}^T q_t^0\left(\left((1-\delta) k_t -w_t\right)
 +\eta_t k_t -c_t  - k_{t+1}\right)\right)
 $$
 
-and attack the min-max problem:
+并提出极小极大问题：
 
 $$
 \min_{\lambda} \max_{\vec{c},\vec{k}}  \mathcal{L}(\vec{c},\vec{k},\lambda)
 $$
 
-First-order conditions are
+一阶条件是
 
 ```{math}
 :label: cond1
@@ -550,19 +505,18 @@ k_t: \quad -\lambda q_t^0 \left[(1-\delta)+\eta_t \right]+\lambda q^0_{t-1}=0 \q
 k_{T+1}: \quad -\lambda q_0^{T+1} \leq 0, \ \leq 0 \text{ if } k_{T+1}=0; \ =0 \text{ if } k_{T+1}>0
 ```
 
-Now we plug in our guesses of prices and do some algebra in the hope of recovering all first-order necessary conditions
-{eq}`constraint1`-{eq}`constraint4` for the planning problem from this lecture {doc}`Cass-Koopmans Planning Model <cass_koopmans_1>`.
+现在我们将价格猜测代入并进行一些代数运算，希望从{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`中的规划问题的一阶必要条件{eq}`constraint1`-{eq}`constraint4`中恢复所有条件。
 
-Combining {eq}`cond1` and {eq}`eq-price`, we get:
+将{eq}`cond1`和{eq}`eq-price`结合，我们得到：
 
 $$
 u'(C_t) = \mu_t
 $$
 
-which is {eq}`constraint1`.
+这是{eq}`constraint1`。
 
-Combining {eq}`cond2`, {eq}`eq-price`, and
-{eq}`eq-price3`, we get:
+将{eq}`cond2`、{eq}`eq-price`和
+{eq}`eq-price3`结合，我们得到：
 
 ```{math}
 :label: co-re
@@ -570,117 +524,102 @@ Combining {eq}`cond2`, {eq}`eq-price`, and
 -\lambda \beta^t \mu_t\left[(1-\delta) +f'(K_t)\right] +\lambda \beta^{t-1}\mu_{t-1}=0
 ```
 
-Rewriting {eq}`co-re` by dividing by $\lambda$ on
-both sides (which is nonzero since  u'>0) we get:
+通过将{eq}`co-re`两边除以$\lambda$（因为$u'>0$所以不为零）重写，我们得到：
 
 $$
 \beta^t \mu_t [(1-\delta+f'(K_t)] = \beta^{t-1} \mu_{t-1}
 $$
 
-or
+或
 
 $$
 \beta \mu_t [(1-\delta+f'(K_t)] = \mu_{t-1}
 $$
 
-which is {eq}`constraint2`.
+这是{eq}`constraint2`。
 
-Combining {eq}`cond3`, {eq}`eq-price`, {eq}`eq-price2`
-and {eq}`eq-price3` after multiplying both sides of
-{eq}`cond3` by $\lambda$, we get
+将{eq}`cond3`、{eq}`eq-price`、{eq}`eq-price2`
+和{eq}`eq-price3`结合，在将{eq}`cond3`两边乘以$\lambda$后，我们得到
 
 $$
 \sum_{t=0}^T \beta^t \mu_{t} \left(C_t+ (K_{t+1} -(1-\delta)K_t)-f(K_t)+K_t f'(K_t)-f'(K_t)K_t\right) \leq 0
 $$
 
-which simplifies to
+这简化为
 
 $$
 \sum_{t=0}^T  \beta^t \mu_{t} \left(C_t +K_{t+1} -(1-\delta)K_t - F(K_t,1)\right) \leq 0
 $$
 
-Since $\beta^t \mu_t >0$ for $t =0, \ldots, T$, it follows that
+因为$\beta^t \mu_t >0$对于$t =0, \ldots, T$，所以
 
 $$
 C_t+K_{t+1}-(1-\delta)K_t -F(K_t,1)=0 \quad  \text{ for all }t \text{ in } \{0, 1, \ldots, T\}
 $$
 
-which is {eq}`constraint3`.
+这是{eq}`constraint3`。
 
-Combining {eq}`cond4` and {eq}`eq-price`, we get:
+将{eq}`cond4`和{eq}`eq-price`结合，我们得到：
 
 $$
 -\beta^{T+1} \mu_{T+1} \leq 0
 $$
 
-Dividing both sides by $\beta^{T+1}$ gives
+两边除以$\beta^{T+1}$得到
 
 $$
 -\mu_{T+1} \leq 0
 $$
 
-which is  {eq}`constraint4` for the  planning problem.
+这是规划问题的{eq}`constraint4`。
 
-Thus, at our guess of the equilibrium price system, the allocation
-that solves the planning problem also solves the problem faced by a
-representative household living in a competitive equilibrium.
+因此，在我们猜测的均衡价格体系下，解决规划问题的配置也解决了代表性家庭在竞争均衡中面临的问题。
 
-### Representative Firm's Problem
+### 代表性企业的问题
 
-We now turn to  the problem faced by a firm in a competitive
-equilibrium:
+我们现在转向竞争均衡中企业面临的问题：
 
-If we plug {eq}`eq-pl` into {eq}`Zero-profits` for all t, we
-get
+如果我们将{eq}`eq-pl`代入{eq}`Zero-profits`对于所有t，我们得到
 
 $$
 \frac{\partial F(K_t, 1)}{\partial K_t} = f'(K_t) = \eta_t
 $$
 
-which is {eq}`eq-price3`.
+这是{eq}`eq-price3`。
 
-If we now plug {eq}`eq-pl` into {eq}`Zero-profits` for all t, we
-get:
+如果我们现在将{eq}`eq-pl`代入{eq}`Zero-profits`对于所有t，我们得到：
 
 $$
 \frac{\partial F(\tilde K_t, 1)}{\partial \tilde L_t} = f(K_t)-f'(K_t)K_t=w_t
 $$
 
-which is exactly {eq}`eq-pr4`.
+这正好是{eq}`eq-pr4`。
 
-Thus, at our guess for the equilibrium price system, the allocation
-that solves the planning problem also solves the problem faced by a firm
-within a competitive equilibrium.
+因此，在我们猜测的均衡价格体系下，解决规划问题的配置也解决了竞争均衡中企业面临的问题。
 
-By {eq}`ge1` and {eq}`ge2` this allocation is
-identical to the one that solves the consumer's problem.
+由{eq}`ge1`和{eq}`ge2`，这个配置与解决消费者问题的配置相同。
 
 ```{note}
-Because budget sets are affected only by relative prices,
-$\{q^0_t\}$ is determined only up to multiplication by a
-positive constant.
+因为预算集只受相对价格影响，
+$\{q^0_t\}$只确定到乘以一个正常数。
 ```
 
-**Normalization:** We are free to choose a $\{q_t^0\}$ that
-makes $\lambda=1$ so that we are measuring $q_t^0$  in
-units of the marginal utility of time $0$ goods.
+**标准化：**我们可以选择$\{q_t^0\}$使$\lambda=1$，这样我们就在时间$0$商品的边际效用单位中测量$q_t^0$。
 
-We will  plot $q, w, \eta$ below to show these equilibrium  prices
-induce the same aggregate movements that we saw earlier in the planning
-problem.
+我们将在下面绘制$q, w, \eta$以显示这些均衡价格
+诱导出与我们在规划问题中看到的相同的总体运动。
 
-To proceed, we bring in Python code that {doc}`Cass-Koopmans Planning Model <cass_koopmans_1>` used to solve the planning problem
+为了继续，我们引入{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`中用来解决规划问题的Python代码
 
-First let's define a `jitclass` that stores  parameters and functions
-the characterize an economy.
+首先让我们定义一个`jitclass`来存储定义我们经济的参数和函数。
 
 ```{code-cell} python3
 planning_data = [
-    ('γ', float64),    # Coefficient of relative risk aversion
-    ('β', float64),    # Discount factor
-    ('δ', float64),    # Depreciation rate on capital
-    ('α', float64),    # Return to capital per capita
-    ('A', float64)     # Technology
+    ('γ', float64),    # 相对风险厌恶系数
+    ('β', float64),    # 贴现因子
+    ('δ', float64),    # 资本折旧率
+    ('α', float64),    # 人均资本回报率
+    ('A', float64)     # 技术水平
 ]
 ```
 
@@ -695,50 +634,50 @@ class PlanningProblem():
 
     def u(self, c):
         '''
-        Utility function
-        ASIDE: If you have a utility function that is hard to solve by hand
-        you can use automatic or symbolic differentiation
-        See https://github.com/HIPS/autograd
+        效用函数
+        注意：如果你有一个难以手动求解的效用函数
+        你可以使用自动或符号微分
+        参见 https://github.com/HIPS/autograd
         '''
         γ = self.γ
 
         return c ** (1 - γ) / (1 - γ) if γ!= 1 else np.log(c)
 
     def u_prime(self, c):
-        'Derivative of utility'
+        '效用函数的导数'
         γ = self.γ
 
         return c ** (-γ)
 
     def u_prime_inv(self, c):
-        'Inverse of derivative of utility'
+        '效用函数导数的逆函数'
         γ = self.γ
 
         return c ** (-1 / γ)
 
     def f(self, k):
-        'Production function'
+        '生产函数'
         α, A = self.α, self.A
 
         return A * k ** α
 
     def f_prime(self, k):
-        'Derivative of production function'
+        '生产函数的导数'
         α, A = self.α, self.A
 
         return α * A * k ** (α - 1)
 
     def f_prime_inv(self, k):
-        'Inverse of derivative of production function'
+        '生产函数导数的逆函数'
         α, A = self.α, self.A
 
         return (k / (A * α)) ** (1 / (α - 1))
 
     def next_k_c(self, k, c):
         ''''
-        Given the current capital Kt and an arbitrary feasible
-        consumption choice Ct, computes Kt+1 by state transition law
-        and optimal Ct+1 by Euler equation.
+        给定当前资本Kt和任意可行的
+        消费选择Ct，通过状态转移定律计算Kt+1
+        并通过欧拉方程计算最优Ct+1。
         '''
         β, δ = self.β, self.δ
         u_prime, u_prime_inv = self.u_prime, self.u_prime_inv
@@ -754,16 +693,15 @@ class PlanningProblem():
 @jit
 def shooting(pp, c0, k0, T=10):
     '''
-    Given the initial condition of capital k0 and an initial guess
-    of consumption c0, computes the whole paths of c and k
-    using the state transition law and Euler equation for T periods.
+    给定资本的初始条件k0和消费的初始猜测值c0，
+    使用状态转移方程和欧拉方程计算T期内c和k的完整路径。
     '''
     if c0 > pp.f(k0):
-        print("initial consumption is not feasible")
+        print("初始消费不可行")
 
         return None
 
-    # initialize vectors of c and k
+    # 初始化c和k的向量
     c_vec = np.empty(T+1)
     k_vec = np.empty(T+2)
 
@@ -821,16 +759,16 @@ k_ss = pp.f_prime_inv(ρ+pp.δ)
 c_ss = pp.f(k_ss) - pp.δ * k_ss
 ```
 
-The above code from this lecture {doc}`Cass-Koopmans Planning Model <cass_koopmans_1>` lets us compute an optimal allocation for the planning problem.
+来自{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`的上述代码让我们能够计算规划问题的最优配置。
 
-* from the preceding analysis, we know that it will also be  an  allocation associated with a competitive equilibium.
+* 从前面的分析中，我们知道它也将是与竞争均衡相关的配置。
 
-Now  we're ready to bring in Python code that we require to compute additional objects that appear in a competitive equilibrium.
+现在我们准备引入计算竞争均衡中出现的额外对象所需的Python代码。
 
 ```{code-cell} python3
 @jit
 def q(pp, c_path):
-    # Here we choose numeraire to be u'(c_0) -- this is q^(t_0)_t
+    # 这里我们选择计价单位为u'(c_0) -- 这是q^(t_0)_t
     T = len(c_path) - 1
     q_path = np.ones(T+1)
     q_path[0] = 1
@@ -849,14 +787,14 @@ def η(pp, k_path):
     return η_path
 ```
 
-Now we calculate and plot for each $T$
+现在我们对每个$T$计算并绘制
 
 ```{code-cell} python3
 T_arr = [250, 150, 75, 50]
 
 fix, axs = plt.subplots(2, 3, figsize=(13, 6))
-titles = ['Arrow-Hicks Prices', 'Labor Rental Rate', 'Capital Rental Rate',
-          'Consumption', 'Capital', 'Lagrange Multiplier']
+titles = ['Arrow-Hicks价格', '劳动力租赁率', '资本租赁率',
+          '消费', '资本', '拉格朗日乘数']
 ylabels = ['$q_t^0$', '$w_t$', '$\eta_t$', '$c_t$', '$k_t$', '$\mu_t$']
 
 for T in T_arr:
@@ -871,22 +809,21 @@ for T in T_arr:
     for i, ax in enumerate(axs.flatten()):
         ax.plot(paths[i])
         ax.set(title=titles[i], ylabel=ylabels[i], xlabel='t')
-        if titles[i] == 'Capital':
+        if titles[i] == '资本':
             ax.axhline(k_ss, lw=1, ls='--', c='k')
-        if titles[i] == 'Consumption':
+        if titles[i] == '消费':
             ax.axhline(c_ss, lw=1, ls='--', c='k')
 
 plt.tight_layout()
 plt.show()
 ```
 
-#### Varying Curvature
+#### 改变曲率
 
-Now we see how our results change if we keep $T$ constant, but allow
-the curvature parameter, $\gamma$ to vary, starting
-with $K_0$ below the steady state.
+现在我们看到如果我们保持$T$不变，但允许
+曲率参数$\gamma$变化，从$K_0$低于稳态开始，结果会如何变化。
 
-We plot the results for $T=150$
+我们绘制$T=150$的结果
 
 ```{code-cell} python3
 T = 150
@@ -907,9 +844,9 @@ for γ in γ_arr:
     for i, ax in enumerate(axs.flatten()):
         ax.plot(paths[i], label=f'$\gamma = {γ}$')
         ax.set(title=titles[i], ylabel=ylabels[i], xlabel='t')
-        if titles[i] == 'Capital':
+        if titles[i] == '资本':
             ax.axhline(k_ss, lw=1, ls='--', c='k')
-        if titles[i] == 'Consumption':
+        if titles[i] == '消费':
             ax.axhline(c_ss, lw=1, ls='--', c='k')
 
 axs[0, 0].legend()
@@ -917,45 +854,44 @@ plt.tight_layout()
 plt.show()
 ```
 
-Adjusting $\gamma$ means adjusting how much individuals prefer
-to smooth consumption.
+调整$\gamma$意味着调整个人偏好
+平滑消费的程度。
 
-Higher $\gamma$ means individuals prefer to smooth more
-resulting in slower convergence to a  steady state allocation.
+较高的$\gamma$意味着个人偏好更多平滑
+导致较慢收敛到稳态配置。
 
-Lower $\gamma$ means individuals prefer to smooth less,
-resulting in faster convergence  to a steady state allocation.
+较低的$\gamma$意味着个人偏好较少平滑，
+导致较快收敛到稳态配置。
 
-## Yield Curves and Hicks-Arrow Prices
+## 收益率曲线和Hicks-Arrow价格
 
-We return to  Hicks-Arrow prices and  calculate how they are related to  **yields**  on loans of alternative maturities.
+我们回到Hicks-Arrow价格并计算它们如何与不同期限贷款的**收益率**相关。
 
-This will let us plot a **yield curve** that graphs   yields  on bonds of  maturities $j=1, 2, \ldots$ against $j=1,2, \ldots$.
+这将让我们绘制一个**收益率曲线**，将期限$j=1, 2, \ldots$的债券收益率与$j=1,2, \ldots$对应。
 
-We use the following formulas.
+我们使用以下公式。
 
-A **yield to maturity** on a loan made at time $t_0$ that matures at time $t > t_0$
+在时间$t_0$发放并在时间$t > t_0$到期的贷款的**到期收益率**
 
 $$
 r_{t_0,t}= -\frac{\log q^{t_0}_t}{t - t_0}
 $$
 
-A Hicks-Arrow price system for a base-year $t_0\leq t$ satisfies
+基准年$t_0\leq t$的Hicks-Arrow价格体系满足
 
 $$
 q^{t_0}_t = \beta^{t-t_0} \frac{u'(c_t)}{u'(c_{t_0})}= \beta^{t-t_0}
 \frac{c_t^{-\gamma}}{c_{t_0}^{-\gamma}}
 $$
 
-We redefine our function for $q$ to allow arbitrary base
-years, and define a new function for $r$, then plot both.
+我们重新定义我们的$q$函数以允许任意基准年，并定义一个新的$r$函数，然后绘制两者。
 
-We begin by continuing to assume that  $t_0=0$ and plot things for different maturities $t=T$, with $K_0$ below the steady state
+我们继续假设$t_0=0$并为不同的期限$t=T$绘制，其中$K_0$低于稳态
 
 ```{code-cell} python3
 @jit
 def q_generic(pp, t0, c_path):
-    # simplify notations
+    # 简化符号
     β = pp.β
     u_prime = pp.u_prime
 
@@ -968,7 +904,7 @@ def q_generic(pp, t0, c_path):
 
 @jit
 def r(pp, t0, q_path):
-    '''Yield to maturity'''
+    '''到期收益率'''
     r_path = - np.log(q_path[1:]) / np.arange(1, len(q_path))
     return r_path
 
@@ -982,10 +918,10 @@ def plot_yield_curves(pp, t0, c0, k0, T_arr):
         r_path = r(pp, t0, q_path)
 
         axs[0].plot(range(t0, T+1), q_path)
-        axs[0].set(xlabel='t', ylabel='$q_t^0$', title='Hicks-Arrow Prices')
+        axs[0].set(xlabel='t', ylabel='$q_t^0$', title='Hicks-Arrow价格')
 
         axs[1].plot(range(t0+1, T+1), r_path)
-        axs[1].set(xlabel='t', ylabel='$r_t^0$', title='Yields')
+        axs[1].set(xlabel='t', ylabel='$r_t^0$', title='收益率')
 ```
 
 ```{code-cell} python3
@@ -993,7 +929,7 @@ T_arr = [150, 75, 50]
 plot_yield_curves(pp, 0, 0.3, k_ss/3, T_arr)
 ```
 
-Now we plot when $t_0=20$
+现在我们在$t_0=20$时绘制
 
 ```{code-cell} python3
 plot_yield_curves(pp, 20, 0.3, k_ss/3, T_arr)

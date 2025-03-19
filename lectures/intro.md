@@ -9,9 +9,10 @@ kernelspec:
   name: python3
 ---
 
-# Python中级数量经济学
+# Python中级定量经济学
 
-本网站提供一系列关于数量经济建模的讲座。
+本网站提供一系列关于定量经济建模的讲座。
 
 ```{tableofcontents}
 ```
+

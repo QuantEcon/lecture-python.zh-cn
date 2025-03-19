@@ -18,16 +18,16 @@ kernelspec:
 </div>
 ```
 
-# Heterogeneous Beliefs and Bubbles
+# 异质信念与泡沫
 
 ```{index} single: Models; Harrison Kreps
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture uses following libraries:
+除了Anaconda中包含的库外，本讲座还使用以下库：
 
 ```{code-cell} ipython
 ---
@@ -36,20 +36,20 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-This lecture describes a version of a model of Harrison and Kreps {cite}`HarrKreps1978`.
+本讲解介绍了Harrison和Kreps模型{cite}`HarrKreps1978`的一个版本。
 
-The model determines the price of a dividend-yielding asset that is traded by two types of self-interested investors.
+该模型确定了一种由两类自利投资者交易的产生股息的资产的价格。
 
-The model features
+该模型具有以下特点：
 
-* heterogeneous beliefs
-* incomplete markets
-* short sales constraints, and possibly $\ldots$
-* (leverage) limits on an investor's ability to borrow in order to finance purchases of a risky asset
+* 异质信念
+* 不完全市场
+* 卖空限制，以及可能的$\ldots$
+* （杠杆）对投资者为购买风险资产而进行借贷的能力的限制
 
-Let's start with some standard imports:
+让我们从一些标准导入开始：
 
 ```{code-cell} ipython
 import numpy as np
@@ -57,55 +57,53 @@ import quantecon as qe
 import scipy.linalg as la
 ```
 
-### References
+### 参考文献
 
-Prior to reading the following, you might like to review our lectures on
+在阅读以下内容之前，建议您回顾我们关于以下内容的讲座：
 
-* {doc}`Markov chains <finite_markov>`
-* {doc}`Asset pricing with finite state space <markov_asset>`
+* {doc}`马尔可夫链 <finite_markov>`
+* {doc}`有限状态空间的资产定价 <markov_asset>`
 
-### Bubbles
+### 泡沫
 
-Economists differ in how they define a *bubble*.
+经济学家对*泡沫*的定义有所不同。
 
-The Harrison-Kreps model illustrates the following notion of a bubble that attracts many economists:
+Harrison-Kreps模型阐述了许多经济学家认同的泡沫概念：
 
-> *A component of an asset price can be interpreted as a bubble when all investors agree that the current price of the asset exceeds what they believe the asset's underlying dividend stream justifies*.
+> *当所有投资者都认为资产当前价格超过他们认为资产基本股息流所能支撑的水平时，资产价格的某个组成部分可以被解释为泡沫*。
 
-## Structure of the Model
+## 模型结构
 
-The model simplifies things  by ignoring alterations in the distribution of wealth
-among investors who have hard-wired different beliefs about the fundamentals that determine
-asset payouts.
+该模型通过忽略具有固定不同信念的投资者之间的财富分配变化来简化问题，这些投资者对决定资产收益的基本面持有不同看法。
 
-There is a fixed number $A$ of shares of an asset.
+有固定数量 $A$ 股的资产。
 
-Each share entitles its owner to a stream of dividends $\{d_t\}$ governed by a Markov chain defined on a state space $S \in \{0, 1\}$.
+每股赋予其所有者一个股息流 $\{d_t\}$，该股息流由定义在状态空间 $S \in \{0, 1\}$ 上的马尔可夫链控制。
 
-
-The dividend obeys
+股息遵循
 
 $$
 d_t =
+
 \begin{cases}
     0 & \text{ if } s_t = 0 \\
     1 & \text{ if } s_t = 1
 \end{cases}
 $$
 
-An owner of a share at the end  of time $t$ and the beginning of time $t+1$ is entitled to the dividend paid at time $t+1$.
+在时间$t$结束和时间$t+1$开始时持有股份的所有者有权获得在时间$t+1$支付的股息。
 
-Thus, the stock is traded **ex dividend**.
+因此，该股票是**除息**交易。
 
-An owner of a share at the beginning of time $t+1$ is also entitled to sell the share to another investor during time $t+1$.
+在时间$t+1$开始时持有股份的所有者也有权在时间$t+1$期间将股份卖给其他投资者。
 
-Two types $h=a, b$ of investors differ only in their beliefs about a Markov transition matrix $P$ with typical element
+两种类型$h=a, b$的投资者仅在其对马尔可夫转移矩阵$P$的信念上有所不同，其典型元素为
 
 $$
 P(i,j) = \mathbb P\{s_{t+1} = j \mid s_t = i\}
 $$
 
-Investors of type $a$ believe the transition matrix
+$a$类型投资者认为转移矩阵为
 
 $$
 P_a =
@@ -115,7 +113,7 @@ P_a =
     \end{bmatrix}
 $$
 
-Investors of  type $b$ think the transition matrix is
+$b$类型投资者认为转移矩阵为
 
 $$
 P_b =
@@ -125,13 +123,13 @@ P_b =
     \end{bmatrix}
 $$
 
-Thus,  in state $0$,  a type $a$ investor is more optimistic  about next period's dividend than is investor $b$.
+因此，在状态$0$时，$a$类投资者对下一期的股息比$b$类投资者更乐观。
 
-But in state $1$,  a type $a$ investor is more pessimistic  about next period's dividend than is investor $b$.
+但在状态$1$时，$a$类投资者对下一期的股息比$b$类投资者更悲观。
 
-The stationary (i.e., invariant) distributions of these two matrices can be calculated as follows:
+这两个矩阵的平稳（即不变）分布可以按如下方式计算：
 
-```{code-cell} python3
+```{code-cell} ipython3
 qa = np.array([[1/2, 1/2], [2/3, 1/3]])
 qb = np.array([[2/3, 1/3], [1/4, 3/4]])
 mca = qe.MarkovChain(qa)
@@ -139,80 +137,82 @@ mcb = qe.MarkovChain(qb)
 mca.stationary_distributions
 ```
 
-```{code-cell} python3
-mcb.stationary_distributions
+```{code-cell} ipython3
+mcb.平稳分布
 ```
 
-The stationary distribution of $P_a$ is approximately $\pi_a = \begin{bmatrix} .57 & .43 \end{bmatrix}$.
+$P_a$ 的平稳分布约为 $\pi_a = \begin{bmatrix} .57 & .43 \end{bmatrix}$。
 
-The stationary distribution of $P_b$ is approximately $\pi_b = \begin{bmatrix} .43 & .57 \end{bmatrix}$.
+$P_b$ 的平稳分布约为 $\pi_b = \begin{bmatrix} .43 & .57 \end{bmatrix}$。
 
-Thus, a type $a$ investor is more pessimistic on average.
+因此，a 类投资者平均来说更悲观。
 
-### Ownership Rights
+### 所有权权利
 
-An owner of the asset at the end of time $t$ is entitled to the dividend at time $t+1$ and also has the right to sell the asset at time $t+1$.
+在 t 时刻结束时资产的所有者有权获得 t+1 时刻的股息，并且有权在 t+1 时刻出售该资产。
 
-Both types of investors are risk-neutral and both have the same fixed discount factor $\beta \in (0,1)$.
+两类投资者都是风险中性的，并且都有相同的固定贴现因子 $\beta \in (0,1)$。
 
-In our numerical example, we’ll set $\beta = .75$, just as Harrison and Kreps {cite}`HarrKreps1978` did.
+在我们的数值示例中，我们将设定 $\beta = .75$，这与 Harrison 和 Kreps {cite}`HarrKreps1978` 的设定相同。
 
-We’ll eventually study the consequences of two alternative assumptions about the number of shares $A$ relative to the resources that our two types of investors can invest in the stock.
+我们最终将研究关于股票数量 A 相对于两类投资者可投资资源的两个替代性假设的后果。
 
-1. Both types of investors have enough resources (either wealth or the capacity to borrow) so that they can purchase the entire available stock of the asset [^f1].
-1. No single type of investor has sufficient resources to purchase the entire stock.
+1. 两类投资者都有足够的资源（无论是财富还是借贷能力）来购买全部可用的资产股票[^f1]。
 
-Case 1 is the case studied in Harrison and Kreps.
+1. 没有任何一类投资者拥有足够的资源来购买全部股票。
 
-In case 2, both types of investors always hold at least some of the asset.
+案例1是Harrison和Kreps研究的案例。
 
-### Short Sales Prohibited
+在案例2中，两类投资者始终至少持有一些资产。
 
-No short sales are allowed.
+### 禁止卖空
 
-This matters because it limits how  pessimists can express their opinions.
+不允许卖空交易。
 
-* They **can** express themselves by selling their shares.
-* They **cannot** express themsevles  more loudly by artificially "manufacturing shares" -- that is, they cannot borrow shares from more optimistic investors and then immediately sell them.
+这很重要，因为它限制了悲观者表达他们观点的方式。
 
-### Optimism and Pessimism
+* 他们**可以**通过出售自己的股份来表达观点。
+* 他们**不能**通过人为"制造股份"来更强烈地表达观点——也就是说，他们不能从更乐观的投资者那里借入股份然后立即卖出。
 
-The above specifications of the perceived transition matrices $P_a$ and $P_b$, taken directly from Harrison and Kreps, build in stochastically alternating temporary optimism and pessimism.
+### 乐观与悲观
 
-Remember that state $1$ is the high dividend state.
+上述感知转移矩阵$P_a$和$P_b$的规范，直接来自Harrison和Kreps的研究，内置了随机交替的暂时性乐观和悲观情绪。
 
-* In state $0$, a type $a$ agent is more optimistic about next period's dividend than a type $b$ agent.
-* In state $1$, a type $b$ agent is more optimistic about next period's dividend than a type $a$ agaub is.
+请记住，状态$1$是高股息状态。
 
-However, the stationary distributions $\pi_a = \begin{bmatrix} .57 & .43 \end{bmatrix}$ and $\pi_b = \begin{bmatrix} .43 & .57 \end{bmatrix}$ tell us that a type $b$ person is more optimistic about the dividend process in the long run than is a type $a$ person.
+* 在状态$0$中，类型$a$的投资者比类型$b$的投资者对下一期的股息更乐观。
 
-### Information
+* 在状态$1$中，类型$b$的代理人对下一期的股息比类型$a$的代理人更乐观。
 
-Investors know a price function mapping the state $s_t$ at $t$ into the equilibrium price $p(s_t)$ that prevails in that state.
+然而，平稳分布$\pi_a = \begin{bmatrix} .57 & .43 \end{bmatrix}$和$\pi_b = \begin{bmatrix} .43 & .57 \end{bmatrix}$告诉我们，从长期来看，类型$b$的人对股息过程比类型$a$的人更乐观。
 
-This price function is endogenous and to be determined below.
+### 信息
 
-When investors choose whether to purchase or sell the asset at $t$, they also know $s_t$.
+投资者知道一个价格函数，该函数将$t$时刻的状态$s_t$映射到在该状态下的均衡价格$p(s_t)$。
 
-## Solving the Model
+这个价格函数是内生的，将在下面确定。
 
-Now let's turn to solving the model.
+当投资者在$t$时刻选择是购买还是出售资产时，他们也知道$s_t$。
 
-We'll  determine equilibrium prices under a particular specification of beliefs and constraints on trading selected from one of the specifications described above.
+## 求解模型
 
-We shall compare equilibrium price functions under the following alternative
-assumptions about beliefs:
+现在让我们开始求解模型。
 
-1. There is only one type of agent, either $a$ or $b$.
-1. There are two types of agents differentiated only by their beliefs. Each type of agent has sufficient resources to purchase all of the asset (Harrison and Kreps's setting).
-1. There are two types of agents with different beliefs, but because of limited wealth and/or limited leverage, both types of investors hold the asset each period.
+我们将在特定的信念设定和交易限制条件下确定均衡价格，这些设定是从上述规范中选择的。
 
-### Summary Table
+我们将比较在以下不同情况下的均衡价格函数
 
-The following table gives a summary of the findings obtained in the remainder of the lecture
-(in an exercise you will be asked to recreate  the  table and also reinterpret parts of it).
+关于信念的假设：
 
-The table reports  implications of Harrison and Kreps's specifications of $P_a, P_b, \beta$.
+1. 只有一种类型的代理人，要么是 $a$ 要么是 $b$。
+1. 有两种类型的代理人，仅在其信念上有所不同。每种类型的代理人都有足够的资源购买所有资产（Harrison和Kreps的设定）。
+1. 有两种具有不同信念的代理人，但由于财富和/或杠杆的限制，两种类型的投资者在每个时期都持有资产。
+
+### 总结表
+
+下表总结了本讲座其余部分获得的结果（在练习中，你将被要求重新创建该表并重新解释其中的部分内容）。
+
+该表报告了Harrison和Kreps对$P_a, P_b, \beta$的规范所产生的影响。
 
 
 |    $ s_t $    |   0   |   1   |
@@ -224,40 +224,41 @@ The table reports  implications of Harrison and Kreps's specifications of $P_a, 
 | $ \hat{p}_a $ | 1.85  | 1.69  |
 | $ \hat{p}_b $ | 1.69  | 2.08  |
 
-Here
+这里
 
-* $p_a$ is the equilibrium price function  under homogeneous beliefs $P_a$
-* $p_b$ is the equilibrium price function under homogeneous beliefs $P_b$
-* $p_o$ is the equilibrium price function under heterogeneous beliefs with optimistic marginal investors
-* $p_p$ is the equilibrium price function under heterogeneous beliefs with pessimistic marginal investors
-* $\hat{p}_a$ is the amount type $a$ investors are willing to pay for the asset
-* $\hat{p}_b$ is the amount type $b$ investors are willing to pay for the asset
+* $p_a$ 是在同质信念 $P_a$ 下的均衡价格函数
+* $p_b$ 是在同质信念 $P_b$ 下的均衡价格函数
+* $p_o$ 是在异质信念下且边际投资者持乐观态度时的均衡价格函数
+* $p_p$ 是在异质信念下且边际投资者持悲观态度时的均衡价格函数
+* $\hat{p}_a$ 是 $a$ 类型投资者愿意为资产支付的金额
+* $\hat{p}_b$ 是 $b$ 类型投资者愿意为资产支付的金额
 
-We'll explain these values and how they are calculated one row at a time.
+我们将逐行解释这些值及其计算方法。
 
-The row corresponding to $p_o$ applies when both types of investor have enough resources to purchase the entire stock of the asset and strict short sales constraints prevail so that  temporarily optimistic investors always price the asset.
+对应于 $p_o$ 的行适用于当两类投资者都有足够的资源购买全部资产，且存在严格的卖空限制，因此暂时乐观的投资者始终决定资产价格的情况。
 
-The row corresponding to $p_p$ would apply if neither type of investor has enough resources to purchase the entire stock of the asset and both types must hold the asset.
+如果两类投资者都没有足够的资源购买全部资产，且两类投资者都必须持有资产，则对应于 $p_p$ 的行将适用。
 
-The row corresponding to $p_p$ would also  apply if both types have enough resources to buy the entire stock of the asset but  short sales are also  possible so that   temporarily pessimistic   investors price the asset.
+如果两类投资者都有足够的资源购买全部资产，但同时也允许卖空，使得暂时悲观的投资者为资产定价，则对应于 $p_p$ 的行也将适用。
 
-### Single Belief Prices
+### 单一信念价格
 
-We’ll start by pricing the asset under homogeneous beliefs.
+我们先来看看在同质信念下的资产定价。
 
-(This is the case treated in {doc}`the lecture <markov_asset>` on asset pricing with finite Markov states)
+(这种情况在{doc}`关于有限马尔可夫状态下资产定价的讲座 <markov_asset>`中已经讨论过)
 
-Suppose that there is only one type of investor, either of type $a$ or $b$, and that this investor always "prices the asset".
+假设只有一种类型的投资者，要么是类型 $a$ 要么是类型 $b$，并且这类投资者始终"为资产定价"。
 
-Let $p_h = \begin{bmatrix} p_h(0) \cr p_h(1) \end{bmatrix}$ be the equilibrium price vector when all investors are of type $h$.
+设 $p_h = \begin{bmatrix} p_h(0) \cr p_h(1) \end{bmatrix}$ 为当所有投资者都是类型 $h$ 时的均衡价格向量。
 
-The price today equals the expected discounted value of tomorrow's dividend and tomorrow's price of the asset:
+今天的价格等于明天的股息和明天的资产价格的预期贴现值：
 
 $$
+
 p_h(s) = \beta \left( P_h(s,0) (0 + p_h(0)) + P_h(s,1) ( 1 + p_h(1)) \right), \quad s = 0, 1
 $$ (eq:assetpricehomog)
 
-These equations imply that the equilibrium price vector is
+这些方程意味着均衡价格向量为
 
 ```{math}
 :label: HarrKrep1
@@ -266,40 +267,40 @@ These equations imply that the equilibrium price vector is
 = \beta [I - \beta P_h]^{-1} P_h \begin{bmatrix} 0 \cr 1 \end{bmatrix}
 ```
 
-The first two rows of the table report $p_a(s)$ and $p_b(s)$.
+表格的前两行报告了$p_a(s)$和$p_b(s)$的值。
 
-Here's a function that can be used to compute these values
+这里有一个可以用来计算这些值的函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 def price_single_beliefs(transition, dividend_payoff, β=.75):
     """
-    Function to Solve Single Beliefs
+    求解单一信念的函数
     """
-    # First compute inverse piece
+    # 首先计算逆矩阵部分
     imbq_inv = la.inv(np.eye(transition.shape[0]) - β * transition)
 
-    # Next compute prices
+    # 接下来计算价格
     prices = β * imbq_inv @ transition @ dividend_payoff
 
     return prices
 ```
 
-#### Single Belief Prices as Benchmarks
+#### 单一信念价格作为基准
 
-These equilibrium prices under homogeneous beliefs are important benchmarks for the subsequent analysis.
+这些在同质信念下的均衡价格是后续分析的重要基准。
 
-* $p_h(s)$ tells what a type $h$ investor  thinks is the "fundamental value" of the asset.
-* Here "fundamental value" means the expected discounted present value of future dividends.
+* $p_h(s)$ 表示类型 $h$ 投资者认为的资产"基本价值"。
+* 这里的"基本价值"指的是未来股息的预期贴现现值。
 
-We will compare these fundamental values of the asset with equilibrium values when traders have different beliefs.
+我们将把这些资产的基本价值与交易者持有不同信念时的均衡价值进行比较。
 
-### Pricing under Heterogeneous Beliefs
+### 异质信念下的定价
 
-There are several cases to consider.
+需要考虑几种情况。
 
-The first is when both types of agents have sufficient wealth to purchase all of the asset themselves.
+第一种是当两种类型的投资者都有足够的财富来独自购买所有资产时。
 
-In this case, the marginal investor who prices the asset is the more optimistic type so that the equilibrium price $\bar p$ satisfies Harrison and Kreps's key equation:
+在这种情况下，为资产定价的边际投资者是更乐观的类型，因此均衡价格 $\bar p$ 满足Harrison和Kreps的关键方程：
 
 ```{math}
 :label: hakr2
@@ -314,32 +315,30 @@ In this case, the marginal investor who prices the asset is the more optimistic 
 \right\}
 ```
 
-for $s=0,1$.
+对于$s=0,1$。
 
-In the above equation, the $max$ on the right side is over the two prospective values of next period's payout
-from owning the asset.
+在上述等式中，右侧的$max$是针对下一期持有资产可能获得的两个支付值。
 
-The marginal investor who prices the asset in state $s$ is of type $a$ if
+如果在状态$s$中定价资产的边际投资者是类型$a$，则满足：
 
 $$
 P_a(s,0)  \bar p(0) + P_a(s,1) ( 1 +  \bar p(1)) >
 P_b(s,0)  \bar p(0) + P_b(s,1) ( 1 +  \bar p(1))
 $$
 
-The marginal investor is of type  $b$ if
+如果边际投资者是类型$b$，则满足：
 
 $$
 P_a(s,1)  \bar p(0) + P_a(s,1) ( 1 +  \bar  p(1)) <
 P_b(s,1)  \bar p(0) + P_b(s,1) ( 1 +  \bar  p(1))
 $$
 
-**Thus the marginal investor is the (temporarily) optimistic type**.
+**因此边际投资者是（暂时的）乐观型**。
 
-Equation {eq}`hakr2` is a functional equation that, like a Bellman equation, can be solved by
+方程{eq}`hakr2`是一个函数方程，类似于贝尔曼方程，可以通过以下方式求解：
 
-* starting with a guess for the price vector $\bar p$ and
-* iterating to convergence on the operator that maps a guess $\bar p^j$ into an updated guess
-  $\bar p^{j+1}$ defined by the right side of {eq}`hakr2`, namely
+* 从价格向量$\bar p$的一个猜测开始
+* 对运算符进行迭代直至收敛，该运算符将猜测值$\bar p^j$映射到由{eq}`hakr2`右侧定义的更新猜测值$\bar p^{j+1}$，即
 
 ```{math}
 :label: HarrKrep3
@@ -348,28 +347,27 @@ Equation {eq}`hakr2` is a functional equation that, like a Bellman equation, can
  = \beta \max
  \left\{
         P_a(s,0) \bar p^j(0) + P_a(s,1) ( 1 + \bar p^j(1))
-        ,\;
+
+,\;
         P_b(s,0) \bar p^j(0) + P_b(s,1) ( 1 + \bar p^j(1))
 \right\}
 ```
 
-for $s=0,1$.
+对于$s=0,1$。
 
-The third row of the table labeled $p_o$ reports equilibrium prices that solve the functional equation when $\beta = .75$.
+表格中标记为$p_o$的第三行报告了当$\beta = .75$时解函数方程的均衡价格。
 
-Here the type that is optimistic about $s_{t+1}$ prices the asset in state $s_t$.
+在这里，对$s_{t+1}$持乐观态度的类型在状态$s_t$中为资产定价。
 
-It is instructive to compare these prices with the equilibrium prices for the homogeneous belief economies that solve under beliefs $P_a$ and $P_b$ reported in the rows labeled $p_a$ and $p_b$, respectively.
+将这些价格与在信念$P_a$和$P_b$下求解的同质信念经济的均衡价格进行比较是很有启发性的，这些价格分别在标记为$p_a$和$p_b$的行中报告。
 
-Equilibrium prices $p_o$ in the heterogeneous beliefs economy evidently exceed what any prospective investor regards as the fundamental value of the asset in each possible state.
+在异质信念经济中的均衡价格$p_o$显然超过了任何潜在投资者在每个可能状态下认为的资产基本价值。
 
-Nevertheless, the economy recurrently visits a state that makes each investor want to
-purchase the asset for more than he believes its future dividends are
-worth.
+尽管如此，经济会反复进入一种状态，使每个投资者都愿意以超过他们认为的未来股息价值的价格购买资产。
 
-An investor is willing to pay more than what he believes is warranted by fundamental value of the prospective dividend stream because he expects to have the option later to sell the asset  to another investor who will value the asset more highly than he will then.
+投资者愿意支付超过他认为基本面股息流所应有的价格，因为他预期之后能够选择将资产卖给另一个会给出更高估值的投资者。
 
-* Investors of type $a$ are willing to pay the following price for the asset
+* $a$类型的投资者愿意为资产支付以下价格
 
 $$
 \hat p_a(s) =
@@ -379,7 +377,7 @@ $$
 \end{cases}
 $$
 
-* Investors of type $b$ are willing to pay the following price for the asset
+* $b$类型的投资者愿意为资产支付以下价格
 
 $$
 \hat p_b(s) =
@@ -389,17 +387,17 @@ $$
 \end{cases}
 $$
 
-Evidently, $\hat p_a(1) < \bar p(1)$ and $\hat p_b(0) < \bar p(0)$.
+显然，$\hat p_a(1) < \bar p(1)$ 且 $\hat p_b(0) < \bar p(0)$。
 
-Investors of type $a$ want to sell the asset in state $1$ while investors of type $b$ want to sell it in state $0$.
+$a$类型的投资者想在状态$1$时卖出资产，而$b$类型的投资者想在状态$0$时卖出资产。
 
-* The asset changes hands whenever the state changes from $0$ to $1$ or from $1$ to $0$.
-* The valuations $\hat p_a(s)$ and $\hat p_b(s)$ are displayed in the fourth and fifth rows of the table.
-* Even  pessimistic investors who don't buy the asset think that it is worth more than they think future dividends are worth.
+* 当状态从$0$变为$1$或从$1$变为$0$时，资产就会易手。
+* 估值$\hat p_a(s)$和$\hat p_b(s)$显示在表格的第四行和第五行。
+* 即使是不买入资产的悲观投资者也认为资产价值高于他们认为的未来股息价值。
 
-Here's code to solve for $\bar p$, $\hat p_a$ and $\hat p_b$ using the iterative method described above
+以下是使用上述迭代方法求解$\bar p$、$\hat p_a$和$\hat p_b$的代码
 
-```{code-cell} python3
+```{code-cell} ipython3
 def price_optimistic_beliefs(transitions, dividend_payoff, β=.75,
                             max_iter=50000, tol=1e-16):
     """
@@ -430,13 +428,13 @@ def price_optimistic_beliefs(transitions, dividend_payoff, β=.75,
     return p_new, phat_a, phat_b
 ```
 
-### Insufficient Funds
+### 资金不足
 
-Outcomes differ when the more optimistic type of investor has insufficient wealth --- or insufficient ability to borrow enough --- to hold the entire stock of the asset.
+当乐观型投资者的财富不足——或无法借到足够资金——以持有全部资产时，结果会有所不同。
 
-In this case, the asset price must adjust to attract pessimistic investors.
+在这种情况下，资产价格必须调整以吸引悲观型投资者。
 
-Instead of equation {eq}`hakr2`, the equilibrium price satisfies
+不同于方程{eq}`hakr2`，均衡价格满足
 
 ```{math}
 :label: HarrKrep4
@@ -449,76 +447,76 @@ Instead of equation {eq}`hakr2`, the equilibrium price satisfies
 \right\}
 ```
 
-and the marginal investor who prices the asset is always the one that values it *less* highly than does the other type.
+定价资产的边际投资者总是对资产估值较低的那一类。
 
-Now the marginal investor is always the (temporarily) pessimistic type.
+现在边际投资者始终是（暂时）悲观的那一类。
 
-Notice from the sixth row of that the pessimistic price $p_o$ is lower than the homogeneous belief prices $p_a$ and $p_b$ in both states.
+从第六行可以看出，悲观价格$p_o$在两种状态下都低于同质信念价格$p_a$和$p_b$。
 
-When pessimistic investors price the asset according to {eq}`HarrKrep4`, optimistic investors think that the asset is underpriced.
+当悲观投资者按照{eq}`HarrKrep4`定价资产时，乐观投资者认为资产被低估了。
 
-If they could, optimistic investors would willingly borrow at a  one-period risk-free gross interest rate $\beta^{-1}$ to purchase more of the asset.
+如果可能的话，乐观的投资者会愿意以一期无风险总利率$\beta^{-1}$借款来购买更多的资产。
 
-Implicit constraints on leverage prohibit them from doing so.
+杠杆方面的隐性约束禁止他们这样做。
 
-When optimistic investors price the asset as in equation {eq}`hakr2`, pessimistic investors think that the asset is overpriced and would like to sell the asset short.
+当乐观的投资者按照方程{eq}`hakr2`给资产定价时，悲观的投资者认为资产被高估了，想要做空这个资产。
 
-Constraints on short sales prevent that.
+卖空限制阻止了这种行为。
 
-Here's code to solve for $\check p$ using iteration
+以下是使用迭代法求解$\check p$的代码
 
-```{code-cell} python3
+```{code-cell} ipython3
 def price_pessimistic_beliefs(transitions, dividend_payoff, β=.75,
                             max_iter=50000, tol=1e-16):
     """
-    Function to Solve Pessimistic Beliefs
+    求解悲观信念的函数
     """
-    # We will guess an initial price vector of [0, 0]
+    # 我们将猜测一个初始价格向量[0, 0]
     p_new = np.array([[0], [0]])
     p_old = np.array([[10.], [10.]])
 
-    # We know this is a contraction mapping, so we can iterate to conv
+    # 我们知道这是一个压缩映射，所以我们可以迭代至收敛
     for i in range(max_iter):
         p_old = p_new
         p_new = β * np.min([q @ p_old
                             + q @ dividend_payoff for q in transitions],
                            1)
 
-        # If we succeed in converging, break out of for loop
+        # 如果成功收敛，跳出for循环
         if np.max(np.sqrt((p_new - p_old)**2)) < tol:
             break
 
     return p_new
 ```
 
-### Further Interpretation
+### 进一步解释
 
-Jose Scheinkman {cite}`Scheinkman2014` interprets the Harrison-Kreps model as a model of a bubble --- a situation in which an asset price exceeds what every investor thinks is merited by his or her beliefs about the value of the asset's underlying dividend stream.
+Jose Scheinkman {cite}`Scheinkman2014` 将Harrison-Kreps模型解释为泡沫模型——即资产价格超过每个投资者基于其对资产基本股息流的信念所认为的合理价值的情况。
 
-Scheinkman stresses these features of the Harrison-Kreps model:
+Scheinkman强调Harrison-Kreps模型的以下特点：
 
-* High volume occurs when the Harrison-Kreps pricing formula {eq}`hakr2` prevails.
+* 当Harrison-Kreps定价公式{eq}`hakr2`成立时，会出现高交易量。
 
-* Type $a$ investors sell the entire stock of the asset to type $b$ investors every time the state switches from $s_t =0$ to $s_t =1$.
+* 每当状态从$s_t =0$转换到$s_t =1$时，A类投资者就会将全部资产卖给B类投资者。
 
-* Type $b$ investors sell the asset to type $a$ investors every time the state switches from $s_t = 1$ to $s_t =0$.
+* 每当状态从$s_t = 1$转换到$s_t =0$时，B类投资者就会将资产卖给A类投资者。
 
-Scheinkman takes this as a strength of the model because he observes high volume during *famous bubbles*.
+Scheinkman认为这是模型的优点，因为他观察到在*著名的泡沫*期间都存在高交易量。
 
-* If the *supply* of the asset is increased sufficiently either physically (more "houses" are built) or artificially (ways are invented to short sell "houses"), bubbles end  when the asset supply has grown enough to outstrip optimistic investors’ resources for purchasing the asset.
-* If optimistic investors finance their purchases by borrowing, tightening leverage constraints can extinguish a bubble.
+* 如果资产的*供给*充分增加，无论是实物形式（建造更多"房屋"）还是人为形式（发明做空"房屋"的方法），当资产供给增长到超过乐观投资者购买资产的资源时，泡沫就会结束。
+* 如果乐观投资者通过借贷来融资购买，收紧杠杆约束可以消除泡沫。
 
-Scheinkman extracts insights about the effects of financial regulations on bubbles.
+Scheinkman提取了关于金融监管对泡沫影响的见解。
 
-He emphasizes how limiting short sales and limiting leverage have opposite effects.
+他强调了限制做空和限制杠杆具有相反的效果。
 
-## Exercises
+## 练习
 
 ```{exercise-start}
 :label: hk_ex1
 ```
 
-This exercise invites you to recreate the summary table using the functions we have built above.
+本练习邀请你使用我们上面构建的函数重新创建汇总表。
 
 |    $s_t$    |   0   |   1   |
 |-------------|-------|-------|
@@ -529,16 +527,13 @@ This exercise invites you to recreate the summary table using the functions we h
 | $\hat{p}_a$ | 1.85  | 1.69  |
 | $\hat{p}_b$ | 1.69  | 2.08  |
 
-You will want first  to define the transition matrices and dividend payoff vector.
+首先你需要定义转移矩阵和股息支付向量。
 
-In addition, below we'll add an interpretation of the row corresponding to $p_o$ by
-inventing two additional types of agents, one of whom is **permanently optimistic**, the other who
-is **permanently pessimistic**.
+此外，在下面我们将通过引入两种额外类型的投资者来解释对应于$p_o$的行，一种是**永久乐观型**，另一种是**永久悲观型**。
 
-We construct subjective transition probability matrices for our permanently  optimistic and permanently pessimistic investors as follows.
+我们为永久乐观型和永久悲观型投资者构建主观转移概率矩阵如下。
 
-The permanently optimistic investors(i.e., the investor with the most optimistic
-beliefs in each state) believes the transition matrix
+永久乐观型投资者(即在每个状态下持最乐观信念的投资者)认为转移矩阵为
 
 $$
 P_o =
@@ -548,7 +543,7 @@ P_o =
     \end{bmatrix}
 $$
 
-The permanently pessimistic investor believes the transition matrix
+永久悲观型投资者认为转移矩阵为
 
 $$
 P_p =
@@ -558,7 +553,7 @@ P_p =
     \end{bmatrix}
 $$
 
-We'll use these transition matrices when we present our solution of exercise 1 below.
+我们将在下面展示练习1的解答时使用这些转移矩阵。
 
 ```{exercise-end}
 ```
@@ -567,15 +562,14 @@ We'll use these transition matrices when we present our solution of exercise 1 b
 :class: dropdown
 ```
 
-First, we will obtain equilibrium price vectors with homogeneous beliefs, including when all
-investors are optimistic or pessimistic.
+首先，我们将获得具有同质信念的均衡价格向量，包括当所有投资者都持乐观或悲观态度时的情况。
 
-```{code-cell} python3
-qa = np.array([[1/2, 1/2], [2/3, 1/3]])    # Type a transition matrix
-qb = np.array([[2/3, 1/3], [1/4, 3/4]])    # Type b transition matrix
-# Optimistic investor transition matrix
+```{code-cell} ipython3
+qa = np.array([[1/2, 1/2], [2/3, 1/3]])    # a类型转移矩阵
+qb = np.array([[2/3, 1/3], [1/4, 3/4]])    # b类型转移矩阵
+# 乐观投资者转移矩阵
 qopt = np.array([[1/2, 1/2], [1/4, 3/4]])
-# Pessimistic investor transition matrix
+# 悲观投资者转移矩阵
 qpess = np.array([[2/3, 1/3], [2/3, 1/3]])
 
 dividendreturn = np.array([[0], [1]])
@@ -587,15 +581,14 @@ for transition, label in zip(transitions, labels):
     print(label)
     print("=" * 20)
     s0, s1 = np.round(price_single_beliefs(transition, dividendreturn), 2)
-    print(f"State 0: {s0}")
-    print(f"State 1: {s1}")
+    print(f"状态0: {s0}")
+    print(f"状态1: {s1}")
     print("-" * 20)
 ```
 
-We will use the price_optimistic_beliefs function to find the price under
-heterogeneous beliefs.
+我们将使用price_optimistic_beliefs函数来找出在异质信念下的价格。
 
-```{code-cell} python3
+```{code-cell} ipython3
 opt_beliefs = price_optimistic_beliefs([qa, qb], dividendreturn)
 labels = ['p_optimistic', 'p_hat_a', 'p_hat_b']
 
@@ -608,10 +601,10 @@ for p, label in zip(opt_beliefs, labels):
     print("-" * 20)
 ```
 
-Notice that the equilibrium price with heterogeneous beliefs is equal to the price under single beliefs
-with **permanently optimistic** investors - this is due to the marginal investor in the heterogeneous beliefs equilibrium always being the type who is  temporarily optimistic.
+注意，在异质信念下的均衡价格等于在**永久乐观**投资者单一信念下的价格 - 这是因为在异质信念均衡中的边际投资者总是暂时乐观的那类投资者。
 
 ```{solution-end}
 ```
 
-[^f1]: By assuming that both types of agents always have "deep enough pockets" to purchase all of the asset, the model takes wealth dynamics off the table. The Harrison-Kreps model generates high trading volume when the state changes either from 0 to 1 or from 1 to 0.
+[^f1]: 通过假设两类代理人总是有"足够深的口袋"来购买所有资产，该模型将财富动态排除在外。Harrison-Kreps模型在状态从0变为1或从1变为0时会产生大量交易量。
+

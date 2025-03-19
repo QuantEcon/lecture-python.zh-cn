@@ -18,79 +18,80 @@ kernelspec:
 </div>
 ```
 
-# {index}`Optimal Growth I: The Stochastic Optimal Growth Model <single: Optimal Growth I: The Stochastic Optimal Growth Model>`
+# {index}`最优增长 I：随机最优增长模型 <single: Optimal Growth I: The Stochastic Optimal Growth Model>`
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-In this lecture, we're going to study a simple optimal growth model with one
-agent.
+在本讲座中，我们将研究一个包含单个代理人的简单最优增长模型。
 
-The model is a version of the standard one sector infinite horizon growth
-model studied in
+该模型是标准的单部门无限期增长模型的一个版本，这在以下文献中有研究：
 
-* {cite}`StokeyLucas1989`, chapter 2
-* {cite}`Ljungqvist2012`, section 3.1
-* [EDTC](http://johnstachurski.net/edtc.html), chapter 1
-* {cite}`Sundaram1996`, chapter 12
+* {cite}`StokeyLucas1989`，第2章
+* {cite}`Ljungqvist2012`，第3.1节
+* [EDTC](http://johnstachurski.net/edtc.html)，第1章
 
-It is an extension of the simple {doc}`cake eating problem <cake_eating_problem>` we looked at earlier.
+* {cite}`Sundaram1996`，第12章
 
-The extension involves
+这是对我们之前研究的简单{doc}`蛋糕食用问题 <cake_eating_problem>`的扩展。
 
-* nonlinear returns to saving, through a production function, and
-* stochastic returns, due to shocks to production.
+这个扩展包括
 
-Despite these additions, the model is still relatively simple.
+* 通过生产函数实现的非线性储蓄回报，以及
+* 由于生产冲击导致的随机回报。
 
-We regard it as a stepping stone to more sophisticated models.
+尽管有这些添加，这个模型仍然相对简单。
 
-We solve the model using dynamic programming and a range of numerical
-techniques.
+我们将其视为通向更复杂模型的垫脚石。
 
-In this first lecture on optimal growth, the solution method will be value
-function iteration (VFI).
+我们使用动态规划和一系列数值技术来求解这个模型。
 
-While the code in this first lecture runs slowly, we will use a variety of
-techniques to drastically improve execution time over the next few lectures.
+在这第一节最优增长课程中，解决方法将是值函数迭代（VFI）。
 
-Let's start with some imports:
+虽然这第一节课中的代码运行较慢，但在接下来的几节课中，我们将使用各种技术来大幅提高执行速度。
+
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.optimize import minimize_scalar
 ```
 
-## The Model
+## 模型
 
 ```{index} single: Optimal Growth; Model
 ```
 
-Consider an agent who owns an amount $y_t \in \mathbb R_+ := [0, \infty)$ of a consumption good at time $t$.
+考虑一个主体在时间 $t$ 拥有数量为 $y_t \in \mathbb R_+ := [0, \infty)$ 的消费品。
 
-This output can either be consumed or invested.
+这些产出可以被消费或投资。
 
-When the good is invested, it is transformed one-for-one into capital.
+当商品被投资时，它会一比一地转化为资本。
 
-The resulting capital stock, denoted here by $k_{t+1}$, will then be used for production.
+由此产生的资本存量，在此用 $k_{t+1}$ 表示，随后将用于生产。
 
-Production is stochastic, in that it also depends on a shock $\xi_{t+1}$ realized at the end of the current period.
+生产是随机的，因为它还取决于在当前期末实现的冲击 $\xi_{t+1}$。
 
-Next period output is
+下一期的产出为
 
 $$
 y_{t+1} := f(k_{t+1}) \xi_{t+1}
 $$
 
-where $f \colon \mathbb R_+ \to \mathbb R_+$ is called the production function.
+其中 $f \colon \mathbb R_+ \to \mathbb R_+$ 被称为生产函数。
 
-The resource constraint is
+资源约束为
 
 ```{math}
 :label: outcsdp0
@@ -98,26 +99,27 @@ The resource constraint is
 k_{t+1} + c_t \leq y_t
 ```
 
-and all variables are required to be nonnegative.
+且所有变量都必须为非负数。
 
-### Assumptions and Comments
+### 假设和说明
 
-In what follows,
+在接下来的内容中，
 
-* The sequence $\{\xi_t\}$ is assumed to be IID.
-* The common distribution of each $\xi_t$ will be denoted by $\phi$.
-* The production function $f$ is assumed to be increasing and continuous.
-* Depreciation of capital is not made explicit but can be incorporated into the production function.
+* 序列 $\{\xi_t\}$ 被假定为独立同分布(IID)。
+* 每个 $\xi_t$ 的共同分布将用 $\phi$ 表示。
 
-While many other treatments of the stochastic growth model use $k_t$ as the state variable, we will use $y_t$.
+* 假设生产函数$f$是递增且连续的。
+* 资本折旧并未明确表示，但可以被整合到生产函数中。
 
-This will allow us to treat a stochastic model while maintaining only one state variable.
+虽然许多其他随机增长模型的处理方法使用$k_t$作为状态变量，我们将使用$y_t$。
 
-We consider alternative states and timing specifications in some of our other lectures.
+这将使我们能够处理随机模型的同时仅保持一个状态变量。
 
-### Optimization
+我们在其他一些讲座中考虑了替代的状态和时序规范。
 
-Taking $y_0$ as given, the agent wishes to maximize
+### 优化
+
+给定$y_0$，代理人希望最大化
 
 ```{math}
 :label: texs0_og2
@@ -125,96 +127,96 @@ Taking $y_0$ as given, the agent wishes to maximize
 \mathbb E \left[ \sum_{t = 0}^{\infty} \beta^t u(c_t) \right]
 ```
 
-subject to
+约束条件为
 
 ```{math}
 :label: og_conse
 
 y_{t+1} = f(y_t - c_t) \xi_{t+1}
-\quad \text{and} \quad
+\quad \text{和} \quad
 0 \leq c_t \leq y_t
-\quad \text{for all } t
+\quad \text{对所有} t
 ```
 
-where
+其中
 
-* $u$ is a bounded, continuous and strictly increasing utility function and
-* $\beta \in (0, 1)$ is a discount factor.
+* $u$是有界、连续且严格递增的效用函数，且
+* $\beta \in (0, 1)$是贴现因子。
 
-In {eq}`og_conse` we are assuming that the resource constraint {eq}`outcsdp0` holds with equality --- which is reasonable because $u$ is strictly increasing and no output will be wasted at the optimum.
+在{eq}`og_conse`中，我们假设资源约束{eq}`outcsdp0`是以等式形式成立的——这是合理的，因为$u$是严格递增的，在最优状态下不会浪费任何产出。
 
-In summary, the agent's aim is to select a path $c_0, c_1, c_2, \ldots$ for consumption that is
+总的来说，代理人的目标是选择一个消费路径$c_0, c_1, c_2, \ldots$，该路径需要：
 
-1. nonnegative,
-1. feasible in the sense of {eq}`outcsdp0`,
-1. optimal, in the sense that it maximizes {eq}`texs0_og2` relative to all other feasible consumption sequences, and
-1. *adapted*, in the sense that the action $c_t$ depends only on
-   observable outcomes, not on future outcomes such as $\xi_{t+1}$.
+1. 非负，
+1. 在{eq}`outcsdp0`意义上可行，
+1. 最优，即相对于所有其他可行的消费序列，最大化{eq}`texs0_og2`，以及
+1. *适应性*，即行动$c_t$只依赖于可观察的结果，而不依赖于未来的结果，如$\xi_{t+1}$。
 
-In the present context
+在当前情况下：
 
-* $y_t$ is called the *state* variable --- it summarizes the "state of the world" at the start of each period.
-* $c_t$ is called the *control* variable --- a value chosen by the agent each period after observing the state.
+* $y_t$被称为*状态*变量——它概括了每个时期开始时的"世界状态"。
+* $c_t$被称为*控制*变量——是代理人在观察状态后每期选择的值。
 
-### The Policy Function Approach
+### 策略函数方法
 
 ```{index} single: Optimal Growth; Policy Function Approach
 ```
 
-One way to think about solving this problem is to look for the best **policy function**.
+解决这个问题的一种方法是寻找最佳的**策略函数**。
 
-A policy function is a map from past and present observables into current action.
+策略函数是一个从过去和现在的可观察变量映射到当前行动的函数。
 
-We'll be particularly interested in **Markov policies**, which are maps from the current state $y_t$ into a current action $c_t$.
+我们将特别关注**马尔可夫策略**，它是从当前状态 $y_t$ 映射到当前行动 $c_t$ 的函数。
 
-For dynamic programming problems such as this one (in fact for any [Markov decision process](https://en.wikipedia.org/wiki/Markov_decision_process)), the optimal policy is always a Markov policy.
+对于像这样的动态规划问题（实际上对于任何[马尔可夫决策过程](https://en.wikipedia.org/wiki/Markov_decision_process)），最优策略总是一个马尔可夫策略。
 
-In other words, the current state $y_t$ provides a [sufficient statistic](https://en.wikipedia.org/wiki/Sufficient_statistic)
-for the history in terms of making an optimal decision today.
+换句话说，当前状态 $y_t$ 为历史提供了一个[充分统计量](https://en.wikipedia.org/wiki/Sufficient_statistic)，用于做出当前的最优决策。
 
-This is quite intuitive, but if you wish you can find proofs in texts such as {cite}`StokeyLucas1989` (section 4.1).
+这很直观，但如果你想要证明，可以在{cite}`StokeyLucas1989`（第4.1节）等教材中找到。
 
-Hereafter we focus on finding the best Markov policy.
+此后我们将专注于寻找最佳马尔可夫策略。
 
-In our context, a Markov policy is a function $\sigma \colon
-\mathbb R_+ \to \mathbb R_+$, with the understanding that states are mapped to actions via
+在我们的情况下，马尔可夫策略是一个函数 $\sigma \colon$
+
+\mathbb R_+ \to \mathbb R_+$，其中状态通过以下方式映射到行动
 
 $$
-c_t = \sigma(y_t) \quad \text{for all } t
+c_t = \sigma(y_t) \quad \text{对所有 } t
 $$
 
-In what follows, we will call $\sigma$ a *feasible consumption policy* if it satisfies
+在下文中，如果 $\sigma$ 满足以下条件，我们称之为*可行消费策略*
 
 ```{math}
 :label: idp_fp_og2
 
 0 \leq \sigma(y) \leq y
-\quad \text{for all} \quad
+\quad \text{对所有} \quad
 y \in \mathbb R_+
 ```
 
-In other words, a feasible consumption policy is a Markov policy that respects the resource constraint.
+换句话说，可行消费策略是一个遵守资源约束的马尔可夫策略。
 
-The set of all feasible consumption policies will be denoted by $\Sigma$.
+所有可行消费策略的集合将用 $\Sigma$ 表示。
 
-Each $\sigma \in \Sigma$ determines a [continuous state Markov process](https://python-advanced.quantecon.org/stationary_densities.html) $\{y_t\}$ for output via
+每个 $\sigma \in \Sigma$ 都通过以下方式确定一个[连续状态马尔可夫过程](https://python-advanced.quantecon.org/stationary_densities.html) $\{y_t\}$ 来表示产出
 
 ```{math}
 :label: firstp0_og2
 
 y_{t+1} = f(y_t - \sigma(y_t)) \xi_{t+1},
-\quad y_0 \text{ given}
+\quad y_0 \text{ 给定}
 ```
 
-This is the time path for output when we choose and stick with the policy $\sigma$.
+这是当我们选择并坚持策略 $\sigma$ 时产出的时间路径。
 
-We insert this process into the objective function to get
+我们将这个过程代入目标函数得到
 
 ```{math}
 :label: texss
 
 \mathbb E
 \left[ \,
+
 \sum_{t = 0}^{\infty} \beta^t u(c_t) \,
 \right] =
 \mathbb E
@@ -223,16 +225,15 @@ We insert this process into the objective function to get
 \right]
 ```
 
-This is the total expected present value of following policy $\sigma$ forever,
-given initial income $y_0$.
+这是永远遵循策略 $\sigma$ 的总期望现值，给定初始收入 $y_0$。
 
-The aim is to select a policy that makes this number as large as possible.
+目标是选择一个能使这个数值尽可能大的策略。
 
-The next section covers these ideas more formally.
+下一节将更正式地介绍这些概念。
 
-### Optimality
+### 最优性
 
-The $\sigma$ associated with a given policy $\sigma$ is the mapping defined by
+与给定策略 $\sigma$ 相关的 $\sigma$ 是由以下映射定义的
 
 ```{math}
 :label: vfcsdp00
@@ -241,12 +242,11 @@ v_{\sigma}(y) =
 \mathbb E \left[ \sum_{t = 0}^{\infty} \beta^t u(\sigma(y_t)) \right]
 ```
 
-when $\{y_t\}$ is given by {eq}`firstp0_og2` with $y_0 = y$.
+其中 $\{y_t\}$ 由方程 {eq}`firstp0_og2` 给出，且 $y_0 = y$。
 
-In other words, it is the lifetime value of following policy $\sigma$
-starting at initial condition $y$.
+换句话说，这是从初始条件 $y$ 开始遵循策略 $\sigma$ 的终身价值。
 
-The **value function** is then defined as
+**价值函数**定义为
 
 ```{math}
 :label: vfcsdp0
@@ -254,15 +254,15 @@ The **value function** is then defined as
 v^*(y) := \sup_{\sigma \in \Sigma} \; v_{\sigma}(y)
 ```
 
-The value function gives the maximal value that can be obtained from state $y$, after considering all feasible policies.
+价值函数给出了在考虑所有可行策略后，从状态 $y$ 可以获得的最大价值。
 
-A policy $\sigma \in \Sigma$ is called **optimal** if it attains the supremum in {eq}`vfcsdp0` for all $y \in \mathbb R_+$.
+如果一个策略 $\sigma \in \Sigma$ 在所有 $y \in \mathbb R_+$ 上都能达到 {eq}`vfcsdp0` 中的上确界，则称其为**最优**策略。
 
-### The Bellman Equation
+### 贝尔曼方程
 
-With our assumptions on utility and production functions, the value function as defined in {eq}`vfcsdp0` also satisfies a **Bellman equation**.
+在我们对效用函数和生产函数的假设下，在 {eq}`vfcsdp0` 中定义的值函数也满足一个**贝尔曼方程**。
 
-For this problem, the Bellman equation takes the form
+对于这个问题，贝尔曼方程的形式为
 
 ```{math}
 :label: fpb30
@@ -274,37 +274,37 @@ v(y) = \max_{0 \leq c \leq y}
 \qquad (y \in \mathbb R_+)
 ```
 
-This is a *functional equation in* $v$.
+这是一个关于 $v$ 的*泛函方程*。
 
-The term $\int v(f(y - c) z) \phi(dz)$ can be understood as the expected next period value when
+项 $\int v(f(y - c) z) \phi(dz)$ 可以理解为在以下条件下的预期下一期价值：
 
-* $v$ is used to measure value
-* the state is $y$
-* consumption is set to $c$
+* 使用 $v$ 来衡量价值
+* 状态为 $y$
+* 消费设定为 $c$
 
-As shown in [EDTC](http://johnstachurski.net/edtc.html), theorem 10.1.11 and a range of other texts
+如 [EDTC](http://johnstachurski.net/edtc.html) 定理10.1.11和其他多个文献所示：
 
-> *The value function* $v^*$ *satisfies the Bellman equation*
+> *值函数* $v^*$ *满足贝尔曼方程*
 
-In other words, {eq}`fpb30` holds when $v=v^*$.
+换句话说，当 $v=v^*$ 时，{eq}`fpb30` 成立。
 
-The intuition is that maximal value from a given state can be obtained by optimally trading off
+直观上来说，从给定状态获得的最大价值可以通过以下两者的最优权衡得到：
 
-* current reward from a given action, vs
-* expected discounted future value of the state resulting from that action
+* 当前行动带来的即时回报，与
+* 该行动导致的未来状态的折现期望价值
 
-The Bellman equation is important because it gives us more information about the value function.
+贝尔曼方程很重要，因为它为我们提供了关于价值函数的更多信息。
 
-It also suggests a way of computing the value function, which we discuss below.
+它还提示了一种计算价值函数的方法，我们将在下面讨论。
 
-### Greedy Policies
+### 贪婪策略
 
-The primary importance of the value function is that we can use it to compute optimal policies.
+价值函数的主要重要性在于我们可以用它来计算最优策略。
 
-The details are as follows.
+具体细节如下。
 
-Given a continuous function $v$ on $\mathbb R_+$, we say that
-$\sigma \in \Sigma$ is $v$-**greedy** if $\sigma(y)$ is a solution to
+给定在 $\mathbb R_+$ 上的连续函数 $v$，如果对于每个 $y \in \mathbb R_+$，
+$\sigma(y)$ 是以下问题的解，我们就说 $\sigma \in \Sigma$ 是 $v$-**贪婪**的：
 
 ```{math}
 :label: defgp20
@@ -315,36 +315,29 @@ $\sigma \in \Sigma$ is $v$-**greedy** if $\sigma(y)$ is a solution to
     \right\}
 ```
 
-for every $y \in \mathbb R_+$.
+换句话说，当 $v$ 被视为价值函数时，如果 $\sigma \in \Sigma$ 能够最优地权衡当前和未来回报，那么它就是 $v$-贪婪的。
 
-In other words, $\sigma \in \Sigma$ is $v$-greedy if it optimally
-trades off current and future rewards when $v$ is taken to be the value
-function.
+在我们的设定中，我们有以下关键结果
 
-In our setting, we have the following key result
+* 一个可行的消费政策是最优的，当且仅当它是$v^*$-贪婪的。
 
-* A feasible consumption policy is optimal if and only if it is $v^*$-greedy.
+这个直觉与贝尔曼方程的直觉类似，这在{eq}`fpb30`之后已经提供。
 
-The intuition is similar to the intuition for the Bellman equation, which was
-provided after {eq}`fpb30`.
+参见[EDTC](http://johnstachurski.net/edtc.html)的定理10.1.11。
 
-See, for example, theorem 10.1.11 of [EDTC](http://johnstachurski.net/edtc.html).
+因此，一旦我们对$v^*$有了很好的近似，我们就可以通过计算相应的贪婪策略来计算（近似）最优策略。
 
-Hence, once we have a good approximation to $v^*$, we can compute the
-(approximately) optimal policy by computing the corresponding greedy policy.
+这样做的优势在于我们现在求解的是一个维度更低的优化问题。
 
-The advantage is that we are now solving a much lower dimensional optimization
-problem.
+### 贝尔曼算子
 
-### The Bellman Operator
+那么，我们应该如何计算价值函数呢？
 
-How, then, should we compute the value function?
+一种方法是使用所谓的**贝尔曼算子**。
 
-One way is to use the so-called **Bellman operator**.
+（算子是一个将函数映射到函数的映射。）
 
-(An operator is a map that sends functions into functions.)
-
-The Bellman operator is denoted by $T$ and defined by
+贝尔曼算子用$T$表示，定义为
 
 ```{math}
 :label: fcbell20_optgrowth
@@ -356,13 +349,11 @@ Tv(y) := \max_{0 \leq c \leq y}
 \qquad (y \in \mathbb R_+)
 ```
 
-In other words, $T$ sends the function $v$ into the new function
-$Tv$ defined by {eq}`fcbell20_optgrowth`.
+换句话说，$T$ 将函数 $v$ 转换为由{eq}`fcbell20_optgrowth`定义的新函数 $Tv$。
 
-By construction, the set of solutions to the Bellman equation
-{eq}`fpb30` *exactly coincides with* the set of fixed points of $T$.
+根据构造，Bellman方程{eq}`fpb30`的解集*恰好等于* $T$ 的不动点集。
 
-For example, if $Tv = v$, then, for any $y \geq 0$,
+例如，如果 $Tv = v$，那么对于任意 $y \geq 0$，
 
 $$
 v(y)
@@ -373,116 +364,102 @@ v(y)
 \right\}
 $$
 
-which says precisely that $v$ is a solution to the Bellman equation.
+这正好说明 $v$ 是Bellman方程的一个解。
 
-It follows that $v^*$ is a fixed point of $T$.
+由此可知 $v^*$ 是 $T$ 的一个不动点。
 
-### Review of Theoretical Results
+### 理论结果回顾
 
 ```{index} single: Dynamic Programming; Theory
 ```
 
-One can also show that $T$ is a contraction mapping on the set of
-continuous bounded functions on $\mathbb R_+$ under the supremum distance
+还可以证明，在上确界距离下，$T$ 是定义在 $\mathbb R_+$ 上的连续有界函数集上的压缩映射
 
 $$
 \rho(g, h) = \sup_{y \geq 0} |g(y) - h(y)|
 $$
 
-See  [EDTC](http://johnstachurski.net/edtc.html), lemma 10.1.18.
+参见 [EDTC](http://johnstachurski.net/edtc.html)，引理10.1.18。
 
-Hence, it has exactly one fixed point in this set, which we know is equal to the value function.
+因此，在这个集合中它有唯一的不动点，我们知道这就等于价值函数。
 
-It follows that
+由此可知
 
-* The value function $v^*$ is bounded and continuous.
-* Starting from any bounded and continuous $v$, the sequence $v, Tv, T^2v, \ldots$
-  generated by iteratively applying $T$ converges uniformly to $v^*$.
+* 值函数 $v^*$ 是有界且连续的。
+* 从任何有界且连续的 $v$ 开始，通过迭代应用 $T$ 生成的序列 $v, Tv, T^2v, \ldots$ 将一致收敛到 $v^*$。
 
-This iterative method is called **value function iteration**.
+这种迭代方法被称为**值函数迭代**。
 
-We also know that a feasible policy is optimal if and only if it is $v^*$-greedy.
+我们还知道，一个可行策略是最优的，当且仅当它是 $v^*$-贪婪的。
 
-It's not too hard to show that a $v^*$-greedy policy exists
-(see  [EDTC](http://johnstachurski.net/edtc.html), theorem 10.1.11 if you get stuck).
+证明存在 $v^*$-贪婪策略并不太难
+（如果你遇到困难，可以参考 [EDTC](http://johnstachurski.net/edtc.html) 定理10.1.11）。
 
-Hence, at least one optimal policy exists.
+因此，至少存在一个最优策略。
 
-Our problem now is how to compute it.
+我们现在的问题是如何计算它。
 
-### {index}`Unbounded Utility <single: Unbounded Utility>`
+### {index}`无界效用 <single: Unbounded Utility>`
 
 ```{index} single: Dynamic Programming; Unbounded Utility
 ```
 
-The results stated above assume that the utility function is bounded.
+上述结果假设效用函数是有界的。
 
-In practice economists often work with unbounded utility functions --- and so will we.
+在实践中，经济学家经常使用无界效用函数——我们也将这样做。
 
-In the unbounded setting, various optimality theories exist.
+在无界设定下，存在各种最优性理论。
 
-Unfortunately, they tend to be case-specific, as opposed to valid for a large range of applications.
+遗憾的是,这些结论往往是针对具体情况的,而不是适用于广泛的应用场景。
 
-Nevertheless, their main conclusions are usually in line with those stated for
-the bounded case just above (as long as we drop the word "bounded").
+尽管如此,它们的主要结论通常与上述有界情况的结论一致(只要我们去掉"有界"这个词)。
 
-Consult,  for example, section 12.2 of [EDTC](http://johnstachurski.net/edtc.html), {cite}`Kamihigashi2012` or {cite}`MV2010`.
+可以参考 [EDTC](http://johnstachurski.net/edtc.html) 第12.2节、{cite}`Kamihigashi2012` 或 {cite}`MV2010`。
 
-## Computation
+## 计算
 
 ```{index} single: Dynamic Programming; Computation
 ```
 
-Let's now look at computing the value function and the optimal policy.
+现在让我们来看看如何计算值函数和最优策略。
 
-Our implementation in this lecture will focus on clarity and
-flexibility.
+本讲中的实现将着重于清晰性和灵活性。
 
-Both of these things are helpful, but they do cost us some speed --- as you
-will see when you run the code.
+这两点都很有帮助,但会牺牲一些运行速度 —— 当你运行代码时就会看到这一点。
 
-{doc}`Later <optgrowth_fast>` we will sacrifice some of this clarity and
-flexibility in order to accelerate our code with just-in-time (JIT)
-compilation.
+{doc}`后续 <optgrowth_fast>` 我们将牺牲一些清晰性和灵活性,通过即时(JIT)编译来加速代码。
 
-The algorithm we will use is fitted value function iteration, which was
-described in earlier lectures {doc}`the McCall model <mccall_fitted_vfi>` and
-{doc}`cake eating <cake_eating_numerical>`.
+我们将使用的算法是拟合值函数迭代法,这是
 
-The algorithm will be
+在前面的讲座中描述的{doc}`McCall模型<mccall_fitted_vfi>`和{doc}`蛋糕食用问题<cake_eating_numerical>`。
+
+算法将是
 
 (fvi_alg)=
-1. Begin with an array of values $\{ v_1, \ldots, v_I \}$ representing
-   the values of some initial function $v$ on the grid points $\{ y_1, \ldots, y_I \}$.
-1. Build a function $\hat v$ on the state space $\mathbb R_+$ by
-   linear interpolation, based on these data points.
-1. Obtain and record the value $T \hat v(y_i)$ on each grid point
-   $y_i$ by repeatedly solving {eq}`fcbell20_optgrowth`.
-1. Unless some stopping condition is satisfied, set
-   $\{ v_1, \ldots, v_I \} = \{ T \hat v(y_1), \ldots, T \hat v(y_I) \}$ and go to step 2.
+1. 从一组值$\{ v_1, \ldots, v_I \}$开始，这些值代表初始函数$v$在网格点$\{ y_1, \ldots, y_I \}$上的值。
+1. 基于这些数据点，通过线性插值在状态空间$\mathbb R_+$上构建函数$\hat v$。
+1. 通过重复求解{eq}`fcbell20_optgrowth`，获取并记录每个网格点$y_i$上的值$T \hat v(y_i)$。
+1. 除非满足某些停止条件，否则设置$\{ v_1, \ldots, v_I \} = \{ T \hat v(y_1), \ldots, T \hat v(y_I) \}$并返回步骤2。
 
-### Scalar Maximization
+### 标量最大化
 
-To maximize the right hand side of the Bellman equation {eq}`fpb30`, we are going to use
-the `minimize_scalar` routine from SciPy.
+为了最大化贝尔曼方程{eq}`fpb30`的右侧，我们将使用SciPy中的`minimize_scalar`程序。
 
-Since we are maximizing rather than minimizing, we will use the fact that the
-maximizer of $g$ on the interval $[a, b]$ is the minimizer of
-$-g$ on the same interval.
+由于我们是在最大化而不是最小化，我们将利用这样一个事实：在区间$[a, b]$上$g$的最大值点是
 
-To this end, and to keep the interface tidy, we will wrap `minimize_scalar`
-in an outer function as follows:
+在相同区间上的 $-g$。
 
-```{code-cell} python3
+为此，并保持接口整洁，我们将把 `minimize_scalar` 封装在一个外部函数中，如下所示：
+
+```{code-cell} ipython3
 def maximize(g, a, b, args):
     """
-    Maximize the function g over the interval [a, b].
+    在区间 [a, b] 上最大化函数 g。
 
-    We use the fact that the maximizer of g on any interval is
-    also the minimizer of -g.  The tuple args collects any extra
-    arguments to g.
+    我们利用了在任何区间上 g 的最大值点也是 -g 的最小值点这一事实。
+    元组 args 收集了传递给 g 的任何额外参数。
 
-    Returns the maximal value and the maximizer.
+    返回最大值和最大值点。
     """
 
     objective = lambda x: -g(x, *args)
@@ -491,28 +468,27 @@ def maximize(g, a, b, args):
     return maximizer, maximum
 ```
 
-### Optimal Growth Model
+### 最优增长模型
 
-We will assume for now that $\phi$ is the distribution of $\xi := \exp(\mu + s \zeta)$ where
+我们暂且假设 $\phi$ 是 $\xi := \exp(\mu + s \zeta)$ 的分布，其中
 
-* $\zeta$ is standard normal,
-* $\mu$ is a shock location parameter and
-* $s$ is a shock scale parameter.
+* $\zeta$ 是标准正态分布，
+* $\mu$ 是冲击位置参数，
+* $s$ 是冲击规模参数。
 
-We will store this and other primitives of the optimal growth model in a class.
+我们将这些和最优增长模型的其他基本要素存储在一个类中。
 
-The class, defined below, combines both parameters and a method that realizes the
-right hand side of the Bellman equation {eq}`fpb30`.
+下面定义的类结合了参数和一个实现贝尔曼方程{eq}`fpb30`右侧的方法。
 
-```{code-cell} python3
+```{code-cell} ipython3
 class OptimalGrowthModel:
 
     def __init__(self,
-                 u,            # utility function
-                 f,            # production function
-                 β=0.96,       # discount factor
-                 μ=0,          # shock location parameter
-                 s=0.1,        # shock scale parameter
+                 u,            # 效用函数
+                 f,            # 生产函数
+                 β=0.96,       # 贴现因子
+                 μ=0,          # 冲击位置参数
+                 s=0.1,        # 冲击规模参数
                  grid_max=4,
                  grid_size=120,
                  shock_size=250,
@@ -520,16 +496,16 @@ class OptimalGrowthModel:
 
         self.u, self.f, self.β, self.μ, self.s = u, f, β, μ, s
 
-        # Set up grid
+        # 设置网格
         self.grid = np.linspace(1e-4, grid_max, grid_size)
 
-        # Store shocks (with a seed, so results are reproducible)
+        # 存储冲击（设定随机种子，使结果可重现）
         np.random.seed(seed)
         self.shocks = np.exp(μ + s * np.random.randn(shock_size))
 
     def state_action_value(self, c, y, v_array):
         """
-        Right hand side of the Bellman equation.
+        贝尔曼方程的右侧。
         """
 
         u, f, β, shocks = self.u, self.f, self.β, self.shocks
@@ -539,38 +515,34 @@ class OptimalGrowthModel:
         return u(c) + β * np.mean(v(f(y - c) * shocks))
 ```
 
-In the second last line we are using linear interpolation.
+在倒数第二行中，我们使用线性插值。
 
-In the last line, the expectation in {eq}`fcbell20_optgrowth` is
-computed via [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_integration), using the approximation
+在最后一行中，{eq}`fcbell20_optgrowth`中的期望值通过[蒙特卡洛](https://en.wikipedia.org/wiki/Monte_Carlo_integration)方法计算，使用以下近似：
 
 $$
 \int v(f(y - c) z) \phi(dz) \approx \frac{1}{n} \sum_{i=1}^n v(f(y - c) \xi_i)
 $$
 
-where $\{\xi_i\}_{i=1}^n$ are IID draws from $\phi$.
+其中$\{\xi_i\}_{i=1}^n$是从$\phi$中独立同分布抽取的样本。
 
-Monte Carlo is not always the most efficient way to compute integrals numerically
-but it does have some theoretical advantages in the present setting.
+蒙特卡洛并不总是计算积分最有效的数值方法，但在当前情况下确实具有一些理论优势。
 
-(For example, it preserves the contraction mapping property of the Bellman operator --- see, e.g., {cite}`pal2013`.)
+（例如，它保持了贝尔曼算子的压缩映射性质 --- 参见{cite}`pal2013`。）
 
-### The Bellman Operator
+### 贝尔曼算子
 
-The next function implements the Bellman operator.
+下面的函数实现了贝尔曼算子。
 
-(We could have added it as a method to the `OptimalGrowthModel` class, but we
-prefer small classes rather than monolithic ones for this kind of
-numerical work.)
+（我们本可以将其作为`OptimalGrowthModel`类的方法添加，但对于这种数值计算工作，我们更倾向于使用小型类而不是单体类。）
 
-```{code-cell} python3
+```{code-cell} ipython3
 def T(v, og):
     """
-    The Bellman operator.  Updates the guess of the value function
-    and also computes a v-greedy policy.
+    贝尔曼算子。更新值函数的猜测值，
+    并同时计算v-贪婪策略。
 
-      * og is an instance of OptimalGrowthModel
-      * v is an array representing a guess of the value function
+      * og是OptimalGrowthModel的一个实例
+      * v是表示值函数猜测的数组
 
     """
     v_new = np.empty_like(v)
@@ -579,7 +551,7 @@ def T(v, og):
     for i in range(len(grid)):
         y = grid[i]
 
-        # Maximize RHS of Bellman equation at state y
+        # 在状态y下最大化贝尔曼方程右侧
         c_star, v_max = maximize(og.state_action_value, 1e-10, y, (y, v))
         v_new[i] = v_max
         v_greedy[i] = c_star
@@ -588,17 +560,17 @@ def T(v, og):
 ```
 
 (benchmark_growth_mod)=
-### An Example
+### 一个示例
 
-Let's suppose now that
+假设现在
 
 $$
 f(k) = k^{\alpha}
-\quad \text{and} \quad
+\quad \text{和} \quad
 u(c) = \ln c
 $$
 
-For this particular problem, an exact analytical solution is available (see {cite}`Ljungqvist2012`, section 3.1.2), with
+对于这个特定问题，存在精确的解析解（参见{cite}`Ljungqvist2012`第3.1.2节），其中
 
 ```{math}
 :label: dpi_tv
@@ -612,24 +584,23 @@ v^*(y) =
  \frac{1}{1 - \alpha \beta} \ln y
 ```
 
-and optimal consumption policy
+和最优消费策略
 
 $$
 \sigma^*(y) = (1 - \alpha \beta ) y
 $$
 
-It is valuable to have these closed-form solutions because it lets us check
-whether our code works for this particular case.
+有这些封闭形式的解是很有价值的，因为它让我们能够检验我们的代码在这个特定情况下是否正确。
 
-In Python, the functions above can be expressed as:
+在Python中，上述函数可以表示为：
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/cd_analytical.py
 ```
 
-Next let's create an instance of the model with the above primitives and assign it to the variable `og`.
+接下来让我们用上述基本要素创建一个模型实例，并将其赋值给变量`og`。
 
-```{code-cell} python3
+```{code-cell} ipython3
 α = 0.4
 def fcd(k):
     return k**α
@@ -637,18 +608,17 @@ def fcd(k):
 og = OptimalGrowthModel(u=np.log, f=fcd)
 ```
 
-Now let's see what happens when we apply our Bellman operator to the exact
-solution $v^*$ in this case.
+现在让我们看看当我们将贝尔曼算子应用于这种情况下的精确解$v^*$时会发生什么。
 
-In theory, since $v^*$ is a fixed point, the resulting function should again be $v^*$.
+理论上，由于$v^*$是一个不动点，得到的函数应该仍然是$v^*$。
 
-In practice, we expect some small numerical error.
+在实践中，我们预计会有一些小的数值误差。
 
-```{code-cell} python3
+```{code-cell} ipython3
 grid = og.grid
 
-v_init = v_star(grid, α, og.β, og.μ)    # Start at the solution
-v_greedy, v = T(v_init, og)             # Apply T once
+v_init = v_star(grid, α, og.β, og.μ)    # 从解开始
+v_greedy, v = T(v_init, og)             # 应用一次T
 
 fig, ax = plt.subplots()
 ax.set_ylim(-35, -24)
@@ -658,87 +628,84 @@ ax.legend()
 plt.show()
 ```
 
-The two functions are essentially indistinguishable, so we are off to a good start.
+这两个函数本质上没有区别，所以我们开始得很顺利。
 
-Now let's have a look at iterating with the Bellman operator, starting
-from an arbitrary initial condition.
+现在让我们看看从任意初始条件开始，如何用贝尔曼算子进行迭代。
 
-The initial condition we'll start with is, somewhat arbitrarily, $v(y) = 5 \ln (y)$.
+我们选择的初始条件是，有点随意地设定为 $v(y) = 5 \ln (y)$。
 
-```{code-cell} python3
-v = 5 * np.log(grid)  # An initial condition
+```{code-cell} ipython3
+v = 5 * np.log(grid)  # 初始条件
 n = 35
 
 fig, ax = plt.subplots()
 
 ax.plot(grid, v, color=plt.cm.jet(0),
-        lw=2, alpha=0.6, label='Initial condition')
+        lw=2, alpha=0.6, label='初始条件')
 
 for i in range(n):
-    v_greedy, v = T(v, og)  # Apply the Bellman operator
+    v_greedy, v = T(v, og)  # 应用贝尔曼算子
     ax.plot(grid, v, color=plt.cm.jet(i / n), lw=2, alpha=0.6)
 
 ax.plot(grid, v_star(grid, α, og.β, og.μ), 'k-', lw=2,
-        alpha=0.8, label='True value function')
+        alpha=0.8, label='真实值函数')
 
 ax.legend()
 ax.set(ylim=(-40, 10), xlim=(np.min(grid), np.max(grid)))
 plt.show()
 ```
 
-The figure shows
+图中显示了
 
-1. the first 36 functions generated by the fitted value function iteration algorithm, with hotter colors given to higher iterates
-1. the true value function $v^*$ drawn in black
+1. 由拟合值迭代算法生成的前36个函数，颜色越热表示迭代次数越高
+1. 用黑色线条绘制的真实值函数$v^*$
 
-The sequence of iterates converges towards $v^*$.
+迭代序列逐渐收敛于$v^*$。
 
-We are clearly getting closer.
+我们显然正在接近目标。
 
-### Iterating to Convergence
+### 迭代至收敛
 
-We can write a function that iterates until the difference is below a particular
-tolerance level.
+我们可以编写一个函数，使其迭代直到差异小于特定的容差水平。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/solve_model.py
 ```
 
-Let's use this function to compute an approximate solution at the defaults.
+让我们使用这个函数在默认设置下计算一个近似解。
 
-```{code-cell} python3
+```{code-cell} ipython3
 v_greedy, v_solution = solve_model(og)
 ```
 
-Now we check our result by plotting it against the true value:
+现在我们通过将结果与真实值进行对比绘图来检验：
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(grid, v_solution, lw=2, alpha=0.6,
-        label='Approximate value function')
+        label='近似值函数')
 
 ax.plot(grid, v_star(grid, α, og.β, og.μ), lw=2,
-        alpha=0.6, label='True value function')
+        alpha=0.6, label='真实值函数')
 
 ax.legend()
 ax.set_ylim(-35, -24)
 plt.show()
 ```
 
-The figure shows that we are pretty much on the money.
+图表显示我们的结果非常准确。
 
-### The Policy Function
+### 策略函数
 
 ```{index} single: Optimal Growth; Policy Function
 ```
 
-The policy `v_greedy` computed above corresponds to an approximate optimal policy.
+上面计算的策略`v_greedy`对应于一个近似最优策略。
 
-The next figure compares it to the exact solution, which, as mentioned
-above, is $\sigma(y) = (1 - \alpha \beta) y$
+下图将其与精确解进行比较，如上所述，精确解为$\sigma(y) = (1 - \alpha \beta) y$
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(grid, v_greedy, lw=2,
@@ -751,39 +718,35 @@ ax.legend()
 plt.show()
 ```
 
-The figure shows that we've done a good job in this instance of approximating
-the true policy.
+图表显示我们在这个例子中很好地近似了真实的策略。
 
-## Exercises
+## 练习
 
 
 ```{exercise}
 :label: og_ex1
 
-A common choice for utility function in this kind of work is the CRRA
-specification
+在这类工作中，效用函数的常见选择是CRRA规格
 
 $$
 u(c) = \frac{c^{1 - \gamma}} {1 - \gamma}
 $$
 
-Maintaining the other defaults, including the Cobb-Douglas production
-function,  solve the optimal growth model with this
-utility specification.
+保持其他默认设置（包括柯布-道格拉斯生产函数），用这个效用函数规格求解最优增长模型。
 
-Setting $\gamma = 1.5$, compute and plot an estimate of the optimal policy.
+设定 $\gamma = 1.5$，计算并绘制最优策略的估计值。
 
-Time how long this function takes to run, so you can compare it to faster code developed in the {doc}`next lecture <optgrowth_fast>`.
+记录这个函数运行所需的时间，以便与{doc}`下一讲<optgrowth_fast>`中开发的更快代码进行比较。
 ```
 
 ```{solution-start} og_ex1
 :class: dropdown
 ```
 
-Here we set up the model.
+这里我们设置模型。
 
-```{code-cell} python3
-γ = 1.5   # Preference parameter
+```{code-cell} ipython3
+γ = 1.5   # 偏好参数
 
 def u_crra(c):
     return (c**(1 - γ) - 1) / (1 - γ)
@@ -791,20 +754,21 @@ def u_crra(c):
 og = OptimalGrowthModel(u=u_crra, f=fcd)
 ```
 
-Now let's run it, with a timer.
 
-```{code-cell} python3
+现在让我们运行它，并计时。
+
+```{code-cell} ipython3
 %%time
 v_greedy, v_solution = solve_model(og)
 ```
 
-Let's plot the policy function just to see what it looks like:
+让我们绘制策略函数看看它的样子：
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(grid, v_greedy, lw=2,
-        alpha=0.6, label='Approximate optimal policy')
+        alpha=0.6, label='近似最优策略')
 
 ax.legend()
 plt.show()
@@ -816,26 +780,25 @@ plt.show()
 ```{exercise}
 :label: og_ex2
 
-Time how long it takes to iterate with the Bellman operator
-20 times, starting from initial condition $v(y) = u(y)$.
+计时从初始条件 $v(y) = u(y)$ 开始，使用贝尔曼算子迭代20次所需的时间。
 
-Use the model specification in the previous exercise.
+使用前一个练习中的模型规格。
 
-(As before, we will compare this number with that for the faster code developed in the {doc}`next lecture <optgrowth_fast>`.)
+(和之前一样，我们会将这个数字与{doc}`下一讲<optgrowth_fast>`中更快的代码进行比较。)
 ```
 
 ```{solution-start} og_ex2
 :class: dropdown
 ```
 
-Let's set up:
+让我们设置：
 
 ```{code-cell} ipython3
 og = OptimalGrowthModel(u=u_crra, f=fcd)
 v = og.u(og.grid)
 ```
 
-Here's the timing:
+这是计时结果：
 
 ```{code-cell} ipython3
 %%time
@@ -847,3 +810,4 @@ for i in range(20):
 
 ```{solution-end}
 ```
+

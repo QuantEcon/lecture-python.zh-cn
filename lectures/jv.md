@@ -18,63 +18,68 @@ kernelspec:
 </div>
 ```
 
-# {index}`Job Search VI: On-the-Job Search <single: Job Search VI: On-the-Job Search>`
+# {index}`在职搜索 VI：在职搜索 <single: Job Search VI: On-the-Job Search>`
 
 ```{index} single: Models; On-the-Job Search
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-In this section, we solve a simple on-the-job search model
+在本节中，我们将解决一个简单的在职搜索模型
 
-* based on {cite}`Ljungqvist2012`, exercise 6.18, and {cite}`Jovanovic1979`
+* 基于 {cite}`Ljungqvist2012` 的练习 6.18 和 {cite}`Jovanovic1979`
 
-Let's start with some imports:
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 import scipy.stats as stats
 from numba import jit, prange
 ```
 
-### Model Features
+### 模型特点
 
-```{index} single: On-the-Job Search; Model Features
+```{index} single: 在职搜索; 模型特点
 ```
 
-* job-specific human capital accumulation combined with on-the-job search
-* infinite-horizon dynamic programming with one state variable and two controls
+* 结合在职搜索的工作特定人力资本积累
+* 具有一个状态变量和两个控制变量的无限期动态规划
 
-## Model
+## 模型
 
-```{index} single: On-the-Job Search; Model
+```{index} single: 在职搜索; 模型
 ```
 
-Let $x_t$ denote the time-$t$ job-specific human capital of a worker employed at a given firm and let  $w_t$ denote current wages.
+令 $x_t$ 表示在特定公司就职的工人在 t 时刻的工作特定人力资本，$w_t$ 表示当前工资。
 
-Let $w_t = x_t(1 - s_t - \phi_t)$, where
+令 $w_t = x_t(1 - s_t - \phi_t)$，其中
 
-* $\phi_t$ is investment in job-specific human capital for the current role and
-* $s_t$ is search effort, devoted to obtaining new offers from other firms.
+* $\phi_t$ 是对当前职位的工作特定人力资本投资，且
+* $s_t$ 是用于获取其他公司新工作机会的搜索努力。
 
-For as long as the worker remains in the current job, evolution of $\{x_t\}$ is given by $x_{t+1} = g(x_t, \phi_t)$.
+只要工人继续留在当前工作，$\{x_t\}$ 的演变由 $x_{t+1} = g(x_t, \phi_t)$ 给出。
 
-When search effort at $t$ is $s_t$, the worker receives a new job offer with probability $\pi(s_t) \in [0, 1]$.
+当 t 时刻的搜索努力为 $s_t$ 时，工人以概率 $\pi(s_t) \in [0, 1]$ 收到新的工作机会。
 
-The value of the offer, measured in job-specific human capital,  is $u_{t+1}$, where $\{u_t\}$ is IID with common distribution $f$.
+这个机会的价值（以工作特定人力资本衡量）是 $u_{t+1}$，其中 $\{u_t\}$ 是具有共同分布 $f$ 的独立同分布序列。
 
-The worker can reject the current offer and continue with existing job.
+工人可以拒绝当前的工作机会并继续现有的工作。
 
-Hence $x_{t+1} = u_{t+1}$ if he/she accepts and $x_{t+1} = g(x_t, \phi_t)$ otherwise.
+因此，如果接受则 $x_{t+1} = u_{t+1}$，否则 $x_{t+1} = g(x_t, \phi_t)$。
 
-Let $b_{t+1} \in \{0,1\}$ be a binary random variable, where $b_{t+1} = 1$ indicates that the worker receives an offer at the end of time $t$.
+令 $b_{t+1} \in \{0,1\}$ 为二元随机变量，其中 $b_{t+1} = 1$ 表示工人在时间 $t$ 结束时收到一个工作机会。
 
-We can write
+我们可以写成
 
 ```{math}
 :label: jd
@@ -84,10 +89,10 @@ x_{t+1}
     \max \{ g(x_t, \phi_t), u_{t+1}\}
 ```
 
-Agent's objective: maximize expected discounted sum of wages via controls $\{s_t\}$ and $\{\phi_t\}$.
+代理人的目标：通过控制变量 $\{s_t\}$ 和 $\{\phi_t\}$ 来最大化预期折现工资总和。
 
-Taking the expectation of $v(x_{t+1})$ and using {eq}`jd`,
-the Bellman equation for this problem can be written as
+对 $v(x_{t+1})$ 取期望并使用 {eq}`jd`，
+这个问题的贝尔曼方程可以写成
 
 ```{math}
 :label: jvbell
@@ -100,96 +105,94 @@ v(x)
      \right\}
 ```
 
-Here nonnegativity of $s$ and $\phi$ is understood, while
-$a \vee b := \max\{a, b\}$.
+这里默认 $s$ 和 $\phi$ 非负，而
+$a \vee b := \max\{a, b\}$。
 
-### Parameterization
+### 参数化
 
-```{index} single: On-the-Job Search; Parameterization
+```{index} single: On-the-Job Search; 参数化
 ```
 
-In the implementation below, we will focus on the parameterization
+在下面的实现中，我们将关注参数化
 
 $$
 g(x, \phi) = A (x \phi)^{\alpha},
 \quad
 \pi(s) = \sqrt s
-\quad \text{and} \quad
+\quad \text{和} \quad
 f = \text{Beta}(2, 2)
 $$
 
-with default parameter values
+默认参数值为
 
 * $A = 1.4$
 * $\alpha = 0.6$
 * $\beta = 0.96$
 
-The $\text{Beta}(2,2)$ distribution is supported on $(0,1)$ - it has a unimodal, symmetric density peaked at 0.5.
+$\text{Beta}(2,2)$ 分布的支撑集是 $(0,1)$ - 它具有单峰、对称的密度函数，峰值在0.5。
 
 (jvboecalc)=
-### Back-of-the-Envelope Calculations
+### 粗略计算
 
-Before we solve the model, let's make some quick calculations that
-provide intuition on what the solution should look like.
+在我们求解模型之前，让我们做一些快速计算，以直观地了解解应该是什么样子。
 
-To begin, observe that the worker has two instruments to build
-capital and hence wages:
+首先，注意到工人有两种方式来积累资本从而提高工资：
 
-1. invest in capital specific to the current job via $\phi$
-1. search for a new job with better job-specific capital match via $s$
+1. 通过 $\phi$ 投资于当前工作的特定资本
+1. 通过 $s$ 搜索具有更好的工作特定资本匹配的新工作
 
-Since wages are $x (1 - s - \phi)$, marginal cost of investment via either $\phi$ or $s$ is identical.
+由于工资是 $x (1 - s - \phi)$，通过 $\phi$ 或 $s$ 进行投资的边际成本是相同的。
 
-Our risk-neutral worker should focus on whatever instrument has the highest expected return.
+我们的风险中性工人应该专注于预期回报最高的工具。
 
-The relative expected return will depend on $x$.
+相对预期回报将取决于$x$。
 
-For example, suppose first that $x = 0.05$
+例如，首先假设$x = 0.05$
 
-* If $s=1$ and $\phi = 0$, then since $g(x,\phi) = 0$,
-  taking expectations of {eq}`jd` gives expected next period capital equal to $\pi(s) \mathbb{E} u
-  = \mathbb{E} u = 0.5$.
-* If $s=0$ and $\phi=1$, then next period capital is $g(x, \phi) = g(0.05, 1) \approx 0.23$.
+* 如果$s=1$且$\phi = 0$，由于$g(x,\phi) = 0$，
+  对{eq}`jd`取期望值得到下一期的预期资本等于$\pi(s) \mathbb{E} u
+  = \mathbb{E} u = 0.5$。
+* 如果$s=0$且$\phi=1$，那么下一期资本是$g(x, \phi) = g(0.05, 1) \approx 0.23$。
 
-Both rates of return are good, but the return from search is better.
+两种回报率都不错，但搜索的回报更好。
 
-Next, suppose that $x = 0.4$
+接下来，假设$x = 0.4$
 
-* If $s=1$ and $\phi = 0$, then expected next period capital is again $0.5$
-* If $s=0$ and $\phi = 1$, then $g(x, \phi) = g(0.4, 1) \approx 0.8$
+* 如果$s=1$且$\phi = 0$，那么下一期的预期资本仍然是$0.5$
+* 如果$s=0$且$\phi = 1$，那么$g(x, \phi) = g(0.4, 1) \approx 0.8$
 
-Return from investment via $\phi$ dominates expected return from search.
+通过$\phi$投资的回报超过了搜索的预期回报。
 
-Combining these observations gives us two informal predictions:
+综合这些观察，我们得到两个非正式的预测：
 
-1. At any given state $x$, the two controls $\phi$ and $s$ will
-   function primarily as substitutes --- worker will focus on whichever instrument has the higher expected return.
-1. For sufficiently small $x$, search will be preferable to investment in
-   job-specific human capital.  For larger $x$, the reverse will be true.
+1. 在任何给定状态$x$下，两个控制变量$\phi$和$s$将
 
-Now let's turn to implementation, and see if we can match our predictions.
+主要作为替代品 --- 工人会专注于预期回报较高的工具。
+1. 对于足够小的 $x$，搜索会比投资工作特定人力资本更可取。对于较大的 $x$，则相反。
 
-## Implementation
+现在让我们转向实施，看看是否能验证我们的预测。
+
+## 实施
 
 ```{index} single: On-the-Job Search; Programming Implementation
 ```
 
-We will set up a class `JVWorker` that holds the parameters of the model described above
+我们将设置一个`JVWorker`类来保存上述模型的参数
 
-```{code-cell} python3
+```{code-cell} ipython3
 class JVWorker:
     r"""
-    A Jovanovic-type model of employment with on-the-job search.
+    一个Jovanovic类型的就业模型，包含在职搜索。
 
     """
 
     def __init__(self,
                  A=1.4,
                  α=0.6,
-                 β=0.96,         # Discount factor
-                 π=np.sqrt,      # Search effort function
-                 a=2,            # Parameter of f
-                 b=2,            # Parameter of f
+                 β=0.96,         # 折现因子
+                 π=np.sqrt,      # 搜索努力函数
+                 a=2,            # f的参数
+                 b=2,            # f的参数
                  grid_size=50,
                  mc_size=100,
                  ɛ=1e-4):
@@ -197,27 +200,25 @@ class JVWorker:
         self.A, self.α, self.β, self.π = A, α, β, π
         self.mc_size, self.ɛ = mc_size, ɛ
 
-        self.g = jit(lambda x, ϕ: A * (x * ϕ)**α)    # Transition function
+        self.g = jit(lambda x, ϕ: A * (x * ϕ)**α)    # 转移函数
         self.f_rvs = np.random.beta(a, b, mc_size)
 
-        # Max of grid is the max of a large quantile value for f and the
-        # fixed point y = g(y, 1)
+        # 网格的最大值是f的大分位数值和固定点y = g(y, 1)的最大值
         ɛ = 1e-4
         grid_max = max(A**(1 / (1 - α)), stats.beta(a, b).ppf(1 - ɛ))
 
-        # Human capital
+        # 人力资本
         self.x_grid = np.linspace(ɛ, grid_max, grid_size)
 ```
 
-The function `operator_factory` takes an instance of this class and returns a
-jitted version of the Bellman operator `T`, i.e.
+函数`operator_factory`接收这个类的实例并返回Bellman算子`T`的jit编译版本，即：
 
 $$
 Tv(x)
 = \max_{s + \phi \leq 1} w(s, \phi)
 $$
 
-where
+其中
 
 ```{math}
 :label: defw
@@ -227,27 +228,23 @@ w(s, \phi)
          \beta \pi(s) \int v[g(x, \phi) \vee u] f(du)
 ```
 
-When we represent $v$, it will be with a NumPy array `v` giving values on grid `x_grid`.
+当我们表示$v$时，将使用NumPy数组`v`在网格`x_grid`上给出值。
 
-But to evaluate the right-hand side of {eq}`defw`, we need a function, so
-we replace the arrays `v` and `x_grid` with a function `v_func` that gives linear
-interpolation of `v` on `x_grid`.
+但要计算{eq}`defw`右侧，我们需要一个函数，所以我们用函数`v_func`替换数组`v`和`x_grid`，该函数在`x_grid`上对`v`进行线性插值。
 
-Inside the `for` loop, for each `x` in the grid over the state space, we
-set up the function $w(z) = w(s, \phi)$ defined in {eq}`defw`.
+在`for`循环内部，对状态空间网格中的每个`x`，我们设置函数$w(z) = w(s, \phi)$，如{eq}`defw`中定义。
 
-The function is maximized over all feasible $(s, \phi)$ pairs.
+该函数在所有可行的$(s, \phi)$对上最大化。
 
-Another function, `get_greedy` returns the optimal choice of $s$ and $\phi$
-at each $x$, given a value function.
+另一个函数`get_greedy`在给定值函数的情况下，返回每个$x$处$s$和$\phi$的最优选择。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def operator_factory(jv, parallel_flag=True):
 
     """
-    Returns a jitted version of the Bellman operator T
+    返回Bellman算子T的jit编译版本
 
-    jv is an instance of JVWorker
+    jv是JVWorker的一个实例
 
     """
 
@@ -272,14 +269,14 @@ def operator_factory(jv, parallel_flag=True):
     @jit(parallel=parallel_flag)
     def T(v):
         """
-        The Bellman operator
+        Bellman算子
         """
 
         v_new = np.empty_like(v)
         for i in prange(len(x_grid)):
             x = x_grid[i]
 
-            # Search on a grid
+            # 在网格上搜索
             search_grid = np.linspace(ɛ, 1, 15)
             max_val = -1
             for s in search_grid:
@@ -294,13 +291,13 @@ def operator_factory(jv, parallel_flag=True):
     @jit
     def get_greedy(v):
         """
-        Computes the v-greedy policy of a given function v
+        计算给定函数v的v-贪婪策略
         """
         s_policy, ϕ_policy = np.empty_like(v), np.empty_like(v)
 
         for i in range(len(x_grid)):
             x = x_grid[i]
-            # Search on a grid
+            # 在网格上搜索
             search_grid = np.linspace(ɛ, 1, 15)
             max_val = -1
             for s in search_grid:
@@ -315,10 +312,9 @@ def operator_factory(jv, parallel_flag=True):
     return T, get_greedy
 ```
 
-To solve the model, we will write a function that uses the Bellman operator
-and iterates to find a fixed point.
+为了求解模型，我们将编写一个使用贝尔曼算子并通过迭代寻找不动点的函数。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def solve_model(jv,
                 use_parallel=True,
                 tol=1e-4,
@@ -327,16 +323,16 @@ def solve_model(jv,
                 print_skip=25):
 
     """
-    Solves the model by value function iteration
+    通过值函数迭代求解模型
 
-    * jv is an instance of JVWorker
+    * jv 是 JVWorker 的一个实例
 
     """
 
     T, _ = operator_factory(jv, parallel_flag=use_parallel)
 
-    # Set up loop
-    v = jv.x_grid * 0.5  # Initial condition
+    # 设置循环
+    v = jv.x_grid * 0.5  # 初始条件
     i = 0
     error = tol + 1
 
@@ -345,37 +341,37 @@ def solve_model(jv,
         error = np.max(np.abs(v - v_new))
         i += 1
         if verbose and i % print_skip == 0:
-            print(f"Error at iteration {i} is {error}.")
+            print(f"第{i}次迭代的误差为{error}。")
         v = v_new
 
     if error > tol:
-        print("Failed to converge!")
+        print("未能收敛！")
     elif verbose:
-        print(f"\nConverged in {i} iterations.")
+        print(f"\n在第{i}次迭代后收敛。")
 
     return v_new
 ```
 
-## Solving for Policies
+## 求解政策
 
-```{index} single: On-the-Job Search; Solving for Policies
+```{index} single: 在职搜索; 求解政策
 ```
 
-Let's generate the optimal policies and see what they look like.
+让我们生成最优政策并看看它们是什么样子。
 
 (jv_policies)=
-```{code-cell} python3
+```{code-cell} ipython3
 jv = JVWorker()
 T, get_greedy = operator_factory(jv)
 v_star = solve_model(jv)
 s_star, ϕ_star = get_greedy(v_star)
 ```
 
-Here are the plots:
+以下是这些图表：
 
-```{code-cell} python3
+```{code-cell} ipython3
 plots = [s_star, ϕ_star, v_star]
-titles = ["s policy", "ϕ policy",  "value function"]
+titles = ["s策略", "ϕ策略",  "价值函数"]
 
 fig, axes = plt.subplots(3, 1, figsize=(12, 12))
 
@@ -388,35 +384,29 @@ axes[-1].set_xlabel("x")
 plt.show()
 ```
 
-The horizontal axis is the state $x$, while the vertical axis gives $s(x)$ and $\phi(x)$.
+横轴表示状态 $x$，纵轴表示 $s(x)$ 和 $\phi(x)$。
 
-Overall, the policies match well with our predictions from {ref}`above <jvboecalc>`
+总的来说，这些策略与我们在{ref}`上文<jvboecalc>`中的预测相符
 
-* Worker switches from one investment strategy to the other depending on relative return.
-* For low values of $x$, the best option is to search for a new job.
-* Once $x$ is larger, worker does better by investing in human capital specific to the current position.
+* 工人根据相对回报在两种投资策略之间切换。
+* 对于较低的 $x$ 值，最佳选择是寻找新工作。
+* 一旦 $x$ 变大，工人通过投资于当前职位的特定人力资本会获得更好的回报。
 
-## Exercises
+## 练习
 
 ```{exercise-start}
 :label: jv_ex1
 ```
 
-Let's look at the dynamics for the state process $\{x_t\}$ associated with these policies.
+让我们看看与这些策略相关的状态过程 $\{x_t\}$ 的动态特征。
 
-The dynamics are given by {eq}`jd` when $\phi_t$ and $s_t$ are
-chosen according to the optimal policies, and $\mathbb{P}\{b_{t+1} = 1\}
-= \pi(s_t)$.
+当根据最优策略选择 $\phi_t$ 和 $s_t$，且 $\mathbb{P}\{b_{t+1} = 1\} = \pi(s_t)$ 时，动态特征由{eq}`jd`给出。
 
-Since the dynamics are random, analysis is a bit subtle.
+由于动态是随机的，分析会有些微妙。
 
-One way to do it is to plot, for each $x$ in a relatively fine grid
-called `plot_grid`, a
-large number $K$ of realizations of $x_{t+1}$ given $x_t =
-x$.
+一种方法是对一个相对精细的网格（称为`plot_grid`）中的每个 $x$，绘制大量（$K$个）在给定 $x_t = x$ 条件下 $x_{t+1}$ 的实现值。
 
-Plot this with one dot for each realization, in the form of a 45 degree
-diagram, setting
+用以下方式绘制每个实现对应一个点的45度图,设置
 
 ```{code-block} python3
 jv = JVWorker(grid_size=25, mc_size=50)
@@ -427,10 +417,9 @@ ax.set_xlim(0, plot_grid_max)
 ax.set_ylim(0, plot_grid_max)
 ```
 
-By examining the plot, argue that under the optimal policies, the state
-$x_t$ will converge to a constant value $\bar x$ close to unity.
+通过观察图表,可以论证在最优策略下,状态 $x_t$ 将收敛到接近1的常数值 $\bar x$。
 
-Argue that at the steady state, $s_t \approx 0$ and $\phi_t \approx 0.6$.
+论证在稳态时, $s_t \approx 0$ 且 $\phi_t \approx 0.6$。
 
 ```{exercise-end}
 ```
@@ -439,16 +428,16 @@ Argue that at the steady state, $s_t \approx 0$ and $\phi_t \approx 0.6$.
 :class: dropdown
 ```
 
-Here’s code to produce the 45 degree diagram
+以下是生成45度图的代码
 
-```{code-cell} python3
+```{code-cell} ipython3
 jv = JVWorker(grid_size=25, mc_size=50)
 π, g, f_rvs, x_grid = jv.π, jv.g, jv.f_rvs, jv.x_grid
 T, get_greedy = operator_factory(jv)
 v_star = solve_model(jv, verbose=False)
 s_policy, ϕ_policy = get_greedy(v_star)
 
-# Turn the policy function arrays into actual functions
+# 将策略函数数组转换为实际函数
 s = lambda y: np.interp(y, x_grid, s_policy)
 ϕ = lambda y: np.interp(y, x_grid, ϕ_policy)
 
@@ -465,7 +454,7 @@ ax.set(xticks=ticks, yticks=ticks,
        ylim=(0, plot_grid_max),
        xlabel='$x_t$', ylabel='$x_{t+1}$')
 
-ax.plot(plot_grid, plot_grid, 'k--', alpha=0.6)  # 45 degree line
+ax.plot(plot_grid, plot_grid, 'k--', alpha=0.6)  # 45度线
 for x in plot_grid:
     for i in range(jv.mc_size):
         b = 1 if np.random.uniform(0, 1) < π(s(x)) else 0
@@ -476,16 +465,16 @@ for x in plot_grid:
 plt.show()
 ```
 
-Looking at the dynamics, we can see that
+观察动态变化，我们可以看到
 
-- If $x_t$ is below about 0.2 the dynamics are random, but
-  $x_{t+1} > x_t$ is very likely.
-- As $x_t$ increases the dynamics become deterministic, and
-  $x_t$ converges to a steady state value close to 1.
+- 如果 $x_t$ 低于约0.2，动态变化是随机的，但
+  $x_{t+1} > x_t$ 的可能性很大。
+- 随着 $x_t$ 增加，动态变化变得确定性，并且
+  $x_t$ 收敛到接近1的稳态值。
 
-Referring back to the figure {ref}`here <jv_policies>` we see that $x_t \approx 1$ means that
-$s_t = s(x_t) \approx 0$ and
-$\phi_t = \phi(x_t) \approx 0.6$.
+参考回 {ref}`这里 <jv_policies>` 的图表，我们看到 $x_t \approx 1$ 意味着
+$s_t = s(x_t) \approx 0$ 且
+$\phi_t = \phi(x_t) \approx 0.6$。
 
 ```{solution-end}
 ```
@@ -494,36 +483,34 @@ $\phi_t = \phi(x_t) \approx 0.6$.
 ```{exercise}
 :label: jv_ex2
 
-In {ref}`jv_ex1`, we found that $s_t$ converges to zero
-and $\phi_t$ converges to about 0.6.
+在 {ref}`jv_ex1` 中，我们发现 $s_t$ 收敛到零，
+而 $\phi_t$ 收敛到约0.6。
 
-Since these results were calculated at a value of $\beta$ close to
-one, let's compare them to the best choice for an *infinitely* patient worker.
+由于这些结果是在 $\beta$ 接近1的情况下计算的，
+让我们将它们与*无限*耐心的工人的最佳选择进行比较。
 
-Intuitively, an infinitely patient worker would like to maximize steady state
-wages, which are a function of steady state capital.
+直观地说，无限耐心的工人会希望最大化稳态工资，
+而稳态工资是稳态资本的函数。
 
-You can take it as given---it's certainly true---that the infinitely patient worker does not
-search in the long run (i.e., $s_t = 0$ for large $t$).
+你可以认为这是既定事实——这确实是真的——无限耐心的工人
+在长期内不会搜索（即，对于较大的 $t$，$s_t = 0$）。
 
-Thus, given $\phi$, steady state capital is the positive fixed point
-$x^*(\phi)$ of the map $x \mapsto g(x, \phi)$.
+因此，给定 $\phi$，稳态资本是映射 $x \mapsto g(x, \phi)$ 的正固定点 $x^*(\phi)$。
 
-Steady state wages can be written as $w^*(\phi) = x^*(\phi) (1 - \phi)$.
+稳态工资可以写作 $w^*(\phi) = x^*(\phi) (1 - \phi)$。
 
-Graph $w^*(\phi)$ with respect to $\phi$, and examine the best
-choice of $\phi$.
+绘制 $w^*(\phi)$ 关于 $\phi$ 的图像，并研究 $\phi$ 的最佳选择。
 
-Can you give a rough interpretation for the value that you see?
+你能对你看到的值给出一个大致的解释吗？
 ```
 
 ```{solution-start} jv_ex2
 :class: dropdown
 ```
 
-The figure can be produced as follows
+可以用以下方法生成图像
 
-```{code-cell} python3
+```{code-cell} ipython3
 jv = JVWorker()
 
 def xbar(ϕ):
@@ -539,16 +526,15 @@ ax.legend()
 plt.show()
 ```
 
-Observe that the maximizer is around 0.6.
 
-This is similar to the long-run value for $\phi$ obtained in
-{ref}`jv_ex1`.
+观察到最大值约在0.6处。
 
-Hence the behavior of the infinitely patent worker is similar to that
-of the worker with $\beta = 0.96$.
+这与{ref}`jv_ex1`中得到的$\phi$的长期值相似。
 
-This seems reasonable and helps us confirm that our dynamic programming
-solutions are probably correct.
+因此，无限耐心的工人的行为与$\beta = 0.96$的工人的行为相似。
+
+这看起来是合理的，并且帮助我们确认我们的动态规划解可能是正确的。
 
 ```{solution-end}
 ```
+

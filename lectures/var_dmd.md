@@ -11,218 +11,191 @@ kernelspec:
   name: python3
 ---
 
-# VARs and DMDs
+# 向量自回归和动态模态分解
 
-This lecture applies computational methods  that we learned about in this lecture 
-{doc}`Singular Value Decomposition <svd_intro>` to 
+本讲座应用我们在 {doc}`奇异值分解 <svd_intro>` 讲座中学到的计算方法来研究：
 
-* first-order vector autoregressions (VARs)
-* dynamic mode decompositions (DMDs)
-* connections between DMDs and first-order VARs 
+* 一阶向量自回归(VARs)
+* 动态模态分解(DMDs)
+* DMDs和一阶VARs之间的联系
 
-## First-Order Vector Autoregressions 
+## 一阶向量自回归
 
-
-We want to fit a **first-order vector autoregression**
+我们要拟合一个**一阶向量自回归**
 
 $$
 X_{t+1} = A X_t + C \epsilon_{t+1}, \quad \epsilon_{t+1} \perp X_t 
 $$ (eq:VARfirstorder)
 
-where $\epsilon_{t+1}$ is the time $t+1$ component  of a sequence of  i.i.d. $m \times 1$ random vectors with mean vector
-zero and identity  covariance matrix and where 
-the $ m \times 1 $ vector $ X_t $ is
+其中 $\epsilon_{t+1}$ 是一个独立同分布的 $m \times 1$ 随机向量序列的时间 $t+1$ 分量，该序列具有零均值向量和单位协方差矩阵，而 $ m \times 1 $ 向量 $ X_t $ 为：
 
 $$
 X_t = \begin{bmatrix}  X_{1,t} & X_{2,t} & \cdots & X_{m,t}     \end{bmatrix}^\top 
 $$ (eq:Xvector)
 
-and where $\cdot ^\top $ again denotes complex transposition and $ X_{i,t} $ is  variable $ i $ at time $ t $.
+其中 $\cdot ^\top $ 再次表示复数转置，$ X_{i,t} $ 是时间 $ t $ 的变量 $ i $。
 
+我们想要拟合方程 {eq}`eq:VARfirstorder`。
 
-
-We want to fit equation {eq}`eq:VARfirstorder`. 
-
-
-Our data are organized in   an $ m \times (n+1) $ matrix  $ \tilde X $ 
+我们的数据组织在一个 $ m \times (n+1) $ 矩阵 $ \tilde X $ 中
 
 $$
 \tilde X =  \begin{bmatrix} X_1 \mid X_2 \mid \cdots \mid X_n \mid X_{n+1} \end{bmatrix}
 $$
 
-where for $ t = 1, \ldots, n +1 $,  the $ m \times 1 $ vector $ X_t $ is given by {eq}`eq:Xvector`. 
+其中对于 $ t = 1, \ldots, n +1 $，$ m \times 1 $ 向量 $ X_t $ 由 {eq}`eq:Xvector` 给出。
 
-Thus, we want to estimate a  system  {eq}`eq:VARfirstorder` that consists of $ m $ least squares regressions of **everything** on one lagged value of **everything**.
+因此，我们想要估计一个系统 {eq}`eq:VARfirstorder`，它由 $ m $ 个最小二乘回归组成，将**所有变量**对**所有变量**的一阶滞后值进行回归。
 
-The $i$'th equation of {eq}`eq:VARfirstorder` is a regression of $X_{i,t+1}$ on the vector $X_t$.
+{eq}`eq:VARfirstorder` 的第 $i$ 个方程是将 $X_{i,t+1}$ 对向量 $X_t$ 进行回归。
 
+我们按如下步骤进行。
 
-We proceed as follows. 
-
-
-From $ \tilde X $,  we  form two $m \times n$ matrices
+从 $ \tilde X $ 中，我们形成两个 $m \times n$ 矩阵
 
 $$
 X =  \begin{bmatrix} X_1 \mid X_2 \mid \cdots \mid X_{n}\end{bmatrix}
 $$
 
-and
+和
 
 $$
 X' =  \begin{bmatrix} X_2 \mid X_3 \mid \cdots \mid X_{n+1}\end{bmatrix}
 $$
 
-Here $ ' $  is part of the name of the matrix $ X' $ and does not indicate matrix transposition.
+这里的 $ ' $ 是矩阵 $ X' $ 名称的一部分，并不表示矩阵转置。
 
-We  use  $\cdot^\top $ to denote matrix transposition or its extension to complex matrices. 
+我们使用 $\cdot^\top $ 来表示矩阵转置或其在复矩阵中的扩展。
 
-In forming $ X $ and $ X' $, we have in each case  dropped a column from $ \tilde X $,  the last column in the case of $ X $, and  the first column in the case of $ X' $.
+在构造 $ X $ 和 $ X' $ 时，我们在每种情况下都从 $ \tilde X $ 中删除了一列，对于 $ X $ 是删除最后一列，对于 $ X' $ 是删除第一列。
 
-Evidently, $ X $ and $ X' $ are both $ m \times  n $ matrices.
+显然，$ X $ 和 $ X' $ 都是 $ m \times n $ 矩阵。
 
-We denote the rank of $ X $ as $ p \leq \min(m, n)  $.
+我们用 $ p \leq \min(m, n) $ 表示 $ X $ 的秩。
 
-Two  cases that interest us are
+我们感兴趣的两种情况是：
 
- *  $ n > > m$, so that we have many more time series  observations $n$ than variables $m$
- *  $m > > n$, so that we have many more variables $m $ than time series observations $n$
+* $ n > > m $，即时间序列观测值数量 $n$ 远大于变量数量 $m$
+* $ m > > n $，即变量数量 $m$ 远大于时间序列观测值数量 $n$
 
-At a general level that includes both of these special cases, a common formula describes the least squares estimator $\hat A$ of $A$.
+在包含这两种特殊情况的一般层面上，有一个共同的公式描述了 $A$ 的最小二乘估计量 $\hat A$。
 
-But important  details differ.
+但重要的细节有所不同。
 
-The common formula is
+这个共同的公式是：
 
 $$ 
 \hat A = X' X^+ 
 $$ (eq:commonA)
 
-where $X^+$ is the pseudo-inverse of $X$.
+其中 $X^+$ 是 $X$ 的伪逆。
 
-To read about the **Moore-Penrose pseudo-inverse** please see [Moore-Penrose pseudo-inverse](https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse)
+关于**Moore-Penrose伪逆**的详细信息，请参见[Moore-Penrose伪逆](https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse)
 
-Applicable formulas for the pseudo-inverse differ for our two cases.
+伪逆的适用公式在我们的两种情况下有所不同。
 
-**Short-Fat Case:**
+**短胖情况：**
 
-When $ n > > m$, so that we have many more time series  observations $n$ than variables $m$ and when
-$X$ has linearly independent **rows**, $X X^\top $ has an inverse and the pseudo-inverse $X^+$ is
+当$n >> m$时，即时间序列观测值$n$远多于变量$m$，且当$X$具有线性独立的**行**时，$X X^\top$有逆矩阵，伪逆$X^+$为
 
 $$
 X^+ = X^\top  (X X^\top )^{-1} 
 $$
 
-Here $X^+$ is a **right-inverse** that verifies $ X X^+ = I_{m \times m}$.
+这里$X^+$是一个**右逆**，满足$X X^+ = I_{m \times m}$。
 
-In this case, our formula {eq}`eq:commonA` for the least-squares estimator of the population matrix of regression coefficients  $A$ becomes
+在这种情况下，我们用于估计总体回归系数矩阵$A$的最小二乘估计量的公式{eq}`eq:commonA`变为
 
 $$ 
 \hat A = X' X^\top  (X X^\top )^{-1}
 $$ (eq:Ahatform101)
 
+这个最小二乘回归系数的公式在计量经济学中被广泛使用。
 
-This  formula for least-squares regression coefficients is widely used in econometrics.
+它被用于估计向量自回归。
 
-It is used  to estimate vector autorgressions.   
+公式{eq}`eq:Ahatform101`右边与$X_{t+1}$和$X_t$的经验交叉二阶矩矩阵成正比，并乘以$X_t$二阶矩矩阵的逆。
 
-The right side of formula {eq}`eq:Ahatform101` is proportional to the empirical cross second moment matrix of $X_{t+1}$ and $X_t$ times the inverse
-of the second moment matrix of $X_t$.
+**高瘦型情况：**
 
-
-
-**Tall-Skinny Case:**
-
-When $m > > n$, so that we have many more attributes $m $ than time series observations $n$ and when $X$ has linearly independent **columns**,
-$X^\top  X$ has an inverse and the pseudo-inverse $X^+$ is
+当$m > > n$时，即属性数量$m$远大于时间序列观测值$n$，且当$X$的**列**线性独立时，$X^\top X$有逆矩阵，伪逆$X^+$为
 
 $$
-X^+ = (X^\top  X)^{-1} X^\top 
+X^+ = (X^\top X)^{-1} X^\top 
 $$
 
-Here  $X^+$ is a **left-inverse** that verifies $X^+ X = I_{n \times n}$.
+这里$X^+$是一个**左逆**，满足$X^+ X = I_{n \times n}$。
 
-In this case, our formula  {eq}`eq:commonA` for a least-squares estimator of $A$ becomes
+在这种情况下，我们用于估计$A$的最小二乘估计公式{eq}`eq:commonA`变为
 
 $$
-\hat A = X' (X^\top  X)^{-1} X^\top 
+\hat A = X' (X^\top X)^{-1} X^\top 
 $$ (eq:hatAversion0)
 
-Please compare formulas {eq}`eq:Ahatform101` and {eq}`eq:hatAversion0` for $\hat A$.
+请比较公式{eq}`eq:Ahatform101`和{eq}`eq:hatAversion0`中的$\hat A$。
 
-Here we are especially interested in formula {eq}`eq:hatAversion0`.
+这里我们特别关注公式{eq}`eq:hatAversion0`。
 
-The $ i $th  row of $ \hat A $ is an $ m \times 1 $ vector of regression coefficients of $ X_{i,t+1} $ on $ X_{j,t}, j = 1, \ldots, m $.
+$\hat A$的第$i$行是一个$m \times 1$向量，包含了$X_{i,t+1}$对$X_{j,t}, j = 1, \ldots, m$回归的系数。
 
-
-If we use formula {eq}`eq:hatAversion0` to calculate $\hat A X$ we find that
+如果我们使用公式{eq}`eq:hatAversion0`来计算$\hat A X$，我们发现
 
 $$
 \hat A X = X'
 $$
 
-so that the regression equation **fits perfectly**.
+因此回归方程**完美拟合**。
 
-This is a typical outcome in an **underdetermined least-squares** model.
+这是**欠定最小二乘**模型中的典型结果。
 
+重申一下，在**高瘦**情况下(在{doc}`奇异值分解<svd_intro>`中描述)，即观测数量$n$相对于向量$X_t$中出现的属性数量$m$较小时，我们想要拟合方程{eq}`eq:VARfirstorder`。
 
-To reiterate, in the  **tall-skinny** case (described in {doc}`Singular Value Decomposition <svd_intro>`)  in which we have a number $n$ of observations   that is small relative to the number $m$ of
-attributes that appear in the vector $X_t$,  we want to fit equation {eq}`eq:VARfirstorder`.
+我们面临着最小二乘估计量是欠定的，且回归方程完美拟合的事实。
 
-We  confront the facts that the least squares estimator is underdetermined and that the regression equation fits perfectly.  
+要继续，我们需要高效地计算伪逆$X^+$。
 
+伪逆$X^+$将是我们$A$估计量的一个组成部分。
 
-To proceed, we'll want efficiently to calculate the pseudo-inverse $X^+$.
-
-The pseudo-inverse $X^+$ will be a component of our estimator of $A$.
-
-As our  estimator $\hat A$ of $A$ we want to form an  $m \times m$ matrix that  solves the least-squares best-fit problem
+作为我们对$A$的估计量$\hat A$，我们想要形成一个$m \times m$矩阵，它解决最小二乘最佳拟合问题
 
 $$ 
-\hat A = \textrm{argmin}_{\check A} || X' - \check  A X ||_F   
+\hat A = \textrm{argmin}_{\check A} || X' - \check  A X ||_F
+
 $$ (eq:ALSeqn)
 
-where $|| \cdot ||_F$ denotes the Frobenius (or Euclidean) norm of a matrix.
+其中 $|| \cdot ||_F$ 表示矩阵的Frobenius（或欧几里得）范数。
 
-The Frobenius norm is defined as
+Frobenius范数定义为
 
 $$
  ||A||_F = \sqrt{ \sum_{i=1}^m \sum_{j=1}^m |A_{ij}|^2 }
 $$
 
-
-The minimizer of the right side of equation {eq}`eq:ALSeqn` is
+方程{eq}`eq:ALSeqn`右侧的最小化解为
 
 $$
 \hat A =  X'  X^{+}  
 $$ (eq:hatAform)
 
-where the (possibly huge) $ n \times m $ matrix $ X^{+} = (X^\top  X)^{-1} X^\top $ is again a pseudo-inverse of $ X $.
+其中（可能巨大的）$ n \times m $ 矩阵 $ X^{+} = (X^\top  X)^{-1} X^\top $ 再次是 $ X $ 的伪逆。
 
+对于我们感兴趣的某些情况，$X^\top  X $ 可能接近奇异，这种情况会使某些数值算法变得不准确。
 
+为了应对这种可能性，我们将使用高效的算法来构建公式{eq}`eq:hatAversion0`中 $\hat A$ 的**降秩近似**。
 
+这种对我们的向量自回归的近似将不再完全拟合。
 
-For some situations that we are interested in, $X^\top  X $ can be close to singular, a situation that  makes some numerical algorithms  be inaccurate.
+$ \hat A $ 的第 $ i $ 行是一个 $ m \times 1 $ 的回归系数向量，表示 $ X_{i,t+1} $ 对 $ X_{j,t}, j = 1, \ldots, m $ 的回归。
 
-To acknowledge that possibility, we'll use  efficient algorithms to  constructing 
-a **reduced-rank approximation** of  $\hat A$ in formula {eq}`eq:hatAversion0`.
-
-Such an approximation to our vector autoregression will no longer fit perfectly.
- 
-
-The $ i $th  row of $ \hat A $ is an $ m \times 1 $ vector of regression coefficients of $ X_{i,t+1} $ on $ X_{j,t}, j = 1, \ldots, m $.
-
-An efficient way to compute the pseudo-inverse $X^+$ is to start with  a singular value decomposition
-
-
+计算伪逆$X^+$的一个有效方法是从奇异值分解开始
 
 $$
 X =  U \Sigma  V^\top  
 $$ (eq:SVDDMD)
 
-where we remind ourselves that for a **reduced** SVD, $X$ is an $m \times n$ matrix of data, $U$ is an $m \times p$ matrix, $\Sigma$  is a $p \times p$ matrix, and $V$ is an $n \times p$ matrix.  
+这里我们需要提醒自己，对于**简化的**SVD，$X$是一个$m \times n$的数据矩阵，$U$是一个$m \times p$的矩阵，$\Sigma$是一个$p \times p$的矩阵，而$V$是一个$n \times p$的矩阵。
 
-We can    efficiently  construct the pertinent pseudo-inverse $X^+$
-by recognizing the following string of equalities.  
+通过认识到以下一系列等式，我们可以有效地构造相关的伪逆$X^+$。
 
 $$
 \begin{aligned}
@@ -234,290 +207,262 @@ X^{+} & = (X^\top  X)^{-1} X^\top  \\
 \end{aligned}
 $$ (eq:efficientpseudoinverse)
 
+（由于我们处在$m > > n$的情况下，在简化SVD中$V^\top  V = I_{p \times p}$，因此我们可以将前面的等式序列同时用于简化SVD和完整SVD。）
 
-(Since we are in the $m > > n$ case in which $V^\top  V = I_{p \times p}$ in a reduced SVD, we can use the preceding
-string of equalities for a reduced SVD as well as for a full SVD.)
-
-Thus, we shall  construct a pseudo-inverse $ X^+ $  of $ X $ by using
-a singular value decomposition of $X$ in equation {eq}`eq:SVDDMD`  to compute
-
+因此，我们将使用方程{eq}`eq:SVDDMD`中$X$的奇异值分解来构造$X$的伪逆$X^+$，计算方法为：
 
 $$
 X^{+} =  V \Sigma^{-1}  U^\top  
 $$ (eq:Xplusformula)
 
-where the matrix $ \Sigma^{-1} $ is constructed by replacing each non-zero element of $ \Sigma $ with $ \sigma_j^{-1} $.
+其中矩阵$\Sigma^{-1}$是通过将$\Sigma$中的每个非零元素替换为$\sigma_j^{-1}$构造而成。
 
-We can  use formula {eq}`eq:Xplusformula`   together with formula {eq}`eq:hatAform` to compute the matrix  $ \hat A $ of regression coefficients.
+我们可以将公式{eq}`eq:Xplusformula`与公式{eq}`eq:hatAform`结合使用来计算回归系数矩阵$\hat A$。
 
-Thus, our  estimator $\hat A = X' X^+$ of the $m \times m$ matrix of coefficients $A$    is
+因此，我们对$m \times m$系数矩阵$A$的估计量$\hat A = X' X^+$为：
 
 $$
 \hat A = X' V \Sigma^{-1}  U^\top  
 $$ (eq:AhatSVDformula)
 
+## 动态模态分解(DMD)
 
+我们转向与**动态模态分解**相关的$m >>n$**高瘦型**情况。
 
-## Dynamic Mode Decomposition (DMD)
+这里，一个$m \times n+1$数据矩阵$\tilde X$包含了比时间周期$n+1$多得多的属性（或变量）$m$。
 
+动态模态分解由{cite}`schmid2010`引入，
 
+你可以阅读有关动态模态分解的内容 {cite}`DMD_book` 和 {cite}`Brunton_Kutz_2019`（第7.2节）。
 
-We turn to the $ m >>n $ **tall and skinny** case  associated with **Dynamic Mode Decomposition**.
+**动态模态分解**（DMD）计算公式{eq}`eq:AhatSVDformula`中描述的最小二乘回归系数$\hat A$的秩为$r < p$的近似。
 
-Here an $ m \times n+1 $  data matrix $ \tilde X $ contains many more attributes (or variables) $ m $ than time periods  $ n+1 $.
+我们将逐步构建一个在应用中有用的表述。
 
+我们将通过描述一阶线性动态系统（即我们的向量自回归）的三种替代表示来实现这一点。
 
-Dynamic mode decomposition was introduced by {cite}`schmid2010`,
+**三种表示的指南：**在实践中，我们主要关注表示3。
 
-You can read  about Dynamic Mode Decomposition {cite}`DMD_book` and {cite}`Brunton_Kutz_2019` (section 7.2).
+我们使用前两种表示来呈现一些有用的中间步骤，这些步骤有助于我们理解表示3的内部原理。
 
+在应用中，我们将只使用**DMD模态**的一小部分子集来近似动态。
 
-**Dynamic Mode Decomposition** (DMD) computes a rank $ r < p  $ approximation to the least squares regression coefficients $ \hat A $  described by formula {eq}`eq:AhatSVDformula`.
+我们使用这样一个小的DMD模态子集来构建对$A$的降秩近似。
 
-  
-We'll  build up gradually  to a formulation that is useful  in applications.
+为此，我们需要使用与表示法3相关的**简化**SVD，而不是与表示法1和2相关的**完全**SVD。
 
+**给急躁读者的指南：** 在我们的应用中，我们将使用表示法3。
 
-We'll do this by describing three  alternative representations of our first-order linear dynamic system, i.e., our vector autoregression. 
-
-**Guide to three representations:** In practice, we'll mainly be interested in Representation 3. 
-
-We use the first two representations  to present some useful  intermediate steps that  help us to appreciate what is under the hood of Representation 3.  
-
-In applications, we'll use only a small  subset of **DMD modes** to approximate dynamics. 
-
-We use  such a small subset of DMD modes to  construct a reduced-rank approximation to $A$.
-
-To do that, we'll want to use the  **reduced**  SVD's affiliated with representation 3, not the **full** SVD's affiliated with representations 1 and 2. 
-
-
-**Guide to impatient reader:** In our applications, we'll be using Representation 3. 
-
-You might want to skip the stage-setting representations 1 and 2 on first reading.
+第一次阅读时，您可以跳过铺垫性的表示法1和2。
 
 +++
 
-## Representation 1
- 
-In this representation, we shall use a **full** SVD of $X$.
+## 表示法1
 
-We use the $m$  **columns** of $U$, and thus the $m$ **rows** of $U^\top $,  to define   a $m \times 1$  vector $\tilde b_t$ as 
+在这个表示法中，我们将使用$X$的**完全**SVD。
 
+我们使用$U$的$m$个**列**，因此也就是$U^\top$的$m$个**行**，来定义一个$m \times 1$向量$\tilde b_t$：
 
 $$
 \tilde b_t = U^\top  X_t .
 $$ (eq:tildeXdef2)
 
-The original  data $X_t$ can be represented as
+原始数据$X_t$可以表示为：
 
 $$ 
 X_t = U \tilde b_t
 $$ (eq:Xdecoder)
 
-(Here we use $b$ to remind ourselves that we are creating a **basis** vector.)
+（这里我们使用$b$来提醒自己我们正在创建一个**基**向量。）
 
-Since we are now using a **full** SVD, $U U^\top  = I_{m \times m}$.
+由于我们现在使用的是**完全**SVD，$U U^\top  = I_{m \times m}$。
 
-So it follows from equation {eq}`eq:tildeXdef2` that we can reconstruct  $X_t$ from $\tilde b_t$.
+因此从方程{eq}`eq:tildeXdef2`可以得出，我们可以从$\tilde b_t$重构$X_t$。
 
-In particular,  
+特别地，
 
-
-
- * Equation {eq}`eq:tildeXdef2` serves as an **encoder** that  **rotates** the $m \times 1$ vector $X_t$ to become an $m \times 1$ vector $\tilde b_t$ 
+* 方程 {eq}`eq:tildeXdef2` 作为一个**编码器**，将 $m \times 1$ 向量 $X_t$ **旋转**成一个 $m \times 1$ 向量 $\tilde b_t$
   
- * Equation {eq}`eq:Xdecoder` serves as a **decoder** that **reconstructs** the $m \times 1$ vector $X_t$ by rotating  the $m \times 1$ vector $\tilde b_t$ 
+* 方程 {eq}`eq:Xdecoder` 作为一个**解码器**，通过旋转 $m \times 1$ 向量 $\tilde b_t$ 来**重构** $m \times 1$ 向量 $X_t$
 
-
-
-Define a  transition matrix for an $m \times 1$ basis vector  $\tilde b_t$ by
+为 $m \times 1$ 基向量 $\tilde b_t$ 定义一个转移矩阵：
 
 $$ 
 \tilde A = U^\top  \hat A U 
 $$ (eq:Atilde0)
 
-We can  recover $\hat A$ from
+我们可以通过以下方式恢复 $\hat A$：
 
 $$
 \hat A = U \tilde A U^\top  
 $$
 
-Dynamics of the  $m \times 1$ basis vector $\tilde b_t$ are governed by
+$m \times 1$ 基向量 $\tilde b_t$ 的动态由以下方程支配：
 
 $$
 \tilde b_{t+1} = \tilde A \tilde b_t 
 $$
 
-To construct forecasts $\overline X_t$ of  future values of $X_t$ conditional on $X_1$, we can apply  decoders (i.e., rotators) to both sides of this equation and deduce
+为了构建基于 $X_1$ 条件的 $X_t$ 未来值的预测 $\overline X_t$，我们可以对这个方程的两边应用解码器（即旋转器），从而推导出：
 
 $$
 \overline X_{t+1} = U \tilde A^t U^\top  X_1
 $$
 
-where we use $\overline X_{t+1}, t \geq 1 $ to denote a forecast.
+这里我们用 $\overline X_{t+1}, t \geq 1$ 表示预测值。
 
 +++
 
-## Representation 2
+## 表示 2
 
+这种表示方法与{cite}`schmid2010`最初提出的方法有关。
 
-This representation is related to  one originally proposed by  {cite}`schmid2010`.
+它可以被视为获得后面将要介绍的相关表示3的一个中间步骤。
 
-It can be regarded as an intermediate step on the way  to obtaining  a related   representation 3 to be presented later
+与表示1一样，我们继续：
 
+* 使用**完全**SVD而**不是**简化SVD
 
-As with Representation 1, we continue to
+正如我们在{doc}`奇异值分解<svd_intro>`的课程中观察和说明的那样：
 
-* use a **full** SVD and **not** a reduced SVD
+  * (a) 对于完全SVD，$U U^\top = I_{m \times m}$和$U^\top U = I_{p \times p}$都是单位矩阵
+  
+  * (b) 对于$X$的简化SVD，$U^\top U$不是单位矩阵。
 
+我们稍后会看到，完全SVD对于我们最终想要做的事情来说过于局限，也就是说，处理$U^\top U$**不是**单位矩阵的情况，因为我们使用$X$的简化SVD。
 
+但现在，让我们假设我们使用的是完全SVD，因此条件(a)和(b)都得到满足。
 
-As we observed and illustrated   in a lecture about the {doc}`Singular Value Decomposition <svd_intro>`
-
-  * (a) for a full SVD $U U^\top  = I_{m \times m} $ and $U^\top  U = I_{p \times p}$ are both identity matrices
- 
-  * (b)  for  a reduced SVD of $X$, $U^\top  U $ is not an identity matrix.  
-
-As we shall see later, a full SVD is  too confining for what we ultimately want to do, namely,  cope with situations in which  $U^\top  U$ is **not** an identity matrix because we  use a reduced SVD of $X$.
-
-But for now, let's proceed under the assumption that we are using a full SVD so that  requirements (a) and (b) are both satisfied.
-
- 
-
-Form an eigendecomposition of the $m \times m$ matrix $\tilde A = U^\top  \hat A U$ defined in equation {eq}`eq:Atilde0`:
+对方程{eq}`eq:Atilde0`中定义的$m \times m$矩阵$\tilde A = U^\top  \hat A U$进行特征分解：
 
 $$
 \tilde A = W \Lambda W^{-1} 
 $$ (eq:tildeAeigen)
 
-where $\Lambda$ is a diagonal matrix of eigenvalues and $W$ is an $m \times m$
-matrix whose columns are eigenvectors  corresponding to rows (eigenvalues) in 
-$\Lambda$.
+其中$\Lambda$是特征值的对角矩阵，$W$是一个$m \times m$矩阵，其列是对应于$\Lambda$中行(特征值)的特征向量。
 
-When $U U^\top  = I_{m \times m}$, as is true with a full SVD of $X$, it follows that 
+当$U U^\top  = I_{m \times m}$时（这在$X$的完全SVD中是成立的），可得：
 
 $$ 
 \hat A = U \tilde A U^\top  = U W \Lambda W^{-1} U^\top  
 $$ (eq:eqeigAhat)
 
-According to equation {eq}`eq:eqeigAhat`, the diagonal matrix $\Lambda$ contains eigenvalues of $\hat A$ and corresponding eigenvectors of $\hat A$ are columns of the matrix $UW$. 
+根据方程{eq}`eq:eqeigAhat`，对角矩阵$\Lambda$包含$\hat A$的特征值，而$\hat A$对应的特征向量是矩阵$UW$的列。
 
-It follows that the systematic (i.e., not random) parts of the $X_t$ dynamics captured by our first-order vector autoregressions   are described by
+因此，我们的一阶向量自回归所捕获的$X_t$动态的系统部分（即非随机部分）可以描述为：
 
 $$
 X_{t+1} = U W \Lambda W^{-1} U^\top   X_t 
 $$
 
-Multiplying both sides of the above equation by $W^{-1} U^\top $ gives
+将上述方程两边同时乘以$W^{-1} U^\top $得到：
 
-$$ 
+$$
+
 W^{-1} U^\top  X_{t+1} = \Lambda W^{-1} U^\top  X_t 
 $$
 
-or 
+或
 
 $$
 \hat b_{t+1} = \Lambda \hat b_t
 $$
 
-where our **encoder**  is 
+其中我们的**编码器**是
 
 $$ 
 \hat b_t = W^{-1} U^\top  X_t
 $$
 
-and our **decoder** is
+我们的**解码器**是
 
 $$
 X_t = U W \hat b_t
 $$
 
-We can use this representation to construct a predictor $\overline X_{t+1}$ of $X_{t+1}$ conditional on $X_1$  via: 
+我们可以使用这种表示来构建一个基于$X_1$的$X_{t+1}$的预测器$\overline X_{t+1}$：
 
 $$
 \overline X_{t+1} = U W \Lambda^t W^{-1} U^\top  X_1 
 $$ (eq:DSSEbookrepr)
 
-
-In effect, 
-{cite}`schmid2010` defined an $m \times m$ matrix $\Phi_s$ as
+实际上，
+{cite}`schmid2010`定义了一个$m \times m$矩阵$\Phi_s$为
 
 $$ 
 \Phi_s = UW 
 $$ (eq:Phisfull)
 
-and a generalized inverse
+和一个广义逆
 
 $$
 \Phi_s^+ = W^{-1}U^\top  
 $$ (eq:Phisfullinv)
 
-{cite}`schmid2010` then  represented equation {eq}`eq:DSSEbookrepr` as
+{cite}`schmid2010`随后将方程{eq}`eq:DSSEbookrepr`表示为
 
 $$
 \overline X_{t+1} = \Phi_s \Lambda^t \Phi_s^+ X_1 
 $$ (eq:schmidrep)
 
-Components of the  basis vector $ \hat b_t = W^{-1} U^\top  X_t \equiv \Phi_s^+ X_t$ are   
-DMD **projected modes**.    
+基向量的分量$ \hat b_t = W^{-1} U^\top  X_t \equiv \Phi_s^+ X_t$是
+DMD**投影模态**。
 
-To understand why they are called **projected modes**, notice that
+要理解为什么它们被称为**投影模态**，注意到
 
 $$ 
 \Phi_s^+ = ( \Phi_s^\top  \Phi_s)^{-1} \Phi_s^\top 
 $$
 
-so that the $m \times p$ matrix 
+使得 $m \times p$ 矩阵
 
 $$
 \hat b =  \Phi_s^+ X
 $$ 
 
-is a matrix of regression coefficients of the $m \times n$ matrix $X$ on the $m \times p$ matrix $\Phi_s$.
+是 $m \times n$ 矩阵 $X$ 在 $m \times p$ 矩阵 $\Phi_s$ 上的回归系数矩阵。
 
-We'll say more about this interpretation in a related context when we discuss representation 3, which was suggested by  Tu et al. {cite}`tu_Rowley`.
+我们将在讨论由 Tu 等人 {cite}`tu_Rowley` 提出的表示3时，在相关背景下进一步讨论这种解释。
 
-It is more appropriate to use  representation 3  when, as is often the case  in practice, we want to use a reduced SVD.
+当我们想要使用简化SVD时（这在实践中经常出现），使用表示3更为合适。
 
+## 表示3
 
+与构建表示1和表示2的程序不同（它们都使用了**完全**SVD），我们现在使用**简化**SVD。
 
+同样，令 $p \leq \textrm{min}(m,n)$ 为 $X$ 的秩。
 
-## Representation 3
-
-Departing from the procedures used to construct  Representations 1 and 2, each of which deployed a **full** SVD, we now use a **reduced** SVD.  
-
-Again, we let  $p \leq \textrm{min}(m,n)$ be the rank of $X$.
-
-Construct a **reduced** SVD
+构造一个**简化**SVD
 
 $$
 X = \tilde U \tilde \Sigma \tilde V^\top , 
 $$
 
-where now $\tilde U$ is $m \times p$, $\tilde \Sigma$ is $ p \times p$, and $\tilde V^\top $ is $p \times n$. 
+其中现在 $\tilde U$ 是 $m \times p$ 矩阵，$\tilde \Sigma$ 是 $p \times p$ 矩阵，而 $\tilde V^\top$ 是 $p \times n$ 矩阵。
 
-Our minimum-norm least-squares approximator of  $A$ now has representation 
+我们的 $A$ 的最小范数最小二乘近似器现在的表示为
 
 $$
+
 \hat A = X' \tilde V \tilde \Sigma^{-1} \tilde U^\top 
 $$ (eq:Ahatwithtildes)
 
 
-**Computing Dominant Eigenvectors of $\hat A$**
+**计算$\hat A$的主要特征向量**
 
-We begin by paralleling a step used to construct  Representation 1, define a  transition matrix for a rotated $p \times 1$ state $\tilde b_t$ by
+我们首先参照构建表示1时使用的步骤，通过以下方式为旋转的$p \times 1$状态$\tilde b_t$定义一个转移矩阵：
 
 $$ 
 \tilde A =\tilde  U^\top  \hat A \tilde U 
 $$ (eq:Atildered)
 
 
-**Interpretation as projection coefficients**
+**作为投影系数的解释**
 
 
-{cite}`DDSE_book` remark that $\tilde A$  can be interpreted in terms of a projection of $\hat A$ onto the $p$ modes in $\tilde U$. 
+{cite}`DDSE_book`指出$\tilde A$可以被解释为$\hat A$在$\tilde U$中$p$个模态上的投影。
 
-To verify this, first note that, because  $ \tilde U^\top  \tilde U = I$, it follows that 
+为了验证这一点，首先注意到，由于$ \tilde U^\top  \tilde U = I$，因此：
 
 $$
 \tilde A = \tilde U^\top  \hat A \tilde U = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1} \tilde U^\top  \tilde U 
@@ -527,49 +472,47 @@ $$ (eq:tildeAverify)
 
  
 
-Next, we'll just  compute the regression coefficients in a projection of $\hat A$ on $\tilde U$ using a standard least-squares formula
+接下来，我们将使用标准最小二乘公式计算$\hat A$在$\tilde U$上的投影的回归系数
 
 $$
+
 (\tilde U^\top  \tilde U)^{-1} \tilde U^\top  \hat A = (\tilde U^\top  \tilde U)^{-1} \tilde U^\top  X' \tilde V \tilde \Sigma^{-1} \tilde U^\top  = 
 \tilde U^\top  X' \tilde V \tilde \Sigma^{-1} \tilde U^\top   = \tilde A .
 $$
 
-Thus, we have verified that $\tilde A$ is a least-squares projection of $\hat A$ onto $\tilde U$.
+因此，我们已经验证了$\tilde A$是$\hat A$在$\tilde U$上的最小二乘投影。
 
-**An Inverse Challenge**
+**一个逆运算的挑战**
 
+因为我们使用的是简化SVD，所以$\tilde U \tilde U^\top  \neq I$。
 
-Because we are using  a reduced SVD,  $\tilde U \tilde U^\top  \neq I$.
-
-Consequently, 
+因此，
 
 $$
 \hat A \neq \tilde U \tilde A \tilde U^\top ,
 $$
 
-so we can't simply  recover $\hat A$ from  $\tilde A$ and $\tilde U$. 
+所以我们不能简单地从$\tilde A$和$\tilde U$恢复$\hat A$。
 
-**A Blind Alley**
+**一个死胡同**
 
-We can start by   hoping for the best and proceeding to construct an eigendecomposition of the $p \times p$ matrix $\tilde A$:
+我们可以抱着最好的希望开始，继续构造$p \times p$矩阵$\tilde A$的特征分解：
 
 $$
  \tilde A =  \tilde  W  \Lambda \tilde  W^{-1} 
 $$ (eq:tildeAeigenred)
 
-where $\Lambda$ is a diagonal matrix of $p$ eigenvalues and the columns of $\tilde W$
-are corresponding eigenvectors. 
+其中$\Lambda$是包含$p$个特征值的对角矩阵，$\tilde W$的列是对应的特征向量。
 
-
-Mimicking our procedure in Representation 2, we cross our fingers and compute an $m \times p$ matrix
+仿照表示法2中的步骤，我们交叉手指计算一个$m \times p$矩阵
 
 $$
 \tilde \Phi_s = \tilde U \tilde W
 $$ (eq:Phisred)
 
-that  corresponds to {eq}`eq:Phisfull` for a full SVD.  
+该矩阵对应于完整SVD中的{eq}`eq:Phisfull`。
 
-At this point, where $\hat A$ is given by formula {eq}`eq:Ahatwithtildes` it is interesting to compute $\hat A \tilde  \Phi_s$:
+此时，当$\hat A$由公式{eq}`eq:Ahatwithtildes`给出时，计算$\hat A \tilde \Phi_s$很有意思：
 
 $$
 \begin{aligned}
@@ -579,31 +522,27 @@ $$
   & = \tilde \Phi_s \Lambda
   \end{aligned}
 $$
- 
-That 
-$ \hat A \tilde \Phi_s \neq \tilde \Phi_s \Lambda $ means that, unlike the  corresponding situation in Representation 2, columns of $\tilde \Phi_s = \tilde U \tilde  W$
-are **not** eigenvectors of $\hat A$ corresponding to eigenvalues  on the diagonal of matix $\Lambda$.
 
-**An Approach That Works**
+$\hat A \tilde \Phi_s \neq \tilde \Phi_s \Lambda$意味着，与表示法2中的相应情况不同，$\tilde \Phi_s = \tilde U \tilde W$的列**不是**$\hat A$对应于矩阵$\Lambda$对角线上特征值的特征向量。
 
-Continuing our quest for eigenvectors of $\hat A$ that we **can** compute with a reduced SVD,  let's define  an $m \times p$ matrix
-$\Phi$ as
+**一个可行的方法**
+
+继续寻找我们**能够**通过简化SVD计算的$\hat A$的特征向量，让我们定义一个$m \times p$矩阵$\Phi$为
 
 $$
 \Phi \equiv \hat A \tilde \Phi_s = X' \tilde V \tilde \Sigma^{-1}  \tilde  W
 $$ (eq:Phiformula)
 
-It turns out that columns of $\Phi$ **are** eigenvectors of $\hat A$.
+事实证明，$\Phi$的列**确实是**$\hat A$的特征向量。
 
-This is  a consequence of a  result established by Tu et al. {cite}`tu_Rowley` that we now present.
-
-
+这是Tu等人{cite}`tu_Rowley`所证明的一个结果，我们现在来介绍。
 
 
-  
-**Proposition** The $p$ columns of $\Phi$ are eigenvectors of $\hat A$.
 
-**Proof:** From formula {eq}`eq:Phiformula` we have
+
+**命题** $\Phi$的$p$列是$\hat A$的特征向量。
+
+**证明：** 根据公式{eq}`eq:Phiformula`，我们有
 
 $$  
 \begin{aligned}
@@ -614,226 +553,209 @@ $$
   \end{aligned}
 $$ 
 
-so that
+因此
 
 $$  
-\hat A \Phi = \Phi \Lambda .
+\hat A \Phi = \Phi \Lambda 
 $$ (eq:APhiLambda)
 
-  
+令 $\phi_i$ 为 $\Phi$ 的第 $i$ 列，$\lambda_i$ 为分解式 {eq}`eq:tildeAeigenred` 中 $\tilde A$ 对应的第 $i$ 个特征值。
 
-Let $\phi_i$ be the $i$th  column of $\Phi$ and $\lambda_i$ be the corresponding $i$ eigenvalue of $\tilde A$ from decomposition {eq}`eq:tildeAeigenred`. 
-
-Equating the $m \times 1$ vectors that appear on the two  sides of  equation {eq}`eq:APhiLambda`  gives
-
+将等式 {eq}`eq:APhiLambda` 两边的 $m \times 1$ 向量对应项相等得到：
 
 $$
 \hat A \phi_i = \lambda_i \phi_i .
 $$
 
-This equation confirms that  $\phi_i$ is an eigenvector of $\hat A$ that corresponds to eigenvalue  $\lambda_i$ of both  $\tilde A$ and $\hat A$.
+这个等式证实了 $\phi_i$ 是 $\hat A$ 的特征向量，对应于 $\tilde A$ 和 $\hat A$ 的特征值 $\lambda_i$。
 
-This concludes the proof. 
+证明至此完成。
 
-Also see {cite}`DDSE_book` (p. 238)
-
-
-### Decoder of  $\check b$ as a linear projection
+另见 {cite}`DDSE_book` (第238页)
 
 
+### $\check b$ 的解码器作为线性投影
 
-
-
-
-From  eigendecomposition {eq}`eq:APhiLambda` we can represent $\hat A$ as 
+从特征分解 {eq}`eq:APhiLambda` 我们可以将 $\hat A$ 表示为：
 
 $$ 
 \hat A = \Phi \Lambda \Phi^+ .
 $$ (eq:Aform12)
 
-
-From formula {eq}`eq:Aform12` we can deduce  dynamics of the $p \times 1$ vector $\check b_t$:
+从公式 {eq}`eq:Aform12` 我们可以推导出 $p \times 1$ 向量 $\check b_t$ 的动态：
 
 $$ 
 \check b_{t+1} = \Lambda \check b_t 
 $$
 
-where
+其中
 
 $$
 \check b_t  = \Phi^+ X_t  
 $$ (eq:decoder102)
 
-
-Since the $m \times p$ matrix $\Phi$ has $p$ linearly independent columns, the generalized inverse of $\Phi$ is
+由于 $m \times p$ 矩阵 $\Phi$ 有 $p$ 个线性独立的列，$\Phi$ 的广义逆为
 
 $$
 \Phi^{+} = (\Phi^\top  \Phi)^{-1} \Phi^\top 
 $$
 
-and so
+因此
 
 $$ 
 \check b = (\Phi^\top  \Phi)^{-1} \Phi^\top  X
 $$ (eq:checkbform)
 
-The $p \times n$  matrix $\check b$  is recognizable as a  matrix of least squares regression coefficients of the $m \times n$  matrix
-$X$ on the $m \times p$ matrix $\Phi$ and consequently
+$p \times n$ 矩阵 $\check b$ 可以被识别为 $m \times n$ 矩阵 $X$ 在 $m \times p$ 矩阵 $\Phi$ 上的最小二乘回归系数矩阵，因此
 
 $$
 \check X = \Phi \check b
 $$ (eq:Xcheck_)
 
-is an $m \times n$ matrix of least squares projections of $X$ on $\Phi$.
+是 $X$ 在 $\Phi$ 上的最小二乘投影的 $m \times n$ 矩阵。
 
- **Variance Decomposition of $X$**
+**$X$ 的方差分解**
 
-By virtue of the least-squares projection theory discussed in  this quantecon lecture  <https://python-advanced.quantecon.org/orth_proj.html>, we can represent $X$ as the sum of the projection $\check X$ of $X$ on $\Phi$  plus a matrix of errors.
+根据这个 quantecon 讲座 <https://python-advanced.quantecon.org/orth_proj.html> 中讨论的最小二乘投影理论，我们可以将 $X$ 表示为 $X$ 在 $\Phi$ 上的投影 $\check X$ 加上误差矩阵的和。
 
-
-To verify this, note that the least squares projection $\check X$ is related to $X$ by
-
+为了验证这一点，注意到最小二乘投影 $\check X$ 与 $X$ 的关系为
 
 $$ 
 X = \check X + \epsilon 
 $$
 
-or
+或
 
 $$
 X = \Phi \check b + \epsilon
+
 $$ (eq:Xbcheck)
 
-where $\epsilon$ is an $m \times n$ matrix of least squares errors satisfying the least squares orthogonality conditions $\epsilon^\top  \Phi =0 $ or
+其中 $\epsilon$ 是一个 $m \times n$ 的最小二乘误差矩阵，满足最小二乘正交条件 $\epsilon^\top \Phi =0$ 或
 
 $$ 
-(X - \Phi \check b)^\top  \Phi = 0_{m \times p}
+(X - \Phi \check b)^\top \Phi = 0_{m \times p}
 $$ (eq:orthls)
 
-Rearranging  the orthogonality conditions {eq}`eq:orthls` gives $X^\top  \Phi = \check b \Phi^\top  \Phi$, which implies formula {eq}`eq:checkbform`. 
+重新整理正交条件 {eq}`eq:orthls` 得到 $X^\top \Phi = \check b \Phi^\top \Phi$，这就推导出公式 {eq}`eq:checkbform`。
 
 
 
 
 
-### An Approximation
+### 一个近似方法
 
 
 
-We now describe a way to approximate  the $p \times 1$ vector $\check b_t$ instead of using  formula {eq}`eq:decoder102`.
+我们现在描述一种近似计算 $p \times 1$ 向量 $\check b_t$ 的方法，而不是使用公式 {eq}`eq:decoder102`。
 
-In particular, the following argument adapted from {cite}`DDSE_book` (page 240) provides a computationally efficient way to approximate $\check b_t$.  
+具体来说，以下论述改编自 {cite}`DDSE_book`（第240页）提供了一种计算效率高的方法来近似 $\check b_t$。
 
-For convenience, we'll apply the method at  time $t=1$.
+为方便起见，我们将在时间 $t=1$ 应用该方法。
 
 
 
-For $t=1$, from equation {eq}`eq:Xbcheck` we have  
+对于 $t=1$，根据方程 {eq}`eq:Xbcheck`，我们有
 
 $$ 
    \check X_1 = \Phi \check b_1
 $$ (eq:X1proj)
 
-where $\check b_1$ is a $p \times 1$ vector. 
+其中 $\check b_1$ 是一个 $p \times 1$ 向量。
 
-Recall from representation 1 above that  $X_1 =  U \tilde b_1$, where $\tilde b_1$ is a time $1$  basis vector for representation 1 and $U$ is from the full SVD  $X = U \Sigma V^\top$.  
+回想上面表示1中的 $X_1 = U \tilde b_1$,其中 $\tilde b_1$ 是表示1的时间1基向量,而 $U$ 来自完整SVD分解 $X = U \Sigma V^\top$。
 
-It  then follows from equation {eq}`eq:Xbcheck` that 
+从方程 {eq}`eq:Xbcheck` 可以得出:
 
- 
 $$ 
   U \tilde b_1 = X' \tilde V \tilde \Sigma^{-1} \tilde  W \check b_1 + \epsilon_1
 $$
 
-where $\epsilon_1$ is a least-squares error vector from equation {eq}`eq:Xbcheck`. 
+其中 $\epsilon_1$ 是方程 {eq}`eq:Xbcheck` 中的最小二乘误差向量。
 
-It follows that 
+因此可得:
 
 $$
 \tilde b_1 = U^\top  X' V \tilde \Sigma^{-1} \tilde W \check b_1 + U^\top  \epsilon_1
 $$
 
-
-Replacing the error term $U^\top  \epsilon_1$ by zero, and replacing $U$ from a **full** SVD of $X$ with $\tilde U$ from a **reduced** SVD,  we obtain  an approximation $\hat b_1$ to $\tilde b_1$:
-
-
+将误差项 $U^\top  \epsilon_1$ 替换为零,并将完整SVD中的 $U$ 替换为简化SVD中的 $\tilde U$,我们得到 $\tilde b_1$ 的近似值 $\hat b_1$:
 
 $$ 
   \hat b_1 = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1} \tilde  W \check b_1
 $$
 
-Recall that  from equation {eq}`eq:tildeAverify`,  $ \tilde A = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1}$.
+回想方程 {eq}`eq:tildeAverify` 中的 $ \tilde A = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1}$。
 
-It then follows  that
-  
-$$ 
-  \hat  b_1 = \tilde   A \tilde W \check b_1
+因此可得:
+
 $$
 
-and therefore, by the  eigendecomposition  {eq}`eq:tildeAeigenred` of $\tilde A$, we have
+\hat  b_1 = \tilde   A \tilde W \check b_1
+$$
+
+因此，根据 $\tilde A$ 的特征分解 {eq}`eq:tildeAeigenred`，我们有
 
 $$ 
   \hat b_1 = \tilde W \Lambda \check b_1
 $$ 
 
-Consequently, 
+因此，
   
 $$ 
   \hat b_1 = ( \tilde W \Lambda)^{-1} \tilde b_1
 $$ 
 
-or 
-
+或者
 
 $$ 
    \hat b_1 = ( \tilde W \Lambda)^{-1} \tilde U^\top  X_1 ,
 $$ (eq:beqnsmall)
 
-
-
-which is a computationally efficient approximation to  the following instance of  equation {eq}`eq:decoder102` for  the initial vector $\check b_1$:
+这是对以下方程 {eq}`eq:decoder102` 中初始向量 $\check b_1$ 的计算效率较高的近似：
 
 $$
   \check b_1= \Phi^{+} X_1
 $$ (eq:bphieqn)
 
+（为了强调 {eq}`eq:beqnsmall` 是一个近似值，DMD的使用者有时将基向量 $\check b_t  = \Phi^+ X_t $ 的分量称为**精确**DMD模态，将 $\hat b_t = ( \tilde W \Lambda)^{-1} \tilde U^\top  X_t$ 的分量称为**近似**模态。）
 
-(To highlight that {eq}`eq:beqnsmall` is an approximation, users of  DMD sometimes call  components of   basis vector $\check b_t  = \Phi^+ X_t $  the  **exact** DMD modes and components of $\hat b_t = ( \tilde W \Lambda)^{-1} \tilde U^\top  X_t$ the **approximate** modes.)  
-
-Conditional on $X_t$, we can compute a decoded $\check X_{t+j},   j = 1, 2, \ldots $  from the exact modes via
+在给定 $X_t$ 的条件下，我们可以通过精确模态计算解码后的 $\check X_{t+j},   j = 1, 2, \ldots $ ：
 
 $$
 \check X_{t+j} = \Phi \Lambda^j \Phi^{+} X_t
+
 $$ (eq:checkXevoln)
 
 
-or  use compute a decoded $\hat X_{t+j}$ from  approximate modes via
+或者通过近似模态计算解码的 $\hat X_{t+j}$:
 
 $$ 
   \hat X_{t+j} = \Phi \Lambda^j (\tilde W \Lambda)^{-1}  \tilde U^\top  X_t .
 $$ (eq:checkXevoln2)
 
-We can then use  a decoded $\check X_{t+j}$ or $\hat X_{t+j}$ to forecast $X_{t+j}$.
+然后我们可以使用解码的 $\check X_{t+j}$ 或 $\hat X_{t+j}$ 来预测 $X_{t+j}$。
 
 
 
-### Using Fewer Modes
+### 使用更少的模态
 
-In applications, we'll actually  use only  a few modes, often  three or less.  
+在实际应用中，我们通常只使用少数几个模态，通常是三个或更少。
 
-Some of the preceding formulas assume that we have retained all $p$ modes associated with  singular values of $X$.  
+前面的一些公式假设我们保留了与 $X$ 的奇异值相关的所有 $p$ 个模态。
 
-We can  adjust our  formulas to describe a situation in which we instead retain only
-the $r < p$ largest singular values.  
+我们可以调整公式来描述只保留 $r < p$ 个最大奇异值的情况。
 
-In that case, we simply replace $\tilde \Sigma$ with the appropriate $r\times r$ matrix of singular values, $\tilde U$ with the $m \times r$ matrix  whose columns correspond to the $r$ largest singular values, and $\tilde V$ with the $n \times r$ matrix whose columns correspond to the $r$ largest  singular values.
-
-Counterparts of all of the salient formulas above then apply.
+在这种情况下，我们只需将 $\tilde \Sigma$ 替换为相应的 $r\times r$ 奇异值矩阵，将 $\tilde U$ 替换为对应于 $r$ 个最大奇异值的 $m \times r$ 矩阵，将 $\tilde V$ 替换为对应于 $r$ 个最大奇异值的 $n \times r$ 矩阵。
 
 
+上述所有重要公式都有其对应的形式。
 
-## Source for Some Python Code
 
-You can find a Python implementation of DMD here:
+
+## Python代码来源
+
+你可以在这里找到DMD的Python实现：
 
 https://mathlab.sissa.it/pydmd
+

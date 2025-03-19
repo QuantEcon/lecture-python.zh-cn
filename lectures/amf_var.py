@@ -1,25 +1,28 @@
-
 import numpy as np
 import scipy as sp
 import scipy.linalg as la
 import quantecon as qe
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 from scipy.stats import norm, lognorm
 
 
 
 class AMF_LSS_VAR:
     """
-    This class transforms an additive (multipilcative)
-    functional into a QuantEcon linear state space system.
+    此类将加性（乘性）泛函转换为QuantEcon线性状态空间系统。
     """
 
     def __init__(self, A, B, D, F=None, nu=None, x_0=None):
-        # Unpack required elements
+        # 解包必需的元素
         self.nx, self.nk = B.shape
         self.A, self.B = A, B
 
-        # checking the dimension of D (extended from the scalar case)
+        # 检查D的维度（从标量情况扩展）
         if len(D.shape) > 1 and D.shape[0] != 1:
             self.nm = D.shape[0]
             self.D = D
@@ -30,17 +33,17 @@ class AMF_LSS_VAR:
             self.nm = 1
             self.D = np.expand_dims(D, 0)
 
-        # Create space for additive decomposition
+        # 为加性分解创建空间
         self.add_decomp = None
         self.mult_decomp = None
 
-        # Set F
+        # 设置F
         if not np.any(F):
             self.F = np.zeros((self.nk, 1))
         else:
             self.F = F
 
-        # Set nu
+        # 设置nu
         if not np.any(nu):
             self.nu = np.zeros((self.nm, 1))
         elif type(nu) == float:
@@ -51,21 +54,20 @@ class AMF_LSS_VAR:
             self.nu = nu
 
         if self.nu.shape[0] != self.D.shape[0]:
-            raise ValueError("The dimension of nu is inconsistent with D!")
+            raise ValueError("nu的维度与D不一致！")
 
-        # Initialize the simulator
+        # 初始化模拟器
         self.x_0 = x_0
 
-        # Construct BIG state space representation
+        # 构建大型状态空间表示
         self.lss = self.construct_ss()
 
     def construct_ss(self):
         """
-        This creates the state space representation that can be passed
-        into the quantecon LSS class.
+        这将创建可以传递到quantecon LSS类的状态空间表示。
         """
 
-        # Pull out useful info
+        # 提取有用信息
         nx, nk, nm = self.nx, self.nk, self.nm
         A, B, D, F, nu = self.A, self.B, self.D, self.F, self.nu
 
@@ -74,7 +76,7 @@ class AMF_LSS_VAR:
         else:
             nu, H, g = self.additive_decomp()
 
-        # Auxiliary blocks with 0's and 1's to fill out the lss matrices
+        # 用0和1填充lss矩阵的辅助块
         nx0c = np.zeros((nx, 1))
         nx0r = np.zeros(nx)
         nx1 = np.ones(nx)
@@ -85,31 +87,31 @@ class AMF_LSS_VAR:
         ny0m = np.zeros((nm, nm))
         nyx0m = np.zeros_like(D)
 
-        # Build A matrix for LSS
-        # Order of states is: [1, t, xt, yt, mt]
-        A1 = np.hstack([1, 0, nx0r, ny0r, ny0r])            # Transition for 1
-        A2 = np.hstack([1, 1, nx0r, ny0r, ny0r])            # Transition for t
-        A3 = np.hstack([nx0c, nx0c, A, nyx0m.T, nyx0m.T])   # Transition for x_{t+1}
-        A4 = np.hstack([nu, ny0c, D, ny1m, ny0m])           # Transition for y_{t+1}
-        A5 = np.hstack([ny0c, ny0c, nyx0m, ny0m, ny1m])     # Transition for m_{t+1}
+        # 为LSS构建A矩阵
+        # 状态顺序为：[1, t, xt, yt, mt]
+        A1 = np.hstack([1, 0, nx0r, ny0r, ny0r])            # 1的转移
+        A2 = np.hstack([1, 1, nx0r, ny0r, ny0r])            # t的转移
+        A3 = np.hstack([nx0c, nx0c, A, nyx0m.T, nyx0m.T])   # x_{t+1}的转移
+        A4 = np.hstack([nu, ny0c, D, ny1m, ny0m])           # y_{t+1}的转移
+        A5 = np.hstack([ny0c, ny0c, nyx0m, ny0m, ny1m])     # m_{t+1}的转移
         Abar = np.vstack([A1, A2, A3, A4, A5])
 
-        # Build B matrix for LSS
+        # 为LSS构建B矩阵
         Bbar = np.vstack([nk0, nk0, B, F, H])
 
-        # Build G matrix for LSS
-        # Order of observation is: [xt, yt, mt, st, tt]
-        G1 = np.hstack([nx0c, nx0c, np.eye(nx), nyx0m.T, nyx0m.T])    # Selector for x_{t}
-        G2 = np.hstack([ny0c, ny0c, nyx0m, ny1m, ny0m])               # Selector for y_{t}
-        G3 = np.hstack([ny0c, ny0c, nyx0m, ny0m, ny1m])               # Selector for martingale
-        G4 = np.hstack([ny0c, ny0c, -g, ny0m, ny0m])                  # Selector for stationary
-        G5 = np.hstack([ny0c, nu, nyx0m, ny0m, ny0m])                 # Selector for trend
+        # 为LSS构建G矩阵
+        # 观测顺序为：[xt, yt, mt, st, tt]
+        G1 = np.hstack([nx0c, nx0c, np.eye(nx), nyx0m.T, nyx0m.T])    # x_{t}的选择器
+        G2 = np.hstack([ny0c, ny0c, nyx0m, ny1m, ny0m])               # y_{t}的选择器
+        G3 = np.hstack([ny0c, ny0c, nyx0m, ny0m, ny1m])               # 鞅的选择器
+        G4 = np.hstack([ny0c, ny0c, -g, ny0m, ny0m])                  # 平稳部分的选择器
+        G5 = np.hstack([ny0c, nu, nyx0m, ny0m, ny0m])                 # 趋势的选择器
         Gbar = np.vstack([G1, G2, G3, G4, G5])
 
-        # Build H matrix for LSS
+        # 为LSS构建H矩阵
         Hbar = np.zeros((Gbar.shape[0], nk))
 
-        # Build LSS type
+        # 构建LSS类型
         if not np.any(self.x_0):
             x0 = np.hstack([1, 0, nx0r, ny0r, ny0r])
         else:
@@ -122,11 +124,11 @@ class AMF_LSS_VAR:
 
     def additive_decomp(self):
         """
-        Return values for the martingale decomposition
-            - nu        : unconditional mean difference in Y
-            - H         : coefficient for the (linear) martingale component (kappa_a)
-            - g         : coefficient for the stationary component g(x)
-            - Y_0       : it should be the function of X_0 (for now set it to 0.0)
+        返回鞅分解的值
+            - nu        : Y的无条件均值差异
+            - H         : （线性）鞅分量的系数 (kappa_a)
+            - g         : 平稳分量g(x)的系数
+            - Y_0       : 应该是X_0的函数（目前设置为0.0）
         """
         I = np.eye(self.nx)
         A_res = la.solve(I - self.A, I)
@@ -137,9 +139,9 @@ class AMF_LSS_VAR:
 
     def multiplicative_decomp(self):
         """
-        Return values for the multiplicative decomposition (Example 5.4.4.)
-            - nu_tilde  : eigenvalue
-            - H         : vector for the Jensen term
+        返回乘性分解的值（示例5.4.4）
+            - nu_tilde  : 特征值
+            - H         : Jensen项的向量
         """
         nu, H, g = self.additive_decomp()
         nu_tilde = nu + (.5)*np.expand_dims(np.diag(H @ H.T), 1)
@@ -151,28 +153,30 @@ class AMF_LSS_VAR:
 
 
 def future_moments(amf_future, N=25):
-
+    """
+    计算未来时刻的矩
+    """
     nx, nk, nm = amf_future.nx, amf_future.nk, amf_future.nm
     nu_tilde, H, g = amf_future.multiplicative_decomp()
     
-    # Allocate space (nm is the number of additive functionals)
+    # 分配空间（nm是加性泛函的数量）
     mbounds = np.zeros((3, N))
     sbounds = np.zeros((3, N))
     ybounds = np.zeros((3, N))
     #mbounds_mult = np.zeros((3, N))
     #sbounds_mult = np.zeros((3, N))
 
-    # Simulate for as long as we wanted
+    # 模拟所需的时长
     moment_generator = amf_future.lss.moment_sequence()
     tmoms = next(moment_generator)
 
-    # Pull out population moments
+    # 提取总体矩
     for t in range (N-1):
         tmoms = next(moment_generator)
         ymeans = tmoms[1]
         yvar = tmoms[3]
 
-        # Lower and upper bounds - for each additive functional
+        # 每个加性泛函的上下界
         yadd_dist = norm(ymeans[nx], np.sqrt(yvar[nx, nx]))
         ybounds[:2, t+1] = yadd_dist.ppf([0.1, .9])
         ybounds[2, t+1] = yadd_dist.mean()

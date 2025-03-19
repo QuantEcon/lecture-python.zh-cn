@@ -11,131 +11,129 @@ kernelspec:
   name: python3
 ---
 
-# Two Meanings of Probability
+# 概率的两种含义
 
+## 概述
 
-## Overview
+本讲解说明了**概率分布**的两种不同解释
 
+* 频率主义解释：预期在大规模独立同分布样本中出现的**相对频率**
 
-This lecture  illustrates two distinct interpretations of a  **probability distribution**
+* 贝叶斯解释：在观察一系列数据后对参数或参数列表的**个人观点**
 
- * A frequentist interpretation as **relative frequencies** anticipated to occur in a large i.i.d. sample
-
- * A Bayesian interpretation as a **personal opinion** (about a parameter or list of parameters) after seeing a collection of observations
-
-We recommend watching this video about **hypothesis testing** within  the frequentist approach
+我们建议观看这个关于频率主义方法中**假设检验**的视频
 
 ```{youtube} 8JIe_cz6qGA
 ```
 
-After you watch that video, please watch the following video on the Bayesian approach to constructing **coverage intervals**
+观看完该视频后，请观看以下关于贝叶斯方法构建**覆盖区间**的视频
 
 ```{youtube} Pahyv9i_X2k
 ```
 
-After you are familiar with the material in these videos, this lecture uses the Socratic method to  to help consolidate your understanding of the different questions that are answered by
+在您熟悉这些视频中的内容后，本讲座采用苏格拉底式方法来帮助巩固您对以下问题的理解：
 
- * a frequentist confidence interval
+* 频率主义置信区间
+* 贝叶斯覆盖区间
 
- * a Bayesian coverage interval
+我们通过邀请您编写Python代码来实现这一目标。
 
-We do this  by inviting you to  write some  Python code.
+建议您在我们提出每个问题后，在继续阅读讲座其余部分之前，先尝试自己解答。
 
-It would be especially useful if you tried doing this after each question that we pose for you,  before
-proceeding to read the rest of the lecture.
+随着讲座的展开，我们会提供我们自己的答案，但如果您在阅读和运行我们的代码之前先尝试编写自己的代码，您会学到更多。
 
-We provide our own answers as the lecture unfolds, but you'll learn more if you try writing your own code before reading and running ours.
+**回答问题的代码：**
 
-**Code for answering questions:**
-
-
-In addition to what’s in Anaconda, this lecture will deploy the following library:
+除了Anaconda中已有的库外，本讲座还将使用以下库：
 
 ```{code-cell} ipython3
 :tags: [hide-output]
 pip install prettytable
 ```
 
-To answer our coding questions, we'll start with some imports
+为了回答我们的编程问题，我们先导入一些库
 
 ```{code-cell} ipython3
 import numpy as np
 import pandas as pd
 import prettytable as pt
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 from scipy.stats import binom
 import scipy.stats as st
 ```
 
-Empowered with these Python tools, we'll now  explore the two meanings described above.
+有了这些Python工具，我们现在来探索上述两种含义。
 
-## Frequentist Interpretation
+## 频率主义解释
 
-Consider the following classic example.
+考虑以下经典例子。
 
-The random variable  $X $ takes on possible values $k = 0, 1, 2, \ldots, n$  with probabilties
+随机变量 $X$ 可能取值为 $k = 0, 1, 2, \ldots, n$，其概率为
 
 $$
 \textrm{Prob}(X =  k | \theta) =
 \left(\frac{n!}{k! (n-k)!} \right) \theta^k (1-\theta)^{n-k}
 $$
 
-where the fixed parameter $\theta \in (0,1)$.
+其中固定参数 $\theta \in (0,1)$。
 
-This is called   the __binomial distribution__.
+这被称为__二项分布__。
 
-Here
+这里
 
-* $\theta$ is the probability that one toss of a coin will be a head, an outcome that we encode as  $Y = 1$.
+* $\theta$ 是一次硬币投掷出现正面的概率，我们将这个结果编码为 $Y = 1$。
 
-* $1 -\theta$ is the probability that one toss of the coin will be a tail, an outcome that we denote $Y = 0$.
+* $1 -\theta$ 是一次硬币投掷出现反面的概率，我们将这个结果表示为 $Y = 0$。
 
-* $X$ is the total number of heads that came up after flipping the coin $n$ times.
+* $X$ 是投掷硬币 $n$ 次后出现正面的总次数。
 
-Consider the following experiment:
+考虑以下实验：
 
-Take $I$ **independent** sequences of $n$  **independent** flips of the coin
+进行 $I$ 次**独立**的硬币投掷序列，每次序列包含 $n$ 次**独立**的投掷
 
-Notice the repeated use of the adjective **independent**:
+注意这里重复使用了**独立**这个形容词：
 
-* we use it once to describe that we are drawing $n$ independent times from a **Bernoulli** distribution with parameter $\theta$ to arrive at one draw from a **Binomial** distribution with parameters
-$\theta,n$.
+* 我们用它一次来描述我们从参数为$\theta$的**伯努利**分布中独立抽取$n$次，从而得到一个参数为$\theta,n$的**二项式**分布的抽样。
 
-* we use it again to describe that we are then drawing $I$  sequences of $n$ coin draws.
+* 我们再次使用它来描述我们正在抽取$I$个由$n$次硬币投掷组成的序列。
 
-Let $y_h^i \in \{0, 1\}$ be the realized value of $Y$ on the $h$th flip during the $i$th sequence of flips.
+令$y_h^i \in \{0, 1\}$表示第$i$个序列中第$h$次投掷时$Y$的实际值。
 
-Let $\sum_{h=1}^n y_h^i$ denote the total number of times  heads come up during the $i$th sequence of $n$ independent coin flips.
+令$\sum_{h=1}^n y_h^i$表示在第$i$个由$n$次独立投币组成的序列中出现正面的总次数。
 
-Let $f_k$ record the fraction of samples of length $n$ for which $\sum_{h=1}^n y_h^i = k$:
+令$f_k$记录长度为$n$的样本中$\sum_{h=1}^n y_h^i = k$的比例：
 
 $$
-f_k^I = \frac{\textrm{number of samples of length n for which } \sum_{h=1}^n y_h^i = k}{
-    I}
+f_k^I = \frac{\textrm{长度为n的样本中满足}\sum_{h=1}^n y_h^i = k\textrm{的数量}}{I}
 $$
 
-The probability  $\textrm{Prob}(X =  k | \theta)$ answers the following question:
+概率$\textrm{Prob}(X = k | \theta)$回答了以下问题：
 
-* As $I$ becomes large, in what   fraction of  $I$ independent  draws of  $n$ coin flips should we anticipate  $k$ heads to occur?
+* 当$I$变得很大时，在$I$次独立的$n$次硬币投掷中，我们应该预期有多大比例会出现$k$次正面？
 
-As usual, a law of large numbers justifies this answer.
+和往常一样，大数定律证明了这个答案。
 
 ```{exercise}
 :label: pm_ex1
 
-1. Please write a Python class to compute $f_k^I$
+1. 请编写一个Python类来计算 $f_k^I$
 
-2. Please use your code to compute $f_k^I, k = 0, \ldots , n$ and compare them to
-  $\textrm{Prob}(X =  k | \theta)$ for various values of $\theta, n$ and $I$
+2. 请使用你的代码计算 $f_k^I, k = 0, \ldots , n$ 并将其与不同 $\theta, n$ 和 $I$ 值下的
+  $\textrm{Prob}(X =  k | \theta)$ 进行比较
 
-3. With the Law of Large numbers in mind, use your code to say something
+3. 结合大数定律，使用你的代码得出一些结论
 ```
 
 ```{solution-start} pm_ex1
 :class: dropdown
 ```
 
-Here is one solution:
+这是一个解决方案：
 
 ```{code-cell} ipython3
 class frequentist:
@@ -143,12 +141,12 @@ class frequentist:
     def __init__(self, θ, n, I):
 
         '''
-        initialization
+        初始化
         -----------------
-        parameters:
-        θ : probability that one toss of a coin will be a head with Y = 1
-        n : number of independent flips in each independent sequence of draws
-        I : number of independent sequence of draws
+        参数：
+        θ：一次硬币投掷得到正面（Y = 1）的概率
+        n：每个独立序列中的独立投掷次数
+        I：独立序列的数量
 
         '''
 
@@ -156,7 +154,7 @@ class frequentist:
 
     def binomial(self, k):
 
-        '''compute the theoretical probability for specific input k'''
+        '''计算特定输入k的理论概率'''
 
         θ, n = self.θ, self.n
         self.k = k
@@ -164,7 +162,7 @@ class frequentist:
 
     def draw(self):
 
-        '''draw n independent flips for I independent sequences'''
+        '''为I个独立序列进行n次独立投掷'''
 
         θ, n, I = self.θ, self.n, self.I
         sample = np.random.rand(I, n)
@@ -173,7 +171,7 @@ class frequentist:
 
     def compute_fk(self, kk):
 
-        '''compute f_{k}^I for specific input k'''
+        '''计算特定输入k的f_{k}^I'''
 
         Y, I = self.Y, self.I
         K = np.sum(Y, 1)
@@ -183,11 +181,11 @@ class frequentist:
 
     def compare(self):
 
-        '''compute and print the comparison'''
+        '''计算并打印比较结果'''
 
         n = self.n
         comp = pt.PrettyTable()
-        comp.field_names = ['k', 'Theoretical', 'Frequentist']
+        comp.field_names = ['k', '理论值', '频率值']
         self.draw()
         for i in range(n):
             self.binomial(i+1)
@@ -204,22 +202,22 @@ freq = frequentist(θ, n, I)
 freq.compare()
 ```
 
-From the table above, can you see the law of large numbers at work?
+从上表中，你能看出大数定律在起作用吗？
 
 ```{solution-end}
 ```
 
-Let's do some more calculations.
+让我们进行更多计算。
 
-**Comparison with different $\theta$**
+**不同$\theta$值的比较**
 
-Now we fix
+现在我们固定
 
 $$
 n=20, k=10, I=1,000,000
 $$
 
-We'll vary $\theta$ from $0.01$ to $0.99$ and plot outcomes against $\theta$.
+我们将$\theta$从$0.01$变化到$0.99$，并绘制结果与$\theta$的关系图。
 
 ```{code-cell} ipython3
 θ_low, θ_high, npt = 0.01, 0.99, 50
@@ -238,21 +236,21 @@ for i in range(npt):
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(8, 6))
 ax.grid()
-ax.plot(thetas, P, 'k-.', label='Theoretical')
-ax.plot(thetas, f_kI, 'r--', label='Fraction')
-plt.title(r'Comparison with different $\theta$', fontsize=16)
+ax.plot(thetas, P, 'k-.', label='理论值')
+ax.plot(thetas, f_kI, 'r--', label='分数')
+plt.title(r'不同$\theta$值的比较', fontsize=16)
 plt.xlabel(r'$\theta$', fontsize=15)
-plt.ylabel('Fraction', fontsize=15)
+plt.ylabel('分数', fontsize=15)
 plt.tick_params(labelsize=13)
 plt.legend()
 plt.show()
 ```
 
-**Comparison with different $n$**
+**不同 $n$ 值的比较**
 
-Now we fix $\theta=0.7, k=10, I=1,000,000$ and vary $n$ from $1$ to $100$.
+现在我们固定 $\theta=0.7, k=10, I=1,000,000$ 并将 $n$ 从 $1$ 变化到 $100$。
 
-Then we'll plot outcomes.
+然后我们将绘制结果。
 
 ```{code-cell} ipython3
 n_low, n_high, nn = 1, 100, 50
@@ -271,19 +269,19 @@ for i in range(nn):
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(8, 6))
 ax.grid()
-ax.plot(ns, P, 'k-.', label='Theoretical')
-ax.plot(ns, f_kI, 'r--', label='Frequentist')
-plt.title(r'Comparison with different $n$', fontsize=16)
+ax.plot(ns, P, 'k-.', label='理论值')
+ax.plot(ns, f_kI, 'r--', label='频率派')
+plt.title(r'不同$n$值的比较', fontsize=16)
 plt.xlabel(r'$n$', fontsize=15)
-plt.ylabel('Fraction', fontsize=15)
+plt.ylabel('比例', fontsize=15)
 plt.tick_params(labelsize=13)
 plt.legend()
 plt.show()
 ```
 
-**Comparison with different $I$**
+**不同 $I$ 值的比较**
 
-Now we fix $\theta=0.7, n=20, k=10$ and vary $\log(I)$ from $2$ to $7$.
+现在我们固定 $\theta=0.7, n=20, k=10$，并将 $\log(I)$ 从 $2$ 变化到 $7$。
 
 ```{code-cell} ipython3
 I_log_low, I_log_high, nI = 2, 6, 200
@@ -303,84 +301,146 @@ for i in range(nI):
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(8, 6))
 ax.grid()
-ax.plot(Is, P, 'k-.', label='Theoretical')
-ax.plot(Is, f_kI, 'r--', label='Fraction')
-plt.title(r'Comparison with different $I$', fontsize=16)
+ax.plot(Is, P, 'k-.', label='理论值')
+ax.plot(Is, f_kI, 'r--', label='分数')
+plt.title(r'不同$I$值的比较', fontsize=16)
 plt.xlabel(r'$I$', fontsize=15)
-plt.ylabel('Fraction', fontsize=15)
+plt.ylabel('分数', fontsize=15)
 plt.tick_params(labelsize=13)
 plt.legend()
 plt.show()
 ```
 
-From the above graphs, we can see that **$I$, the number of independent sequences,** plays an important role.
+从上面的图表中，我们可以看到**$I$，即独立序列的数量，**起着重要作用。
 
-When $I$ becomes larger, the difference between theoretical probability and frequentist estimate becomes smaller.
+当$I$变大时，理论概率和频率估计之间的差异变小。
 
-Also, as long as $I$ is large enough, changing $\theta$ or $n$ does not substantially change the accuracy of the observed fraction
-as an approximation of $\theta$.
+而且，只要$I$足够大，改变$\theta$或$n$都不会实质性地改变观察到的分数作为$\theta$的近似值的准确性。
 
-The Law of Large Numbers is at work here.
+这里体现了大数定律。
 
-For each draw of an independent sequence, $\textrm{Prob}(X_i =  k | \theta)$  is the same, so aggregating all draws forms an i.i.d sequence of a binary random variable $\rho_{k,i},i=1,2,...I$, with a mean of $\textrm{Prob}(X =  k | \theta)$ and a variance of
+对于每次独立序列的抽取，$\textrm{Prob}(X_i =  k | \theta)$都是相同的，所以将所有抽取汇总形成了一个二元随机变量$\rho_{k,i},i=1,2,...I$的独立同分布序列，其均值为$\textrm{Prob}(X =  k | \theta)$，方差为
 
 $$
 n \cdot \textrm{Prob}(X =  k | \theta) \cdot (1-\textrm{Prob}(X =  k | \theta)).
 $$
 
-So, by the LLN, the average of $P_{k,i}$ converges to:
+因此，根据大数定律，$P_{k,i}$的平均值收敛于：
 
 $$
 E[\rho_{k,i}] = \textrm{Prob}(X =  k | \theta) = \left(\frac{n!}{k! (n-k)!} \right) \theta^k (1-\theta)^{n-k}
 $$
 
-as $I$ goes to infinity.
+当$I$趋向于无穷大时。
 
+## 贝叶斯解释
 
-## Bayesian Interpretation
+我们再次使用二项分布。
 
-We again use a binomial distribution.
+但现在我们不把 $\theta$ 看作是一个固定的数值。
 
-But now we don't regard  $\theta$ as being a fixed number.
+相反，我们把它看作一个**随机变量**。
 
-Instead, we think of it as a **random variable**.
+$\theta$ 由一个概率分布来描述。
 
-$\theta$ is described by a probability distribution.
+但现在这个概率分布的含义与我们在大规模独立同分布样本中预期出现的相对频率不同。
 
-But now this probability distribution means something different than a relative frequency that we can anticipate to occur in a large i.i.d. sample.
+相反，$\theta$ 的概率分布现在是我们对 $\theta$ 可能值的观点总结，这可能是在：
 
-Instead, the probability distribution of $\theta$ is now a summary of our views about  likely values of $\theta$ either
+  * 在我们**尚未**看到**任何**数据之前，或者
+  * 在我们已经看到**一些**数据之后，在看到**更多**数据之**前**
 
-  * **before** we have seen **any** data at all, or
-  * **before** we have seen **more** data, after we have seen **some** data
-
-Thus, suppose that, before seeing any data, you have a personal prior probability distribution saying that
+因此，假设在看到任何数据之前，你有一个个人先验概率分布，表示为：
 
 $$
 P(\theta) = \frac{\theta^{\alpha-1}(1-\theta)^{\beta -1}}{B(\alpha, \beta)}
 $$
 
-where $B(\alpha, \beta)$ is a  **beta function** , so that $P(\theta)$ is
-a **beta distribution** with parameters $\alpha, \beta$.
+其中 $B(\alpha, \beta)$ 是一个**贝塔函数**，所以 $P(\theta)$ 是一个带参数 $\alpha, \beta$ 的**贝塔分布**。
 
 ```{exercise}
 :label: pm_ex2
 
-**a)**  Please write down the **likelihood function** for a sample of length $n$ from a binomial distribution with parameter $\theta$.
+**a)** 对于二项分布样本（长度为$n$）的**似然函数**为：
 
-**b)** Please write down the **posterior** distribution for $\theta$ after observing  one flip of the coin.
+$L(\theta|x) = \binom{n}{k}\theta^k(1-\theta)^{n-k}$
 
-**c)** Now pretend that the true value of $\theta = .4$ and that someone who doesn't know this has a beta prior distribution with parameters  with $\beta = \alpha = .5$. Please write a Python class to simulate this person's personal posterior distribution for $\theta$  for a _single_ sequence of $n$ draws.
+其中$k$是成功的次数。
 
-**d)** Please plot the posterior distribution for $\theta$ as a function of $\theta$ as $n$ grows as $1, 2, \ldots$.
+**b)** 观察一次硬币投掷后的**后验**分布：
 
-**e)** For various $n$'s, please describe and compute  a Bayesian coverage interval for the interval $[.45, .55]$.
+如果先验是Beta($\alpha,\beta$)，那么后验分布是：
+- 如果观察到正面：Beta($\alpha+1,\beta$)
+- 如果观察到反面：Beta($\alpha,\beta+1$)
 
-**f)** Please tell what question a Bayesian coverage interval answers.
+**c)** 以下是模拟后验分布的Python类：
 
-**g)** Please compute the Posterior probabililty that $\theta \in [.45, .55]$ for various values of sample size $n$.
+```python
+import numpy as np
+from scipy.stats import beta
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
 
-**h)** Please use your Python class to study what happens to the posterior distribution as $n \rightarrow + \infty$, again assuming that the true value of $\theta = .4$, though it is unknown to the person doing the updating via Bayes' Law.
+
+class BayesianCoinFlip:
+    def __init__(self, true_theta=0.4, alpha=0.5, beta=0.5):
+        self.true_theta = true_theta
+        self.alpha = alpha
+        self.beta = beta
+        
+    def simulate_flips(self, n):
+        flips = np.random.binomial(1, self.true_theta, n)
+        successes = np.sum(flips)
+        failures = n - successes
+        
+        # 更新后验参数
+        post_alpha = self.alpha + successes
+        post_beta = self.beta + failures
+        
+        return post_alpha, post_beta
+```
+
+**d)** 绘制后验分布随$n$增长的变化：
+
+```python
+def plot_posterior_evolution(n_max=10):
+    simulator = BayesianCoinFlip()
+    theta = np.linspace(0, 1, 1000)
+    
+    plt.figure(figsize=(12, 8))
+    
+    for n in range(1, n_max+1):
+        post_alpha, post_beta = simulator.simulate_flips(n)
+        posterior = beta.pdf(theta, post_alpha, post_beta)
+        plt.plot(theta, posterior, label=f'n={n}')
+    
+    plt.title('后验分布随样本量变化')
+    plt.legend()
+    plt.show()
+```
+
+**e)** 贝叶斯覆盖区间对于区间$[.45, .55]$的计算：
+
+对于不同的$n$值，我们需要计算后验分布在该区间内的概率。
+
+**f)** 贝叶斯覆盖区间回答的问题是：
+
+给定观察到的数据，参数$\theta$落在特定区间内的后验概率是多少。
+
+**g)** 计算不同样本量$n$下$\theta \in [.45, .55]$的后验概率：
+
+```python
+def compute_posterior_probability(n):
+    simulator = BayesianCoinFlip()
+    post_alpha, post_beta = simulator.simulate_flips(n)
+    prob = beta.cdf(0.55, post_alpha, post_beta) - beta.cdf(0.45, post_alpha, post_beta)
+    return prob
+```
+
+**h)** 请使用您的Python类来研究当 $n \rightarrow + \infty$ 时后验分布会发生什么变化，同样假设 $\theta = .4$ 的真实值（尽管对于通过贝叶斯定律进行更新的人来说是未知的）。
 ```
 
 
@@ -388,59 +448,60 @@ a **beta distribution** with parameters $\alpha, \beta$.
 :class: dropdown
 ```
 
-**a)** Please write down the **likelihood function** and the **posterior** distribution for $\theta$ after observing  one flip of our coin.
+**a)** 请写出观察到一次硬币翻转后 $\theta$ 的**似然函数**和**后验**分布。
 
-Suppose the outcome is __Y__.
+假设结果是 __Y__。
 
-The likelihood function is:
+似然函数是：
 
 $$
 L(Y|\theta)= \textrm{Prob}(X =  Y | \theta) =
 \theta^Y (1-\theta)^{1-Y}
 $$
 
-**b)** Please write the **posterior** distribution for $\theta$ after observing  one flip of our coin.
+**b)** 请写出观察到一次硬币翻转后 $\theta$ 的**后验**分布。
 
-The prior distribution is
+先验分布是
 
 $$
 \textrm{Prob}(\theta) = \frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)}
 $$
 
-We can derive the posterior distribution for $\theta$ via
+我们可以通过以下方式推导 $\theta$ 的后验分布
 
 \begin{align*}
   \textrm{Prob}(\theta | Y) &= \frac{\textrm{Prob}(Y | \theta) \textrm{Prob}(\theta)}{\textrm{Prob}(Y)} \\
-  &=\frac{\textrm{Prob}(Y | \theta) \textrm{Prob}(\theta)}{\int_{0}^{1} \textrm{Prob}(Y | \theta) \textrm{Prob}(\theta) d \theta }\\
+
+&=\frac{\textrm{Prob}(Y | \theta) \textrm{Prob}(\theta)}{\int_{0}^{1} \textrm{Prob}(Y | \theta) \textrm{Prob}(\theta) d \theta }\\
   &= \frac{\theta^Y (1-\theta)^{1-Y}\frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)}}{\int_{0}^{1}\theta^Y (1-\theta)^{1-Y}\frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)} d \theta } \\
   &= \frac{ \theta^{Y+\alpha - 1} (1 - \theta)^{1-Y+\beta - 1}}{\int_{0}^{1}\theta^{Y+\alpha - 1} (1 - \theta)^{1-Y+\beta - 1} d \theta}
 \end{align*}
 
-which means that
+这意味着
 
 $$
 \textrm{Prob}(\theta | Y) \sim \textrm{Beta}(\alpha + Y, \beta + (1-Y))
 $$
 
-Now please pretend that the true value of $\theta = .4$ and that someone who doesn't know this has a beta prior with $\beta = \alpha = .5$.
+现在请假设$\theta$的真实值为0.4，而某个不知道这一点的人有一个beta先验分布，其中$\beta = \alpha = .5$。
 
-**c)** Now pretend that the true value of $\theta = .4$ and that someone who doesn't know this has a beta prior distribution with parameters  with $\beta = \alpha = .5$. Please write a Python class to simulate this person's personal posterior distribution for $\theta$  for a _single_ sequence of $n$ draws.
+**c)** 现在假设 $\theta$ 的真实值为 0.4，而某个不知道这一点的人有一个参数为 $\beta = \alpha = .5$ 的beta先验分布。请编写一个Python类来模拟这个人对于一个长度为 $n$ 的单一序列的 $\theta$ 的个人后验分布。
 
 ```{code-cell} ipython3
 class Bayesian:
 
     def __init__(self, θ=0.4, n=1_000_000, α=0.5, β=0.5):
         """
-        Parameters:
+        参数:
         ----------
-        θ : float, ranging from [0,1].
-           probability that one toss of a coin will be a head with Y = 1
+        θ : float, 取值范围[0,1]
+           硬币投掷时出现正面（Y = 1）的概率
 
-        n : int.
-           number of independent flips in an independent sequence of draws
+        n : int
+           独立投掷序列中的投掷次数
 
-        α&β : int or float.
-             parameters of the prior distribution on θ
+        α&β : int或float
+             θ的先验分布的参数
 
         """
         self.θ, self.n, self.α, self.β = θ, n, α, β
@@ -448,7 +509,7 @@ class Bayesian:
 
     def draw(self):
         """
-        simulate a single sequence of draws of length n, given probability θ
+        模拟给定概率θ下长度为n的单一序列投掷
 
         """
         array = np.random.rand(self.n)
@@ -456,16 +517,16 @@ class Bayesian:
 
     def form_single_posterior(self, step_num):
         """
-        form a posterior distribution after observing the first step_num elements of the draws
+        在观察到序列的前step_num个元素后形成后验分布
 
-        Parameters
+        参数
         ----------
-        step_num: int.
-               number of steps observed to form a posterior distribution
+        step_num: int
+               用于形成后验分布的观察步数
 
-        Returns
+        返回值
         ------
-        the posterior distribution for sake of plotting in the subsequent steps
+        后验分布，用于后续步骤的绘图
 
         """
         heads_num = self.draws[:step_num].sum()
@@ -475,12 +536,12 @@ class Bayesian:
 
     def form_posterior_series(self,num_obs_list):
         """
-        form a series of posterior distributions that form after observing different number of draws.
+        形成观察不同数量抽样后的一系列后验分布
 
-        Parameters
+        参数
         ----------
-        num_obs_list: a list of int.
-               a list of the number of observations used to form a series of posterior distributions.
+        num_obs_list: int列表
+               用于形成一系列后验分布的观察数量列表
 
         """
         self.posterior_list = []
@@ -488,14 +549,14 @@ class Bayesian:
             self.posterior_list.append(self.form_single_posterior(num))
 ```
 
-**d)** Please plot the posterior distribution for $\theta$ as a function of $\theta$ as $n$ grows from $1, 2, \ldots$.
+**d)** 请绘制$\theta$的后验分布随着$n$从$1, 2, \ldots$增长时的函数图。
 
 ```{code-cell} ipython3
 Bay_stat = Bayesian()
 Bay_stat.draw()
 
-num_list = [1, 2, 3, 4, 5, 10, 20, 30, 50, 70, 100, 300, 500, 1000, # this line for finite n
-            5000, 10_000, 50_000, 100_000, 200_000, 300_000]  # this line for approximately infinite n
+num_list = [1, 2, 3, 4, 5, 10, 20, 30, 50, 70, 100, 300, 500, 1000, # 此行用于有限n
+            5000, 10_000, 50_000, 100_000, 200_000, 300_000]  # 此行用于近似无穷n
 
 Bay_stat.form_posterior_series(num_list)
 
@@ -503,19 +564,19 @@ Bay_stat.form_posterior_series(num_list)
 
 fig, ax = plt.subplots(figsize=(10, 6))
 
-ax.plot(θ_values, Bay_stat.prior.pdf(θ_values), label='Prior Distribution', color='k', linestyle='--')
+ax.plot(θ_values, Bay_stat.prior.pdf(θ_values), label='先验分布', color='k', linestyle='--')
 
 for ii, num in enumerate(num_list[:14]):
-    ax.plot(θ_values, Bay_stat.posterior_list[ii].pdf(θ_values), label='Posterior with n = %d' % num)
+    ax.plot(θ_values, Bay_stat.posterior_list[ii].pdf(θ_values), label='n = %d 时的后验分布' % num)
 
-ax.set_title('P.D.F of Posterior Distributions', fontsize=15)
+ax.set_title('后验分布的概率密度函数', fontsize=15)
 ax.set_xlabel(r"$\theta$", fontsize=15)
 
 ax.legend(fontsize=11)
 plt.show()
 ```
 
-**e)** For various $n$'s, please describe and compute  $.05$ and $.95$ quantiles for  posterior probabilities.
+**e)** 对于不同的 $n$ 值，请描述并计算后验概率的 $.05$ 和 $.95$ 分位数。
 
 ```{code-cell} ipython3
 upper_bound = [ii.ppf(0.05) for ii in Bay_stat.posterior_list[:14]]
@@ -529,21 +590,21 @@ interval_df = interval_df.T
 interval_df
 ```
 
-As $n$ increases, we can see that Bayesian coverage intervals narrow and move toward $0.4$.
+随着$n$的增加，我们可以看到贝叶斯覆盖区间变窄并趋向于$0.4$。
 
-**f)** Please tell what question a Bayesian coverage interval answers.
+**f)** 请说明贝叶斯覆盖区间回答了什么问题。
 
-The Bayesian coverage interval tells the range of $\theta$ that corresponds to the [$p_1$, $p_2$] quantiles of the cumulative probability distribution (CDF)  of the posterior distribution.
+贝叶斯覆盖区间表示后验分布的累积概率分布(CDF)中[$p_1$, $p_2$]分位数所对应的$\theta$的范围。
 
-To construct the coverage interval we first compute a posterior distribution of the unknown parameter $\theta$.
+要构建覆盖区间，我们首先要计算未知参数$\theta$的后验分布。
 
-If the CDF is $F(\theta)$, then the Bayesian coverage interval $[a,b]$ for the interval $[p_1,p_2]$ is described by
+如果CDF为$F(\theta)$，那么区间$[p_1,p_2]$的贝叶斯覆盖区间$[a,b]$由以下等式描述：
 
 $$
 F(a)=p_1,F(b)=p_2
 $$
 
-**g)** Please compute the Posterior probabililty that $\theta \in [.45, .55]$ for various values of sample size $n$.
+**g)** 请计算不同样本量$n$下$\theta \in [.45, .55]$的后验概率。
 
 ```{code-cell} ipython3
 left_value, right_value = 0.45, 0.55
@@ -552,34 +613,34 @@ posterior_prob_list=[ii.cdf(right_value)-ii.cdf(left_value) for ii in Bay_stat.p
 
 fig, ax = plt.subplots(figsize=(8, 5))
 ax.plot(posterior_prob_list)
-ax.set_title('Posterior Probabililty that '+ r"$\theta$" +' Ranges from %.2f to %.2f'%(left_value, right_value),
+ax.set_title('后验概率：'+ r"$\theta$" +'的范围从%.2f到%.2f'%(left_value, right_value),
              fontsize=13)
 ax.set_xticks(np.arange(0, len(posterior_prob_list), 3))
 ax.set_xticklabels(num_list[::3])
-ax.set_xlabel('Number of Observations', fontsize=11)
+ax.set_xlabel('观测数量', fontsize=11)
 
 plt.show()
 ```
 
-Notice that in the graph above the posterior probabililty that $\theta \in [.45, .55]$ typically exhibits a hump shape as $n$ increases.
+注意在上图中，后验概率 $\theta \in [.45, .55]$ 随着 $n$ 的增加通常呈现出驼峰形状。
 
-Two opposing forces are at work.
+这是两种相反力量在起作用。
 
-The first force is that the individual  adjusts his belief as he observes new outcomes, so his posterior probability distribution  becomes more and more realistic, which explains the rise of the posterior probabililty.
+第一种力量是，个体在观察到新的结果时会调整他的信念，因此他的后验概率分布变得越来越符合实际，这解释了后验概率的上升。
 
-However, $[.45, .55]$ actually excludes the true $\theta =.4 $ that generates the data.
+然而，$[.45, .55]$ 实际上排除了生成数据的真实 $\theta =.4$。
 
-As a result, the posterior probabililty drops as larger and larger samples refine his  posterior probability distribution of $\theta$.
+结果，随着更大的样本量使他的 $\theta$ 后验概率分布更加精确，后验概率开始下降。
 
-The descent seems precipitous only because of the scale of the graph  that has the number of observations increasing disproportionately.
+下降看起来很陡峭只是因为图表的尺度使观测数量增加不成比例。
 
-When the number of observations becomes large enough, our Bayesian becomes so confident about $\theta$ that he considers $\theta \in [.45, .55]$ very unlikely.
+当观测数量变得足够大时，我们的贝叶斯学习者对 $\theta$ 变得如此确信，以至于他认为 $\theta \in [.45, .55]$ 的可能性很小。
 
-That is why we see a nearly horizontal line when the number of observations exceeds 500.
+这就是为什么当观测数量超过500时，我们看到一条几乎水平的线。
 
-**h)** Please use your Python class to study what happens to the posterior distribution as $n \rightarrow + \infty$, again assuming that the true value of $\theta = .4$, though it is unknown to the person doing the updating via Bayes' Law.
+**h)** 请使用你的Python类来研究当 $n \rightarrow + \infty$ 时后验分布会发生什么，同样假设 $\theta$ 的真实值为0.4，尽管对于通过贝叶斯定律进行更新的人来说这是未知的。
 
-Using the Python class we made above, we can see the evolution of posterior distributions as $n$ approaches infinity.
+使用我们上面创建的Python类，我们可以看到后验分布随着 $n$ 趋向于无穷大时的演变。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -597,11 +658,11 @@ ax.legend(fontsize=11)
 plt.show()
 ```
 
-As $n$ increases, we can see that the probability density functions _concentrate_ on $0.4$, the true value of $\theta$.
+随着 $n$ 的增加，我们可以看到概率密度函数在 $0.4$（即 $\theta$ 的真实值）处_集中_。
 
-Here the  posterior means  converges to $0.4$ while the posterior standard deviations converges to $0$ from above.
+这里后验均值收敛于 $0.4$，而后验标准差从上方收敛于 $0$。
 
-To show this, we compute the means and variances statistics of the posterior distributions.
+为了展示这一点，我们计算后验分布的均值和方差统计量。
 
 ```{code-cell} ipython3
 mean_list = [ii.mean() for ii in Bay_stat.posterior_list]
@@ -610,16 +671,16 @@ std_list = [ii.std() for ii in Bay_stat.posterior_list]
 fig, ax = plt.subplots(1, 2, figsize=(14, 5))
 
 ax[0].plot(mean_list)
-ax[0].set_title('Mean Values of Posterior Distribution', fontsize=13)
+ax[0].set_title('后验分布的均值', fontsize=13)
 ax[0].set_xticks(np.arange(0, len(mean_list), 3))
 ax[0].set_xticklabels(num_list[::3])
-ax[0].set_xlabel('Number of Observations', fontsize=11)
+ax[0].set_xlabel('观测数量', fontsize=11)
 
 ax[1].plot(std_list)
-ax[1].set_title('Standard Deviations of Posterior Distribution', fontsize=13)
+ax[1].set_title('后验分布的标准差', fontsize=13)
 ax[1].set_xticks(np.arange(0, len(std_list), 3))
 ax[1].set_xticklabels(num_list[::3])
-ax[1].set_xlabel('Number of Observations', fontsize=11)
+ax[1].set_xlabel('观测数量', fontsize=11)
 
 plt.show()
 ```
@@ -627,12 +688,11 @@ plt.show()
 ```{solution-end}
 ```
 
-How shall we interpret the patterns above?
+我们应该如何解读上述模式？
 
-The answer is encoded in the  Bayesian updating formulas.
+答案就在贝叶斯更新公式中。
 
-It is natural to extend the one-step Bayesian update to an $n$-step Bayesian update.
-
+将单步贝叶斯更新自然延伸到 n 步贝叶斯更新是很合理的。
 
 $$
 \textrm{Prob}(\theta|k) = \frac{\textrm{Prob}(\theta,k)}{\textrm{Prob}(k)}=\frac{\textrm{Prob}(k|\theta)*\textrm{Prob}(\theta)}{\textrm{Prob}(k)}=\frac{\textrm{Prob}(k|\theta)*\textrm{Prob}(\theta)}{\int_0^1 \textrm{Prob}(k|\theta)*\textrm{Prob}(\theta) d\theta}
@@ -650,73 +710,74 @@ $$
 ={Beta}(\alpha + k, \beta+N-k)
 $$
 
-A beta distribution with $\alpha$ and $\beta$ has the following mean and variance.
+具有 $\alpha$ 和 $\beta$ 参数的贝塔分布有以下均值和方差。
 
-The mean is $\frac{\alpha}{\alpha + \beta}$
+均值是 $\frac{\alpha}{\alpha + \beta}$
 
-The variance is $\frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}$
+方差是 $\frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}$
 
-* $\alpha$ can be viewed as the number of successes
+* $\alpha$ 可以被视为成功次数
 
-* $\beta$ can be viewed as the number of failures
+* $\beta$ 可以被视为失败次数
 
-The random variables $k$ and $N-k$ are governed by Binomial Distribution with $\theta=0.4$.
+随机变量 $k$ 和 $N-k$ 服从二项分布，其中 $\theta=0.4$。
 
-Call this the true data generating process.
+这称为真实数据生成过程。
 
-According to the Law of Large Numbers, for a large number of observations, observed frequencies of $k$ and $N-k$ will be described by the true data generating process, i.e., the population probability distribution that we assumed when generating the observations on the computer. (See {ref}`pm_ex1`).
+根据大数定律，对于大量观测值，$k$ 和 $N-k$ 的观测频率将由真实数据生成过程描述，即我们在计算机上生成观测值时假设的总体概率分布。(参见 {ref}`pm_ex1`)。
 
-Consequently, the  mean of the posterior distribution converges to $0.4$ and the variance withers to zero.
+因此，后验分布的均值收敛于 $0.4$，方差趋近于零。
 
 ```{code-cell} ipython3
 upper_bound = [ii.ppf(0.95) for ii in Bay_stat.posterior_list]
 lower_bound = [ii.ppf(0.05) for ii in Bay_stat.posterior_list]
 
 fig, ax = plt.subplots(figsize=(10, 6))
-ax.scatter(np.arange(len(upper_bound)), upper_bound, label='95 th Quantile')
-ax.scatter(np.arange(len(lower_bound)), lower_bound, label='05 th Quantile')
+ax.scatter(np.arange(len(upper_bound)), upper_bound, label='95 分位数')
+ax.scatter(np.arange(len(lower_bound)), lower_bound, label='05 分位数')
 
 ax.set_xticks(np.arange(0, len(upper_bound), 2))
 ax.set_xticklabels(num_list[::2])
-ax.set_xlabel('Number of Observations', fontsize=12)
-ax.set_title('Bayesian Coverage Intervals of Posterior Distributions', fontsize=15)
+ax.set_xlabel('观测值数量', fontsize=12)
+ax.set_title('后验分布的贝叶斯覆盖区间', fontsize=15)
 
 ax.legend(fontsize=11)
 plt.show()
 ```
 
-After observing a large number of outcomes, the  posterior distribution collapses around $0.4$.
+在观察了大量结果后，后验分布收敛于$0.4$周围。
 
-Thus, the Bayesian statististian  comes to believe that $\theta$ is near $.4$.
+因此，贝叶斯统计学家开始相信$\theta$接近$.4$。
 
-As shown in the figure above, as the number of observations grows, the Bayesian coverage intervals (BCIs) become narrower and narrower   around  $0.4$.
+如上图所示，随着观测数量的增加，贝叶斯置信区间(BCIs)在$0.4$周围变得越来越窄。
 
-However, if you take a closer look, you will find that the centers of  the BCIs are not exactly $0.4$, due to the persistent influence of the prior distribution and the randomness of the simulation path.
+然而，如果仔细观察，你会发现BCIs的中心并不完全是$0.4$，这是由于先验分布的持续影响和模拟路径的随机性造成的。
 
 
-## Role of a Conjugate Prior
+## 共轭先验的作用
 
-We have made  assumptions that link functional forms of  our likelihood function and our prior in a way that has eased our calculations considerably.
+我们做出了一些假设，将似然函数和先验的函数形式联系起来，这大大简化了我们的计算。
 
-In particular, our assumptions that the likelihood function is **binomial** and that the prior distribution is a **beta distribution** have the consequence that the posterior distribution implied by Bayes' Law is also a **beta distribution**.
+特别是，我们假设似然函数是**二项分布**，而先验分布是**贝塔分布**，这导致贝叶斯定律推导出的后验分布也是一个**贝塔分布**。
 
-So posterior and prior are both beta distributions, albeit ones with different parameters.
+所以后验分布和先验分布都是贝塔分布，只是参数不同。
 
-When a likelihood function and prior fit together like hand and glove in this way, we can  say that the  prior and posterior are **conjugate distributions**.
+当似然函数和先验分布像手套一样完美契合时，我们称这样的先验分布和后验分布为**共轭分布**。
 
-In this situation, we also sometimes  say that we have **conjugate prior** for the likelihood function $\textrm{Prob}(X | \theta)$.
+在这种情况下，我们有时也说我们有一个似然函数$\textrm{Prob}(X | \theta)$的**共轭先验**。
 
-Typically, the functional form of the likelihood function determines the functional form of a **conjugate prior**.
+通常，似然函数的函数形式决定了**共轭先验**的函数形式。
 
-A natural question to ask is why should a person's personal prior about a parameter $\theta$ be restricted to be described by a conjugate prior?
+一个自然的问题是，为什么一个人对参数$\theta$的个人先验必须局限于共轭先验的形式？
 
-Why not some other functional form that more sincerely describes the person's beliefs?
+为什么不能用其他更真实地描述个人信念的函数形式？
 
-To be argumentative, one could ask, why should the form of the likelihood function have *anything* to say about my personal beliefs about $\theta$?
+为了提出质疑，我们可以问，为什么似然函数的形式应该对我关于$\theta$的个人信念有*任何*影响？
 
-A dignified response to that question is, well, it shouldn't, but if you want to compute a posterior easily you'll just be happier if your prior is conjugate to your likelihood.
 
-Otherwise, your posterior won't have a convenient analytical form and you'll be in the situation of wanting to apply the Markov chain Monte Carlo techniques deployed in {doc}`this quantecon lecture <bayes_nonconj>`.
+对这个问题一个得体的回答是，理论上不应该这样，但如果你想要轻松地计算后验概率，那么当你的先验与似然函数共轭时，你会更加满意。
 
-We also apply these powerful methods to approximating Bayesian posteriors for non-conjugate priors in
-{doc}`this quantecon lecture <ar1_bayes>` and {doc}`this quantecon lecture <ar1_turningpts>`
+否则，你的后验概率将不会有一个方便的解析形式，你就会陷入需要应用马尔可夫链蒙特卡洛技术的情况，就像在{doc}`这个 quantecon 讲座 <bayes_nonconj>`中部署的那样。
+
+我们也在{doc}`这个 quantecon 讲座 <ar1_bayes>`和{doc}`这个 quantecon 讲座 <ar1_turningpts>`中将这些强大的方法应用于近似非共轭先验的贝叶斯后验。
+

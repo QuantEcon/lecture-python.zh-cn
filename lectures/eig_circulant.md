@@ -11,42 +11,44 @@ kernelspec:
   name: python3
 ---
 
-# Circulant Matrices
+# 循环矩阵
 
-## Overview
+## 概述
 
-This lecture describes circulant matrices and some of their properties.
+本讲座介绍循环矩阵及其一些性质。
 
-Circulant matrices have a special structure that connects them to  useful concepts
-including
+循环矩阵具有特殊的结构，这种结构将它们与一些有用的概念联系起来，包括：
 
-  * convolution
-  * Fourier transforms
-  * permutation matrices
+  * 卷积
+  * 傅里叶变换
+  * 置换矩阵
 
-Because of these connections, circulant matrices are widely used  in machine learning, for example, in image processing.
+由于这些联系，循环矩阵在机器学习中被广泛使用，例如在图像处理中。
 
-
-We begin by importing some Python packages
+我们首先导入一些Python包：
 
 ```{code-cell} ipython3
 import numpy as np
 from numba import jit
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 ```
 
 ```{code-cell} ipython3
 np.set_printoptions(precision=3, suppress=True)
 ```
 
-## Constructing a Circulant Matrix
+## 构造循环矩阵
 
-To construct an $N \times N$ circulant matrix, we  need only the first row, say,
+要构造一个 $N \times N$ 的循环矩阵，我们只需要第一行，比如：
 
 $$ \begin{bmatrix} c_{0} & c_{1} & c_{2} & c_{3} & c_{4} & \cdots & c_{N-1} \end{bmatrix} .$$
 
-After setting entries in the first row, the remaining rows of a circulant matrix are determined as
-follows:
+设置第一行的元素后，循环矩阵的其余行按以下方式确定：
 
 $$
 C=\left[\begin{array}{ccccccc}
@@ -60,10 +62,9 @@ c_{1} & c_{2} & c_{3} & c_{4} & c_{5} & \cdots & c_{0}
 \end{array}\right]
 $$ (eqn:circulant)
 
-It is also possible to construct a circulant matrix by creating the transpose of the above matrix, in which case only the
-first column needs to be specified.
+也可以通过创建上述矩阵的转置来构造循环矩阵，在这种情况下只需要指定第一列。
 
-Let's write some Python code to generate a circulant matrix.
+让我们编写一些Python代码来生成循环矩阵：
 
 ```{code-cell} ipython3
 @jit
@@ -82,69 +83,60 @@ def construct_cirlulant(row):
 ```
 
 ```{code-cell} ipython3
-# a simple case when N = 3
+# 一个简单的例子，当 N = 3 时
 construct_cirlulant(np.array([1., 2., 3.]))
 ```
 
-### Some Properties of Circulant Matrices
+### 循环矩阵的一些性质
 
-Here are some useful properties:
+以下是一些有用的性质：
 
-Suppose that $A$ and $B$ are both circulant matrices. Then it can be verified that
+假设 $A$ 和 $B$ 都是循环矩阵。那么可以验证：
 
- * The transpose of a circulant matrix is a circulant matrix.
+ * 循环矩阵的转置是循环矩阵
+ * $A + B$ 是循环矩阵
+ * $A B$ 是循环矩阵
+ * $A B = B A$
 
-
-
-  * $A + B$ is a circulant matrix
-  * $A B$ is a circulant matrix
-  * $A B = B A$
-
-Now consider a circulant matrix with first row
+现在考虑一个第一行为
 
   $$  c = \begin{bmatrix} c_0 & c_1 & \cdots & c_{N-1} \end{bmatrix} $$
 
- and consider a vector
+的循环矩阵，并考虑一个向量
 
  $$ a = \begin{bmatrix} a_0 & a_1 & \cdots  &  a_{N-1} \end{bmatrix} $$
 
- The **convolution** of  vectors $c$ and $a$ is defined   as the vector $b = c * a $  with components
+向量 $c$ 和 $a$ 的**卷积**定义为向量 $b = c * a $，其分量为
 
 $$
  b_k = \sum_{i=0}^{n-1} c_{k-i} a_i
 $$ (eqn:conv)
 
-We use $*$ to denote **convolution** via the calculation described in equation {eq}`eqn:conv`.
+我们使用 $*$ 来表示通过方程 {eq}`eqn:conv` 描述的**卷积**计算。
 
-It can be verified that the vector $b$ satisfies
+可以验证向量 $b$ 满足
 
 $$ b = C^T a  $$
 
-where $C^T$ is the transpose of the circulant matrix  defined in equation {eq}`eqn:circulant`.
+其中 $C^T$ 是方程 {eq}`eqn:circulant` 中定义的循环矩阵的转置。
 
+## 与置换矩阵的联系
 
+构造循环矩阵的一个好方法是使用**置换矩阵**。
 
+在定义置换**矩阵**之前，我们先定义**置换**。
 
+非负整数集 $\{0, 1, 2, \ldots \}$ 的**置换**是该集合到自身的一一映射。
 
-## Connection to Permutation Matrix
+集合 $\{1, 2, \ldots, n\}$ 的置换重新排列了该集合中的 $n$ 个整数。
 
-A good way to construct a circulant matrix is to use a **permutation matrix**.
+[置换矩阵](https://mathworld.wolfram.com/PermutationMatrix.html)是通过根据数字 $1$ 到 $n$ 的置换来置换 $n \times n$ 单位矩阵的行而获得的。
 
-Before defining a permutation **matrix**, we'll define a **permutation**.
+因此，每一行和每一列都恰好包含一个 $1$，其余位置都是 $0$。
 
-A **permutation** of a set of the set of non-negative integers $\{0, 1, 2, \ldots \}$ is a one-to-one mapping of the set into itself.
+每个置换都对应一个唯一的置换矩阵。
 
-A permutation of a set $\{1, 2, \ldots, n\}$ rearranges the $n$ integers in the set.
-
-
-A [permutation matrix](https://mathworld.wolfram.com/PermutationMatrix.html) is obtained by permuting the rows of an $n \times n$ identity matrix according to a permutation of the numbers $1$ to $n$.
-
-
-Thus, every row and every column contain precisely a single $1$ with $0$ everywhere else.
-
-Every permutation corresponds to a unique permutation matrix.
-
-For example, the $N \times N$ matrix
+例如，$N \times N$ 矩阵
 
 $$
 P=\left[\begin{array}{cccccc}
@@ -157,10 +149,9 @@ P=\left[\begin{array}{cccccc}
 \end{array}\right]
 $$ (eqn:exampleP)
 
-serves as  a **cyclic shift**  operator that, when applied to an $N \times 1$ vector $h$, shifts entries in rows $2$ through $N$ up one row and shifts the entry in row $1$ to row $N$.
+作为一个**循环移位**算子，当应用于 $N \times 1$ 向量 $h$ 时，将第 $2$ 行到第 $N$ 行的元素向上移动一行，并将第 $1$ 行的元素移动到第 $N$ 行。
 
-
-Eigenvalues of  the cyclic shift permutation matrix $P$ defined in equation {eq}`eqn:exampleP` can be computed  by constructing
+方程 {eq}`eqn:exampleP` 中定义的循环移位置换矩阵 $P$ 的特征值可以通过构造
 
 $$
 P-\lambda I=\left[\begin{array}{cccccc}
@@ -173,31 +164,29 @@ P-\lambda I=\left[\begin{array}{cccccc}
 \end{array}\right]
 $$
 
-and solving
+并求解
 
 $$
 \textrm{det}(P - \lambda I) = (-1)^N \lambda^{N}-1=0
 $$
 
+来计算。
 
-Eigenvalues $\lambda_i$  can be complex.
+特征值 $\lambda_i$ 可以是复数。
 
-Magnitudes $\mid \lambda_i \mid$  of these  eigenvalues $\lambda_i$ all equal  $1$.
+这些特征值 $\lambda_i$ 的模 $\mid \lambda_i \mid$ 都等于 $1$。
 
-Thus, **singular values** of the  permutation matrix $P$ defined in equation {eq}`eqn:exampleP` all equal $1$.
+因此，方程 {eq}`eqn:exampleP` 中定义的置换矩阵 $P$ 的**奇异值**都等于 $1$。
 
-It can be verified that permutation matrices are orthogonal matrices:
+可以验证置换矩阵是正交矩阵：
 
 $$
 P P' = I
 $$
 
+## Python示例
 
-
-
-## Examples with Python
-
-Let's write some Python code to illustrate these ideas.
+让我们编写一些Python代码来说明这些概念：
 
 ```{code-cell} ipython3
 @jit
@@ -218,7 +207,7 @@ P4
 ```
 
 ```{code-cell} ipython3
-# compute the eigenvalues and eigenvectors
+# 计算特征值和特征向量
 𝜆, Q = np.linalg.eig(P4)
 ```
 
@@ -227,19 +216,19 @@ for i in range(4):
     print(f'𝜆{i} = {𝜆[i]:.1f} \nvec{i} = {Q[i, :]}\n')
 ```
 
-In graphs  below, we shall portray eigenvalues of a shift  permutation matrix   in the complex plane.
+在下面的图中，我们将在复平面上展示移位置换矩阵的特征值。
 
-These eigenvalues are uniformly distributed along the unit circle.
+这些特征值均匀分布在单位圆上。
 
-They are the **$n$ roots of unity**, meaning they are the $n$  numbers  $z$  that solve $z^n =1$, where $z$ is a complex number.
+它们是**$n$ 次单位根**，意味着它们是满足 $z^n =1$ 的 $n$ 个复数 $z$，其中 $z$ 是一个复数。
 
-In particular, the $n$ roots of unity are
+特别地，$n$ 次单位根是
 
 $$
 z = \exp\left(\frac{2 \pi j k }{N} \right) , \quad k = 0, \ldots, N-1
 $$
 
-where $j$ denotes the purely imaginary unit number.
+其中 $j$ 表示纯虚数单位。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(2, 2, figsize=(10, 10))
@@ -259,20 +248,23 @@ for i, N in enumerate([3, 4, 6, 8]):
         ax[row_i, col_i].scatter(𝜆[j].real, 𝜆[j].imag, c='b')
 
     ax[row_i, col_i].set_title(f'N = {N}')
-    ax[row_i, col_i].set_xlabel('real')
-    ax[row_i, col_i].set_ylabel('imaginary')
+    ax[row_i, col_i].set_xlabel('实部')
+    ax[row_i, col_i].set_ylabel('虚部')
 
 plt.show()
 ```
-For a vector of  coefficients $\{c_i\}_{i=0}^{n-1}$, eigenvectors of $P$ are also  eigenvectors of
+
+对于系数向量 $\{c_i\}_{i=0}^{n-1}$，$P$ 的特征向量也是
 
 $$
 C = c_{0} I + c_{1} P + c_{2} P^{2} +\cdots + c_{N-1} P^{N-1}.
 $$
 
-Consider an example in which  $N=8$ and let $w = e^{-2 \pi j / N}$.
+的特征向量。
 
-It can be verified that the matrix $F_8$ of eigenvectors of $P_{8}$  is
+考虑一个例子，其中 $N=8$ 且 $w = e^{-2 \pi j / N}$。
+
+可以验证 $P_{8}$ 的特征向量矩阵 $F_8$ 是
 
 $$
 F_{8}=\left[\begin{array}{ccccc}
@@ -287,13 +279,13 @@ F_{8}=\left[\begin{array}{ccccc}
 \end{array}\right]
 $$
 
-The matrix $F_8$ defines a  [Discete Fourier Transform](https://en.wikipedia.org/wiki/Discrete_Fourier_transform).
+矩阵 $F_8$ 定义了一个[离散傅里叶变换](https://en.wikipedia.org/wiki/Discrete_Fourier_transform)。
 
-To convert it into an orthogonal eigenvector matrix, we can simply normalize it by dividing every entry  by $\sqrt{8}$.
+为了将其转换为正交特征向量矩阵，我们可以简单地通过将每个元素除以 $\sqrt{8}$ 来归一化。
 
- *  stare at the first column of $F_8$ above to convince yourself of this fact
+ * 仔细观察上面 $F_8$ 的第一列来理解这个事实
 
-The eigenvalues corresponding to each eigenvector are $\{w^{j}\}_{j=0}^{7}$ in order.
+对应于每个特征向量的特征值按顺序是 $\{w^{j}\}_{j=0}^{7}$。
 
 ```{code-cell} ipython3
 def construct_F(N):
@@ -320,16 +312,16 @@ F8
 ```
 
 ```{code-cell} ipython3
-# normalize
+# 归一化
 Q8 = F8 / np.sqrt(8)
 ```
 
 ```{code-cell} ipython3
-# verify the orthogonality (unitarity)
+# 验证正交性（酉性）
 Q8 @ np.conjugate(Q8)
 ```
 
-Let's verify that $k$th column of $Q_{8}$ is an eigenvector of $P_{8}$ with an eigenvalue $w^{k}$.
+让我们验证 $Q_{8}$ 的第 $k$ 列是 $P_{8}$ 的特征向量，对应的特征值是 $w^{k}$。
 
 ```{code-cell} ipython3
 P8 = construct_P(8)
@@ -346,23 +338,21 @@ for j in range(8):
 diff_arr
 ```
 
-## Associated Permutation Matrix
+## 关联置换矩阵
 
-
-Next, we execute calculations to verify that the circulant matrix $C$ defined  in equation {eq}`eqn:circulant` can be written as
-
+接下来，我们执行计算来验证方程 {eq}`eqn:circulant` 中定义的循环矩阵 $C$ 可以写成
 
 $$
 C = c_{0} I + c_{1} P + \cdots + c_{n-1} P^{n-1}
 $$
 
-and that every eigenvector of $P$ is also an eigenvector of $C$.
+并且 $P$ 的每个特征向量也是 $C$ 的特征向量。
 
 ```{code-cell} ipython3
 
 ```
 
-We illustrate this for $N=8$ case.
+我们用 $N=8$ 的情况来说明这一点。
 
 ```{code-cell} ipython3
 c = np.random.random(8)
@@ -376,7 +366,7 @@ c
 C8 = construct_cirlulant(c)
 ```
 
-Compute $c_{0} I + c_{1} P + \cdots + c_{n-1} P^{n-1}$.
+计算 $c_{0} I + c_{1} P + \cdots + c_{n-1} P^{n-1}$。
 
 ```{code-cell} ipython3
 N = 8
@@ -397,13 +387,13 @@ C
 C8
 ```
 
-Now let's compute the difference between two circulant matrices that we have  constructed in two different ways.
+现在让我们计算两种不同方式构造的循环矩阵之间的差异。
 
 ```{code-cell} ipython3
 np.abs(C - C8).max()
 ```
 
-The  $k$th column of $P_{8}$ associated with eigenvalue $w^{k-1}$ is an eigenvector of $C_{8}$ associated with an eigenvalue $\sum_{h=0}^{7} c_{j} w^{h k}$.
+与特征值 $w^{k-1}$ 相关的 $P_{8}$ 的第 $k$ 列是 $C_{8}$ 的特征向量，对应的特征值是 $\sum_{h=0}^{7} c_{j} w^{h k}$。
 
 ```{code-cell} ipython3
 𝜆_C8 = np.zeros(8, dtype=complex)
@@ -417,24 +407,22 @@ for j in range(8):
 𝜆_C8
 ```
 
-We can verify this by comparing `C8 @ Q8[:, j]` with `𝜆_C8[j] * Q8[:, j]`.
+我们可以通过比较 `C8 @ Q8[:, j]` 和 `𝜆_C8[j] * Q8[:, j]` 来验证这一点。
 
 ```{code-cell} ipython3
-# verify
+# 验证
 for j in range(8):
     diff = C8 @ Q8[:, j] - 𝜆_C8[j] * Q8[:, j]
     print(diff)
 ```
 
-## Discrete Fourier Transform
+## 离散傅里叶变换
 
-The **Discrete Fourier Transform** (DFT) allows us to  represent a  discrete time sequence as a weighted sum of complex sinusoids.
+**离散傅里叶变换**（DFT）允许我们将离散时间序列表示为复正弦波的加权和。
 
-Consider a sequence of $N$ real number $\{x_j\}_{j=0}^{N-1}$.
+考虑一个包含 $N$ 个实数的序列 $\{x_j\}_{j=0}^{N-1}$。
 
-The **Discrete Fourier Transform** maps $\{x_j\}_{j=0}^{N-1}$ into a sequence of complex numbers $\{X_k\}_{k=0}^{N-1}$
-
-where
+**离散傅里叶变换**将 $\{x_j\}_{j=0}^{N-1}$ 映射到复数序列 $\{X_k\}_{k=0}^{N-1}$，其中
 
 $$
 X_{k}=\sum_{n=0}^{N-1}x_{n}e^{-2\pi\frac{kn}{N}i}
@@ -442,7 +430,7 @@ $$
 
 ```{code-cell} ipython3
 def DFT(x):
-    "The discrete Fourier transform."
+    "离散傅里叶变换。"
 
     N = len(x)
     w = np.e ** (-complex(0, 2*np.pi/N))
@@ -455,12 +443,12 @@ def DFT(x):
     return X
 ```
 
-Consider the following example.
+考虑以下示例。
 
 $$
 x_{n}=\begin{cases}
 1/2 & n=0,1\\
-0 & \text{otherwise}
+0 & \text{其他情况}
 \end{cases}
 $$
 
@@ -473,7 +461,7 @@ x[0:2] = 1/2
 x
 ```
 
-Apply a discrete Fourier transform.
+应用离散傅里叶变换。
 
 ```{code-cell} ipython3
 X = DFT(x)
@@ -483,7 +471,7 @@ X = DFT(x)
 X
 ```
 
-We can plot  magnitudes of a sequence of numbers and the  associated discrete Fourier transform.
+我们可以绘制数字序列的幅值和相关的离散傅里叶变换。
 
 ```{code-cell} ipython3
 def plot_magnitude(x=None, X=None):
@@ -508,7 +496,7 @@ def plot_magnitude(x=None, X=None):
         plt.vlines(range(n), 0, np.abs(data[i]), color='b')
 
         plt.xlabel(xs[i])
-        plt.ylabel('magnitude')
+        plt.ylabel('幅值')
         plt.title(names[i])
         plt.show()
 ```
@@ -517,9 +505,9 @@ def plot_magnitude(x=None, X=None):
 plot_magnitude(x=x, X=X)
 ```
 
-The **inverse Fourier transform**  transforms a Fourier transform  $X$ of $x$  back to $x$.
+**逆傅里叶变换**将 $x$ 的傅里叶变换 $X$ 转换回 $x$。
 
-The inverse Fourier transform is defined as
+逆傅里叶变换定义为
 
 $$
 x_{n} = \sum_{k=0}^{N-1} \frac{1}{N} X_{k} e^{2\pi\left(\frac{kn}{N}\right)i}, \quad n=0, 1, \ldots, N-1
@@ -543,17 +531,17 @@ def inverse_transform(X):
 inverse_transform(X)
 ```
 
-Another example is
+另一个例子是
 
 $$
 x_{n}=2\cos\left(2\pi\frac{11}{40}n\right),\ n=0,1,2,\cdots19
 $$
 
-Since $N=20$, we cannot use an integer multiple of $\frac{1}{20}$ to represent a frequency $\frac{11}{40}$.
+由于 $N=20$，我们不能使用 $\frac{1}{20}$ 的整数倍来表示频率 $\frac{11}{40}$。
 
-To handle this,  we shall end up using all $N$ of the availble   frequencies in the DFT.
+为了处理这种情况，我们最终将使用DFT中所有可用的 $N$ 个频率。
 
-Since $\frac{11}{40}$ is in between $\frac{10}{40}$ and $\frac{12}{40}$ (each of which is an integer multiple of $\frac{1}{20}$), the complex coefficients in the DFT   have their  largest magnitudes at $k=5,6,15,16$, not just at a single frequency.
+由于 $\frac{11}{40}$ 在 $\frac{10}{40}$ 和 $\frac{12}{40}$ 之间（每个都是 $\frac{1}{20}$ 的整数倍），DFT中的复系数在 $k=5,6,15,16$ 处具有最大幅值，而不仅仅是在单个频率处。
 
 ```{code-cell} ipython3
 N = 20
@@ -571,9 +559,9 @@ X = DFT(x)
 plot_magnitude(x=x, X=X)
 ```
 
-What happens if we change the last example to $x_{n}=2\cos\left(2\pi\frac{10}{40}n\right)$?
+如果我们把最后一个例子改为 $x_{n}=2\cos\left(2\pi\frac{10}{40}n\right)$ 会发生什么？
 
-Note that $\frac{10}{40}$ is an integer multiple of $\frac{1}{20}$.
+注意 $\frac{10}{40}$ 是 $\frac{1}{20}$ 的整数倍。
 
 ```{code-cell} ipython3
 N = 20
@@ -591,9 +579,9 @@ X = DFT(x)
 plot_magnitude(x=x, X=X)
 ```
 
-If we represent the discrete Fourier transform as a matrix, we discover that it equals the  matrix $F_{N}$ of eigenvectors  of the permutation matrix $P_{N}$.
+如果我们将离散傅里叶变换表示为矩阵，我们会发现它等于置换矩阵 $P_{N}$ 的特征向量矩阵 $F_{N}$。
 
-We can use the example where $x_{n}=2\cos\left(2\pi\frac{11}{40}n\right),\ n=0,1,2,\cdots19$ to illustrate this.
+我们可以使用 $x_{n}=2\cos\left(2\pi\frac{11}{40}n\right),\ n=0,1,2,\cdots19$ 的例子来说明这一点。
 
 ```{code-cell} ipython3
 N = 20
@@ -607,14 +595,14 @@ for j in range(N):
 x
 ```
 
-First use the summation formula to transform $x$ to $X$.
+首先使用求和公式将 $x$ 变换为 $X$。
 
 ```{code-cell} ipython3
 X = DFT(x)
 X
 ```
 
-Now let's evaluate the outcome  of postmultiplying  the eigenvector matrix  $F_{20}$ by the vector $x$, a product that we claim should equal the Fourier tranform of the sequence $\{x_n\}_{n=0}^{N-1}$.
+现在让我们计算特征向量矩阵 $F_{20}$ 与向量 $x$ 的后乘结果，这个乘积应该等于序列 $\{x_n\}_{n=0}^{N-1}$ 的傅里叶变换。
 
 ```{code-cell} ipython3
 F20, _ = construct_F(20)
@@ -624,13 +612,9 @@ F20, _ = construct_F(20)
 F20 @ x
 ```
 
-Similarly, the inverse DFT can be expressed as a inverse DFT matrix $F^{-1}_{20}$.
+同样，逆DFT可以表示为逆DFT矩阵 $F^{-1}_{20}$。
 
 ```{code-cell} ipython3
 F20_inv = np.linalg.inv(F20)
 F20_inv @ X
-```
-
-```{code-cell} ipython3
-
 ```

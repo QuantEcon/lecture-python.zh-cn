@@ -18,7 +18,7 @@ kernelspec:
 </div>
 ```
 
-# {index}`LLN <single: LLN>` and {index}`CLT <single: CLT>`
+# {index}`大数定律 <single: LLN>` 和 {index}`中心极限定理 <single: CLT>`
 
 ```{index} single: Law of Large Numbers
 ```
@@ -26,33 +26,37 @@ kernelspec:
 ```{index} single: Central Limit Theorem
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-This lecture illustrates two of the most important theorems of probability and statistics: The
-law of large numbers (LLN) and the central limit theorem (CLT).
+本讲座阐述概率论和统计学中两个最重要的定理：大数定律（LLN）和中心极限定理（CLT）。
 
-These beautiful theorems lie behind many of the most fundamental results in econometrics and quantitative economic modeling.
+这些优美的定理是计量经济学和定量经济建模中许多最基本结果的基础。
 
-The lecture is based around simulations that show the LLN and CLT in action.
+本讲座基于展示大数定律和中心极限定理实际应用的模拟。
 
-We also demonstrate how the LLN and CLT break down when the assumptions they are based on do not hold.
+我们还将演示当大数定律和中心极限定理的基本假设不成立时，这些定理是如何失效的。
 
-In addition, we examine several useful extensions of the classical theorems, such as
+此外，我们还将探讨这些经典定理的几个有用扩展，例如：
 
-* The delta method, for smooth functions of random variables, and
-* the multivariate case.
+* 用于随机变量平滑函数的 delta 方法，以及
+* 多元情况。
 
-Some of these extensions are presented as exercises.
+其中一些扩展将以练习的形式呈现。
 
-We'll need the following imports:
+我们需要以下导入：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import random
 import numpy as np
 from scipy.stats import t, beta, lognorm, expon, gamma, uniform
@@ -62,47 +66,44 @@ from matplotlib.collections import PolyCollection
 from scipy.linalg import inv, sqrtm
 ```
 
-## Relationships
+## 关系
 
-The CLT refines the LLN.
+中心极限定理（CLT）完善了大数定律（LLN）。
 
-The LLN gives conditions under which sample moments converge to population moments as sample size increases.
+大数定律给出了样本矩随样本量增加而收敛到总体矩的条件。
 
-The CLT provides information about the rate at which sample moments converge to population moments as sample size increases.
+中心极限定理提供了关于样本矩以何种速率随样本量增加而收敛到总体矩的信息。
 
 (lln_mr)=
-## LLN
+## 大数定律
 
 ```{index} single: Law of Large Numbers
 ```
 
-We begin with the law of large numbers, which tells us when sample averages
-will converge to their population means.
+我们从大数定律开始，它告诉我们样本平均值何时会收敛到总体均值。
 
 (lln_ksl)=
-### The Classical LLN
+### 经典大数定律
 
-The classical law of large numbers concerns independent and
-identically distributed (IID) random variables.
+经典大数定律涉及独立同分布（IID）随机变量。
 
-Here is the strongest version of the classical LLN, known as *Kolmogorov's strong law*.
+这里是经典大数定律的最强版本，被称为*柯尔莫戈洛夫强大数定律*。
 
-Let $X_1, \ldots, X_n$ be independent and identically
-distributed scalar random variables, with common distribution $F$.
+设 $X_1, \ldots, X_n$ 是独立同分布的标量随机变量，具有相同的分布 $F$。
 
-When it exists, let $\mu$ denote the common mean of this sample:
+当存在时，令 $\mu$ 表示该样本的共同均值：
 
 $$
 \mu := \mathbb E X = \int x F(dx)
 $$
 
-In addition, let
+此外，令
 
 $$
 \bar X_n := \frac{1}{n} \sum_{i=1}^n X_i
 $$
 
-Kolmogorov's strong law states that, if $\mathbb E |X|$ is finite, then
+Kolmogorov强大数定律指出，如果$\mathbb E |X|$是有限的，那么
 
 ```{math}
 :label: lln_as
@@ -110,30 +111,27 @@ Kolmogorov's strong law states that, if $\mathbb E |X|$ is finite, then
 \mathbb P \left\{ \bar X_n \to \mu \text{ as } n \to \infty \right\} = 1
 ```
 
-What does this last expression mean?
+这个表达式是什么意思？
 
-Let's think about it from a simulation perspective, imagining for a moment that
-our computer can generate perfect random samples (which of course [it can't](https://en.wikipedia.org/wiki/Pseudorandom_number_generator)).
+让我们从模拟的角度来思考，暂时假设我们的计算机可以生成完美的随机样本（当然[实际上不能](https://en.wikipedia.org/wiki/Pseudorandom_number_generator)）。
 
-Let's also imagine that we can generate infinite sequences so that the
-statement $\bar X_n \to \mu$ can be evaluated.
+我们也假设我们可以生成无限序列，这样就可以评估$\bar X_n \to \mu$这个陈述。
 
-In this setting, {eq}`lln_as` should be interpreted as meaning that the
-probability of the computer producing a sequence where $\bar X_n \to \mu$ fails to occur
-is zero.
+在这种情况下，{eq}`lln_as`应该被理解为：计算机生成一个不满足$\bar X_n \to \mu$的序列的概率为零。
 
-### Proof
+### 证明
 
 ```{index} single: Law of Large Numbers; Proof
 ```
 
-The proof of Kolmogorov's strong law is nontrivial -- see, for example, theorem 8.3.5 of {cite}`Dudley2002`.
+Kolmogorov强大数定律的证明并不简单 -- 参见{cite}`Dudley2002`的定理8.3.5。
 
-On the other hand, we can prove a weaker version of the LLN very easily and
-still get most of the intuition.
+另一方面，我们可以很容易地证明大数定律的一个较弱版本，而且
 
-The version we prove is as follows: If $X_1, \ldots, X_n$ is IID with $\mathbb E X_i^2 < \infty$,
-then, for any $\epsilon > 0$, we have
+仍然可以理解大部分直观含义。
+
+我们要证明的版本如下：如果 $X_1, \ldots, X_n$ 是独立同分布的，且 $\mathbb E X_i^2 < \infty$，
+那么对于任意 $\epsilon > 0$，我们有
 
 ```{math}
 :label: lln_ip
@@ -143,11 +141,11 @@ then, for any $\epsilon > 0$, we have
 n \to \infty
 ```
 
-(This version is weaker because we claim only [convergence in probability](https://en.wikipedia.org/wiki/Convergence_of_random_variables#Convergence_in_probability) rather than [almost sure convergence](https://en.wikipedia.org/wiki/Convergence_of_random_variables#Almost_sure_convergence), and assume a finite second moment)
+(这个版本较弱，因为我们只声称[依概率收敛](https://en.wikipedia.org/wiki/Convergence_of_random_variables#Convergence_in_probability)而不是[几乎必然收敛](https://en.wikipedia.org/wiki/Convergence_of_random_variables#Almost_sure_convergence)，并且假设二阶矩有限)
 
-To see that this is so, fix $\epsilon > 0$, and let $\sigma^2$ be the variance of each $X_i$.
+要证明这一点，固定 $\epsilon > 0$，并令 $\sigma^2$ 为每个 $X_i$ 的方差。
 
-Recall the [Chebyshev inequality](https://en.wikipedia.org/wiki/Chebyshev%27s_inequality), which tells us that
+回忆[切比雪夫不等式](https://en.wikipedia.org/wiki/Chebyshev%27s_inequality)，它告诉我们
 
 ```{math}
 :label: lln_cheb
@@ -156,7 +154,7 @@ Recall the [Chebyshev inequality](https://en.wikipedia.org/wiki/Chebyshev%27s_in
 \leq \frac{\mathbb E [ (\bar X_n - \mu)^2]}{\epsilon^2}
 ```
 
-Now observe that
+现在观察到
 
 $$
 \begin{aligned}
@@ -173,14 +171,13 @@ $$
 \end{aligned}
 $$
 
-Here the crucial step is at the third equality, which follows from
-independence.
+这里关键的步骤是第三个等式，它是由独立性得出的。
 
-Independence means that if $i \not= j$, then the covariance term $\mathbb E (X_i - \mu)(X_j - \mu)$ drops out.
+独立性意味着如果 $i \not= j$，那么协方差项 $\mathbb E (X_i - \mu)(X_j - \mu)$ 就会消失。
 
-As a result, $n^2 - n$ terms vanish, leading us to a final expression that goes to zero in $n$.
+因此，$n^2 - n$ 项消失了，使我们得到一个随 $n$ 趋近于零的最终表达式。
 
-Combining our last result with {eq}`lln_cheb`, we come to the estimate
+将我们的最后结果与{eq}`lln_cheb`结合，我们得到估计
 
 ```{math}
 :label: lln_cheb2
@@ -189,45 +186,42 @@ Combining our last result with {eq}`lln_cheb`, we come to the estimate
 \leq \frac{\sigma^2}{n \epsilon^2}
 ```
 
-The claim in {eq}`lln_ip` is now clear.
+{eq}`lln_ip`中的声明现在就很清楚了。
 
-Of course, if the sequence $X_1, \ldots, X_n$ is correlated, then the cross-product terms
-$\mathbb E (X_i - \mu)(X_j - \mu)$ are not necessarily zero.
+当然，如果序列 $X_1, \ldots, X_n$ 是相关的，那么交叉项
+$\mathbb E (X_i - \mu)(X_j - \mu)$ 不一定为零。
 
-While this doesn't mean that the same line of argument is impossible, it does mean
-that if we want a similar result then the covariances should be "almost zero"
-for "most" of these terms.
+虽然这并不意味着相同的论证方法是不可能的，但这确实意味着
+如果我们想要得到类似的结果，那么"大多数"这些项的协方差应该"接近零"。
 
-In a long sequence, this would be true if, for example, $\mathbb E (X_i - \mu)(X_j - \mu)$
-approached zero when the difference between $i$ and $j$ became
-large.
+在一个长序列中，如果 $\mathbb E (X_i - \mu)(X_j - \mu)$ 在 $i$ 和 $j$ 的差值
+变大时趋近于零，那么这种情况就会成立。
 
-In other words, the LLN can still work if the sequence $X_1, \ldots, X_n$ has a kind of "asymptotic independence", in the sense that correlation falls to zero as variables become further apart in the sequence.
+换句话说，如果序列 $X_1, \ldots, X_n$ 具有某种"渐近独立性"，即当变量在序列中的距离增大时相关性降为零，大数定律仍然可以成立。
 
-This idea is very important in time series analysis, and we'll come across it again soon enough.
+这个概念在时间序列分析中非常重要，我们很快就会再次遇到它。
 
-### Illustration
+### 示例说明
 
 ```{index} single: Law of Large Numbers; Illustration
 ```
 
-Let's now illustrate the classical IID law of large numbers using simulation.
+现在让我们用模拟来说明经典的独立同分布大数定律。
 
-In particular, we aim to generate some sequences of IID random variables and plot the evolution
-of $\bar X_n$ as $n$ increases.
+特别地，我们的目标是生成一些独立同分布随机变量序列，并绘制 $\bar X_n$ 随 $n$ 增加的演变过程。
 
-Below is a figure that does just this (as usual, you can click on it to expand it).
+下面的图正是展示了这一点（和往常一样，您可以点击图片放大查看）。
 
-It shows IID observations from three different distributions and plots $\bar X_n$ against $n$ in each case.
+图中展示了来自三个不同分布的独立同分布观测值，并在每种情况下绘制了 $\bar X_n$ 与 $n$ 的关系。
 
-The dots represent the underlying observations $X_i$ for $i = 1, \ldots, 100$.
+点表示基础观测值 $X_i$，其中 $i = 1, \ldots, 100$。
 
-In each of the three cases, convergence of $\bar X_n$ to $\mu$ occurs as predicted
+在这三种情况下，$\bar X_n$ 都如预期般收敛到 $\mu$
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 100
 
-# Arbitrary collection of distributions
+# 任意分布集合
 distributions = {"student's t with 10 degrees of freedom": t(10),
                  "β(2, 2)": beta(2, 2),
                  "lognormal LN(0, 1/2)": lognorm(0.5),
@@ -235,11 +229,11 @@ distributions = {"student's t with 10 degrees of freedom": t(10),
                  "poisson(4)": poisson(4),
                  "exponential with λ = 1": expon(1)}
 
-# Create a figure and some axes
+# 创建图形和坐标轴
 num_plots = 3
 fig, axes = plt.subplots(num_plots, 1, figsize=(10, 20))
 
-# Set some plotting parameters to improve layout
+# 设置一些绘图参数以改善布局
 bbox = (0., 1.02, 1., .102)
 legend_args = {'ncol': 2,
                'bbox_to_anchor': bbox,
@@ -248,88 +242,83 @@ legend_args = {'ncol': 2,
 plt.subplots_adjust(hspace=0.5)
 
 for ax in axes:
-    # Choose a randomly selected distribution
+    # 随机选择一个分布
     name = random.choice(list(distributions.keys()))
     distribution = distributions.pop(name)
 
-    # Generate n draws from the distribution
+    # 从分布中生成n个样本
     data = distribution.rvs(n)
 
-    # Compute sample mean at each n
+    # 计算每个n处的样本均值
     sample_mean = np.empty(n)
     for i in range(n):
         sample_mean[i] = np.mean(data[:i+1])
 
-    # Plot
+    # 绘图
     ax.plot(list(range(n)), data, 'o', color='grey', alpha=0.5)
     axlabel = '$\\bar{X}_n$ for $X_i \sim$' + name
     ax.plot(list(range(n)), sample_mean, 'g-', lw=3, alpha=0.6, label=axlabel)
     m = distribution.mean()
-    ax.plot(list(range(n)), [m] * n, 'k--', lw=1.5, label='$\mu$')
+    ax.plot(list(range(n)), [m] * n, 'k--', lw=1.5, label=r'$\mu$')
     ax.vlines(list(range(n)), m, data, lw=0.2)
     ax.legend(**legend_args, fontsize=12)
 
 plt.show()
 ```
 
-The three distributions are chosen at random from a selection stored in the dictionary `distributions`.
+这三个分布是从存储在字典 `distributions` 中的选项中随机选择的。
 
-## CLT
+## 中心极限定理
 
 ```{index} single: Central Limit Theorem
 ```
 
-Next, we turn to the central limit theorem, which tells us about the distribution of the deviation between sample averages and population means.
+接下来，我们来看中心极限定理，它告诉我们样本平均值与总体均值之间偏差的分布情况。
 
-### Statement of the Theorem
+### 定理陈述
 
-The central limit theorem is one of the most remarkable results in all of mathematics.
+中心极限定理是数学中最令人惊叹的结果之一。
 
-In the classical IID setting, it tells us the following:
+在经典的独立同分布（IID）设定下，它告诉我们以下内容：
 
 (statement_clt)=
-If the sequence $X_1, \ldots, X_n$ is IID, with common mean
-$\mu$ and common variance $\sigma^2 \in (0, \infty)$, then
+如果序列 $X_1, \ldots, X_n$ 是独立同分布的，具有相同的均值
+$\mu$ 和相同的方差 $\sigma^2 \in (0, \infty)$，那么
 
 ```{math}
 :label: lln_clt
 
 \sqrt{n} ( \bar X_n - \mu ) \stackrel { d } {\to} N(0, \sigma^2)
-\quad \text{as} \quad
+\quad \text{当} \quad
 n \to \infty
 ```
 
-Here $\stackrel { d } {\to} N(0, \sigma^2)$ indicates [convergence in distribution](https://en.wikipedia.org/wiki/Convergence_of_random_variables#Convergence_in_distribution) to a centered (i.e, zero mean) normal with standard deviation $\sigma$.
+这里 $\stackrel { d } {\to} N(0, \sigma^2)$ 表示[分布收敛](https://en.wikipedia.org/wiki/Convergence_of_random_variables#Convergence_in_distribution)到一个中心化的（即均值为零）正态分布，其标准差为 $\sigma$。
 
-### Intuition
+### 直观理解
 
-```{index} single: Central Limit Theorem; Intuition
+```{index} single: 中心极限定理; 直观理解
 ```
 
-The striking implication of the CLT is that for **any** distribution with
-finite second moment, the simple operation of adding independent
-copies **always** leads to a Gaussian curve.
+中心极限定理最引人注目的含义是，对于**任何**具有有限二阶矩的分布，简单地将独立样本相加**总是**会导致高斯曲线。
 
-A relatively simple proof of the central limit theorem can be obtained by
-working with characteristic functions (see, e.g., theorem 9.5.6 of {cite}`Dudley2002`).
+通过使用特征函数可以得到中心极限定理相对简单的证明（参见{cite}`Dudley2002`的定理9.5.6）。
 
-The proof is elegant but almost anticlimactic, and it provides surprisingly little intuition.
+这个证明很优雅但几乎有点令人失望，因为它提供的直观理解非常有限。
 
-In fact, all of the proofs of the CLT that we know are similar in this respect.
+事实上，我们所知道的所有中心极限定理的证明在这方面都是类似的。
 
-Why does adding independent copies produce a bell-shaped distribution?
+为什么将独立样本相加会产生钟形分布？
 
-Part of the answer can be obtained by investigating the addition of independent Bernoulli
-random variables.
+部分答案可以通过研究独立伯努利随机变量的加法来获得。
 
-In particular, let $X_i$ be binary, with $\mathbb P\{X_i = 0\} = \mathbb P\{X_i =
-1 \} = 0.5$, and let $X_1, \ldots, X_n$ be independent.
+具体来说，令$X_i$为二元随机变量，其中$\mathbb P\{X_i = 0\} = \mathbb P\{X_i = 1 \} = 0.5$，且$X_1, \ldots, X_n$相互独立。
 
-Think of $X_i = 1$ as a "success", so that $Y_n = \sum_{i=1}^n X_i$ is the number of successes in $n$ trials.
+把 $X_i = 1$ 看作一次"成功"，那么 $Y_n = \sum_{i=1}^n X_i$ 就是在 $n$ 次试验中成功的次数。
 
-The next figure plots the probability mass function of $Y_n$ for $n = 1, 2, 4, 8$
+下图展示了当 $n = 1, 2, 4, 8$ 时，$Y_n$ 的概率质量函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, axes = plt.subplots(2, 2, figsize=(10, 6))
 plt.subplots_adjust(hspace=0.4)
 axes = axes.flatten()
@@ -346,120 +335,113 @@ for ax, n in zip(axes, ns):
 plt.show()
 ```
 
-When $n = 1$, the distribution is flat --- one success or no successes
-have the same probability.
+当 $n = 1$ 时，分布是平坦的 --- 一次成功或零次成功具有相同的概率。
 
-When $n = 2$ we can either have 0, 1 or 2 successes.
+当 $n = 2$ 时，我们可能得到0、1或2次成功。
 
-Notice the peak in probability mass at the mid-point $k=1$.
+注意在中点 $k=1$ 处概率质量的峰值。
 
-The reason is that there are more ways to get 1 success ("fail then succeed"
-or "succeed then fail") than to get zero or two successes.
+这是因为获得1次成功（"先失败后成功"或"先成功后失败"）的方式比获得零次或两次成功的方式更多。
 
-Moreover, the two trials are independent, so the outcomes "fail then succeed" and "succeed then
-fail" are just as likely as the outcomes "fail then fail" and "succeed then succeed".
+而且，两次试验是独立的，所以"先失败后成功"和"先成功后失败"的结果与"连续失败"和"连续成功"的结果一样可能。
 
-(If there was positive correlation, say, then "succeed then fail" would be less likely than "succeed then succeed")
+（如果存在正相关，那么"先成功后失败"的可能性就会比"连续成功"小）
 
-Here, already we have the essence of the CLT: addition under independence leads probability mass to pile up in the middle and thin out at the tails.
+在这里，我们已经看到了中心极限定理的本质：在独立性条件下的加法导致概率质量在中间堆积，在尾部变薄。
 
-For $n = 4$ and $n = 8$ we again get a peak at the "middle" value (halfway between the minimum and the maximum possible value).
+对于 $n = 4$ 和 $n = 8$，我们再次在"中间"值（最小可能值和最大可能值之间的中点）处得到一个峰值。
 
-The intuition is the same --- there are simply more ways to get these middle outcomes.
+这个直觉是一样的 --- 只是这些中间结果有更多种可能的方式。
 
-If we continue, the bell-shaped curve becomes even more pronounced.
+如果我们继续下去，钟形曲线会变得更加明显。
 
-We are witnessing the [binomial approximation of the normal distribution](https://en.wikipedia.org/wiki/De_Moivre%E2%80%93Laplace_theorem).
+我们正在见证[二项分布对正态分布的近似](https://en.wikipedia.org/wiki/De_Moivre%E2%80%93Laplace_theorem)。
 
-### Simulation 1
+### 模拟1
 
-Since the CLT seems almost magical, running simulations that verify its implications is one good way to build intuition.
+由于中心极限定理看起来几乎是神奇的，运行模拟来验证其含义是建立直觉的一个好方法。
 
-To this end, we now perform the following simulation
+为此，我们现在进行以下模拟
 
-1. Choose an arbitrary distribution $F$ for the underlying observations $X_i$.
-1. Generate independent draws of $Y_n := \sqrt{n} ( \bar X_n - \mu )$.
-1. Use these draws to compute some measure of their distribution --- such as a histogram.
-1. Compare the latter to $N(0, \sigma^2)$.
+1. 为底层观测值$X_i$选择一个任意分布$F$。
+1. 生成$Y_n := \sqrt{n} ( \bar X_n - \mu )$的独立抽样。
+1. 使用这些抽样来计算其分布的某些度量 --- 比如直方图。
+1. 将后者与$N(0, \sigma^2)$进行比较。
 
-Here's some code that does exactly this for the exponential distribution
-$F(x) = 1 - e^{- \lambda x}$.
+下面是一些代码，专门用于指数分布$F(x) = 1 - e^{- \lambda x}$的这种模拟。
 
-(Please experiment with other choices of $F$, but remember that, to conform with the conditions of the CLT, the distribution must have a finite second moment.)
+(请尝试其他的$F$选择，但请记住，为了符合中心极限定理的条件，分布必须具有有限的二阶矩。)
 
 (sim_one)=
-```{code-cell} python3
-# Set parameters
-n = 250                  # Choice of n
-k = 100000               # Number of draws of Y_n
-distribution = expon(2)  # Exponential distribution, λ = 1/2
+```{code-cell} ipython3
+# 设置参数
+n = 250                  # n的选择
+k = 100000              # Y_n的抽样次数
+distribution = expon(2)  # 指数分布，λ = 1/2
 μ, s = distribution.mean(), distribution.std()
 
-# Draw underlying RVs. Each row contains a draw of X_1,..,X_n
+# 抽取基础随机变量。每行包含X_1,...,X_n的一次抽样
 data = distribution.rvs((k, n))
-# Compute mean of each row, producing k draws of \bar X_n
+# 计算每行的平均值，产生k个\bar X_n的抽样
 sample_means = data.mean(axis=1)
-# Generate observations of Y_n
+# 生成Y_n的观测值
 Y = np.sqrt(n) * (sample_means - μ)
 
-# Plot
+# 绘图
 fig, ax = plt.subplots(figsize=(10, 6))
 xmin, xmax = -3 * s, 3 * s
 ax.set_xlim(xmin, xmax)
 ax.hist(Y, bins=60, alpha=0.5, density=True)
 xgrid = np.linspace(xmin, xmax, 200)
-ax.plot(xgrid, norm.pdf(xgrid, scale=s), 'k-', lw=2, label='$N(0, \sigma^2)$')
+ax.plot(xgrid, norm.pdf(xgrid, scale=s), 'k-', lw=2, label=r'$N(0, \sigma^2)$')
 ax.legend()
 
 plt.show()
 ```
 
-Notice the absence of for loops --- every operation is vectorized, meaning that the major calculations are all shifted to highly optimized C code.
+注意这里没有使用for循环 --- 每个操作都是向量化的，这意味着主要计算都转移到了高度优化的C代码中。
 
-The fit to the normal density is already tight and can be further improved by increasing `n`.
+与正态密度的拟合已经很紧密，通过增加`n`可以进一步改善。
 
-You can also experiment with other specifications of $F$.
+你也可以尝试其他$F$的规格。
 
-### Simulation 2
+### 模拟2
 
-Our next simulation is somewhat like the first, except that we aim to track the distribution of $Y_n := \sqrt{n} ( \bar X_n - \mu )$ as $n$ increases.
+我们的下一个模拟在某种程度上类似于第一个，不同之处在于我们旨在追踪$Y_n := \sqrt{n} ( \bar X_n - \mu )$的分布随着$n$的增加而变化。
 
-In the simulation, we'll be working with random variables having $\mu = 0$.
+在模拟中，我们将处理均值$\mu = 0$的随机变量。
 
-Thus, when $n=1$, we have $Y_1 = X_1$, so the first distribution is just
-the distribution of the underlying random variable.
+因此，当$n=1$时，我们有$Y_1 = X_1$，所以第一个分布就是底层随机变量的分布。
 
-For $n=2$, the distribution of $Y_2$ is that of $(X_1 + X_2) / \sqrt{2}$, and so on.
+对于$n=2$，$Y_2$的分布是$(X_1 + X_2) / \sqrt{2}$的分布，以此类推。
 
-What we expect is that, regardless of the distribution of the underlying
-random variable, the distribution of $Y_n$ will smooth out into a bell-shaped curve.
+我们预期的是，无论底层随机变量的分布如何，$Y_n$的分布都会平滑成钟形曲线。
 
-The next figure shows this process for $X_i \sim f$, where $f$ was
-specified as the convex combination of three different beta densities.
+下图显示了$X_i \sim f$的这个过程，其中$f$是
 
-(Taking a convex combination is an easy way to produce an irregular shape for $f$.)
+指定为三个不同贝塔分布的凸组合。
 
-In the figure, the closest density is that of $Y_1$, while the furthest is that of
-$Y_5$
+（取凸组合是产生 $f$ 不规则形状的一种简单方法。）
 
-```{code-cell} python3
+在图中，最近的密度是 $Y_1$ 的密度，而最远的是 $Y_5$ 的密度。
+
+```{code-cell} ipython3
 beta_dist = beta(2, 2)
 
 def gen_x_draws(k):
     """
-    Returns a flat array containing k independent draws from the
-    distribution of X, the underlying random variable.  This distribution
-    is itself a convex combination of three beta distributions.
+    返回一个包含从底层随机变量 X 的分布中独立抽取 k 次的扁平数组。
+    这个分布本身是三个贝塔分布的凸组合。
     """
     bdraws = beta_dist.rvs((3, k))
-    # Transform rows, so each represents a different distribution
+    # 转换行，使每行代表不同的分布
     bdraws[0, :] -= 0.5
     bdraws[1, :] += 0.6
     bdraws[2, :] -= 1.1
-    # Set X[i] = bdraws[j, i], where j is a random draw from {0, 1, 2}
+    # 设置 X[i] = bdraws[j, i]，其中 j 是从 {0, 1, 2} 中随机抽取的
     js = np.random.randint(0, 2, size=k)
     X = bdraws[js, np.arange(k)]
-    # Rescale, so that the random variable is zero mean
+    # 重新缩放，使随机变量均值为零
     m, sigma = X.mean(), X.std()
     return (X - m) / sigma
 
@@ -467,23 +449,23 @@ nmax = 5
 reps = 100000
 ns = list(range(1, nmax + 1))
 
-# Form a matrix Z such that each column is reps independent draws of X
+# 构建矩阵 Z，使每列都是 X 的 reps 个独立抽样
 Z = np.empty((reps, nmax))
 for i in range(nmax):
     Z[:, i] = gen_x_draws(reps)
-# Take cumulative sum across columns
+# 对列进行累积求和
 S = Z.cumsum(axis=1)
-# Multiply j-th column by sqrt j
+# 将第 j 列乘以 sqrt j
 Y = (1 / np.sqrt(ns)) * S
 
-# Plot
+# 绘图
 ax = plt.figure(figsize = (10, 6)).add_subplot(projection='3d')
 
 a, b = -3, 3
 gs = 100
 xs = np.linspace(a, b, gs)
 
-# Build verts
+# 构建顶点
 greys = np.linspace(0.3, 0.7, nmax)
 verts = []
 for n in ns:
@@ -499,22 +481,19 @@ ax.set(xlim3d=(1, nmax), xticks=(ns), ylabel='$Y_n$', zlabel='$p(y_n)$',
        xlabel=("n"), yticks=((-3, 0, 3)), ylim3d=(a, b),
        zlim3d=(0, 0.4), zticks=((0.2, 0.4)))
 ax.invert_xaxis()
-# Rotates the plot 30 deg on z axis and 45 deg on x axis
+# 在 z 轴上旋转 30 度，在 x 轴上旋转 45 度
 ax.view_init(30, 45)
 plt.show()
 ```
 
-As expected, the distribution smooths out into a bell curve as $n$
-increases.
+正如预期的那样，随着$n$的增加，分布逐渐平滑成钟形曲线。
 
-We leave you to investigate its contents if you wish to know more.
+如果您想了解更多，我们建议您自行探索其内容。
 
-If you run the file from the ordinary IPython shell, the figure should pop up in a
-window that you can rotate with your mouse, giving different views on the
-density sequence.
+如果您从普通的IPython shell运行该文件，图形应该会在一个窗口中弹出，您可以用鼠标旋转它，从不同角度查看密度序列。
 
 (multivariate_clt)=
-### The Multivariate Case
+### 多元情况
 
 ```{index} single: Law of Large Numbers; Multivariate Case
 ```
@@ -522,15 +501,15 @@ density sequence.
 ```{index} single: Central Limit Theorem; Multivariate Case
 ```
 
-The law of large numbers and central limit theorem work just as nicely in multidimensional settings.
+大数定律和中心极限定理在多维环境中同样适用。
 
-To state the results, let's recall some elementary facts about random vectors.
+为了阐述这些结果，让我们回顾一些关于随机向量的基本事实。
 
-A random vector $\mathbf X$ is just a sequence of $k$ random variables $(X_1, \ldots, X_k)$.
+随机向量$\mathbf X$就是一个由$k$个随机变量组成的序列$(X_1, \ldots, X_k)$。
 
-Each realization of $\mathbf X$ is an element of $\mathbb R^k$.
+$\mathbf X$的每个实现都是$\mathbb R^k$中的一个元素。
 
-A collection of random vectors $\mathbf X_1, \ldots, \mathbf X_n$ is called independent if, given any $n$ vectors $\mathbf x_1, \ldots, \mathbf x_n$ in $\mathbb R^k$, we have
+如果对于任意 $n$ 个向量 $\mathbf x_1, \ldots, \mathbf x_n$ （在 $\mathbb R^k$ 中），随机向量集合 $\mathbf X_1, \ldots, \mathbf X_n$ 满足：
 
 $$
 \mathbb P\{\mathbf X_1 \leq \mathbf x_1,\ldots, \mathbf X_n \leq \mathbf x_n \}
@@ -538,11 +517,13 @@ $$
 \times \cdots \times \mathbb P\{ \mathbf X_n \leq \mathbf x_n \}
 $$
 
-(The vector inequality $\mathbf X \leq \mathbf x$ means that $X_j \leq x_j$ for $j = 1,\ldots,k$)
+则称这个随机向量集合是独立的。
 
-Let $\mu_j := \mathbb E [X_j]$ for all $j =1,\ldots,k$.
+（向量不等式 $\mathbf X \leq \mathbf x$ 表示对于 $j = 1,\ldots,k$，都有 $X_j \leq x_j$）
 
-The expectation $\mathbb E [\mathbf X]$ of $\mathbf X$ is defined to be the vector of expectations:
+令 $\mu_j := \mathbb E [X_j]$，其中 $j =1,\ldots,k$。
+
+向量 $\mathbf X$ 的期望 $\mathbb E [\mathbf X]$ 定义为各分量期望组成的向量：
 
 $$
 \mathbb E [\mathbf X] :=
@@ -564,15 +545,16 @@ $$
 \right) =: \boldsymbol \mu
 $$
 
-The *variance-covariance matrix* of random vector $\mathbf X$ is defined as
+随机向量 $\mathbf X$ 的*方差-协方差矩阵*定义为
 
 $$
+
 \mathop{\mathrm{Var}}[\mathbf X]
 := \mathbb E
 [ (\mathbf X - \boldsymbol \mu) (\mathbf X - \boldsymbol \mu)']
 $$
 
-Expanding this out, we get
+展开后得到
 
 $$
 \mathop{\mathrm{Var}}[\mathbf X] =
@@ -589,25 +571,21 @@ $$
 \right)
 $$
 
-The $j,k$-th term is the scalar covariance between $X_j$ and
-$X_k$.
+第$j,k$项是$X_j$和$X_k$之间的标量协方差。
 
-With this notation, we can proceed to the multivariate LLN and CLT.
+有了这个表示法，我们可以继续讨论多元大数定律和中心极限定理。
 
-Let $\mathbf X_1, \ldots, \mathbf X_n$ be a sequence of independent and
-identically distributed random vectors, each one taking values in
-$\mathbb R^k$.
+设$\mathbf X_1, \ldots, \mathbf X_n$是一个独立同分布的随机向量序列，每个向量都取值于$\mathbb R^k$中。
 
-Let $\boldsymbol \mu$ be the vector $\mathbb E [\mathbf X_i]$, and let $\Sigma$
-be the variance-covariance matrix of $\mathbf X_i$.
+令$\boldsymbol \mu$为向量$\mathbb E [\mathbf X_i]$，令$\Sigma$为$\mathbf X_i$的方差-协方差矩阵。
 
-Interpreting vector addition and scalar multiplication in the usual way (i.e., pointwise), let
+按照通常的方式解释向量加法和标量乘法（即逐点运算），令
 
 $$
 \bar{\mathbf X}_n := \frac{1}{n} \sum_{i=1}^n \mathbf X_i
 $$
 
-In this setting, the LLN tells us that
+在这种情况下，大数定律告诉我们
 
 ```{math}
 :label: lln_asmv
@@ -615,9 +593,9 @@ In this setting, the LLN tells us that
 \mathbb P \left\{ \bar{\mathbf X}_n \to \boldsymbol \mu \text{ as } n \to \infty \right\} = 1
 ```
 
-Here $\bar{\mathbf X}_n \to \boldsymbol \mu$ means that $\| \bar{\mathbf X}_n - \boldsymbol \mu \| \to 0$, where $\| \cdot \|$ is the standard Euclidean norm.
+这里 $\bar{\mathbf X}_n \to \boldsymbol \mu$ 表示 $\| \bar{\mathbf X}_n - \boldsymbol \mu \| \to 0$，其中 $\| \cdot \|$ 是标准欧几里得范数。
 
-The CLT tells us that, provided $\Sigma$ is finite,
+中心极限定理告诉我们，如果 $\Sigma$ 是有限的，则
 
 ```{math}
 :label: lln_cltmv
@@ -627,18 +605,18 @@ The CLT tells us that, provided $\Sigma$ is finite,
 n \to \infty
 ```
 
-## Exercises
+## 练习
 
 
 ```{exercise-start}
 :label: lln_ex1
 ```
 
-One very useful consequence of the central limit theorem is as follows.
+中心极限定理的一个非常有用的推论如下。
 
-Assume the conditions of the CLT as {ref}`stated above <statement_clt>`.
+假设满足{ref}`上述陈述的<statement_clt>`中心极限定理的条件。
 
-If $g \colon \mathbb R \to \mathbb R$ is differentiable at $\mu$ and $g'(\mu) \not= 0$, then
+如果 $g \colon \mathbb R \to \mathbb R$ 在 $\mu$ 处可微且 $g'(\mu) \not= 0$，那么
 
 ```{math}
 :label: lln_dm
@@ -649,19 +627,19 @@ If $g \colon \mathbb R \to \mathbb R$ is differentiable at $\mu$ and $g'(\mu) \n
 n \to \infty
 ```
 
-This theorem is used frequently in statistics to obtain the asymptotic distribution of estimators --- many of which can be expressed as functions of sample means.
+这个定理在统计学中经常用于获得估计量的渐近分布——其中许多可以表示为样本均值的函数。
 
-(These kinds of results are often said to use the "delta method".)
+(这类结果通常被称为使用"delta方法"。)
 
-The proof is based on a Taylor expansion of $g$ around the point $\mu$.
+证明基于$g$在点$\mu$处的泰勒展开。
 
-Taking the result as given, let the distribution $F$ of each $X_i$ be uniform on $[0, \pi / 2]$ and let $g(x) = \sin(x)$.
+假设每个$X_i$的分布$F$在$[0, \pi / 2]$上均匀分布，且$g(x) = \sin(x)$。
 
-Derive the asymptotic distribution of $\sqrt{n} \{ g(\bar X_n) - g(\mu) \}$ and illustrate convergence in the same spirit as the program discussed {ref}`above <sim_one>`.
+推导$\sqrt{n} \{ g(\bar X_n) - g(\mu) \}$的渐近分布，并按照{ref}`上述<sim_one>`程序的方式说明其收敛性。
 
-What happens when you replace $[0, \pi / 2]$ with $[0, \pi]$?
+当你将$[0, \pi / 2]$替换为$[0, \pi]$时会发生什么？
 
-What is the source of the problem?
+问题的根源是什么？
 
 ```{exercise-end}
 ```
@@ -670,14 +648,14 @@ What is the source of the problem?
 :class: dropdown
 ```
 
-Here is one solution
+这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 """
-Illustrates the delta method, a consequence of the central limit theorem.
+演示delta方法，这是中心极限定理的一个推论。
 """
 
-# Set parameters
+# 设置参数
 n = 250
 replications = 100000
 distribution = uniform(loc=0, scale=(np.pi / 2))
@@ -686,12 +664,12 @@ distribution = uniform(loc=0, scale=(np.pi / 2))
 g = np.sin
 g_prime = np.cos
 
-# Generate obs of sqrt{n} (g(X_n) - g(μ))
+# 生成sqrt{n} (g(X_n) - g(μ))的观测值
 data = distribution.rvs((replications, n))
-sample_means = data.mean(axis=1)  # Compute mean of each row
+sample_means = data.mean(axis=1)  # 计算每行的平均值
 error_obs = np.sqrt(n) * (g(sample_means) - g(μ))
 
-# Plot
+# 绘图
 asymptotic_sd = g_prime(μ) * s
 fig, ax = plt.subplots(figsize=(10, 6))
 xmin = -3 * g_prime(μ) * s
@@ -705,13 +683,11 @@ ax.legend()
 plt.show()
 ```
 
-What happens when you replace $[0, \pi / 2]$ with
-$[0, \pi]$?
+当你将$[0, \pi / 2]$替换为$[0, \pi]$时会发生什么？
 
-In this case, the mean $\mu$ of this distribution is
-$\pi/2$, and since $g' = \cos$, we have $g'(\mu) = 0$.
+在这种情况下，该分布的均值$\mu$是$\pi/2$，并且由于$g' = \cos$，我们有$g'(\mu) = 0$。
 
-Hence the conditions of the delta theorem are not satisfied.
+因此，delta定理的条件不满足。
 
 ```{solution-end}
 ```
@@ -721,15 +697,15 @@ Hence the conditions of the delta theorem are not satisfied.
 :label: lln_ex2
 ```
 
-Here's a result that's often used in developing statistical tests, and is connected to the multivariate central limit theorem.
+这是一个在开发统计检验时经常使用的结果，它与多元中心极限定理有关。
 
-If you study econometric theory, you will see this result used again and again.
+如果你学习计量经济学理论，你会反复看到这个结果的应用。
 
-Assume the setting of the multivariate CLT {ref}`discussed above <multivariate_clt>`, so that
+假设处于{ref}`上述讨论的<multivariate_clt>`多元中心极限定理的设定中，即：
 
-1. $\mathbf X_1, \ldots, \mathbf X_n$ is a sequence of IID random vectors, each taking values in $\mathbb R^k$.
-1. $\boldsymbol \mu := \mathbb E [\mathbf X_i]$, and $\Sigma$ is the variance-covariance matrix of $\mathbf X_i$.
-1. The convergence
+1. $\mathbf X_1, \ldots, \mathbf X_n$是一个IID随机向量序列，每个向量取值于$\mathbb R^k$。
+1. $\boldsymbol \mu := \mathbb E [\mathbf X_i]$，且$\Sigma$是$\mathbf X_i$的方差-协方差矩阵。
+1. 以下收敛成立：
 
 ```{math}
 :label: lln_cltmv2
@@ -737,38 +713,34 @@ Assume the setting of the multivariate CLT {ref}`discussed above <multivariate_c
 \sqrt{n} ( \bar{\mathbf X}_n - \boldsymbol \mu ) \stackrel { d } {\to} N(\mathbf 0, \Sigma)
 ```
 
-is valid.
+在统计环境中，人们通常希望右侧是**标准**正态分布，这样可以轻松计算置信区间。
 
-In a statistical setting, one often wants the right-hand side to be **standard** normal so that confidence intervals are easily computed.
+这种标准化可以基于以下三个观察结果来实现。
 
-This normalization can be achieved on the basis of three observations.
-
-First, if $\mathbf X$ is a random vector in $\mathbb R^k$ and $\mathbf A$ is constant and $k \times k$, then
+首先，如果$\mathbf X$是$\mathbb R^k$中的随机向量，且$\mathbf A$是常数且为$k \times k$矩阵，那么
 
 $$
 \mathop{\mathrm{Var}}[\mathbf A \mathbf X]
 = \mathbf A \mathop{\mathrm{Var}}[\mathbf X] \mathbf A'
 $$
 
-Second, by the [continuous mapping theorem](https://en.wikipedia.org/wiki/Continuous_mapping_theorem), if $\mathbf Z_n \stackrel{d}{\to} \mathbf Z$ in $\mathbb R^k$ and $\mathbf A$ is constant and $k \times k$, then
+其次，根据[连续映射定理](https://en.wikipedia.org/wiki/Continuous_mapping_theorem)，如果$\mathbf Z_n \stackrel{d}{\to} \mathbf Z$在$\mathbb R^k$中成立，且$\mathbf A$是常数且为$k \times k$矩阵，那么
 
 $$
 \mathbf A \mathbf Z_n
 \stackrel{d}{\to} \mathbf A \mathbf Z
 $$
 
-Third, if $\mathbf S$ is a $k \times k$ symmetric positive definite matrix, then there
-exists a symmetric positive definite matrix $\mathbf Q$, called the inverse
-[square root](https://en.wikipedia.org/wiki/Square_root_of_a_matrix) of $\mathbf S$, such that
+第三，如果$\mathbf S$是一个$k \times k$对称正定矩阵，那么存在一个对称正定矩阵$\mathbf Q$，称为$\mathbf S$的[平方根](https://en.wikipedia.org/wiki/Square_root_of_a_matrix)的逆，使得
 
 $$
+
 \mathbf Q \mathbf S\mathbf Q' = \mathbf I
 $$
 
-Here $\mathbf I$ is the $k \times k$ identity matrix.
+这里 $\mathbf I$ 是 $k \times k$ 单位矩阵。
 
-Putting these things together, your first exercise is to show that if
-$\mathbf Q$ is the inverse square root of $\mathbf \Sigma$, then
+把这些内容放在一起，你的第一个练习是证明如果 $\mathbf Q$ 是 $\mathbf \Sigma$ 的逆平方根，那么
 
 $$
 \mathbf Z_n := \sqrt{n} \mathbf Q ( \bar{\mathbf X}_n - \boldsymbol \mu )
@@ -776,7 +748,7 @@ $$
 \mathbf Z \sim N(\mathbf 0, \mathbf I)
 $$
 
-Applying the continuous mapping theorem one more time tells us that
+再次应用连续映射定理告诉我们
 
 $$
 \| \mathbf Z_n \|^2
@@ -784,7 +756,7 @@ $$
 \| \mathbf Z \|^2
 $$
 
-Given the distribution of $\mathbf Z$, we conclude that
+根据 $\mathbf Z$ 的分布，我们得出结论
 
 ```{math}
 :label: lln_ctc
@@ -794,18 +766,18 @@ n \| \mathbf Q ( \bar{\mathbf X}_n - \boldsymbol \mu ) \|^2
 \chi^2(k)
 ```
 
-where $\chi^2(k)$ is the chi-squared distribution with $k$ degrees
-of freedom.
+这里 $\chi^2(k)$ 是具有 $k$ 个自由度的卡方分布。
 
-(Recall that $k$ is the dimension of $\mathbf X_i$, the underlying random vectors.)
+（回想一下，$k$ 是底层随机向量 $\mathbf X_i$ 的维度。）
 
-Your second exercise is to illustrate the convergence in {eq}`lln_ctc` with a simulation.
+你的第二个练习是通过模拟来说明 {eq}`lln_ctc` 中的收敛性。
 
-In doing so, let
+在此过程中，令
 
 $$
 \mathbf X_i :=
 \left(
+
 \begin{array}{c}
     W_i \\
     U_i + W_i
@@ -813,17 +785,17 @@ $$
 \right)
 $$
 
-where
+其中
 
-* each $W_i$ is an IID draw from the uniform distribution on $[-1, 1]$.
-* each $U_i$ is an IID draw from the uniform distribution on $[-2, 2]$.
-* $U_i$ and $W_i$ are independent of each other.
+* 每个 $W_i$ 是从区间 $[-1, 1]$ 上的均匀分布中独立同分布抽取的。
+* 每个 $U_i$ 是从区间 $[-2, 2]$ 上的均匀分布中独立同分布抽取的。
+* $U_i$ 和 $W_i$ 相互独立。
 
 ```{hint}
 :class: dropdown
 
-1. `scipy.linalg.sqrtm(A)` computes the square root of `A`.  You still need to invert it.
-1. You should be able to work out $\Sigma$ from the preceding information.
+1. `scipy.linalg.sqrtm(A)` 用于计算 `A` 的平方根。你还需要求其逆。
+1. 你应该能从前面的信息推导出 $\Sigma$。
 ```
 
 ```{exercise-end}
@@ -833,7 +805,7 @@ where
 :class: dropdown
 ```
 
-First we want to verify the claim that
+首先我们要验证以下说法：
 
 $$
 \sqrt{n} \mathbf Q ( \bar{\mathbf X}_n - \boldsymbol \mu )
@@ -841,29 +813,28 @@ $$
 N(\mathbf 0, \mathbf I)
 $$
 
-This is straightforward given the facts presented in the exercise.
+根据习题中给出的事实，这是很直接的。
 
-Let
+令
 
 $$
 \mathbf Y_n := \sqrt{n} ( \bar{\mathbf X}_n - \boldsymbol \mu )
-\quad \text{and} \quad
+\quad \text{和} \quad
 \mathbf Y \sim N(\mathbf 0, \Sigma)
 $$
 
-By the multivariate CLT and the continuous mapping theorem, we have
+根据多元中心极限定理和连续映射定理，我们有
 
 $$
 \mathbf Q \mathbf Y_n
+
 \stackrel{d}{\to}
 \mathbf Q \mathbf Y
 $$
 
-Since linear combinations of normal random variables are normal, the
-vector $\mathbf Q \mathbf Y$ is also normal.
+由于正态随机变量的线性组合也是正态的，向量$\mathbf Q \mathbf Y$也是正态的。
 
-Its mean is clearly $\mathbf 0$, and its variance-covariance
-matrix is
+其均值显然为$\mathbf 0$，其方差-协方差矩阵为
 
 $$
 \mathrm{Var}[\mathbf Q \mathbf Y]
@@ -872,51 +843,51 @@ $$
 = \mathbf I
 $$
 
-In conclusion,
-$\mathbf Q \mathbf Y_n \stackrel{d}{\to} \mathbf Q \mathbf Y \sim N(\mathbf 0, \mathbf I)$,
-which is what we aimed to show.
+因此，
+$\mathbf Q \mathbf Y_n \stackrel{d}{\to} \mathbf Q \mathbf Y \sim N(\mathbf 0, \mathbf I)$，
+这就是我们要证明的。
 
-Now we turn to the simulation exercise.
+现在我们来看模拟练习。
 
-Our solution is as follows
+我们的解决方案如下
 
-```{code-cell} python3
-# Set parameters
+```{code-cell} ipython3
+# 设置参数
 n = 250
 replications = 50000
-dw = uniform(loc=-1, scale=2)  # Uniform(-1, 1)
-du = uniform(loc=-2, scale=4)  # Uniform(-2, 2)
+dw = uniform(loc=-1, scale=2)  # 均匀分布(-1, 1)
+du = uniform(loc=-2, scale=4)  # 均匀分布(-2, 2)
 sw, su = dw.std(), du.std()
 vw, vu = sw**2, su**2
 Σ = ((vw, vw), (vw, vw + vu))
 Σ = np.array(Σ)
 
-# Compute Σ^{-1/2}
+# 计算 Σ^{-1/2}
 Q = inv(sqrtm(Σ))
 
-# Generate observations of the normalized sample mean
+# 生成标准化样本均值的观测值
 error_obs = np.empty((2, replications))
 for i in range(replications):
-    # Generate one sequence of bivariate shocks
+    # 生成一组二元随机冲击
     X = np.empty((2, n))
     W = dw.rvs(n)
     U = du.rvs(n)
-    # Construct the n observations of the random vector
+    # 构造随机向量的n个观测值
     X[0, :] = W
     X[1, :] = W + U
-    # Construct the i-th observation of Y_n
+    # 构造Y_n的第i个观测值
     error_obs[:, i] = np.sqrt(n) * X.mean(axis=1)
 
-# Premultiply by Q and then take the squared norm
+# 乘以Q然后计算平方范数
 temp = Q @ error_obs
 chisq_obs = np.sum(temp**2, axis=0)
 
-# Plot
+# 绘图
 fig, ax = plt.subplots(figsize=(10, 6))
 xmax = 8
 ax.set_xlim(0, xmax)
 xgrid = np.linspace(0, xmax, 200)
-lb = "Chi-squared with 2 degrees of freedom"
+lb = "自由度为2的卡方分布"
 ax.plot(xgrid, chi2.pdf(xgrid, 2), 'k-', lw=2, label=lb)
 ax.legend()
 ax.hist(chisq_obs, bins=50, density=True)
@@ -925,3 +896,4 @@ plt.show()
 
 ```{solution-end}
 ```
+

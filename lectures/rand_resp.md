@@ -9,35 +9,34 @@ kernelspec:
   name: python3
 ---
 
-# Randomized Response Surveys
+# 随机化回应调查
+
+## 概述
+
+社会污名可能会阻止人们承认潜在的令人尴尬的行为或观点。
+
+当人们不愿意参与关于个人敏感问题的抽样调查时，他们可能会拒绝参与，即使参与了，他们也可能会对敏感问题提供不正确的答案。
+
+这些问题会导致**选择**偏差，给调查的解释和设计带来挑战。
+
+为了说明社会科学家如何思考估计此类令人尴尬的行为和观点的普遍程度，本讲座描述了S. L. Warner {cite}`warner1965randomized`的一种经典方法。
+
+Warner使用基础概率论构建了一种方法，在保护调查受访者**个人**隐私的同时，仍能估算出在一个**群体**中具有社会污名特征或从事社会污名活动的人数比例。
+
+Warner的想法是在受访者的答案与调查制作者最终收到的**信号**之间添加**噪声**。
+
+了解噪声的结构可以让受访者确信调查制作者无法观察到他的答案。
+
+噪声注入程序的统计特性为受访者提供了**合理的可否认性**。
+
+相关理念构成了现代**差分隐私**系统的基础。
+
+(参见 https://en.wikipedia.org/wiki/Differential_privacy)
 
 
-## Overview
+## Warner的策略
 
-Social stigmas can inhibit people from confessing potentially embarrassing activities or opinions. 
-
-When people are reluctant to participate a sample survey about personally  sensitive issues, they  might decline  to participate, and even if they do participate, they might choose to provide incorrect answers to  sensitive questions.
-
-These problems induce  **selection**  biases that present challenges to interpreting and designing surveys.
-
-To illustrate how social scientists have thought about estimating the prevalence of such embarrassing activities and opinions, this lecture describes a classic approach  of S. L. Warner {cite}`warner1965randomized`.
-
-Warner  used elementary  probability to construct a  way to protect the privacy  of **individual** respondents to surveys while still    estimating  the fraction of a **collection** of individuals   who have a socially stigmatized characteristic or who engage in  a socially stigmatized activity.  
-
-Warner's idea was to  add **noise** between the respondent's answer and the **signal** about that answer that the  survey maker ultimately receives. 
-
-Knowing about the structure of the noise assures the respondent that the survey maker does not observe his answer.
-
-Statistical properties of the  noise injection procedure provide the respondent  **plausible deniability**.   
-
-Related ideas underlie  modern **differential privacy** systems.
-
-(See https://en.wikipedia.org/wiki/Differential_privacy)
-
-
-## Warner's Strategy
-
-As usual, let's bring in the Python modules we'll be using.
+像往常一样，让我们导入将要使用的Python模块。
 
 
 ```{code-cell} ipython3
@@ -45,63 +44,62 @@ import numpy as np
 import pandas as pd
 ```
 
-Suppose that every person in population either belongs to Group A or Group B. 
+假设人群中的每个人要么属于 A 组，要么属于 B 组。
 
-We want to estimate the proportion $\pi$ who belong to Group A while protecting individual respondents' privacy.
+我们想要估计属于 A 组的人口比例 $\pi$，同时保护个人受访者的隐私。
 
+Warner {cite}`warner1965randomized` 提出并分析了以下程序：
 
-Warner {cite}`warner1965randomized` proposed and analyzed the following procedure.
+- 从人群中有放回地抽取 $n$ 个随机样本，并对每个人进行访谈。
+- 从人群中有放回地抽取 $n$ 个随机样本，并对每个人进行访谈。
+- 准备一个**随机转盘**，该转盘指向字母 A 的概率为 $p$，指向字母 B 的概率为 $(1-p)$。
+- 每个受试者转动随机转盘，看到一个面试官**看不到**的结果（A 或 B）。
+- 受试者说明自己是否属于转盘所指向的组。
+- 如果转盘指向受试者所属的组，受试者回答"是"；否则回答"否"。
+- 受试者如实回答问题。
 
-- A  random sample of $n$ people is drawn with replacement from the population and  each person is interviewed.
-- Draw $n$ random samples from the population with replacement and interview each person.
-- Prepare a **random spinner** that with $p$ probability points to the Letter A and with $(1-p)$ probability points to the Letter B.
-- Each subject spins a random spinner and sees an outcome (A or B)  that the interviewer  does **not observe**.
-- The subject   states whether he belongs to the group to which the spinner points.
-- If the spinner points to the group that the spinner belongs, the subject reports "yes"; otherwise he reports "no".
-- The  subject answers the question truthfully. 
+Warner构建了一个用于估计总体中集合A所占比例的最大似然估计量。
 
-Warner constructed a maximum  likelihood estimators of the proportion of the population in set A.
+设
 
-Let
+- $\pi$ : 总体中A的真实概率
+- $p$ : 指针指向A的概率
+- $X_{i}=\begin{cases}1,\text{ 如果第}i\text{个受试者回答是}\\0,\text{ 如果第}i\text{个受试者回答否}\end{cases}$
 
-- $\pi$ : True probability of A in the population
-- $p$ : Probability that the spinner points to A
-- $X_{i}=\begin{cases}1,\text{ if the } i\text{th} \ \text{ subject  says yes}\\0,\text{ if the } i\text{th} \ \text{  subject  says no}\end{cases}$
+将样本集编号，使得前$n_1$个报告"是"，而后$n-n_1$个报告"否"。
 
-
-Index the sample set so that  the first $n_1$ report "yes", while the second $n-n_1$ report "no".
-
-The likelihood function of a sample set is 
+样本集的似然函数为
 
 $$
 L=\left[\pi p + (1-\pi)(1-p)\right]^{n_{1}}\left[(1-\pi) p +\pi (1-p)\right]^{n-n_{1}} 
 $$ (eq:one)
 
-The log of the likelihood function is:
+似然函数的对数为：
 
 $$
 \log(L)= n_1 \log \left[\pi p + (1-\pi)(1-p)\right] + (n-n_{1}) \log \left[(1-\pi) p +\pi (1-p)\right]
 $$ (eq:two)
 
-The first-order necessary condition for maximizing the log likelihood function with respect to  $\pi$ is:
+关于$\pi$最大化对数似然函数的一阶必要条件是：
 
 $$
 \frac{(n-n_1)(2p-1)}{(1-\pi) p +\pi (1-p)}=\frac{n_1 (2p-1)}{\pi p + (1-\pi)(1-p)} 
 $$
 
-or
+或
 
 $$
+
 \pi p + (1-\pi)(1-p)=\frac{n_1}{n}
 $$ (eq:3)
 
-If  $p \neq \frac{1}{2}$, then the maximum likelihood estimator (MLE) of $\pi$ is:
+如果 $p \neq \frac{1}{2}$，则最大似然估计量（MLE）$\pi$ 为：
 
 $$
 \hat{\pi}=\frac{p-1}{2p-1}+\frac{n_1}{(2p-1)n}
 $$ (eq:four)
 
-We compute the mean and variance of the MLE estimator $\hat \pi$ to be:
+我们计算MLE估计量 $\hat \pi$ 的均值和方差为：
 
 $$
 \begin{aligned}
@@ -111,7 +109,7 @@ $$
 \end{aligned}
 $$ (eq:five)
 
-and
+以及
 
 $$
 \begin{aligned}
@@ -122,48 +120,46 @@ Var(\hat{\pi})&=\frac{n Var(X_i)}{(2p - 1 )^2 n^2} \\
 \end{aligned}
 $$ (eq:six)
 
-Equation {eq}`eq:five` indicates  that $\hat{\pi}$ is an **unbiased estimator** of $\pi$ while equation {eq}`eq:six` tell us the variance of the estimator.
+方程 {eq}`eq:five` 表明 $\hat{\pi}$ 是 $\pi$ 的**无偏估计量**，而方程 {eq}`eq:six` 告诉我们估计量的方差。
 
-To compute a  confidence interval, first  rewrite {eq}`eq:six` as:
+为了计算置信区间，首先将 {eq}`eq:six` 重写为：
 
 $$
 Var(\hat{\pi})=\frac{\frac{1}{4}-(\pi-\frac{1}{2})^2}{n}+\frac{\frac{1}{16(p-\frac{1}{2})^2}-\frac{1}{4}}{n}
 $$ (eq:seven)
 
-This equation indicates that the variance of $\hat{\pi}$ can be represented as a sum of the variance due to sampling plus the variance due to the random device.
+这个方程表明 $\hat{\pi}$ 的方差可以表示为抽样方差和随机设备方差的和。
 
-From the expressions above we can find that:
+从上述表达式中我们可以发现：
 
-- When $p$ is $\frac{1}{2}$, expression {eq}`eq:one` degenerates to a constant.
+- 当 $p$ 为 $\frac{1}{2}$ 时，表达式 {eq}`eq:one` 退化为一个常数。
 
-- When $p$ is $1$ or $0$, the randomized estimate degenerates to an estimator without randomized sampling.
+- 当 $p$ 为 $1$ 或 $0$ 时，随机化估计退化为不含随机抽样的估计量。
 
+我们将只讨论 $p \in (\frac{1}{2},1)$ 的情况
 
-We shall only discuss  situations in which $p \in (\frac{1}{2},1)$
+（$p \in (0,\frac{1}{2})$ 的情况是对称的）。
 
-(a situation in which $p \in (0,\frac{1}{2})$ is symmetric).
+从表达式 {eq}`eq:five` 和 {eq}`eq:seven` 我们可以推导出：
 
-From expressions {eq}`eq:five` and {eq}`eq:seven` we can deduce that: 
+- 随着 $p$ 的增加，$\hat{\pi}$ 的均方误差(MSE)减小。
 
-- The MSE of $\hat{\pi}$  decreases as $p$ increases.
+## 比较两种调查设计
 
+让我们比较前面的随机化回答法与一个简化的非随机化回答法。
 
-## Comparing Two Survey Designs 
+在我们的非随机化回答法中，我们假设：
 
-Let's compare the preceding randomized-response method with a stylized non-randomized response method.
+- A组成员以概率 $T_a$ 说真话，而B组成员以概率 $T_b$ 说真话
+- $Y_i$ 为1或0，取决于样本中第i个成员的报告是否属于A组。
 
-In our non-randomized response method, we suppose that:
-
-- Members of Group A tells the truth with probability  $T_a$ while the members of Group B tells the truth with probability $T_b$
-- $Y_i$ is $1$ or $0$ according to whether the sample's $i\text{th}$ member's report is in Group A or not.
-
-Then we can estimate $\pi$ as:
+那么我们可以估计 $\pi$ 为：
 
 $$
 \hat{\pi}=\frac{\sum_{i=1}^{n}Y_i}{n}
 $$ (eq:eight)
 
-We calculate the expectation, bias, and variance of the estimator to be:
+我们计算该估计量的期望值、偏差和方差为：
 
 $$
 \begin{aligned}
@@ -180,20 +176,20 @@ $$ (eq:ten)
 
 $$
 \begin{aligned}
+
 Var(\hat{\pi})&=\frac{ \left[ \pi T_a + (1-\pi)(1-T_b)\right]  \left[1- \pi T_a -(1-\pi)(1-T_b)\right] }{n}
 \end{aligned}
 $$ (eq:eleven)
 
-It is useful to define a
+定义一个
 
 $$
-\text{MSE Ratio}=\frac{\text{Mean Square Error Randomized}}{\text{Mean Square Error Regular}}
+\text{MSE 比率}=\frac{\text{随机化的均方误差}}{\text{常规的均方误差}}
 $$
 
-We can compute  MSE Ratios for different survey designs associated with different parameter values.
+我们可以计算不同参数值下不同调查设计的MSE比率。
 
-The following Python code computes  objects we want to stare at in order to make comparisons
-under  different values of $\pi_A$ and $n$:
+以下Python代码计算了我们想要观察的对象，以便在不同的$\pi_A$和$n$值下进行比较：
 
 ```{code-cell} ipython3
 class Comparison:
@@ -205,7 +201,7 @@ class Comparison:
                          [1,   0.7], [1,   0.5], [0.95, 0.95], 
                          [0.9, 0.9], [0.7, 0.7], [0.5,  0.5]])
         self.p_arr = np.array([0.6, 0.7, 0.8, 0.9])
-        self.p_map = dict(zip(self.p_arr, [f"MSE Ratio: p = {x}" for x in self.p_arr]))
+        self.p_map = dict(zip(self.p_arr, [f"MSE 比率: p = {x}" for x in self.p_arr]))
         self.template = pd.DataFrame(columns=self.p_arr)
         self.template[['T_a','T_b']] = TaTb
         self.template['Bias'] = None
@@ -249,14 +245,14 @@ class Comparison:
         return df
 ```
 
-Let's put the code to work for parameter values
+让我们使用以下参数值来运行代码
 
 - $\pi_A=0.6$
 - $n=1000$
 
-We can generate MSE Ratios theoretically using the above formulas.
+我们可以使用上述公式理论上生成MSE比率。
 
-We can also perform   Monte Carlo simulations  of a MSE Ratio.
+我们也可以对MSE比率进行蒙特卡洛模拟。
 
 ```{code-cell} ipython3
 cp1 = Comparison(0.6, 1000)
@@ -269,20 +265,20 @@ df1_mc = cp1.MCsimulation()
 df1_mc
 ```
 
-The theoretical calculations  do a good job of predicting  Monte Carlo results.
+理论计算很好地预测了蒙特卡洛结果。
 
-We see that in many situations, especially when the bias is not small, the MSE of the randomized-sampling  methods is smaller than that of the non-randomized sampling method. 
+我们看到在许多情况下，特别是当偏差不小时，随机抽样方法的均方误差比非随机抽样方法要小。
 
-These differences become larger as  $p$ increases.
+随着$p$的增加，这些差异变得更大。
 
-By adjusting  parameters $\pi_A$ and $n$, we can study outcomes in different situations.
+通过调整参数$\pi_A$和$n$，我们可以研究不同情况下的结果。
 
-For example, for another situation described in Warner {cite}`warner1965randomized`:
+例如，对于Warner {cite}`warner1965randomized`描述的另一种情况：
 
 - $\pi_A=0.5$
 - $n=1000$
 
-we can use the code
+我们可以使用以下代码
 
 ```{code-cell} ipython3
 cp2 = Comparison(0.5, 1000)
@@ -295,12 +291,12 @@ df2_mc = cp2.MCsimulation()
 df2_mc
 ```
 
-We can also revisit a calculation in the  concluding section of Warner {cite}`warner1965randomized` in which 
+我们还可以重新审视Warner {cite}`warner1965randomized`结论部分的一个计算，其中
 
 - $\pi_A=0.6$
 - $n=2000$
 
-We use the code
+我们使用以下代码
 
 ```{code-cell} ipython3
 cp3 = Comparison(0.6, 2000)
@@ -313,11 +309,11 @@ df3_mc = cp3.MCsimulation()
 df3_mc
 ```
 
-Evidently, as $n$ increases, the randomized response method does  better performance in more situations.
+显然，随着$n$的增加，随机化回应法在更多情况下表现更好。
 
-## Concluding Remarks
+## 结束语
 
-{doc}`This QuantEcon lecture <util_rand_resp>`  describes some alternative randomized response surveys.
+{doc}`这个QuantEcon讲座<util_rand_resp>`描述了一些其他的随机化回应调查方法。
 
-That lecture presents a utilitarian analysis of those alternatives conducted by Lars Ljungqvist
-{cite}`ljungqvist1993unified`.
+该讲座介绍了Lars Ljungqvist {cite}`ljungqvist1993unified`对这些替代方案进行的功利主义分析。
+

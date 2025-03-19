@@ -17,34 +17,36 @@ kernelspec:
 </div>
 ```
 
-# Maximum Likelihood Estimation
+# 最大似然估计
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-In a {doc}`previous lecture <ols>`, we estimated the relationship between
-dependent and explanatory variables using linear regression.
+在{doc}`之前的讲座 <ols>`中，我们使用线性回归估计了因变量和解释变量之间的关系。
 
-But what if a linear relationship is not an appropriate assumption for our model?
+但如果线性关系不适合我们的模型假设呢？
 
-One widely used alternative is maximum likelihood estimation, which
-involves specifying a class of distributions, indexed by unknown parameters, and then using the data to pin down these parameter values.
+一个广泛使用的替代方法是最大似然估计，它涉及指定一类由未知参数索引的分布，然后使用数据来确定这些参数值。
 
-The benefit relative to linear regression is that it allows more flexibility in the probabilistic relationships between variables.
+与线性回归相比，其优势在于它允许变量之间有更灵活的概率关系。
 
-Here we illustrate maximum likelihood by replicating Daniel Treisman's (2016) paper, [Russia's Billionaires](https://www.aeaweb.org/articles?id=10.1257/aer.p20161068), which connects the number of billionaires in a country to its economic characteristics.
+在这里，我们通过复现Daniel Treisman（2016）的论文[《俄罗斯的亿万富翁》](https://www.aeaweb.org/articles?id=10.1257/aer.p20161068)来说明最大似然法。该论文将一个国家的亿万富翁数量与其经济特征联系起来。
 
-The paper concludes that Russia has a higher number of billionaires than
-economic factors such as market size and tax rate predict.
+该论文得出结论：俄罗斯的亿万富翁数量高于经济因素（如市场规模和税率）所预测的水平。
 
-We'll require the following imports:
+我们需要以下导入：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from numpy import exp
 from scipy.special import factorial
@@ -56,52 +58,50 @@ from scipy.stats import norm
 from statsmodels.iolib.summary2 import summary_col
 ```
 
-### Prerequisites
+### 预备知识
 
-We assume familiarity with basic probability and multivariate calculus.
+我们假设读者熟悉基本概率论和多元微积分。
 
-## Set Up and Assumptions
+## 设置和假设
 
-Let's consider the steps we need to go through in maximum likelihood estimation and how they pertain to this study.
+让我们考虑最大似然估计所需的步骤以及它们与本研究的关系。
 
-### Flow of Ideas
+### 思路流程
 
-The first step with maximum likelihood estimation is to choose the probability distribution believed to be generating the data.
+最大似然估计的第一步是选择被认为产生数据的概率分布。
 
-More precisely, we need to make an assumption as to which *parametric class* of distributions is generating the data.
+更准确地说，我们需要对产生数据的*参数分布族*做出假设。
 
-* e.g., the class of all normal distributions, or the class of all gamma distributions.
+* 例如，所有正态分布的类别，或所有伽马分布的类别。
 
-Each such class is a family of distributions indexed by a finite number of parameters.
+每个这样的类别都是由有限个参数索引的分布族。
 
-* e.g., the class of normal distributions is a family of distributions
-  indexed by its mean $\mu \in (-\infty, \infty)$ and standard deviation $\sigma \in (0, \infty)$.
+* 例如，正态分布类是由其均值 $\mu \in (-\infty, \infty)$ 和标准差 $\sigma \in (0, \infty)$ 索引的分布族。
 
-We'll let the data pick out a particular element of the class by pinning down the parameters.
+我们将让数据通过确定参数来选择类别中的特定元素。
 
-The parameter estimates so produced will be called **maximum likelihood estimates**.
+以这种方式产生的参数估计被称为**最大似然估计**。
 
-### Counting Billionaires
+### 统计亿万富豪
 
-Treisman {cite}`Treisman2016` is interested in estimating the number of billionaires in different countries.
+Treisman {cite}`Treisman2016` 致力于估计不同国家的亿万富豪数量。
 
-The number of billionaires is integer-valued.
+亿万富豪的数量是整数值。
 
-Hence we consider distributions that take values only in the nonnegative integers.
+因此我们考虑仅取非负整数值的分布。
 
-(This is one reason least squares regression is not the best tool for the present problem, since the dependent variable in linear regression is not restricted
-to integer values)
+（这是最小二乘回归不是当前问题最佳工具的原因之一，因为线性回归中的因变量不限于整数值）
 
-One integer distribution is the [Poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution), the probability mass function (pmf) of which is
+[泊松分布](https://en.wikipedia.org/wiki/Poisson_distribution)是一种整数分布，其概率质量函数（pmf）为
 
 $$
 f(y) = \frac{\mu^{y}}{y!} e^{-\mu},
 \qquad y = 0, 1, 2, \ldots, \infty
 $$
 
-We can plot the Poisson distribution over $y$ for different values of $\mu$ as follows
+我们可以按如下方式绘制不同 $\mu$ 值下的泊松分布图
 
-```{code-cell} python3
+```{code-cell} ipython3
 poisson_pmf = lambda y, μ: μ**y / factorial(y) * exp(-μ)
 y_values = range(0, 25)
 
@@ -127,28 +127,26 @@ ax.legend(fontsize=14)
 plt.show()
 ```
 
-Notice that the Poisson distribution begins to resemble a normal distribution as the mean of $y$ increases.
+注意当 $y$ 的均值增加时，泊松分布开始呈现出类似正态分布的特征。
 
-Let's have a look at the distribution of the data we'll be working with in this lecture.
+让我们来看看本讲中我们将要使用的数据分布情况。
 
-Treisman's main source of data is *Forbes'* annual rankings of billionaires and their estimated net worth.
+Treisman的主要数据来源是《福布斯》年度富豪榜及其估计净资产。
 
-The dataset `mle/fp.dta` can be downloaded from [here](https://python.quantecon.org/_static/lecture_specific/mle/fp.dta)
-or its [AER page](https://www.aeaweb.org/articles?id=10.1257/aer.p20161068).
+数据集`mle/fp.dta`可以从[这里](https://python.quantecon.org/_static/lecture_specific/mle/fp.dta)
+或其[AER页面](https://www.aeaweb.org/articles?id=10.1257/aer.p20161068)下载。
 
-```{code-cell} python3
+```{code-cell} ipython3
 pd.options.display.max_columns = 10
 
-# Load in data and view
+# 加载数据并查看
 df = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/mle/fp.dta?raw=true')
 df.head()
 ```
 
-Using a histogram, we can view the distribution of the number of
-billionaires per country, `numbil0`, in 2008 (the United States is
-dropped for plotting purposes)
+通过直方图，我们可以查看2008年各国亿万富翁人数`numbil0`的分布情况（为了绘图目的，已排除美国数据）
 
-```{code-cell} python3
+```{code-cell} ipython3
 numbil0_2008 = df[(df['year'] == 2008) & (
     df['country'] != 'United States')].loc[:, 'numbil0']
 
@@ -156,20 +154,20 @@ plt.subplots(figsize=(12, 8))
 plt.hist(numbil0_2008, bins=30)
 plt.xlim(left=0)
 plt.grid()
-plt.xlabel('Number of billionaires in 2008')
-plt.ylabel('Count')
+plt.xlabel('2008年亿万富翁人数')
+plt.ylabel('计数')
 plt.show()
 ```
 
-From the histogram, it appears that the Poisson assumption is not unreasonable (albeit with a very low $\mu$ and some outliers).
+从直方图来看，泊松分布的假设似乎是合理的（尽管μ值很低且有一些异常值）。
 
-## Conditional Distributions
+## 条件分布
 
-In Treisman's paper, the dependent variable --- the number of billionaires $y_i$ in country $i$ --- is modeled as a function of GDP per capita, population size, and years membership in GATT and WTO.
+在Treisman的论文中，因变量——国家$i$的亿万富翁数量$y_i$——被建模为人均GDP、人口规模以及加入关贸总协定和世贸组织年限的函数。
 
-Hence, the distribution of $y_i$ needs to be conditioned on the vector of explanatory variables $\mathbf{x}_i$.
+因此，$y_i$的分布需要以解释变量向量$\mathbf{x}_i$为条件。
 
-The standard formulation --- the so-called *poisson regression* model --- is as follows:
+标准公式——即所谓的*泊松回归*模型——如下：
 
 ```{math}
 :label: poissonreg
@@ -178,24 +176,22 @@ f(y_i \mid \mathbf{x}_i) = \frac{\mu_i^{y_i}}{y_i!} e^{-\mu_i}; \qquad y_i = 0, 
 ```
 
 $$
-\text{where}\ \mu_i
+\text{其中}\ \mu_i
      = \exp(\mathbf{x}_i' \boldsymbol{\beta})
      = \exp(\beta_0 + \beta_1 x_{i1} + \ldots + \beta_k x_{ik})
 $$
 
-To illustrate the idea that the distribution of $y_i$ depends on
-$\mathbf{x}_i$ let's run a simple simulation.
+为了说明$y_i$的分布依赖于$\mathbf{x}_i$这一概念，让我们进行一个简单的模拟。
 
-We use our `poisson_pmf` function from above and arbitrary values for
-$\boldsymbol{\beta}$ and $\mathbf{x}_i$
+我们使用上面的`poisson_pmf`函数和任意值的$\boldsymbol{\beta}$和$\mathbf{x}_i$
 
-```{code-cell} python3
+```{code-cell} ipython3
 y_values = range(0, 20)
 
-# Define a parameter vector with estimates
+# 定义一个带有估计值的参数向量
 β = np.array([0.26, 0.18, 0.25, -0.1, -0.22])
 
-# Create some observations X
+# 创建一些观测值X
 datasets = [np.array([0, 1, 1, 1, 2]),
             np.array([2, 3, 2, 4, 0]),
             np.array([3, 4, 5, 3, 2]),
@@ -224,15 +220,13 @@ ax.axis(xmin=0, ymin=0)
 plt.show()
 ```
 
-We can see that the distribution of $y_i$ is conditional on
-$\mathbf{x}_i$ ($\mu_i$ is no longer constant).
+我们可以看到 $y_i$ 的分布是以 $\mathbf{x}_i$ 为条件的（$\mu_i$ 不再是常数）。
 
-## Maximum Likelihood Estimation
+## 最大似然估计
 
-In our model for number of billionaires, the conditional distribution
-contains 4 ($k = 4$) parameters that we need to estimate.
+在我们的亿万富翁数量模型中，条件分布包含4个（$k = 4$）需要估计的参数。
 
-We will label our entire parameter vector as $\boldsymbol{\beta}$ where
+我们将整个参数向量标记为 $\boldsymbol{\beta}$，其中
 
 $$
 \boldsymbol{\beta} = \begin{bmatrix}
@@ -243,30 +237,29 @@ $$
                       \end{bmatrix}
 $$
 
-To estimate the model using MLE, we want to maximize the likelihood that
-our estimate $\hat{\boldsymbol{\beta}}$ is the true parameter $\boldsymbol{\beta}$.
+为了使用最大似然估计来估计模型，我们希望最大化我们的估计值 $\hat{\boldsymbol{\beta}}$ 是真实参数 $\boldsymbol{\beta}$ 的似然。
 
-Intuitively, we want to find the $\hat{\boldsymbol{\beta}}$ that best fits our data.
+直观地说，我们想要找到最适合我们数据的 $\hat{\boldsymbol{\beta}}$。
 
-First, we need to construct the likelihood function $\mathcal{L}(\boldsymbol{\beta})$, which is similar to a joint probability density function.
+首先，我们需要构建似然函数 $\mathcal{L}(\boldsymbol{\beta})$，它类似于联合概率密度函数。
 
-Assume we have some data $y_i = \{y_1, y_2\}$ and
-$y_i \sim f(y_i)$.
+假设我们有一些数据 $y_i = \{y_1, y_2\}$ 且
+$y_i \sim f(y_i)$。
 
-If $y_1$ and $y_2$ are independent, the joint pmf of these
-data is $f(y_1, y_2) = f(y_1) \cdot f(y_2)$.
+如果 $y_1$ 和 $y_2$ 是独立的，这些数据的联合概率质量函数是
+$f(y_1, y_2) = f(y_1) \cdot f(y_2)$。
 
-If $y_i$ follows a Poisson distribution with $\lambda = 7$,
-we can visualize the joint pmf like so
+如果 $y_i$ 服从参数为 $\lambda = 7$ 的泊松分布，
+我们可以这样可视化联合概率质量函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 def plot_joint_poisson(μ=7, y_n=20):
     yi_values = np.arange(0, y_n, 1)
 
-    # Create coordinate points of X and Y
+    # 创建 X 和 Y 的坐标点
     X, Y = np.meshgrid(yi_values, yi_values)
 
-    # Multiply distributions together
+    # 将分布相乘
     Z = poisson_pmf(X, μ) * poisson_pmf(Y, μ)
 
     fig = plt.figure(figsize=(12, 8))
@@ -280,20 +273,16 @@ def plot_joint_poisson(μ=7, y_n=20):
 plot_joint_poisson(μ=7, y_n=20)
 ```
 
-Similarly, the joint pmf of our data (which is distributed as a
-conditional Poisson distribution) can be written as
+同样，我们的数据（服从条件泊松分布）的联合概率质量函数可以写作：
 
 $$
 f(y_1, y_2, \ldots, y_n \mid \mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n; \boldsymbol{\beta})
     = \prod_{i=1}^{n} \frac{\mu_i^{y_i}}{y_i!} e^{-\mu_i}
 $$
 
-$y_i$ is conditional on both the values of $\mathbf{x}_i$ and the
-parameters $\boldsymbol{\beta}$.
+$y_i$ 同时依赖于 $\mathbf{x}_i$ 的值和参数 $\boldsymbol{\beta}$。
 
-The likelihood function is the same as the joint pmf, but treats the
-parameter $\boldsymbol{\beta}$ as a random variable and takes the observations
-$(y_i, \mathbf{x}_i)$ as given
+似然函数与联合概率质量函数相同，但是将参数 $\boldsymbol{\beta}$ 视为随机变量，并将观测值 $(y_i, \mathbf{x}_i)$ 视为已知：
 
 $$
 \begin{split}
@@ -303,18 +292,18 @@ f(y_1, y_2, \ldots, y_n \mid  \ \mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n
 \end{split}
 $$
 
-Now that we have our likelihood function, we want to find the $\hat{\boldsymbol{\beta}}$ that yields the maximum likelihood value
+现在我们有了似然函数，我们要找到能使似然值最大的 $\hat{\boldsymbol{\beta}}$
 
 $$
+
 \underset{\boldsymbol{\beta}}{\max} \mathcal{L}(\boldsymbol{\beta})
 $$
 
-In doing so it is generally easier to maximize the log-likelihood (consider
-differentiating $f(x) = x \exp(x)$  vs.  $f(x) = \log(x) + x$).
+在这种情况下，最大化对数似然通常更容易（比较求导 $f(x) = x \exp(x)$ 与 $f(x) = \log(x) + x$）。
 
-Given that taking a logarithm is a monotone increasing transformation, a maximizer of the likelihood function will also be a maximizer of the log-likelihood function.
+由于对数是单调递增变换，似然函数的最大值点也是对数似然函数的最大值点。
 
-In our case the log-likelihood is
+在我们的例子中，对数似然为
 
 $$
 \begin{split}
@@ -338,7 +327,7 @@ $$
 \end{split}
 $$
 
-The MLE of the Poisson to the Poisson  for $\hat{\beta}$ can be obtained by solving
+泊松分布的 $\hat{\beta}$ 的最大似然估计可以通过求解以下问题得到：
 
 $$
 \underset{\beta}{\max} \Big(
@@ -347,28 +336,25 @@ $$
 \sum_{i=1}^{n} \log y! \Big)
 $$
 
-However, no analytical solution exists to the above problem -- to find the MLE
-we need to use numerical methods.
+然而，上述问题没有解析解——要找到最大似然估计，我们需要使用数值方法。
 
-## MLE with Numerical Methods
+## 使用数值方法的最大似然估计
 
-Many distributions do not have nice, analytical solutions and therefore require
-numerical methods to solve for parameter estimates.
+许多分布都没有很好的解析解，因此需要数值方法来求解参数估计。
 
-One such numerical method is the Newton-Raphson algorithm.
+牛顿-拉夫森算法就是这样一种数值方法。
 
-Our goal is to find the maximum likelihood estimate $\hat{\boldsymbol{\beta}}$.
+我们的目标是找到最大似然估计 $\hat{\boldsymbol{\beta}}$。
 
-At $\hat{\boldsymbol{\beta}}$, the first derivative of the log-likelihood
-function will be equal to 0.
+在 $\hat{\boldsymbol{\beta}}$ 处，对数似然函数的一阶导数将等于0。
 
-Let's illustrate this by supposing
+让我们通过假设以下函数来说明这一点：
 
 $$
 \log \mathcal{L(\beta)} = - (\beta - 10) ^2 - 10
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 β = np.linspace(1, 20)
 logL = -(β - 10) ** 2 - 10
 dlogL = -2 * β + 20
@@ -392,64 +378,55 @@ plt.axhline(c='black')
 plt.show()
 ```
 
-The plot shows that the maximum likelihood value (the top plot) occurs
-when $\frac{d \log \mathcal{L(\boldsymbol{\beta})}}{d \boldsymbol{\beta}} = 0$ (the bottom
-plot).
+图表显示最大似然值（上图）出现在
+$\frac{d \log \mathcal{L(\boldsymbol{\beta})}}{d \boldsymbol{\beta}} = 0$ 时（下图）。
 
-Therefore, the likelihood is maximized when $\beta = 10$.
+因此，似然函数在 $\beta = 10$ 时达到最大值。
 
-We can also ensure that this value is a *maximum* (as opposed to a
-minimum) by checking that the second derivative (slope of the bottom
-plot) is negative.
+我们还可以通过检查二阶导数（下图的斜率）是否为负来确保这个值是一个*最大值*（而不是最小值）。
 
-The Newton-Raphson algorithm finds a point where the first derivative is
-0.
+牛顿-拉夫森算法用于寻找一阶导数为0的点。
 
-To use the algorithm, we take an initial guess at the maximum value,
-$\beta_0$ (the OLS parameter estimates might be a reasonable
-guess), then
+要使用该算法，我们首先对最大值进行初始猜测，
+$\beta_0$（OLS参数估计可能是一个合理的猜测），然后
 
-1. Use the updating rule to iterate the algorithm
+1. 使用更新规则进行迭代
 
    $$
    \boldsymbol{\beta}_{(k+1)} = \boldsymbol{\beta}_{(k)} - H^{-1}(\boldsymbol{\beta}_{(k)})G(\boldsymbol{\beta}_{(k)})
    $$
-   where:
+   其中：
 
    $$
    \begin{aligned}
    G(\boldsymbol{\beta}_{(k)}) = \frac{d \log \mathcal{L(\boldsymbol{\beta}_{(k)})}}{d \boldsymbol{\beta}_{(k)}} \\
-   H(\boldsymbol{\beta}_{(k)}) = \frac{d^2 \log \mathcal{L(\boldsymbol{\beta}_{(k)})}}{d \boldsymbol{\beta}_{(k)}d \boldsymbol{\beta}'_{(k)}}
+
+H(\boldsymbol{\beta}_{(k)}) = \frac{d^2 \log \mathcal{L(\boldsymbol{\beta}_{(k)})}}{d \boldsymbol{\beta}_{(k)}d \boldsymbol{\beta}'_{(k)}}
    \end{aligned}
    $$
 
-1. Check whether $\boldsymbol{\beta}_{(k+1)} - \boldsymbol{\beta}_{(k)} < tol$
-    - If true, then stop iterating and set
+1. 检查 $\boldsymbol{\beta}_{(k+1)} - \boldsymbol{\beta}_{(k)} < tol$ 是否成立
+    - 如果成立，则停止迭代并设定
       $\hat{\boldsymbol{\beta}} = \boldsymbol{\beta}_{(k+1)}$
-    - If false, then update $\boldsymbol{\beta}_{(k+1)}$
+    - 如果不成立，则更新 $\boldsymbol{\beta}_{(k+1)}$
 
-As can be seen from the updating equation,
-$\boldsymbol{\beta}_{(k+1)} = \boldsymbol{\beta}_{(k)}$ only when
-$G(\boldsymbol{\beta}_{(k)}) = 0$ ie. where the first derivative is equal to 0.
+从更新方程可以看出，只有当 $G(\boldsymbol{\beta}_{(k)}) = 0$ 时，即一阶导数等于0时，才有 $\boldsymbol{\beta}_{(k+1)} = \boldsymbol{\beta}_{(k)}$。
 
-(In practice, we stop iterating when the difference is below a small
-tolerance threshold)
+（在实践中，当差异小于一个很小的容差阈值时，我们就停止迭代）
 
-Let's have a go at implementing the Newton-Raphson algorithm.
+让我们来实现牛顿-拉弗森算法。
 
-First, we'll create a class called `PoissonRegression` so we can
-easily recompute the values of the log likelihood, gradient and Hessian
-for every iteration
+首先，我们创建一个名为 `PoissonRegression` 的类，这样我们就可以在每次迭代时轻松重新计算对数似然、梯度和海森矩阵的值
 
-```{code-cell} python3
+```{code-cell} ipython3
 class PoissonRegression:
 
     def __init__(self, y, X, β):
         self.X = X
         self.n, self.k = X.shape
-        # Reshape y as a n_by_1 column vector
+        # 将y重塑为n_by_1列向量
         self.y = y.reshape(self.n,1)
-        # Reshape β as a k_by_1 column vector
+        # 将β重塑为k_by_1列向量
         self.β = β.reshape(self.k,1)
 
     def μ(self):
@@ -471,43 +448,38 @@ class PoissonRegression:
         return -(X.T @ (μ * X))
 ```
 
-Our function `newton_raphson` will take a `PoissonRegression` object
-that has an initial guess of the parameter vector $\boldsymbol{\beta}_0$.
+我们的函数`newton_raphson`将接收一个`PoissonRegression`对象，该对象包含参数向量$\boldsymbol{\beta}_0$的初始猜测值。
 
-The algorithm will update the parameter vector according to the updating
-rule, and recalculate the gradient and Hessian matrices at the new
-parameter estimates.
+该算法将根据更新规则更新参数向量，并在新的参数估计值处重新计算梯度和Hessian矩阵。
 
-Iteration will end when either:
+迭代将在以下情况下结束：
 
-* The difference between the parameter and the updated parameter is below a tolerance level.
-* The maximum number of iterations has been achieved (meaning convergence is not achieved).
+* 参数与更新后参数之间的差异低于容差水平。
+* 达到最大迭代次数（意味着未达到收敛）。
 
-So we can get an idea of what's going on while the algorithm is running,
-an option `display=True` is added to print out values at each
-iteration.
+为了让我们能够了解算法运行时的情况，添加了`display=True`选项来打印每次迭代的值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def newton_raphson(model, tol=1e-3, max_iter=1000, display=True):
 
     i = 0
-    error = 100  # Initial error value
+    error = 100  # 初始误差值
 
-    # Print header of output
+    # 打印输出的标题
     if display:
         header = f'{"Iteration_k":<13}{"Log-likelihood":<16}{"θ":<60}'
         print(header)
         print("-" * len(header))
 
-    # While loop runs while any value in error is greater
-    # than the tolerance until max iterations are reached
+    # 当error中的任何值大于容差且未达到最大迭代次数时，
+    # while循环继续运行
     while np.any(error > tol) and i < max_iter:
         H, G = model.H(), model.G()
         β_new = model.β - (np.linalg.inv(H) @ G)
         error = np.abs(β_new - model.β)
         model.β = β_new
 
-        # Print iterations
+        # 打印迭代结果
         if display:
             β_list = [f'{t:.3}' for t in list(model.β.flatten())]
             update = f'{i:<13}{model.logL():<16.8}{β_list}'
@@ -515,17 +487,16 @@ def newton_raphson(model, tol=1e-3, max_iter=1000, display=True):
 
         i += 1
 
-    print(f'Number of iterations: {i}')
+    print(f'迭代次数：{i}')
     print(f'β_hat = {model.β.flatten()}')
 
-    # Return a flat array for β (instead of a k_by_1 column vector)
+    # 返回β的扁平数组（而不是k_by_1列向量）
     return model.β.flatten()
 ```
 
-Let's try out our algorithm with a small dataset of 5 observations and 3
-variables in $\mathbf{X}$.
+让我们用一个包含5个观测值和3个变量的小数据集来测试我们的算法$\mathbf{X}$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 X = np.array([[1, 2, 5],
               [1, 1, 3],
               [1, 4, 2],
@@ -534,40 +505,35 @@ X = np.array([[1, 2, 5],
 
 y = np.array([1, 0, 1, 1, 0])
 
-# Take a guess at initial βs
+# 对初始β值进行猜测
 init_β = np.array([0.1, 0.1, 0.1])
 
-# Create an object with Poisson model values
+# 创建一个包含泊松模型值的对象
 poi = PoissonRegression(y, X, β=init_β)
 
-# Use newton_raphson to find the MLE
+# 使用牛顿-拉弗森方法找到最大似然估计
 β_hat = newton_raphson(poi, display=True)
 ```
 
-As this was a simple model with few observations, the algorithm achieved
-convergence in only 7 iterations.
+由于这是一个观测值较少的简单模型，算法仅用7次迭代就达到了收敛。
 
-You can see that with each iteration, the log-likelihood value increased.
+你可以看到，每次迭代后对数似然值都在增加。
 
-Remember, our objective was to maximize the log-likelihood function,
-which the algorithm has worked to achieve.
+请记住，我们的目标是最大化对数似然函数，这正是算法一直在努力实现的。
 
-Also, note that the increase in $\log \mathcal{L}(\boldsymbol{\beta}_{(k)})$
-becomes smaller with each iteration.
+同时，注意到$\log \mathcal{L}(\boldsymbol{\beta}_{(k)})$的增量在每次迭代后都变得更小。
 
-This is because the gradient is approaching 0 as we reach the maximum,
-and therefore the numerator in our updating equation is becoming smaller.
+这是因为当我们接近最大值时，梯度正在接近0，因此我们更新方程中的分子也变得更小。
 
-The gradient vector should be close to 0 at $\hat{\boldsymbol{\beta}}$
+在$\hat{\boldsymbol{\beta}}$处，梯度向量应该接近0
 
-```{code-cell} python3
+```{code-cell} ipython3
 poi.G()
 ```
 
-The iterative process can be visualized in the following diagram, where
-the maximum is found at $\beta = 10$
+迭代过程可以在下图中可视化，其中最大值在 $\beta = 10$ 处
 
-```{code-cell} python3
+```{code-cell} ipython3
 ---
 tags: [output_scroll]
 ---
@@ -603,24 +569,19 @@ ax.grid(alpha=0.3)
 plt.show()
 ```
 
-Note that our implementation of the Newton-Raphson algorithm is rather
-basic --- for more robust implementations see,
-for example, [scipy.optimize](https://docs.scipy.org/doc/scipy/reference/optimize.html).
+请注意，我们实现的牛顿-拉夫森算法相当基础 --- 如需更稳健的实现方案，请参考例如 [scipy.optimize](https://docs.scipy.org/doc/scipy/reference/optimize.html)。
 
-## Maximum Likelihood Estimation with `statsmodels`
+## 使用 `statsmodels` 进行最大似然估计
 
-Now that we know what's going on under the hood, we can apply MLE to an interesting application.
+现在我们已经了解了其内部运作原理，我们可以将最大似然估计应用到一个有趣的应用中。
 
-We'll use the Poisson regression model in `statsmodels` to obtain
-a richer output with standard errors, test values, and more.
+我们将使用 `statsmodels` 中的泊松回归模型来获得更丰富的输出，包括标准误差、检验值等更多信息。
 
-`statsmodels` uses the same algorithm as above to find the maximum
-likelihood estimates.
+`statsmodels` 使用与上述相同的算法来找到最大似然估计值。
 
-Before we begin, let's re-estimate our simple model with `statsmodels`
-to confirm we obtain the same coefficients and log-likelihood value.
+在开始之前，让我们用 `statsmodels` 重新估计我们的简单模型，以确认我们能得到相同的系数和对数似然值。
 
-```{code-cell} python3
+```{code-cell} ipython3
 X = np.array([[1, 2, 5],
               [1, 1, 3],
               [1, 4, 2],
@@ -633,30 +594,27 @@ stats_poisson = Poisson(y, X).fit()
 print(stats_poisson.summary())
 ```
 
-Now let's replicate results from Daniel Treisman's paper, [Russia's
-Billionaires](https://www.aeaweb.org/articles?id=10.1257/aer.p20161068),
-mentioned earlier in the lecture.
+现在让我们复现Daniel Treisman的论文[Russia's Billionaires](https://www.aeaweb.org/articles?id=10.1257/aer.p20161068)中的结果，该论文在之前的讲座中提到过。
 
-Treisman starts by estimating equation {eq}`poissonreg`, where:
+Treisman首先估计方程{eq}`poissonreg`，其中：
 
-* $y_i$ is ${number\ of\ billionaires}_i$
-* $x_{i1}$ is $\log{GDP\ per\ capita}_i$
-* $x_{i2}$ is $\log{population}_i$
-* $x_{i3}$ is ${years\ in\ GATT}_i$ -- years membership in GATT and WTO (to proxy access to international markets)
+* $y_i$ 是 ${亿万富翁人数}_i$
+* $x_{i1}$ 是 $\log{人均GDP}_i$
+* $x_{i2}$ 是 $\log{人口}_i$
+* $x_{i3}$ 是 ${GATT成员年限}_i$ -- 作为GATT和WTO成员的年限（用于衡量国际市场准入）
 
-The paper only considers the year 2008 for estimation.
+论文仅考虑2008年进行估计。
 
-We will set up our variables for estimation like so (you should have the
-data assigned to `df` from earlier in the lecture)
+我们将按如下方式设置估计变量（你应该已经从讲座前面部分将数据赋值给了`df`）
 
-```{code-cell} python3
-# Keep only year 2008
+```{code-cell} ipython3
+# 仅保留2008年数据
 df = df[df['year'] == 2008]
 
-# Add a constant
+# 添加常数项
 df['const'] = 1
 
-# Variable sets
+# 变量集
 reg1 = ['const', 'lngdppc', 'lnpop', 'gattwto08']
 reg2 = ['const', 'lngdppc', 'lnpop',
         'gattwto08', 'lnmcap08', 'rintr', 'topint08']
@@ -664,33 +622,28 @@ reg3 = ['const', 'lngdppc', 'lnpop', 'gattwto08', 'lnmcap08',
         'rintr', 'topint08', 'nrrents', 'roflaw']
 ```
 
-Then we can use the `Poisson` function from `statsmodels` to fit the
-model.
+然后我们可以使用`statsmodels`中的`Poisson`函数来拟合模型。
 
-We'll use robust standard errors as in the author's paper
+我们将像作者论文中那样使用稳健标准误
 
-```{code-cell} python3
+```{code-cell} ipython3
 # Specify model
 poisson_reg = sm.Poisson(df[['numbil0']], df[reg1],
                          missing='drop').fit(cov_type='HC0')
 print(poisson_reg.summary())
 ```
 
-Success! The algorithm was able to achieve convergence in 9 iterations.
+成功！算法在9次迭代后实现了收敛。
 
-Our output indicates that GDP per capita, population, and years of
-membership in the General Agreement on Tariffs and Trade (GATT) are
-positively related to the number of billionaires a country has, as
-expected.
+我们的输出表明，人均GDP、人口和关税贸易总协定(GATT)的成员年限与一个国家的亿万富翁数量呈正相关，这符合预期。
 
-Let's also estimate the author's more full-featured models and display
-them in a single table
+让我们也来估算作者的更完整模型，并将它们显示在同一个表格中
 
-```{code-cell} python3
+```{code-cell} ipython3
 regs = [reg1, reg2, reg3]
-reg_names = ['Model 1', 'Model 2', 'Model 3']
-info_dict = {'Pseudo R-squared': lambda x: f"{x.prsquared:.2f}",
-             'No. observations': lambda x: f"{int(x.nobs):d}"}
+reg_names = ['模型1', '模型2', '模型3']
+info_dict = {'伪R方': lambda x: f"{x.prsquared:.2f}",
+             '观测数': lambda x: f"{int(x.nobs):d}"}
 regressor_order = ['const',
                    'lngdppc',
                    'lnpop',
@@ -714,104 +667,84 @@ results_table = summary_col(results=results,
                             model_names=reg_names,
                             info_dict=info_dict,
                             regressor_order=regressor_order)
-results_table.add_title('Table 1 - Explaining the Number of Billionaires \
-                        in 2008')
+results_table.add_title('表1 - 解释2008年各国亿万富翁数量')
 print(results_table)
 ```
 
-The output suggests that the frequency of billionaires is positively
-correlated with GDP per capita, population size, stock market
-capitalization, and negatively correlated with top marginal income tax
-rate.
+输出结果表明，亿万富翁的频率与人均GDP、人口规模、股票市场市值呈正相关，与最高边际所得税率呈负相关。
 
-To analyze our results by country, we can plot the difference between
-the predicted an actual values, then sort from highest to lowest and
-plot the first 15
+为了按国家分析我们的结果，我们可以绘制预测值与实际值之间的差异，然后从高到低排序并绘制前15个国家
 
-```{code-cell} python3
+```{code-cell} ipython3
 data = ['const', 'lngdppc', 'lnpop', 'gattwto08', 'lnmcap08', 'rintr',
         'topint08', 'nrrents', 'roflaw', 'numbil0', 'country']
 results_df = df[data].dropna()
 
-# Use last model (model 3)
+# 使用最后一个模型（模型3）
 results_df['prediction'] = results[-1].predict()
 
-# Calculate difference
+# 计算差异
 results_df['difference'] = results_df['numbil0'] - results_df['prediction']
 
-# Sort in descending order
+# 按降序排列
 results_df.sort_values('difference', ascending=False, inplace=True)
 
-# Plot the first 15 data points
+# 绘制前15个数据点
 results_df[:15].plot('country', 'difference', kind='bar',
                     figsize=(12,8), legend=False)
-plt.ylabel('Number of billionaires above predicted level')
-plt.xlabel('Country')
+plt.ylabel('高于预测水平的亿万富翁数量')
+plt.xlabel('国家')
 plt.show()
 ```
 
-As we can see, Russia has by far the highest number of billionaires in
-excess of what is predicted by the model (around 50 more than expected).
+正如我们所见，俄罗斯的亿万富豪数量远远超出模型预测值（比预期多约50人）。
 
-Treisman uses this empirical result to discuss possible reasons for
-Russia's excess of billionaires, including the origination of wealth in
-Russia, the political climate, and the history of privatization in the
-years after the USSR.
+Treisman利用这一实证结果讨论了俄罗斯亿万富豪过多的可能原因，包括俄罗斯财富的来源、政治环境以及苏联解体后的私有化历史。
 
-## Summary
+## 总结
 
-In this lecture, we used Maximum Likelihood Estimation to estimate the
-parameters of a Poisson model.
+在本讲中，我们使用最大似然估计法来估计泊松模型的参数。
 
-`statsmodels` contains other built-in likelihood models such as
-[Probit](https://www.statsmodels.org/dev/generated/statsmodels.discrete.discrete_model.Probit.html)
-and
-[Logit](https://www.statsmodels.org/dev/generated/statsmodels.discrete.discrete_model.Logit.html).
+`statsmodels`包含其他内置的似然模型，如[Probit](https://www.statsmodels.org/dev/generated/statsmodels.discrete.discrete_model.Probit.html)和[Logit](https://www.statsmodels.org/dev/generated/statsmodels.discrete.discrete_model.Logit.html)。
 
-For further flexibility, `statsmodels` provides a way to specify the
-distribution manually using the `GenericLikelihoodModel` class - an
-example notebook can be found
-[here](https://www.statsmodels.org/dev/examples/notebooks/generated/generic_mle.html).
+为了提供更大的灵活性，`statsmodels`提供了使用`GenericLikelihoodModel`类手动指定分布的方法 - 示例notebook可以在这里找到
 
-## Exercises
+[此处](https://www.statsmodels.org/dev/examples/notebooks/generated/generic_mle.html)。
+
+## 练习
 
 
 ```{exercise}
 :label: mle_ex1
 
-Suppose we wanted to estimate the probability of an event $y_i$
-occurring, given some observations.
+假设我们想要估计事件 $y_i$ 发生的概率，给定一些观测值。
 
-We could use a probit regression model, where the pmf of $y_i$ is
+我们可以使用概率回归模型，其中 $y_i$ 的概率质量函数为
 
 $$
 \begin{aligned}
 f(y_i; \boldsymbol{\beta}) = \mu_i^{y_i} (1-\mu_i)^{1-y_i}, \quad y_i = 0,1 \\
-\text{where} \quad \mu_i = \Phi(\mathbf{x}_i' \boldsymbol{\beta})
+\text{其中} \quad \mu_i = \Phi(\mathbf{x}_i' \boldsymbol{\beta})
 \end{aligned}
 $$
 
-$\Phi$ represents the *cumulative normal distribution* and
-constrains the predicted $y_i$ to be between 0 and 1 (as required
-for a probability).
+$\Phi$ 表示*累积正态分布*，它将预测的 $y_i$ 限制在0和1之间（这是概率所必需的）。
 
-$\boldsymbol{\beta}$ is a vector of coefficients.
+$\boldsymbol{\beta}$ 是一个系数向量。
 
-Following the example in the lecture, write a class to represent the
-Probit model.
+按照讲座中的示例，编写一个类来表示Probit模型。
 
-To begin, find the log-likelihood function and derive the gradient and
-Hessian.
+首先，找出对数似然函数并推导梯度和海森矩阵。
 
-The `scipy` module `stats.norm` contains the functions needed to
-compute the cmf and pmf of the normal distribution.
+`scipy`模块中的`stats.norm`包含计算正态分布的累积分布函数和概率质量函数所需的函数。
 ```
 
 ```{solution-start} mle_ex1
+
 :class: dropdown
 ```
 
-The log-likelihood can be written as
+对数似然函数可以写作
 
 $$
 \log \mathcal{L} = \sum_{i=1}^n
@@ -820,16 +753,15 @@ y_i \log \Phi(\mathbf{x}_i' \boldsymbol{\beta}) +
 (1 - y_i) \log (1 - \Phi(\mathbf{x}_i' \boldsymbol{\beta})) \big]
 $$
 
-Using the **fundamental theorem of calculus**, the derivative of a
-cumulative probability distribution is its marginal distribution
+根据**微积分基本定理**，累积概率分布的导数是其边际分布
 
 $$
 \frac{ \partial} {\partial s} \Phi(s) = \phi(s)
 $$
 
-where $\phi$ is the marginal normal distribution.
+其中$\phi$是边际正态分布。
 
-The gradient vector of the Probit model is
+Probit模型的梯度向量是
 
 $$
 \frac {\partial \log \mathcal{L}} {\partial \boldsymbol{\beta}} =
@@ -839,11 +771,12 @@ y_i \frac{\phi(\mathbf{x}'_i \boldsymbol{\beta})}{\Phi(\mathbf{x}'_i \boldsymbol
 \Big] \mathbf{x}_i
 $$
 
-The Hessian of the Probit model is
+Probit模型的Hessian矩阵是
 
 $$
 \frac {\partial^2 \log \mathcal{L}} {\partial \boldsymbol{\beta} \partial \boldsymbol{\beta}'} =
 -\sum_{i=1}^n \phi (\mathbf{x}_i' \boldsymbol{\beta})
+
 \Big[
 y_i \frac{ \phi (\mathbf{x}_i' \boldsymbol{\beta}) + \mathbf{x}_i' \boldsymbol{\beta} \Phi (\mathbf{x}_i' \boldsymbol{\beta}) } { [\Phi (\mathbf{x}_i' \boldsymbol{\beta})]^2 } +
 (1 - y_i) \frac{ \phi (\mathbf{x}_i' \boldsymbol{\beta}) - \mathbf{x}_i' \boldsymbol{\beta} (1 - \Phi (\mathbf{x}_i' \boldsymbol{\beta})) } { [1 - \Phi (\mathbf{x}_i' \boldsymbol{\beta})]^2 }
@@ -851,10 +784,9 @@ y_i \frac{ \phi (\mathbf{x}_i' \boldsymbol{\beta}) + \mathbf{x}_i' \boldsymbol{\
 \mathbf{x}_i \mathbf{x}_i'
 $$
 
-Using these results, we can write a class for the Probit model as
-follows
+根据这些结果，我们可以按如下方式编写Probit模型的类
 
-```{code-cell} python3
+```{code-cell} ipython3
 class ProbitRegression:
 
     def __init__(self, y, X, β):
@@ -894,9 +826,7 @@ class ProbitRegression:
 :label: mle_ex2
 ```
 
-Use the following dataset and initial values of $\boldsymbol{\beta}$ to
-estimate the MLE with the Newton-Raphson algorithm developed earlier in
-the lecture
+使用以下数据集和$\boldsymbol{\beta}$的初始值，用课程前面介绍的牛顿-拉夫森算法来估计最大似然估计
 
 $$
 \mathbf{X} =
@@ -925,16 +855,13 @@ y =
 \end{bmatrix}
 $$
 
-Verify your results with `statsmodels` - you can import the Probit
-function with the following import statement
+使用`statsmodels`验证你的结果 - 你可以用以下导入语句导入Probit函数
 
-```{code-cell} python3
+```{code-cell} ipython3
 from statsmodels.discrete.discrete_model import Probit
 ```
 
-Note that the simple Newton-Raphson algorithm developed in this lecture
-is very sensitive to initial values, and therefore you may fail to
-achieve convergence with different starting values.
+请注意，本讲中开发的简单牛顿-拉夫森算法对初始值非常敏感，因此使用不同的起始值可能无法实现收敛。
 
 ```{exercise-end}
 ```
@@ -943,9 +870,9 @@ achieve convergence with different starting values.
 :class: dropdown
 ```
 
-Here is one solution
+这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 X = np.array([[1, 2, 4],
               [1, 1, 1],
               [1, 4, 3],
@@ -954,21 +881,22 @@ X = np.array([[1, 2, 4],
 
 y = np.array([1, 0, 1, 1, 0])
 
-# Take a guess at initial βs
+# 对β初始值进行猜测
 β = np.array([0.1, 0.1, 0.1])
 
-# Create instance of Probit regression class
+# 创建Probit回归类的实例
 prob = ProbitRegression(y, X, β)
 
-# Run Newton-Raphson algorithm
+# 运行牛顿-拉夫森算法
 newton_raphson(prob)
 ```
 
-```{code-cell} python3
-# Use statsmodels to verify results
+```{code-cell} ipython3
+# 使用statsmodels验证结果
 
 print(Probit(y, X).fit().summary())
 ```
 
 ```{solution-end}
 ```
+

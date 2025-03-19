@@ -1,8 +1,9 @@
 name: Build Cache [using jupyter-book]
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    # Execute cache weekly at 3am on Monday
+    - cron:  '0 3 * * 1'
+  workflow_dispatch:  # Allows manual trigger if required
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -15,7 +16,7 @@ jobs:
           auto-update-conda: true
           auto-activate-base: true
           miniconda-version: 'latest'
-          python-version: "3.11"
+          python-version: "3.12"
           environment-file: environment.yml
           activate-environment: quantecon
       - name: graphviz Support # TODO: required?
@@ -33,11 +34,12 @@ jobs:
             latexmk                   \
             xindy                     \
             dvipng                    \
-            cm-super
+            cm-super                  \
+            latex-cjk-all
       - name: Build HTML
         shell: bash -l {0}
         run: |
-          jb build lectures --path-output ./ -W --keep-going
+          jb build lectures --path-output ./ --keep-going
       - name: Upload Execution Reports (HTML)
         uses: actions/upload-artifact@v4
         if: failure()
@@ -49,3 +51,4 @@ jobs:
         with:
           name: build-cache
           path: _build
+          include-hidden-files: true

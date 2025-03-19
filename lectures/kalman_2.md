@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.16.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -20,7 +20,7 @@ kernelspec:
 </div>
 ```
 
-# Another Look at the Kalman Filter
+# 卡尔曼滤波器的另一个视角
 
 ```{index} single: Kalman Filter 2
 ```
@@ -29,18 +29,19 @@ kernelspec:
 :depth: 2
 ```
 
-In this quantecon lecture {doc}`A First Look at the Kalman filter <kalman>`, we used
-a Kalman filter to estimate  locations of a rocket. 
+在之前的量化经济学讲座 {doc}`卡尔曼滤波器的初步介绍 <kalman>` 中，我们使用卡尔曼滤波器来估计火箭的位置。
 
-In this lecture,  we'll use the Kalman filter to 
-infer a worker's human capital and the  effort that the worker devotes to accumulating 
-human capital, neither of which the firm observes directly.
+在本讲座中，我们将使用卡尔曼滤波器来推断工人的：
+1. 人力资本
+2. 工人投入人力资本积累的努力程度
 
-The firm learns about those things only by observing a history of the output that the worker generates for the firm, and from understanding how that output depends on the worker's human capital and how human capital evolves as a function of the worker's effort. 
+这两个变量都是公司无法直接观察到的。
 
-We'll posit a rule that expresses how the much  firm pays the worker each period  as a function of the firm's information each period.
+公司只能通过观察工人产生的产出历史，以及理解这些产出如何依赖于工人的人力资本，以及人力资本如何作为工人努力程度的函数来演化，来了解这些信息。
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+我们将设定一个规则，说明公司如何根据每期获得的信息来支付工人工资。
+
+除了Anaconda中的内容外，本讲座还需要以下库：
 
 ```{code-cell} ipython3
 :tags: [hide-output]
@@ -48,24 +49,39 @@ In addition to what's in Anaconda, this lecture will need the following librarie
 !pip install quantecon
 ```
 
-To conduct simulations, we bring in these imports, as in {doc}`A First Look at the Kalman filter <kalman>`.
+为了进行模拟，我们引入以下导入，与 {doc}`卡尔曼滤波器的初步介绍 <kalman>` 相同：
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from quantecon import Kalman, LinearStateSpace
 from collections import namedtuple
 from scipy.stats import multivariate_normal
 import matplotlib as mpl
-mpl.rcParams['text.usetex'] = True
-mpl.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
+# Configure Matplotlib to use pdfLaTeX and CJKutf8
+mpl.rcParams.update({
+    'text.usetex': True,
+    'text.latex.preamble': r'''
+        \usepackage{{CJKutf8}}
+        \usepackage{{amsmath}}
+    '''
+})
+
+# Function to wrap Chinese text in CJK environment
+def cjk(text):
+    return rf'\begin{{CJK}}{{UTF8}}{{gbsn}}{text}\end{{CJK}}'
 ```
 
-## A worker's output 
+## 工人的产出
 
-A representative worker is permanently employed at a firm.
+一个代表性工人永久受雇于一家公司。
 
-The workers'  output  is  described by the following dynamic process:
+工人的产出由以下动态过程描述：
 
 ```{math}
 :label: worker_model
@@ -77,55 +93,53 @@ y_t & = g h_t + v_t , \quad v_t \sim {\mathcal N} (0, R)
 \end{aligned}
 ```
 
-Here 
+其中：
 
-* $h_t$ is the logarithm of human capital at time $t$
-* $u_t$ is the logarithm of the worker's effort at accumulating human capital at $t$ 
-* $y_t$ is the logarithm of the worker's output at time $t$
+* $h_t$ 是时间 $t$ 时的人力资本对数
+* $u_t$ 是时间 $t$ 时工人投入人力资本积累的努力程度的对数
+* $y_t$ 是时间 $t$ 时工人产出的对数
 * $h_0 \sim {\mathcal N}(\hat h_0, \sigma_{h,0})$
 * $u_0 \sim {\mathcal N}(\hat u_0, \sigma_{u,0})$
 
-Parameters of the model are $\alpha, \beta, c, R, g, \hat h_0, \hat u_0, \sigma_h, \sigma_u$.
+模型的参数包括 $\alpha, \beta, c, R, g, \hat h_0, \hat u_0, \sigma_h, \sigma_u$。
 
-At time $0$, a firm has hired the worker.
+在时间 $0$，公司雇佣了工人。
 
-The worker is permanently attached to the firm and so works for the same  firm at all  dates $t =0, 1, 2, \ldots$.
+工人永久依附于公司，因此在所有时间 $t =0, 1, 2, \ldots$ 都为同一家公司工作。
 
-At the beginning of time $0$, the firm observes neither the worker's innate initial human capital $h_0$ nor its hard-wired permanent effort level $u_0$.
+在时间 $0$ 开始时，公司既无法观察到工人的初始人力资本 $h_0$，也无法观察到其固有的永久努力水平 $u_0$。
 
-The firm believes that $u_0$ for a particular worker is drawn from a Gaussian probability distribution, and so is  described by $u_0 \sim {\mathcal N}(\hat u_0, \sigma_{u,0})$.
+公司认为特定工人的 $u_0$ 服从高斯概率分布，因此由 $u_0 \sim {\mathcal N}(\hat u_0, \sigma_{u,0})$ 描述。
 
-The $h_t$ part of a worker's "type" moves over time, but the effort component of the worker's  type is  $u_t = u_0$.
+工人"类型"中的 $h_t$ 部分随时间变化，但努力程度部分 $u_t = u_0$ 保持不变。
 
-This means that  from the firm's point of view, the worker's effort is  effectively an unknown  fixed  "parameter".
+这意味着从公司的角度来看，工人的努力程度实际上是一个未知的固定"参数"。
 
-At time $t\geq 1$, for a particular worker the  firm  observed  $y^{t-1} = [y_{t-1}, y_{t-2}, \ldots, y_0]$.
+在时间 $t\geq 1$，对于特定工人，公司观察到 $y^{t-1} = [y_{t-1}, y_{t-2}, \ldots, y_0]$。
 
-The firm does not observe the  worker's "type" $(h_0, u_0)$.
+公司无法观察到工人的"类型" $(h_0, u_0)$。
 
-But the firm  does observe the worker's  output $y_t$ at time $t$ and remembers the worker's past outputs $y^{t-1}$.
+但公司确实观察到工人在时间 $t$ 的产出 $y_t$，并记得工人的过去产出 $y^{t-1}$。
 
-## A firm's wage-setting policy
+## 公司的工资设定政策
 
-Based on information about the worker that the firm has at time $t \geq 1$, the firm pays the worker log wage  
+基于公司在时间 $t \geq 1$ 获得的关于工人的信息，公司支付工人的对数工资为：
 
 $$
 w_t = g  E [ h_t | y^{t-1} ], \quad t \geq 1
 $$
 
-and at time $0$ pays the  worker a log wage equal to  the unconditional mean of $y_0$:
+在时间 $0$，支付工人的对数工资等于 $y_0$ 的无条件均值：
 
 $$
 w_0 = g \hat h_0
 $$
 
-In using this payment rule, the firm is taking into account that the worker's log output today is partly due
-to the random component $v_t$ that comes entirely from luck, and that is assumed to be independent of $h_t$ and $u_t$.
+在使用这个支付规则时，公司考虑到工人今天的对数产出部分来自完全由运气决定的随机成分 $v_t$，并且假设 $v_t$ 与 $h_t$ 和 $u_t$ 独立。
 
+## 状态空间表示
 
-## A state-space representation
-
-Write system [](worker_model) in the state-space form
+将系统 [](worker_model) 写成状态空间形式：
 
 ```{math}
 \begin{aligned}
@@ -134,7 +148,7 @@ y_t & = \begin{bmatrix} g & 0 \end{bmatrix} \begin{bmatrix} h_{t} \cr u_{t} \end
 \end{aligned}
 ```
 
-which is equivalent with
+这等价于：
 
 ```{math}
 :label: ssrepresent
@@ -145,7 +159,7 @@ x_0 & \sim {\mathcal N}(\hat x_0, \Sigma_0)
 \end{aligned}
 ```
 
-where
+其中：
 
 ```{math}
 x_t  = \begin{bmatrix} h_{t} \cr u_{t} \end{bmatrix} , \quad
@@ -154,7 +168,7 @@ x_t  = \begin{bmatrix} h_{t} \cr u_{t} \end{bmatrix} , \quad
                      0 & \sigma_{u,0} \end{bmatrix}
 ```
 
-To compute the firm's wage setting policy, we first we create a `namedtuple` to store the parameters of the model
+为了计算公司的工资设定政策，我们首先创建一个 `namedtuple` 来存储模型的参数：
 
 ```{code-cell} ipython3
 WorkerModel = namedtuple("WorkerModel", 
@@ -170,7 +184,7 @@ def create_worker(α=.8, β=.2, c=.2,
                   [0]])
     G = np.array([g, 1])
 
-    # Define initial state and covariance matrix
+    # 定义初始状态和协方差矩阵
     xhat_0 = np.array([[hhat_0], 
                        [uhat_0]])
     
@@ -180,19 +194,17 @@ def create_worker(α=.8, β=.2, c=.2,
     return WorkerModel(A=A, C=C, G=G, R=R, xhat_0=xhat_0, Σ_0=Σ_0)
 ```
 
-Please note how the `WorkerModel` namedtuple creates all of the objects required to compute an associated
-state-space representation {eq}`ssrepresent`.
+请注意 `WorkerModel` namedtuple 如何创建计算相关状态空间表示 {eq}`ssrepresent` 所需的所有对象。
 
-This is handy, because in order to  simulate a history $\{y_t, h_t\}$ for a worker, we'll want to form 
- state space system for him/her by using the [`LinearStateSpace`](https://quanteconpy.readthedocs.io/en/latest/tools/lss.html) class.
+这很方便，因为为了模拟工人的历史 $\{y_t, h_t\}$，我们需要使用 [`LinearStateSpace`](https://quanteconpy.readthedocs.io/en/latest/tools/lss.html) 类为他/她形成状态空间系统。
 
 ```{code-cell} ipython3
-# Define A, C, G, R, xhat_0, Σ_0
+# 定义 A, C, G, R, xhat_0, Σ_0
 worker = create_worker()
 A, C, G, R = worker.A, worker.C, worker.G, worker.R
 xhat_0, Σ_0 = worker.xhat_0, worker.Σ_0
 
-# Create a LinearStateSpace object
+# 创建 LinearStateSpace 对象
 ss = LinearStateSpace(A, C, G, np.sqrt(R), 
         mu_0=xhat_0, Sigma_0=np.zeros((2,2)))
 
@@ -203,17 +215,15 @@ y = y.flatten()
 h_0, u_0 = x[0, 0], x[1, 0]
 ```
 
-Next, to  compute the firm's policy for setting the log wage based on the information it has about the worker,
-we  use the Kalman filter described in this quantecon lecture {doc}`A First Look at the Kalman filter <kalman>`.
+接下来，为了计算公司基于其获得的关于工人的信息来设定对数工资的政策，我们使用本量化经济学讲座 {doc}`卡尔曼滤波器的初步介绍 <kalman>` 中描述的卡尔曼滤波器。
 
-In particular, we want to compute all of the objects in an "innovation representation".
+特别是，我们想要计算"创新表示"中的所有对象。
 
-## An Innovations Representation
+## 创新表示
 
-We have all the objects in hand required to form an innovations representation for the output
-process $\{y_t\}_{t=0}^T$ for a worker.
+我们已经掌握了形成工人产出过程 $\{y_t\}_{t=0}^T$ 的创新表示所需的所有对象。
 
-Let's code that up now.
+让我们现在编写代码：
 
 ```{math}
 \begin{aligned}
@@ -221,10 +231,9 @@ Let's code that up now.
 y_{t} & = G \hat x_t + a_t
 \end{aligned}
 ```
-where $K_t$ is the Kalman gain matrix at time $t$.
+其中 $K_t$ 是时间 $t$ 的卡尔曼增益矩阵。
 
-
-We accomplish this in the following code that  uses the [`Kalman`](https://quanteconpy.readthedocs.io/en/latest/tools/kalman.html) class.
+我们使用 [`Kalman`](https://quanteconpy.readthedocs.io/en/latest/tools/kalman.html) 类来完成这个任务：
 
 ```{code-cell} ipython3
 kalman = Kalman(ss, xhat_0, Σ_0)
@@ -246,36 +255,36 @@ x_hat_t = np.concatenate((x[:, 1][:, np.newaxis],
 u_hat_t = x_hat_t[1, :]
 ```
 
-For a draw of $h_0, u_0$,  we plot $E y_t = G \hat x_t $ where $\hat x_t = E [x_t | y^{t-1}]$.
+对于 $h_0, u_0$ 的一个实现，我们绘制 $E y_t = G \hat x_t $，其中 $\hat x_t = E [x_t | y^{t-1}]$。
 
-We also plot $E [u_0 | y^{t-1}]$, which is  the firm inference about  a worker's hard-wired "work ethic" $u_0$, conditioned on information $y^{t-1}$ that it has about him or her coming into period $t$.
+我们还绘制 $E [u_0 | y^{t-1}]$，这是公司基于其拥有的信息 $y^{t-1}$ 对工人固有的"工作伦理" $u_0$ 的推断。
 
-We can  watch as the  firm's inference  $E [u_0 | y^{t-1}]$ of the worker's work ethic converges toward the hidden   $u_0$, which is not directly observed by the firm.
+我们可以观察公司对工人工作伦理的推断 $E [u_0 | y^{t-1}]$ 如何逐渐收敛于隐藏的 $u_0$，而 $u_0$ 是公司无法直接观察到的。
 
 ```{code-cell} ipython3
-
 fig, ax = plt.subplots(1, 2)
 
 ax[0].plot(y_hat_t, label=r'$E[y_t| y^{t-1}]$')
-ax[0].set_xlabel('Time')
+ax[0].set_xlabel(cjk('时间'))
 ax[0].set_ylabel(r'$E[y_t]$')
-ax[0].set_title(r'$E[y_t]$ over time')
+ax[0].set_title(cjk('$E[y_t]$ 随时间变化'))
 ax[0].legend()
 
 ax[1].plot(u_hat_t, label=r'$E[u_t|y^{t-1}]$')
 ax[1].axhline(y=u_0, color='grey', 
             linestyle='dashed', label=fr'$u_0={u_0:.2f}$')
-ax[1].set_xlabel('Time')
+ax[1].set_xlabel(cjk('时间'))
 ax[1].set_ylabel(r'$E[u_t|y^{t-1}]$')
-ax[1].set_title('Inferred work ethic over time')
+ax[1].set_title(cjk('推断的工作伦理随时间变化'))
 ax[1].legend()
 
 fig.tight_layout()
 plt.show()
 ```
-## Some Computational Experiments
 
-Let's look at  $\Sigma_0$ and $\Sigma_T$ in order to see how much the firm learns about the hidden state during the horizon we have set.
+## 一些计算实验
+
+让我们看看 $\Sigma_0$ 和 $\Sigma_T$，以了解公司在设定的时间范围内对隐藏状态了解多少。
 
 ```{code-cell} ipython3
 print(Σ_t[:, :, 0])
@@ -285,36 +294,35 @@ print(Σ_t[:, :, 0])
 print(Σ_t[:, :, -1])
 ```
 
-Evidently,  entries in the conditional covariance matrix become smaller over time.
+显然，条件协方差矩阵中的元素随时间变小。
 
-It is enlightening to  portray how  conditional covariance matrices $\Sigma_t$ evolve by plotting confidence ellipsoides around $E [x_t |y^{t-1}] $ at various $t$'s.
+通过在不同时间 $t$ 绘制 $E [x_t |y^{t-1}] $ 周围的置信椭圆，我们可以生动地展示条件协方差矩阵 $\Sigma_t$ 如何演化。
 
 ```{code-cell} ipython3
-
-# Create a grid of points for contour plotting
+# 创建用于等高线绘制的点网格
 h_range = np.linspace(x_hat_t[0, :].min()-0.5*Σ_t[0, 0, 1], 
                       x_hat_t[0, :].max()+0.5*Σ_t[0, 0, 1], 100)
 u_range = np.linspace(x_hat_t[1, :].min()-0.5*Σ_t[1, 1, 1], 
                       x_hat_t[1, :].max()+0.5*Σ_t[1, 1, 1], 100)
 h, u = np.meshgrid(h_range, u_range)
 
-# Create a figure with subplots for each time step
+# 为每个时间步创建子图
 fig, axs = plt.subplots(1, 3, figsize=(12, 7))
 
-# Iterate through each time step
+# 遍历每个时间步
 for i, t in enumerate(np.linspace(0, T-1, 3, dtype=int)):
-    # Create a multivariate normal distribution with x_hat and Σ at time step t
+    # 创建具有时间步 t 的 x_hat 和 Σ 的多变量正态分布
     mu = x_hat_t[:, t]
     cov = Σ_t[:, :, t]
     mvn = multivariate_normal(mean=mu, cov=cov)
     
-    # Evaluate the multivariate normal PDF on the grid
+    # 在网格上评估多变量正态 PDF
     pdf_values = mvn.pdf(np.dstack((h, u)))
     
-    # Create a contour plot for the PDF
+    # 创建 PDF 的等高线图
     con = axs[i].contour(h, u, pdf_values, cmap='viridis')
     axs[i].clabel(con, inline=1, fontsize=10)
-    axs[i].set_title(f'Time Step {t+1}')
+    axs[i].set_title(cjk('时间步')+f'{t+1}')
     axs[i].set_xlabel(r'$h_{{{}}}$'.format(str(t+1)))
     axs[i].set_ylabel(r'$u_{{{}}}$'.format(str(t+1)))
     
@@ -328,23 +336,21 @@ plt.tight_layout()
 plt.show()
 ```
 
-Note how the accumulation of evidence $y^t$ affects the shape of the confidence ellipsoid as sample size $t$ grows. 
+注意证据 $y^t$ 的积累如何随着样本量 $t$ 的增长影响置信椭圆的形状。
 
-Now let's use our code to set the hidden state $x_0$ to a particular vector in order to watch how
-a firm learns starting from some $x_0$ we are interested in. 
+现在让我们使用我们的代码将隐藏状态 $x_0$ 设置为特定的向量，以观察公司如何从我们感兴趣的某个 $x_0$ 开始学习。
 
-For example, let's say $h_0 = 0$ and $u_0 = 4$.
+例如，让我们说 $h_0 = 0$ 和 $u_0 = 4$。
 
-Here is one way to do this.
+这是实现这个目标的一种方式：
 
 ```{code-cell} ipython3
-
-# For example, we might want h_0 = 0 and u_0 = 4
+# 例如，我们可能想要 h_0 = 0 和 u_0 = 4
 mu_0 = np.array([0.0, 4.0])
 
-# Create a LinearStateSpace object with Sigma_0 as a matrix of zeros
+# 创建一个 LinearStateSpace 对象，其中 Sigma_0 为零矩阵
 ss_example = LinearStateSpace(A, C, G, np.sqrt(R), mu_0=mu_0, 
-                              # This line forces exact h_0=0 and u_0=4
+                              # 这行强制 h_0=0 和 u_0=4
                               Sigma_0=np.zeros((2, 2))
                              )
 
@@ -352,24 +358,23 @@ T = 100
 x, y = ss_example.simulate(T)
 y = y.flatten()
 
-# Now h_0=0 and u_0=4
+# 现在 h_0=0 和 u_0=4
 h_0, u_0 = x[0, 0], x[1, 0]
 print('h_0 =', h_0)
 print('u_0 =', u_0)
 ```
 
-Another way to accomplish the same goal is to use the following code.
+实现相同目标的另一种方式是使用以下代码：
 
 ```{code-cell} ipython3
-
-# If we want to set the initial 
-# h_0 = hhat_0 = 0 and u_0 = uhhat_0 = 4.0:
+# 如果我们想要设置初始 
+# h_0 = hhat_0 = 0 和 u_0 = uhhat_0 = 4.0:
 worker = create_worker(hhat_0=0.0, uhat_0=4.0)
 
 ss_example = LinearStateSpace(A, C, G, np.sqrt(R), 
-                              # This line takes h_0=hhat_0 and u_0=uhhat_0
+                              # 这行取 h_0=hhat_0 和 u_0=uhhat_0
                               mu_0=worker.xhat_0,
-                              # This line forces exact h_0=hhat_0 and u_0=uhhat_0
+                              # 这行强制 h_0=hhat_0 和 u_0=uhhat_0
                               Sigma_0=np.zeros((2, 2))
                              )
 
@@ -377,23 +382,23 @@ T = 100
 x, y = ss_example.simulate(T)
 y = y.flatten()
 
-# Now h_0 and u_0 will be exactly hhat_0
+# 现在 h_0 和 u_0 将精确等于 hhat_0
 h_0, u_0 = x[0, 0], x[1, 0]
 print('h_0 =', h_0)
 print('u_0 =', u_0)
 ```
 
-For this worker, let's generate a plot like the one above.
+对于这个工人，让我们生成一个类似上面的图：
 
 ```{code-cell} ipython3
-# First we compute the Kalman filter with initial xhat_0 and Σ_0 
+# 首先我们使用初始 xhat_0 和 Σ_0 计算卡尔曼滤波器
 kalman = Kalman(ss, xhat_0, Σ_0)
 Σ_t = []
 y_hat_t = np.zeros(T-1)
 u_hat_t = np.zeros(T-1)
 
-# Then we iteratively update the Kalman filter class using 
-# observation y based on the linear state model above:
+# 然后我们使用基于上述线性状态模型的观测值 y 
+# 迭代更新卡尔曼滤波器类：
 for t in range(1, T):
     kalman.update(y[t])
     x_hat, Σ = kalman.x_hat, kalman.Sigma
@@ -402,46 +407,44 @@ for t in range(1, T):
     u_hat_t[t-1] = x_hat[1]
 
 
-# Generate plots for y_hat_t and u_hat_t
+# 生成 y_hat_t 和 u_hat_t 的图
 fig, ax = plt.subplots(1, 2)
 
 ax[0].plot(y_hat_t, label=r'$E[y_t| y^{t-1}]$')
-ax[0].set_xlabel('Time')
+ax[0].set_xlabel(cjk('时间'))
 ax[0].set_ylabel(r'$E[y_t]$')
-ax[0].set_title(r'$E[y_t]$ over time')
+ax[0].set_title(cjk('$E[y_t]$ 随时间变化'))
 ax[0].legend()
 
 ax[1].plot(u_hat_t, label=r'$E[u_t|y^{t-1}]$')
 ax[1].axhline(y=u_0, color='grey', 
             linestyle='dashed', label=fr'$u_0={u_0:.2f}$')
-ax[1].set_xlabel('Time')
+ax[1].set_xlabel(cjk('时间'))
 ax[1].set_ylabel(r'$E[u_t|y^{t-1}]$')
-ax[1].set_title('Inferred work ethic over time')
+ax[1].set_title(cjk('推断的工作伦理随时间变化'))
 ax[1].legend()
 
 fig.tight_layout()
 plt.show()
 ```
 
-More generally, we can change some or all of the parameters defining a worker in our `create_worker`
-namedtuple.
+更一般地，我们可以在 `create_worker` namedtuple 中更改定义工人的部分或全部参数。
 
-Here is an example. 
+这是一个例子：
 
 ```{code-cell} ipython3
-
-# We can set these parameters when creating a worker -- just like classes!
+# 我们可以在创建工人时设置这些参数 -- 就像类一样！
 hard_working_worker =  create_worker(α=.4, β=.8, 
                         hhat_0=7.0, uhat_0=100, σ_h=2.5, σ_u=3.2)
 
 print(hard_working_worker)
 ```
 
-We can also simulate the system for $T = 50$ periods for different workers.
+我们还可以为不同的工人模拟 $T = 50$ 期的系统。
 
-The difference between the inferred work ethics and true work ethics converges to $0$ over time.
+推断的工作伦理和真实工作伦理之间的差异随时间收敛到 $0$。
 
-This shows that the filter is gradually teaching the worker and firm about the worker's effort.
+这表明滤波器正在逐渐教会工人和公司关于工人努力程度的信息。
 
 ```{code-cell} ipython3
 :tags: [hide-input]
@@ -464,7 +467,7 @@ def simulate_workers(worker, T, ax, mu_0=None, Sigma_0=None,
 
     u_0 = x[1, 0]
     
-    # Compute Kalman filter
+    # 计算卡尔曼滤波器
     kalman = Kalman(ss, xhat_0, Σ_0)
     Σ_t = []
     
@@ -479,31 +482,30 @@ def simulate_workers(worker, T, ax, mu_0=None, Sigma_0=None,
         u_hat_t[i] = x_hat[1]
 
     if diff == True:
-        title = ('Difference between inferred and true work ethic over time' 
+        title = (cjk('推断的工作伦理与真实工作伦理的差异随时间变化') 
                  if title == None else title)
         
         ax.plot(u_hat_t - u_0, alpha=.5)
         ax.axhline(y=0, color='grey', linestyle='dashed')
-        ax.set_xlabel('Time')
+        ax.set_xlabel(cjk('时间'))
         ax.set_ylabel(r'$E[u_t|y^{t-1}] - u_0$')
         ax.set_title(title)
         
     else:
         label_line = (r'$E[u_t|y^{t-1}]$' if name == None 
                       else name)
-        title = ('Inferred work ethic over time' 
+        title = (cjk('推断的工作伦理随时间变化')
                 if title == None else title)
         
         u_hat_plot = ax.plot(u_hat_t, label=label_line)
         ax.axhline(y=u_0, color=u_hat_plot[0].get_color(), 
                     linestyle='dashed', alpha=0.5)
-        ax.set_xlabel('Time')
+        ax.set_xlabel(cjk('时间'))
         ax.set_ylabel(r'$E[u_t|y^{t-1}]$')
         ax.set_title(title)
 ```
 
 ```{code-cell} ipython3
-
 num_workers = 3
 T = 50
 fig, ax = plt.subplots(figsize=(7, 7))
@@ -516,8 +518,7 @@ plt.show()
 ```
 
 ```{code-cell} ipython3
-
-# We can also generate plots of u_t:
+# 我们还可以生成 u_t 的图：
 
 T = 50
 fig, ax = plt.subplots(figsize=(7, 7))
@@ -529,7 +530,7 @@ uhat_0s = [2, -2, 1]
 for i, (uhat_0, α, β) in enumerate(zip(uhat_0s, αs, βs)):
     worker = create_worker(uhat_0=uhat_0, α=α, β=β)
     simulate_workers(worker, T, ax,
-                    # By setting diff=False, it will give u_t
+                    # 通过设置 diff=False，它将给出 u_t
                     diff=False, name=r'$u_{{{}, t}}$'.format(i))
     
 ax.axhline(y=u_0, xmin=0, xmax=0, color='grey', 
@@ -539,13 +540,12 @@ plt.show()
 ```
 
 ```{code-cell} ipython3
-
-# We can also use exact u_0=1 and h_0=2 for all workers
+# 我们还可以为所有工人使用精确的 u_0=1 和 h_0=2
 
 T = 50
 fig, ax = plt.subplots(figsize=(7, 7))
 
-# These two lines set u_0=1 and h_0=2 for all workers
+# 这两行设置所有工人的 u_0=1 和 h_0=2
 mu_0 = np.array([[1],
                  [2]])
 Sigma_0 = np.zeros((2,2))
@@ -559,7 +559,7 @@ for i, (uhat_0, α, β) in enumerate(zip(uhat_0s, αs, βs)):
     simulate_workers(worker, T, ax, mu_0=mu_0, Sigma_0=Sigma_0, 
                      diff=False, name=r'$u_{{{}, t}}$'.format(i))
     
-# This controls the boundary of plots
+# 这控制图的边界
 ax.set_ylim(ymin=-3, ymax=3)
 ax.axhline(y=u_0, xmin=0, xmax=0, color='grey', 
            linestyle='dashed', label=r'$u_{i, 0}$')
@@ -568,8 +568,7 @@ plt.show()
 ```
 
 ```{code-cell} ipython3
-
-# We can generate a plot for only one of the workers:
+# 我们可以只为其中一个工人生成图：
 
 T = 50
 fig, ax = plt.subplots(figsize=(7, 7))
@@ -586,18 +585,17 @@ uhat_0s = 100
 
 worker = create_worker(uhat_0=uhat_0, α=α, β=β)
 simulate_workers(worker, T, ax, mu_0=mu_0_1, Sigma_0=Sigma_0, 
-                 diff=False, name=r'Hard-working worker')
+                 diff=False, name=cjk('勤奋的工人'))
 simulate_workers(worker, T, ax, mu_0=mu_0_2, Sigma_0=Sigma_0, 
                  diff=False, 
-                 title='A hard-working worker and a less hard-working worker',
-                 name=r'Normal worker')
+                 title=cjk('一个勤奋的工人和一个不太勤奋的工人'),
+                 name=cjk('普通工人'))
 ax.axhline(y=u_0, xmin=0, xmax=0, color='grey', 
            linestyle='dashed', label=r'$u_{i, 0}$')
 ax.legend(bbox_to_anchor=(1, 0.5))
 plt.show()
 ```
 
-## Future Extensions
+## 未来扩展
 
-We can do lots of enlightening experiments by creating new types of workers and letting the firm 
-learn about their hidden (to the firm) states by observing just their output histories.
+我们可以通过创建新类型的工人，并让公司仅通过观察他们的产出历史来了解他们的隐藏（对公司来说）状态，来进行许多富有启发性的实验。

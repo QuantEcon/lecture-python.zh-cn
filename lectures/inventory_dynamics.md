@@ -17,53 +17,56 @@ kernelspec:
 </div>
 ```
 
-# Inventory Dynamics
+# 库存动态
 
-```{index} single: Markov process, inventory
+```{index} single: 马尔可夫过程, 库存
 ```
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-## Overview
+## 概述
 
-In this lecture we will study the time path of inventories for firms that
-follow so-called s-S inventory dynamics.
+在本讲座中，我们将研究遵循所谓s-S库存动态的企业的库存时间路径。
 
-Such firms
+这些企业
 
-1. wait until inventory falls below some level $s$ and then
-1. order sufficient quantities to bring their inventory back up to capacity $S$.
+1. 等待直到库存降至某个水平$s$以下，然后
+1. 订购足够数量以将库存补充到容量$S$。
 
-These kinds of policies are common in practice and also optimal in certain circumstances.
+这类政策在实践中很常见，并且在某些情况下也是最优的。
 
-A review of early literature and some macroeconomic implications can be found in {cite}`caplin1985variability`.
+早期文献综述和一些宏观经济含义可以在{cite}`caplin1985variability`中找到。
 
-Here our main aim is to learn more about simulation, time series and Markov dynamics.
+我们的主要目标是学习更多关于模拟、时间序列和马尔可夫动态的知识。
 
-While our Markov environment and many of the concepts we consider are related to those found in our {doc}`lecture on finite Markov chains <finite_markov>`, the state space is a continuum in the current application.
+虽然我们的马尔可夫环境和许多我们考虑的概念与{doc}`有限马尔可夫链讲座 <finite_markov>`中的概念相关，但在当前应用中状态空间是连续的。
 
-Let's start with some imports
+让我们从一些导入开始
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from numba import jit, float64, prange
 from numba.experimental import jitclass
 ```
 
-## Sample Paths
+## 样本路径
 
-Consider a firm with inventory $X_t$.
+考虑一个拥有库存 $X_t$ 的公司。
 
-The firm waits until $X_t \leq s$ and then restocks up to $S$ units.
+当库存 $X_t \leq s$ 时，公司会补货至 $S$ 单位。
 
-It faces stochastic demand $\{ D_t \}$, which we assume is IID.
+公司面临随机需求 $\{ D_t \}$，我们假设这是独立同分布的。
 
-With notation $a^+ := \max\{a, 0\}$, inventory dynamics can be written
-as
+使用符号 $a^+ := \max\{a, 0\}$，库存动态可以写作
 
 $$
 X_{t+1} =
@@ -73,23 +76,22 @@ X_{t+1} =
     \end{cases}
 $$
 
-In what follows, we will assume that each $D_t$ is lognormal, so that
+在下文中，我们将假设每个 $D_t$ 都是对数正态分布的，即
 
 $$
 D_t = \exp(\mu + \sigma Z_t)
 $$
 
-where $\mu$ and $\sigma$ are parameters and $\{Z_t\}$ is IID
-and standard normal.
+其中 $\mu$ 和 $\sigma$ 是参数，$\{Z_t\}$ 是独立同分布的标准正态分布。
 
-Here's a class that stores parameters and generates time paths for inventory.
+这里有一个类，用于存储参数并生成库存的时间路径。
 
-```{code-cell} python3
+```{code-cell} ipython3
 firm_data = [
-   ('s', float64),          # restock trigger level
-   ('S', float64),          # capacity
-   ('mu', float64),         # shock location parameter
-   ('sigma', float64)       # shock scale parameter
+   ('s', float64),          # 补货触发水平
+   ('S', float64),          # 容量
+   ('mu', float64),         # 冲击位置参数
+   ('sigma', float64)       # 冲击规模参数
 ]
 
 
@@ -101,7 +103,7 @@ class Firm:
         self.s, self.S, self.mu, self.sigma = s, S, mu, sigma
 
     def update(self, x):
-        "Update the state from t to t+1 given current state x."
+        "根据当前状态x更新t到t+1的状态。"
 
         Z = np.random.randn()
         D = np.exp(self.mu + self.sigma * Z)
@@ -120,7 +122,7 @@ class Firm:
         return X
 ```
 
-Let's run a first simulation, of a single path:
+让我们运行第一个模拟，模拟单个路径：
 
 ```{code-cell} ipython3
 firm = Firm()
@@ -138,18 +140,17 @@ legend_args = {'ncol': 3,
                'loc': 3,
                'mode': 'expand'}
 
-ax.plot(X, label="inventory")
+ax.plot(X, label="库存")
 ax.plot(np.full(sim_length, s), 'k--', label="$s$")
 ax.plot(np.full(sim_length, S), 'k-', label="$S$")
 ax.set_ylim(0, S+10)
-ax.set_xlabel("time")
+ax.set_xlabel("时间")
 ax.legend(**legend_args)
 
 plt.show()
 ```
 
-Now let's simulate multiple paths in order to build a more complete picture of
-the probabilities of different outcomes:
+现在让我们模拟多条路径，以便更全面地了解不同结果的概率：
 
 ```{code-cell} ipython3
 sim_length=200
@@ -167,21 +168,19 @@ for i in range(400):
 plt.show()
 ```
 
-## Marginal Distributions
+## 边际分布
 
-Now let’s look at the marginal distribution $\psi_T$ of $X_T$ for some
-fixed $T$.
+现在让我们来看看某个固定时间点 $T$ 时 $X_T$ 的边际分布 $\psi_T$。
 
-We will do this by generating many draws of $X_T$ given initial
-condition $X_0$.
+我们将通过在给定初始条件 $X_0$ 的情况下生成多个 $X_T$ 的样本来实现这一点。
 
-With these draws of $X_T$ we can build up a picture of its distribution $\psi_T$.
+通过这些 $X_T$ 的样本，我们可以构建其分布 $\psi_T$ 的图像。
 
-Here's one visualization, with $T=50$.
+这里是一个可视化示例，其中 $T=50$。
 
 ```{code-cell} ipython3
 T = 50
-M = 200  # Number of draws
+M = 200  # 样本数量
 
 ymin, ymax = 0, S + 10
 
@@ -218,7 +217,7 @@ axes[1].hist(sample,
 plt.show()
 ```
 
-We can build up a clearer picture by drawing more samples
+通过绘制更多样本，我们可以得到一个更清晰的图像
 
 ```{code-cell} ipython3
 T = 50
@@ -240,18 +239,18 @@ ax.hist(sample,
 plt.show()
 ```
 
-Note that the distribution is bimodal
+请注意分布呈双峰
 
-* Most firms have restocked twice but a few have restocked only once (see figure with paths above).
-* Firms in the second category have lower inventory.
+* 大多数公司已经补货两次，但少数公司只补货一次（见上图路径）。
+* 第二类公司的库存较低。
 
-We can also approximate the distribution using a [kernel density estimator](https://en.wikipedia.org/wiki/Kernel_density_estimation).
+我们也可以使用[核密度估计](https://en.wikipedia.org/wiki/Kernel_density_estimation)来近似这个分布。
 
-Kernel density estimators can be thought of as smoothed histograms.
+核密度估计可以被理解为平滑的直方图。
 
-They are preferable to histograms when the distribution being estimated is likely to be smooth.
+当被估计的分布可能是平滑的时候，核密度估计比直方图更可取。
 
-We will use a kernel density estimator from [scikit-learn](https://scikit-learn.org/stable/)
+我们将使用[scikit-learn](https://scikit-learn.org/stable/)中的核密度估计器
 
 ```{code-cell} ipython3
 from sklearn.neighbors import KernelDensity
@@ -272,46 +271,39 @@ plot_kde(sample, ax)
 plt.show()
 ```
 
-The allocation of probability mass is similar to what was shown by the
-histogram just above.
+概率质量的分配与上面直方图所显示的类似。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: id_ex1
 
-This model is asymptotically stationary, with a unique stationary
-distribution.
+这个模型是渐近平稳的，具有唯一的平稳分布。
 
-(See the discussion of stationarity in {doc}`our lecture on AR(1) processes <intro:ar1_processes>` for background --- the fundamental concepts are the same.)
+（有关平稳性的背景讨论，请参见{doc}`我们关于AR(1)过程的讲座 <intro:ar1_processes>`——基本概念是相同的。）
 
-In particular, the sequence of marginal distributions $\{\psi_t\}$
-is converging to a unique limiting distribution that does not depend on
-initial conditions.
+特别是，边际分布序列$\{\psi_t\}$正在收敛到一个唯一的极限分布，该分布不依赖于初始条件。
 
-Although we will not prove this here, we can investigate it using simulation.
+虽然我们在这里不会证明这一点，但我们可以通过模拟来研究它。
 
-Your task is to generate and plot the sequence $\{\psi_t\}$ at times
-$t = 10, 50, 250, 500, 750$ based on the discussion above.
+你的任务是根据上述讨论，在时间点$t = 10, 50, 250, 500, 750$生成并绘制序列$\{\psi_t\}$。
 
-(The kernel density estimator is probably the best way to present each
-distribution.)
+（核密度估计器可能是呈现每个分布的最佳方式。）
 
-You should see convergence, in the sense that differences between successive distributions are getting smaller.
+你应该能看到收敛性，体现在连续分布之间的差异越来越小。
 
-Try different initial conditions to verify that, in the long run, the distribution is invariant across initial conditions.
+尝试不同的初始条件来验证，从长远来看，分布在不同初始条件下是不变的。
 ```
 
 ```{solution-start} id_ex1
 :class: dropdown
 ```
 
-Below is one possible solution:
+以下是一个可能的解决方案：
 
-The computations involve a lot of CPU cycles so we have tried to write the
-code efficiently.
+这些计算涉及大量的CPU周期，所以我们试图高效地编写代码。
 
-This meant writing a specialized function rather than using the class above.
+这意味着编写一个专门的函数，而不是使用上面的类。
 
 ```{code-cell} ipython3
 s, S, mu, sigma = firm.s, firm.S, firm.mu, firm.sigma
@@ -354,22 +346,19 @@ for d in first_diffs:
     current_date += d
     plot_kde(X, ax, label=f't = {current_date}')
 
-ax.set_xlabel('inventory')
-ax.set_ylabel('probability')
+ax.set_xlabel('库存')
+ax.set_ylabel('概率')
 ax.legend()
 plt.show()
 ```
 
-Notice that by $t=500$ or $t=750$ the densities are barely
-changing.
+注意到在 $t=500$ 或 $t=750$ 时密度几乎不再变化。
 
-We have reached a reasonable approximation of the stationary density.
+我们已经得到了平稳密度的合理近似。
 
-You can convince yourself that initial conditions don’t matter by
-testing a few of them.
+你可以通过测试几个不同的初始条件来确信初始条件并不重要。
 
-For example, try rerunning the code above with all firms starting at
-$X_0 = 20$ or $X_0 = 80$.
+例如，尝试用所有公司从 $X_0 = 20$ 或 $X_0 = 80$ 开始重新运行上面的代码。
 
 ```{solution-end}
 ```
@@ -377,32 +366,29 @@ $X_0 = 20$ or $X_0 = 80$.
 ```{exercise}
 :label: id_ex2
 
-Using simulation, calculate the probability that firms that start with
-$X_0 = 70$ need to order twice or more in the first 50 periods.
+使用模拟计算从 $X_0 = 70$ 开始的公司在前50个周期内需要订货两次或更多次的概率。
 
-You will need a large sample size to get an accurate reading.
+你需要一个较大的样本量来获得准确的结果。
 ```
-
 
 ```{solution-start} id_ex2
 :class: dropdown
 ```
 
-Here is one solution.
+这是一个解决方案。
 
-Again, the computations are relatively intensive so we have written a a
-specialized function rather than using the class above.
+同样，由于计算量相对较大，我们编写了一个专门的函数而不是使用上面的类。
 
-We will also use parallelization across firms.
+我们还将使用跨公司的并行化处理。
 
 ```{code-cell} ipython3
 @jit(parallel=True)
 def compute_freq(sim_length=50, x_init=70, num_firms=1_000_000):
 
-    firm_counter = 0  # Records number of firms that restock 2x or more
+    firm_counter = 0  # 记录补货2次或以上的公司数量
     for m in prange(num_firms):
         x = x_init
-        restock_counter = 0  # Will record number of restocks for firm m
+        restock_counter = 0  # 将记录公司m的补货次数
 
         for t in range(sim_length):
             Z = np.random.randn()
@@ -419,21 +405,22 @@ def compute_freq(sim_length=50, x_init=70, num_firms=1_000_000):
     return firm_counter / num_firms
 ```
 
-Note the time the routine takes to run, as well as the output.
+
+记录程序运行所需的时间和输出结果。
 
 ```{code-cell} ipython3
 %%time
 
 freq = compute_freq()
-print(f"Frequency of at least two stock outs = {freq}")
+print(f"至少发生两次缺货的频率 = {freq}")
 ```
 
-Try switching the `parallel` flag to `False` in the jitted function
-above.
+尝试将上面jitted函数中的`parallel`标志改为`False`。
 
-Depending on your system, the difference can be substantial.
+根据你的系统配置，运行速度的差异可能会很大。
 
-(On our desktop machine, the speed up is by a factor of 5.)
+（在我们的台式机上，速度提升了5倍。）
 
 ```{solution-end}
 ```
+

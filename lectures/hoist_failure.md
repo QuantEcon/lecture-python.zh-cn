@@ -12,182 +12,169 @@ kernelspec:
 ---
 
 
-# Fault Tree Uncertainties
+# 故障树不确定性
 
 
-## Overview
+## 概述
 
-This lecture puts elementary tools to work to approximate probability distributions of the annual failure rates of a system consisting of
-a number of critical parts.
+本讲将运用基本工具来近似计算由多个关键部件组成的系统的年度故障率的概率分布。
 
-We'll use log normal distributions to approximate probability distributions of critical  component parts.
+我们将使用对数正态分布来近似关键组件部件的概率分布。
 
-To  approximate the probability distribution of the **sum** of $n$ log normal probability distributions that describes the failure rate of the
-entire system, we'll compute the convolution of those $n$ log normal probability distributions.
+为了近似描述整个系统故障率的n个对数正态概率分布之**和**的概率分布，我们将计算这n个对数正态概率分布的卷积。
 
-We'll use the following concepts and tools:
+我们将使用以下概念和工具：
 
-* log normal distributions
-* the convolution theorem that describes the probability distribution of the sum independent random variables
-* fault tree analysis for approximating a failure rate of a multi-component system
-* a hierarchical probability model for describing uncertain probabilities
-* Fourier transforms and inverse Fourier tranforms as efficient ways of computing convolutions of sequences
+* 对数正态分布
+* 描述独立随机变量之和的概率分布的卷积定理
 
-For more about Fourier transforms see this quantecon lecture [Circulant Matrices](https://python.quantecon.org/eig_circulant.html)
-as well as these  lecture  [Covariance Stationary Processes](https://python-advanced.quantecon.org/arma.html) and [Estimation of Spectra](https://python-advanced.quantecon.org/estspec.html).
+* 用于近似多组件系统故障率的故障树分析
+* 用于描述不确定概率的层次概率模型
+* 傅里叶变换和逆傅里叶变换作为计算序列卷积的高效方法
 
+关于傅里叶变换的更多信息，请参见这个 quantecon 讲座 [循环矩阵](https://python.quantecon.org/eig_circulant.html)
+以及这些讲座 [协方差平稳过程](https://python-advanced.quantecon.org/arma.html) 和 [谱估计](https://python-advanced.quantecon.org/estspec.html)。
 
+El-Shanawany, Ardron 和 Walker {cite}`Ardron_2018` 以及 Greenfield 和 Sargent {cite}`Greenfield_Sargent_1993` 使用了这里描述的一些方法来近似核设施安全系统的故障概率。
 
+这些方法响应了 Apostolakis {cite}`apostolakis1990` 提出的关于构建量化程序的一些建议。
 
-El-Shanawany, Ardron,  and Walker {cite}`Ardron_2018` and Greenfield and Sargent {cite}`Greenfield_Sargent_1993`  used some of the methods described here  to approximate probabilities of failures of safety systems in nuclear facilities.
+对安全系统可靠性的不确定性。
 
-These methods respond to some of the recommendations made by Apostolakis  {cite}`apostolakis1990` for constructing procedures for quantifying
-uncertainty about the reliability of a safety system.
-
-We'll start by bringing in some Python machinery.
+我们先引入一些Python工具。
 
 
 
 
-```{code-cell} python3
+```{code-cell} ipython3
 !pip install tabulate
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 from scipy.signal import fftconvolve
 from tabulate import tabulate
 import time
 ```
 
-
-```{code-cell} python3
+```{code-cell} ipython3
 np.set_printoptions(precision=3, suppress=True)
 ```
 
 <!-- #region -->
 
+## 对数正态分布
 
-## Log normal distribution
+如果一个随机变量 $x$ 服从均值为 $\mu$ 和方差为 $\sigma^2$ 的正态分布，那么 $x$ 的自然对数，即 $y = \log(x)$，就服从参数为 $\mu, \sigma^2$ 的**对数正态分布**。
 
+注意我们说的是**参数**而不是**均值和方差** $\mu,\sigma^2$。
 
+ * $\mu$ 和 $\sigma^2$ 是 $x = \exp (y)$ 的均值和方差
+ * 它们**不是** $y$ 的均值和方差
+ * 相反，$y$ 的均值是 $e ^{\mu + \frac{1}{2} \sigma^2}$，$y$ 的方差是 $(e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} $
 
-If a random variable $x$ follows a normal distribution with mean $\mu$ and variance $\sigma^2$,
-then the natural logarithm of $x$, say $y = \log(x)$, follows a **log normal distribution** with parameters $\mu, \sigma^2$.
+对数正态随机变量 $y$ 是非负的。
 
-Notice that we said **parameters** and not **mean and variance** $\mu,\sigma^2$.
-
- * $\mu$ and $\sigma^2$ are the mean and variance of $x = \exp (y)$
- * they are **not** the mean and variance of $y$
- * instead, the  mean of $y$ is $e ^{\mu + \frac{1}{2} \sigma^2}$ and the variance of $y$ is $(e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} $
-
-A log normal  random variable $y$ is nonnegative.
-
-
-The density for a log normal random variate $y$ is
+对数正态随机变量 $y$ 的密度函数是
 
 $$ f(y) = \frac{1}{y \sigma \sqrt{2 \pi}} \exp \left(  \frac{- (\log y - \mu)^2 }{2 \sigma^2} \right) $$
 
-for $y \geq 0$.
+其中 $y \geq 0$。
 
-
-Important features of a log normal random variable are
+对数正态随机变量的重要特征是
 
 $$
 \begin{aligned}
- \textrm{mean:} & \quad e ^{\mu + \frac{1}{2} \sigma^2} \cr
- \textrm{variance:}  & \quad (e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} \cr
-  \textrm{median:} & \quad e^\mu \cr
- \textrm{mode:} & \quad e^{\mu - \sigma^2} \cr
- \textrm{.95 quantile:} & \quad e^{\mu + 1.645 \sigma} \cr
- \textrm{.95-.05 quantile ratio:}  & \quad e^{1.645 \sigma} \cr
+ \textrm{均值:} & \quad e ^{\mu + \frac{1}{2} \sigma^2} \cr
+
+\textrm{方差:}  & \quad (e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} \cr
+  \textrm{中位数:} & \quad e^\mu \cr
+ \textrm{众数:} & \quad e^{\mu - \sigma^2} \cr
+ \textrm{.95 分位数:} & \quad e^{\mu + 1.645 \sigma} \cr
+ \textrm{.95-.05 分位数比:}  & \quad e^{1.645 \sigma} \cr
  \end{aligned}
 $$
 
 
-Recall the following _stability_ property of two independent normally distributed random variables:
+回顾两个独立正态分布随机变量的以下_稳定性_性质：
 
-If $x_1$ is normal with mean $\mu_1$ and variance $\sigma_1^2$ and $x_2$ is independent of $x_1$ and normal with mean $\mu_2$ and variance $\sigma_2^2$, then $x_1 + x_2$ is normally distributed with
-mean $\mu_1 + \mu_2$ and variance $\sigma_1^2 + \sigma_2^2$.
-
-
-Independent log normal distributions have a different _stability_ property.
-
-The **product** of  independent log normal random variables is also log normal.
+如果$x_1$是均值为$\mu_1$、方差为$\sigma_1^2$的正态分布，且$x_2$独立于$x_1$并且是均值为$\mu_2$、方差为$\sigma_2^2$的正态分布，那么$x_1 + x_2$是均值为$\mu_1 + \mu_2$、方差为$\sigma_1^2 + \sigma_2^2$的正态分布。
 
 
-In particular, if $y_1$ is log normal with parameters $(\mu_1, \sigma_1^2)$ and
-$y_2$ is log normal with parameters $(\mu_2, \sigma_2^2)$, then the product $y_1 y_2$ is log normal
-with parameters $(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)$.
+独立的对数正态分布具有不同的_稳定性_性质。
+
+独立对数正态随机变量的**乘积**也是对数正态分布。
+
+
+特别地，如果$y_1$是参数为$(\mu_1, \sigma_1^2)$的对数正态分布，且
+
+$y_2$ 是对数正态分布，参数为 $(\mu_2, \sigma_2^2)$，那么乘积 $y_1 y_2$ 也是对数正态分布，其参数为 $(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)$。
 
 ```{note}
-While the product of two log normal distributions is log normal, the **sum** of two log normal distributions is **not** log normal.
+虽然两个对数正态分布的乘积是对数正态分布，但两个对数正态分布的**和**却**不是**对数正态分布。
 ```
 
-This observation sets the stage for challenge that confronts us in this lecture, namely, to approximate probability distributions of **sums** of independent log normal random variables.
+这个观察为我们在本讲中面临的挑战奠定了基础，即如何近似独立对数正态随机变量**和**的概率分布。
 
-To compute the probability distribution of the sum of two log normal distributions, we can use the following convolution property of a probability distribution that is a sum of independent random variables.
+要计算两个对数正态分布之和的概率分布，我们可以使用独立随机变量之和的概率分布的卷积性质。
 
-## The Convolution Property
+## 卷积性质
 
-Let $x$ be a random variable with probability density $f(x)$, where $x \in {\bf R}$.
+设 $x$ 是概率密度为 $f(x)$ 的随机变量，其中 $x \in {\bf R}$。
 
-Let $y$ be a random variable with probability density $g(y)$, where $y \in {\bf R}$.
+设 $y$ 是概率密度为 $g(y)$ 的随机变量，其中 $y \in {\bf R}$。
 
-Let $x$ and $y$ be independent random variables and let $z = x + y \in {\bf R}$.
+设 $x$ 和 $y$ 是独立随机变量，且 $z = x + y \in {\bf R}$。
 
-Then the probability distribution of $z$ is
+那么 $z$ 的概率分布为
 
 $$ h(z) = (f * g)(z) \equiv \int_{-\infty}^\infty f (z) g(z - \tau) d \tau $$
 
-where  $(f*g)$ denotes the **convolution** of the two functions $f$ and $g$.
+其中 $(f*g)$ 表示两个函数 $f$ 和 $g$ 的**卷积**。
 
-If the random variables are both nonnegative, then the above formula specializes to
+如果随机变量都是非负的，则上述公式可简化为
 
 $$ h(z) = (f * g)(z) \equiv \int_{0}^\infty f (z) g(z - \tau) d \tau $$
 
-Below, we'll use a discretized version of the preceding formula.
+下面，我们将使用上述公式的离散化版本。
 
-In particular, we'll replace both $f$ and $g$ with discretized counterparts, normalized to sum to $1$ so that they are probability distributions.
+具体来说，我们将把 $f$ 和 $g$ 都替换为离散化的对应形式，并归一化使其和为1，这样它们就是概率分布。
 
-  * by **discretized** we mean an equally spaced sampled version
+  * **离散化**指的是等间隔采样的版本
 
-Then we'll use the following version of the above formula
+然后我们将使用以下版本的公式
 
 $$ h_n = (f*g)_n = \sum_{m=0}^\infty f_m g_{n-m} , n \geq 0 $$
 
-to compute a discretized version of the probability distribution of the sum of two random variables,
-one with probability mass function $f$, the other with probability mass function $g$.
+来计算两个随机变量之和的概率分布的离散化版本，其中一个随机变量的概率质量函数为 $f$，另一个的概率质量函数为 $g$。
 
+在应用卷积性质到对数正态分布的和之前，让我们先用一些简单的离散分布来练习。
 
-
-
-<!-- #endregion -->
-
-Before applying the convolution property to sums of log normal distributions, let's practice on some simple discrete distributions.
-
-To take one  example, let's consider the following two probability distributions
+以一个例子来说，让我们考虑以下两个概率分布
 
 $$ f_j = \textrm{Prob} (X = j), j = 0, 1 $$
 
-and
+和
 
 $$ g_j = \textrm{Prob} (Y = j ) , j = 0, 1, 2, 3 $$
 
-and
+和
 
 $$ h_j = \textrm{Prob} (Z \equiv X + Y = j) , j=0, 1, 2, 3, 4 $$
 
-The convolution property tells us that
+卷积性质告诉我们
 
 $$ h = f* g = g* f $$
 
-Let's compute  an example using the `numpy.convolve` and `scipy.signal.fftconvolve`.
+让我们使用`numpy.convolve`和`scipy.signal.fftconvolve`来计算一个例子。
 
-
-
-```{code-cell} python3
+```{code-cell} ipython3
 f = [.75, .25]
 g = [0., .6,  0., .4]
 h = np.convolve(f,g)
@@ -199,33 +186,32 @@ print("h = ", h, ", np.sum(h) = ", np.sum(h))
 print("hf = ", hf, ",np.sum(hf) = ", np.sum(hf))
 ```
 
-A little later we'll explain some advantages that come from using `scipy.signal.ftconvolve` rather than `numpy.convolve`.numpy program convolve.
+稍后我们将解释使用`scipy.signal.ftconvolve`而不是`numpy.convolve`的一些优势。
 
-They provide the same answers but `scipy.signal.ftconvolve` is much faster.
+它们提供相同的结果，但`scipy.signal.ftconvolve`要快得多。
 
-That's why we rely on it later in this lecture.
-
-
-## Approximating Distributions
-
-We'll construct an example to verify that  discretized distributions can do a good job of approximating  samples drawn from underlying
-continuous distributions.
-
-We'll start by generating samples of size 25000 of three independent  log normal random variates as well as pairwise and triple-wise sums.
-
-Then we'll plot  histograms and compare them with convolutions of appropriate discretized log normal distributions.
-
-```{code-cell} python3
-## create sums of two and three log normal random variates ssum2 = s1 + s2 and ssum3 = s1 + s2 + s3
+这就是为什么我们在本讲座后面会依赖它。
 
 
-mu1, sigma1 = 5., 1. # mean and standard deviation
+## 近似分布
+
+我们将构建一个示例来验证离散化分布能够很好地近似从底层连续分布中抽取的样本。
+
+我们将首先生成25000个样本，包含三个独立的对数正态随机变量以及它们的两两和三重和。
+
+然后我们将绘制直方图，并将其与适当离散化的对数正态分布的卷积进行比较。
+
+```{code-cell} ipython3
+## 创建两个和三个对数正态随机变量的和 ssum2 = s1 + s2 和 ssum3 = s1 + s2 + s3
+
+
+mu1, sigma1 = 5., 1. # 均值和标准差
 s1 = np.random.lognormal(mu1, sigma1, 25000)
 
-mu2, sigma2 = 5., 1. # mean and standard deviation
+mu2, sigma2 = 5., 1. # 均值和标准差
 s2 = np.random.lognormal(mu2, sigma2, 25000)
 
-mu3, sigma3 = 5., 1. # mean and standard deviation
+mu3, sigma3 = 5., 1. # 均值和标准差
 s3 = np.random.lognormal(mu3, sigma3, 25000)
 
 ssum2 = s1 + s2
@@ -233,31 +219,28 @@ ssum2 = s1 + s2
 ssum3 = s1 + s2 + s3
 
 count, bins, ignored = plt.hist(s1, 1000, density=True, align='mid')
-
-
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 
 count, bins, ignored = plt.hist(ssum2, 1000, density=True, align='mid')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 
 count, bins, ignored = plt.hist(ssum3, 1000, density=True, align='mid')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 samp_mean2 = np.mean(s2)
 pop_mean2 = np.exp(mu2+ (sigma2**2)/2)
 
 pop_mean2, samp_mean2, mu2, sigma2
 ```
 
-Here are helper functions that create a discretized version of a log normal
-probability density function.
+以下是创建对数正态概率密度函数离散化版本的辅助函数。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def p_log_normal(x,μ,σ):
     p = 1 / (σ*x*np.sqrt(2*np.pi)) * np.exp(-1/2*((np.log(x) - μ)/σ)**2)
     return p
@@ -270,32 +253,31 @@ def pdf_seq(μ,σ,I,m):
 ```
 
 <!-- #region -->
-Now we shall set a grid length $I$ and a grid increment size $m =1$ for our discretizations.
+现在我们要为我们的离散化设置一个网格长度$I$和网格增量大小$m =1$。
 
 ```{note}
-We set $I$ equal to a power of two because we want to be free to use a Fast Fourier Transform
-to compute a convolution of two sequences (discrete distributions).
+我们将$I$设置为2的幂，因为我们希望能够自由使用快速傅里叶变换来计算两个序列（离散分布）的卷积。
 ```
 
-We recommend experimenting with different values of the power $p$ of 2.
+我们建议尝试2的不同幂值$p$。
 
-Setting it to 15 rather than 12, for example, improves how well the discretized probability mass function approximates the original continuous probability density function being studied.
+例如，将其设置为15而不是12，可以改善离散化概率质量函数对所研究的原始连续概率密度函数的近似程度。
 
 <!-- #endregion -->
 
-```{code-cell} python3
+```{code-cell} ipython3
 p=15
-I = 2**p # Truncation value
-m = .1 # increment size
+I = 2**p # 截断值
+m = .1 # 增量大小
 
 ```
 
-```{code-cell} python3
-## Cell to check -- note what happens when don't normalize!
-## things match up without adjustment. Compare with above
+```{code-cell} ipython3
+## 检查单元格 -- 注意当不进行归一化时会发生什么！
+## 无需调整即可匹配。与上面进行比较
 
 p1,p1_norm,x = pdf_seq(mu1,sigma1,I,m)
-## compute number of points to evaluate the probability mass function
+## 计算评估概率质量函数的点数
 NT = x.size
 
 plt.figure(figsize = (8,8))
@@ -307,71 +289,61 @@ count, bins, ignored = plt.hist(s1, 1000, density=True, align='mid')
 plt.show()
 ```
 
-```{code-cell} python3
-# Compute mean from discretized pdf and compare with the theoretical value
+```{code-cell} ipython3
+# 从离散化的概率密度函数计算均值并与理论值进行比较
 
 mean= np.sum(np.multiply(x[:NT],p1_norm[:NT]))
 meantheory = np.exp(mu1+.5*sigma1**2)
 mean, meantheory
 ```
 
+## 概率质量函数的卷积
 
-## Convolving Probability Mass Functions
+现在让我们使用卷积定理来计算上面参数化的两个对数正态随机变量之和的概率分布。
 
-Now let's use the convolution theorem to compute the probability distribution of a sum of the two log normal random variables we have parameterized above.
+我们还将计算上面构造的三个对数正态分布之和的概率。
 
-We'll also compute the probability of a sum of three log normal distributions constructed above.
+在进行这些计算之前，我们需要解释我们选择的用于计算两个序列卷积的Python算法。
 
+由于要进行卷积的序列很长，我们使用`scipy.signal.fftconvolve`函数而不是numpy.convolve函数。
 
-Before we do these things, we shall explain our choice of Python algorithm to compute a convolution
-of two sequences.
+这两个函数给出的结果实际上是等价的，但对于长序列来说，`scipy.signal.fftconvolve`要快得多。
 
-Because the sequences that we convolve are long, we use the `scipy.signal.fftconvolve` function
-rather than the numpy.convove function.
+程序`scipy.signal.fftconvolve`使用快速傅里叶变换及其逆变换来计算卷积。
 
-These two functions give virtually equivalent answers but for long sequences `scipy.signal.fftconvolve`
-is much faster.
+让我们定义傅里叶变换和逆傅里叶变换。
 
-The program `scipy.signal.fftconvolve` uses fast Fourier transforms and their inverses to calculate convolutions.
-
-Let's define the Fourier transform and the inverse Fourier transform.
-
-The **Fourier transform** of a sequence $\{x_t\}_{t=0}^{T-1}$ is  a sequence of complex numbers
-$\{x(\omega_j)\}_{j=0}^{T-1}$ given by
+序列$\{x_t\}_{t=0}^{T-1}$的**傅里叶变换**是一个复数序列$\{x(\omega_j)\}_{j=0}^{T-1}$，由下式给出：
 
 $$
  x(\omega_j) = \sum_{t=0}^{T-1} x_t \exp(- i \omega_j t)
 $$ (eq:ft1)
 
-where $\omega_j = \frac{2 \pi j}{T}$ for $j=0, 1, \ldots, T-1$.
+其中 $\omega_j = \frac{2 \pi j}{T}$，$j=0, 1, \ldots, T-1$。
 
-The **inverse Fourier transform** of the sequence $\{x(\omega_j)\}_{j=0}^{T-1}$ is
+序列 $\{x(\omega_j)\}_{j=0}^{T-1}$ 的**逆傅里叶变换**为
 
 $$
  x_t = T^{-1} \sum_{j=0}^{T-1} x(\omega_j) \exp (i \omega_j t)
 $$ (eq:ift1)
 
-The sequences $\{x_t\}_{t=0}^{T-1}$ and $\{x(\omega_j)\}_{j=0}^{T-1}$ contain the same information.
+序列 $\{x_t\}_{t=0}^{T-1}$ 和 $\{x(\omega_j)\}_{j=0}^{T-1}$ 包含相同的信息。
 
-The pair of equations {eq}`eq:ft1` and {eq}`eq:ift1` tell how to recover one series from its Fourier partner.
+方程对 {eq}`eq:ft1` 和 {eq}`eq:ift1` 说明了如何从一个序列恢复其傅里叶对应序列。
 
+程序 `scipy.signal.fftconvolve` 利用了两个序列 $\{f_k\}$、$\{g_k\}$ 的卷积可以通过以下方式计算的定理：
 
+- 计算序列 $\{f_k\}$ 和 $\{g_k\}$ 的傅里叶变换 $F(\omega)$、$G(\omega)$
+- 形成乘积 $H (\omega) = F(\omega) G (\omega)$
+- 卷积 $f * g$ 是 $H(\omega)$ 的逆傅里叶变换
 
-The program `scipy.signal.fftconvolve` deploys  the theorem that  a convolution of two sequences $\{f_k\}, \{g_k\}$ can be computed in the following way:
+**快速傅里叶变换**和相关的**逆快速傅里叶变换**能够非常快速地执行这些计算。
 
--  Compute Fourier transforms $F(\omega), G(\omega)$ of the $\{f_k\}$ and $\{g_k\}$ sequences, respectively
--  Form the product $H (\omega) = F(\omega) G (\omega)$
-- The convolution of $f * g$ is the inverse Fourier transform of $H(\omega)$
+这就是 `scipy.signal.fftconvolve` 使用的算法。
 
+让我们做一个预热计算，比较 `numpy.convolve` 和 `scipy.signal.fftconvolve` 所需的时间。
 
-The **fast Fourier transform** and the associated **inverse fast Fourier transform** execute these
-calculations very quickly.
-
-This is the algorithm that   `scipy.signal.fftconvolve` uses.
-
-Let's do a warmup calculation that compares the times taken by `numpy.convove` and `scipy.signal.fftconvolve`.
-
-```{code-cell} python3
+```{code-cell} ipython3
 
 
 p1,p1_norm,x = pdf_seq(mu1,sigma1,I,m)
@@ -403,12 +375,11 @@ print("time with np.convolve = ", tdiff1,  "; time with fftconvolve = ",  tdiff2
 
 ```
 
-The fast Fourier transform is two orders of magnitude faster than `numpy.convolve`
+快速傅里叶变换比 `numpy.convolve` 快两个数量级
 
+现在让我们将计算得到的两个对数正态随机变量之和的概率质量函数近似值与我们上面形成的样本直方图进行对比绘制。
 
-Now let's plot our computed probability mass function approximation  for the sum of two log normal random variables against the histogram of the sample that we formed above.
-
-```{code-cell} python3
+```{code-cell} ipython3
 NT= np.size(x)
 
 plt.figure(figsize = (8,8))
@@ -422,7 +393,7 @@ count, bins, ignored = plt.hist(ssum2, 1000, density=True, align='mid')
 plt.show()
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 NT= np.size(x)
 plt.figure(figsize = (8,8))
 plt.subplot(2,1,1)
@@ -430,144 +401,135 @@ plt.plot(x[:int(NT)],c2f[:int(NT)]/m,label = '')
 plt.xlim(0,5000)
 
 count, bins, ignored = plt.hist(ssum3, 1000, density=True, align='mid')
-# plt.plot(P2P3[:10000],label = 'FFT method',linestyle = '--')
+# plt.plot(P2P3[:10000],label = 'FFT方法',linestyle = '--')
 
 plt.show()
 ```
 
-```{code-cell} python3
-## Let's compute the mean of the discretized pdf
+```{code-cell} ipython3
+## 让我们计算离散化pdf的均值
 mean= np.sum(np.multiply(x[:NT],c1f[:NT]))
 # meantheory = np.exp(mu1+.5*sigma1**2)
 mean, 2*meantheory
 ```
 
-```{code-cell} python3
-## Let's compute the mean of the discretized pdf
+```{code-cell} ipython3
+## 让我们计算离散化pdf的均值
 mean= np.sum(np.multiply(x[:NT],c2f[:NT]))
 # meantheory = np.exp(mu1+.5*sigma1**2)
 mean, 3*meantheory
 ```
 
 <!-- #region -->
-## Failure Tree Analysis
+## 故障树分析
 
-We shall soon apply the convolution theorem to compute the probability of a **top event** in a failure tree analysis.
+我们即将应用卷积定理来计算故障树分析中**顶事件**的概率。
 
-Before applying the convolution theorem, we first describe the model that connects constituent events to the **top** end whose
-failure rate we seek to quantify.
+在应用卷积定理之前，我们首先描述将组成事件与我们要量化其故障率的**顶端**事件连接起来的模型。
 
-The model is an example of the widely used  **failure tree analysis** described by  El-Shanawany, Ardron,  and Walker {cite}`Ardron_2018`.
+该模型是El-Shanawany、Ardron和Walker {cite}`Ardron_2018`所描述的广泛使用的**故障树分析**的一个例子。
 
-To construct the statistical model, we repeatedly use  what is called the **rare event approximation**.
+为了构建统计模型，我们反复使用所谓的**稀有事件近似**。
 
-We want to compute the probabilty of an event $A \cup B$.
+我们想要计算事件$A \cup B$的概率。
 
- * the union $A \cup B$ is the event that $A$ OR $B$ occurs
+* 并集$A \cup B$是事件$A$或$B$发生的情况
 
-A law of probability tells us that  $A$ OR $B$ occurs with probability
+概率法则告诉我们，$A$或$B$发生的概率为
 
 $$ P(A \cup B) = P(A) + P(B) - P(A \cap B) $$
 
-where the intersection $A \cap B$ is the event that $A$ **AND** $B$ both occur and the union $A \cup B$ is
-the event that $A$ **OR** $B$ occurs.
+其中交集$A \cap B$是事件$A$**和**$B$都发生的情况，而并集$A \cup B$是事件$A$**或**$B$发生的情况。
 
-If $A$ and $B$ are independent, then
+如果$A$和$B$是独立的，那么
 
 $$ P(A \cap B) = P(A) P(B)  $$
 
-If $P(A)$ and $P(B)$ are both small, then $P(A) P(B)$ is even smaller.
+如果 $P(A)$ 和 $P(B)$ 都很小，那么 $P(A) P(B)$ 就更小。
 
-The **rare event approximation** is
+**稀有事件近似**为
 
 $$ P(A \cup B) \approx P(A) + P(B)  $$
 
-This approximation is widely used in evaluating system failures.
+这种近似方法在评估系统故障时被广泛使用。
 
 
-## Application
+## 应用
 
-A system has been designed with the feature a system  failure occurs when **any** of  $n$ critical  components  fails.
+一个系统的设计特点是，当**任何**一个关键组件发生故障时，系统就会发生故障。
 
-The failure probability $P(A_i)$  of each event $A_i$  is small.
+每个事件 $A_i$ 的故障概率 $P(A_i)$ 都很小。
 
-We assume that failures of the components are statistically independent random variables.
+我们假设组件的故障是统计独立的随机变量。
 
 
-We repeatedly apply a **rare event approximation** to obtain the following formula for the problem
-of a system failure:
+我们反复应用**稀有事件近似**，得到系统故障问题的以下公式：
 
 $$ P(F) \approx P(A_1) + P (A_2) + \cdots + P (A_n) $$
 
-or
+或
 
 $$
 P(F) \approx \sum_{i=1}^n P (A_i)
 $$ (eq:probtop)
 
-Probabilities for each event are recorded as failure rates per year.
+每个事件的概率以每年故障率的形式记录。
 
 
-## Failure Rates Unknown
+## 未知的故障率
 
-Now we come to the problem that really interests us, following  {cite}`Ardron_2018` and Greenfield and Sargent
- {cite}`Greenfield_Sargent_1993`  in the spirit of Apostolakis  {cite}`apostolakis1990`.
+现在我们来讨论真正感兴趣的问题，参考 {cite}`Ardron_2018` 和 Greenfield and Sargent
 
-The constituent probabilities or failure rates $P(A_i)$ are not known a priori and have to be estimated.
+{cite}`Greenfield_Sargent_1993` 遵循 Apostolakis {cite}`apostolakis1990` 的思路。
 
-We address this problem by specifying **probabilities of probabilities** that  capture one  notion of not knowing the constituent probabilities that are inputs into a failure tree analysis.
+构成概率或失效率 $P(A_i)$ 并非先验已知，需要进行估计。
 
+我们通过指定**概率的概率**来解决这个问题，这反映了对故障树分析输入中的构成概率的不确定性这一概念。
 
-Thus, we assume that a system analyst is uncertain about  the failure rates $P(A_i), i =1, \ldots, n$ for components of a system.
+因此，我们假设系统分析师对系统组件的失效率 $P(A_i), i =1, \ldots, n$ 存在不确定性。
 
-The analyst copes with this situation by regarding the systems failure probability $P(F)$ and each of the component probabilities $P(A_i)$ as  random variables.
+分析师通过将系统失效概率 $P(F)$ 和每个组件概率 $P(A_i)$ 视为随机变量来应对这种情况。
 
-  * dispersions of the probability distribution of $P(A_i)$ characterizes the analyst's uncertainty about the failure probability $P(A_i)$
+  * $P(A_i)$ 概率分布的离散程度表征了分析师对失效概率 $P(A_i)$ 的不确定性
 
-  * the dispersion of the implied probability distribution of $P(F)$ characterizes his uncertainty about the probability of a system's failure.
+  * $P(F)$ 的隐含概率分布的离散程度表征了分析师对系统失效概率的不确定性
 
-This leads to what is sometimes called a **hierarchical** model in which the analyst has  probabilities about the probabilities $P(A_i)$.
+这导致了有时被称为**层次化**模型，其中分析师对概率$P(A_i)$本身也有概率估计。
 
-The analyst formalizes his uncertainty by assuming that
+分析师通过以下假设来形式化他的不确定性：
 
- * the failure probability $P(A_i)$ is itself a log normal random variable with parameters $(\mu_i, \sigma_i)$.
- * failure rates $P(A_i)$ and $P(A_j)$ are statistically independent for all pairs with $i \neq j$.
+* 失效概率$P(A_i)$本身是一个对数正态随机变量，其参数为$(\mu_i, \sigma_i)$。
+* 对于所有$i \neq j$的配对，失效率$P(A_i)$和$P(A_j)$在统计上是相互独立的。
 
-The analyst  calibrates the parameters  $(\mu_i, \sigma_i)$ for the failure events $i = 1, \ldots, n$ by reading reliability studies in engineering papers that have studied historical failure rates of components that are as similar as possible to the components being used in the system under study.
+分析师通过阅读工程论文中的可靠性研究来校准失效事件$i = 1, \ldots, n$的参数$(\mu_i, \sigma_i)$，这些研究考察了与系统中使用的组件尽可能相似的组件的历史失效率。
 
-The analyst assumes that such  information about the observed dispersion of annual failure rates, or times to failure, can inform him of what to expect about parts' performances in his system.
+分析师假设，这些关于年度失效率或失效时间的观测分散性的信息，可以帮助他预测零件在其系统中的性能表现。
 
-The analyst  assumes that the random variables $P(A_i)$   are  statistically mutually independent.
+分析师假设随机变量 $P(A_i)$ 在统计上是相互独立的。
 
+分析师想要近似系统失效概率 $P(F)$ 的概率质量函数和累积分布函数。
 
+  * 我们说概率质量函数是因为我们之前描述的对每个随机变量的离散化方式。
 
-The analyst wants to approximate a probability mass function and cumulative distribution function
-of the systems failure probability $P(F)$.
+分析师通过重复应用卷积定理来计算**顶事件** $F$（即**系统失效**）的概率质量函数，以计算独立对数正态随机变量之和的概率分布，如方程 {eq}`eq:probtop` 所述。
 
-  * We say probability mass function because of how we discretize each random variable, as described earlier.
+## 废物提升机失效率
 
-The analyst calculates the probability mass function for the **top event** $F$, i.e., a **system failure**,  by repeatedly applying the convolution theorem to compute the probability distribution of a sum of independent log normal random variables, as described in equation
-{eq}`eq:probtop`.
+我们以接近实际的例子来说明，假设 $n = 14$。
 
-<!-- #endregion -->
+该例子估计了核废料设施中一个关键提升机的年度失效率。
 
-## Waste Hoist Failure Rate
+监管机构希望系统的设计能够使顶事件的失效率以高概率保持在较小值。
 
-We'll take close to a real world example by assuming that $n = 14$.
+这个例子是{cite}`Greenfield_Sargent_1993`第27页表10中描述的设计方案B-2（案例I）。
 
-The example estimates the annual failure rate of a critical  hoist at a nuclear waste facility.
+该表描述了十四个对数正态随机变量的参数$\mu_i, \sigma_i$，这些随机变量由**七对**独立同分布的随机变量组成。
 
-A regulatory agency wants the sytem to be designed in a way that makes the failure rate of the top event small with high probability.
+* 在每一对内，参数$\mu_i, \sigma_i$是相同的
 
-This example is Design Option B-2 (Case I) described in Table 10 on page 27 of {cite}`Greenfield_Sargent_1993`.
+* 如{cite}`Greenfield_Sargent_1993`第27页表10所述，七个唯一概率$P(A_i)$的对数正态分布参数已被校准为以下Python代码中的值：
 
-The table describes parameters $\mu_i, \sigma_i$ for  fourteen log normal random variables that consist of  **seven pairs** of random variables that are identically and independently distributed.
-
- * Within a pair, parameters $\mu_i, \sigma_i$ are the same
-
- * As described in table 10 of {cite}`Greenfield_Sargent_1993`  p. 27, parameters of log normal distributions for  the seven unique probabilities $P(A_i)$ have been calibrated to be the values in the following Python code:
-
-```{code-cell} python3
+```{code-cell} ipython3
 mu1, sigma1 = 4.28, 1.1947
 mu2, sigma2 = 3.39, 1.1947
 mu3, sigma3 = 2.795, 1.1947
@@ -577,35 +539,32 @@ mu6, sigma6 = 1.444, 1.4632
 mu7, sigma7 = -.040, 1.4632
 
 ```
+
 ```{note}
-Because the failure rates are all very small,  log normal distributions with the
-above parameter values actually describe $P(A_i)$ times $10^{-09}$.
+由于故障率都很小，具有上述参数值的对数正态分布实际上描述的是 $P(A_i)$ 乘以 $10^{-09}$。
 ```
 
-So the probabilities that we'll put on the $x$ axis of the probability mass function and associated cumulative distribution function should be multiplied by $10^{-09}$
+所以我们将在概率质量函数和相关累积分布函数的 $x$ 轴上标注的概率应该乘以 $10^{-09}$
 
+为了提取汇总计算分位数的表格，我们将使用一个辅助函数
 
-To extract a table that summarizes computed quantiles, we'll use a helper function
-
-```{code-cell} python3
+```{code-cell} ipython3
 def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
     return idx
 ```
 
-We compute the required thirteen convolutions in the following code.
+我们在以下代码中计算所需的十三个卷积。
 
-(Please feel free to try different values of the power parameter $p$ that we use to set the number of points in our grid for constructing
-the probability mass functions that discretize the continuous log normal distributions.)
+(请随意尝试不同的幂参数 $p$ 值，我们用它来设置网格中的点数，以构建离散化连续对数正态分布的概率质量函数。)
 
-We'll plot a counterpart to the cumulative distribution function (CDF) in  figure 5 on page 29 of {cite}`Greenfield_Sargent_1993`
-and we'll also present a counterpart to their Table 11 on page 28.
+我们将绘制一个与{cite}`Greenfield_Sargent_1993`第29页图5中的累积分布函数(CDF)相对应的图，并且还将展示一个与他们第28页表11相对应的表。
 
-```{code-cell} python3
+```{code-cell} ipython3
 p=15
-I = 2**p # Truncation value
-m =  .05 # increment size
+I = 2**p # 截断值
+m =  .05 # 增量大小
 
 
 
@@ -645,15 +604,15 @@ toc = time.perf_counter()
 
 tdiff13 = toc - tic
 
-print("time for 13 convolutions = ", tdiff13)
+print("13个卷积的计算时间 = ", tdiff13)
 
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 d13 = np.cumsum(c13)
 Nx=int(1400)
 plt.figure()
-plt.plot(x[0:int(Nx/m)],d13[0:int(Nx/m)])  # show Yad this -- I multiplied by m -- step size
+plt.plot(x[0:int(Nx/m)],d13[0:int(Nx/m)])  # 展示给Yad看 -- 我乘以了m -- 步长
 plt.hlines(0.5,min(x),Nx,linestyles='dotted',colors = {'black'})
 plt.hlines(0.9,min(x),Nx,linestyles='dotted',colors = {'black'})
 plt.hlines(0.95,min(x),Nx,linestyles='dotted',colors = {'black'})
@@ -686,9 +645,10 @@ print(tabulate([
     ['95%',f"{x_95}"],
     ['99%',f"{x_99}"],
     ['99.78%',f"{x_9978}"]],
-    headers = ['Percentile', 'x * 1e-9']))
+    headers = ['百分位数', 'x * 1e-9']))
 ```
-The above table agrees closely with column 2 of  Table 11 on p. 28 of  of {cite}`Greenfield_Sargent_1993`.
 
-Discrepancies are probably due to slight differences in the number of digits retained in inputting $\mu_i, \sigma_i, i = 1, \ldots, 14$
-and in the number of points deployed in the discretizations.
+上表与 {cite}`Greenfield_Sargent_1993` 第28页表11的第2列数据非常接近。
+
+差异可能是由于在输入 $\mu_i, \sigma_i, i = 1, \ldots, 14$ 时保留的小数位数略有不同，以及在离散化时使用的点数不同所致。
+

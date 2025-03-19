@@ -17,45 +17,49 @@ kernelspec:
 </div>
 ```
 
-# {index}`Optimal Growth IV: The Endogenous Grid Method <single: Optimal Growth IV: The Endogenous Grid Method>`
+# {index}`最优增长 IV：内生网格法 <single: Optimal Growth IV: The Endogenous Grid Method>`
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
+## 概述
 
-## Overview
+在之前，我们使用以下方法求解了随机最优增长模型：
 
-Previously, we solved the stochastic optimal growth model using
+1. {doc}`值函数迭代 <optgrowth_fast>`
+1. {doc}`基于欧拉方程的时间迭代 <coleman_policy_iter>`
 
-1. {doc}`value function iteration <optgrowth_fast>`
-1. {doc}`Euler equation based time iteration <coleman_policy_iter>`
+我们发现时间迭代在准确性和效率方面都明显更好。
 
-We found time iteration to be significantly more accurate and efficient.
+在本讲中，我们将学习一种对时间迭代的巧妙变形，称为**内生网格方法**（EGM）。
 
-In this lecture, we'll look at a clever twist on time iteration called the **endogenous grid method** (EGM).
+EGM是由[Chris Carroll](http://www.econ2.jhu.edu/people/ccarroll/)发明的一种实现政策迭代的数值方法。
 
-EGM is a numerical method for implementing policy iteration invented by [Chris Carroll](http://www.econ2.jhu.edu/people/ccarroll/).
+原始参考文献是{cite}`Carroll2006`。
 
-The original reference is {cite}`Carroll2006`.
-
-Let's start with some standard imports:
+让我们从一些标准导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from numba import jit
 ```
 
-## Key Idea
+## 核心思想
 
-Let's start by reminding ourselves of the theory and then see how the numerics fit in.
+让我们先回顾一下理论，然后看看数值计算如何配合。
 
-### Theory
+### 理论
 
-Take the model set out in {doc}`the time iteration lecture <coleman_policy_iter>`, following the same terminology and notation.
+采用{doc}`时间迭代讲座 <coleman_policy_iter>`中设定的模型，遵循相同的术语和符号。
 
-The Euler equation is
+欧拉方程为
 
 ```{math}
 :label: egm_euler
@@ -64,11 +68,11 @@ The Euler equation is
 = \beta \int (u'\circ \sigma^*)(f(y - \sigma^*(y)) z) f'(y - \sigma^*(y)) z \phi(dz)
 ```
 
-As we saw, the Coleman-Reffett operator is a nonlinear operator $K$ engineered so that $\sigma^*$ is a fixed point of $K$.
+如我们所见，Coleman-Reffett算子是一个非线性算子$K$，其设计使得$\sigma^*$是$K$的不动点。
 
-It takes as its argument a continuous strictly increasing consumption policy $\sigma \in \Sigma$.
+它以一个连续严格递增的消费策略$\sigma \in \Sigma$作为参数。
 
-It returns a new function $K \sigma$,  where $(K \sigma)(y)$ is the $c \in (0, \infty)$ that solves
+它返回一个新函数$K \sigma$，其中$(K \sigma)(y)$是满足以下方程的$c \in (0, \infty)$：
 
 ```{math}
 :label: egm_coledef
@@ -77,45 +81,41 @@ u'(c)
 = \beta \int (u' \circ \sigma) (f(y - c) z ) f'(y - c) z \phi(dz)
 ```
 
-### Exogenous Grid
+### 外生网格
 
-As discussed in {doc}`the lecture on time iteration <coleman_policy_iter>`, to implement the method on a computer, we need a numerical approximation.
+如{doc}`时间迭代讲座 <coleman_policy_iter>`中所讨论的，要在计算机上实现该方法，我们需要一个数值近似。
 
-In particular, we represent a policy function by a set of values on a finite grid.
+具体来说，我们用有限网格上的一组值来表示策略函数。
 
-The function itself is reconstructed from this representation when necessary, using interpolation or some other method.
+在需要时，使用插值或其他方法从这种表示中重建函数本身。
 
-{doc}`Previously <coleman_policy_iter>`, to obtain a finite representation of an updated consumption policy, we
+{doc}`之前 <coleman_policy_iter>`，为了获得更新后消费策略的有限表示，我们
 
-* fixed a grid of income points $\{y_i\}$
-* calculated the consumption value $c_i$ corresponding to each
-  $y_i$ using {eq}`egm_coledef` and a root-finding routine
+* 固定了一个收入点网格 $\{y_i\}$
+* 使用{eq}`egm_coledef`和一个寻根程序计算对应每个$y_i$的消费值$c_i$
 
-Each $c_i$ is then interpreted as the value of the function $K \sigma$ at $y_i$.
+每个$c_i$被解释为函数$K \sigma$在$y_i$处的值。
 
-Thus, with the points $\{y_i, c_i\}$ in hand, we can reconstruct $K \sigma$ via approximation.
+因此，有了点$\{y_i, c_i\}$后，我们可以通过近似重建$K \sigma$。
 
-Iteration then continues...
+然后继续迭代...
 
-### Endogenous Grid
+### 内生网格
 
-The method discussed above requires a root-finding routine to find the
-$c_i$ corresponding to a given income value $y_i$.
+上述方法需要一个寻根程序来找到对应给定收入值$y_i$的$c_i$。
 
-Root-finding is costly because it typically involves a significant number of
-function evaluations.
+求根计算成本很高，因为它通常需要大量的函数求值。
 
-As pointed out by Carroll {cite}`Carroll2006`, we can avoid this if
-$y_i$ is chosen endogenously.
+正如Carroll {cite}`Carroll2006`指出的那样，如果$y_i$是内生选择的，我们可以避免这种情况。
 
-The only assumption required is that $u'$ is invertible on $(0, \infty)$.
+唯一需要的假设是$u'$在$(0, \infty)$上是可逆的。
 
-Let $(u')^{-1}$ be the inverse function of $u'$.
+令$(u')^{-1}$为$u'$的反函数。
 
-The idea is this:
+基本思路是：
 
-* First, we fix an *exogenous* grid $\{k_i\}$ for capital ($k = y - c$).
-* Then we obtain  $c_i$ via
+* 首先，我们为资本($k = y - c$)固定一个*外生*网格$\{k_i\}$。
+* 然后我们通过以下方式获得$c_i$
 
 ```{math}
 :label: egm_getc
@@ -127,63 +127,62 @@ c_i =
 \right\}
 ```
 
-* Finally, for each $c_i$ we set $y_i = c_i + k_i$.
+* 最后，对于每个$c_i$我们设定$y_i = c_i + k_i$。
 
-It is clear that each $(y_i, c_i)$ pair constructed in this manner satisfies {eq}`egm_coledef`.
+显然，以这种方式构造的每个$(y_i, c_i)$对都满足{eq}`egm_coledef`。
 
-With the points $\{y_i, c_i\}$ in hand, we can reconstruct $K \sigma$ via approximation as before.
+有了这些点$\{y_i, c_i\}$，我们可以像之前一样通过近似重构$K \sigma$。
 
-The name EGM comes from the fact that the grid $\{y_i\}$ is  determined **endogenously**.
+EGM这个名称来源于网格$\{y_i\}$是**内生**决定的这一事实。
 
-## Implementation
+## 实现
 
-As {doc}`before <coleman_policy_iter>`, we will start with a simple setting
-where
+如{doc}`之前 <coleman_policy_iter>`，我们将从一个简单的设定开始，其中
 
-* $u(c) = \ln c$,
-* production is Cobb-Douglas, and
-* the shocks are lognormal.
+* $u(c) = \ln c$，
+* 生产函数是柯布-道格拉斯形式，且
+* 冲击是对数正态分布。
 
-This will allow us to make comparisons with the analytical solutions
+这将使我们能够与解析解进行比较
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/cd_analytical.py
 ```
 
-We reuse the `OptimalGrowthModel` class
+我们重用 `OptimalGrowthModel` 类
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth_fast/ogm.py
 ```
 
-### The Operator
+### 算子
 
-Here's an implementation of $K$ using EGM as described above.
+以下是使用EGM实现$K$的代码，如上所述。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def K(σ_array, og):
     """
-    The Coleman-Reffett operator using EGM
+    使用EGM的Coleman-Reffett算子
 
     """
 
-    # Simplify names
+    # 简化命名
     f, β = og.f, og.β
     f_prime, u_prime = og.f_prime, og.u_prime
     u_prime_inv = og.u_prime_inv
     grid, shocks = og.grid, og.shocks
 
-    # Determine endogenous grid
+    # 确定内生网格
     y = grid + σ_array  # y_i = k_i + c_i
 
-    # Linear interpolation of policy using endogenous grid
+    # 使用内生网格进行策略的线性插值
     σ = lambda x: np.interp(x, y, σ_array)
 
-    # Allocate memory for new consumption array
+    # 为新的消费数组分配内存
     c = np.empty_like(grid)
 
-    # Solve for updated consumption value
+    # 求解更新后的消费值
     for i, k in enumerate(grid):
         vals = u_prime(σ(f(k) * shocks)) * f_prime(k) * shocks
         c[i] = u_prime_inv(β * np.mean(vals))
@@ -191,33 +190,33 @@ def K(σ_array, og):
     return c
 ```
 
-Note the lack of any root-finding algorithm.
+注意这里没有任何求根算法。
 
-### Testing
+### 测试
 
-First we create an instance.
+首先我们创建一个实例。
 
-```{code-cell} python3
+```{code-cell} ipython3
 og = OptimalGrowthModel()
 grid = og.grid
 ```
 
-Here's our solver routine:
+这是我们的求解程序：
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/coleman_policy_iter/solve_time_iter.py
 ```
 
-Let's call it:
+让我们运行它：
 
-```{code-cell} python3
+```{code-cell} ipython3
 σ_init = np.copy(grid)
 σ = solve_model_time_iter(og, σ_init)
 ```
 
-Here is a plot of the resulting policy, compared with the true policy:
+以下是结果策略与真实策略的比较：
 
-```{code-cell} python3
+```{code-cell} ipython3
 y = grid + σ  # y_i = k_i + c_i
 
 fig, ax = plt.subplots()
@@ -232,22 +231,21 @@ ax.legend()
 plt.show()
 ```
 
-The maximal absolute deviation between the two policies is
+两个策略之间的最大绝对偏差是
 
-```{code-cell} python3
+```{code-cell} ipython3
 np.max(np.abs(σ - σ_star(y, og.α, og.β)))
 ```
 
-How long does it take to converge?
+收敛需要多长时间？
 
-```{code-cell} python3
+```{code-cell} ipython3
 %%timeit -n 3 -r 1
 σ = solve_model_time_iter(og, σ_init, verbose=False)
 ```
 
-Relative to time iteration, which as already found to be highly efficient, EGM
-has managed to shave off still more run time without compromising accuracy.
+相对于时间迭代，EGM在没有任何数值求根步骤的情况下，仍然能够显著减少计算时间，同时保持高精度。
 
-This is due to the lack of a numerical root-finding step.
+这是因为没有数值求根步骤。
 
-We can now solve the optimal growth model at given parameters extremely fast.
+我们现在可以非常快速地求解给定参数的随机最优增长模型。

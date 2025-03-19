@@ -18,13 +18,13 @@ kernelspec:
 </div>
 ```
 
-# {index}`Finite Markov Chains <single: Finite Markov Chains>`
+# {index}`有限马尔可夫链 <single: Finite Markov Chains>`
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -33,66 +33,70 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-Markov chains are one of the most useful classes of stochastic processes, being
+马尔可夫链是最有用的随机过程类别之一，因为它们：
 
-* simple, flexible and supported by many elegant theoretical results
-* valuable for building intuition about random dynamic models
-* central to quantitative modeling in their own right
+* 简单、灵活，并且有许多优雅的理论支持
+* 对于建立随机动态模型的直观认识很有价值
+* 本身就是定量建模的核心
 
-You will find them in many of the workhorse models of economics and finance.
+你会在经济学和金融学的许多基础模型中发现它们。
 
-In this lecture, we review some of the theory of Markov chains.
+在本讲座中，我们将回顾马尔可夫链的一些理论。
 
-We will also introduce some of the high-quality routines for working with Markov chains available in [QuantEcon.py](https://quantecon.org/quantecon-py/).
+我们还将介绍[QuantEcon.py](https://quantecon.org/quantecon-py/)中提供的一些用于处理马尔可夫链的高质量程序。
 
-Prerequisite knowledge is basic probability and linear algebra.
+所需的预备知识是基础概率论和线性代数。
 
-Let's start with some standard imports:
+让我们从一些标准导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
 import quantecon as qe
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 ```
 
-## Definitions
+## 定义
 
-The following concepts are fundamental.
+以下概念是基础性的。
 
 (finite_dp_stoch_mat)=
-### {index}`Stochastic Matrices <single: Stochastic Matrices>`
+### {index}`随机矩阵 <single: Stochastic Matrices>`
 
 ```{index} single: Finite Markov Chains; Stochastic Matrices
 ```
 
-A **stochastic matrix** (or **Markov matrix**)  is an $n \times n$ square matrix $P$
-such that
+**随机矩阵**（或**马尔可夫矩阵**）是一个 $n \times n$ 的方阵 $P$，满足：
 
-1. each element of $P$ is nonnegative, and
-1. each row of $P$ sums to one
+1. $P$ 的每个元素都是非负的，且
+1. $P$ 的每一行之和等于一
 
-Each row of $P$ can be regarded as a probability mass function over $n$ possible outcomes.
+$P$ 的每一行都可以被视为在 $n$ 个可能结果上的概率质量函数。
 
-It is too not difficult to check [^pm] that if $P$ is a stochastic matrix, then so is the $k$-th power $P^k$ for all $k \in \mathbb N$.
+不难证明[^pm]，如果 $P$ 是随机矩阵，那么对于所有 $k \in \mathbb N$，其 $k$ 次幂 $P^k$ 也是随机矩阵。
 
-### {index}`Markov Chains <single: Markov Chains>`
+### {index}`马尔可夫链 <single: Markov Chains>`
 
 ```{index} single: Finite Markov Chains
 ```
 
-There is a close connection between stochastic matrices and Markov chains.
+随机矩阵和马尔可夫链之间有着密切的联系。
 
-To begin, let $S$ be a finite set with $n$ elements $\{x_1, \ldots, x_n\}$.
+首先，令 $S$ 为具有 $n$ 个元素 $\{x_1, \ldots, x_n\}$ 的有限集。
 
-The set $S$ is called the **state space** and $x_1, \ldots, x_n$ are the **state values**.
+集合 $S$ 被称为**状态空间**，而 $x_1, \ldots, x_n$ 被称为**状态值**。
 
-A **Markov chain** $\{X_t\}$ on $S$ is a sequence of random variables on $S$ that have the **Markov property**.
+**马尔可夫链** $\{X_t\}$ 是定义在状态空间 $S$ 上的一系列具有**马尔可夫性质**的随机变量。
 
-This means that, for any date $t$ and any state $y \in S$,
+这意味着，对于任意时刻 $t$ 和任意状态 $y \in S$，
 
 ```{math}
 :label: fin_markov_mp
@@ -101,9 +105,9 @@ This means that, for any date $t$ and any state $y \in S$,
 = \mathbb P \{ X_{t+1}  = y \,|\, X_t, X_{t-1}, \ldots \}
 ```
 
-In other words, knowing the current state is enough to know probabilities for future states.
+换句话说，知道当前状态就足以确定未来状态的概率。
 
-In particular, the dynamics of a Markov chain are fully determined by the set of values
+特别地，马尔可夫链的动态完全由以下值集确定
 
 ```{math}
 :label: mpp
@@ -112,42 +116,41 @@ P(x, y) := \mathbb P \{ X_{t+1} = y \,|\, X_t = x \}
 \qquad (x, y \in S)
 ```
 
-By construction,
+根据构造，
 
-* $P(x, y)$ is the probability of going from $x$ to $y$ in one unit of time (one step)
-* $P(x, \cdot)$ is the conditional distribution of $X_{t+1}$ given $X_t = x$
+* $P(x, y)$ 是在一个时间单位（一步）内从 $x$ 到 $y$ 的概率
+* $P(x, \cdot)$ 是在给定 $X_t = x$ 条件下 $X_{t+1}$ 的条件分布
 
-We can view $P$ as a stochastic matrix where
+我们可以将 $P$ 视为一个随机矩阵，其中
 
 $$
 P_{ij} = P(x_i, x_j)
 \qquad 1 \leq i, j \leq n
 $$
 
-Going the other way, if we take a stochastic matrix $P$, we can generate a Markov
-chain $\{X_t\}$ as follows:
+反过来，如果我们有一个随机矩阵 $P$，我们可以生成一个马尔可夫链 $\{X_t\}$，方法如下：
 
-* draw $X_0$ from a marginal distribution $\psi$
-* for each $t = 0, 1, \ldots$, draw $X_{t+1}$ from $P(X_t,\cdot)$
+* 从边际分布 $\psi$ 中抽取 $X_0$
+* 对每个 $t = 0, 1, \ldots$, 从 $P(X_t,\cdot)$ 中抽取 $X_{t+1}$
 
-By construction, the resulting process satisfies {eq}`mpp`.
+根据构造，所得到的过程满足 {eq}`mpp`。
 
 (mc_eg1)=
-### Example 1
+### 示例1
 
-Consider a worker who, at any given time $t$, is either unemployed (state 0) or employed (state 1).
+考虑一个工人，在任何给定时间 $t$，要么失业（状态0）要么就业（状态1）。
 
-Suppose that, over a one month period,
+假设在一个月的时间段内，
 
-1. An unemployed worker finds a job with probability $\alpha \in (0, 1)$.
-1. An employed worker loses her job and becomes unemployed with probability $\beta \in (0, 1)$.
+1. 失业工人找到工作的概率为 $\alpha \in (0, 1)$。
+1. 就业工人失去工作并变成失业的概率为 $\beta \in (0, 1)$。
 
-In terms of a Markov model, we have
+就马尔可夫模型而言，我们有
 
 * $S = \{ 0, 1\}$
-* $P(0, 1) = \alpha$ and $P(1, 0) = \beta$
+* $P(0, 1) = \alpha$ 且 $P(1, 0) = \beta$
 
-We can write out the transition probabilities in matrix form as
+我们可以用矩阵形式写出转移概率：
 
 ```{math}
 :label: p_unempemp
@@ -161,18 +164,19 @@ P
   \right)
 ```
 
-Once we have the values $\alpha$ and $\beta$, we can address a range of questions, such as
+一旦我们有了 $\alpha$ 和 $\beta$ 的值，我们就可以解决一系列问题，比如
 
-* What is the average duration of unemployment?
-* Over the long-run, what fraction of time does a worker find herself unemployed?
-* Conditional on employment, what is the probability of becoming unemployed at least once over the next 12 months?
+* 失业的平均持续时间是多少？
 
-We'll cover such applications below.
+* 从长期来看，一个工人处于失业状态的时间比例是多少？
+* 在就业的条件下，未来12个月内至少失业一次的概率是多少？
+
+我们将在下面讨论这些应用。
 
 (mc_eg2)=
-### Example 2
+### 示例2
 
-From  US unemployment data, Hamilton {cite}`Hamilton2005` estimated the stochastic matrix
+根据美国失业数据，Hamilton {cite}`Hamilton2005` 估算出如下随机矩阵
 
 $$
 P =
@@ -185,85 +189,85 @@ P =
 \right)
 $$
 
-where
+其中
 
-* the frequency is monthly
-* the first state represents "normal growth"
-* the second state represents "mild recession"
-* the third state represents "severe recession"
+* 频率为每月
+* 第一个状态代表"正常增长"
+* 第二个状态代表"轻度衰退"
+* 第三个状态代表"严重衰退"
 
-For example, the matrix tells us that when the state is normal growth, the state will again be normal growth next month with probability 0.97.
+例如，该矩阵告诉我们，当状态为正常增长时，下个月仍然是正常增长的概率为0.97。
 
-In general, large values on the main diagonal indicate persistence in the process $\{ X_t \}$.
+一般来说，主对角线上的较大值表明过程 $\{ X_t \}$ 具有持续性。
 
-This Markov process can also be represented as a directed graph, with edges labeled by transition probabilities
+这个马尔可夫过程也可以用一个有向图表示，边上标注着转移概率
 
 ```{figure} /_static/lecture_specific/finite_markov/hamilton_graph.png
 
 ```
 
-Here "ng" is normal growth, "mr" is mild recession, etc.
+这里"ng"表示正常增长，"mr"表示温和衰退，等等。
 
-## Simulation
+## 模拟
 
 ```{index} single: Markov Chains; Simulation
 ```
 
-One natural way to answer questions about Markov chains is to simulate them.
+回答关于马尔可夫链问题的一个自然方法是对其进行模拟。
 
-(To approximate the probability of event $E$, we can simulate many times and count the fraction of times that $E$ occurs).
+(要近似事件 $E$ 发生的概率，我们可以进行多次模拟并统计 $E$ 发生的次数比例)。
 
-Nice functionality for simulating Markov chains exists in [QuantEcon.py](http://quantecon.org/quantecon-py).
+[QuantEcon.py](http://quantecon.org/quantecon-py)提供了模拟马尔可夫链的良好功能。
 
-* Efficient, bundled with lots of other useful routines for handling Markov chains.
+* 高效，并捆绑了许多其他用于处理马尔可夫链的实用程序。
 
-However, it's also a good exercise to roll our own routines --- let's do that first and then come back to the methods in [QuantEcon.py](http://quantecon.org/quantecon-py).
+然而，编写我们自己的程序也是一个很好的练习 —— 让我们先来做这个，然后再回到[QuantEcon.py](http://quantecon.org/quantecon-py)中的方法。
 
-In these exercises, we'll take the state space to be $S = 0,\ldots, n-1$.
+在这些练习中，我们将状态空间设定为 $S = 0,\ldots, n-1$。
 
-### Rolling Our Own
+### 自行编写程序
 
-To simulate a Markov chain, we need its stochastic matrix $P$ and a marginal probability distribution $\psi$  from which to  draw a realization of $X_0$.
+要模拟马尔可夫链，我们需要其随机矩阵 $P$ 和一个边际概率分布 $\psi$，用于抽取 $X_0$ 的一个实现值。
 
-The Markov chain is then constructed as discussed above.  To repeat:
+马尔可夫链的构建过程如上所述。重复如下：
 
-1. At time $t=0$, draw a realization of  $X_0$  from $\psi$.
-1. At each subsequent time $t$, draw a realization of the new state $X_{t+1}$ from $P(X_t, \cdot)$.
+1. 在时间 $t=0$ 时，从 $\psi$ 中抽取 $X_0$ 的一个实现值。
+1. 在之后的每个时间 $t$，从 $P(X_t, \cdot)$ 中抽取新状态 $X_{t+1}$ 的一个实现值。
 
-To implement this simulation procedure, we need a method for generating draws from a discrete distribution.
+为了实现这个模拟过程，我们需要一个从离散分布中生成抽样的方法。
 
-For this task, we'll use `random.draw` from [QuantEcon](http://quantecon.org/quantecon-py), which works as follows:
+对于这个任务，我们将使用来自 [QuantEcon](http://quantecon.org/quantecon-py) 的 `random.draw`，其使用方法如下：
 
-```{code-cell} python3
-ψ = (0.3, 0.7)           # probabilities over {0, 1}
-cdf = np.cumsum(ψ)       # convert into cummulative distribution
-qe.random.draw(cdf, 5)   # generate 5 independent draws from ψ
+```{code-cell} ipython3
+ψ = (0.3, 0.7)           # {0, 1}上的概率
+cdf = np.cumsum(ψ)       # 转换为累积分布
+qe.random.draw(cdf, 5)   # 从ψ中生成5个独立抽样
 ```
 
-We'll write our code as a function that accepts the following three arguments
+我们将把代码写成一个接受以下三个参数的函数
 
-* A stochastic matrix `P`
-* An initial state `init`
-* A positive integer `sample_size` representing the length of the time series the function should return
+* 一个随机矩阵 `P`
+* 一个初始状态 `init`
+* 一个正整数 `sample_size` 表示函数应返回的时间序列长度
 
-```{code-cell} python3
+```{code-cell} ipython3
 def mc_sample_path(P, ψ_0=None, sample_size=1_000):
 
-    # set up
+    # 设置
     P = np.asarray(P)
     X = np.empty(sample_size, dtype=int)
 
-    # Convert each row of P into a cdf
+    # 将P的每一行转换为累积分布函数
     n = len(P)
     P_dist = [np.cumsum(P[i, :]) for i in range(n)]
 
-    # draw initial state, defaulting to 0
+    # 抽取初始状态，默认为0
     if ψ_0 is not None:
         X_0 = qe.random.draw(np.cumsum(ψ_0))
     else:
         X_0 = 0
 
-    # simulate
+    # 模拟
     X[0] = X_0
     for t in range(sample_size - 1):
         X[t+1] = qe.random.draw(P_dist[X[t]])
@@ -271,35 +275,33 @@ def mc_sample_path(P, ψ_0=None, sample_size=1_000):
     return X
 ```
 
-Let's see how it works using the small matrix
+让我们用一个小矩阵来看看它是如何工作的
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[0.4, 0.6],
      [0.2, 0.8]]
 ```
 
-As we'll see later, for a long series drawn from `P`, the fraction of the sample that takes value 0 will be about 0.25.
+我们稍后会看到，对于从`P`中抽取的长序列，样本中取值为0的比例大约是0.25。
 
-Moreover, this is true, regardless of the initial distribution from which
-$X_0$ is drawn.
+而且，无论$X_0$的初始分布如何，这个结论都成立。
 
-The following code illustrates this
+以下代码演示了这一点
 
-```{code-cell} python3
+```{code-cell} ipython3
 X = mc_sample_path(P, ψ_0=[0.1, 0.9], sample_size=100_000)
 np.mean(X == 0)
 ```
 
-You can try changing the initial distribution to confirm that the output is
-always close to 0.25, at least for the `P` matrix above.
+你可以尝试改变初始分布，以确认输出总是接近0.25，至少对于上面的`P`矩阵是这样。
 
-### Using QuantEcon's Routines
+### 使用QuantEcon的程序
 
-As discussed above, [QuantEcon.py](http://quantecon.org/quantecon-py) has routines for handling Markov chains, including simulation.
+如上所述，[QuantEcon.py](http://quantecon.org/quantecon-py)有处理马尔可夫链的程序，包括模拟。
 
-Here's an illustration using the same P as the preceding example
+这里用与前面例子相同的P进行说明
 
-```{code-cell} python3
+```{code-cell} ipython3
 from quantecon import MarkovChain
 
 mc = qe.MarkovChain(P)
@@ -307,63 +309,63 @@ X = mc.simulate(ts_length=1_000_000)
 np.mean(X == 0)
 ```
 
-The [QuantEcon.py](http://quantecon.org/quantecon-py) routine is [JIT compiled](https://python-programming.quantecon.org/numba.html#numba-link) and much faster.
+[QuantEcon.py](http://quantecon.org/quantecon-py)程序使用了[JIT编译](https://python-programming.quantecon.org/numba.html#numba-link)，运行速度更快。
 
 ```{code-cell} ipython
-%time mc_sample_path(P, sample_size=1_000_000) # Our homemade code version
+%time mc_sample_path(P, sample_size=1_000_000) # 我们自制代码版本
 ```
 
 ```{code-cell} ipython
-%time mc.simulate(ts_length=1_000_000) # qe code version
+%time mc.simulate(ts_length=1_000_000) # qe代码版本
 ```
 
-#### Adding State Values and Initial Conditions
+#### 添加状态值和初始条件
 
-If we wish to, we can provide a specification of state values to `MarkovChain`.
+如果需要，我们可以为`MarkovChain`提供状态值的规范。
 
-These state values can be integers, floats, or even strings.
+这些状态值可以是整数、浮点数，甚至是字符串。
 
-The following code illustrates
+以下代码演示了这一点
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc = qe.MarkovChain(P, state_values=('unemployed', 'employed'))
 mc.simulate(ts_length=4, init='employed')
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc.simulate(ts_length=4, init='unemployed')
 ```
 
-```{code-cell} python3
-mc.simulate(ts_length=4)  # Start at randomly chosen initial state
+```{code-cell} ipython3
+mc.simulate(ts_length=4)  # 从随机选择的初始状态开始
 ```
 
-If we want to see indices rather than state values as outputs as  we can use
+如果我们想要看到索引而不是状态值作为输出，我们可以使用
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc.simulate_indices(ts_length=4)
 ```
 
 (mc_md)=
-## {index}`Marginal Distributions <single: Marginal Distributions>`
+## {index}`边际分布 <single: 边际分布>`
 
-```{index} single: Markov Chains; Marginal Distributions
+```{index} single: 马尔可夫链; 边际分布
 ```
 
-Suppose that
+假设
 
-1. $\{X_t\}$ is a Markov chain with stochastic matrix $P$
-1. the marginal distribution of $X_t$ is known to be $\psi_t$
+1. $\{X_t\}$ 是一个具有随机矩阵 $P$ 的马尔可夫链
+1. $X_t$ 的边际分布已知为 $\psi_t$
 
-What then is the marginal distribution of $X_{t+1}$, or, more generally, of $X_{t+m}$?
+那么 $X_{t+1}$ 或更一般地 $X_{t+m}$ 的边际分布是什么？
 
-To answer this, we let $\psi_t$ be the marginal distribution of $X_t$ for $t = 0, 1, 2, \ldots$.
+为了回答这个问题，我们令 $\psi_t$ 为 $t = 0, 1, 2, \ldots$ 时 $X_t$ 的边际分布。
 
-Our first aim is to find $\psi_{t + 1}$ given $\psi_t$ and $P$.
+我们的首要目标是根据 $\psi_t$ 和 $P$ 找到 $\psi_{t + 1}$。
 
-To begin, pick any $y  \in S$.
+首先，选取任意 $y \in S$。
 
-Using the [law of total probability](https://en.wikipedia.org/wiki/Law_of_total_probability), we can decompose the probability that $X_{t+1} = y$ as follows:
+使用[全概率公式](https://en.wikipedia.org/wiki/Law_of_total_probability)，我们可以将 $X_{t+1} = y$ 的概率分解如下：
 
 $$
 \mathbb P \{X_{t+1} = y \}
@@ -371,18 +373,17 @@ $$
                \cdot \mathbb P \{ X_t = x \}
 $$
 
-In words, to get the probability of being at $y$ tomorrow, we account for
-all  ways this can happen and sum their probabilities.
+用文字来说，要得到明天处于状态 $y$ 的概率，我们需要考虑所有可能发生的情况并将它们的概率相加。
 
-Rewriting this statement in terms of  marginal and conditional probabilities gives
+用边际概率和条件概率重写这个表达式得到
 
 $$
 \psi_{t+1}(y) = \sum_{x \in S} P(x,y) \psi_t(x)
 $$
 
-There are $n$ such equations, one for each $y \in S$.
+对于每个 $y \in S$，都有一个这样的方程，共 $n$ 个方程。
 
-If we think of $\psi_{t+1}$ and $\psi_t$ as *row vectors*, these $n$ equations are summarized by the matrix expression
+如果我们将 $\psi_{t+1}$ 和 $\psi_t$ 视为*行向量*，这 $n$ 个方程可以用矩阵表达式概括为
 
 ```{math}
 :label: fin_mc_fr
@@ -390,17 +391,15 @@ If we think of $\psi_{t+1}$ and $\psi_t$ as *row vectors*, these $n$ equations a
 \psi_{t+1} = \psi_t P
 ```
 
-Thus, to move a marginal distribution forward one unit of time, we postmultiply by $P$.
+因此，要将边际分布向前推进一个时间单位，我们需要右乘 $P$。
 
-By postmultiplying $m$ times, we move a marginal distribution forward $m$ steps into the future.
+通过右乘 $m$ 次，我们可以将边际分布向未来推进 $m$ 步。
 
-Hence, iterating on {eq}`fin_mc_fr`, the expression $\psi_{t+m} = \psi_t P^m$ is also valid --- here $P^m$ is the $m$-th power of $P$.
+因此，通过迭代 {eq}`fin_mc_fr`，表达式 $\psi_{t+m} = \psi_t P^m$ 也是有效的 --- 这里 $P^m$ 是 $P$ 的 $m$ 次幂。
 
-As a special case, we see that if $\psi_0$ is the initial distribution from
-which $X_0$ is drawn, then $\psi_0 P^m$ is the distribution of
-$X_m$.
+作为一个特例，我们可以看到，如果 $\psi_0$ 是 $X_0$ 的初始分布，那么 $\psi_0 P^m$ 就是 $X_m$ 的分布。
 
-This is very important, so let's repeat it
+这一点非常重要，让我们重复一遍
 
 ```{math}
 :label: mdfmc
@@ -408,7 +407,7 @@ This is very important, so let's repeat it
 X_0 \sim \psi_0 \quad \implies \quad X_m \sim \psi_0 P^m
 ```
 
-and, more generally,
+更一般地，
 
 ```{math}
 :label: mdfmc2
@@ -417,39 +416,36 @@ X_t \sim \psi_t \quad \implies \quad X_{t+m} \sim \psi_t P^m
 ```
 
 (finite_mc_mstp)=
-### Multiple Step Transition Probabilities
+### 多步转移概率
 
-We know that the probability of transitioning from $x$ to $y$ in
-one step is $P(x,y)$.
+我们知道从状态 $x$ 到 $y$ 的一步转移概率是 $P(x,y)$。
 
-It turns out that the probability of transitioning from $x$ to $y$ in
-$m$ steps is $P^m(x,y)$, the $(x,y)$-th element of the
-$m$-th power of $P$.
+事实证明，从 $x$ 到 $y$ 的 $m$ 步转移概率是 $P^m(x,y)$，即 $P$ 的 $m$ 次幂的第 $(x,y)$ 个元素。
 
-To see why, consider again {eq}`mdfmc2`, but now with a $\psi_t$ that puts all probability on state $x$ so that the transition probabilities are
+要理解这一点，再次考虑 {eq}`mdfmc2`，但现在假设 $\psi_t$ 在状态 $x$ 上的概率为1，其他位置为零，使得转移概率为：
 
-* 1 in the $x$-th position and zero elsewhere
+* 在第 $x$ 个位置为1，其他位置为零
 
-Inserting this into {eq}`mdfmc2`, we see that, conditional on $X_t = x$, the distribution of $X_{t+m}$ is the $x$-th row of $P^m$.
+将此代入 {eq}`mdfmc2`，我们可以看到，在条件 $X_t = x$ 下，$X_{t+m}$ 的分布是 $P^m$ 的第 $x$ 行。
 
-In particular
+具体来说
 
 $$
-\mathbb P \{X_{t+m} = y \,|\, X_t = x \} = P^m(x, y) = (x, y) \text{-th element of } P^m
+\mathbb P \{X_{t+m} = y \,|\, X_t = x \} = P^m(x, y) = P^m \text{的第} (x, y) \text{个元素}
 $$
 
-### Example: Probability of Recession
+### 示例：衰退的概率
 
 ```{index} single: Markov Chains; Future Probabilities
 ```
 
-Recall the stochastic matrix $P$ for recession and growth {ref}`considered above <mc_eg2>`.
+回顾上面{ref}`考虑过的<mc_eg2>`衰退和增长的随机矩阵$P$。
 
-Suppose that the current state is unknown --- perhaps statistics are available only  at the *end* of the current month.
+假设当前状态未知 --- 可能统计数据仅在当前月份*结束时*才能获得。
 
-We guess that the probability that the economy is in state $x$ is $\psi(x)$.
+我们猜测经济处于状态$x$的概率是$\psi(x)$。
 
-The probability of being in recession (either mild or severe) in 6 months time is given by the inner product
+6个月后经济处于衰退状态（轻度或严重）的概率由以下内积给出：
 
 $$
 \psi P^6
@@ -464,84 +460,74 @@ $$
 $$
 
 (mc_eg1-1)=
-### Example 2: Cross-Sectional Distributions
+### 示例2：横截面分布
 
 ```{index} single: Markov Chains; Cross-Sectional Distributions
 ```
 
-The marginal distributions we have been studying can be viewed either as
-probabilities or as cross-sectional frequencies that a Law of Large Numbers leads us to anticipate for  large samples.
+我们一直在研究的边际分布可以被视为概率，也可以被视为大数定律使我们预期在大样本中出现的横截面频率。
 
-To illustrate, recall our model of employment/unemployment dynamics for a given worker {ref}`discussed above <mc_eg1>`.
+为了说明这一点，让我们回顾{ref}`上面讨论过的<mc_eg1>`关于某个工人就业/失业动态的模型。
 
-Consider a large population of workers, each of whose lifetime experience is described by the specified dynamics, with each worker's
-outcomes being realizations of processes that are statistically independent of all other workers' processes.
+考虑一个大规模的工人群体，每个工人的终身经历都由特定的动态过程描述，每个工人的结果都是统计上独立于其他所有工人过程的实现。
 
-Let $\psi$ be the current *cross-sectional* distribution over $\{ 0, 1 \}$.
+让$\psi$表示当前在$\{ 0, 1 \}$上的*横截面*分布。
 
-The cross-sectional distribution records fractions of workers employed and unemployed at a given moment.
+横截面分布记录了在某一时刻就业和失业工人的比例。
 
-* For example, $\psi(0)$ is the unemployment rate.
+* 例如，$\psi(0)$是失业率。
 
-What will the cross-sectional distribution be in 10 periods hence?
+10个周期后的横截面分布会是什么？
 
-The answer is $\psi P^{10}$, where $P$ is the stochastic matrix in
-{eq}`p_unempemp`.
+答案是$\psi P^{10}$，其中$P$是{eq}`p_unempemp`中的随机矩阵。
 
-This is because each worker's state evolves according to $P$, so
-$\psi P^{10}$ is a marginal distibution  for a single randomly selected
-worker.
+这是因为每个工人的状态都按照$P$演变，所以$\psi P^{10}$是随机选择的单个工人的边际分布。
 
-But when the sample is large, outcomes and probabilities are roughly equal (by an application of the Law
-of Large Numbers).
+但当样本量很大时，结果和概率大致相等（根据大数定律）。
 
-So for a very large (tending to infinite) population,
-$\psi P^{10}$ also represents  fractions of workers in
-each state.
+因此，对于一个非常大的（趋向于无限的）人口，
 
-This is exactly the cross-sectional distribution.
+$\psi P^{10}$ 也表示每个状态中工人的比例。
 
-## {index}`Irreducibility and Aperiodicity <single: Irreducibility and Aperiodicity>`
+这正是横截面分布。
+
+## {index}`不可约性和非周期性 <single: Irreducibility and Aperiodicity>`
 
 ```{index} single: Markov Chains; Irreducibility, Aperiodicity
 ```
 
-Irreducibility and aperiodicity are central concepts of modern Markov chain theory.
+不可约性和非周期性是现代马尔可夫链理论的核心概念。
 
-Let's see what they're about.
+让我们来看看它们是什么。
 
-### Irreducibility
+### 不可约性
 
-Let $P$ be a fixed stochastic matrix.
+设 $P$ 是一个固定的随机矩阵。
 
-Two states $x$ and $y$ are said to **communicate** with each other if
-there exist positive integers $j$ and $k$ such that
+如果存在正整数 $j$ 和 $k$ 使得
 
 $$
 P^j(x, y) > 0
-\quad \text{and} \quad
+\quad \text{和} \quad
 P^k(y, x) > 0
 $$
 
-In view of our discussion {ref}`above <finite_mc_mstp>`, this means precisely
-that
+则称两个状态 $x$ 和 $y$ 是**互通的**。
 
-* state $x$ can eventually be reached  from state $y$, and
-* state $y$ can eventually  be reached from state $x$
+根据我们{ref}`上面的讨论 <finite_mc_mstp>`，这正好意味着
 
-The stochastic matrix $P$ is called **irreducible** if all states
-communicate; that is, if $x$ and $y$ communicate for all
-$(x, y)$ in $S \times S$.
+* 状态 $x$ 最终可以从状态 $y$ 到达，且
+* 状态 $y$ 最终可以从状态 $x$ 到达
 
-For example, consider the following transition probabilities for wealth of a fictitious set of
-households
+如果所有状态都是互通的，即对于 $S \times S$ 中的所有 $(x, y)$，$x$ 和 $y$ 都是互通的，则称随机矩阵 $P$ 是**不可约的**。
+
+例如，考虑以下一组虚构家庭财富的转移概率
 
 ```{figure} /_static/lecture_specific/finite_markov/mc_irreducibility1.png
 
 ```
 
-We can translate this into a stochastic matrix, putting zeros where
-there's no edge between nodes
+我们可以将其转换为随机矩阵，在节点之间没有边的地方填零
 
 $$
 P :=
@@ -554,12 +540,11 @@ P :=
 \right)
 $$
 
-It's clear from the graph that this stochastic matrix is irreducible: we can  eventually
-reach any state from any other state.
+从图中可以清楚地看出，这个随机矩阵是不可约的：我们最终可以从任何一个状态到达任何其他状态。
 
-We can also test this using [QuantEcon.py](http://quantecon.org/quantecon-py)'s MarkovChain class
+我们也可以使用[QuantEcon.py](http://quantecon.org/quantecon-py)的MarkovChain类来测试这一点
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[0.9, 0.1, 0.0],
      [0.4, 0.4, 0.2],
      [0.1, 0.1, 0.8]]
@@ -568,17 +553,17 @@ mc = qe.MarkovChain(P, ('poor', 'middle', 'rich'))
 mc.is_irreducible
 ```
 
-Here's a more pessimistic scenario in which  poor people remain poor forever
+这是一个更悲观的情景，其中穷人永远保持贫穷
 
 ```{figure} /_static/lecture_specific/finite_markov/mc_irreducibility2.png
 
 ```
 
-This stochastic matrix is not irreducible, since, for example, rich is not accessible from poor.
+这个随机矩阵不是不可约的，因为，例如，从穷人状态无法到达富人状态。
 
-Let's confirm this
+让我们来验证这一点
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[1.0, 0.0, 0.0],
      [0.1, 0.8, 0.1],
      [0.0, 0.2, 0.8]]
@@ -587,31 +572,31 @@ mc = qe.MarkovChain(P, ('poor', 'middle', 'rich'))
 mc.is_irreducible
 ```
 
-We can also determine the "communication classes"
+我们也可以确定"通信类"
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc.communication_classes
 ```
 
-It might be clear to you already that irreducibility is going to be important in terms of long run outcomes.
+你可能已经清楚地意识到，不可约性对于长期结果来说将会很重要。
 
-For example, poverty is a life sentence in the second graph but not the first.
+例如，在第二个图中贫困是一个终身状态，但在第一个图中则不是。
 
-We'll come back to this a bit later.
+我们稍后会再回到这个话题。
 
-### Aperiodicity
+### 非周期性
 
-Loosely speaking, a Markov chain is called **periodic** if it cycles in a predictable way, and **aperiodic** otherwise.
+简单来说，如果马尔可夫链以可预测的方式循环，我们称之为**周期性**的，否则称为**非周期性**的。
 
-Here's a trivial example with three states
+这里有一个包含三个状态的简单例子
 
 ```{figure} /_static/lecture_specific/finite_markov/mc_aperiodicity1.png
 
 ```
 
-The chain cycles with period 3:
+该链以周期3循环：
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[0, 1, 0],
      [0, 0, 1],
      [1, 0, 0]]
@@ -620,26 +605,25 @@ mc = qe.MarkovChain(P)
 mc.period
 ```
 
-More formally, the **period** of a state $x$ is the largest common divisor
-of a set of integers
+更正式地说，一个状态 $x$ 的**周期**是一个整数集合的最大公约数
 
 $$
 D(x) := \{j \geq 1 : P^j(x, x) > 0\}
 $$
 
-In the last example, $D(x) = \{3, 6, 9, \ldots\}$ for every state $x$, so the period is 3.
+在上一个例子中，对于每个状态 $x$，$D(x) = \{3, 6, 9, \ldots\}$，所以周期是3。
 
-A stochastic matrix is called **aperiodic** if the period of every state is 1, and **periodic** otherwise.
+如果每个状态的周期都是1，随机矩阵被称为**非周期的**，否则称为**周期的**。
 
-For example, the stochastic matrix associated with the transition probabilities below is periodic because, for example, state $a$ has period 2
+例如，下面这个转移概率对应的随机矩阵是周期的，因为状态 $a$ 的周期是2
 
 ```{figure} /_static/lecture_specific/finite_markov/mc_aperiodicity2.png
 
 ```
 
-We can confirm that the stochastic matrix is periodic with the following code
+我们可以用以下代码确认这个随机矩阵是周期的
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[0.0, 1.0, 0.0, 0.0],
      [0.5, 0.0, 0.5, 0.0],
      [0.0, 0.5, 0.0, 0.5],
@@ -649,155 +633,149 @@ mc = qe.MarkovChain(P)
 mc.period
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 mc.is_aperiodic
 ```
 
-## {index}`Stationary Distributions <single: Stationary Distributions>`
+## {index}`平稳分布 <single: 平稳分布>`
 
-```{index} single: Markov Chains; Stationary Distributions
+```{index} single: 马尔可夫链; 平稳分布
 ```
 
-As seen in {eq}`fin_mc_fr`, we can shift a marginal distribution forward one unit of time via postmultiplication by $P$.
+如{eq}`fin_mc_fr`所示，我们可以通过后乘$P$将边际分布向前移动一个时间单位。
 
-Some distributions are invariant under this updating process --- for example,
+某些分布在这种更新过程下保持不变 --- 例如，
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = np.array([[0.4, 0.6],
               [0.2, 0.8]])
 ψ = (0.25, 0.75)
 ψ @ P
 ```
 
-Such distributions are called **stationary** or **invariant**.
+这种分布被称为**平稳分布**或**不变分布**。
 
 (mc_stat_dd)=
-Formally, a marginal distribution $\psi^*$ on $S$ is called **stationary** for $P$ if $\psi^* = \psi^* P$.
+形式上，如果对于转移矩阵$P$，边际分布$\psi^*$满足$\psi^* = \psi^* P$，则称其为$P$的**平稳分布**。
 
-(This is the same notion of stationarity that we learned about in the
-{doc}`lecture on AR(1) processes <intro:ar1_processes>` applied to a different setting.)
+（这与我们在{doc}`AR(1)过程讲座 <intro:ar1_processes>`中学到的平稳性概念是相同的，只是应用在不同的场景中。）
 
-From this equality, we immediately get $\psi^* = \psi^* P^t$ for all $t$.
+从这个等式中，我们可以立即得到对于所有$t$都有$\psi^* = \psi^* P^t$。
 
-This tells us an important fact: If the distribution of $X_0$ is a stationary distribution, then $X_t$ will have this same distribution for all $t$.
+这告诉我们一个重要的事实：如果$X_0$的分布是平稳分布，那么对于所有$t$，$X_t$将具有相同的分布。
 
-Hence stationary distributions have a natural interpretation as **stochastic steady states** --- we'll discuss this more soon.
+因此，平稳分布可以自然地解释为**随机稳态**——我们很快会详细讨论这一点。
 
-Mathematically, a stationary distribution is a fixed point of $P$ when $P$ is thought of as the map $\psi \mapsto \psi P$ from (row) vectors to (row) vectors.
+从数学角度来看，当将$P$视为从（行）向量到（行）向量的映射$\psi \mapsto \psi P$时，平稳分布是$P$的不动点。
 
-**Theorem.** Every stochastic matrix $P$ has at least one stationary distribution.
+**定理：**每个随机矩阵$P$至少有一个平稳分布。
 
-(We are assuming here that the state space $S$ is finite; if not more assumptions are required)
+(我们在此假设状态空间 $S$ 是有限的；如果不是则需要更多假设)
 
-For proof of this result, you can apply [Brouwer's fixed point theorem](https://en.wikipedia.org/wiki/Brouwer_fixed-point_theorem), or see [EDTC](https://johnstachurski.net/edtc.html), theorem 4.3.5.
+对于这个结果的证明，你可以应用[布劳威尔不动点定理](https://en.wikipedia.org/wiki/Brouwer_fixed-point_theorem)，或参见[EDTC](https://johnstachurski.net/edtc.html)中的定理4.3.5。
 
-There can be many stationary distributions corresponding to a given stochastic matrix $P$.
+对于给定的随机矩阵 $P$，可能存在多个平稳分布。
 
-* For example, if $P$ is the identity matrix, then all marginal distributions are stationary.
+* 例如，如果 $P$ 是单位矩阵，那么所有边际分布都是平稳的。
 
-To get uniqueness an invariant distribution, the transition matrix $P$ must have the property that no nontrivial subsets of
-the state space are **infinitely persistent**.
+要获得唯一的不变分布，转移矩阵 $P$ 必须具有这样的性质：状态空间的任何非平凡子集都不能是**无限持续的**。
 
-A subset of the state space is infinitely persistent if other parts of the
-state space cannot be accessed from it.
+如果从状态空间的某个子集无法到达其他部分，则该子集是无限持续的。
 
-Thus, infinite persistence of a non-trivial subset is the opposite of irreducibility.
+因此，非平凡子集的无限持续性与不可约性是相对的。
 
-This gives some intuition for the following fundamental theorem.
+这为以下基本定理提供了一些直观理解。
 
 (mc_conv_thm)=
-**Theorem.** If $P$ is both aperiodic and irreducible, then
 
-1. $P$ has exactly one stationary distribution $\psi^*$.
-1. For any initial marginal distribution $\psi_0$, we have $\| \psi_0 P^t - \psi^* \| \to 0$ as $t \to \infty$.
+**定理。** 如果$P$既是非周期的又是不可约的，那么
 
-For a proof, see, for example, theorem 5.2 of {cite}`haggstrom2002finite`.
+1. $P$恰好有一个平稳分布$\psi^*$。
+1. 对于任何初始边际分布$\psi_0$，当$t \to \infty$时，有$\| \psi_0 P^t - \psi^* \| \to 0$。
 
-(Note that part 1 of the theorem only requires  irreducibility, whereas part 2
-requires both irreducibility and aperiodicity)
+证明可参见{cite}`haggstrom2002finite`的定理5.2。
 
-A stochastic matrix that satisfies the conditions of the theorem is sometimes called **uniformly ergodic**.
+(注意定理的第1部分只需要不可约性，而第2部分需要同时具备不可约性和非周期性)
 
-A sufficient condition for aperiodicity and irreducibility is that every element of $P$ is strictly positive.
+满足该定理条件的随机矩阵有时被称为**一致遍历的**。
 
-* Try to convince yourself of this.
+$P$的每个元素都严格大于零是非周期性和不可约性的充分条件。
 
-### Example
+* 试着说服自己这一点是正确的。
 
-Recall our model of the employment/unemployment dynamics of a particular worker {ref}`discussed above <mc_eg1>`.
+### 示例
 
-Assuming $\alpha \in (0,1)$ and $\beta \in (0,1)$, the uniform ergodicity condition is satisfied.
+回想我们之前{ref}`讨论过的 <mc_eg1>`关于某个工人就业/失业动态的模型。
 
-Let $\psi^* = (p, 1-p)$ be the stationary distribution, so that $p$ corresponds to unemployment (state 0).
+假设$\alpha \in (0,1)$且$\beta \in (0,1)$，一致遍历条件是满足的。
 
-Using $\psi^* = \psi^* P$ and a bit of algebra yields
+令 $\psi^* = (p, 1-p)$ 为平稳分布，其中 $p$ 对应失业状态（状态0）。
+
+使用 $\psi^* = \psi^* P$ 并经过一些代数运算得到
 
 $$
 p = \frac{\beta}{\alpha + \beta}
 $$
 
-This is, in some sense, a steady state probability of unemployment --- more about the  interpretation of this below.
+这在某种意义上是失业的稳态概率 --- 关于这个解释的更多内容见下文。
 
-Not surprisingly it tends to zero as $\beta \to 0$, and to one as $\alpha \to 0$.
+不出所料，当 $\beta \to 0$ 时，它趋近于零；当 $\alpha \to 0$ 时，它趋近于一。
 
-### Calculating Stationary Distributions
+### 计算平稳分布
 
 ```{index} single: Markov Chains; Calculating Stationary Distributions
 ```
 
-As discussed above, a particular Markov matrix $P$ can have many stationary distributions.
+如上所述，一个特定的马尔可夫矩阵 $P$ 可能有多个平稳分布。
 
-That is, there can be many row vectors $\psi$ such that $\psi = \psi P$.
+也就是说，可能存在多个行向量 $\psi$ 满足 $\psi = \psi P$。
 
-In fact if $P$ has two distinct stationary distributions $\psi_1,
-\psi_2$ then it has infinitely many, since in this case, as you can verify,  for any $\lambda \in [0, 1]$
+事实上，如果 $P$ 有两个不同的平稳分布 $\psi_1, \psi_2$，那么它就有无限多个平稳分布，因为在这种情况下，正如你可以验证的那样，对于任意 $\lambda \in [0, 1]$
 
 $$
 \psi_3 := \lambda \psi_1 + (1 - \lambda) \psi_2
 $$
 
-is a stationary distribution for $P$.
+都是 $P$ 的一个平稳分布。
 
-If we restrict attention to the case in which only one stationary distribution exists, one way to  finding it is to solve the system
+如果我们将注意力限制在只存在一个平稳分布的情况下，找到它的一种方法是求解系统
 
 $$
 \psi (I_n - P) = 0
 $$ (eq:eqpsifixed)
 
-for $\psi$, where $I_n$ is the $n \times n$ identity.
+其中$I_n$是$n \times n$单位矩阵，求解$\psi$。
 
-But the zero vector solves system {eq}`eq:eqpsifixed`,  so we must proceed cautiously.
+但是零向量可以满足系统{eq}`eq:eqpsifixed`，所以我们必须谨慎处理。
 
-We want to impose the restriction that $\psi$ is  a probability distribution.
+我们要施加$\psi$是概率分布的限制条件。
 
-There are various ways to do this.
+有多种方法可以做到这一点。
 
-One option is to regard solving system {eq}`eq:eqpsifixed`  as an eigenvector problem: a vector
-$\psi$ such that $\psi = \psi P$ is a left eigenvector associated
-with the unit eigenvalue $\lambda = 1$.
+一种选择是将求解系统{eq}`eq:eqpsifixed`视为特征向量问题：满足$\psi = \psi P$的向量$\psi$是与单位特征值$\lambda = 1$相关的左特征向量。
 
-A stable and sophisticated algorithm specialized for stochastic matrices is implemented in [QuantEcon.py](http://quantecon.org/quantecon-py).
+[QuantEcon.py](http://quantecon.org/quantecon-py)实现了一个专门用于随机矩阵的稳定且复杂的算法。
 
-This is the one we recommend:
+这是我们推荐的方法：
 
-```{code-cell} python3
+```{code-cell} ipython3
 P = [[0.4, 0.6],
      [0.2, 0.8]]
 
 mc = qe.MarkovChain(P)
-mc.stationary_distributions  # Show all stationary distributions
+mc.stationary_distributions  # 显示所有平稳分布
 ```
 
-### Convergence to Stationarity
+### 收敛到平稳分布
 
-```{index} single: Markov Chains; Convergence to Stationarity
+```{index} single: 马尔可夫链; 收敛到平稳分布
 ```
 
-Part 2 of the Markov chain convergence theorem {ref}`stated above <mc_conv_thm>` tells us that the marginal distribution of $X_t$ converges to the stationary distribution regardless of where we begin.
+马尔可夫链收敛定理的第2部分{ref}`如上所述<mc_conv_thm>`告诉我们，无论从何处开始，$X_t$的边际分布都会收敛到平稳分布。
 
-This adds considerable authority to our interpretation of $\psi^*$ as a stochastic steady state.
+这大大加强了我们将$\psi^*$解释为随机稳态的观点。
 
-The convergence in the theorem is illustrated in the next figure
+下图展示了定理中的收敛过程
 
 ```{code-cell} ipython
 P = ((0.971, 0.029, 0.000),
@@ -805,7 +783,7 @@ P = ((0.971, 0.029, 0.000),
      (0.000, 0.508, 0.492))
 P = np.array(P)
 
-ψ = (0.0, 0.2, 0.8)        # Initial condition
+ψ = (0.0, 0.2, 0.8)        # 初始条件
 
 fig = plt.figure(figsize=(8, 6))
 ax = fig.add_subplot(111, projection='3d')
@@ -832,71 +810,71 @@ ax.scatter(ψ_star[0], ψ_star[1], ψ_star[2], c='k', s=60)
 plt.show()
 ```
 
-Here
+这里
 
-* $P$ is the stochastic matrix for recession and growth {ref}`considered above <mc_eg2>`.
-* The highest red dot is an arbitrarily chosen initial marginal probability distribution  $\psi$, represented as a vector in $\mathbb R^3$.
-* The other red dots are the marginal distributions $\psi P^t$ for $t = 1, 2, \ldots$.
-* The black dot is $\psi^*$.
+* $P$ 是{ref}`上文讨论的 <mc_eg2>`衰退和增长的随机矩阵。
+* 最高的红点是任意选择的初始边际概率分布 $\psi$，表示为 $\mathbb R^3$ 中的一个向量。
+* 其他红点是边际分布 $\psi P^t$，其中 $t = 1, 2, \ldots$。
+* 黑点是 $\psi^*$。
 
-You might like to try experimenting with different initial conditions.
+你可以尝试用不同的初始条件进行实验。
 
 (ergodicity)=
-## {index}`Ergodicity <single: Ergodicity>`
+## {index}`遍历性 <single: Ergodicity>`
 
-```{index} single: Markov Chains; Ergodicity
+```{index} single: 马尔可夫链; 遍历性
 ```
 
-Under irreducibility, yet another important result obtains: for all $x \in S$,
+在不可约性条件下，还有另一个重要的结果：对于所有 $x \in S$，
 
 ```{math}
 :label: llnfmc0
 
 \frac{1}{m} \sum_{t = 1}^m \mathbf{1}\{X_t = x\}  \to \psi^*(x)
-    \quad \text{as } m \to \infty
+    \quad \text{当 } m \to \infty
 ```
 
-Here
+这里
 
-* $\mathbf{1}\{X_t = x\} = 1$ if $X_t = x$ and zero otherwise
-* convergence is with probability one
-* the result does not depend on the marginal distribution  of $X_0$
+* $\mathbf{1}\{X_t = x\} = 1$ 当且仅当 $X_t = x$，否则为零
+* 收敛是以概率1发生的
+* 该结果不依赖于 $X_0$ 的边际分布
 
-The result tells us that the fraction of time the chain spends at state $x$ converges to $\psi^*(x)$ as time goes to infinity.
+结果表明，随着时间趋向无穷，马尔可夫链在状态 $x$ 停留的时间比例收敛到 $\psi^*(x)$。
 
 (new_interp_sd)=
-This gives us another way to interpret the stationary distribution --- provided that the convergence result in {eq}`llnfmc0` is valid.
+这为我们提供了另一种解释平稳分布的方式 --- 前提是{eq}`llnfmc0`中的收敛结果成立。
 
-The convergence asserted in {eq}`llnfmc0` is a special case of a law of large numbers result for Markov chains --- see [EDTC](http://johnstachurski.net/edtc.html), section 4.3.4 for some additional information.
+{eq}`llnfmc0`中所述的收敛是马尔可夫链大数定律结果的一个特例 --- 更多相关信息请参见[EDTC](http://johnstachurski.net/edtc.html)第4.3.4节。
 
 (mc_eg1-2)=
-### Example
+### 示例
 
-Recall our cross-sectional interpretation of the employment/unemployment model {ref}`discussed above <mc_eg1-1>`.
+回想我们之前{ref}`讨论过的<mc_eg1-1>`就业/失业模型的横截面解释。
 
-Assume that $\alpha \in (0,1)$ and $\beta \in (0,1)$, so that irreducibility and aperiodicity both hold.
+假设 $\alpha \in (0,1)$ 且 $\beta \in (0,1)$，因此不可约性和非周期性都成立。
 
-We saw that the stationary distribution is $(p, 1-p)$, where
+我们看到平稳分布是 $(p, 1-p)$，其中
 
 $$
 p = \frac{\beta}{\alpha + \beta}
 $$
 
-In the cross-sectional interpretation, this is the fraction of people unemployed.
+在横截面解释中，这是失业人口的比例。
 
-In view of our latest (ergodicity) result, it is also the fraction of time that a single worker can expect to spend unemployed.
+根据我们最新的（遍历性）结果，这也是单个工人预期处于失业状态的时间比例。
 
-Thus, in the long-run, cross-sectional averages for a population and time-series averages for a given person coincide.
+因此，从长远来看，群体的横截面平均值和个人的时间序列平均值是一致的。
 
-This is one aspect of the concept  of ergodicity.
+这是遍历性概念的一个方面。
 
 (finite_mc_expec)=
-## Computing Expectations
+## 计算期望值
 
-```{index} single: Markov Chains; Forecasting Future Values
+```{index} single: 马尔可夫链; 预测未来值
 ```
 
-We sometimes want to  compute mathematical  expectations of functions of $X_t$ of the form
+我们有时需要计算 $X_t$ 函数的数学期望值，形式如下：
 
 ```{math}
 :label: mc_une
@@ -904,7 +882,7 @@ We sometimes want to  compute mathematical  expectations of functions of $X_t$ o
 \mathbb E [ h(X_t) ]
 ```
 
-and conditional expectations such as
+以及条件期望值，如：
 
 ```{math}
 :label: mc_cce
@@ -912,11 +890,10 @@ and conditional expectations such as
 \mathbb E [ h(X_{t + k})  \mid X_t = x]
 ```
 
-where
+其中：
 
-* $\{X_t\}$ is a Markov chain generated by $n \times n$ stochastic matrix $P$
-* $h$ is a given function, which, in terms of matrix
-  algebra, we'll think of as the column vector
+* $\{X_t\}$ 是由 $n \times n$ 随机矩阵 $P$ 生成的马尔可夫链
+* $h$ 是给定函数，从矩阵代数的角度来看，我们将其视为列向量
 
 $$
 h
@@ -929,30 +906,27 @@ h
   \right)
 $$
 
-Computing the unconditional expectation {eq}`mc_une` is easy.
+计算无条件期望值 {eq}`mc_une` 很简单。
 
-
-We just sum over the marginal  distribution  of $X_t$ to get
+我们只需对 $X_t$ 的边际分布求和即可得到
 
 $$
 \mathbb E [ h(X_t) ]
 = \sum_{x \in S} (\psi P^t)(x) h(x)
 $$
 
-Here $\psi$ is the distribution of $X_0$.
+这里 $\psi$ 是 $X_0$ 的分布。
 
-Since $\psi$ and hence $\psi P^t$ are row vectors, we can also
-write this as
+由于 $\psi$ 以及 $\psi P^t$ 都是行向量，我们也可以写成
 
 $$
 \mathbb E [ h(X_t) ]
 =  \psi P^t h
 $$
 
-For the conditional expectation {eq}`mc_cce`, we need to sum over
-the conditional distribution of $X_{t + k}$ given $X_t = x$.
+对于条件期望 {eq}`mc_cce`，我们需要对给定 $X_t = x$ 时 $X_{t + k}$ 的条件分布求和。
 
-We already know that this is $P^k(x, \cdot)$, so
+我们已经知道这是 $P^k(x, \cdot)$，所以
 
 ```{math}
 :label: mc_cce2
@@ -961,33 +935,31 @@ We already know that this is $P^k(x, \cdot)$, so
 = (P^k h)(x)
 ```
 
-The vector $P^k h$ stores the conditional expectation $\mathbb E [ h(X_{t + k})  \mid X_t = x]$ over all $x$.
+向量 $P^k h$ 存储了所有 $x$ 的条件期望 $\mathbb E [ h(X_{t + k})  \mid X_t = x]$。
 
-### Iterated Expectations
+### 迭代期望
 
-The **law of iterated expectations** states that
+**迭代期望法则**指出
 
 $$
 \mathbb E \left[ \mathbb E [ h(X_{t + k})  \mid X_t = x] \right] = \mathbb E [  h(X_{t + k}) ]
 $$
 
-where the outer $ \mathbb E$ on the left side is an unconditional distribution taken with respect to the marginal distribution  $\psi_t$ of $X_t$
-(again see equation {eq}`mdfmc2`).
+其中左边的外部期望 $ \mathbb E$ 是关于 $X_t$ 的边际分布 $\psi_t$ 的无条件分布（参见方程 {eq}`mdfmc2`）。
 
-To verify the law of iterated expectations, use  equation {eq}`mc_cce2` to substitute $ (P^k h)(x)$ for $E [ h(X_{t + k})  \mid X_t = x]$, write
+为了验证迭代期望法则，使用方程 {eq}`mc_cce2` 将 $ (P^k h)(x)$ 代入 $E [ h(X_{t + k})  \mid X_t = x]$，写作
 
 $$
 \mathbb E \left[ \mathbb E [ h(X_{t + k})  \mid X_t = x] \right] = \psi_t P^k h,
 $$
 
-and note $\psi_t P^k h = \psi_{t+k} h = \mathbb E [  h(X_{t + k}) ] $.
+并注意 $\psi_t P^k h = \psi_{t+k} h = \mathbb E [  h(X_{t + k}) ] $。
 
-### Expectations of Geometric Sums
+### 几何和的期望
 
-Sometimes we want to compute the mathematical expectation of a geometric sum, such as
-$\sum_t \beta^t h(X_t)$.
+有时我们想要计算几何和的数学期望，例如 $\sum_t \beta^t h(X_t)$。
 
-In view of the preceding discussion, this is
+根据前面的讨论，这等于
 
 $$
 \mathbb{E} [
@@ -996,20 +968,20 @@ $$
 = [(I - \beta P)^{-1} h](x)
 $$
 
-where
+其中
 
 $$
 (I - \beta P)^{-1}  = I + \beta P + \beta^2 P^2 + \cdots
 $$
 
-Premultiplication by $(I - \beta P)^{-1}$ amounts to "applying the **resolvent operator**".
+乘以 $(I - \beta P)^{-1}$ 相当于"应用**预解算子**"。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: fm_ex1
 
-According to the discussion {ref}`above <mc_eg1-2>`, if a worker's employment dynamics obey the stochastic matrix
+根据{ref}`上述讨论 <mc_eg1-2>`，如果一个工人的就业动态遵循随机矩阵
 
 $$
 P
@@ -1021,27 +993,21 @@ P
   \right)
 $$
 
-with $\alpha \in (0,1)$ and $\beta \in (0,1)$, then, in the long-run, the fraction
-of time spent unemployed will be
+其中 $\alpha \in (0,1)$ 且 $\beta \in (0,1)$，那么从长期来看，失业时间的比例将是
 
 $$
 p := \frac{\beta}{\alpha + \beta}
 $$
 
-In other words, if $\{X_t\}$ represents the Markov chain for
-employment, then $\bar X_m \to p$ as $m \to \infty$, where
+换句话说，如果 $\{X_t\}$ 表示就业的马尔可夫链，那么当 $m \to \infty$ 时，$\bar X_m \to p$，其中
 
 $$
 \bar X_m := \frac{1}{m} \sum_{t = 1}^m \mathbf{1}\{X_t = 0\}
 $$
 
-This exercise asks you to illustrate convergence by computing
-$\bar X_m$ for large $m$ and checking that
-it is close to $p$.
+本练习要求你通过计算大规模 $m$ 的 $\bar X_m$ 并验证其接近 $p$ 来说明这种收敛性。
 
-You will see that this statement is true regardless of the choice of initial
-condition or the values of $\alpha, \beta$, provided both lie in
-$(0, 1)$.
+你会发现，只要 $\alpha, \beta$ 都在 $(0, 1)$ 区间内，无论选择什么初始条件，这个结论都是成立的。
 ```
 
 
@@ -1049,36 +1015,35 @@ $(0, 1)$.
 :class: dropdown
 ```
 
-We will address this exercise graphically.
+我们将通过图形方式解决这个练习。
 
-The plots show the time series of $\bar X_m - p$ for two initial
-conditions.
+图表显示了两种初始条件下 $\bar X_m - p$ 的时间序列。
 
-As $m$ gets large, both series converge to zero.
+随着 $m$ 变大，两个序列都收敛于零。
 
-```{code-cell} python3
+```{code-cell} ipython3
 α = β = 0.1
 N = 10000
 p = β / (α + β)
 
-P = ((1 - α,       α),               # Careful: P and p are distinct
+P = ((1 - α,       α),               # 注意：P和p是不同的
      (    β,   1 - β))
 mc = MarkovChain(P)
 
 fig, ax = plt.subplots(figsize=(9, 6))
 ax.set_ylim(-0.25, 0.25)
 ax.grid()
-ax.hlines(0, 0, N, lw=2, alpha=0.6)   # Horizonal line at zero
+ax.hlines(0, 0, N, lw=2, alpha=0.6)   # 在零处画水平线
 
 for x0, col in ((0, 'blue'), (1, 'green')):
-    # Generate time series for worker that starts at x0
+    # 生成从x0开始的工人的时间序列
     X = mc.simulate(N, init=x0)
-    # Compute fraction of time spent unemployed, for each n
+    # 计算每个n的失业时间比例
     X_bar = (X == 0).cumsum() / (1 + np.arange(N, dtype=float))
-    # Plot
+    # 绘图
     ax.fill_between(range(N), np.zeros(N), X_bar - p, color=col, alpha=0.1)
     ax.plot(X_bar - p, color=col, label=f'$X_0 = \, {x0} $')
-    # Overlay in black--make lines clearer
+    # 用黑色覆盖--使线条更清晰
     ax.plot(X_bar - p, 'k-', alpha=0.6)
 
 ax.legend(loc='upper right')
@@ -1092,108 +1057,105 @@ plt.show()
 :label: fm_ex2
 ```
 
-A topic of interest for economics and many other disciplines is *ranking*.
+*排名*是经济学和许多其他学科关注的一个话题。
 
-Let's now consider one of the most practical and important ranking problems
---- the rank assigned to web pages by search engines.
+现在让我们来考虑一个最实用且重要的排名问题——搜索引擎对网页的排名。
 
-(Although the problem is motivated from outside of economics, there is in fact a deep connection between search ranking systems and prices in certain competitive equilibria --- see {cite}`DLP2013`.)
+（尽管这个问题源自经济学之外，但搜索排名系统与某些竞争均衡中的价格实际上存在深层联系——参见{cite}`DLP2013`。）
 
-To understand the issue, consider the set of results returned by a query to a web search engine.
+为了理解这个问题，考虑一下网络搜索引擎查询返回的结果集。
 
-For the user, it is desirable to
+对用户来说，理想的是：
 
-1. receive a large set of accurate matches
-1. have the matches returned in order, where the order corresponds to some measure of "importance"
+1. 获得大量准确的匹配结果
+1. 按顺序返回匹配结果，这个顺序对应某种"重要性"的衡量标准
 
-Ranking according to a measure of importance is the problem we now consider.
+根据重要性衡量标准进行排名就是我们现在要考虑的问题。
 
-The methodology developed to solve this problem by Google founders Larry Page and Sergey Brin
-is known as [PageRank](https://en.wikipedia.org/wiki/PageRank).
+Google创始人拉里·佩奇和谢尔盖·布林开发的解决这个问题的方法被称为[PageRank](https://en.wikipedia.org/wiki/PageRank)。
 
-To illustrate the idea, consider the following diagram
+为了说明这个概念，请看下面的图表
 
 ```{figure} /_static/lecture_specific/finite_markov/web_graph.png
 ```
 
-Imagine that this is a miniature version of the WWW, with
+想象这是万维网的一个微型版本，其中
 
-* each node representing a web page
-* each arrow representing the existence of a link from one page to another
+* 每个节点代表一个网页
+* 每个箭头代表从一个页面到另一个页面的链接存在
 
-Now let's think about which pages are likely to be important, in the sense of being valuable to a search engine user.
+现在让我们思考哪些页面可能是重要的，即对搜索引擎用户来说具有价值的页面。
 
-One possible criterion for the importance of a page is the number of inbound links --- an indication of popularity.
+衡量页面重要性的一个可能标准是入站链接的数量——这表明了受欢迎程度。
 
-By this measure, `m` and `j` are the most important pages, with 5 inbound links each.
+按照这个标准，`m`和`j`是最重要的页面，各有5个入站链接。
 
-However, what if the pages linking to `m`, say, are not themselves important?
+但是，如果链接到`m`的页面本身并不重要呢？
 
-Thinking this way, it seems appropriate to weight the inbound nodes by relative importance.
+这样想的话，似乎应该根据相对重要性来对入站节点进行加权。
 
-The PageRank algorithm does precisely this.
+PageRank算法正是这样做的。
 
-A slightly simplified presentation that captures the basic idea is as follows.
+下面是一个稍微简化的介绍，但捕捉到了基本思想。
 
-Letting $j$ be (the integer index of) a typical page and $r_j$ be its ranking, we set
+令 $j$ 为（整数索引的）典型页面，$r_j$ 为其排名，我们设定
 
 $$
 r_j = \sum_{i \in L_j} \frac{r_i}{\ell_i}
 $$
 
-where
+其中
 
-* $\ell_i$ is the total number of outbound links from $i$
-* $L_j$ is the set of all pages $i$ such that $i$ has a link to $j$
+* $\ell_i$ 是从页面 $i$ 出发的外链总数
+* $L_j$ 是所有链接到页面 $j$ 的页面 $i$ 的集合
 
-This is a measure of the number of inbound links, weighted by their own ranking (and normalized by $1 / \ell_i$).
+这是一个衡量入站链接数量的指标，根据链接来源页面的排名进行加权（并通过 $1 / \ell_i$ 进行归一化）。
 
-There is, however, another interpretation, and it brings us back to Markov chains.
+然而，还有另一种解释，这让我们回到马尔可夫链。
 
-Let $P$ be the matrix given by $P(i, j) = \mathbf 1\{i \to j\} / \ell_i$ where $\mathbf 1\{i \to j\} = 1$ if $i$ has a link to $j$ and zero otherwise.
+令 $P$ 为矩阵，其中 $P(i, j) = \mathbf 1\{i \to j\} / \ell_i$，这里 $\mathbf 1\{i \to j\} = 1$ 表示页面 $i$ 有链接指向 $j$，否则为零。
 
-The matrix $P$ is a stochastic matrix provided that each page has at least one link.
+如果每个页面至少有一个链接，则矩阵 $P$ 是一个随机矩阵。
 
-With this definition of $P$ we have
+基于这个 $P$ 的定义，我们有
 
 $$
 r_j
 = \sum_{i \in L_j} \frac{r_i}{\ell_i}
-= \sum_{\text{all } i} \mathbf 1\{i \to j\} \frac{r_i}{\ell_i}
-= \sum_{\text{all } i} P(i, j) r_i
+= \sum_{\text{所有 } i} \mathbf 1\{i \to j\} \frac{r_i}{\ell_i}
+= \sum_{\text{所有 } i} P(i, j) r_i
 $$
 
-Writing $r$ for the row vector of rankings, this becomes $r = r P$.
+将排名写成行向量 $r$，这就变成了 $r = r P$。
 
-Hence $r$ is the stationary distribution of the stochastic matrix $P$.
+因此 $r$ 是随机矩阵 $P$ 的平稳分布。
 
-Let's think of $P(i, j)$ as the probability of "moving" from page $i$ to page $j$.
+让我们将 $P(i, j)$ 理解为从页面 $i$ "移动"到页面 $j$ 的概率。
 
-The value $P(i, j)$ has the interpretation
+$P(i, j)$ 的值可以解释为：
 
-* $P(i, j) = 1/k$ if $i$ has $k$ outbound links and $j$ is one of them
-* $P(i, j) = 0$ if $i$ has no direct link to $j$
+* 如果页面 $i$ 有 $k$ 个出站链接，且 $j$ 是其中之一，则 $P(i, j) = 1/k$
+* 如果页面 $i$ 没有直接链接到 $j$，则 $P(i, j) = 0$
 
-Thus, motion from page to page is that of a web surfer who moves from one page to another by randomly clicking on one of the links on that page.
+因此，从一个页面到另一个页面的移动就像一个网络浏览者通过随机点击页面上的某个链接来移动。
 
-Here "random" means that each link is selected with equal probability.
+这里的"随机"意味着每个链接被选中的概率相等。
 
-Since $r$ is the stationary distribution of $P$, assuming that the uniform ergodicity condition is valid, we {ref}`can interpret <new_interp_sd>` $r_j$ as the fraction of time that a (very persistent) random surfer spends at page $j$.
+由于 $r$ 是 $P$ 的平稳分布，假设一致遍历性条件成立，我们{ref}`可以解释 <new_interp_sd>` $r_j$ 为一个（非常持久的）随机浏览者在页面 $j$ 停留的时间比例。
 
-Your exercise is to apply this ranking algorithm to the graph pictured above
-and return the list of pages ordered by rank.
+你的练习是将这个排名算法应用到上图所示的图中，并返回按排名顺序排列的页面列表。
 
-There is a total of 14 nodes (i.e., web pages), the first named `a` and the last named `n`.
+总共有14个节点（即网页），第一个命名为 `a`，最后一个命名为 `n`。
 
-A typical line from the file has the form
+文件中的典型行具有以下形式
 
 ```{code-block} none
 d -> h;
 ```
 
-This should be interpreted as meaning that there exists a link from `d` to `h`.
+这应该被理解为存在一个从`d`到`h`的链接。
 
-The data for this graph is shown below, and read into a file called `web_graph_data.txt` when the cell is executed.
+下面显示了这个图的数据，当单元格执行时，这些数据被读入名为`web_graph_data.txt`的文件中。
 
 ```{code-cell} ipython
 %%file web_graph_data.txt
@@ -1236,20 +1198,20 @@ n -> j;
 n -> m;
 ```
 
-To parse this file and extract the relevant information, you can use [regular expressions](https://docs.python.org/3/library/re.html).
+要解析这个文件并提取相关信息，你可以使用[正则表达式](https://docs.python.org/3/library/re.html)。
 
-The following code snippet provides a hint as to how you can go about this
+下面的代码片段提供了一个关于如何实现的提示
 
-```{code-cell} python3
+```{code-cell} ipython3
 import re
-re.findall('\w', 'x +++ y ****** z')  # \w matches alphanumerics
+re.findall(r'\w', 'x +++ y ****** z')  # \w 匹配字母数字字符
 ```
 
-```{code-cell} python3
-re.findall('\w', 'a ^^ b &&& $$ c')
+```{code-cell} ipython3
+re.findall(r'\w', 'a ^^ b &&& $$ c')
 ```
 
-When you solve for the ranking, you will find that the highest ranked node is in fact `g`, while the lowest is `a`.
+当你解出排名时，你会发现实际上`g`是排名最高的节点，而`a`是排名最低的。
 
 ```{exercise-end}
 ```
@@ -1259,11 +1221,11 @@ When you solve for the ranking, you will find that the highest ranked node is in
 :class: dropdown
 ```
 
-Here is one solution:
+这是一个解决方案：
 
-```{code-cell} python3
+```{code-cell} ipython3
 """
-Return list of pages, ordered by rank
+返回按排名排序的页面列表
 """
 import re
 from operator import itemgetter
@@ -1271,11 +1233,11 @@ from operator import itemgetter
 infile = 'web_graph_data.txt'
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
-n = 14 # Total number of web pages (nodes)
+n = 14 # 网页（节点）总数
 
-# Create a matrix Q indicating existence of links
-#  * Q[i, j] = 1 if there is a link from i to j
-#  * Q[i, j] = 0 otherwise
+# 创建一个表示链接存在的矩阵Q
+#  * Q[i, j] = 1 表示从i到j存在链接
+#  * Q[i, j] = 0 表示不存在链接
 Q = np.zeros((n, n), dtype=int)
 with open(infile) as f:
     edges = f.readlines()
@@ -1283,16 +1245,16 @@ for edge in edges:
     from_node, to_node = re.findall('\w', edge)
     i, j = alphabet.index(from_node), alphabet.index(to_node)
     Q[i, j] = 1
-# Create the corresponding Markov matrix P
+# 创建相应的马尔可夫矩阵P
 P = np.empty((n, n))
 for i in range(n):
     P[i, :] = Q[i, :] / Q[i, :].sum()
 mc = MarkovChain(P)
-# Compute the stationary distribution r
+# 计算稳态分布r
 r = mc.stationary_distributions[0]
 ranked_pages = {alphabet[i] : r[i] for i in range(n)}
-# Print solution, sorted from highest to lowest rank
-print('Rankings\n ***')
+# 打印解决方案，从最高排名到最低排名排序
+print('排名\n ***')
 for name, rank in sorted(ranked_pages.items(), key=itemgetter(1), reverse=1):
     print(f'{name}: {rank:.4}')
 ```
@@ -1304,74 +1266,75 @@ for name, rank in sorted(ranked_pages.items(), key=itemgetter(1), reverse=1):
 ```{exercise}
 :label: fm_ex3
 
-In numerical work, it is sometimes convenient to replace a continuous model with a discrete one.
+在数值计算中，有时用离散模型替代连续模型会比较方便。
 
-In particular, Markov chains are routinely generated as discrete approximations to AR(1) processes of the form
+特别是，马尔可夫链经常被用作如下AR(1)过程的离散近似：
 
 $$
 y_{t+1} = \rho y_t + u_{t+1}
 $$
 
-Here ${u_t}$ is assumed to be IID and $N(0, \sigma_u^2)$.
+这里假设${u_t}$是独立同分布的，且服从$N(0, \sigma_u^2)$。
 
-The variance of the stationary probability distribution of $\{ y_t \}$ is
+$\{ y_t \}$的平稳概率分布的方差为
 
 $$
 \sigma_y^2 := \frac{\sigma_u^2}{1-\rho^2}
 $$
 
-Tauchen's method {cite}`Tauchen1986` is the most common method for approximating this continuous state process with a finite state Markov chain.
+Tauchen方法{cite}`Tauchen1986`是将这个连续状态过程近似为有限状态马尔可夫链最常用的方法。
 
-A routine for this already exists in [QuantEcon.py](http://quantecon.org/quantecon-py) but let's write our own version as an exercise.
+[QuantEcon.py](http://quantecon.org/quantecon-py)中已经有了这个程序，但让我们作为练习自己写一个版本。
 
-As a first step, we choose
+作为第一步，我们选择：
 
-* $n$, the number of states for the discrete approximation
-* $m$, an integer that parameterizes the width of the state space
+* $n$，离散近似的状态数
+* $m$，一个用于参数化状态空间宽度的整数
 
-Next, we create a state space $\{x_0, \ldots, x_{n-1}\} \subset \mathbb R$
-and a stochastic $n \times n$ matrix $P$ such that
+接下来，我们创建一个状态空间$\{x_0, \ldots, x_{n-1}\} \subset \mathbb R$
+
+以及一个随机 $n \times n$ 矩阵 $P$，满足以下条件：
 
 * $x_0 = - m \, \sigma_y$
 * $x_{n-1} = m \, \sigma_y$
-* $x_{i+1} = x_i + s$ where $s = (x_{n-1} - x_0) / (n - 1)$
+* $x_{i+1} = x_i + s$ 其中 $s = (x_{n-1} - x_0) / (n - 1)$
 
-Let $F$ be the cumulative distribution function of the normal distribution $N(0, \sigma_u^2)$.
+令 $F$ 为正态分布 $N(0, \sigma_u^2)$ 的累积分布函数。
 
-The values $P(x_i, x_j)$ are computed to approximate the AR(1) process --- omitting the derivation, the rules are as follows:
+$P(x_i, x_j)$ 的值是为了近似 AR(1) 过程而计算的 --- 省略推导过程，规则如下：
 
-1. If $j = 0$, then set
+1. 如果 $j = 0$，则设
 
    $$
    P(x_i, x_j) = P(x_i, x_0) = F(x_0-\rho x_i + s/2)
    $$
 
-1. If $j = n-1$, then set
+1. 如果 $j = n-1$，则设
 
    $$
    P(x_i, x_j) = P(x_i, x_{n-1}) = 1 - F(x_{n-1} - \rho x_i - s/2)
    $$
 
-1. Otherwise, set
+1. 否则，设
 
    $$
    P(x_i, x_j) = F(x_j - \rho x_i + s/2) - F(x_j - \rho x_i - s/2)
    $$
 
+练习要求编写一个函数 `approx_markov(rho, sigma_u, m=3, n=7)`，返回
+$\{x_0, \ldots, x_{n-1}\} \subset \mathbb R$ 和 $n \times n$ 矩阵
+$P$，如上所述。
 
-The exercise is to write a function `approx_markov(rho, sigma_u, m=3, n=7)` that returns
-$\{x_0, \ldots, x_{n-1}\} \subset \mathbb R$ and $n \times n$ matrix
-$P$ as described above.
-
-* Even better, write a function that returns an instance of [QuantEcon.py's](http://quantecon.org/quantecon-py) MarkovChain class.
+* 更好的方法是编写一个函数，返回[QuantEcon.py](http://quantecon.org/quantecon-py)的MarkovChain类的实例。
 ```
 
 ```{solution} fm_ex3
 :class: dropdown
 
-A solution from the [QuantEcon.py](http://quantecon.org/quantecon-py) library
-can be found [here](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/markov/approximation.py).
+可以在[QuantEcon.py](http://quantecon.org/quantecon-py)库中找到解决方案，
+具体见[这里](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/markov/approximation.py)。
 
 ```
 
-[^pm]: Hint: First show that if $P$ and $Q$ are stochastic matrices then so is their product --- to check the row sums, try post multiplying by a column vector of ones.  Finally, argue that $P^n$ is a stochastic matrix using induction.
+[^pm]: 提示：首先证明如果P和Q是随机矩阵，那么它们的乘积也是随机矩阵——要检查行和，试着用一列1向量进行后乘。最后，用归纳法论证P^n是随机矩阵。
+

@@ -17,13 +17,13 @@ kernelspec:
 </div>
 ```
 
-# {index}`The Income Fluctuation Problem I: Basic Model <single: The Income Fluctuation Problem I: Basic Model>`
+# {index}`收入波动问题 I：基本模型 <single: The Income Fluctuation Problem I: Basic Model>`
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -32,33 +32,35 @@ tags: [hide-output]
 !pip install quantecon
 ```
 
-## Overview
+## 概述
 
-In this lecture, we study an optimal savings problem for an infinitely lived consumer---the "common ancestor" described in {cite}`Ljungqvist2012`, section 1.3.
+在本讲中，我们研究一个无限生命期消费者的最优储蓄问题——即{cite}`Ljungqvist2012`第1.3节中描述的"共同祖先"。
 
-This is an essential sub-problem for many representative macroeconomic models
+这是许多代表性宏观经济模型的重要子问题
 
 * {cite}`Aiyagari1994`
 * {cite}`Huggett1993`
-* etc.
+* 等等
 
-It is related to the decision problem in the {doc}`stochastic optimal growth model <optgrowth>` and yet differs in important ways.
+它与{doc}`随机最优增长模型 <optgrowth>`中的决策问题相关，但在重要方面有所不同。
 
-For example, the choice problem for the agent includes an additive income term that leads to an occasionally binding constraint.
+例如，代理人的选择问题包含一个加性收入项，这导致了一个偶尔会出现的约束条件。
 
-Moreover, in this and the following lectures, we will inject more realistic
-features such as correlated shocks.
+此外，在本讲及后续讲座中，我们将引入更多现实的特征，如相关性冲击。
 
-To solve the model we will use Euler equation based time iteration, which proved
-to be {doc}`fast and accurate <coleman_policy_iter>` in our investigation of
-the {doc}`stochastic optimal growth model <optgrowth>`.
+为了求解该模型，我们将使用基于欧拉方程的时间迭代法，这在我们研究{doc}`随机最优增长模型 <optgrowth>`时被证明是{doc}`快速且准确的 <coleman_policy_iter>`。
 
-Time iteration is globally convergent under mild assumptions, even when utility is unbounded (both above and below).
+在温和的假设条件下，时间迭代在全局范围内是收敛的，即使效用是无界的（上下都无界）。
 
-We'll need the following imports:
+我们需要以下导入：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from quantecon.optimize import brentq
 from numba import jit, float64
@@ -66,30 +68,30 @@ from numba.experimental import jitclass
 from quantecon import MarkovChain
 ```
 
-### References
+### 参考文献
 
-Our presentation is a simplified version of {cite}`ma2020income`.
+我们的演示是{cite}`ma2020income`的简化版本。
 
-Other references include {cite}`Deaton1991`, {cite}`DenHaan2010`,
-{cite}`Kuhn2013`, {cite}`Rabault2002`,  {cite}`Reiter2009`  and
-{cite}`SchechtmanEscudero1977`.
+其他参考文献包括{cite}`Deaton1991`、{cite}`DenHaan2010`、
+{cite}`Kuhn2013`、{cite}`Rabault2002`、{cite}`Reiter2009`和
+{cite}`SchechtmanEscudero1977`。
 
-## The Optimal Savings Problem
+## 最优储蓄问题
 
 ```{index} single: Optimal Savings; Problem
 ```
 
-Let's write down the model and then discuss how to solve it.
+让我们先写下模型，然后讨论如何求解。
 
-### Set-Up
+### 设置
 
-Consider a household that chooses a state-contingent consumption plan $\{c_t\}_{t \geq 0}$ to maximize
+考虑一个家庭，选择状态相关的消费计划$\{c_t\}_{t \geq 0}$以最大化
 
 $$
 \mathbb{E} \, \sum_{t=0}^{\infty} \beta^t u(c_t)
 $$
 
-subject to
+约束条件为
 
 ```{math}
 :label: eqst
@@ -100,56 +102,54 @@ a_{t+1} \leq  R(a_t - c_t)  + Y_{t+1},
 \quad t = 0, 1, \ldots
 ```
 
-Here
+这里
 
-* $\beta \in (0,1)$ is the discount factor
-* $a_t$ is asset holdings at time $t$, with borrowing constraint $a_t \geq 0$
-* $c_t$ is consumption
-* $Y_t$ is non-capital income (wages, unemployment compensation, etc.)
-* $R := 1 + r$, where $r > 0$ is the interest rate on savings
+* $\beta \in (0,1)$是贴现因子
+* $a_t$是t时期的资产持有量，借贷约束为$a_t \geq 0$
+* $c_t$是消费
+* $Y_t$是非资本收入（工资、失业补偿等）
+* $R := 1 + r$，其中$r > 0$是储蓄利率
 
-The timing here is as follows:
+时间安排如下：
 
-1. At the start of period $t$, the household chooses consumption
-   $c_t$.
-1. Labor is supplied by the household throughout the period and labor income
-   $Y_{t+1}$ is received at the end of period $t$.
-1. Financial income $R(a_t - c_t)$ is received at the end of period $t$.
-1. Time shifts to $t+1$ and the process repeats.
+1. 在第 $t$ 期开始时，家庭选择消费
+   $c_t$。
+1. 家庭在整个期间提供劳动，并在第 $t$ 期末收到劳动收入
+   $Y_{t+1}$。
+1. 金融收入 $R(a_t - c_t)$ 在第 $t$ 期末收到。
+1. 时间转移到 $t+1$ 并重复此过程。
 
-Non-capital income $Y_t$ is given by $Y_t = y(Z_t)$, where
-$\{Z_t\}$ is an exogeneous state process.
+非资本收入 $Y_t$ 由 $Y_t = y(Z_t)$ 给出，其中
+$\{Z_t\}$ 是一个外生状态过程。
 
-As is common in the literature, we take $\{Z_t\}$ to be a finite state
-Markov chain taking values in $\mathsf Z$ with Markov matrix $P$.
+按照文献中的常见做法，我们将 $\{Z_t\}$ 视为一个有限状态
+马尔可夫链，取值于 $\mathsf Z$，具有马尔可夫矩阵 $P$。
 
-We further assume that
+我们进一步假设
 
 1. $\beta R < 1$
-1. $u$ is smooth, strictly increasing and strictly concave with $\lim_{c \to 0} u'(c) = \infty$ and $\lim_{c \to \infty} u'(c) = 0$
+1. $u$ 是光滑的、严格递增和严格凹的，且 $\lim_{c \to 0} u'(c) = \infty$ 和 $\lim_{c \to \infty} u'(c) = 0$
 
-The asset space is $\mathbb R_+$ and the state is the pair $(a,z)
-\in \mathsf S := \mathbb R_+ \times \mathsf Z$.
+资产空间是 $\mathbb R_+$，状态是对 $(a,z)
+\in \mathsf S := \mathbb R_+ \times \mathsf Z$。
 
-A *feasible consumption path* from $(a,z) \in \mathsf S$ is a consumption
-sequence $\{c_t\}$ such that $\{c_t\}$ and its induced asset path $\{a_t\}$ satisfy
+从 $(a,z) \in \mathsf S$ 开始的*可行消费路径*是一个消费
+
+序列 $\{c_t\}$ 满足 $\{c_t\}$ 及其导出的资产路径 $\{a_t\}$ 需要：
 
 1. $(a_0, z_0) = (a, z)$
-1. the feasibility constraints in {eq}`eqst`, and
-1. measurability, which means that $c_t$ is a function of random
-   outcomes up to date $t$ but not after.
+1. 满足{eq}`eqst`中的可行性约束，以及
+1. 可测性，即 $c_t$ 是直到时间 $t$ 的随机结果的函数，而不是之后的。
 
-The meaning of the third point is just that consumption at time $t$
-cannot be a function of outcomes are yet to be observed.
+第三点的含义仅仅是时间 $t$ 的消费不能是尚未观察到的结果的函数。
 
-In fact, for this problem, consumption can be chosen optimally by taking it to
-be contingent only on the current state.
+事实上，对于这个问题，可以通过仅让消费依赖于当前状态来实现最优选择。
 
-Optimality is defined below.
+最优性定义如下。
 
-### Value Function and Euler Equation
+### 价值函数和欧拉方程
 
-The *value function* $V \colon \mathsf S \to \mathbb{R}$ is defined by
+*价值函数* $V \colon \mathsf S \to \mathbb{R}$ 定义为
 
 ```{math}
 :label: eqvf
@@ -160,11 +160,11 @@ V(a, z) := \max \, \mathbb{E}
 \right\}
 ```
 
-where the maximization is overall feasible consumption paths from $(a,z)$.
+其中最大化是针对从$(a,z)$出发的所有可行消费路径。
 
-An *optimal consumption path* from $(a,z)$ is a feasible consumption path from $(a,z)$ that attains the supremum in {eq}`eqvf`.
+从$(a,z)$出发的*最优消费路径*是从$(a,z)$出发的可行消费路径中实现{eq}`eqvf`中上确界的路径。
 
-To pin down such paths we can use a version of the Euler equation, which in the present setting is
+为了确定这些路径，我们可以使用欧拉方程的一个版本，在当前设定中为
 
 ```{math}
 :label: ee00
@@ -173,7 +173,7 @@ u' (c_t)
 \geq \beta R \,  \mathbb{E}_t  u'(c_{t+1})
 ```
 
-and
+和
 
 ```{math}
 :label: ee01
@@ -183,17 +183,13 @@ c_t < a_t
 u' (c_t) = \beta R \,  \mathbb{E}_t  u'(c_{t+1})
 ```
 
-When $c_t = a_t$ we obviously have $u'(c_t) = u'(a_t)$,
+当 $c_t = a_t$ 时，我们显然有 $u'(c_t) = u'(a_t)$，
 
-When $c_t$ hits the upper bound $a_t$, the
-strict inequality $u' (c_t) > \beta R \,  \mathbb{E}_t  u'(c_{t+1})$
-can occur because $c_t$ cannot increase sufficiently to attain equality.
+当 $c_t$ 达到上界 $a_t$ 时，严格不等式 $u' (c_t) > \beta R \,  \mathbb{E}_t  u'(c_{t+1})$ 可能出现，因为 $c_t$ 无法充分增加以达到等式。
 
-(The lower boundary case $c_t = 0$ never arises at the optimum because
-$u'(0) = \infty$.)
+（最优解中永远不会出现下界情况 $c_t = 0$，因为 $u'(0) = \infty$。）
 
-With some thought, one can show that {eq}`ee00` and {eq}`ee01` are
-equivalent to
+经过一些思考，可以证明 {eq}`ee00` 和 {eq}`ee01` 等价于
 
 ```{math}
 :label: eqeul0
@@ -204,13 +200,13 @@ u' (c_t)
 \right\}
 ```
 
-### Optimality Results
+### 最优性结果
 
-As shown in {cite}`ma2020income`,
+如 {cite}`ma2020income` 所示，
 
-1. For each $(a,z) \in \mathsf S$, a unique optimal consumption path from $(a,z)$ exists
-1. This path is the unique feasible path from $(a,z)$ satisfying the
-   Euler equality {eq}`eqeul0` and the transversality condition
+1. 对于每个 $(a,z) \in \mathsf S$，从 $(a,z)$ 出发存在唯一的最优消费路径
+
+1. 这条路径是从$(a,z)$出发的唯一可行路径，它满足欧拉等式{eq}`eqeul0`和横截条件
 
 ```{math}
 :label: eqtv
@@ -218,45 +214,42 @@ As shown in {cite}`ma2020income`,
 \lim_{t \to \infty} \beta^t \, \mathbb{E} \, [ u'(c_t) a_{t+1} ] = 0
 ```
 
-Moreover, there exists an *optimal consumption function*
-$\sigma^* \colon \mathsf S \to \mathbb R_+$ such that the path
-from $(a,z)$ generated by
+此外，存在一个*最优消费函数*$\sigma^* \colon \mathsf S \to \mathbb R_+$，使得从$(a,z)$生成的路径
 
 $$
 (a_0, z_0) = (a, z),
 \quad
 c_t = \sigma^*(a_t, Z_t)
-\quad \text{and} \quad
+\quad \text{和} \quad
 a_{t+1} = R (a_t - c_t) + Y_{t+1}
 $$
 
-satisfies both {eq}`eqeul0` and {eq}`eqtv`, and hence is the unique optimal
-path from $(a,z)$.
+同时满足{eq}`eqeul0`和{eq}`eqtv`，因此是从$(a,z)$出发的唯一最优路径。
 
-Thus, to solve the optimization problem, we need to compute the policy $\sigma^*$.
+因此，为了解决这个优化问题，我们需要计算策略$\sigma^*$。
 
 (ifp_computation)=
-## Computation
+## 计算
 
 ```{index} single: Optimal Savings; Computation
 ```
 
-There are two standard ways to solve for $\sigma^*$
+计算$\sigma^*$有两种标准方法
 
-1. time iteration using the Euler equality and
-1. value function iteration.
+1. 使用欧拉等式的时间迭代法
+1. 值函数迭代法
 
-Our investigation of the cake eating problem and stochastic optimal growth
-model suggests that time iteration will be faster and more accurate.
+我们对蛋糕食用问题和随机最优增长的研究
 
-This is the approach that we apply below.
+模型表明时间迭代将更快且更准确。
 
-### Time Iteration
+这就是我们下面要采用的方法。
 
-We can rewrite {eq}`eqeul0` to make it a statement about functions rather than
-random variables.
+### 时间迭代
 
-In particular, consider the functional equation
+我们可以重写{eq}`eqeul0`，使其成为关于函数而不是随机变量的表述。
+
+具体来说，考虑函数方程
 
 ```{math}
 :label: eqeul1
@@ -270,21 +263,17 @@ In particular, consider the functional equation
      \right\}
 ```
 
-where
+其中
 
-* $(u' \circ \sigma)(s) := u'(\sigma(s))$.
-* $\mathbb E_z$ conditions on current state $z$ and $\hat X$
-  indicates next period value of random variable $X$ and
-* $\sigma$ is the unknown function.
+* $(u' \circ \sigma)(s) := u'(\sigma(s))$
+* $\mathbb E_z$表示基于当前状态$z$的条件期望，$\hat X$表示随机变量$X$的下一期值
+* $\sigma$是未知函数
 
-We need a suitable class of candidate solutions for the optimal consumption
-policy.
+我们需要为最优消费政策选择一个合适的候选解类别。
 
-The right way to pick such a class is to consider what properties the solution
-is likely to have, in order to restrict the search space and ensure that
-iteration is well behaved.
+选择这样一个类别的正确方法是考虑解可能具有什么性质，以便限制搜索空间并确保迭代表现良好。
 
-To this end, let $\mathscr C$ be the space of continuous functions $\sigma \colon \mathbf S \to \mathbb R$ such that $\sigma$ is increasing in the first argument, $0 < \sigma(a,z) \leq a$ for all $(a,z) \in \mathbf S$, and
+为此，令 $\mathscr C$ 为连续函数 $\sigma \colon \mathbf S \to \mathbb R$ 的空间，其中 $\sigma$ 对第一个参数是递增的，对所有 $(a,z) \in \mathbf S$ 都有 $0 < \sigma(a,z) \leq a$，且
 
 ```{math}
 :label: ifpC4
@@ -293,12 +282,11 @@ To this end, let $\mathscr C$ be the space of continuous functions $\sigma \colo
 \left| (u' \circ \sigma)(a,z) - u'(a) \right| < \infty
 ```
 
-This will be our candidate class.
+这将是我们的候选类。
 
-In addition, let $K \colon \mathscr{C} \to \mathscr{C}$ be defined as
-follows.
+此外，令 $K \colon \mathscr{C} \to \mathscr{C}$ 定义如下。
 
-For given $\sigma \in \mathscr{C}$, the value $K \sigma (a,z)$ is the unique $c \in [0, a]$ that solves
+对给定的 $\sigma \in \mathscr{C}$，$K \sigma (a,z)$ 是解决以下方程的唯一 $c \in [0, a]$：
 
 ```{math}
 :label: eqsifc
@@ -312,22 +300,17 @@ u'(c)
      \right\}
 ```
 
-We refer to $K$ as the Coleman--Reffett operator.
+我们将 $K$ 称为 Coleman--Reffett 算子。
 
-The operator $K$ is constructed so that fixed points of $K$
-coincide with solutions to the functional equation {eq}`eqeul1`.
+构造算子 $K$ 的目的是使得 $K$ 的不动点与泛函方程 {eq}`eqeul1` 的解重合。
 
-It is shown in {cite}`ma2020income` that the unique optimal policy can be
-computed by picking any $\sigma \in \mathscr{C}$ and iterating with the
-operator $K$ defined in {eq}`eqsifc`.
+在{cite}`ma2020income`中显示，通过选取任意$\sigma \in \mathscr{C}$并使用{eq}`eqsifc`中定义的算子$K$进行迭代，可以计算出唯一的最优策略。
 
-### Some Technical Details
+### 一些技术细节
 
-The proof of the last statement is somewhat technical but here is a quick
-summary:
+最后这个结论的证明在技术上有些复杂，但这里给出一个简要总结：
 
-It is shown in {cite}`ma2020income` that $K$ is a contraction mapping on
-$\mathscr{C}$ under the metric
+在{cite}`ma2020income`中证明，在以下度量下，$K$是$\mathscr{C}$上的压缩映射
 
 $$
 \rho(c, d) := \| \, u' \circ \sigma_1 - u' \circ \sigma_2 \, \|
@@ -335,44 +318,41 @@ $$
  \qquad \quad (\sigma_1, \sigma_2 \in \mathscr{C})
 $$
 
-which evaluates the maximal difference in terms of marginal utility.
+该度量计算边际效用的最大差异。
 
-(The benefit of this measure of distance is that, while elements of $\mathscr C$ are not generally bounded, $\rho$ is always finite under our assumptions.)
+（这种距离度量的好处在于，虽然$\mathscr C$中的元素通常不是有界的，但在我们的假设下$\rho$始终是有限的。）
 
-It is also shown that the metric $\rho$ is complete on $\mathscr{C}$.
+还证明了度量$\rho$在$\mathscr{C}$上是完备的。
 
-In consequence, $K$ has a unique fixed point $\sigma^* \in \mathscr{C}$ and $K^n c \to \sigma^*$ as $n \to \infty$ for any $\sigma \in \mathscr{C}$.
+因此，$K$ 在 $\mathscr{C}$ 中有唯一的不动点 $\sigma^*$，且对于任意 $\sigma \in \mathscr{C}$，当 $n \to \infty$ 时，$K^n c \to \sigma^*$。
 
-By the definition of $K$, the fixed points of $K$ in $\mathscr{C}$ coincide with the solutions to {eq}`eqeul1` in $\mathscr{C}$.
+根据 $K$ 的定义，$K$ 在 $\mathscr{C}$ 中的不动点与方程 {eq}`eqeul1` 在 $\mathscr{C}$ 中的解相一致。
 
-As a consequence, the path $\{c_t\}$ generated from $(a_0,z_0) \in
-S$ using policy function $\sigma^*$ is the unique optimal path from
-$(a_0,z_0) \in S$.
+因此，从 $(a_0,z_0) \in S$ 出发，使用策略函数 $\sigma^*$ 生成的路径 $\{c_t\}$ 是从 $(a_0,z_0) \in S$ 出发的唯一最优路径。
 
-## Implementation
+## 实现
 
 ```{index} single: Optimal Savings; Programming Implementation
 ```
 
-We use the CRRA utility specification
+我们使用 CRRA 效用函数规范
 
 $$
 u(c) = \frac{c^{1 - \gamma}} {1 - \gamma}
 $$
 
-The exogeneous state process $\{Z_t\}$ defaults to a two-state Markov chain
-with state space $\{0, 1\}$ and transition matrix $P$.
+外生状态过程 $\{Z_t\}$ 默认为一个两状态马尔可夫链，其状态空间为 $\{0, 1\}$，转移矩阵为 $P$。
 
-Here we build a class called `IFP` that stores the model primitives.
+这里我们构建一个名为 `IFP` 的类来存储模型的基本要素。
 
-```{code-cell} python3
+```{code-cell} ipython3
 ifp_data = [
-    ('R', float64),              # Interest rate 1 + r
-    ('β', float64),              # Discount factor
-    ('γ', float64),              # Preference parameter
-    ('P', float64[:, :]),        # Markov matrix for binary Z_t
-    ('y', float64[:]),           # Income is Y_t = y[Z_t]
-    ('asset_grid', float64[:])   # Grid (array)
+    ('R', float64),              # 利率 1 + r
+    ('β', float64),              # 贴现因子
+    ('γ', float64),              # 偏好参数
+    ('P', float64[:, :]),        # Z_t 的二元马尔可夫矩阵
+    ('y', float64[:]),           # 收入为 Y_t = y[Z_t]
+    ('asset_grid', float64[:])   # 网格（数组）
 ]
 
 @jitclass(ifp_data)
@@ -393,14 +373,14 @@ class IFP:
         self.P, self.y = np.array(P), np.array(y)
         self.asset_grid = np.linspace(0, grid_max, grid_size)
 
-        # Recall that we need R β < 1 for convergence.
-        assert self.R * self.β < 1, "Stability condition violated."
+        # 注意我们需要 R β < 1 以确保收敛
+        assert self.R * self.β < 1, "稳定性条件被违反。"
 
     def u_prime(self, c):
         return c**(-self.γ)
 ```
 
-Next we provide a function to compute the difference
+接下来我们提供一个函数来计算差值
 
 ```{math}
 :label: euler_diff_eq
@@ -413,30 +393,29 @@ u'(c) - \max \left\{
      \right\}
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def euler_diff(c, a, z, σ_vals, ifp):
     """
-    The difference between the left- and right-hand side
-    of the Euler Equation, given current policy σ.
+    欧拉方程左右两边的差值，基于当前策略σ。
 
-        * c is the consumption choice
-        * (a, z) is the state, with z in {0, 1}
-        * σ_vals is a policy represented as a matrix.
-        * ifp is an instance of IFP
+        * c 是消费选择
+        * (a, z) 是状态，其中 z 在 {0, 1} 中
+        * σ_vals 是以矩阵形式表示的策略
+        * ifp 是 IFP 的一个实例
 
     """
 
-    # Simplify names
+    # 简化名称
     R, P, y, β, γ  = ifp.R, ifp.P, ifp.y, ifp.β, ifp.γ
     asset_grid, u_prime = ifp.asset_grid, ifp.u_prime
     n = len(P)
 
-    # Convert policy into a function by linear interpolation
+    # 通过线性插值将策略转换为函数
     def σ(a, z):
         return np.interp(a, asset_grid, σ_vals[:, z])
 
-    # Calculate the expectation conditional on current z
+    # 计算基于当前z的期望值
     expect = 0.0
     for z_hat in range(n):
         expect += u_prime(σ(R * (a - c) + y[z_hat], z_hat)) * P[z, z_hat]
@@ -444,16 +423,15 @@ def euler_diff(c, a, z, σ_vals, ifp):
     return u_prime(c) - max(β * R * expect, u_prime(a))
 ```
 
-Note that we use linear interpolation along the asset grid to approximate the
-policy function.
+请注意，我们沿着资产网格使用线性插值来近似策略函数。
 
-The next step is to obtain the root of the Euler difference.
+下一步是求取欧拉方程差的根。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def K(σ, ifp):
     """
-    The operator K.
+    算子K。
 
     """
     σ_new = np.empty_like(σ)
@@ -465,22 +443,20 @@ def K(σ, ifp):
     return σ_new
 ```
 
-With the operator $K$ in hand, we can choose an initial condition and
-start to iterate.
+有了算子 $K$ 之后，我们可以选择一个初始条件并开始迭代。
 
-The following function iterates to convergence and returns the approximate
-optimal policy.
+下面的函数进行迭代直至收敛，并返回近似的最优策略。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/coleman_policy_iter/solve_time_iter.py
 ```
 
-Let's carry this out using the default parameters of the `IFP` class:
+让我们使用`IFP`类的默认参数来执行这个过程：
 
-```{code-cell} python3
+```{code-cell} ipython3
 ifp = IFP()
 
-# Set up initial consumption policy of consuming all assets at all z
+# 设置初始消费策略，即在所有z状态下消费所有资产
 z_size = len(ifp.P)
 a_grid = ifp.asset_grid
 a_size = len(a_grid)
@@ -489,73 +465,72 @@ a_size = len(a_grid)
 σ_star = solve_model_time_iter(ifp, σ_init)
 ```
 
-Here's a plot of the resulting policy for each exogeneous state $z$.
+这是每个外生状态 $z$ 对应的最优策略图。
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 for z in range(z_size):
     label = rf'$\sigma^*(\cdot, {z})$'
     ax.plot(a_grid, σ_star[:, z], label=label)
-ax.set(xlabel='assets', ylabel='consumption')
+ax.set(xlabel='资产', ylabel='消费')
 ax.legend()
 plt.show()
 ```
 
-The following exercises walk you through several applications where policy functions are computed.
+以下练习将带您完成几个需要计算政策函数的应用。
 
-### A Sanity Check
+### 合理性检查
 
-One way to check our results is to
+检查我们结果的一种方法是
 
-* set labor income to zero in each state and
-* set the gross interest rate $R$ to unity.
+* 将每个状态的劳动收入设为零
+* 将总利率 $R$ 设为1。
 
-In this case, our income fluctuation problem is just a cake eating problem.
+在这种情况下，我们的收入波动问题就变成了一个蛋糕消费问题。
 
-We know that, in this case, the value function and optimal consumption policy
-are given by
+我们知道，在这种情况下，价值函数和最优消费政策由以下给出：
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/cake_eating_numerical/analytical.py
 ```
 
-Let's see if we match up:
+让我们看看是否匹配：
 
-```{code-cell} python3
+```{code-cell} ipython3
 ifp_cake_eating = IFP(r=0.0, y=(0.0, 0.0))
 
 σ_star = solve_model_time_iter(ifp_cake_eating, σ_init)
 
 fig, ax = plt.subplots()
-ax.plot(a_grid, σ_star[:, 0], label='numerical')
-ax.plot(a_grid, c_star(a_grid, ifp.β, ifp.γ), '--', label='analytical')
+ax.plot(a_grid, σ_star[:, 0], label='数值解')
+ax.plot(a_grid, c_star(a_grid, ifp.β, ifp.γ), '--', label='解析解')
 
-ax.set(xlabel='assets', ylabel='consumption')
+ax.set(xlabel='资产', ylabel='消费')
 ax.legend()
 
 plt.show()
 ```
 
-Success!
+成功！
 
-## Exercises
+## 练习
 
 ```{exercise-start}
 :label: ifp_ex1
 ```
 
-Let's consider how the interest rate affects consumption.
+让我们考虑利率如何影响消费。
 
-Reproduce the following figure, which shows (approximately) optimal consumption policies for different interest rates
+复现下图，该图显示了不同利率下的（近似）最优消费策略
 
 ```{figure} /_static/lecture_specific/ifp/ifp_policies.png
 ```
 
-* Other than `r`, all parameters are at their default values.
-* `r` steps through `np.linspace(0, 0.04, 4)`.
-* Consumption is plotted against assets for income shock fixed at the smallest value.
+* 除了`r`外，所有参数都使用默认值。
+* `r`的取值范围为`np.linspace(0, 0.04, 4)`。
+* 消费相对于资产绘制，收入冲击固定在最小值。
 
-The figure shows that higher interest rates boost savings and hence suppress consumption.
+图中显示，较高的利率会促进储蓄，从而抑制消费。
 
 ```{exercise-end}
 ```
@@ -564,9 +539,9 @@ The figure shows that higher interest rates boost savings and hence suppress con
 :class: dropdown
 ```
 
-Here's one solution:
+这是一个解决方案：
 
-```{code-cell} python3
+```{code-cell} ipython3
 r_vals = np.linspace(0, 0.04, 4)
 
 fig, ax = plt.subplots()
@@ -575,7 +550,7 @@ for r_val in r_vals:
     σ_star = solve_model_time_iter(ifp, σ_init, verbose=False)
     ax.plot(ifp.asset_grid, σ_star[:, 0], label=f'$r = {r_val:.3f}$')
 
-ax.set(xlabel='asset level', ylabel='consumption (low income)')
+ax.set(xlabel='资产水平', ylabel='消费（低收入）')
 ax.legend()
 plt.show()
 ```
@@ -588,12 +563,11 @@ plt.show()
 :label: ifp_ex2
 ```
 
-Now let's consider the long run asset levels held by households under the
-default parameters.
+现在让我们考虑在默认参数下家庭长期持有的资产水平。
 
-The following figure is a 45 degree diagram showing the law of motion for assets when consumption is optimal
+下图是一个45度图,显示了在消费最优时资产的变动规律
 
-```{code-cell} python3
+```{code-cell} ipython3
 ifp = IFP()
 
 σ_star = solve_model_time_iter(ifp, σ_init, verbose=False)
@@ -601,43 +575,41 @@ a = ifp.asset_grid
 R, y = ifp.R, ifp.y
 
 fig, ax = plt.subplots()
-for z, lb in zip((0, 1), ('low income', 'high income')):
+for z, lb in zip((0, 1), ('低收入', '高收入')):
     ax.plot(a, R * (a - σ_star[:, z]) + y[z] , label=lb)
 
 ax.plot(a, a, 'k--')
-ax.set(xlabel='current assets', ylabel='next period assets')
+ax.set(xlabel='当前资产', ylabel='下一期资产')
 
 ax.legend()
 plt.show()
 ```
 
-The unbroken lines show the update function for assets at each $z$, which is
+实线显示了每个 $z$ 值下资产的更新函数，即
 
 $$
 a \mapsto R (a - \sigma^*(a, z)) + y(z)
 $$
 
-The dashed line is the 45 degree line.
+虚线是45度线。
 
-We can see from the figure that the dynamics will be stable --- assets do not
-diverge even in the highest state.
+从图中可以看出，这个动态过程是稳定的 --- 即使在最高状态下，资产也不会发散。
 
-In fact there is a unique stationary distribution of assets that we can calculate by simulation
+事实上，存在一个我们可以通过模拟计算的唯一的平稳分布
 
-* Can be proved via theorem 2 of {cite}`HopenhaynPrescott1992`.
-* It represents the long run dispersion of assets across households when households have idiosyncratic shocks.
+* 这可以通过{cite}`HopenhaynPrescott1992`的定理2来证明。
+* 它表示当家庭面临特质性冲击时，家庭之间资产的长期分布情况。
 
-Ergodicity is valid here, so stationary probabilities can be calculated by averaging over a single long time series.
+这里符合遍历性，因此平稳概率可以通过对单个长时间序列取平均值来计算。
 
-Hence to approximate the stationary distribution we can simulate a long time
-series for assets and histogram it.
+因此，为了近似平稳分布，我们可以模拟一个较长的资产时间序列并绘制其直方图。
 
-Your task is to generate such a histogram.
+你的任务是生成这样一个直方图。
 
-* Use a single time series $\{a_t\}$ of length 500,000.
-* Given the length of this time series, the initial condition $(a_0,
-  z_0)$ will not matter.
-* You might find it helpful to use the `MarkovChain` class from `quantecon`.
+* 使用一个长度为500,000的单一时间序列 $\{a_t\}$。
+* 考虑到这个时间序列的长度，初始条件 $(a_0, z_0)$ 并不重要。
+
+* 使用`quantecon`中的`MarkovChain`类可能会对你有帮助。
 
 ```{exercise-end}
 ```
@@ -646,27 +618,26 @@ Your task is to generate such a histogram.
 :class: dropdown
 ```
 
-First we write a function to compute a long asset series.
+首先我们编写一个函数来计算长期资产序列。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def compute_asset_series(ifp, T=500_000, seed=1234):
     """
-    Simulates a time series of length T for assets, given optimal
-    savings behavior.
-
-    ifp is an instance of IFP
+    模拟资产的长度为T的时间序列，基于最优储蓄行为。
+    
+    ifp是IFP的一个实例
     """
-    P, y, R = ifp.P, ifp.y, ifp.R  # Simplify names
-
-    # Solve for the optimal policy
+    P, y, R = ifp.P, ifp.y, ifp.R  # 简化名称
+    
+    # 求解最优策略
     σ_star = solve_model_time_iter(ifp, σ_init, verbose=False)
     σ = lambda a, z: np.interp(a, ifp.asset_grid, σ_star[:, z])
-
-    # Simulate the exogeneous state process
+    
+    # 模拟外生状态过程
     mc = MarkovChain(P)
     z_seq = mc.simulate(T, random_state=seed)
-
-    # Simulate the asset path
+    
+    # 模拟资产路径
     a = np.zeros(T+1)
     for t in range(T):
         z = z_seq[t]
@@ -674,24 +645,23 @@ def compute_asset_series(ifp, T=500_000, seed=1234):
     return a
 ```
 
-Now we call the function, generate the series and then histogram it:
+现在我们调用函数，生成序列并绘制直方图：
 
-```{code-cell} python3
+```{code-cell} ipython3
 ifp = IFP()
 a = compute_asset_series(ifp)
 
 fig, ax = plt.subplots()
 ax.hist(a, bins=20, alpha=0.5, density=True)
-ax.set(xlabel='assets')
+ax.set(xlabel='资产')
 plt.show()
 ```
 
-The shape of the asset distribution is unrealistic.
+资产分布的形状不够真实。
 
-Here it is left skewed when in reality it has a long right tail.
+这里呈现为左偏态，而实际上应该具有长右尾。
 
-In a {doc}`subsequent lecture <ifp_advanced>` we will rectify this by adding
-more realistic features to the model.
+在{doc}`后续讲座 <ifp_advanced>`中，我们将通过在模型中添加更多真实特征来纠正这一点。
 
 ```{solution-end}
 ```
@@ -700,24 +670,20 @@ more realistic features to the model.
 :label: ifp_ex3
 ```
 
-Following on from exercises 1 and 2, let's look at how savings and aggregate
-asset holdings vary with the interest rate
+在练习1和2的基础上，让我们来看看储蓄和总体资产持有量如何随利率变化
 
 ```{note}
-{cite}`Ljungqvist2012` section 18.6 can be consulted for more background on the topic treated in this exercise.
+可以参考{cite}`Ljungqvist2012`第18.6节获取本练习所涉及主题的更多背景知识。
 ```
-For a given parameterization of the model, the mean of the stationary
-distribution of assets can be interpreted as aggregate capital in an economy
-with a unit mass of *ex-ante* identical households facing idiosyncratic
-shocks.
 
-Your task is to investigate how this measure of aggregate capital varies with
-the interest rate.
+对于模型的给定参数化，资产稳态分布的均值可以被解释为一个经济体中的总资本，该经济体中有单位质量的面临特质性冲击的*事前*相同的家庭。
 
-Following tradition, put the price (i.e., interest rate) on the vertical axis.
+你的任务是研究这个总资本衡量指标如何随利率变化。
 
-On the horizontal axis put aggregate capital, computed as the mean of the
-stationary distribution given the interest rate.
+按照传统，将价格（即利率）放在纵轴上。
+
+
+在横轴上放置总资本，该值通过给定利率下的平稳分布的均值计算得出。
 
 ```{exercise-end}
 ```
@@ -726,9 +692,9 @@ stationary distribution given the interest rate.
 :class: dropdown
 ```
 
-Here's one solution
+这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 M = 25
 r_vals = np.linspace(0, 0.02, M)
 fig, ax = plt.subplots()
@@ -746,7 +712,8 @@ ax.set(xlabel='capital', ylabel='interest rate')
 plt.show()
 ```
 
-As expected, aggregate savings increases with the interest rate.
+正如预期的那样，总储蓄随着利率的上升而增加。
 
 ```{solution-end}
 ```
+

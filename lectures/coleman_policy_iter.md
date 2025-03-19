@@ -17,13 +17,13 @@ kernelspec:
 </div>
 ```
 
-# {index}`Optimal Growth III: Time Iteration <single: Optimal Growth III: Time Iteration>`
+# {index}`最优增长 III：时间迭代 <single: Optimal Growth III: Time Iteration>`
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
-In addition to what's in Anaconda, this lecture will need the following libraries:
+除了Anaconda中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
@@ -31,56 +31,50 @@ tags: [hide-output]
 ---
 !pip install quantecon
 ```
+## 概述
 
-## Overview
+在本讲中，我们将继续我们{doc}`之前 <optgrowth>`对随机最优增长模型的研究。
 
-In this lecture, we'll continue our {doc}`earlier <optgrowth>` study of the stochastic optimal growth model.
+在那节课中，我们使用值函数迭代求解了相关的动态规划问题。
 
-In that lecture, we solved the associated dynamic programming
-problem using value function iteration.
+这种技术的优点在于其广泛的适用性。
 
-The beauty of this technique is its broad applicability.
+然而，对于数值问题，我们通常可以通过推导专门针对具体应用的方法来获得更高的效率。
 
-With numerical problems, however, we can often attain higher efficiency in
-specific applications by deriving methods that are carefully tailored to the
-application at hand.
+随机最优增长模型有大量可供利用的结构，特别是当我们对原始函数采用一些凹性和光滑性假设时。
 
-The stochastic optimal growth model has plenty of structure to exploit for
-this purpose, especially when we adopt some concavity and smoothness
-assumptions over primitives.
+我们将利用这种结构来获得一个基于欧拉方程的方法。
 
-We'll use this structure to obtain an Euler equation based method.
+这将是对我们在{doc}`蛋糕食用问题 <cake_eating_numerical>`的基础讲座中考虑的时间迭代法的扩展。
 
-This will be an extension of the time iteration method considered
-in our elementary lecture on {doc}`cake eating <cake_eating_numerical>`.
-
-In a {doc}`subsequent lecture <egm_policy_iter>`, we'll see that time
-iteration can be further adjusted to obtain even more efficiency.
-
-Let's start with some imports:
+在{doc}`后续讲座 <egm_policy_iter>`中，我们将看到时间迭代可以进一步调整以获得更高的效率。
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from quantecon.optimize import brentq
 from numba import jit
 ```
+## 欧拉方程
 
-## The Euler Equation
+我们的第一步是推导欧拉方程，这是对我们在{doc}`蛋糕食用问题讲座 <cake_eating_problem>`中得到的欧拉方程的推广。
 
-Our first step is to derive the Euler equation, which is a generalization of
-the Euler equation we obtained in the {doc}`lecture on cake eating <cake_eating_problem>`.
+我们采用{doc}`随机增长模型讲座 <optgrowth>`中设定的模型，并添加以下假设：
 
-We take the model set out in {doc}`the stochastic growth model lecture <optgrowth>` and add the following assumptions:
-
-1. $u$ and $f$ are continuously differentiable and strictly concave
+1. $u$和$f$是连续可微且严格凹函数
 1. $f(0) = 0$
-1. $\lim_{c \to 0} u'(c) = \infty$ and $\lim_{c \to \infty} u'(c) = 0$
-1. $\lim_{k \to 0} f'(k) = \infty$ and $\lim_{k \to \infty} f'(k) = 0$
+1. $\lim_{c \to 0} u'(c) = \infty$且$\lim_{c \to \infty} u'(c) = 0$
+1. $\lim_{k \to 0} f'(k) = \infty$且$\lim_{k \to \infty} f'(k) = 0$
 
-The last two conditions are usually called **Inada conditions**.
+最后两个条件通常被称为**稻田条件**。
 
-Recall the Bellman equation
+回顾贝尔曼方程
 
 ```{math}
 :label: cpi_fpb30
@@ -93,15 +87,14 @@ v^*(y) = \max_{0 \leq c \leq y}
 y \in \mathbb R_+
 ```
 
-Let the optimal consumption policy be denoted by $\sigma^*$.
+让最优消费策略用$\sigma^*$表示。
 
-We know that $\sigma^*$ is a $v^*$-greedy policy so that $\sigma^*(y)$ is the maximizer in {eq}`cpi_fpb30`.
+我们知道$\sigma^*$是一个$v^*$-贪婪策略，因此$\sigma^*(y)$是{eq}`cpi_fpb30`中的最大化值。
+上述条件表明
 
-The conditions above imply that
-
-* $\sigma^*$ is the unique optimal policy for the stochastic optimal growth model
-* the optimal policy is continuous, strictly increasing and also **interior**, in the sense that $0 < \sigma^*(y) < y$ for all strictly positive $y$, and
-* the value function is strictly concave and continuously differentiable, with
+* $\sigma^*$ 是随机最优增长模型的唯一最优策略
+* 最优策略是连续的、严格递增的，并且是**内部的**，即对于所有严格正的 $y$，都有 $0 < \sigma^*(y) < y$，并且
+* 值函数是严格凹的且连续可微的，满足
 
 ```{math}
 :label: cpi_env
@@ -109,10 +102,9 @@ The conditions above imply that
 (v^*)'(y) = u' (\sigma^*(y) ) := (u' \circ \sigma^*)(y)
 ```
 
-The last result is called the **envelope condition** due to its relationship with the [envelope theorem](https://en.wikipedia.org/wiki/Envelope_theorem).
+最后这个结果被称为**包络条件**，因为它与[包络定理](https://en.wikipedia.org/wiki/Envelope_theorem)有关。
 
-To see why {eq}`cpi_env` holds, write the Bellman equation in the equivalent
-form
+要理解为什么{eq}`cpi_env`成立，可以将贝尔曼方程写成等价形式
 
 $$
 v^*(y) = \max_{0 \leq k \leq y}
@@ -121,13 +113,10 @@ v^*(y) = \max_{0 \leq k \leq y}
     \right\},
 $$
 
-Differentiating with respect to $y$,  and then evaluating at the optimum yields {eq}`cpi_env`.
+对 $y$ 求导，然后在最优点处求值即可得到{eq}`cpi_env`。
+（[EDTC](https://johnstachurski.net/edtc.html)第12.1节包含这些结果的完整证明，许多其他教材中也可以找到密切相关的讨论。）
 
-(Section 12.1 of [EDTC](https://johnstachurski.net/edtc.html) contains full proofs of these results, and closely related discussions can be found in many other texts.)
-
-Differentiability of the value function and interiority of the optimal policy
-imply that optimal consumption satisfies the first order condition associated
-with {eq}`cpi_fpb30`, which is
+价值函数的可微性和最优策略的内部性意味着最优消费满足与{eq}`cpi_fpb30`相关的一阶条件，即
 
 ```{math}
 :label: cpi_foc
@@ -135,7 +124,7 @@ with {eq}`cpi_fpb30`, which is
 u'(\sigma^*(y)) = \beta \int (v^*)'(f(y - \sigma^*(y)) z) f'(y - \sigma^*(y)) z \phi(dz)
 ```
 
-Combining {eq}`cpi_env` and the first-order condition {eq}`cpi_foc` gives the **Euler equation**
+将{eq}`cpi_env`和一阶条件{eq}`cpi_foc`结合得到**欧拉方程**
 
 ```{math}
 :label: cpi_euler
@@ -144,7 +133,7 @@ Combining {eq}`cpi_env` and the first-order condition {eq}`cpi_foc` gives the **
 = \beta \int (u'\circ \sigma^*)(f(y - \sigma^*(y)) z) f'(y - \sigma^*(y)) z \phi(dz)
 ```
 
-We can think of the Euler equation as a functional equation
+我们可以将欧拉方程视为一个泛函方程
 
 ```{math}
 :label: cpi_euler_func
@@ -152,14 +141,13 @@ We can think of the Euler equation as a functional equation
 (u'\circ \sigma)(y)
 = \beta \int (u'\circ \sigma)(f(y - \sigma(y)) z) f'(y - \sigma(y)) z \phi(dz)
 ```
+对于内部消费策略 $\sigma$，其中一个解就是最优策略 $\sigma^*$。
 
-over interior consumption policies $\sigma$, one solution of which is the optimal policy $\sigma^*$.
+我们的目标是求解函数方程 {eq}`cpi_euler_func` 从而获得 $\sigma^*$。
 
-Our aim is to solve the functional equation {eq}`cpi_euler_func` and hence obtain $\sigma^*$.
+### Coleman-Reffett 算子
 
-### The Coleman-Reffett Operator
-
-Recall the Bellman operator
+回顾 Bellman 算子
 
 ```{math}
 :label: fcbell20_coleman
@@ -170,17 +158,14 @@ Tv(y) := \max_{0 \leq c \leq y}
 \right\}
 ```
 
-Just as we introduced the Bellman operator to solve the Bellman equation, we
-will now introduce an operator over policies to help us solve the Euler
-equation.
+正如我们引入 Bellman 算子来求解 Bellman 方程一样，我们现在将引入一个作用于策略的算子来帮助我们求解欧拉方程。
 
-This operator $K$ will act on the set of all $\sigma \in \Sigma$
-that are continuous, strictly increasing and interior.
+这个算子 $K$ 将作用于所有连续、严格递增且内部的 $\sigma \in \Sigma$ 的集合上。
 
-Henceforth we denote this set of policies by $\mathscr P$
+此后我们用 $\mathscr P$ 表示这个策略集合
 
-1. The operator $K$ takes as its argument a $\sigma \in \mathscr P$ and
-1. returns a new function $K\sigma$,  where $K\sigma(y)$ is the $c \in (0, y)$ that solves.
+1. 算子 $K$ 以 $\sigma \in \mathscr P$ 为参数
+1. 返回一个新函数 $K\sigma$，其中 $K\sigma(y)$ 是求解以下方程的 $c \in (0, y)$。
 
 ```{math}
 :label: cpi_coledef
@@ -189,95 +174,78 @@ u'(c)
 = \beta \int (u' \circ \sigma) (f(y - c) z ) f'(y - c) z \phi(dz)
 ```
 
-We call this operator the **Coleman-Reffett operator** to acknowledge the work of
-{cite}`Coleman1990` and {cite}`Reffett1996`.
+我们称这个算子为**Coleman-Reffett算子**，以此致敬{cite}`Coleman1990`和{cite}`Reffett1996`的研究工作。
 
-In essence, $K\sigma$ is the consumption policy that the Euler equation tells
-you to choose today when your future consumption policy is $\sigma$.
+本质上，当你的未来消费政策是$\sigma$时，$K\sigma$是欧拉方程告诉你今天应该选择的消费政策。
 
-The  important thing to note about $K$ is that, by
-construction, its fixed points coincide with solutions to the functional
-equation {eq}`cpi_euler_func`.
+关于$K$需要注意的重要一点是，根据其构造，其不动点恰好与函数方程{eq}`cpi_euler_func`的解coincide。
 
-In particular, the optimal policy $\sigma^*$ is a fixed point.
+特别地，最优政策$\sigma^*$就是一个不动点。
 
-Indeed, for fixed $y$, the value $K\sigma^*(y)$ is the $c$ that
-solves
+事实上，对于固定的$y$，$K\sigma^*(y)$是解决以下方程的$c$：
 
 $$
 u'(c)
 = \beta \int (u' \circ \sigma^*) (f(y - c) z ) f'(y - c) z \phi(dz)
 $$
 
-In view of the Euler equation, this is exactly $\sigma^*(y)$.
+根据欧拉方程，这恰好就是$\sigma^*(y)$。
 
-### Is the Coleman-Reffett Operator Well Defined?
+### Coleman-Reffett算子是否良定义？
 
-In particular, is there always a unique $c \in (0, y)$ that solves
-{eq}`cpi_coledef`?
+特别地，是否总存在唯一的$c \in (0, y)$来解决{eq}`cpi_coledef`？
 
-The answer is yes, under our assumptions.
+在我们的假设条件下，答案是肯定的。
+对于任何 $\sigma \in \mathscr P$，{eq}`cpi_coledef` 右侧
 
-For any $\sigma \in \mathscr P$, the right side of {eq}`cpi_coledef`
+* 在 $(0, y)$ 上关于 $c$ 是连续且严格递增的
+* 当 $c \uparrow y$ 时趋向于 $+\infty$
 
-* is continuous and strictly increasing in $c$ on $(0, y)$
-* diverges to $+\infty$ as $c \uparrow y$
+{eq}`cpi_coledef` 左侧
 
-The left side of {eq}`cpi_coledef`
+* 在 $(0, y)$ 上关于 $c$ 是连续且严格递减的
+* 当 $c \downarrow 0$ 时趋向于 $+\infty$
 
-* is continuous and strictly decreasing in $c$ on $(0, y)$
-* diverges to $+\infty$ as $c \downarrow 0$
+绘制这些曲线并利用上述信息，你会确信当 $c$ 在 $(0, y)$ 范围内变化时，这些曲线恰好相交一次。
 
-Sketching these curves and using the information above will convince you that they cross exactly once as $c$ ranges over $(0, y)$.
+通过更深入的分析，可以进一步证明当 $\sigma \in \mathscr P$ 时，$K \sigma \in \mathscr P$。
 
-With a bit more analysis, one can show in addition that $K \sigma \in \mathscr P$
-whenever $\sigma \in \mathscr P$.
+### 与值函数迭代的比较（理论）
 
-### Comparison with VFI (Theory)
+可以证明 $K$ 的迭代与贝尔曼算子的迭代之间存在紧密关系。
 
-It is possible to prove that there is a tight relationship between iterates of
-$K$ and iterates of the Bellman operator.
+从数学角度来说，这两个算子是*拓扑共轭的*。
 
-Mathematically, the two operators are *topologically conjugate*.
+简单来说，这意味着如果一个算子的迭代收敛，那么另一个算子的迭代也会收敛，反之亦然。
 
-Loosely speaking, this means that if iterates of one operator converge then
-so do iterates of the other, and vice versa.
+而且，至少从理论上讲，它们的收敛速度是相同的。
+然而，事实证明算子 $K$ 在数值计算上更加稳定，因此在我们考虑的应用中更加高效。
 
-Moreover, there is a sense in which they converge at the same rate, at least
-in theory.
+下面给出一些例子。
 
-However, it turns out that the operator $K$ is more stable numerically
-and hence more efficient in the applications we consider.
+## 实现
 
-Examples are given below.
-
-## Implementation
-
-As in our {doc}`previous study <optgrowth_fast>`, we continue to assume that
+如同我们在{doc}`之前的研究 <optgrowth_fast>`中一样，我们继续假设
 
 * $u(c) = \ln c$
 * $f(k) = k^{\alpha}$
-* $\phi$ is the distribution of $\xi := \exp(\mu + s \zeta)$ when $\zeta$ is standard normal
+* $\phi$ 是当 $\zeta$ 为标准正态分布时 $\xi := \exp(\mu + s \zeta)$ 的分布
 
-This will allow us to compare our results to the analytical solutions
+这将使我们能够将结果与解析解进行比较
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/cd_analytical.py
 ```
+如上所述，我们计划使用时间迭代来求解模型，这意味着要使用算子$K$进行迭代。
 
-As discussed above, our plan is to solve the model using time iteration, which
-means iterating with the operator $K$.
+为此，我们需要访问函数$u'$和$f, f'$。
 
-For this we need access to the functions $u'$ and $f, f'$.
+这些函数在我们在{doc}`之前的讲座 <optgrowth_fast>`中构建的`OptimalGrowthModel`类中可用。
 
-These are available in a class called `OptimalGrowthModel` that we
-constructed in an {doc}`earlier lecture <optgrowth_fast>`.
-
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth_fast/ogm.py
 ```
-
-Now we implement a method called `euler_diff`, which returns
+现在我们实现一个名为`euler_diff`的方法，它返回
 
 ```{math}
 :label: euler_diff
@@ -289,37 +257,34 @@ u'(c) - \beta \int (u' \circ \sigma) (f(y - c) z ) f'(y - c) z \phi(dz)
 @jit
 def euler_diff(c, σ, y, og):
     """
-    Set up a function such that the root with respect to c,
-    given y and σ, is equal to Kσ(y).
+    设置一个函数，使得关于c的根，
+    在给定y和σ的情况下，等于Kσ(y)。
 
     """
 
     β, shocks, grid = og.β, og.shocks, og.grid
     f, f_prime, u_prime = og.f, og.f_prime, og.u_prime
 
-    # First turn σ into a function via interpolation
+    # 首先通过插值将σ转换为函数
     σ_func = lambda x: np.interp(x, grid, σ)
 
-    # Now set up the function we need to find the root of.
+    # 现在设置我们需要找到根的函数
     vals = u_prime(σ_func(f(y - c) * shocks)) * f_prime(y - c) * shocks
     return u_prime(c) - β * np.mean(vals)
 ```
+函数`euler_diff`通过蒙特卡洛方法计算积分，并使用线性插值来近似函数。
 
-The function `euler_diff` evaluates integrals by Monte Carlo and
-approximates functions using linear interpolation.
+我们将使用根查找算法来求解{eq}`euler_diff`，在给定状态$y$和$σ$（当前策略猜测值）的情况下求解$c$。
 
-We will use a root-finding algorithm to solve {eq}`euler_diff` for $c$ given
-state $y$ and $σ$, the current guess of the policy.
-
-Here's the operator $K$, that implements the root-finding step.
+以下是实现根查找步骤的算子$K$。
 
 ```{code-cell} ipython3
 @jit
 def K(σ, og):
     """
-    The Coleman-Reffett operator
+    Coleman-Reffett算子
 
-     Here og is an instance of OptimalGrowthModel.
+    这里og是OptimalGrowthModel的一个实例。
     """
 
     β = og.β
@@ -328,129 +293,118 @@ def K(σ, og):
 
     σ_new = np.empty_like(σ)
     for i, y in enumerate(grid):
-        # Solve for optimal c at y
+        # 在y处求解最优c
         c_star = brentq(euler_diff, 1e-10, y-1e-10, args=(σ, y, og))[0]
         σ_new[i] = c_star
 
     return σ_new
 ```
+### 测试
 
-### Testing
+让我们生成一个实例并绘制$K$的一些迭代结果，从$σ(y) = y$开始。
 
-Let's generate an instance and plot some iterates of $K$, starting from $σ(y) = y$.
-
-```{code-cell} python3
+```{code-cell} ipython3
 og = OptimalGrowthModel()
 grid = og.grid
 
 n = 15
-σ = grid.copy()  # Set initial condition
+σ = grid.copy()  # 设置初始条件
 
 fig, ax = plt.subplots()
-lb = 'initial condition $\sigma(y) = y$'
+lb = '初始条件 $\sigma(y) = y$'
 ax.plot(grid, σ, color=plt.cm.jet(0), alpha=0.6, label=lb)
 
 for i in range(n):
     σ = K(σ, og)
     ax.plot(grid, σ, color=plt.cm.jet(i / n), alpha=0.6)
 
-# Update one more time and plot the last iterate in black
+# 再更新一次并用黑色绘制最后一次迭代
 σ = K(σ, og)
-ax.plot(grid, σ, color='k', alpha=0.8, label='last iterate')
+ax.plot(grid, σ, color='k', alpha=0.8, label='最后一次迭代')
 
 ax.legend()
 
 plt.show()
 ```
+我们可以看到迭代过程快速收敛到一个极限值，这与我们在{doc}`上一讲<optgrowth_fast>`中得到的解相似。
 
-We see that the iteration process converges quickly to a limit
-that resembles the solution we obtained in {doc}`the previous lecture <optgrowth_fast>`.
+这里有一个名为`solve_model_time_iter`的函数，它接收一个`OptimalGrowthModel`实例作为输入，并通过时间迭代法返回最优策略的近似解。
 
-Here is a function called `solve_model_time_iter` that takes an instance of
-`OptimalGrowthModel` and returns an approximation to the optimal policy,
-using time iteration.
-
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/coleman_policy_iter/solve_time_iter.py
 ```
+让我们运行它：
 
-Let's call it:
-
-```{code-cell} python3
+```{code-cell} ipython3
 σ_init = np.copy(og.grid)
 σ = solve_model_time_iter(og, σ_init)
 ```
+这是得到的策略与真实策略的对比图：
 
-Here is a plot of the resulting policy, compared with the true policy:
-
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 ax.plot(og.grid, σ, lw=2,
-        alpha=0.8, label='approximate policy function')
+        alpha=0.8, label='近似策略函数')
 
 ax.plot(og.grid, σ_star(og.grid, og.α, og.β), 'k--',
-        lw=2, alpha=0.8, label='true policy function')
+        lw=2, alpha=0.8, label='真实策略函数')
 
 ax.legend()
 plt.show()
 ```
+再次说明，拟合效果非常好。
 
-Again, the fit is excellent.
+两种策略之间的最大绝对偏差是
 
-The maximal absolute deviation between the two policies is
-
-```{code-cell} python3
+```{code-cell} ipython3
 np.max(np.abs(σ - σ_star(og.grid, og.α, og.β)))
 ```
+需要多长时间才能收敛？
 
-How long does it take to converge?
-
-```{code-cell} python3
+```{code-cell} ipython3
 %%timeit -n 3 -r 1
 σ = solve_model_time_iter(og, σ_init, verbose=False)
 ```
+与我们的{doc}`JIT编译的值函数迭代<optgrowth_fast>`相比，收敛速度非常快。
 
-Convergence is very fast, even compared to our {doc}`JIT-compiled value function iteration <optgrowth_fast>`.
+总的来说，我们发现时间迭代方法对于这个模型来说提供了很高的效率和准确性。
 
-Overall, we find that time iteration provides a very high degree of efficiency
-and accuracy, at least for this model.
-
-## Exercises
+## 练习
 
 ```{exercise}
 :label: cpi_ex1
 
-Solve the model with CRRA utility
+用CRRA效用函数求解模型
 
 $$
 u(c) = \frac{c^{1 - \gamma}} {1 - \gamma}
 $$
 
-Set `γ = 1.5`.
+设定`γ = 1.5`。
 
-Compute and plot the optimal policy.
+计算并绘制最优策略。
 ```
 
 ```{solution-start} cpi_ex1
 :class: dropdown
 ```
 
-We use the class `OptimalGrowthModel_CRRA` from our {doc}`VFI lecture <optgrowth_fast>`.
+我们使用{doc}`VFI讲座<optgrowth_fast>`中的`OptimalGrowthModel_CRRA`类。
 
-```{code-cell} python3
+```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth_fast/ogm_crra.py
 ```
 
-Let's create an instance:
+让我们创建一个实例：
 
-```{code-cell} python3
+```{code-cell} ipython3
 og_crra = OptimalGrowthModel_CRRA()
 ```
 
-Now we solve and plot the policy:
+现在我们求解并绘制策略：
 
-```{code-cell} python3
+```{code-cell} ipython3
 %%time
 σ = solve_model_time_iter(og_crra, σ_init)
 

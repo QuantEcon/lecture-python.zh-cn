@@ -17,51 +17,51 @@ kernelspec:
 </div>
 ```
 
-# Job Search III: Fitted Value Function Iteration
+# 求职搜索 III: 拟合值函数迭代
 
-```{contents} Contents
+```{contents} 目录
 :depth: 2
 ```
 
+## 概述
 
-## Overview
+在本讲座中，我们再次研究{doc}`带有离职的McCall求职搜索模型 <mccall_model_with_separation>`，但这次使用连续工资分布。
 
-In this lecture we again study the {doc}`McCall job search model with separation <mccall_model_with_separation>`, but now with a continuous wage distribution.
+虽然我们在{doc}`第一个求职搜索讲座 <mccall_model>`的练习中已经简要考虑过连续工资分布，但在那种情况下，这种改变相对来说是微不足道的。
 
-While we already considered continuous wage distributions briefly in the
-exercises of the {doc}`first job search lecture <mccall_model>`,
-the change was relatively trivial in that case.
+这是因为我们能够将问题简化为求解单个标量值（持续价值）。
 
-This is because we were able to reduce the problem to solving for a single
-scalar value (the continuation value).
+在这里，由于分离，变化不那么简单，因为连续的工资分布导致了不可数的无限状态空间。
 
-Here, with separation, the change is less trivial, since a continuous wage distribution leads to an uncountably infinite state space.
+无限状态空间带来了额外的挑战，特别是在应用值函数迭代（VFI）时。
 
-The infinite state space leads to additional challenges, particularly when it
-comes to applying value function iteration (VFI).
+这些挑战将促使我们通过添加插值步骤来修改VFI。
 
-These challenges will lead us to modify VFI by adding an interpolation step.
+VFI和这个插值步骤的组合被称为**拟合值函数迭代**（fitted VFI）。
 
-The combination of VFI and this interpolation step is called **fitted value function iteration** (fitted VFI).
+拟合VFI在实践中非常常见，所以我们将花一些时间来详细研究。
 
-Fitted VFI is very common in practice, so we will take some time to work through the details.
-
-We will use the following imports:
+我们将使用以下导入：
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from numba import jit, float64
 from numba.experimental import jitclass
 ```
 
-## The Algorithm
+## 算法
 
-The model is the same as the McCall model with job separation we {doc}`studied before <mccall_model_with_separation>`, except that the wage offer distribution is continuous.
+该模型与我们{doc}`之前学习的 <mccall_model_with_separation>`带有工作分离的McCall模型相同，只是工资分布是连续的。
 
-We are going to start with the two Bellman equations we obtained for the model with job separation after {ref}`a simplifying transformation <ast_mcm>`.
+我们将从{ref}`简化转换 <ast_mcm>`后得到的两个Bellman方程开始。
 
-Modified to accommodate continuous wage draws, they take the following form:
+为了适应连续的工资分布，它们采用以下形式：
 
 ```{math}
 :label: bell1mcmc
@@ -69,7 +69,7 @@ Modified to accommodate continuous wage draws, they take the following form:
 d = \int \max \left\{ v(w'), \,  u(c) + \beta d \right\} q(w') d w'
 ```
 
-and
+和
 
 ```{math}
 :label: bell2mcmc
@@ -80,77 +80,73 @@ v(w) = u(w) + \beta
     \right]
 ```
 
-The unknowns here are the function $v$ and the scalar $d$.
+这里的未知量是函数$v$和标量$d$。
 
-The difference between these and the pair of Bellman equations we previously worked on are
+这些方程与我们之前处理的一对Bellman方程的区别在于：
 
-1. in {eq}`bell1mcmc`, what used to be a sum over a finite number of wage values is an integral over an infinite set.
-1. The function $v$ in {eq}`bell2mcmc` is defined over all $w \in \mathbb R_+$.
+1. 在{eq}`bell1mcmc`中，原来对有限个工资值的求和变成了对无限集合的积分。
+1. {eq}`bell2mcmc`中的函数$v$定义在所有$w \in \mathbb R_+$上。
 
-The function $q$ in {eq}`bell1mcmc` is the density of the wage offer distribution.
+函数 $q$ 在 {eq}`bell1mcmc` 中是工资分布的密度函数。
 
-Its support is taken as equal to $\mathbb R_+$.
+其支撑集等于 $\mathbb R_+$。
 
-### Value Function Iteration
+### 值函数迭代
 
-In theory, we should now proceed as follows:
+理论上，我们应该按以下步骤进行：
 
-1. Begin with a guess $v, d$ for the solutions to {eq}`bell1mcmc`--{eq}`bell2mcmc`.
-1. Plug $v, d$ into the right hand side of {eq}`bell1mcmc`--{eq}`bell2mcmc` and
-   compute the left hand side to obtain updates $v', d'$
-1. Unless some stopping condition is satisfied, set $(v, d) = (v', d')$
-   and go to step 2.
+1. 从一个对 {eq}`bell1mcmc`--{eq}`bell2mcmc` 解的猜测值 $v, d$ 开始。
+1. 将 $v, d$ 代入 {eq}`bell1mcmc`--{eq}`bell2mcmc` 的右侧，
+   计算左侧以获得更新值 $v', d'$
+1. 除非满足某些停止条件，否则设置 $(v, d) = (v', d')$
+   并返回步骤2。
 
-However, there is a problem we must confront before we implement this procedure:
-The iterates of the value function can neither be calculated exactly nor stored on a computer.
+然而，在实施这个程序之前，我们必须面对一个问题：
+值函数的迭代既不能被精确计算，也不能被存储在计算机中。
 
-To see the issue, consider {eq}`bell2mcmc`.
+要理解这个问题，请考虑 {eq}`bell2mcmc`。
 
-Even if $v$ is a known function,  the only way to store its update $v'$
-is to record its value $v'(w)$ for every $w \in \mathbb R_+$.
+即使 $v$ 是一个已知函数，存储其更新值 $v'$ 的唯一方法
+是记录其在每个 $w \in \mathbb R_+$ 处的值 $v'(w)$。
 
-Clearly, this is impossible.
+显然，这是不可能的。
 
-### Fitted Value Function Iteration
+### 拟合值函数迭代
 
-What we will do instead is use **fitted value function iteration**.
+我们将改用**拟合值函数迭代**。
 
-The procedure is as follows:
+具体步骤如下：
 
-Let a current guess $v$ be given.
+假设已有当前的猜测值 $v$。
 
-Now we record the value of the function $v'$ at only
-finitely many "grid" points $w_1 < w_2 < \cdots < w_I$ and then reconstruct $v'$ from this information when required.
+我们只在有限个"网格"点 $w_1 < w_2 < \cdots < w_I$ 上记录函数 $v'$ 的值，然后在需要时根据这些信息重构 $v'$。
 
-More precisely, the algorithm will be
+更具体地说，算法将是
 
 (fvi_alg)=
-1. Begin with an array $\mathbf v$ representing the values of an initial guess of the value function on some grid points $\{w_i\}$.
-1. Build a function $v$ on the state space $\mathbb R_+$ by interpolation or approximation, based on $\mathbf v$ and $\{ w_i\}$.
-1. Obtain and record the samples of the updated function $v'(w_i)$ on each grid point $w_i$.
-1. Unless some stopping condition is satisfied, take this as the new array and go to step 1.
+1. 从一个数组 $\mathbf v$ 开始，该数组表示在某些网格点 $\{w_i\}$ 上的初始值函数猜测值。
+1. 基于 $\mathbf v$ 和 $\{w_i\}$，通过插值或近似在状态空间 $\mathbb R_+$ 上构建函数 $v$。
+1. 在每个网格点 $w_i$ 上获取并记录更新后的函数 $v'(w_i)$ 的样本。
+1. 除非满足某些停止条件，否则将此作为新数组并返回步骤1。
 
-How should we go about step 2?
+我们应该如何处理步骤2？
 
-This is a problem of function approximation, and there are many ways to approach it.
+这是一个函数逼近问题，有很多种方法可以解决。
 
-What's important here is that the function approximation scheme must not only
-produce a good approximation to each $v$, but also that it combines well with the broader iteration algorithm described above.
+这里重要的是函数近似方案不仅要对每个$v$产生良好的近似，而且还要能够很好地配合上述更广泛的迭代算法。
 
-One good choice from both respects is continuous piecewise linear interpolation.
+从这两个方面来看，分段线性插值是一个不错的选择。
 
-This method
+这种方法
 
-1. combines well with value function iteration (see., e.g.,
-   {cite}`gordon1995stable` or {cite}`stachurski2008continuous`) and
-1. preserves useful shape properties such as monotonicity and concavity/convexity.
+1. 能够很好地配合值函数迭代（参见{cite}`gordon1995stable`或{cite}`stachurski2008continuous`）且
+1. 能保持有用的形状特性，如单调性和凹凸性。
 
-Linear interpolation will be implemented using [numpy.interp](https://numpy.org/doc/stable/reference/generated/numpy.interp.html).
+线性插值将使用[numpy.interp](https://numpy.org/doc/stable/reference/generated/numpy.interp.html)来实现。
 
-The next figure illustrates piecewise linear interpolation of an arbitrary
-function on grid points $0, 0.2, 0.4, 0.6, 0.8, 1$.
+下图展示了在网格点$0, 0.2, 0.4, 0.6, 0.8, 1$上对任意函数进行分段线性插值的情况。
 
-```{code-cell} python3
+```{code-cell} ipython3
 def f(x):
     y1 = 2 * np.cos(6 * x) + np.sin(14 * x)
     return y1 + 2.5
@@ -173,17 +169,15 @@ ax.set(xlim=(0, 1), ylim=(0, 6))
 plt.show()
 ```
 
-## Implementation
+## 实现
 
-The first step is to build a jitted class for the McCall model with separation and
-a continuous wage offer distribution.
+第一步是为具有分离和连续工资分布的McCall模型构建一个即时编译类。
 
-We will take the utility function to be the log function for this application, with $u(c) = \ln c$.
+在本应用中，我们将效用函数设定为对数函数，即$u(c) = \ln c$。
 
-We will adopt the lognormal distribution for wages, with $w = \exp(\mu + \sigma z)$
-when $z$ is standard normal and $\mu, \sigma$ are parameters.
+我们将为工资采用对数正态分布，当$z$为标准正态分布且$\mu, \sigma$为参数时，$w = \exp(\mu + \sigma z)$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def lognormal_draws(n=1000, μ=2.5, σ=0.5, seed=1234):
     np.random.seed(seed)
@@ -192,15 +186,15 @@ def lognormal_draws(n=1000, μ=2.5, σ=0.5, seed=1234):
     return w_draws
 ```
 
-Here's our class.
+这是我们的类。
 
-```{code-cell} python3
+```{code-cell} ipython3
 mccall_data_continuous = [
-    ('c', float64),          # unemployment compensation
-    ('α', float64),          # job separation rate
-    ('β', float64),          # discount factor
-    ('w_grid', float64[:]),  # grid of points for fitted VFI
-    ('w_draws', float64[:])  # draws of wages for Monte Carlo
+    ('c', float64),          # 失业补偿
+    ('α', float64),          # 工作分离率
+    ('β', float64),          # 折现因子
+    ('w_grid', float64[:]),  # 用于拟合VFI的网格点
+    ('w_draws', float64[:])  # 用于蒙特卡洛的工资抽样
 ]
 
 @jitclass(mccall_data_continuous)
@@ -222,36 +216,36 @@ class McCallModelContinuous:
 
     def update(self, v, d):
 
-        # Simplify names
+        # 简化名称
         c, α, β = self.c, self.α, self.β
         w = self.w_grid
         u = lambda x: np.log(x)
 
-        # Interpolate array represented value function
+        # 对数组表示的值函数进行插值
         vf = lambda x: np.interp(x, w, v)
 
-        # Update d using Monte Carlo to evaluate integral
+        # 使用蒙特卡洛方法评估积分来更新d
         d_new = np.mean(np.maximum(vf(self.w_draws), u(c) + β * d))
 
-        # Update v
+        # 更新v
         v_new = u(w) + β * ((1 - α) * v + α * d)
 
         return v_new, d_new
 ```
 
-We then return the current iterate as an approximate solution.
+然后我们返回当前迭代值作为近似解。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def solve_model(mcm, tol=1e-5, max_iter=2000):
     """
-    Iterates to convergence on the Bellman equations
+    对贝尔曼方程进行迭代直至收敛
 
-    * mcm is an instance of McCallModel
+    * mcm 是 McCallModel 的一个实例
     """
 
-    v = np.ones_like(mcm.w_grid)    # Initial guess of v
-    d = 1                           # Initial guess of d
+    v = np.ones_like(mcm.w_grid)    # v的初始猜测值
+    d = 1                           # d的初始猜测值
     i = 0
     error = tol + 1
 
@@ -267,19 +261,18 @@ def solve_model(mcm, tol=1e-5, max_iter=2000):
     return v, d
 ```
 
-Here's a function `compute_reservation_wage` that takes an instance of `McCallModelContinuous`
-and returns the associated reservation wage.
+这是一个函数`compute_reservation_wage`，它接收一个`McCallModelContinuous`实例并返回相应的保留工资。
 
-If $v(w) < h$ for all $w$, then the function returns np.inf
+如果对所有的w都有$v(w) < h$，那么函数返回np.inf
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def compute_reservation_wage(mcm):
     """
-    Computes the reservation wage of an instance of the McCall model
-    by finding the smallest w such that v(w) >= h.
+    通过寻找最小的满足v(w) >= h的w，
+    计算McCall模型实例的保留工资。
 
-    If no such w exists, then w_bar is set to np.inf.
+    如果不存在这样的w，则w_bar被设为np.inf。
     """
     u = lambda x: np.log(x)
 
@@ -295,28 +288,27 @@ def compute_reservation_wage(mcm):
     return w_bar
 ```
 
-The exercises ask you to explore the solution and how it changes with parameters.
+这些练习要求你探索解决方案以及它如何随参数变化。
 
-## Exercises
+## 练习
 
 ```{exercise}
 :label: mfv_ex1
 
-Use the code above to explore what happens to the reservation wage when the wage parameter $\mu$
-changes.
+使用上面的代码探索当工资参数 $\mu$ 发生变化时，保留工资会发生什么变化。
 
-Use the default parameters and $\mu$ in `mu_vals = np.linspace(0.0, 2.0, 15)`.
+使用默认参数和 `mu_vals = np.linspace(0.0, 2.0, 15)` 中的 $\mu$ 值。
 
-Is the impact on the reservation wage as you expected?
+保留工资的变化是否如你所预期？
 ```
 
 ```{solution-start} mfv_ex1
 :class: dropdown
 ```
 
-Here is one solution
+这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcm = McCallModelContinuous()
 mu_vals = np.linspace(0.0, 2.0, 15)
 w_bar_vals = np.empty_like(mu_vals)
@@ -335,8 +327,7 @@ ax.legend()
 plt.show()
 ```
 
-Not surprisingly, the agent is more inclined to wait when the distribution of
-offers shifts to the right.
+不出所料，当报价分布向右偏移时，求职者更倾向于等待。
 
 ```{solution-end}
 ```
@@ -344,30 +335,28 @@ offers shifts to the right.
 ```{exercise}
 :label: mfv_ex2
 
-Let us now consider how the agent responds to an increase in volatility.
+让我们现在来考虑求职者如何对波动性的增加做出反应。
 
-To try to understand this, compute the reservation wage when the wage offer
-distribution is uniform on $(m - s, m + s)$ and $s$ varies.
+为了理解这一点，请计算当工资报价分布在 $(m - s, m + s)$ 上均匀分布，且 $s$ 变化时的保留工资。
 
-The idea here is that we are holding the mean constant and spreading the
-support.
+这里的想法是我们保持均值不变，但扩大分布范围。
 
-(This is a form of *mean-preserving spread*.)
+（这是一种*均值保持扩散*。）
 
-Use `s_vals = np.linspace(1.0, 2.0, 15)` and `m = 2.0`.
+使用 `s_vals = np.linspace(1.0, 2.0, 15)` 和 `m = 2.0`。
 
-State how you expect the reservation wage to vary with $s$.
+说明你预期保留工资如何随 $s$ 变化。
 
-Now compute it.  Is this as you expected?
+现在计算它。结果是否如你所预期？
 ```
 
 ```{solution-start} mfv_ex2
 :class: dropdown
 ```
 
-Here is one solution
+这是一个解决方案
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcm = McCallModelContinuous()
 s_vals = np.linspace(1.0, 2.0, 15)
 m = 2.0
@@ -381,22 +370,22 @@ for i, s in enumerate(s_vals):
     w_bar = compute_reservation_wage(mcm)
     w_bar_vals[i] = w_bar
 
-ax.set(xlabel='volatility', ylabel='reservation wage')
-ax.plot(s_vals, w_bar_vals, label=r'$\bar w$ as a function of wage volatility')
+ax.set(xlabel='波动性', ylabel='保留工资')
+ax.plot(s_vals, w_bar_vals, label=r'工资波动性函数中的$\bar w$')
 ax.legend()
 
 plt.show()
 ```
 
-The reservation wage increases with volatility.
 
-One might think that higher volatility would make the agent more inclined to
-take a given offer, since doing so represents certainty and waiting represents
-risk.
+保留工资随波动性增加而增加。
 
-But job search is like holding an option: the worker is only exposed to upside risk (since, in a free market, no one can force them to take a bad offer).
+人们可能会认为，更高的波动性会使求职者更倾向于接受给定的工作机会，因为接受工作代表确定性，而等待则意味着风险。
 
-More volatility means higher upside potential, which encourages the agent to wait.
+但求职就像持有期权：工人只面临上行风险（因为在自由市场中，没有人可以强迫他们接受不好的工作机会）。
+
+更大的波动性意味着更高的上行潜力，这会鼓励求职者继续等待。
 
 ```{solution-end}
 ```
+

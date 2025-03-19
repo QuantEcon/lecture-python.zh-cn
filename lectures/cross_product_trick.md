@@ -11,73 +11,64 @@ kernelspec:
   name: python3
 ---
 
-# Eliminating Cross Products 
+# 消除交叉项
 
-## Overview
+## 概述
 
-This lecture describes formulas for eliminating 
+本讲座描述了消除以下内容的公式：
 
-  * cross products between states and control in linear-quadratic dynamic programming  problems
+  * 线性二次动态规划问题中状态和控制之间的交叉项
   
-  * covariances between state and measurement noises in  Kalman filtering  problems
+  * 卡尔曼滤波问题中状态噪声和测量噪声之间的协方差
 
+对于线性二次动态规划问题，主要思路包括以下步骤：
 
-For a linear-quadratic dynamic programming problem, the idea involves these steps
-
- * transform  states and controls in a way that leads to an equivalent problem with no cross-products between transformed states and controls
- * solve the transformed problem using standard formulas for problems with no cross-products between states and controls  presented in this lecture {doc}`Linear Control: Foundations <lqcontrol>`
- * transform the optimal decision rule for the altered problem into the optimal decision rule for the original problem with cross-products between states and controls
+ * 对状态和控制进行变换，得到一个等价问题，其中转换后的状态和控制之间没有交叉项
+ * 使用本讲座 {doc}`线性控制：基础 <lqcontrol>` 中介绍的标准公式求解转换后的问题
+ * 将转换后问题的最优决策规则转换回原始问题（即有状态和控制交叉项的问题）的最优决策规则
 
 +++
 
-## Undiscounted Dynamic Programming Problem
+## 无折现动态规划问题
 
-Here is a nonstochastic undiscounted LQ dynamic programming with cross products between
-states and controls in the objective function.
+这里是一个目标函数中包含状态和控制交叉项的非随机无折现线性二次动态规划问题。
 
+该问题由矩阵5元组 $(A, B, R, Q, H)$ 定义，其中 $R$ 和 $Q$ 是正定对称矩阵，且
+$A \sim m \times m, B \sim m \times k, Q \sim k \times k, R \sim m \times m$ 以及 $H \sim k \times m$。
 
-
-The problem is defined by the 5-tuple of matrices $(A, B, R, Q, H)$
-where  $R$ and $Q$ are positive definite symmetric matrices and 
-$A \sim m \times m, B \sim m \times k,  Q \sim k \times k, R \sim m \times m$ and $H \sim k \times m$.
-
-
-The problem is to choose $\{x_{t+1}, u_t\}_{t=0}^\infty$ to maximize 
+问题是选择 $\{x_{t+1}, u_t\}_{t=0}^\infty$ 以最大化
 
 $$
  - \sum_{t=0}^\infty (x_t' R x_t + u_t' Q u_t + 2 u_t H x_t) 
 $$
 
-subject to the linear constraints 
+受限于线性约束
 
 $$ x_{t+1} = A x_t + B u_t,  \quad t \geq 0 $$
 
-where $x_0$ is a given initial condition. 
+其中 $x_0$ 是给定的初始条件。
 
-The solution to this undiscounted infinite-horizon problem is a time-invariant feedback rule  
+这个无限期无折现问题的解是一个时不变的反馈规则
 
 $$ u_t  = -F x_t $$
 
-where
+其中
 
 $$ F = -(Q + B'PB)^{-1} B'PA $$
 
-and  $P \sim m \times m $ is a positive definite solution of the algebraic matrix Riccati equation
+且 $P \sim m \times m $ 是代数矩阵Riccati方程的正定解
 
 $$
 P = R + A'PA - (A'PB + H')(Q + B'PB)^{-1}(B'PA + H).
 $$
 
-
 +++
 
-It can be verified that an **equivalent** problem without cross-products between states and controls
-is  defined by  a 4-tuple of matrices : $(A^*, B, R^*, Q) $. 
+可以验证，一个**等价的**没有状态和控制交叉项的问题可以由矩阵4元组定义：$(A^*, B, R^*, Q)$。
 
-That the omitted matrix $H=0$ indicates that there are no cross products between states and controls
-in the equivalent problem. 
+省略的矩阵 $H=0$ 表示在等价问题中没有状态和控制之间的交叉项。
 
-The matrices $(A^*, B, R^*, Q) $ defining the  equivalent problem and the value function, policy function matrices $P, F^*$ that solve it are  related to the matrices $(A, B, R, Q, H)$ defining the original problem  and the  value function, policy function matrices $P, F$ that solve the original problem by 
+定义等价问题的矩阵 $(A^*, B, R^*, Q)$ 及其值函数、策略函数矩阵 $P, F^*$ 与定义原始问题的矩阵 $(A, B, R, Q, H)$ 及其值函数、策略函数矩阵 $P, F$ 之间的关系如下：
 
 \begin{align*}
 A^* & = A - B Q^{-1} H, \\
@@ -89,75 +80,70 @@ F & = F^* + Q^{-1} H.
 
 +++
 
-## Kalman Filter
+## 卡尔曼滤波
 
-The **duality** that prevails  between a linear-quadratic optimal control and a Kalman filtering problem means that there is an analogous transformation that allows us to transform a Kalman filtering problem
-with non-zero covariance matrix  between between shocks to states and shocks to measurements to an equivalent Kalman filtering problem with zero covariance between shocks to states and measurments.
+线性二次最优控制和卡尔曼滤波问题之间存在的**对偶性**意味着存在一个类似的变换，允许我们将状态噪声和测量噪声之间具有非零协方差矩阵的卡尔曼滤波问题转换为一个等价的、状态噪声和测量噪声之间协方差为零的卡尔曼滤波问题。
 
-Let's look at the appropriate transformations.
+让我们看看适当的变换。
 
+首先，让我们回顾一下具有状态噪声和测量噪声之间协方差的卡尔曼滤波。
 
-First, let's recall the Kalman filter with covariance between noises to states and measurements.
-
-The hidden Markov model is 
+隐马尔可夫模型为：
 
 \begin{align*}
 x_{t+1} & = A x_t + B w_{t+1},  \\
 z_{t+1} & = D x_t + F w_{t+1},  
 \end{align*}
 
-where $A \sim m \times m, B \sim m \times p $ and $D \sim k \times m, F \sim k \times p $,
-and $w_{t+1}$ is the time $t+1$ component of a sequence of i.i.d. $p \times 1$ normally distibuted
-random vectors with mean vector zero and covariance matrix equal to a $p \times p$ identity matrix. 
+其中 $A \sim m \times m, B \sim m \times p $ 且 $D \sim k \times m, F \sim k \times p $，
+且 $w_{t+1}$ 是一个独立同分布的 $p \times 1$ 正态分布随机向量序列的时间 $t+1$ 分量，其均值向量为零，协方差矩阵等于 $p \times p$ 单位矩阵。
 
-Thus, $x_t$ is $m \times 1$ and $z_t$ is $k \times 1$. 
+因此，$x_t$ 是 $m \times 1$ 且 $z_t$ 是 $k \times 1$。
 
-The Kalman  filtering formulas are 
+卡尔曼滤波公式为：
 
+```{math}
+:label: eq:Kalman102
 
-\begin{align*}
 K(\Sigma_t) & = (A \Sigma_t D' + BF')(D \Sigma_t D' + FF')^{-1}, \\
 \Sigma_{t+1}&  = A \Sigma_t A' + BB' - (A \Sigma_t D' + BF')(D \Sigma_t D' + FF')^{-1} (D \Sigma_t A' + FB').
-\end{align*} (eq:Kalman102)
- 
+```
 
-Define   tranformed matrices
+定义转换后的矩阵：
 
 \begin{align*}
 A^* & = A - BF' (FF')^{-1} D, \\
 B^* {B^*}' & = BB' - BF' (FF')^{-1} FB'.
 \end{align*}
 
-### Algorithm
+### 算法
 
-A consequence of  formulas {eq}`eq:Kalman102} is that we can use the following algorithm to solve Kalman filtering problems that involve  non zero covariances between state and signal noises. 
+公式 {eq}`eq:Kalman102` 的一个结果是，我们可以使用以下算法来求解涉及状态噪声和信号噪声之间非零协方差的卡尔曼滤波问题。
 
-First, compute $\Sigma, K^*$ using the ordinary Kalman filtering  formula with $BF' = 0$, i.e.,
-with zero covariance matrix between random shocks to  states and  random shocks to measurements. 
+首先，使用普通卡尔曼滤波公式计算 $\Sigma, K^*$，其中 $BF' = 0$，即状态随机噪声和测量随机噪声之间的协方差矩阵为零。
 
-That is, compute  $K^*$ and $\Sigma$ that  satisfy
+也就是说，计算满足以下条件的 $K^*$ 和 $\Sigma$：
 
 \begin{align*}
 K^* & = (A^* \Sigma D')(D \Sigma D' + FF')^{-1} \\
 \Sigma & = A^* \Sigma {A^*}' + B^* {B^*}' - (A^* \Sigma D')(D \Sigma D' + FF')^{-1} (D \Sigma {A^*}').
 \end{align*}
 
-The Kalman gain for the original problem **with non-zero covariance** between shocks to states and measurements is then
+原始问题（具有**非零协方差**的状态和测量噪声）的卡尔曼增益为：
 
 $$
 K = K^* + BF' (FF')^{-1},
 $$
 
-The state reconstruction covariance matrix $\Sigma$ for the original problem equals the state reconstrution covariance matrix for the transformed problem.
+原始问题的状态重构协方差矩阵 $\Sigma$ 等于转换后问题的状态重构协方差矩阵。
 
 +++
 
-## Duality table
+## 对偶表
 
-Here is a handy table to remember how the Kalman filter and dynamic program are related.
+这是一个便于记忆卡尔曼滤波和动态规划关系的表格。
 
-
-| Dynamic Program | Kalman Filter |
+| 动态规划 | 卡尔曼滤波 |
 | :-------------: | :-----------: |
 |       $A$       |     $A'$      |
 |       $B$       |     $D'$      |
