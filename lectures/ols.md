@@ -520,6 +520,7 @@ $$
 如果$\alpha$在统计上显著（p值<0.05），那么我们就拒绝原假设，得出$avexpr_i$是内生的结论。
 
 使用上述信息，估算豪斯曼检验并解释你的结果。
+```
 
 ```{solution-start} ols_ex1
 :class: dropdown
@@ -589,6 +590,7 @@ $$
 使用上述信息，计算模型1中的 $\hat{\beta}$
 
 使用 `numpy` - 你的结果应该与讲座前面 `statsmodels` 的输出结果相同。
+```
 
 ```{solution-start} ols_ex2
 :class: dropdown

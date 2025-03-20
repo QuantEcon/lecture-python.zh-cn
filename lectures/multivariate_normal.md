@@ -789,7 +789,6 @@ $$
 那么我们可以写作
 
 ```{math}
-
 :label: mnv_1
 
 \theta = \mu_{\theta} + c_1 \epsilon_1 + c_2 \epsilon_2 + \dots + c_n \epsilon_n + c_{n+1} \epsilon_{n+1}

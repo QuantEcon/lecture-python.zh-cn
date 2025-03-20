@@ -129,7 +129,7 @@ def translate_cn(input_file):
         content = file.read()
 
     # Split the content into chunks
-    chunks = split_text(content, chunk_size=1000)  # Using smaller chunks for better reliability
+    chunks = split_text(content, chunk_size=1500)  # Using smaller chunks for better reliability
     logging.info(f"Split {input_file} into {len(chunks)} chunks")
 
     # Create the output file name

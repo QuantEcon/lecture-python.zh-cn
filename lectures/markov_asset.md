@@ -1009,7 +1009,7 @@ consol_price(apm, ζ)
 ```
 
 ```{code-cell} ipython3
-看涨期权(apm, ζ, p_s)
+call_option(apm, ζ, p_s)
 ```
 
 让我们将最后两个函数绘制成图表

@@ -459,7 +459,7 @@ def check_terminal_condition(bid_info, p, v):
 ```
 
 ```{code-cell} ipython3
-分配,获胜者列表,失败者列表 = 检查终止条件(出价信息, p, v)
+allocation, winner_list, loser_list = check_terminal_condition(bid_info, p, v)
 ```
 
 ```{code-cell} ipython3
@@ -467,11 +467,11 @@ present_dict(allocation)
 ```
 
 ```{code-cell} ipython3
-获胜者列表
+winner_list
 ```
 
 ```{code-cell} ipython3
-失败者列表
+loser_list
 ```
 
 ### 第二轮
@@ -549,7 +549,7 @@ present_dict(bid_info)
 ```
 
 ```{code-cell} ipython3
-分配,获胜者列表,失败者列表 = 检查终止条件(出价信息, p, v)
+allocation, winner_list, loser_list = check_terminal_condition(bid_info, p, v)
 ```
 
 ```{code-cell} ipython3
@@ -571,7 +571,7 @@ present_dict(bid_info)
 ```
 
 ```{code-cell} ipython3
-分配,获胜者列表,失败者列表 = 检查终止条件(出价信息, p, v)
+allocation, winner_list, loser_list = check_terminal_condition(bid_info, p, v)
 ```
 
 ```{code-cell} ipython3
