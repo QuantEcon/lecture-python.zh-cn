@@ -138,7 +138,7 @@ mca.stationary_distributions
 ```
 
 ```{code-cell} ipython3
-mcb.平稳分布
+mcb.stationary_distributions
 ```
 
 $P_a$ 的平稳分布约为 $\pi_a = \begin{bmatrix} .57 & .43 \end{bmatrix}$。

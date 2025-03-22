@@ -375,6 +375,7 @@ $$
 **h)** 请使用您的Python类来研究当 $n \rightarrow + \infty$ 时后验分布会发生什么变化，同样假设 $\theta$ 的真实值为 $.4$，尽管对于通过贝叶斯定律进行更新的人来说这是未知的。
 ```
 
+
 ```{solution-start} pm_ex2
 :class: dropdown
 ```
