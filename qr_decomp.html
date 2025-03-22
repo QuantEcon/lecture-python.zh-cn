@@ -1,0 +1,1515 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>3. QR分解 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'qr_decomp';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/qr_decomp.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="4. 循环矩阵" href="eig_circulant.html" />
+    <link rel="prev" title="2. 线性代数" href="linear_algebra.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="QR分解"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="QR分解" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/qr_decomp.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=qr_decomp>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.2. 矩阵分解</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.3. 格拉姆-施密特正交化过程</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a">3.3.1. 方阵<span class="math notranslate nohighlight">\(A\)</span>的格拉姆-施密特过程</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.3.2. <span class="math notranslate nohighlight">\(A\)</span> 非方阵</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.4. 一些代码</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.5. 示例</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">3.6. 使用QR分解计算特征值</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#qr-pca">3.7. <span class="math notranslate nohighlight">\(QR\)</span> 分解与主成分分析（PCA）</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">QR分解</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="qr">
+<h1><span class="section-number">3. </span>QR分解<a class="headerlink" href="#qr" title="Permalink to this heading">#</a></h1>
+<section id="id1">
+<h2><span class="section-number">3.1. </span>概述<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<p>本讲解释QR分解及其与以下内容的关系：</p>
+<ul class="simple">
+<li><p>正交投影和最小二乘法</p></li>
+<li><p>Gram-Schmidt正交化过程</p></li>
+<li><p>特征值和特征向量</p></li>
+</ul>
+<p>我们将编写一些Python代码来帮助巩固理解。</p>
+</section>
+<section id="id2">
+<h2><span class="section-number">3.2. </span>矩阵分解<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<p>QR分解（也称为QR因式分解）是将一个矩阵分解为一个正交矩阵和一个三角矩阵的乘积。</p>
+<p>对于一个实矩阵<span class="math notranslate nohighlight">\(A\)</span>，其QR分解形式为：</p>
+<div class="math notranslate nohighlight">
+\[
+A=QR
+\]</div>
+<p>其中：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(Q\)</span>是正交矩阵（满足<span class="math notranslate nohighlight">\(Q^TQ = I\)</span>）</p></li>
+<li><p><span class="math notranslate nohighlight">\(R\)</span>是上三角矩阵</p></li>
+</ul>
+<p>我们将使用<strong>Gram-Schmidt正交化过程</strong>来计算QR分解</p>
+<p>由于这个过程很有教育意义，我们将编写自己的Python代码来完成这项工作</p>
+</section>
+<section id="id3">
+<h2><span class="section-number">3.3. </span>格拉姆-施密特正交化过程<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>我们从一个<strong>方阵</strong><span class="math notranslate nohighlight">\(A\)</span>开始。</p>
+<p>如果方阵<span class="math notranslate nohighlight">\(A\)</span>是非奇异的，那么<span class="math notranslate nohighlight">\(QR\)</span>分解是唯一的。</p>
+<p>我们稍后会处理矩形矩阵<span class="math notranslate nohighlight">\(A\)</span>。</p>
+<p>实际上，我们的算法也适用于非方阵的矩形矩阵<span class="math notranslate nohighlight">\(A\)</span>。</p>
+<section id="a">
+<h3><span class="section-number">3.3.1. </span>方阵<span class="math notranslate nohighlight">\(A\)</span>的格拉姆-施密特过程<a class="headerlink" href="#a" title="Permalink to this heading">#</a></h3>
+<p>这里我们对矩阵<span class="math notranslate nohighlight">\(A\)</span>的<strong>列</strong>应用格拉姆-施密特过程。</p>
+<p>具体来说，令</p>
+<div class="math notranslate nohighlight">
+\[
+A= \left[ \begin{array}{c|c|c|c} a_1 &amp; a_2 &amp; \cdots &amp; a_n \end{array} \right]
+\]</div>
+<p>令<span class="math notranslate nohighlight">\(|| · ||\)</span>表示L2范数。</p>
+<p>格拉姆-施密特算法按特定顺序重复以下两个步骤</p>
+<ul class="simple">
+<li><p><strong>标准化</strong>向量使其具有单位范数</p></li>
+<li><p><strong>正交化</strong>下一个向量</p></li>
+</ul>
+<p>首先，我们设<span class="math notranslate nohighlight">\(u_1 = a_1\)</span>然后进行<strong>标准化</strong>：</p>
+<div class="math notranslate nohighlight">
+\[
+u_1=a_1, \ \ \ e_1=\frac{u_1}{||u_1||}
+\]</div>
+<p>我们先<strong>正交化</strong>计算<span class="math notranslate nohighlight">\(u_2\)</span>，然后<strong>标准化</strong>得到<span class="math notranslate nohighlight">\(e_2\)</span>：</p>
+<div class="math notranslate nohighlight">
+\[
+u_2=a_2-(a_2· e_1)e_1, \ \ \  e_2=\frac{u_2}{||u_2||}
+\]</div>
+<p>我们邀请读者通过验证 <span class="math notranslate nohighlight">\(e_1 \cdot e_2 = 0\)</span> 来确认 <span class="math notranslate nohighlight">\(e_1\)</span> 与 <span class="math notranslate nohighlight">\(e_2\)</span> 正交。</p>
+<p>Gram-Schmidt过程继续迭代。</p>
+<p>因此，对于 <span class="math notranslate nohighlight">\(k= 2, \ldots, n-1\)</span>，我们构造</p>
+<div class="math notranslate nohighlight">
+\[
+u_{k+1}=a_{k+1}-(a_{k+1}· e_1)e_1-\cdots-(a_{k+1}· e_k)e_k, \ \ \ e_{k+1}=\frac{u_{k+1}}{||u_{k+1}||}
+\]</div>
+<p>这里的 <span class="math notranslate nohighlight">\((a_j \cdot e_i)\)</span> 可以被解释为 <span class="math notranslate nohighlight">\(a_j\)</span> 在 <span class="math notranslate nohighlight">\(e_i\)</span> 上的线性最小二乘<strong>回归系数</strong></p>
+<ul class="simple">
+<li><p>它是 <span class="math notranslate nohighlight">\(a_j\)</span> 和 <span class="math notranslate nohighlight">\(e_i\)</span> 的内积除以 <span class="math notranslate nohighlight">\(e_i\)</span> 的内积，其中
+由于<em>标准化</em>，我们知道 <span class="math notranslate nohighlight">\(e_i \cdot e_i = 1\)</span></p></li>
+<li><p>这个回归系数可以解释为<strong>协方差</strong>除以<strong>方差</strong></p></li>
+</ul>
+<p>可以验证</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\begin{split}
+A= \left[ \begin{array}{c|c|c|c} a_1 &amp; a_2 &amp; \cdots &amp; a_n \end{array} \right]=
+\left[ \begin{array}{c|c|c|c} e_1 &amp; e_2 &amp; \cdots &amp; e_n \end{array} \right]
+\left[ \begin{matrix} a_1·e_1 &amp; a_2·e_1 &amp; \cdots &amp; a_n·e_1\\ 0 &amp; a_2·e_2 &amp; \cdots &amp; a_n·e_2\end{split}\\\begin{split}\\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; a_n·e_n \end{matrix} \right]
+\end{split}\end{aligned}\end{align} \]</div>
+<p>因此，我们构造了分解</p>
+<div class="math notranslate nohighlight">
+\[ 
+A = Q R
+\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight">
+\[ 
+Q = \left[ \begin{array}{c|c|c|c} a_1 &amp; a_2 &amp; \cdots &amp; a_n \end{array} \right]=
+\left[ \begin{array}{c|c|c|c} e_1 &amp; e_2 &amp; \cdots &amp; e_n \end{array} \right]
+\]</div>
+<p>且</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+R = \left[ \begin{matrix} a_1·e_1 &amp; a_2·e_1 &amp; \cdots &amp; a_n·e_1\\ 0 &amp; a_2·e_2 &amp; \cdots &amp; a_n·e_2 
+\\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; a_n·e_n \end{matrix} \right]
+\end{split}\]</div>
+</section>
+<section id="id4">
+<h3><span class="section-number">3.3.2. </span><span class="math notranslate nohighlight">\(A\)</span> 非方阵<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<p>现在假设 <span class="math notranslate nohighlight">\(A\)</span> 是一个 <span class="math notranslate nohighlight">\(n \times m\)</span> 矩阵，其中 <span class="math notranslate nohighlight">\(m &gt; n\)</span>。</p>
+<p>那么 <span class="math notranslate nohighlight">\(QR\)</span> 分解为</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\begin{split}
+A= \left[ \begin{array}{c|c|c|c} a_1 &amp; a_2 &amp; \cdots &amp; a_m \end{array} \right]=\left[ \begin{array}{c|c|c|c} e_1 &amp; e_2 &amp; \cdots &amp; e_n \end{array} \right]
+\left[ \begin{matrix} a_1·e_1 &amp; a_2·e_1 &amp; \cdots &amp; a_n·e_1 &amp; a_{n+1}\cdot e_1 &amp; \cdots &amp; a_{m}\cdot e_1 \\\end{split}\\\begin{split}0 &amp; a_2·e_2 &amp; \cdots &amp; a_n·e_2 &amp; a_{n+1}\cdot e_2 &amp; \cdots &amp; a_{m}\cdot e_2 \\ \vdots &amp; \vdots &amp; \ddots &amp; \quad  \vdots &amp; \vdots &amp; \ddots &amp; \vdots
+\\ 0 &amp; 0 &amp; \cdots &amp; a_n·e_n &amp; a_{n+1}\cdot e_n &amp; \cdots &amp; a_{m}\cdot e_n \end{matrix} \right]
+\end{split}\end{aligned}\end{align} \]</div>
+<p>这意味着</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+a_1 &amp; = (a_1\cdot e_1) e_1 \cr
+a_2 &amp; = (a_2\cdot e_1) e_1 + (a_2\cdot e_2) e_2 \cr
+\vdots &amp; \quad \vdots \cr
+a_n &amp; = (a_n\cdot e_1) e_1 + (a_n\cdot e_2) e_2 + \cdots + (a_n \cdot e_n) e_n  \cr
+a_{n+1} &amp; = (a_{n+1}\cdot e_1) e_1 + (a_{n+1}\cdot e_2) e_2 + \cdots + (a_{n+1}\cdot e_n) e_n  \cr
+\vdots &amp; \quad \vdots \cr
+a_m &amp; = (a_m\cdot e_1) e_1 + (a_m\cdot e_2) e_2 + \cdots + (a_m \cdot e_n) e_n  \cr
+\end{align*}\]</div>
+</section>
+</section>
+<section id="id5">
+<h2><span class="section-number">3.4. </span>一些代码<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>现在让我们编写一些自制的Python代码，通过部署上述的Gram-Schmidt过程来实现QR分解。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">qr</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">QR_Decomposition</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span> <span class="c1"># 获取A的形状</span>
+
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> <span class="c1"># 初始化矩阵Q</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> <span class="c1"># 初始化矩阵u</span>
+
+    <span class="n">u</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">Q</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+
+        <span class="n">u</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+            <span class="n">u</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="p">(</span><span class="n">A</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">Q</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span> <span class="o">*</span> <span class="n">Q</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="c1"># 获取每个u向量</span>
+
+        <span class="n">Q</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span> <span class="c1"># 计算每个e向量</span>
+
+    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+            <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">@</span> <span class="n">Q</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">Q</span><span class="p">,</span> <span class="n">R</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>前面的代码没问题，但可以进行一些进一步的整理。</p>
+<p>我们这样做是因为在本notebook后面部分，我们想要比较使用上面的自制代码与Python <code class="docutils literal notranslate"><span class="pre">scipy</span></code>包提供的QR代码所得到的结果。</p>
+<p>不同的数值算法产生的<span class="math notranslate nohighlight">\(Q\)</span>和<span class="math notranslate nohighlight">\(R\)</span>矩阵之间可能存在符号差异。</p>
+<p>由于在计算<span class="math notranslate nohighlight">\(QR\)</span>时这些符号差异会相互抵消，所以这些都是有效的QR分解。</p>
+<p>但是，为了使我们自制函数和<code class="docutils literal notranslate"><span class="pre">scipy</span></code>中的QR模块的结果具有可比性，让我们要求<span class="math notranslate nohighlight">\(Q\)</span>具有正对角线元素。</p>
+<p>我们通过适当调整<span class="math notranslate nohighlight">\(Q\)</span>中列的符号和<span class="math notranslate nohighlight">\(R\)</span>中行的符号来实现这一点。</p>
+<p>为了实现这个目标，我们将定义一对函数。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">diag_sign</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="s2">&quot;计算矩阵A对角线元素的符号&quot;</span>
+
+    <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">A</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">D</span>
+
+<span class="k">def</span> <span class="nf">adjust_sign</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    调整Q中列的符号和R中行的符号，</span>
+<span class="sd">    以确保Q的对角线为正</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">D</span> <span class="o">=</span> <span class="n">diag_sign</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span>
+
+    <span class="n">Q</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">@</span> <span class="n">D</span>
+    <span class="n">R</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">D</span> <span class="o">@</span> <span class="n">R</span>
+
+    <span class="k">return</span> <span class="n">Q</span><span class="p">,</span> <span class="n">R</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h2><span class="section-number">3.5. </span>示例<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<p>现在让我们做一个例子。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span>
+<span class="c1"># A = np.array([[1.0, 0.5, 0.2], [0.5, 0.5, 1.0], [0.0, 1.0, 1.0]])</span>
+<span class="c1"># A = np.array([[1.0, 0.5, 0.2], [0.5, 0.5, 1.0]])</span>
+
+<span class="n">A</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1., 1., 0.],
+       [1., 0., 1.],
+       [0., 1., 1.]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">adjust_sign</span><span class="p">(</span><span class="o">*</span><span class="n">QR_Decomposition</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0.70710678, -0.40824829, -0.57735027],
+       [ 0.70710678,  0.40824829,  0.57735027],
+       [ 0.        , -0.81649658,  0.57735027]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">R</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 1.41421356,  0.70710678,  0.70710678],
+       [ 0.        , -1.22474487, -0.40824829],
+       [ 0.        ,  0.        ,  1.15470054]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们将结果与 <code class="docutils literal notranslate"><span class="pre">scipy</span></code> 包产生的结果进行比较</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q_scipy</span><span class="p">,</span> <span class="n">R_scipy</span> <span class="o">=</span> <span class="n">adjust_sign</span><span class="p">(</span><span class="o">*</span><span class="n">qr</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;我们的 Q: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Scipy 的 Q: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">Q_scipy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>我们的 Q: 
+ [[ 0.70710678 -0.40824829 -0.57735027]
+ [ 0.70710678  0.40824829  0.57735027]
+ [ 0.         -0.81649658  0.57735027]]
+
+
+Scipy 的 Q: 
+ [[ 0.70710678 -0.40824829 -0.57735027]
+ [ 0.70710678  0.40824829  0.57735027]
+ [ 0.         -0.81649658  0.57735027]]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;我们的 R: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Scipy 的 R: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">R_scipy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>我们的 R: 
+ [[ 1.41421356  0.70710678  0.70710678]
+ [ 0.         -1.22474487 -0.40824829]
+ [ 0.          0.          1.15470054]]
+
+
+Scipy 的 R: 
+ [[ 1.41421356  0.70710678  0.70710678]
+ [ 0.         -1.22474487 -0.40824829]
+ [ 0.          0.          1.15470054]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>上述结果给我们带来好消息，我们自制的函数与scipy产生的结果一致。</p>
+<p>现在让我们对一个矩形矩阵<span class="math notranslate nohighlight">\(A\)</span>进行QR分解，这个矩阵是<span class="math notranslate nohighlight">\(n \times m\)</span>的，其中<span class="math notranslate nohighlight">\(m &gt; n\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">adjust_sign</span><span class="p">(</span><span class="o">*</span><span class="n">QR_Decomposition</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+<span class="n">Q</span><span class="p">,</span> <span class="n">R</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.4472136 , -0.89442719],
+        [ 0.89442719,  0.4472136 ]]),
+ array([[ 2.23606798,  1.34164079,  9.8386991 ],
+        [ 0.        , -2.68328157,  0.4472136 ]]))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q_scipy</span><span class="p">,</span> <span class="n">R_scipy</span> <span class="o">=</span> <span class="n">adjust_sign</span><span class="p">(</span><span class="o">*</span><span class="n">qr</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+<span class="n">Q_scipy</span><span class="p">,</span> <span class="n">R_scipy</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.4472136 , -0.89442719],
+        [ 0.89442719,  0.4472136 ]]),
+ array([[ 2.23606798,  1.34164079,  9.8386991 ],
+        [ 0.        , -2.68328157,  0.4472136 ]]))
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id7">
+<h2><span class="section-number">3.6. </span>使用QR分解计算特征值<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<p>现在介绍一个关于QR算法的有用事实。</p>
+<p>以下基于QR分解的迭代可用于计算<strong>方阵</strong> <span class="math notranslate nohighlight">\(A\)</span> 的<strong>特征值</strong>。</p>
+<p>算法如下：</p>
+<ol class="arabic simple">
+<li><p>设 <span class="math notranslate nohighlight">\(A_0 = A\)</span> 并形成 <span class="math notranslate nohighlight">\(A_0 = Q_0 R_0\)</span></p></li>
+<li><p>形成 <span class="math notranslate nohighlight">\(A_1 = R_0 Q_0\)</span>。注意 <span class="math notranslate nohighlight">\(A_1\)</span> 与 <span class="math notranslate nohighlight">\(A_0\)</span> 相似(易于验证)，因此具有相同的特征值。</p></li>
+<li><p>形成 <span class="math notranslate nohighlight">\(A_1 = Q_1 R_1\)</span> (即，形成 <span class="math notranslate nohighlight">\(A_1\)</span> 的 <span class="math notranslate nohighlight">\(QR\)</span> 分解)。</p></li>
+<li><p>形成 <span class="math notranslate nohighlight">\(A_2 = R_1 Q_1\)</span> 然后 <span class="math notranslate nohighlight">\(A_2 = Q_2 R_2\)</span>。</p></li>
+<li><p>迭代直至收敛。</p></li>
+<li><p>计算 <span class="math notranslate nohighlight">\(A\)</span> 的特征值，并将其与从该过程得到的极限 <span class="math notranslate nohighlight">\(A_n\)</span> 的对角线值进行比较。</p></li>
+</ol>
+<p><strong>注意：</strong> 这个算法接近于计算特征值最有效的方法之一！</p>
+<p>让我们编写一些Python代码来尝试这个算法</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">QR_eigvals</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="s2">&quot;使用QR分解找到A的特征值。&quot;</span>
+
+    <span class="n">A_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="n">A_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">diff</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">maxiter</span><span class="p">):</span>
+        <span class="n">A_old</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">A_new</span>
+        <span class="n">Q</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">QR_Decomposition</span><span class="p">(</span><span class="n">A_old</span><span class="p">)</span>
+
+        <span class="n">A_new</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">R</span> <span class="o">@</span> <span class="n">Q</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">A_new</span> <span class="o">-</span> <span class="n">A_old</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">eigvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">A_new</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">eigvals</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在让我们试试这段代码，并将结果与<code class="docutils literal notranslate"><span class="pre">scipy.linalg.eigvals</span></code>给出的结果进行比较</p>
+<p>开始吧</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 用一个随机A矩阵做实验</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">sorted</span><span class="p">(</span><span class="n">QR_eigvals</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[-0.0742005181406427, -0.06005426104247407, 0.8948545350036408]
+</pre></div>
+</div>
+</div>
+</div>
+<p>与 <code class="docutils literal notranslate"><span class="pre">scipy</span></code> 包进行比较。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">sorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(-0.06712738959155837-0.17519566415822432j),
+ (-0.06712738959155837+0.17519566415822432j),
+ (0.8948545350036403+0j)]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="qr-pca">
+<h2><span class="section-number">3.7. </span><span class="math notranslate nohighlight">\(QR\)</span> 分解与主成分分析（PCA）<a class="headerlink" href="#qr-pca" title="Permalink to this heading">#</a></h2>
+<p><span class="math notranslate nohighlight">\(QR\)</span> 分解与主成分分析（PCA）之间存在一些有趣的联系。</p>
+<p>以下是一些联系：</p>
+<ol class="arabic simple">
+<li><p>设 <span class="math notranslate nohighlight">\(X'\)</span> 是一个 <span class="math notranslate nohighlight">\(k \times n\)</span> 的随机矩阵，其中第 <span class="math notranslate nohighlight">\(j\)</span> 列是从 <span class="math notranslate nohighlight">\({\mathcal N}(\mu, \Sigma)\)</span> 分布中随机抽取的样本，这里 <span class="math notranslate nohighlight">\(\mu\)</span> 是 <span class="math notranslate nohighlight">\(k \times 1\)</span> 的均值向量，<span class="math notranslate nohighlight">\(\Sigma\)</span> 是 <span class="math notranslate nohighlight">\(k \times k\)</span> 的协方差矩阵。我们需要 <span class="math notranslate nohighlight">\(n &gt; &gt; k\)</span> —— 这是一个”计量经济学的例子”。</p></li>
+<li><p>将 <span class="math notranslate nohighlight">\(X'\)</span> 分解为 <span class="math notranslate nohighlight">\(X' = Q R\)</span>，其中 <span class="math notranslate nohighlight">\(Q\)</span> 是 <span class="math notranslate nohighlight">\(k \times k\)</span> 矩阵，<span class="math notranslate nohighlight">\(R\)</span> 是 <span class="math notranslate nohighlight">\(k \times n\)</span> 矩阵。</p></li>
+<li><p>计算 <span class="math notranslate nohighlight">\(R R'\)</span> 的特征值，即我们将计算 <span class="math notranslate nohighlight">\(R R' = \tilde P \Lambda \tilde P'\)</span>。</p></li>
+<li><p>构造 <span class="math notranslate nohighlight">\(X' X = Q \tilde P \Lambda \tilde P' Q'\)</span> 并与特征分解 <span class="math notranslate nohighlight">\(X'X = P \hat \Lambda P'\)</span> 进行比较。</p></li>
+<li><p>我们将发现 <span class="math notranslate nohighlight">\(\Lambda = \hat \Lambda\)</span> 且 <span class="math notranslate nohighlight">\(P = Q \tilde P\)</span>。</p></li>
+</ol>
+<p>让我们用Python代码来验证推测5。</p>
+<p>首先模拟一个随机的 <span class="math notranslate nohighlight">\(\left(n, k\right)\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">k</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<span class="c1"># 生成一些随机矩</span>
+<span class="n">𝜇</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+<span class="n">Σ</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">C</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># X 是一个随机矩阵，其中每一列都遵循多元正态分布</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">𝜇</span><span class="p">,</span> <span class="n">Σ</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1000, 5)
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们对<span class="math notranslate nohighlight">\(X^{\prime}\)</span>进行QR分解。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">adjust_sign</span><span class="p">(</span><span class="o">*</span><span class="n">QR_Decomposition</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>检查 <span class="math notranslate nohighlight">\(Q\)</span> 和 <span class="math notranslate nohighlight">\(R\)</span> 的形状。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">R</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((5, 5), (5, 1000))
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在我们可以构造 <span class="math notranslate nohighlight">\(R R^{\prime}=\tilde{P} \Lambda \tilde{P}^{\prime}\)</span> 并形成特征分解。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">RR</span> <span class="o">=</span> <span class="n">R</span> <span class="o">@</span> <span class="n">R</span><span class="o">.</span><span class="n">T</span>
+
+<span class="n">𝜆</span><span class="p">,</span> <span class="n">P_tilde</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span>
+<span class="n">Λ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">𝜆</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们也可以对 <span class="math notranslate nohighlight">\(X^{\prime} X=P \hat{\Lambda} P^{\prime}\)</span> 进行分解。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">XX</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X</span>
+
+<span class="n">𝜆_hat</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">XX</span><span class="p">)</span>
+<span class="n">Λ_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">𝜆_hat</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>比较 <span class="math notranslate nohighlight">\(\Lambda\)</span> 和 <span class="math notranslate nohighlight">\(\hat{\Lambda}\)</span> 对角线上的特征值。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">𝜆</span><span class="p">,</span> <span class="n">𝜆_hat</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([8.10283879e+00, 5.12895248e+01, 2.66540613e+02, 1.42195868e+03,
+        8.71245985e+03]),
+ array([8.10283879e+00, 5.12895248e+01, 2.66540613e+02, 1.42195868e+03,
+        8.71245985e+03]))
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们比较 <span class="math notranslate nohighlight">\(P\)</span> 和 <span class="math notranslate nohighlight">\(Q \tilde{P}\)</span>。</p>
+<p>同样，我们需要注意 <span class="math notranslate nohighlight">\(P\)</span> 和 <span class="math notranslate nohighlight">\(Q\tilde{P}\)</span> 的列之间的符号差异。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">QP_tilde</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">@</span> <span class="n">P_tilde</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span> <span class="o">@</span> <span class="n">diag_sign</span><span class="p">(</span><span class="n">P</span><span class="p">)</span> <span class="o">-</span> <span class="n">QP_tilde</span> <span class="o">@</span> <span class="n">diag_sign</span><span class="p">(</span><span class="n">QP_tilde</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.1121993043493603e-14
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们验证 <span class="math notranslate nohighlight">\(X^{\prime}X\)</span> 可以被分解为 <span class="math notranslate nohighlight">\(Q \tilde{P} \Lambda \tilde{P}^{\prime} Q^{\prime}\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">QPΛPQ</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">@</span> <span class="n">P_tilde</span> <span class="o">@</span> <span class="n">Λ</span> <span class="o">@</span> <span class="n">P_tilde</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Q</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">QPΛPQ</span> <span class="o">-</span> <span class="n">XX</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.000888343900442e-11
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/qr_decomp.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/qr_decomp.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/qr_decomp.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/qr_decomp.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/qr_decomp.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "qr_decomp";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/qr_decomp.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

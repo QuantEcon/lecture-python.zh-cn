@@ -1,0 +1,1750 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>33. 求职搜索 VII：McCall工人的Q学习 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'mccall_q';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/mccall_q.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="34. Cass-Koopmans模型" href="cass_koopmans_1.html" />
+    <link rel="prev" title="32. 在职搜索 VI：在职搜索" href="jv.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="求职搜索 VII：McCall工人的Q学习"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="求职搜索 VII：McCall工人的Q学习" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/mccall_q.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=mccall_q>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">33.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mccall">33.2. McCall 模型回顾</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#q">33.3. 隐含质量函数 <span class="math notranslate nohighlight">\(Q\)</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">33.4. 从概率到样本</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">33.5. Q-学习</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">33.6. 在职工人不能辞职</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">33.7. 可能的扩展</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">求职搜索 VII：McCall工人的Q学习</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="vii-mccallq">
+<h1><span class="section-number">33. </span>求职搜索 VII：McCall工人的Q学习<a class="headerlink" href="#vii-mccallq" title="Permalink to this heading">#</a></h1>
+<section id="id1">
+<h2><span class="section-number">33.1. </span>概述<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<p>本讲解介绍一种强大的机器学习技术——Q学习。</p>
+<p><span id="id2">[<a class="reference internal" href="zreferences.html#id32" title="Richard S Sutton and Andrew G Barto. Reinforcement learning: An introduction. MIT press, 2018.">Sutton and Barto, 2018</a>]</span>介绍了Q学习和其他各种统计学习程序。</p>
+<p>Q学习算法结合了以下思想：</p>
+<ul class="simple">
+<li><p>动态规划</p></li>
+<li><p>最小二乘法的递归版本，即<a class="reference external" href="https://en.wikipedia.org/wiki/Temporal_difference_learning">时间差分学习</a>。</p></li>
+</ul>
+<p>本讲将Q学习算法应用于McCall工人所面临的情况。</p>
+<p>本讲还考虑了McCall工人可以选择辞去当前工作的情况。</p>
+<p>相对于我们在 <a class="reference internal" href="mccall_model.html"><span class="doc">quantecon 讲座</span></a> 中学习的 McCall 工人模型的动态规划方法，Q-学习算法让工人对以下方面的了解更少：</p>
+<ul class="simple">
+<li><p>生成工资序列的随机过程</p></li>
+<li><p>描述接受或拒绝工作后果的奖励函数</p></li>
+</ul>
+<p>Q-学习算法调用统计学习模型来学习这些内容。</p>
+<p>统计学习通常可以归结为某种形式的最小二乘法，在这里也是如此。</p>
+<p>每当我们提到<strong>统计学习</strong>时，我们都必须说明正在学习的对象是什么。</p>
+<p>对于 Q-学习来说，要学习的对象并不是动态规划所关注的<strong>价值函数</strong>。</p>
+<p>但它与价值函数密切相关。</p>
+<p>在本讲座研究的有限动作、有限状态的情况下，要统计学习的对象是一个 <strong>Q-表</strong>，它是针对有限集合的 <strong>Q-函数</strong>的一个实例。</p>
+<p>有时 Q-函数或 Q-表也被称为质量函数或质量表。</p>
+<p>Q-表的行和列对应着智能体可能遇到的状态，以及在每个状态下可以采取的可能行动。</p>
+<p>一个类似贝尔曼方程的等式在算法中起着重要作用。</p>
+<p>它与我们在<a class="reference internal" href="mccall_model.html"><span class="doc">这个 quantecon 讲座</span></a>中看到的 McCall 模型的贝尔曼方程不同。</p>
+<p>在本讲座中，我们将学习一些关于：</p>
+<ul class="simple">
+<li><p>与任何马尔可夫决策问题相关的<strong>Q-函数</strong>或<strong>质量函数</strong>，其最优值函数满足贝尔曼方程</p></li>
+<li><p><strong>时序差分学习</strong>，Q-学习算法的一个关键组成部分</p></li>
+</ul>
+<p>像往常一样，让我们先导入一些 Python 模块。</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantecon
+</pre></div>
+</div>
+</div>
+<details class="hide below-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell output</span>
+<span class="expanded">Hide code cell output</span>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.0)
+Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (0.60.0)
+Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
+Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
+Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.1)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.2)
+Requirement already satisfied: llvmlite&lt;0.44,&gt;=0.43.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.43.0)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.3.2)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.7)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2.2.3)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2024.8.30)
+Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from sympy-&gt;quantecon) (1.3.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int64</span>
+<span class="kn">from</span> <span class="nn">numba.experimental</span> <span class="kn">import</span> <span class="n">jitclass</span>
+<span class="kn">from</span> <span class="nn">quantecon.distributions</span> <span class="kn">import</span> <span class="n">BetaBinomial</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="mccall">
+<h2><span class="section-number">33.2. </span>McCall 模型回顾<a class="headerlink" href="#mccall" title="Permalink to this heading">#</a></h2>
+<p>我们首先回顾在<a class="reference internal" href="mccall_model.html"><span class="doc">这个 quantecon 讲座</span></a>中描述的 McCall 模型。</p>
+<p>我们将计算一个最优值函数和实现该值的政策。</p>
+<p>我们最终会将这个最优政策与 Q-learning McCall 工人所学到的进行比较。</p>
+<p>McCall 模型的特征由参数 <span class="math notranslate nohighlight">\(\beta,c\)</span> 和已知的工资分布 <span class="math notranslate nohighlight">\(F\)</span> 来描述。</p>
+<p>McCall 工人想要最大化预期的终身收入折现总和</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E} \sum_{t=0}^{\infty} \beta^t y_t
+\]</div>
+<p>工人的收入 <span class="math notranslate nohighlight">\(y_t\)</span> 在就业时等于他的工资 <span class="math notranslate nohighlight">\(w\)</span>，在失业时等于失业补助 <span class="math notranslate nohighlight">\(c\)</span>。</p>
+<p>对于刚收到工资offer <span class="math notranslate nohighlight">\(w\)</span> 并正在决定是接受还是拒绝的 McCall 工人来说，最优值 <span class="math notranslate nohighlight">\(V\left(w\right)\)</span> 满足贝尔曼方程</p>
+<div class="math notranslate nohighlight" id="equation-eq-mccallbellman">
+<span class="eqno">(33.1)<a class="headerlink" href="#equation-eq-mccallbellman" title="Permalink to this equation">#</a></span>\[
+V\left(w\right)=\max_{\text{accept, reject}}\;\left\{ \frac{w}{1-\beta},c+\beta\int V\left(w'\right)dF\left(w'\right)\right\}
+\]</div>
+<p>为了与Q-learning的结果进行比较基准，我们首先近似最优值函数。</p>
+<p>在有限离散状态空间中，可能的状态由<span class="math notranslate nohighlight">\(\{1,2,...,n\}\)</span>索引，我们对值函数<span class="math notranslate nohighlight">\(v\in\mathbb{R}^{n}\)</span>做一个初始猜测，然后对贝尔曼方程进行迭代：</p>
+<div class="math notranslate nohighlight">
+\[
+v^{\prime}(i)=\max \left\{\frac{w(i)}{1-\beta}, c+\beta \sum_{1 \leq j \leq n} v(j) q(j)\right\} \quad \text { for } i=1, \ldots, n
+\]</div>
+<p>让我们使用<a class="reference internal" href="mccall_model.html"><span class="doc">这个quantecon讲座</span></a>中的Python代码。</p>
+<p>我们使用一个名为<code class="docutils literal notranslate"><span class="pre">VFI</span></code>的Python方法，通过值函数迭代来计算最优值函数。</p>
+<p>我们构造一个假设的工资分布，并用以下Python代码绘制：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">100</span>                        <span class="c1"># default parameters</span>
+<span class="n">q_default</span> <span class="o">=</span> <span class="n">BetaBinomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">()</span>       <span class="c1"># default choice of q</span>
+
+<span class="n">w_min</span><span class="p">,</span> <span class="n">w_max</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">60</span>
+<span class="n">w_default</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">w_min</span><span class="p">,</span> <span class="n">w_max</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># plot distribution of wage offer</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_default</span><span class="p">,</span> <span class="n">q_default</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$q(w(i))$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;wages&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;probabilities&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/f566092c708fcfad5266753751af6d8824e0ecf4c02313ee6406818654e17141.png" src="_images/f566092c708fcfad5266753751af6d8824e0ecf4c02313ee6406818654e17141.png" />
+</div>
+</div>
+<p>接下来我们将通过对贝尔曼方程进行迭代收敛来计算工人的最优价值函数。</p>
+<p>然后我们将绘制贝尔曼算子的各种迭代结果。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mccall_data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>      <span class="c1"># 失业补偿</span>
+    <span class="p">(</span><span class="s1">&#39;β&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>      <span class="c1"># 贴现因子</span>
+    <span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>   <span class="c1"># 工资值数组，w[i] = 状态i下的工资</span>
+    <span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>    <span class="c1"># 概率数组</span>
+<span class="p">]</span>
+
+
+<span class="nd">@jitclass</span><span class="p">(</span><span class="n">mccall_data</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">McCallModel</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">β</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w_default</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q_default</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span> <span class="o">=</span> <span class="n">c</span><span class="p">,</span> <span class="n">β</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">w</span><span class="p">,</span> <span class="n">q</span>
+
+    <span class="k">def</span> <span class="nf">state_action_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        状态-行动对的值。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 简化名称</span>
+        <span class="n">c</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
+        <span class="c1"># 评估每个状态-行动对的值</span>
+        <span class="c1"># 考虑行动 = 接受或拒绝当前offer</span>
+        <span class="n">accept</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span><span class="p">)</span>
+        <span class="n">reject</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">β</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="n">q</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">accept</span><span class="p">,</span> <span class="n">reject</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">VFI</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        找到最优价值函数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="p">)</span>
+        <span class="n">v_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">flag</span><span class="o">=</span><span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="n">v_next</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_action_values</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v_next</span> <span class="o">-</span> <span class="n">v</span><span class="p">))</span><span class="o">&lt;=</span><span class="n">eps</span><span class="p">:</span>
+                <span class="n">flag</span><span class="o">=</span><span class="mi">1</span>
+                <span class="k">break</span>
+            <span class="n">v</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">v_next</span>
+
+        <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">flag</span>
+
+<span class="k">def</span> <span class="nf">plot_value_function_seq</span><span class="p">(</span><span class="n">mcm</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">num_plots</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    绘制一系列价值函数。</span>
+
+<span class="sd">        * mcm 是 McCallModel 的一个实例</span>
+<span class="sd">        * ax 是实现了plot方法的轴对象</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mcm</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">mcm</span><span class="o">.</span><span class="n">w</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mcm</span><span class="o">.</span><span class="n">β</span><span class="p">)</span>
+    <span class="n">v_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_plots</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mcm</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;iterate </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># 更新猜测值</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">v_next</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mcm</span><span class="o">.</span><span class="n">state_action_values</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+        <span class="n">v</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">v_next</span>  <span class="c1"># 将内容复制到v中</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcm</span> <span class="o">=</span> <span class="n">McCallModel</span><span class="p">()</span>
+<span class="n">valfunc_VFI</span><span class="p">,</span> <span class="n">flag</span> <span class="o">=</span> <span class="n">mcm</span><span class="o">.</span><span class="n">VFI</span><span class="p">()</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;工资&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;价值&#39;</span><span class="p">)</span>
+<span class="n">plot_value_function_seq</span><span class="p">(</span><span class="n">mcm</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/32bac6e169f344459f1916a4bd3aa2712f8f339c1e3752e130105e238caf3f00.png" src="_images/32bac6e169f344459f1916a4bd3aa2712f8f339c1e3752e130105e238caf3f00.png" />
+</div>
+</div>
+<p>接下来我们将打印出迭代序列的极限值。</p>
+<p>这是通过值函数迭代得到的McCall工人价值函数的近似值。</p>
+<p>在我们完成Q学习之后，我们将使用这个值函数作为基准。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">valfunc_VFI</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[5322.27935875 5322.27935875 5322.27935875 5322.27935875 5322.27935875
+ 5322.27935875 5322.27935875 5322.27935875 5322.27935875 5500.
+ 6000.        ]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="q">
+<h2><span class="section-number">33.3. </span>隐含质量函数 <span class="math notranslate nohighlight">\(Q\)</span><a class="headerlink" href="#q" title="Permalink to this heading">#</a></h2>
+<p><strong>质量函数</strong> <span class="math notranslate nohighlight">\(Q\)</span> 将状态-动作对映射为最优值。</p>
+<p>它们与最优值函数紧密相连。</p>
+<p>但值函数仅是状态的函数，而不包含动作。</p>
+<p>对于每个给定状态，质量函数给出从该状态开始可以达到的最优值列表，列表的每个组成部分表示可以采取的一种可能动作。</p>
+<p>对于我们的McCall工人模型，假设有有限的可能工资集合：</p>
+<ul class="simple">
+<li><p>状态空间 <span class="math notranslate nohighlight">\(\mathcal{W}=\{w_1,w_2,...,w_n\}\)</span> 由整数 <span class="math notranslate nohighlight">\(1,2,...,n\)</span> 索引</p></li>
+<li><p>动作空间为 <span class="math notranslate nohighlight">\(\mathcal{A}=\{\text{accept}, \text{reject}\}\)</span></p></li>
+</ul>
+<p>令 <span class="math notranslate nohighlight">\(a \in \mathcal{A}\)</span> 为两个可能动作之一，即接受或拒绝。</p>
+<p>对于我们的McCall工人，最优Q函数 <span class="math notranslate nohighlight">\(Q(w,a)\)</span> 等于一个此前失业的工人在手头有offer <span class="math notranslate nohighlight">\(w\)</span> 时，如果他采取动作 <span class="math notranslate nohighlight">\(a\)</span> 所能获得的最大价值。</p>
+<p><span class="math notranslate nohighlight">\(Q(w,a)\)</span> 的这个定义假设工人在随后的时期会采取最优行动。</p>
+<p>我们的 McCall 工人的最优 Q-函数满足</p>
+<div class="math notranslate nohighlight" id="equation-eq-impliedq">
+<span class="eqno">(33.2)<a class="headerlink" href="#equation-eq-impliedq" title="Permalink to this equation">#</a></span>\[\begin{split}
+\begin{aligned}
+Q\left(w,\text{accept}\right) &amp; =\frac{w}{1-\beta} \\
+Q\left(w,\text{reject}\right) &amp; =c+\beta\int\max_{\text{accept, reject}}\left\{ \frac{w'}{1-\beta},Q\left(w',\text{reject}\right)\right\} dF\left(w'\right)
+\end{aligned}
+\end{split}\]</div>
+<p>注意，系统<a class="reference internal" href="#equation-eq-impliedq">(33.2)</a>的第一个方程假设在代理人接受了一个报价后，他将来不会拒绝同样的报价。</p>
+<p>这些方程与我们在<a class="reference internal" href="mccall_model.html"><span class="doc">这个 quantecon 讲座</span></a>中研究的工人最优值函数的贝尔曼方程是一致的。</p>
+<p>显然，在那个讲座中描述的最优值函数 <span class="math notranslate nohighlight">\(V(w)\)</span> 与我们的 Q-函数有如下关系：</p>
+<div class="math notranslate nohighlight">
+\[
+V(w) = \max_{\textrm{accept},\textrm{reject}} \left\{ Q(w, \text{accept} \right), Q\left(w,\text{reject} \right)\}
+\]</div>
+<p>如果我们观察系统<a class="reference internal" href="#equation-eq-impliedq">(33.2)</a>中的第二个方程，我们注意到由于工资过程在时间上是独立同分布的，<span class="math notranslate nohighlight">\(Q\left(w,\text{reject}\right)\)</span>，方程右侧与当前状态<span class="math notranslate nohighlight">\(w\)</span>无关。</p>
+<p>因此我们可以将其表示为一个标量</p>
+<div class="math notranslate nohighlight">
+\[ Q_r := Q\left(w,\text{reject}\right) \quad \forall \, w\in\mathcal{W}.
+\]</div>
+<p>这一事实为我们提供了一种替代方案，而且事实证明，在这种情况下，这是一种更快的方法来计算McCall工人模型的最优值函数和相关的最优策略。</p>
+<p>与我们上面使用的值函数迭代不同，我们可以对系统<a class="reference internal" href="#equation-eq-impliedq">(33.2)</a>中第二个方程的一个版本进行迭代直至收敛，该方程将<span class="math notranslate nohighlight">\(Q_r\)</span>的估计值映射为改进的估计值<span class="math notranslate nohighlight">\(Q_r'\)</span>：</p>
+<div class="math notranslate nohighlight">
+\[
+Q_{r}^\prime=c+\beta\int\max_{\text{}}\left\{ \frac{w'}{1-\beta},Q_{r}\right\} dF\left(w'\right)
+\]</div>
+<p>在<span class="math notranslate nohighlight">\(Q_r\)</span>序列收敛后，我们可以从以下公式恢复McCall工人模型的最优值函数<span class="math notranslate nohighlight">\(V(w)\)</span>：</p>
+<div class="math notranslate nohighlight">
+\[
+V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
+\]</div>
+</section>
+<section id="id3">
+<h2><span class="section-number">33.4. </span>从概率到样本<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>我们之前提到，McCall工人模型的最优Q函数满足以下贝尔曼方程：</p>
+<div class="math notranslate nohighlight" id="equation-eq-probtosample1">
+<span class="eqno">(33.3)<a class="headerlink" href="#equation-eq-probtosample1" title="Permalink to this equation">#</a></span>\[
+\begin{aligned}
+         w  &amp; + \beta \max_{\textrm{accept, reject}} \left\{ Q (w, \textrm{accept}), Q(w, \textrm{reject}) \right\} - Q (w, \textrm{accept})   = 0  \cr
+         c  &amp; +\beta\int\max_{\text{accept, reject}}\left\{ Q(w', \textrm{accept}),Q\left(w',\text{reject}\right)\right\} dF\left(w'\right) - Q\left(w,\text{reject}\right)  = 0  \cr
+\end{aligned}
+\]</div>
+<p>注意第二行中对<span class="math notranslate nohighlight">\(F(w')\)</span>的积分。</p>
+<p>删除积分符号为我们开始思考Q-learning提供了一个不严谨但有启发性的思路。</p>
+<p>因此，构建一个保留<a class="reference internal" href="#equation-eq-probtosample1">(33.3)</a>第一个方程的差分方程系统。</p>
+<p>但是第二个方程通过去除对<span class="math notranslate nohighlight">\(F (w')\)</span>的积分来替代：</p>
+<div class="math notranslate nohighlight" id="equation-eq-probtosample2">
+<span class="eqno">(33.4)<a class="headerlink" href="#equation-eq-probtosample2" title="Permalink to this equation">#</a></span>\[
+\begin{aligned}
+         w  &amp; + \beta \max_{\textrm{accept, reject}} \left\{ Q (w, \textrm{accept}), Q(w, \textrm{reject}) \right\} - Q (w, \textrm{accept})   = 0  \cr
+         c  &amp; +\beta \max_{\text{accept, reject}}\left\{ Q(w', \textrm{accept}),Q\left(w',\text{reject}\right)\right\}  - Q\left(w,\text{reject}\right)  \approx 0  \cr
+\end{aligned}
+\]</div>
+<p>第二个方程不可能对我们状态空间的笛卡尔积中的所有<span class="math notranslate nohighlight">\(w, w'\)</span>对都成立。</p>
+<p>但是，也许我们可以借助大数定律，希望它能对一个长时间序列中抽取的<span class="math notranslate nohighlight">\(w_t, w_{t+1}\)</span>对<strong>平均</strong>成立，这里我们把<span class="math notranslate nohighlight">\(w_t\)</span>看作<span class="math notranslate nohighlight">\(w\)</span>，把<span class="math notranslate nohighlight">\(w_{t+1}\)</span>看作<span class="math notranslate nohighlight">\(w'\)</span>。</p>
+<p>Q-learning的基本思想是从<span class="math notranslate nohighlight">\(F\)</span>中抽取一个长样本序列（虽然我们假设工人不知道<span class="math notranslate nohighlight">\(F\)</span>，但我们是知道的）并对递归式进行迭代</p>
+<p>将日期 <span class="math notranslate nohighlight">\(t\)</span> 时的 Q 函数估计值 <span class="math notranslate nohighlight">\(\hat Q_t\)</span> 映射到日期 <span class="math notranslate nohighlight">\(t+1\)</span> 时的改进估计值 <span class="math notranslate nohighlight">\(\hat Q_{t+1}\)</span>。</p>
+<p>为了建立这样一个算法，我们首先定义一些误差或”差异”</p>
+<div class="math notranslate nohighlight" id="equation-eq-old105">
+<span class="eqno">(33.5)<a class="headerlink" href="#equation-eq-old105" title="Permalink to this equation">#</a></span>\[
+\begin{aligned}
+         w  &amp; + \beta \max_{\textrm{accept, reject}} \left\{ \hat Q_t (w_t, \textrm{accept}), \hat Q_t(w_t, \textrm{reject}) \right\} - \hat Q_t(w_t, \textrm{accept})   = \textrm{diff}_{\textrm{accept},t}  \cr
+         c  &amp; +\beta \max_{\text{accept, reject}}\left\{ \hat Q_t(w_{t+1}, \textrm{accept}),\hat Q_t\left(w_{t+1},\text{reject}\right)\right\}  - \hat Q_t\left(w_t,\text{reject}\right)  = \textrm{diff}_{\textrm{reject},t}  \cr
+\end{aligned}
+\]</div>
+<p>自适应学习方案将是以下形式</p>
+<div class="math notranslate nohighlight" id="equation-eq-old106">
+<span class="eqno">(33.6)<a class="headerlink" href="#equation-eq-old106" title="Permalink to this equation">#</a></span>\[
+\hat Q_{t+1} = \hat Q_t + \alpha \ \textrm{diff}_t
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\alpha \in (0,1)\)</span> 是一个小的<strong>增益</strong>参数，用于控制学习速率，而 <span class="math notranslate nohighlight">\(\hat Q_t\)</span> 和 <span class="math notranslate nohighlight">\(\textrm{diff}_t\)</span> 是对应的 <span class="math notranslate nohighlight">\(2 \times 1\)</span> 向量</p>
+<p>对应方程组 <a class="reference internal" href="#equation-eq-old105">(33.5)</a> 中的对象。</p>
+<p>这个非正式的论述将我们引向 Q-学习的门槛。</p>
+</section>
+<section id="id4">
+<h2><span class="section-number">33.5. </span>Q-学习<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<p>让我们首先精确描述一个 Q-学习算法。</p>
+<p>然后我们将实现它。</p>
+<p>该算法通过使用蒙特卡洛方法来更新 Q-函数的估计值。</p>
+<p>我们从 Q-函数的初始猜测开始。</p>
+<p>在本讲中研究的例子里，我们有一个有限的动作空间和有限的状态空间。</p>
+<p>这意味着我们可以将 Q-函数表示为矩阵或 Q-表，<span class="math notranslate nohighlight">\(\widetilde{Q}(w,a)\)</span>。</p>
+<p>Q-学习通过更新 Q-函数来进行，决策者在模拟生成的工资序列路径上获得经验。</p>
+<p>在学习过程中，我们的 McCall 工人采取行动并体验这些行动带来的奖励。</p>
+<p>他同时学习关于环境（在这种情况下是工资分布）和奖励函数的知识。</p>
+<p>在这种情况下，失业补偿 <span class="math notranslate nohighlight">\(c\)</span> 和工资的现值。</p>
+<p>更新算法基于对如下递归的略微修改（稍后将描述）：</p>
+<div class="math notranslate nohighlight" id="equation-eq-old3">
+<span class="eqno">(33.7)<a class="headerlink" href="#equation-eq-old3" title="Permalink to this equation">#</a></span>\[
+\widetilde{Q}^{new}\left(w,a\right)=\widetilde{Q}^{old}\left(w,a\right)+\alpha \widetilde{TD}\left(w,a\right)
+\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight" id="equation-eq-old4">
+<span class="eqno">(33.8)<a class="headerlink" href="#equation-eq-old4" title="Permalink to this equation">#</a></span>\[\begin{split}
+\begin{aligned}
+\widetilde{TD}\left(w,\text{accept}\right) &amp; = \left[ w+\beta\max_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w,a'\right) \right]-\widetilde{Q}^{old}\left(w,\text{accept}\right) \\
+\widetilde{TD}\left(w,\text{reject}\right) &amp; = \left[ c+\beta\max_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w',a'\right) \right]-\widetilde{Q}^{old}\left(w,\text{reject}\right),\;w'\sim F
+\end{aligned}
+\end{split}\]</div>
+<p>对于 <span class="math notranslate nohighlight">\(a = \left\{\textrm{accept,reject} \right\}\)</span>，项 <span class="math notranslate nohighlight">\(\widetilde{TD}(w,a)\)</span> 是驱动更新的<strong>时间差分误差</strong>。</p>
+<p>因此，这个系统是我们在方程 <a class="reference internal" href="#equation-eq-old106">(33.6)</a> 中非正式描述的自适应系统的一个版本。</p>
+<p>方程组<a class="reference internal" href="#equation-eq-old4">(33.8)</a>尚未捕捉到算法的一个方面，即我们通过偶尔随机替换的<strong>实验性</strong>尝试</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{argmax}_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w,a'\right)
+\]</div>
+<p>替换为</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{argmin}_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w,a'\right)
+\]</div>
+<p>并且
+偶尔替换</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{argmax}_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w',a'\right)
+\]</div>
+<p>替换为</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{argmin}_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w',a'\right)
+\]</div>
+<p>在以下McCall工人Q-学习的伪代码的第3步中，我们以概率<span class="math notranslate nohighlight">\(\epsilon\)</span>激活这种实验：</p>
+<ol class="arabic simple">
+<li><p>设置一个任意的初始Q表。</p></li>
+<li><p>从<span class="math notranslate nohighlight">\(F\)</span>中抽取初始工资报价<span class="math notranslate nohighlight">\(w\)</span>。</p></li>
+<li><p>从Q表的相应行中，使用以下<span class="math notranslate nohighlight">\(\epsilon\)</span>-贪婪算法选择行动：</p>
+<ul class="simple">
+<li><p>以概率<span class="math notranslate nohighlight">\(1-\epsilon\)</span>选择使价值最大化的行动，并且</p></li>
+</ul>
+</li>
+</ol>
+<ul class="simple">
+<li><p>以概率 <span class="math notranslate nohighlight">\(\epsilon\)</span> 选择替代行动。</p></li>
+</ul>
+<ol class="arabic simple" start="4">
+<li><p>更新与所选行动相关的状态，并根据<a class="reference internal" href="#equation-eq-old4">(33.8)</a>计算 <span class="math notranslate nohighlight">\(\widetilde{TD}\)</span>，然后根据<a class="reference internal" href="#equation-eq-old3">(33.7)</a>更新 <span class="math notranslate nohighlight">\(\widetilde{Q}\)</span>。</p></li>
+<li><p>如果需要则抽取新的状态 <span class="math notranslate nohighlight">\(w'\)</span>，否则采用现有工资，并再次根据<a class="reference internal" href="#equation-eq-old3">(33.7)</a>更新Q表。</p></li>
+<li><p>当新旧Q表足够接近时停止，即对于给定的 <span class="math notranslate nohighlight">\(\delta\)</span>，满足 <span class="math notranslate nohighlight">\(\lVert\tilde{Q}^{new}-\tilde{Q}^{old}\rVert_{\infty}\leq\delta\)</span>，或者当工人连续接受 <span class="math notranslate nohighlight">\(T\)</span> 期（对于预先规定的 <span class="math notranslate nohighlight">\(T\)</span>）时停止。</p></li>
+<li><p>带着更新后的Q表返回步骤2。</p></li>
+</ol>
+<p>重复此程序 <span class="math notranslate nohighlight">\(N\)</span> 次回合或直到更新的Q表收敛。</p>
+<p>我们将步骤2到7的一次完整过程称为时序差分学习的一个”回合”或”轮次”。</p>
+<p>在我们的情境中，每个回合都始于代理人抽取一个初始工资报价，即一个新状态。</p>
+<p>智能体根据预设的Q表采取行动，获得奖励，然后进入由本期行动所暗示的新状态。</p>
+<p>Q表通过时序差分学习进行更新。</p>
+<p>我们重复这个过程直到Q表收敛或达到一个回合的最大长度。</p>
+<p>多个回合使智能体能够重新开始，并访问那些从前一个回合的终止状态较难访问到的状态。</p>
+<p>例如，一个基于其Q表接受了工资报价的智能体将较少可能从工资分布的其他部分获得新的报价。</p>
+<p>通过使用<span class="math notranslate nohighlight">\(\epsilon\)</span>-贪婪方法并增加回合数，Q学习算法在探索和利用之间取得平衡。</p>
+<p><strong>注意：</strong> 注意在<a class="reference internal" href="#equation-eq-old3">(33.7)</a>中定义的与最优Q表相关的<span class="math notranslate nohighlight">\(\widetilde{TD}\)</span>自动满足对所有状态-动作对<span class="math notranslate nohighlight">\(\widetilde{TD}=0\)</span>。我们的Q-learning算法的极限是否收敛到最优Q表，取决于算法是否足够频繁地访问所有状态-动作对。</p>
+<p>我们在Python类中实现这个伪代码。</p>
+<p>为了简单和方便，我们让<code class="docutils literal notranslate"><span class="pre">s</span></code>表示介于<span class="math notranslate nohighlight">\(0\)</span>和<span class="math notranslate nohighlight">\(n=50\)</span>之间的状态索引，且<span class="math notranslate nohighlight">\(w_s=w[s]\)</span>。</p>
+<p>Q表的第一列表示拒绝工资的相关值，第二列表示接受工资的相关值。</p>
+<p>我们使用<code class="docutils literal notranslate"><span class="pre">numba</span></code>编译来加速计算。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>            <span class="c1"># 失业补偿</span>
+    <span class="p">(</span><span class="s1">&#39;β&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>            <span class="c1"># 折现因子</span>
+    <span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>         <span class="c1"># 工资值数组，w[i] = 状态i的工资</span>
+    <span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>         <span class="c1"># 概率数组</span>
+    <span class="p">(</span><span class="s1">&#39;eps&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>          <span class="c1"># epsilon贪婪算法参数</span>
+    <span class="p">(</span><span class="s1">&#39;δ&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>            <span class="c1"># Q表阈值</span>
+    <span class="p">(</span><span class="s1">&#39;lr&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>           <span class="c1"># 学习率α</span>
+    <span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">int64</span><span class="p">),</span>              <span class="c1"># 接受的最大期数</span>
+    <span class="p">(</span><span class="s1">&#39;quit_allowed&#39;</span><span class="p">,</span> <span class="n">int64</span><span class="p">)</span>    <span class="c1"># 接受工资后是否允许辞职</span>
+<span class="p">]</span>
+
+<span class="nd">@jitclass</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Qlearning_McCall</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">β</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w_default</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q_default</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">δ</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">quit_allowed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span> <span class="o">=</span> <span class="n">c</span><span class="p">,</span> <span class="n">β</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">w</span><span class="p">,</span> <span class="n">q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">δ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">eps</span><span class="p">,</span> <span class="n">δ</span><span class="p">,</span> <span class="n">lr</span><span class="p">,</span> <span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quit_allowed</span> <span class="o">=</span> <span class="n">quit_allowed</span>
+
+
+    <span class="k">def</span> <span class="nf">draw_offer_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        从工资分布中抽取状态索引。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">q</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">temp_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtable</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">accept</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        计算与状态和动作相关的TD。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">c</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span>
+
+        <span class="k">if</span> <span class="n">accept</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">state_next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">draw_offer_index</span><span class="p">()</span>
+            <span class="n">TD</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">β</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">qtable</span><span class="p">[</span><span class="n">state_next</span><span class="p">,</span> <span class="p">:])</span> <span class="o">-</span> <span class="n">qtable</span><span class="p">[</span><span class="n">state</span><span class="p">,</span> <span class="n">accept</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">state_next</span> <span class="o">=</span> <span class="n">state</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quit_allowed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">TD</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">state_next</span><span class="p">]</span> <span class="o">+</span> <span class="n">β</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">qtable</span><span class="p">[</span><span class="n">state_next</span><span class="p">,</span> <span class="p">:])</span> <span class="o">-</span> <span class="n">qtable</span><span class="p">[</span><span class="n">state</span><span class="p">,</span> <span class="n">accept</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">TD</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">state_next</span><span class="p">]</span> <span class="o">+</span> <span class="n">β</span><span class="o">*</span><span class="n">qtable</span><span class="p">[</span><span class="n">state_next</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">qtable</span><span class="p">[</span><span class="n">state</span><span class="p">,</span> <span class="n">accept</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">TD</span><span class="p">,</span> <span class="n">state_next</span>
+
+    <span class="k">def</span> <span class="nf">run_one_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtable</span><span class="p">,</span> <span class="n">max_times</span><span class="o">=</span><span class="mi">20000</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        运行一个&quot;轮次&quot;。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">c</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span>
+        <span class="n">eps</span><span class="p">,</span> <span class="n">δ</span><span class="p">,</span> <span class="n">lr</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">δ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="n">s0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">draw_offer_index</span><span class="p">()</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s0</span>
+        <span class="n">accept_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_times</span><span class="p">):</span>
+
+            <span class="c1"># 选择动作</span>
+            <span class="n">accept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">qtable</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">&lt;=</span><span class="n">eps</span><span class="p">:</span>
+                <span class="n">accept</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">accept</span>
+
+            <span class="k">if</span> <span class="n">accept</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">accept_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">accept_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">TD</span><span class="p">,</span> <span class="n">s_next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp_diff</span><span class="p">(</span><span class="n">qtable</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">accept</span><span class="p">)</span>
+
+            <span class="c1"># 更新qtable</span>
+            <span class="n">qtable_new</span> <span class="o">=</span> <span class="n">qtable</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">qtable_new</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">accept</span><span class="p">]</span> <span class="o">=</span> <span class="n">qtable</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">accept</span><span class="p">]</span> <span class="o">+</span> <span class="n">lr</span><span class="o">*</span><span class="n">TD</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">qtable_new</span><span class="o">-</span><span class="n">qtable</span><span class="p">))</span><span class="o">&lt;=</span><span class="n">δ</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">accept_count</span> <span class="o">==</span> <span class="n">T</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="n">s</span><span class="p">,</span> <span class="n">qtable</span> <span class="o">=</span> <span class="n">s_next</span><span class="p">,</span> <span class="n">qtable_new</span>
+
+        <span class="k">return</span> <span class="n">qtable_new</span>
+
+<span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">run_epochs</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">qlmc</span><span class="p">,</span> <span class="n">qtable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    运行N次轮次，每次使用上一次迭代的qtable。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">%</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;进度：轮次 = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">new_qtable</span> <span class="o">=</span> <span class="n">qlmc</span><span class="o">.</span><span class="n">run_one_epoch</span><span class="p">(</span><span class="n">qtable</span><span class="p">)</span>
+        <span class="n">qtable</span> <span class="o">=</span> <span class="n">new_qtable</span>
+
+    <span class="k">return</span> <span class="n">qtable</span>
+
+<span class="k">def</span> <span class="nf">valfunc_from_qtable</span><span class="p">(</span><span class="n">qtable</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">qtable</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">compute_error</span><span class="p">(</span><span class="n">valfunc</span><span class="p">,</span> <span class="n">valfunc_VFI</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">valfunc</span><span class="o">-</span><span class="n">valfunc_VFI</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 创建一个 Qlearning_McCall 实例</span>
+<span class="n">qlmc</span> <span class="o">=</span> <span class="n">Qlearning_McCall</span><span class="p">()</span>
+
+<span class="c1"># 运行</span>
+<span class="n">qtable0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">w_default</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">qtable</span> <span class="o">=</span> <span class="n">run_epochs</span><span class="p">(</span><span class="mi">20000</span><span class="p">,</span> <span class="n">qlmc</span><span class="p">,</span> <span class="n">qtable0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度：轮次 = 0
+进度：轮次 = 2000
+进度：轮次 = 4000
+进度：轮次 = 6000
+进度：轮次 = 8000
+进度：轮次 = 10000
+进度：轮次 = 12000
+进度：轮次 = 14000
+进度：轮次 = 16000
+进度：轮次 = 18000
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">qtable</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[2657.50381313    0.        ]
+ [5380.93737543 5244.38477597]
+ [5309.20700437 5264.60834136]
+ [5288.26792787 5217.60801654]
+ [5332.23695984 5292.71744907]
+ [5339.88817251 5317.28600885]
+ [5282.40230193 5278.64846135]
+ [5429.91809689 5290.00737313]
+ [5298.38644797 5299.51067889]
+ [5372.36975512 5500.        ]
+ [5346.011863   6000.        ]]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 检查价值函数</span>
+<span class="n">valfunc_qlr</span> <span class="o">=</span> <span class="n">valfunc_from_qtable</span><span class="p">(</span><span class="n">qtable</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">valfunc_qlr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2657.50381313 5380.93737543 5309.20700437 5288.26792787 5332.23695984
+ 5339.88817251 5282.40230193 5429.91809689 5299.51067889 5500.
+ 6000.        ]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 绘图</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_default</span><span class="p">,</span> <span class="n">valfunc_VFI</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;VFI&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_default</span><span class="p">,</span> <span class="n">valfunc_qlr</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;QL&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;工资&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;最优值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/1604196af524ff4357ad0f75d1491069045f136cd3caac272bd0d8ead55b954f.png" src="_images/1604196af524ff4357ad0f75d1491069045f136cd3caac272bd0d8ead55b954f.png" />
+</div>
+</div>
+<p>现在，让我们计算一个更大状态空间的情况：<span class="math notranslate nohighlight">\(n=30\)</span>（而不是<span class="math notranslate nohighlight">\(n=10\)</span>）。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">100</span>                        <span class="c1"># 默认参数</span>
+<span class="n">q_new</span> <span class="o">=</span> <span class="n">BetaBinomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">()</span>           <span class="c1"># 默认的q选择</span>
+
+<span class="n">w_min</span><span class="p">,</span> <span class="n">w_max</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">60</span>
+<span class="n">w_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">w_min</span><span class="p">,</span> <span class="n">w_max</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="c1"># 绘制工资报价分布</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_new</span><span class="p">,</span> <span class="n">q_new</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$q(w(i))$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;工资&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;概率&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># 值函数迭代</span>
+<span class="n">mcm</span> <span class="o">=</span> <span class="n">McCallModel</span><span class="p">(</span><span class="n">w</span><span class="o">=</span><span class="n">w_new</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q_new</span><span class="p">)</span>
+<span class="n">valfunc_VFI</span><span class="p">,</span> <span class="n">flag</span> <span class="o">=</span> <span class="n">mcm</span><span class="o">.</span><span class="n">VFI</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/aeb8bdf6cec90c50e17d94fe1abb7de00ba63bc007703e24fc0c57cb09d67718.png" src="_images/aeb8bdf6cec90c50e17d94fe1abb7de00ba63bc007703e24fc0c57cb09d67718.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcm</span> <span class="o">=</span> <span class="n">McCallModel</span><span class="p">(</span><span class="n">w</span><span class="o">=</span><span class="n">w_new</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q_new</span><span class="p">)</span>
+<span class="n">valfunc_VFI</span><span class="p">,</span> <span class="n">flag</span> <span class="o">=</span> <span class="n">mcm</span><span class="o">.</span><span class="n">VFI</span><span class="p">()</span>
+<span class="n">valfunc_VFI</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([4859.77015703, 4859.77015703, 4859.77015703, 4859.77015703,
+       4859.77015703, 4859.77015703, 4859.77015703, 4859.77015703,
+       4859.77015703, 4859.77015703, 4859.77015703, 4859.77015703,
+       4859.77015703, 4859.77015703, 4859.77015703, 4859.77015703,
+       4859.77015703, 4859.77015703, 4859.77015703, 4859.77015703,
+       4859.77015703, 4859.77015703, 4859.77015703, 4859.77015703,
+       5000.        , 5166.66666667, 5333.33333333, 5500.        ,
+       5666.66666667, 5833.33333333, 6000.        ])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_epochs</span><span class="p">(</span><span class="n">epochs_to_plot</span><span class="p">,</span> <span class="n">quit_allowed</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="s2">&quot;绘制由不断增加的训练轮数所得到的值函数。&quot;</span>
+    <span class="n">qlmc_new</span> <span class="o">=</span> <span class="n">Qlearning_McCall</span><span class="p">(</span><span class="n">w</span><span class="o">=</span><span class="n">w_new</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q_new</span><span class="p">,</span> <span class="n">quit_allowed</span><span class="o">=</span><span class="n">quit_allowed</span><span class="p">)</span>
+    <span class="n">qtable</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">w_new</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">epochs_to_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">epochs_to_plot</span><span class="p">)</span>
+    <span class="c1"># 绘图</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_new</span><span class="p">,</span> <span class="n">valfunc_VFI</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;VFI&#39;</span><span class="p">)</span>
+
+    <span class="n">max_epochs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">epochs_to_plot</span><span class="p">)</span>
+    <span class="c1"># 迭代训练轮数</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_epochs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">%</span><span class="p">(</span><span class="n">max_epochs</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;进度: 训练轮数 = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">epochs_to_plot</span><span class="p">:</span>
+            <span class="n">valfunc_qlr</span> <span class="o">=</span> <span class="n">valfunc_from_qtable</span><span class="p">(</span><span class="n">qtable</span><span class="p">)</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">valfunc_qlr</span><span class="p">,</span> <span class="n">valfunc_VFI</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_new</span><span class="p">,</span> <span class="n">valfunc_qlr</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;QL:训练轮数=</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">, 平均误差=</span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+        <span class="n">new_qtable</span> <span class="o">=</span> <span class="n">qlmc_new</span><span class="o">.</span><span class="n">run_one_epoch</span><span class="p">(</span><span class="n">qtable</span><span class="p">)</span>
+        <span class="n">qtable</span> <span class="o">=</span> <span class="n">new_qtable</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;工资&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;最优值&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_epochs</span><span class="p">(</span><span class="n">epochs_to_plot</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">200000</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 0
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 20000
+进度: 训练轮数 = 40000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 60000
+进度: 训练轮数 = 80000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 100000
+进度: 训练轮数 = 120000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 140000
+进度: 训练轮数 = 160000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 180000
+进度: 训练轮数 = 200000
+</pre></div>
+</div>
+<img alt="_images/36ced6596ce6cf48259d84c2ade43a9a440be4438f6254804d1f32a1fa02313d.png" src="_images/36ced6596ce6cf48259d84c2ade43a9a440be4438f6254804d1f32a1fa02313d.png" />
+</div>
+</div>
+<p>上述图表表明：</p>
+<ul class="simple">
+<li><p>Q-learning算法在学习那些很少被抽取到的工资水平的Q表时会遇到困难</p></li>
+<li><p>随着训练周期的延长，对通过值函数迭代计算得到的”真实”值函数的近似质量会提高</p></li>
+</ul>
+</section>
+<section id="id5">
+<h2><span class="section-number">33.6. </span>在职工人不能辞职<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>在方程组<a class="reference internal" href="#equation-eq-old4">(33.8)</a>中描述的前述时序差分Q-learning版本允许在职工人辞职，即拒绝其现有工资，转而在本期领取失业补助并在下期获得新的工作机会。</p>
+<p>这是<a class="reference internal" href="mccall_model.html"><span class="doc">这个QuantEcon讲座</span></a>中描述的McCall工人不会选择的选项。</p>
+<p>参见<span id="id6">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span>第6章关于搜索的证明。</p>
+<p>但在Q-learning的背景下，给予工人辞职并在失业期间获得失业补助的选项，实际上通过促进探索而非过早地进行利用，加快了学习过程。</p>
+<p>为了说明这一点，我们将修改时间差分公式，以禁止已就业的工人辞去她之前接受的工作。</p>
+<p>基于对可选择项的这种理解，我们得到以下时间差分值：</p>
+<div class="math notranslate nohighlight" id="equation-eq-temp-diff">
+<span class="eqno">(33.9)<a class="headerlink" href="#equation-eq-temp-diff" title="Permalink to this equation">#</a></span>\[\begin{split}
+\begin{aligned}
+\widetilde{TD}\left(w,\text{accept}\right) &amp; = \left[ w+\beta\widetilde{Q}^{old}\left(w,\text{accept}\right) \right]-\widetilde{Q}^{old}\left(w,\text{accept}\right) \\
+\widetilde{TD}\left(w,\text{reject}\right) &amp; = \left[ c+\beta\max_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w',a'\right) \right]-\widetilde{Q}^{old}\left(w,\text{reject}\right),\;w'\sim F
+\end{aligned}
+\end{split}\]</div>
+<p>事实证明，公式<a class="reference internal" href="#equation-eq-temp-diff">(33.9)</a>与我们的Q学习递归<a class="reference internal" href="#equation-eq-old3">(33.7)</a>结合使用，可以让我们的智能体最终学习到最优值函数，就像在可以重新抽取选项的情况下一样。</p>
+<p>但是学习速度较慢，因为如果代理人过早接受工资报价，就会失去在同一回合中探索新状态和调整该状态相关价值的机会。</p>
+<p>当训练轮数/回合数较低时，这可能导致次优结果。</p>
+<p>但是如果我们增加训练轮数/回合数，我们可以观察到误差会减小，结果会变得更好。</p>
+<p>我们用以下代码和图表来说明这些可能性。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_epochs</span><span class="p">(</span><span class="n">epochs_to_plot</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">200000</span><span class="p">],</span> <span class="n">quit_allowed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 0
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 20000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 40000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 60000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 80000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 100000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 120000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 140000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 160000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 180000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 200000
+</pre></div>
+</div>
+<img alt="_images/5773c0638ad26c35c78dc6c25e5cceb97658a6c19640d67a2b4a43211e9afd35.png" src="_images/5773c0638ad26c35c78dc6c25e5cceb97658a6c19640d67a2b4a43211e9afd35.png" />
+</div>
+</div>
+</section>
+<section id="id7">
+<h2><span class="section-number">33.7. </span>可能的扩展<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<p>要将算法扩展到处理连续状态空间的问题，一个典型的方法是限制Q函数和策略函数采用特定的函数形式。</p>
+<p>这就是<strong>深度Q学习</strong>的方法，其核心思想是使用多层神经网络作为良好的函数逼近器。</p>
+<p>我们将在后续的quantecon课程中讨论这个主题。</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/mccall_q.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/mccall_q.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/mccall_q.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/mccall_q.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/mccall_q.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "mccall_q";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/mccall_q.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

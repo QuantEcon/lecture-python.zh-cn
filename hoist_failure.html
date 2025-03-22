@@ -1,0 +1,1610 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>13. 故障树不确定性 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'hoist_failure';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/hoist_failure.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="14. 人工神经网络简介" href="back_prop.html" />
+    <link rel="prev" title="12. 多元正态分布" href="multivariate_normal.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="故障树不确定性"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="故障树不确定性" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/hoist_failure.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=hoist_failure>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">13.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">13.2. 对数正态分布</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">13.3. 卷积性质</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">13.4. 近似分布</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">13.5. 概率质量函数的卷积</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">13.6. 故障树分析</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">13.7. 应用</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">13.8. 未知的故障率</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">13.9. 废物提升机失效率</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">故障树不确定性</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><span class="section-number">13. </span>故障树不确定性<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<section id="id2">
+<h2><span class="section-number">13.1. </span>概述<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<p>本讲将运用基本工具来近似计算由多个关键部件组成的系统的年度故障率的概率分布。</p>
+<p>我们将使用对数正态分布来近似关键组件部件的概率分布。</p>
+<p>为了近似描述整个系统故障率的n个对数正态概率分布之<strong>和</strong>的概率分布，我们将计算这n个对数正态概率分布的卷积。</p>
+<p>我们将使用以下概念和工具：</p>
+<ul class="simple">
+<li><p>对数正态分布</p></li>
+<li><p>描述独立随机变量之和的概率分布的卷积定理</p></li>
+<li><p>用于近似多组件系统故障率的故障树分析</p></li>
+<li><p>用于描述不确定概率的层次概率模型</p></li>
+<li><p>傅里叶变换和逆傅里叶变换作为计算序列卷积的高效方法</p></li>
+</ul>
+<p>关于傅里叶变换的更多信息，请参见这个 quantecon 讲座 <a class="reference external" href="https://python.quantecon.org/eig_circulant.html">循环矩阵</a>
+以及这些讲座 <a class="reference external" href="https://python-advanced.quantecon.org/arma.html">协方差平稳过程</a> 和 <a class="reference external" href="https://python-advanced.quantecon.org/estspec.html">谱估计</a>。</p>
+<p>El-Shanawany, Ardron 和 Walker <span id="id3">[<a class="reference internal" href="zreferences.html#id22" title="Ashraf Ben El-Shanawany, Keith H Ardron, and Simon P Walker. Lognormal approximations of fault tree uncertainty distributions. Risk Analysis, 38(8):1576–1584, 2018.">El-Shanawany <em>et al.</em>, 2018</a>]</span> 以及 Greenfield 和 Sargent <span id="id4">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span> 使用了这里描述的一些方法来近似核设施安全系统的故障概率。</p>
+<p>这些方法响应了 Apostolakis <span id="id5">[<a class="reference internal" href="zreferences.html#id20" title="George Apostolakis. The concept of probability in safety assessments of technological systems. Science, 250(4986):1359–1364, 1990.">Apostolakis, 1990</a>]</span> 提出的关于构建量化程序的一些建议。</p>
+<p>对安全系统可靠性的不确定性。</p>
+<p>我们先引入一些Python工具。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>tabulate
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: tabulate in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.9.0)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">fftconvolve</span>
+<span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<!-- #region -->
+</section>
+<section id="id6">
+<h2><span class="section-number">13.2. </span>对数正态分布<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<p>如果一个随机变量 <span class="math notranslate nohighlight">\(x\)</span> 服从均值为 <span class="math notranslate nohighlight">\(\mu\)</span> 和方差为 <span class="math notranslate nohighlight">\(\sigma^2\)</span> 的正态分布，那么 <span class="math notranslate nohighlight">\(x\)</span> 的自然对数，即 <span class="math notranslate nohighlight">\(y = \log(x)\)</span>，就服从参数为 <span class="math notranslate nohighlight">\(\mu, \sigma^2\)</span> 的<strong>对数正态分布</strong>。</p>
+<p>注意我们说的是<strong>参数</strong>而不是<strong>均值和方差</strong> <span class="math notranslate nohighlight">\(\mu,\sigma^2\)</span>。</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mu\)</span> 和 <span class="math notranslate nohighlight">\(\sigma^2\)</span> 是 <span class="math notranslate nohighlight">\(x = \exp (y)\)</span> 的均值和方差</p></li>
+<li><p>它们<strong>不是</strong> <span class="math notranslate nohighlight">\(y\)</span> 的均值和方差</p></li>
+<li><p>相反，<span class="math notranslate nohighlight">\(y\)</span> 的均值是 <span class="math notranslate nohighlight">\(e ^{\mu + \frac{1}{2} \sigma^2}\)</span>，<span class="math notranslate nohighlight">\(y\)</span> 的方差是 <span class="math notranslate nohighlight">\((e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} \)</span></p></li>
+</ul>
+<p>对数正态随机变量 <span class="math notranslate nohighlight">\(y\)</span> 是非负的。</p>
+<p>对数正态随机变量 <span class="math notranslate nohighlight">\(y\)</span> 的密度函数是</p>
+<div class="math notranslate nohighlight">
+\[ f(y) = \frac{1}{y \sigma \sqrt{2 \pi}} \exp \left(  \frac{- (\log y - \mu)^2 }{2 \sigma^2} \right) \]</div>
+<p>其中 <span class="math notranslate nohighlight">\(y \geq 0\)</span>。</p>
+<p>对数正态随机变量的重要特征是</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}
+\begin{aligned}
+ \textrm{均值:} &amp; \quad e ^{\mu + \frac{1}{2} \sigma^2} \cr\\\textrm{方差:}  &amp; \quad (e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} \cr
+  \textrm{中位数:} &amp; \quad e^\mu \cr
+ \textrm{众数:} &amp; \quad e^{\mu - \sigma^2} \cr
+ \textrm{.95 分位数:} &amp; \quad e^{\mu + 1.645 \sigma} \cr
+ \textrm{.95-.05 分位数比:}  &amp; \quad e^{1.645 \sigma} \cr
+ \end{aligned}
+\end{aligned}\end{align} \]</div>
+<p>回顾两个独立正态分布随机变量的以下_稳定性_性质：</p>
+<p>如果<span class="math notranslate nohighlight">\(x_1\)</span>是均值为<span class="math notranslate nohighlight">\(\mu_1\)</span>、方差为<span class="math notranslate nohighlight">\(\sigma_1^2\)</span>的正态分布，且<span class="math notranslate nohighlight">\(x_2\)</span>独立于<span class="math notranslate nohighlight">\(x_1\)</span>并且是均值为<span class="math notranslate nohighlight">\(\mu_2\)</span>、方差为<span class="math notranslate nohighlight">\(\sigma_2^2\)</span>的正态分布，那么<span class="math notranslate nohighlight">\(x_1 + x_2\)</span>是均值为<span class="math notranslate nohighlight">\(\mu_1 + \mu_2\)</span>、方差为<span class="math notranslate nohighlight">\(\sigma_1^2 + \sigma_2^2\)</span>的正态分布。</p>
+<p>独立的对数正态分布具有不同的_稳定性_性质。</p>
+<p>独立对数正态随机变量的<strong>乘积</strong>也是对数正态分布。</p>
+<p>特别地，如果<span class="math notranslate nohighlight">\(y_1\)</span>是参数为<span class="math notranslate nohighlight">\((\mu_1, \sigma_1^2)\)</span>的对数正态分布，且</p>
+<p><span class="math notranslate nohighlight">\(y_2\)</span> 是对数正态分布，参数为 <span class="math notranslate nohighlight">\((\mu_2, \sigma_2^2)\)</span>，那么乘积 <span class="math notranslate nohighlight">\(y_1 y_2\)</span> 也是对数正态分布，其参数为 <span class="math notranslate nohighlight">\((\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)\)</span>。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>虽然两个对数正态分布的乘积是对数正态分布，但两个对数正态分布的<strong>和</strong>却<strong>不是</strong>对数正态分布。</p>
+</div>
+<p>这个观察为我们在本讲中面临的挑战奠定了基础，即如何近似独立对数正态随机变量<strong>和</strong>的概率分布。</p>
+<p>要计算两个对数正态分布之和的概率分布，我们可以使用独立随机变量之和的概率分布的卷积性质。</p>
+</section>
+<section id="id7">
+<h2><span class="section-number">13.3. </span>卷积性质<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<p>设 <span class="math notranslate nohighlight">\(x\)</span> 是概率密度为 <span class="math notranslate nohighlight">\(f(x)\)</span> 的随机变量，其中 <span class="math notranslate nohighlight">\(x \in {\bf R}\)</span>。</p>
+<p>设 <span class="math notranslate nohighlight">\(y\)</span> 是概率密度为 <span class="math notranslate nohighlight">\(g(y)\)</span> 的随机变量，其中 <span class="math notranslate nohighlight">\(y \in {\bf R}\)</span>。</p>
+<p>设 <span class="math notranslate nohighlight">\(x\)</span> 和 <span class="math notranslate nohighlight">\(y\)</span> 是独立随机变量，且 <span class="math notranslate nohighlight">\(z = x + y \in {\bf R}\)</span>。</p>
+<p>那么 <span class="math notranslate nohighlight">\(z\)</span> 的概率分布为</p>
+<div class="math notranslate nohighlight">
+\[ h(z) = (f * g)(z) \equiv \int_{-\infty}^\infty f (z) g(z - \tau) d \tau \]</div>
+<p>其中 <span class="math notranslate nohighlight">\((f*g)\)</span> 表示两个函数 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 的<strong>卷积</strong>。</p>
+<p>如果随机变量都是非负的，则上述公式可简化为</p>
+<div class="math notranslate nohighlight">
+\[ h(z) = (f * g)(z) \equiv \int_{0}^\infty f (z) g(z - \tau) d \tau \]</div>
+<p>下面，我们将使用上述公式的离散化版本。</p>
+<p>具体来说，我们将把 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 都替换为离散化的对应形式，并归一化使其和为1，这样它们就是概率分布。</p>
+<ul class="simple">
+<li><p><strong>离散化</strong>指的是等间隔采样的版本</p></li>
+</ul>
+<p>然后我们将使用以下版本的公式</p>
+<div class="math notranslate nohighlight">
+\[ h_n = (f*g)_n = \sum_{m=0}^\infty f_m g_{n-m} , n \geq 0 \]</div>
+<p>来计算两个随机变量之和的概率分布的离散化版本，其中一个随机变量的概率质量函数为 <span class="math notranslate nohighlight">\(f\)</span>，另一个的概率质量函数为 <span class="math notranslate nohighlight">\(g\)</span>。</p>
+<p>在应用卷积性质到对数正态分布的和之前，让我们先用一些简单的离散分布来练习。</p>
+<p>以一个例子来说，让我们考虑以下两个概率分布</p>
+<div class="math notranslate nohighlight">
+\[ f_j = \textrm{Prob} (X = j), j = 0, 1 \]</div>
+<p>和</p>
+<div class="math notranslate nohighlight">
+\[ g_j = \textrm{Prob} (Y = j ) , j = 0, 1, 2, 3 \]</div>
+<p>和</p>
+<div class="math notranslate nohighlight">
+\[ h_j = \textrm{Prob} (Z \equiv X + Y = j) , j=0, 1, 2, 3, 4 \]</div>
+<p>卷积性质告诉我们</p>
+<div class="math notranslate nohighlight">
+\[ h = f* g = g* f \]</div>
+<p>让我们使用<code class="docutils literal notranslate"><span class="pre">numpy.convolve</span></code>和<code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>来计算一个例子。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="p">[</span><span class="mf">.75</span><span class="p">,</span> <span class="mf">.25</span><span class="p">]</span>
+<span class="n">g</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">.6</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span> <span class="mf">.4</span><span class="p">]</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">)</span>
+<span class="n">hf</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;f = &quot;</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>  <span class="s2">&quot;, np.sum(f) = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;g = &quot;</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="s2">&quot;, np.sum(g) = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;h = &quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="s2">&quot;, np.sum(h) = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">h</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hf = &quot;</span><span class="p">,</span> <span class="n">hf</span><span class="p">,</span> <span class="s2">&quot;,np.sum(hf) = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">hf</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>f =  [0.75, 0.25] , np.sum(f) =  1.0
+g =  [0.0, 0.6, 0.0, 0.4] , np.sum(g) =  1.0
+h =  [0.   0.45 0.15 0.3  0.1 ] , np.sum(h) =  1.0
+hf =  [0.   0.45 0.15 0.3  0.1 ] ,np.sum(hf) =  1.0000000000000002
+</pre></div>
+</div>
+</div>
+</div>
+<p>稍后我们将解释使用<code class="docutils literal notranslate"><span class="pre">scipy.signal.ftconvolve</span></code>而不是<code class="docutils literal notranslate"><span class="pre">numpy.convolve</span></code>的一些优势。</p>
+<p>它们提供相同的结果，但<code class="docutils literal notranslate"><span class="pre">scipy.signal.ftconvolve</span></code>要快得多。</p>
+<p>这就是为什么我们在本讲座后面会依赖它。</p>
+</section>
+<section id="id8">
+<h2><span class="section-number">13.4. </span>近似分布<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
+<p>我们将构建一个示例来验证离散化分布能够很好地近似从底层连续分布中抽取的样本。</p>
+<p>我们将首先生成25000个样本，包含三个独立的对数正态随机变量以及它们的两两和三重和。</p>
+<p>然后我们将绘制直方图，并将其与适当离散化的对数正态分布的卷积进行比较。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## 创建两个和三个对数正态随机变量的和 ssum2 = s1 + s2 和 ssum3 = s1 + s2 + s3</span>
+
+
+<span class="n">mu1</span><span class="p">,</span> <span class="n">sigma1</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">1.</span> <span class="c1"># 均值和标准差</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span> <span class="n">sigma1</span><span class="p">,</span> <span class="mi">25000</span><span class="p">)</span>
+
+<span class="n">mu2</span><span class="p">,</span> <span class="n">sigma2</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">1.</span> <span class="c1"># 均值和标准差</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="n">mu2</span><span class="p">,</span> <span class="n">sigma2</span><span class="p">,</span> <span class="mi">25000</span><span class="p">)</span>
+
+<span class="n">mu3</span><span class="p">,</span> <span class="n">sigma3</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">1.</span> <span class="c1"># 均值和标准差</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="n">mu3</span><span class="p">,</span> <span class="n">sigma3</span><span class="p">,</span> <span class="mi">25000</span><span class="p">)</span>
+
+<span class="n">ssum2</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">+</span> <span class="n">s2</span>
+
+<span class="n">ssum3</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">+</span> <span class="n">s2</span> <span class="o">+</span> <span class="n">s3</span>
+
+<span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/03e6f4b2d96541e24f46e3779710abbc904b14ccfb168c7f73ddb04bc7ab336e.png" src="_images/03e6f4b2d96541e24f46e3779710abbc904b14ccfb168c7f73ddb04bc7ab336e.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ssum2</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/7ddfc1ca6350713a22b06a42644a9c2b76bcf259f974770b8aaf42cb999a4dca.png" src="_images/7ddfc1ca6350713a22b06a42644a9c2b76bcf259f974770b8aaf42cb999a4dca.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ssum3</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/92c3a373ca5ef3e31d6d6ed759f5fa36b0a499f683e0e5b365ac1d11f14f34c2.png" src="_images/92c3a373ca5ef3e31d6d6ed759f5fa36b0a499f683e0e5b365ac1d11f14f34c2.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">samp_mean2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+<span class="n">pop_mean2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">mu2</span><span class="o">+</span> <span class="p">(</span><span class="n">sigma2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">pop_mean2</span><span class="p">,</span> <span class="n">samp_mean2</span><span class="p">,</span> <span class="n">mu2</span><span class="p">,</span> <span class="n">sigma2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(244.69193226422038, 244.62844346232993, 5.0, 1.0)
+</pre></div>
+</div>
+</div>
+</div>
+<p>以下是创建对数正态概率密度函数离散化版本的辅助函数。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">p_log_normal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">μ</span><span class="p">,</span><span class="n">σ</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">σ</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">μ</span><span class="p">)</span><span class="o">/</span><span class="n">σ</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span>
+
+<span class="k">def</span> <span class="nf">pdf_seq</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span><span class="n">σ</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">1e-7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">p_array</span> <span class="o">=</span> <span class="n">p_log_normal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">μ</span><span class="p">,</span><span class="n">σ</span><span class="p">)</span>
+    <span class="n">p_array_norm</span> <span class="o">=</span> <span class="n">p_array</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">p_array</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p_array</span><span class="p">,</span><span class="n">p_array_norm</span><span class="p">,</span><span class="n">x</span>
+</pre></div>
+</div>
+</div>
+</div>
+<!-- #region -->
+<p>现在我们要为我们的离散化设置一个网格长度<span class="math notranslate nohighlight">\(I\)</span>和网格增量大小<span class="math notranslate nohighlight">\(m =1\)</span>。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>我们将<span class="math notranslate nohighlight">\(I\)</span>设置为2的幂，因为我们希望能够自由使用快速傅里叶变换来计算两个序列（离散分布）的卷积。</p>
+</div>
+<p>我们建议尝试2的不同幂值<span class="math notranslate nohighlight">\(p\)</span>。</p>
+<p>例如，将其设置为15而不是12，可以改善离散化概率质量函数对所研究的原始连续概率密度函数的近似程度。</p>
+<!-- #endregion --><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">=</span><span class="mi">15</span>
+<span class="n">I</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">p</span> <span class="c1"># 截断值</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mf">.1</span> <span class="c1"># 增量大小</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## 检查单元格 -- 注意当不进行归一化时会发生什么！</span>
+<span class="c1">## 无需调整即可匹配。与上面进行比较</span>
+
+<span class="n">p1</span><span class="p">,</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span><span class="n">sigma1</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="c1">## 计算评估概率质量函数的点数</span>
+<span class="n">NT</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)],</span><span class="n">p1</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)],</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2500</span><span class="p">)</span>
+<span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/98fde9713d633bb1f40cfba5d934aa02eaf4f15b360f335de1bc4b0b7dd4537c.png" src="_images/98fde9713d633bb1f40cfba5d934aa02eaf4f15b360f335de1bc4b0b7dd4537c.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 从离散化的概率密度函数计算均值并与理论值进行比较</span>
+
+<span class="n">mean</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="n">NT</span><span class="p">],</span><span class="n">p1_norm</span><span class="p">[:</span><span class="n">NT</span><span class="p">]))</span>
+<span class="n">meantheory</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">mu1</span><span class="o">+</span><span class="mf">.5</span><span class="o">*</span><span class="n">sigma1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">mean</span><span class="p">,</span> <span class="n">meantheory</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(244.69059898302908, 244.69193226422038)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h2><span class="section-number">13.5. </span>概率质量函数的卷积<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
+<p>现在让我们使用卷积定理来计算上面参数化的两个对数正态随机变量之和的概率分布。</p>
+<p>我们还将计算上面构造的三个对数正态分布之和的概率。</p>
+<p>在进行这些计算之前，我们需要解释我们选择的用于计算两个序列卷积的Python算法。</p>
+<p>由于要进行卷积的序列很长，我们使用<code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>函数而不是numpy.convolve函数。</p>
+<p>这两个函数给出的结果实际上是等价的，但对于长序列来说，<code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>要快得多。</p>
+<p>程序<code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>使用快速傅里叶变换及其逆变换来计算卷积。</p>
+<p>让我们定义傅里叶变换和逆傅里叶变换。</p>
+<p>序列<span class="math notranslate nohighlight">\(\{x_t\}_{t=0}^{T-1}\)</span>的<strong>傅里叶变换</strong>是一个复数序列<span class="math notranslate nohighlight">\(\{x(\omega_j)\}_{j=0}^{T-1}\)</span>，由下式给出：</p>
+<div class="math notranslate nohighlight" id="equation-eq-ft1">
+<span class="eqno">(13.1)<a class="headerlink" href="#equation-eq-ft1" title="Permalink to this equation">#</a></span>\[
+ x(\omega_j) = \sum_{t=0}^{T-1} x_t \exp(- i \omega_j t)
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\omega_j = \frac{2 \pi j}{T}\)</span>，<span class="math notranslate nohighlight">\(j=0, 1, \ldots, T-1\)</span>。</p>
+<p>序列 <span class="math notranslate nohighlight">\(\{x(\omega_j)\}_{j=0}^{T-1}\)</span> 的<strong>逆傅里叶变换</strong>为</p>
+<div class="math notranslate nohighlight" id="equation-eq-ift1">
+<span class="eqno">(13.2)<a class="headerlink" href="#equation-eq-ift1" title="Permalink to this equation">#</a></span>\[
+ x_t = T^{-1} \sum_{j=0}^{T-1} x(\omega_j) \exp (i \omega_j t)
+\]</div>
+<p>序列 <span class="math notranslate nohighlight">\(\{x_t\}_{t=0}^{T-1}\)</span> 和 <span class="math notranslate nohighlight">\(\{x(\omega_j)\}_{j=0}^{T-1}\)</span> 包含相同的信息。</p>
+<p>方程对 <a class="reference internal" href="#equation-eq-ft1">(13.1)</a> 和 <a class="reference internal" href="#equation-eq-ift1">(13.2)</a> 说明了如何从一个序列恢复其傅里叶对应序列。</p>
+<p>程序 <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code> 利用了两个序列 <span class="math notranslate nohighlight">\(\{f_k\}\)</span>、<span class="math notranslate nohighlight">\(\{g_k\}\)</span> 的卷积可以通过以下方式计算的定理：</p>
+<ul class="simple">
+<li><p>计算序列 <span class="math notranslate nohighlight">\(\{f_k\}\)</span> 和 <span class="math notranslate nohighlight">\(\{g_k\}\)</span> 的傅里叶变换 <span class="math notranslate nohighlight">\(F(\omega)\)</span>、<span class="math notranslate nohighlight">\(G(\omega)\)</span></p></li>
+<li><p>形成乘积 <span class="math notranslate nohighlight">\(H (\omega) = F(\omega) G (\omega)\)</span></p></li>
+<li><p>卷积 <span class="math notranslate nohighlight">\(f * g\)</span> 是 <span class="math notranslate nohighlight">\(H(\omega)\)</span> 的逆傅里叶变换</p></li>
+</ul>
+<p><strong>快速傅里叶变换</strong>和相关的<strong>逆快速傅里叶变换</strong>能够非常快速地执行这些计算。</p>
+<p>这就是 <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code> 使用的算法。</p>
+<p>让我们做一个预热计算，比较 <code class="docutils literal notranslate"><span class="pre">numpy.convolve</span></code> 和 <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code> 所需的时间。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p1</span><span class="p">,</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span><span class="n">sigma1</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p2</span><span class="p">,</span><span class="n">p2_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu2</span><span class="p">,</span><span class="n">sigma2</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p3</span><span class="p">,</span><span class="n">p3_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu3</span><span class="p">,</span><span class="n">sigma3</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+
+<span class="n">tic</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">p2_norm</span><span class="p">)</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span><span class="n">p3_norm</span><span class="p">)</span>
+
+
+<span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">tdiff1</span> <span class="o">=</span> <span class="n">toc</span> <span class="o">-</span> <span class="n">tic</span>
+
+<span class="n">tic</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">c1f</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">p2_norm</span><span class="p">)</span>
+<span class="n">c2f</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c1f</span><span class="p">,</span><span class="n">p3_norm</span><span class="p">)</span>
+<span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">tdiff2</span> <span class="o">=</span> <span class="n">toc</span> <span class="o">-</span> <span class="n">tic</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time with np.convolve = &quot;</span><span class="p">,</span> <span class="n">tdiff1</span><span class="p">,</span>  <span class="s2">&quot;; time with fftconvolve = &quot;</span><span class="p">,</span>  <span class="n">tdiff2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time with np.convolve =  37.12749747999999 ; time with fftconvolve =  0.07504507099997682
+</pre></div>
+</div>
+</div>
+</div>
+<p>快速傅里叶变换比 <code class="docutils literal notranslate"><span class="pre">numpy.convolve</span></code> 快两个数量级</p>
+<p>现在让我们将计算得到的两个对数正态随机变量之和的概率质量函数近似值与我们上面形成的样本直方图进行对比绘制。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">NT</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)],</span><span class="n">c1f</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)]</span><span class="o">/</span><span class="n">m</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5000</span><span class="p">)</span>
+
+<span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ssum2</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+<span class="c1"># plt.plot(P2P3[:10000],label = &#39;FFT method&#39;,linestyle = &#39;--&#39;)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/7a0a7aaee11fbabd3eb83901947c66e6c4c54eea7e08ee85ae6b6f12dc498efd.png" src="_images/7a0a7aaee11fbabd3eb83901947c66e6c4c54eea7e08ee85ae6b6f12dc498efd.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">NT</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)],</span><span class="n">c2f</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">NT</span><span class="p">)]</span><span class="o">/</span><span class="n">m</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5000</span><span class="p">)</span>
+
+<span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ssum3</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+<span class="c1"># plt.plot(P2P3[:10000],label = &#39;FFT方法&#39;,linestyle = &#39;--&#39;)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/5c038a2d93d5b21422d8cc6c3c9f7137a805858fe786419d37e3ad3961aa3706.png" src="_images/5c038a2d93d5b21422d8cc6c3c9f7137a805858fe786419d37e3ad3961aa3706.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## 让我们计算离散化pdf的均值</span>
+<span class="n">mean</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="n">NT</span><span class="p">],</span><span class="n">c1f</span><span class="p">[:</span><span class="n">NT</span><span class="p">]))</span>
+<span class="c1"># meantheory = np.exp(mu1+.5*sigma1**2)</span>
+<span class="n">mean</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">meantheory</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(489.3810974093853, 489.38386452844077)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## 让我们计算离散化pdf的均值</span>
+<span class="n">mean</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="n">NT</span><span class="p">],</span><span class="n">c2f</span><span class="p">[:</span><span class="n">NT</span><span class="p">]))</span>
+<span class="c1"># meantheory = np.exp(mu1+.5*sigma1**2)</span>
+<span class="n">mean</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">meantheory</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(734.0714863312272, 734.0757967926611)
+</pre></div>
+</div>
+</div>
+</div>
+<!-- #region -->
+</section>
+<section id="id10">
+<h2><span class="section-number">13.6. </span>故障树分析<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
+<p>我们即将应用卷积定理来计算故障树分析中<strong>顶事件</strong>的概率。</p>
+<p>在应用卷积定理之前，我们首先描述将组成事件与我们要量化其故障率的<strong>顶端</strong>事件连接起来的模型。</p>
+<p>该模型是El-Shanawany、Ardron和Walker <span id="id11">[<a class="reference internal" href="zreferences.html#id22" title="Ashraf Ben El-Shanawany, Keith H Ardron, and Simon P Walker. Lognormal approximations of fault tree uncertainty distributions. Risk Analysis, 38(8):1576–1584, 2018.">El-Shanawany <em>et al.</em>, 2018</a>]</span>所描述的广泛使用的<strong>故障树分析</strong>的一个例子。</p>
+<p>为了构建统计模型，我们反复使用所谓的<strong>稀有事件近似</strong>。</p>
+<p>我们想要计算事件<span class="math notranslate nohighlight">\(A \cup B\)</span>的概率。</p>
+<ul class="simple">
+<li><p>并集<span class="math notranslate nohighlight">\(A \cup B\)</span>是事件<span class="math notranslate nohighlight">\(A\)</span>或<span class="math notranslate nohighlight">\(B\)</span>发生的情况</p></li>
+</ul>
+<p>概率法则告诉我们，<span class="math notranslate nohighlight">\(A\)</span>或<span class="math notranslate nohighlight">\(B\)</span>发生的概率为</p>
+<div class="math notranslate nohighlight">
+\[ P(A \cup B) = P(A) + P(B) - P(A \cap B) \]</div>
+<p>其中交集<span class="math notranslate nohighlight">\(A \cap B\)</span>是事件<span class="math notranslate nohighlight">\(A\)</span><strong>和</strong><span class="math notranslate nohighlight">\(B\)</span>都发生的情况，而并集<span class="math notranslate nohighlight">\(A \cup B\)</span>是事件<span class="math notranslate nohighlight">\(A\)</span><strong>或</strong><span class="math notranslate nohighlight">\(B\)</span>发生的情况。</p>
+<p>如果<span class="math notranslate nohighlight">\(A\)</span>和<span class="math notranslate nohighlight">\(B\)</span>是独立的，那么</p>
+<div class="math notranslate nohighlight">
+\[ P(A \cap B) = P(A) P(B)  \]</div>
+<p>如果 <span class="math notranslate nohighlight">\(P(A)\)</span> 和 <span class="math notranslate nohighlight">\(P(B)\)</span> 都很小，那么 <span class="math notranslate nohighlight">\(P(A) P(B)\)</span> 就更小。</p>
+<p><strong>稀有事件近似</strong>为</p>
+<div class="math notranslate nohighlight">
+\[ P(A \cup B) \approx P(A) + P(B)  \]</div>
+<p>这种近似方法在评估系统故障时被广泛使用。</p>
+</section>
+<section id="id12">
+<h2><span class="section-number">13.7. </span>应用<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h2>
+<p>一个系统的设计特点是，当<strong>任何</strong>一个关键组件发生故障时，系统就会发生故障。</p>
+<p>每个事件 <span class="math notranslate nohighlight">\(A_i\)</span> 的故障概率 <span class="math notranslate nohighlight">\(P(A_i)\)</span> 都很小。</p>
+<p>我们假设组件的故障是统计独立的随机变量。</p>
+<p>我们反复应用<strong>稀有事件近似</strong>，得到系统故障问题的以下公式：</p>
+<div class="math notranslate nohighlight">
+\[ P(F) \approx P(A_1) + P (A_2) + \cdots + P (A_n) \]</div>
+<p>或</p>
+<div class="math notranslate nohighlight" id="equation-eq-probtop">
+<span class="eqno">(13.3)<a class="headerlink" href="#equation-eq-probtop" title="Permalink to this equation">#</a></span>\[
+P(F) \approx \sum_{i=1}^n P (A_i)
+\]</div>
+<p>每个事件的概率以每年故障率的形式记录。</p>
+</section>
+<section id="id13">
+<h2><span class="section-number">13.8. </span>未知的故障率<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h2>
+<p>现在我们来讨论真正感兴趣的问题，参考 <span id="id14">[<a class="reference internal" href="zreferences.html#id22" title="Ashraf Ben El-Shanawany, Keith H Ardron, and Simon P Walker. Lognormal approximations of fault tree uncertainty distributions. Risk Analysis, 38(8):1576–1584, 2018.">El-Shanawany <em>et al.</em>, 2018</a>]</span> 和 Greenfield and Sargent</p>
+<p><span id="id15">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span> 遵循 Apostolakis <span id="id16">[<a class="reference internal" href="zreferences.html#id20" title="George Apostolakis. The concept of probability in safety assessments of technological systems. Science, 250(4986):1359–1364, 1990.">Apostolakis, 1990</a>]</span> 的思路。</p>
+<p>构成概率或失效率 <span class="math notranslate nohighlight">\(P(A_i)\)</span> 并非先验已知，需要进行估计。</p>
+<p>我们通过指定<strong>概率的概率</strong>来解决这个问题，这反映了对故障树分析输入中的构成概率的不确定性这一概念。</p>
+<p>因此，我们假设系统分析师对系统组件的失效率 <span class="math notranslate nohighlight">\(P(A_i), i =1, \ldots, n\)</span> 存在不确定性。</p>
+<p>分析师通过将系统失效概率 <span class="math notranslate nohighlight">\(P(F)\)</span> 和每个组件概率 <span class="math notranslate nohighlight">\(P(A_i)\)</span> 视为随机变量来应对这种情况。</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P(A_i)\)</span> 概率分布的离散程度表征了分析师对失效概率 <span class="math notranslate nohighlight">\(P(A_i)\)</span> 的不确定性</p></li>
+<li><p><span class="math notranslate nohighlight">\(P(F)\)</span> 的隐含概率分布的离散程度表征了分析师对系统失效概率的不确定性</p></li>
+</ul>
+<p>这导致了有时被称为<strong>层次化</strong>模型，其中分析师对概率<span class="math notranslate nohighlight">\(P(A_i)\)</span>本身也有概率估计。</p>
+<p>分析师通过以下假设来形式化他的不确定性：</p>
+<ul class="simple">
+<li><p>失效概率<span class="math notranslate nohighlight">\(P(A_i)\)</span>本身是一个对数正态随机变量，其参数为<span class="math notranslate nohighlight">\((\mu_i, \sigma_i)\)</span>。</p></li>
+<li><p>对于所有<span class="math notranslate nohighlight">\(i \neq j\)</span>的配对，失效率<span class="math notranslate nohighlight">\(P(A_i)\)</span>和<span class="math notranslate nohighlight">\(P(A_j)\)</span>在统计上是相互独立的。</p></li>
+</ul>
+<p>分析师通过阅读工程论文中的可靠性研究来校准失效事件<span class="math notranslate nohighlight">\(i = 1, \ldots, n\)</span>的参数<span class="math notranslate nohighlight">\((\mu_i, \sigma_i)\)</span>，这些研究考察了与系统中使用的组件尽可能相似的组件的历史失效率。</p>
+<p>分析师假设，这些关于年度失效率或失效时间的观测分散性的信息，可以帮助他预测零件在其系统中的性能表现。</p>
+<p>分析师假设随机变量 <span class="math notranslate nohighlight">\(P(A_i)\)</span> 在统计上是相互独立的。</p>
+<p>分析师想要近似系统失效概率 <span class="math notranslate nohighlight">\(P(F)\)</span> 的概率质量函数和累积分布函数。</p>
+<ul class="simple">
+<li><p>我们说概率质量函数是因为我们之前描述的对每个随机变量的离散化方式。</p></li>
+</ul>
+<p>分析师通过重复应用卷积定理来计算<strong>顶事件</strong> <span class="math notranslate nohighlight">\(F\)</span>（即<strong>系统失效</strong>）的概率质量函数，以计算独立对数正态随机变量之和的概率分布，如方程 <a class="reference internal" href="#equation-eq-probtop">(13.3)</a> 所述。</p>
+</section>
+<section id="id17">
+<h2><span class="section-number">13.9. </span>废物提升机失效率<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h2>
+<p>我们以接近实际的例子来说明，假设 <span class="math notranslate nohighlight">\(n = 14\)</span>。</p>
+<p>该例子估计了核废料设施中一个关键提升机的年度失效率。</p>
+<p>监管机构希望系统的设计能够使顶事件的失效率以高概率保持在较小值。</p>
+<p>这个例子是<span id="id18">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span>第27页表10中描述的设计方案B-2（案例I）。</p>
+<p>该表描述了十四个对数正态随机变量的参数<span class="math notranslate nohighlight">\(\mu_i, \sigma_i\)</span>，这些随机变量由<strong>七对</strong>独立同分布的随机变量组成。</p>
+<ul class="simple">
+<li><p>在每一对内，参数<span class="math notranslate nohighlight">\(\mu_i, \sigma_i\)</span>是相同的</p></li>
+<li><p>如<span id="id19">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span>第27页表10所述，七个唯一概率<span class="math notranslate nohighlight">\(P(A_i)\)</span>的对数正态分布参数已被校准为以下Python代码中的值：</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mu1</span><span class="p">,</span> <span class="n">sigma1</span> <span class="o">=</span> <span class="mf">4.28</span><span class="p">,</span> <span class="mf">1.1947</span>
+<span class="n">mu2</span><span class="p">,</span> <span class="n">sigma2</span> <span class="o">=</span> <span class="mf">3.39</span><span class="p">,</span> <span class="mf">1.1947</span>
+<span class="n">mu3</span><span class="p">,</span> <span class="n">sigma3</span> <span class="o">=</span> <span class="mf">2.795</span><span class="p">,</span> <span class="mf">1.1947</span>
+<span class="n">mu4</span><span class="p">,</span> <span class="n">sigma4</span> <span class="o">=</span> <span class="mf">2.717</span><span class="p">,</span> <span class="mf">1.1947</span>
+<span class="n">mu5</span><span class="p">,</span> <span class="n">sigma5</span> <span class="o">=</span> <span class="mf">2.717</span><span class="p">,</span> <span class="mf">1.1947</span>
+<span class="n">mu6</span><span class="p">,</span> <span class="n">sigma6</span> <span class="o">=</span> <span class="mf">1.444</span><span class="p">,</span> <span class="mf">1.4632</span>
+<span class="n">mu7</span><span class="p">,</span> <span class="n">sigma7</span> <span class="o">=</span> <span class="o">-</span><span class="mf">.040</span><span class="p">,</span> <span class="mf">1.4632</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>由于故障率都很小，具有上述参数值的对数正态分布实际上描述的是 <span class="math notranslate nohighlight">\(P(A_i)\)</span> 乘以 <span class="math notranslate nohighlight">\(10^{-09}\)</span>。</p>
+</div>
+<p>所以我们将在概率质量函数和相关累积分布函数的 <span class="math notranslate nohighlight">\(x\)</span> 轴上标注的概率应该乘以 <span class="math notranslate nohighlight">\(10^{-09}\)</span></p>
+<p>为了提取汇总计算分位数的表格，我们将使用一个辅助函数</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">find_nearest</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">array</span> <span class="o">-</span> <span class="n">value</span><span class="p">))</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">idx</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们在以下代码中计算所需的十三个卷积。</p>
+<p>(请随意尝试不同的幂参数 <span class="math notranslate nohighlight">\(p\)</span> 值，我们用它来设置网格中的点数，以构建离散化连续对数正态分布的概率质量函数。)</p>
+<p>我们将绘制一个与<span id="id20">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span>第29页图5中的累积分布函数(CDF)相对应的图，并且还将展示一个与他们第28页表11相对应的表。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">=</span><span class="mi">15</span>
+<span class="n">I</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">p</span> <span class="c1"># 截断值</span>
+<span class="n">m</span> <span class="o">=</span>  <span class="mf">.05</span> <span class="c1"># 增量大小</span>
+
+
+
+
+<span class="n">p1</span><span class="p">,</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span><span class="n">sigma1</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p2</span><span class="p">,</span><span class="n">p2_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu2</span><span class="p">,</span><span class="n">sigma2</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p3</span><span class="p">,</span><span class="n">p3_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu3</span><span class="p">,</span><span class="n">sigma3</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p4</span><span class="p">,</span><span class="n">p4_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu4</span><span class="p">,</span><span class="n">sigma4</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p5</span><span class="p">,</span><span class="n">p5_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu5</span><span class="p">,</span><span class="n">sigma5</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p6</span><span class="p">,</span><span class="n">p6_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu6</span><span class="p">,</span><span class="n">sigma6</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p7</span><span class="p">,</span><span class="n">p7_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p8</span><span class="p">,</span><span class="n">p8_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p9</span><span class="p">,</span><span class="n">p9_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p10</span><span class="p">,</span><span class="n">p10_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p11</span><span class="p">,</span><span class="n">p11_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p12</span><span class="p">,</span><span class="n">p12_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p13</span><span class="p">,</span><span class="n">p13_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="n">p14</span><span class="p">,</span><span class="n">p14_norm</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">pdf_seq</span><span class="p">(</span><span class="n">mu7</span><span class="p">,</span><span class="n">sigma7</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+
+<span class="n">tic</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">c1</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">p1_norm</span><span class="p">,</span><span class="n">p2_norm</span><span class="p">)</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span><span class="n">p3_norm</span><span class="p">)</span>
+<span class="n">c3</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span><span class="n">p4_norm</span><span class="p">)</span>
+<span class="n">c4</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c3</span><span class="p">,</span><span class="n">p5_norm</span><span class="p">)</span>
+<span class="n">c5</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c4</span><span class="p">,</span><span class="n">p6_norm</span><span class="p">)</span>
+<span class="n">c6</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c5</span><span class="p">,</span><span class="n">p7_norm</span><span class="p">)</span>
+<span class="n">c7</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c6</span><span class="p">,</span><span class="n">p8_norm</span><span class="p">)</span>
+<span class="n">c8</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c7</span><span class="p">,</span><span class="n">p9_norm</span><span class="p">)</span>
+<span class="n">c9</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c8</span><span class="p">,</span><span class="n">p10_norm</span><span class="p">)</span>
+<span class="n">c10</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c9</span><span class="p">,</span><span class="n">p11_norm</span><span class="p">)</span>
+<span class="n">c11</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c10</span><span class="p">,</span><span class="n">p12_norm</span><span class="p">)</span>
+<span class="n">c12</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c11</span><span class="p">,</span><span class="n">p13_norm</span><span class="p">)</span>
+<span class="n">c13</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">c12</span><span class="p">,</span><span class="n">p14_norm</span><span class="p">)</span>
+
+<span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+<span class="n">tdiff13</span> <span class="o">=</span> <span class="n">toc</span> <span class="o">-</span> <span class="n">tic</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;13个卷积的计算时间 = &quot;</span><span class="p">,</span> <span class="n">tdiff13</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>13个卷积的计算时间 =  3.1593598590000056
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d13</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">c13</span><span class="p">)</span>
+<span class="n">Nx</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mi">1400</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">Nx</span><span class="o">/</span><span class="n">m</span><span class="p">)],</span><span class="n">d13</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">Nx</span><span class="o">/</span><span class="n">m</span><span class="p">)])</span>  <span class="c1"># 展示给Yad看 -- 我乘以了m -- 步长</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">Nx</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;black&#39;</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">Nx</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;black&#39;</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">Nx</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;black&#39;</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">Nx</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;black&#39;</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">Nx</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;black&#39;</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">Nx</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$x10^{-9}$&quot;</span><span class="p">,</span><span class="n">loc</span> <span class="o">=</span> <span class="s2">&quot;right&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">x_1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.01</span><span class="p">)]</span>
+<span class="n">x_5</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.05</span><span class="p">)]</span>
+<span class="n">x_10</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)]</span>
+<span class="n">x_50</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.50</span><span class="p">)]</span>
+<span class="n">x_66</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.665</span><span class="p">)]</span>
+<span class="n">x_85</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.85</span><span class="p">)]</span>
+<span class="n">x_90</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.90</span><span class="p">)]</span>
+<span class="n">x_95</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.95</span><span class="p">)]</span>
+<span class="n">x_99</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.99</span><span class="p">)]</span>
+<span class="n">x_9978</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">d13</span><span class="p">,</span><span class="mf">0.9978</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([</span>
+    <span class="p">[</span><span class="s1">&#39;1%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;5%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_5</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;10%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;50%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_50</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;66.5%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_66</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;85%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_85</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;90%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_90</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;95%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_95</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;99%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_99</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;99.78%&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_9978</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]],</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;百分位数&#39;</span><span class="p">,</span> <span class="s1">&#39;x * 1e-9&#39;</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/48e5760047ca9beb8bbf40ec6d277c85ec5b6073ce7f7f7d0e94c7c4da029e8a.png" src="_images/48e5760047ca9beb8bbf40ec6d277c85ec5b6073ce7f7f7d0e94c7c4da029e8a.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>百分位数      x * 1e-9
+----------  ----------
+1%               76.15
+5%              106.5
+10%             128.2
+50%             260.55
+66.5%           338.55
+85%             509.4
+90%             608.8
+95%             807.6
+99%            1470.2
+99.78%         2474.85
+</pre></div>
+</div>
+</div>
+</div>
+<p>上表与 <span id="id21">[<a class="reference internal" href="zreferences.html#id21" title="Moses A Greenfield and Thomas J Sargent. A probabilistic analysis of a catastrophic transuranic waste hoise accident at the wipp. Environmental Evaluation Group, Albuquerque, New Mexico, June 1993. URL: http://www.tomsargent.com/research/EEG-53.pdf.">Greenfield and Sargent, 1993</a>]</span> 第28页表11的第2列数据非常接近。</p>
+<p>差异可能是由于在输入 <span class="math notranslate nohighlight">\(\mu_i, \sigma_i, i = 1, \ldots, 14\)</span> 时保留的小数位数略有不同，以及在离散化时使用的点数不同所致。</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/hoist_failure.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/hoist_failure.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/hoist_failure.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/hoist_failure.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/hoist_failure.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "hoist_failure";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/hoist_failure.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

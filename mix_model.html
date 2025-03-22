@@ -1,0 +1,1651 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>55. 错误模型 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'mix_model';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/mix_model.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="56. 贝叶斯与频率主义决策规则的比较" href="navy_captain.html" />
+    <link rel="prev" title="54. 似然比过程和贝叶斯学习" href="likelihood_bayes.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="错误模型"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="错误模型" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/mix_model.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=mix_model>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">55.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#h">55.2. 从复合彩票 <span class="math notranslate nohighlight">\(H\)</span> 中抽样</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">55.3. 类型1代理</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#h-1">55.4. 当混合分布<span class="math notranslate nohighlight">\(H\)</span>生成数据时，类型1代理学到什么</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kullback-leibler-pi-t">55.5. Kullback-Leibler 散度决定 <span class="math notranslate nohighlight">\(\pi_t\)</span> 的极限</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">55.6. 类型2代理</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">55.7. 总结说明</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">错误模型</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="likelihood-ratio-process">
+<span id="id1"></span><h1><span class="section-number">55. </span>错误模型<a class="headerlink" href="#likelihood-ratio-process" title="Permalink to this heading">#</a></h1>
+<p>除了Anaconda中包含的库之外，本讲座还需要以下库：</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>numpyro<span class="w"> </span>jax
+</pre></div>
+</div>
+</div>
+<details class="hide below-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell output</span>
+<span class="expanded">Hide code cell output</span>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: numpyro in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.18.0)
+Requirement already satisfied: jax in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.5.3)
+Requirement already satisfied: jaxlib&gt;=0.4.25 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numpyro) (0.5.3)
+Requirement already satisfied: multipledispatch in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numpyro) (0.6.0)
+Requirement already satisfied: numpy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numpyro) (1.26.4)
+Requirement already satisfied: tqdm in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numpyro) (4.66.5)
+Requirement already satisfied: ml_dtypes&gt;=0.4.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from jax) (0.5.1)
+Requirement already satisfied: opt_einsum in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from jax) (3.4.0)
+Requirement already satisfied: scipy&gt;=1.11.1 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from jax) (1.13.1)
+Requirement already satisfied: six in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from multipledispatch-&gt;numpyro) (1.16.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="id2">
+<h2><span class="section-number">55.1. </span>概述<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<p>这是<a class="reference internal" href="likelihood_bayes.html"><span class="doc">这个 quantecon 讲座</span></a>的续篇。</p>
+<p>我们将讨论创建复合彩票的两种方式及其后果。</p>
+<p>复合彩票可以说是创建了一个_混合分布_。</p>
+<p>我们构建复合彩票的两种方式在<strong>时间安排</strong>上有所不同。</p>
+<ul class="simple">
+<li><p>其中一种方式是在时间开始时一次性在两个可能的概率分布之间进行混合</p></li>
+<li><p>另一种方式是在每个时期都在相同的两个可能的概率分布之间进行混合</p></li>
+</ul>
+<p>这个统计设定与那个 quantecon 讲座中研究的问题相近但不完全相同。</p>
+<p>在那个讲座中，有两个独立同分布的过程可能支配着一个非负随机变量 <span class="math notranslate nohighlight">\(W\)</span> 的连续抽取。</p>
+<p>自然界一劳永逸地决定是从分布 <span class="math notranslate nohighlight">\(f\)</span> 还是从分布 <span class="math notranslate nohighlight">\(g\)</span> 中进行一系列独立同分布的抽取。</p>
+<p>该讲座研究了一个同时知道<span class="math notranslate nohighlight">\(f\)</span>和<span class="math notranslate nohighlight">\(g\)</span>但不知道自然在<span class="math notranslate nohighlight">\(-1\)</span>时刻选择了哪个分布的代理人。</p>
+<p>代理人通过假设自然以概率<span class="math notranslate nohighlight">\(\pi_{-1}\)</span>选择概率分布<span class="math notranslate nohighlight">\(f\)</span>的方式来表示这种无知，就像抛一枚不公平的硬币。</p>
+<p>这个假设使得代理人能够构建一个关于随机序列<span class="math notranslate nohighlight">\(\{W_t\}_{t=0}^\infty\)</span>的主观联合概率分布。</p>
+<p>我们研究了代理人如何使用条件概率法则和观察到的历史数据<span class="math notranslate nohighlight">\(w^t =\{w_s\}_{t=0}^t\)</span>来形成</p>
+<div class="math notranslate nohighlight">
+\[
+\pi_t = E [ \textrm{自然选择分布}  f | w^t] , \quad  t = 0, 1, 2, \ldots
+\]</div>
+<p>然而，在本讲座的设定中，这个规则赋予了代理人一个错误的模型。</p>
+<p>原因是现在工资序列实际上是由一个不同的统计模型描述的。</p>
+<p>因此，我们需要对<a class="reference internal" href="likelihood_bayes.html"><span class="doc">quantecon讲座</span></a>的规范进行如下修改。</p>
+<p>现在，在<strong>每个时期</strong> <span class="math notranslate nohighlight">\(t \geq 0\)</span>，自然界抛出一个可能不公平的硬币，其正面（<span class="math notranslate nohighlight">\(f\)</span>）概率为 <span class="math notranslate nohighlight">\(\alpha\)</span>，反面（<span class="math notranslate nohighlight">\(g\)</span>）概率为 <span class="math notranslate nohighlight">\(1-\alpha\)</span>。</p>
+<p>因此，自然界持续地从具有以下c.d.f.的<strong>混合分布</strong>中抽取：</p>
+<div class="math notranslate nohighlight">
+\[
+H(w ) = \alpha F(w) + (1-\alpha) G(w), \quad \alpha \in (0,1)
+\]</div>
+<p>我们将研究两个试图了解工资过程的代理人，他们使用不同的统计模型。</p>
+<p>两种类型的代理人都知道 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span>，但都不知道 <span class="math notranslate nohighlight">\(\alpha\)</span>。</p>
+<p>我们的第一类代理人错误地认为在时间 <span class="math notranslate nohighlight">\(-1\)</span> 时，自然界一次性选择了 <span class="math notranslate nohighlight">\(f\)</span> 或 <span class="math notranslate nohighlight">\(g\)</span>，此后永久地从该分布中抽取。</p>
+<p>我们的第二类代理人正确地知道，自然界在每个时期都以混合概率 <span class="math notranslate nohighlight">\(\alpha \in (0,1)\)</span> 混合 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span>，尽管代理人不知道混合参数。</p>
+<p>我们的第一类代理人应用了在<a class="reference internal" href="likelihood_bayes.html"><span class="doc">这个quantecon讲座</span></a>中描述的学习算法。</p>
+<p>在那节课中统计模型的背景下,这是一个很好的学习算法,它使贝叶斯学习者最终能够学习到自然在时间<span class="math notranslate nohighlight">\(-1\)</span>时所抽取的分布。</p>
+<p>这是因为该代理的统计模型在与数据生成过程一致的意义上是<em>正确的</em>。</p>
+<p>但在当前情况下,我们的第一类决策者的模型是错误的,因为实际生成数据的模型<span class="math notranslate nohighlight">\(h\)</span>既不是<span class="math notranslate nohighlight">\(f\)</span>也不是<span class="math notranslate nohighlight">\(g\)</span>,因此超出了代理认为可能的模型支持范围。</p>
+<p>尽管如此,我们将看到我们的第一类代理仍然能够摸索前进,并最终学到一些有趣且有用的东西,即使这些并不是<em>真实的</em>。</p>
+<p>相反,事实证明我们这个配备了错误统计模型的第一类代理,最终会学习到<span class="math notranslate nohighlight">\(f\)</span>或<span class="math notranslate nohighlight">\(g\)</span>中在特定意义上与实际生成数据的<span class="math notranslate nohighlight">\(h\)</span><em>最接近</em>的那个概率分布。</p>
+<p>我们将说明它在什么意义上最接近。</p>
+<p>我们的第二类代理理解自然在每个时期以固定的混合概率 <span class="math notranslate nohighlight">\(\alpha\)</span> 在 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 之间进行混合。</p>
+<p>但是代理不知道 <span class="math notranslate nohighlight">\(\alpha\)</span>。</p>
+<p>代理决定使用贝叶斯定律应用于他的模型来学习 <span class="math notranslate nohighlight">\(\alpha\)</span>。</p>
+<p>他的模型是正确的，因为它包含了实际的数据生成过程 <span class="math notranslate nohighlight">\(h\)</span> 作为一个可能的分布。</p>
+<p>在本讲中，我们将学习</p>
+<ul class="simple">
+<li><p>自然如何在两个分布 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 之间<em>混合</em>来创建一个新的分布 <span class="math notranslate nohighlight">\(h\)</span>。</p></li>
+<li><p>Kullback-Leibler统计散度 <a class="reference external" href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">https://en.wikipedia.org/wiki/Kullback–Leibler_divergence</a>，它在不正确的统计模型下控制统计学习</p></li>
+<li><p>一个有用的Python函数 <code class="docutils literal notranslate"><span class="pre">numpy.searchsorted</span></code>，它与均匀随机数生成器一起使用可以从任意分布中进行采样</p></li>
+</ul>
+<p>像往常一样，我们先导入一些Python工具。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1">#set default figure size</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">vectorize</span><span class="p">,</span> <span class="n">jit</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">gamma</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">quad</span>
+
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">numpyro</span>
+<span class="kn">import</span> <span class="nn">numpyro.distributions</span> <span class="k">as</span> <span class="nn">dist</span>
+<span class="kn">from</span> <span class="nn">numpyro.infer</span> <span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span>
+
+<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">142857</span><span class="p">)</span>
+
+<span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">set_seed</span><span class="p">():</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">142857</span><span class="p">)</span>
+<span class="n">set_seed</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们用Python生成两个贝塔分布</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 两个贝塔分布的参数</span>
+<span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+<span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.2</span>
+
+<span class="nd">@vectorize</span>
+<span class="k">def</span> <span class="nf">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">gamma</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">gamma</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span> <span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># 两个密度函数</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">))</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    生成N组T个似然比观测值，</span>
+<span class="sd">    以N x T矩阵形式返回。</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">l_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+            <span class="n">l_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">l_arr</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们还将使用以下Python代码来准备一些信息丰富的模拟</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l_arr_g</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">50000</span><span class="p">)</span>
+<span class="n">l_seq_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">l_arr_g</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l_arr_f</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">50000</span><span class="p">)</span>
+<span class="n">l_seq_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">l_arr_f</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="h">
+<h2><span class="section-number">55.2. </span>从复合彩票 <span class="math notranslate nohighlight">\(H\)</span> 中抽样<a class="headerlink" href="#h" title="Permalink to this heading">#</a></h2>
+<p>我们实现两种方法从混合模型 <span class="math notranslate nohighlight">\(\alpha F + (1-\alpha) G\)</span> 中抽取样本。</p>
+<p>我们将使用这两种方法生成样本，并验证它们是否匹配良好。</p>
+<p>以下是从复合彩票中抽样的”方法1”的伪代码：</p>
+<ul class="simple">
+<li><p>第一步：</p>
+<ul>
+<li><p>使用 numpy.random.choice 函数抛一个不公平的硬币，以概率 <span class="math notranslate nohighlight">\(\alpha\)</span> 选择分布 <span class="math notranslate nohighlight">\(F\)</span>，以概率 <span class="math notranslate nohighlight">\(1-\alpha\)</span> 选择分布 <span class="math notranslate nohighlight">\(G\)</span></p></li>
+</ul>
+</li>
+<li><p>第二步：</p>
+<ul>
+<li><p>根据硬币抛掷的结果，从 <span class="math notranslate nohighlight">\(F\)</span> 或 <span class="math notranslate nohighlight">\(G\)</span> 中抽样</p></li>
+</ul>
+</li>
+<li><p>第三步：</p>
+<ul>
+<li><p>将前两步放在一个大循环中，对 <span class="math notranslate nohighlight">\(w\)</span> 的每个实现都执行这些步骤</p></li>
+</ul>
+</li>
+</ul>
+<p>我们的第二种方法使用均匀分布和以下在 quantecon 讲座 <a class="reference external" href="https://python.quantecon.org/prob_matrix.html">https://python.quantecon.org/prob_matrix.html</a> 中描述和使用的事实：</p>
+<ul class="simple">
+<li><p>如果随机变量 <span class="math notranslate nohighlight">\(X\)</span> 的累积分布函数为 <span class="math notranslate nohighlight">\(F(X)\)</span>，那么随机变量 <span class="math notranslate nohighlight">\(F^{-1}(U)\)</span> 也具有累积分布函数 <span class="math notranslate nohighlight">\(F(x)\)</span>，其中 <span class="math notranslate nohighlight">\(U\)</span> 是 <span class="math notranslate nohighlight">\([0,1]\)</span> 上的均匀随机变量。</p></li>
+</ul>
+<p>换句话说，如果 <span class="math notranslate nohighlight">\(X \sim F(x)\)</span>，我们可以通过从区间 <span class="math notranslate nohighlight">\([0,1]\)</span> 上的均匀分布中抽取随机样本，并计算 <span class="math notranslate nohighlight">\(F^{-1}(U)\)</span> 来从 <span class="math notranslate nohighlight">\(F\)</span> 中生成随机样本。</p>
+<p>我们将结合 <code class="docutils literal notranslate"><span class="pre">numpy.searchsorted</span></code> 命令使用这个事实来直接从 <span class="math notranslate nohighlight">\(H\)</span> 中采样。</p>
+<p>参见 <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.searchsorted.html">https://numpy.org/doc/stable/reference/generated/numpy.searchsorted.html</a> 了解 <code class="docutils literal notranslate"><span class="pre">searchsorted</span></code> 函数。</p>
+<p>查看<a class="reference external" href="https://www.google.com/search?q=Mr.+P+Solver+video+on+Monte+Carlo+simulation&amp;amp;oq=Mr.+P+Solver+video+on+Monte+Carlo+simulation">Mr. P Solver关于蒙特卡洛模拟的视频</a>，了解这个强大技巧的其他应用。</p>
+<p>在下面的Python代码中，我们将使用这两种方法，并确认它们都能很好地从我们的目标混合分布中进行采样。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">draw_lottery</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="s2">&quot;直接从复合彩票中抽取。&quot;</span>
+
+    <span class="n">draws</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">&lt;=</span><span class="n">p</span><span class="p">:</span>
+            <span class="n">draws</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">draws</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">draw_lottery_MC</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="s2">&quot;使用蒙特卡洛技巧从复合彩票中抽取。&quot;</span>
+
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-8</span><span class="p">,</span><span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="mf">1e-8</span><span class="p">),</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="n">CDF</span> <span class="o">=</span> <span class="n">p</span><span class="o">*</span><span class="n">sp</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">p</span><span class="p">)</span><span class="o">*</span><span class="n">sp</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">)</span>
+
+    <span class="n">Us</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">draws</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">CDF</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">Us</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">draws</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 验证</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">100000</span>
+<span class="n">α</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="n">sample1</span> <span class="o">=</span> <span class="n">draw_lottery</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">sample2</span> <span class="o">=</span> <span class="n">draw_lottery_MC</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+<span class="c1"># 绘制抽样和密度函数</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">sample1</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;直接抽样&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">sample2</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;MC抽样&#39;</span><span class="p">)</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">α</span><span class="o">*</span><span class="n">f</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">g</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;密度&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/8e3694917b7350c9475b0b585563a649795495cf9d2d1a4917220916508d9dc9.png" src="_images/8e3694917b7350c9475b0b585563a649795495cf9d2d1a4917220916508d9dc9.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># %%timeit    # 比较速度</span>
+<span class="c1"># sample1 = draw_lottery(α, N=int(1e6))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># %%timeit</span>
+<span class="c1"># sample2 = draw_lottery_MC(α, N=int(1e6))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>注意：</strong> 使用numba加速后，当我们生成1,000,000个样本时，第一种方法实际上只比第二种方法稍慢一点。</p>
+</section>
+<section id="id3">
+<h2><span class="section-number">55.3. </span>类型1代理<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>我们现在来研究类型1代理学到了什么</p>
+<p>请记住，我们的类型1代理使用了错误的统计模型，认为自然在时间-1时就一次性地在<span class="math notranslate nohighlight">\(f\)</span>和<span class="math notranslate nohighlight">\(g\)</span>之间做出了选择。</p>
+<p>因此，类型1代理使用了在<a class="reference internal" href="likelihood_bayes.html"><span class="doc">这个quantecon讲座</span></a>中研究的学习算法。</p>
+<p>我们现在简要回顾一下该学习算法。</p>
+<p>让<span class="math notranslate nohighlight">\(\pi_t\)</span>表示贝叶斯后验概率，定义为</p>
+<div class="math notranslate nohighlight">
+\[
+\pi_t = {\rm Prob}(q=f|w^t)
+\]</div>
+<p>似然比过程在控制后验概率<span class="math notranslate nohighlight">\(\pi_t\)</span>演化的公式中起着主要作用，这是<strong>贝叶斯法则</strong>的一个实例。</p>
+<p>贝叶斯法则意味着<span class="math notranslate nohighlight">\(\{\pi_t\}\)</span>遵循以下递归</p>
+<div class="math notranslate nohighlight" id="equation-equation-eq-recur1">
+<span class="eqno">(55.1)<a class="headerlink" href="#equation-equation-eq-recur1" title="Permalink to this equation">#</a></span>\[
+\pi_t=\frac{\pi_{t-1} l_t(w_t)}{\pi_{t-1} l_t(w_t)+1-\pi_{t-1}}
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(\pi_{0}\)</span>是<span class="math notranslate nohighlight">\(q = f\)</span>的贝叶斯先验概率，</p>
+<p>即，基于我们尚未看到任何数据而对 <span class="math notranslate nohighlight">\( q \)</span> 的个人或主观信念。</p>
+<p>下面我们定义一个Python函数，使用似然比 <span class="math notranslate nohighlight">\( \ell \)</span> 根据递归公式 <a class="reference internal" href="#equation-equation-eq-recur1">(55.1)</a> 来更新信念 <span class="math notranslate nohighlight">\( \pi \)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">π</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+    <span class="s2">&quot;使用似然l更新π&quot;</span>
+
+    <span class="c1"># 更新信念</span>
+    <span class="n">π</span> <span class="o">=</span> <span class="n">π</span> <span class="o">*</span> <span class="n">l</span> <span class="o">/</span> <span class="p">(</span><span class="n">π</span> <span class="o">*</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">π</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">π</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>公式 <a class="reference internal" href="#equation-equation-eq-recur1">(55.1)</a> 可以通过迭代推广,从而得到时间 <span class="math notranslate nohighlight">\( t \)</span> 的后验概率 <span class="math notranslate nohighlight">\( \pi_{t+1} \)</span> 作为时间 <span class="math notranslate nohighlight">\( 0 \)</span> 的先验概率 <span class="math notranslate nohighlight">\( \pi_0 \)</span> 和时间 <span class="math notranslate nohighlight">\( t \)</span> 的似然比过程 <span class="math notranslate nohighlight">\( L(w^{t+1}) \)</span> 的函数表达式。</p>
+<p>首先,注意更新规则</p>
+<div class="math notranslate nohighlight">
+\[
+\pi_{t+1}
+=\frac{\pi_{t}\ell \left(w_{t+1}\right)}
+{\pi_{t}\ell \left(w_{t+1}\right)+\left(1-\pi_{t}\right)}
+\]</div>
+<p>意味着</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\frac{1}{\pi_{t+1}}
+    &amp;=\frac{\pi_{t}\ell \left(w_{t+1}\right)
+        +\left(1-\pi_{t}\right)}{\pi_{t}\ell \left(w_{t+1}\right)} \\
+    &amp;=1-\frac{1}{\ell \left(w_{t+1}\right)}
+        +\frac{1}{\ell \left(w_{t+1}\right)}\frac{1}{\pi_{t}}.
+\end{aligned}
+\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[
+\Rightarrow
+\frac{1}{\pi_{t+1}}-1
+=\frac{1}{\ell \left(w_{t+1}\right)}\left(\frac{1}{\pi_{t}}-1\right).
+\]</div>
+<p>因此</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}
+\begin{aligned}
+    \frac{1}{\pi_{t+1}}-1
+    =\frac{1}{\prod_{i=1}^{t+1}\ell \left(w_{i}\right)}
+        \left(\frac{1}{\pi_{0}}-1\right)\\=\frac{1}{L\left(w^{t+1}\right)}\left(\frac{1}{\pi_{0}}-1\right).
+\end{aligned}
+\end{aligned}\end{align} \]</div>
+<p>由于 <span class="math notranslate nohighlight">\( \pi_{0}\in\left(0,1\right) \)</span> 且
+<span class="math notranslate nohighlight">\( L\left(w^{t+1}\right)&gt;0 \)</span>，我们可以验证
+<span class="math notranslate nohighlight">\( \pi_{t+1}\in\left(0,1\right) \)</span>。</p>
+<p>通过重新整理前面的方程，我们可以将 <span class="math notranslate nohighlight">\( \pi_{t+1} \)</span> 表示为
+<span class="math notranslate nohighlight">\( L\left(w^{t+1}\right) \)</span>（即t+1时刻的似然比过程）
+和初始先验 <span class="math notranslate nohighlight">\( \pi_{0} \)</span> 的函数</p>
+<div class="math notranslate nohighlight" id="equation-equation-eq-bayeslaw103">
+<span class="eqno">(55.2)<a class="headerlink" href="#equation-equation-eq-bayeslaw103" title="Permalink to this equation">#</a></span>\[
+\pi_{t+1}=\frac{\pi_{0}L\left(w^{t+1}\right)}{\pi_{0}L\left(w^{t+1}\right)+1-\pi_{0}}.
+\]</div>
+<p>公式<a class="reference internal" href="#equation-equation-eq-bayeslaw103">(55.2)</a>是公式<a class="reference internal" href="#equation-equation-eq-recur1">(55.1)</a>的推广。</p>
+<p>公式<a class="reference internal" href="#equation-equation-eq-bayeslaw103">(55.2)</a>可以被视为在观察到数据批次<span class="math notranslate nohighlight">\( \left\{ w_{i}\right\} _{i=1}^{t+1} \)</span>后，对先验概率<span class="math notranslate nohighlight">\( \pi_0 \)</span>的一步修正。</p>
+</section>
+<section id="h-1">
+<h2><span class="section-number">55.4. </span>当混合分布<span class="math notranslate nohighlight">\(H\)</span>生成数据时，类型1代理学到什么<a class="headerlink" href="#h-1" title="Permalink to this heading">#</a></h2>
+<p>我们现在研究当混合分布<span class="math notranslate nohighlight">\(h;\alpha\)</span>真实地每期生成数据时会发生什么。</p>
+<p>次鞅或上鞅继续描述 <span class="math notranslate nohighlight">\(\pi_t\)</span></p>
+<p>它显露出其丑陋的一面，导致 <span class="math notranslate nohighlight">\(\pi_t\)</span> 要么收敛到 <span class="math notranslate nohighlight">\(0\)</span>，要么收敛到 <span class="math notranslate nohighlight">\(1\)</span>。</p>
+<p>即使在实际中自然总是在 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 之间混合，这一点仍然成立。</p>
+<p>在验证了关于 <span class="math notranslate nohighlight">\(\pi_t\)</span> 序列可能极限点的这一说法之后，我们将深入研究决定 <span class="math notranslate nohighlight">\(\pi_t\)</span> 极限值的基本力量。</p>
+<p>让我们设定一个 <span class="math notranslate nohighlight">\(\alpha\)</span> 值，然后观察 <span class="math notranslate nohighlight">\(\pi_t\)</span> 如何演变。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">simulate_mixed</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    当真实密度为混合h;α时，生成N组T个似然比观测值，</span>
+<span class="sd">    返回N x T矩阵</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">w_s</span> <span class="o">=</span> <span class="n">draw_lottery</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="n">N</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+    <span class="n">l_arr</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">w_s</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">w_s</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">l_arr</span>
+
+<span class="k">def</span> <span class="nf">plot_π_seq</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="n">π1</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">π2</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">200</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    当混合分布支配数据时，计算并绘制π_seq和对数似然比过程</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">l_arr_mixed</span> <span class="o">=</span> <span class="n">simulate_mixed</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">l_seq_mixed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">l_arr_mixed</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">T</span> <span class="o">=</span> <span class="n">l_arr_mixed</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">π_seq_mixed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">π_seq_mixed</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">π1</span><span class="p">,</span> <span class="n">π2</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">π_seq_mixed</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">π_seq_mixed</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">],</span> <span class="n">l_arr_mixed</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">t</span><span class="p">])</span>
+
+    <span class="c1"># 绘图</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">π_seq_mixed</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">label</span><span class="o">=</span><span class="sa">rf</span><span class="s2">&quot;$\pi_0$=</span><span class="si">{</span><span class="n">π_seq_mixed</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>  <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;对数似然比过程&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$\pi_t$&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;当 $</span><span class="se">\\</span><span class="s2">alpha G + (1-</span><span class="se">\\</span><span class="s2">alpha)$ F 支配数据时&quot;</span><span class="p">)</span>
+
+    <span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">l_seq_mixed</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$log(L(w^</span><span class="si">{t}</span><span class="s2">))$&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:34: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:34: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+/tmp/ipykernel_7315/940956931.py:34: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+  ax1.set_ylabel(&quot;$\pi_t$&quot;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_π_seq</span><span class="p">(</span><span class="n">α</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/8fccc2acdb551474535bf95ceabc427cea75f6a046445f0e56c7e782ab58c6f1.png" src="_images/8fccc2acdb551474535bf95ceabc427cea75f6a046445f0e56c7e782ab58c6f1.png" />
+</div>
+</div>
+<p>上图显示了对数似然比过程的一个样本路径（蓝色虚线），以及从两个不同初始条件开始的 <span class="math notranslate nohighlight">\(\pi_t\)</span> 的样本路径。</p>
+<p>让我们看看当我们改变 <span class="math notranslate nohighlight">\(\alpha\)</span> 时会发生什么</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_π_seq</span><span class="p">(</span><span class="n">α</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/517075b2ada738f9ebeaddf15856273bf9a95ec5d2c65428dd35ab54fa022a1c.png" src="_images/517075b2ada738f9ebeaddf15856273bf9a95ec5d2c65428dd35ab54fa022a1c.png" />
+</div>
+</div>
+<p>显然，<span class="math notranslate nohighlight">\(\alpha\)</span> 对 <span class="math notranslate nohighlight">\(\pi_t\)</span> 在 <span class="math notranslate nohighlight">\(t \rightarrow + \infty\)</span> 时的终点有很大影响</p>
+</section>
+<section id="kullback-leibler-pi-t">
+<h2><span class="section-number">55.5. </span>Kullback-Leibler 散度决定 <span class="math notranslate nohighlight">\(\pi_t\)</span> 的极限<a class="headerlink" href="#kullback-leibler-pi-t" title="Permalink to this heading">#</a></h2>
+<p>为了理解是什么决定了 <span class="math notranslate nohighlight">\(\pi_t\)</span> 的极限点是 <span class="math notranslate nohighlight">\(0\)</span> 还是 <span class="math notranslate nohighlight">\(1\)</span>，以及答案如何依赖于生成以下混合分布的真实混合概率 <span class="math notranslate nohighlight">\(\alpha \in (0,1)\)</span>：</p>
+<div class="math notranslate nohighlight">
+\[ h(w) \equiv h(w | \alpha) = \alpha f(w) + (1-\alpha) g(w) \]</div>
+<p>我们将计算以下两个 Kullback-Leibler 散度：</p>
+<div class="math notranslate nohighlight">
+\[
+KL_g (\alpha) = \int \log\left(\frac{g(w)}{h(w)}\right) h(w) d w
+\]</div>
+<p>和</p>
+<div class="math notranslate nohighlight">
+\[
+KL_f (\alpha) = \int \log\left(\frac{f(w)}{h(w)}\right) h(w) d w
+\]</div>
+<p>我们将绘制这两个函数关于 <span class="math notranslate nohighlight">\(\alpha\)</span> 的图像，同时用 <span class="math notranslate nohighlight">\(\alpha\)</span> 来改变 <span class="math notranslate nohighlight">\(h(w) = h(w|\alpha)\)</span>。</p>
+<p><span class="math notranslate nohighlight">\(\pi_t\)</span> 的极限由下式决定：</p>
+<div class="math notranslate nohighlight">
+\[ \min_{f,g} \{KL_g, KL_f\} \]</div>
+<p>唯一可能的极限是 <span class="math notranslate nohighlight">\(0\)</span> 和 <span class="math notranslate nohighlight">\(1\)</span>。</p>
+<p>当 <span class="math notranslate nohighlight">\(t \rightarrow +\infty\)</span> 时，<span class="math notranslate nohighlight">\(\pi_t\)</span> 趋向于 1 当且仅当 <span class="math notranslate nohighlight">\(KL_f &lt; KL_g\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@vectorize</span>
+<span class="k">def</span> <span class="nf">KL_g</span><span class="p">(</span><span class="n">α</span><span class="p">):</span>
+    <span class="s2">&quot;Compute the KL divergence between g and h.&quot;</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="mf">1e-8</span>                          <span class="c1"># to avoid 0 at end points</span>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">err</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+    <span class="n">gs</span><span class="p">,</span> <span class="n">fs</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">ws</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span>
+    <span class="n">hs</span> <span class="o">=</span> <span class="n">α</span><span class="o">*</span><span class="n">fs</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">gs</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">gs</span><span class="o">/</span><span class="n">hs</span><span class="p">)</span><span class="o">*</span><span class="n">hs</span><span class="p">)</span><span class="o">/</span><span class="mi">10000</span>
+
+<span class="nd">@vectorize</span>
+<span class="k">def</span> <span class="nf">KL_f</span><span class="p">(</span><span class="n">α</span><span class="p">):</span>
+    <span class="s2">&quot;Compute the KL divergence between f and h.&quot;</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="mf">1e-8</span>                          <span class="c1"># to avoid 0 at end points</span>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">err</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+    <span class="n">gs</span><span class="p">,</span> <span class="n">fs</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">ws</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span>
+    <span class="n">hs</span> <span class="o">=</span> <span class="n">α</span><span class="o">*</span><span class="n">fs</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">gs</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">fs</span><span class="o">/</span><span class="n">hs</span><span class="p">)</span><span class="o">*</span><span class="n">hs</span><span class="p">)</span><span class="o">/</span><span class="mi">10000</span>
+
+
+<span class="c1"># compute KL using quad in Scipy</span>
+<span class="k">def</span> <span class="nf">KL_g_quad</span><span class="p">(</span><span class="n">α</span><span class="p">):</span>
+    <span class="s2">&quot;Compute the KL divergence between g and h using scipy.integrate.&quot;</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">α</span><span class="o">*</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">quad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="n">h</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="o">*</span><span class="n">h</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">KL_f_quad</span><span class="p">(</span><span class="n">α</span><span class="p">):</span>
+    <span class="s2">&quot;Compute the KL divergence between f and h using scipy.integrate.&quot;</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">α</span><span class="o">*</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">quad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="n">h</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="o">*</span><span class="n">h</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># vectorize</span>
+<span class="n">KL_g_quad_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">KL_g_quad</span><span class="p">)</span>
+<span class="n">KL_f_quad_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">KL_f_quad</span><span class="p">)</span>
+
+
+<span class="c1"># Let us find the limit point</span>
+<span class="k">def</span> <span class="nf">π_lim</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">π_0</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
+    <span class="s2">&quot;Find limit of π sequence.&quot;</span>
+    <span class="n">π_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">π_seq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">π_0</span>
+    <span class="n">l_arr</span> <span class="o">=</span> <span class="n">simulate_mixed</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">π_seq</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">π_seq</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">l_arr</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">π_seq</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">π_lim_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">π_lim</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们首先绘制每个<span class="math notranslate nohighlight">\(\alpha\)</span>对应的KL散度<span class="math notranslate nohighlight">\(KL_g\left(\alpha\right), KL_f\left(\alpha\right)\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">α_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">KL_g_arr</span> <span class="o">=</span> <span class="n">KL_g</span><span class="p">(</span><span class="n">α_arr</span><span class="p">)</span>
+<span class="n">KL_f_arr</span> <span class="o">=</span> <span class="n">KL_f</span><span class="p">(</span><span class="n">α_arr</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">α_arr</span><span class="p">,</span> <span class="n">KL_g_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;KL(g, h)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">α_arr</span><span class="p">,</span> <span class="n">KL_f_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;KL(f, h)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;K-L散度&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\alpha$&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/d18ab920adaca65fef9dbf935094d0b6e4ebf47bca3d8ff0c139adc7662d0b2f.png" src="_images/d18ab920adaca65fef9dbf935094d0b6e4ebf47bca3d8ff0c139adc7662d0b2f.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># # 使用Scipy计算KL散度</span>
+
+<span class="c1"># α_arr = np.linspace(0, 1, 100)</span>
+<span class="c1"># KL_g_arr = KL_g_quad_v(α_arr)</span>
+<span class="c1"># KL_f_arr = KL_f_quad_v(α_arr)</span>
+
+<span class="c1"># fig, ax = plt.subplots(1, figsize=[10, 6])</span>
+
+<span class="c1"># ax.plot(α_arr, KL_g_arr, label=&#39;KL(g, h)&#39;)</span>
+<span class="c1"># ax.plot(α_arr, KL_f_arr, label=&#39;KL(f, h)&#39;)</span>
+<span class="c1"># ax.set_ylabel(&#39;K-L散度&#39;)</span>
+
+<span class="c1"># ax.legend(loc=&#39;upper right&#39;)</span>
+<span class="c1"># plt.show()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们计算一个 <span class="math notranslate nohighlight">\(\alpha\)</span> 值，使得 <span class="math notranslate nohighlight">\(h\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 之间的 KL 散度等于 <span class="math notranslate nohighlight">\(h\)</span> 和 <span class="math notranslate nohighlight">\(f\)</span> 之间的 KL 散度。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 当 KL_f = KL_g 时</span>
+<span class="n">α_arr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">KL_g_arr</span><span class="o">-</span><span class="n">KL_f_arr</span><span class="p">))]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.31313131313131315
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们可以计算并绘制每个 <span class="math notranslate nohighlight">\(\alpha\)</span> 的收敛点 <span class="math notranslate nohighlight">\(\pi_{\infty}\)</span> 来验证收敛确实受KL散度支配。</p>
+<p>蓝色圆圈显示了模拟发现的不同 <span class="math notranslate nohighlight">\(\alpha\)</span> 值（记录在 <span class="math notranslate nohighlight">\(x\)</span> 轴上）对应的 <span class="math notranslate nohighlight">\(\pi_t\)</span> 的极限值。</p>
+<p>因此，下图证实了最小KL散度如何支配我们的类型1代理最终学到的内容。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">α_arr_x</span> <span class="o">=</span> <span class="n">α_arr</span><span class="p">[(</span><span class="n">α_arr</span><span class="o">&lt;</span><span class="mf">0.28</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="n">α_arr</span><span class="o">&gt;</span><span class="mf">0.38</span><span class="p">)]</span>
+<span class="n">π_lim_arr</span> <span class="o">=</span> <span class="n">π_lim_v</span><span class="p">(</span><span class="n">α_arr_x</span><span class="p">)</span>
+
+<span class="c1"># plot</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">α_arr</span><span class="p">,</span> <span class="n">KL_g_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;KL(g, h)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">α_arr</span><span class="p">,</span> <span class="n">KL_f_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;KL(f, h)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;K-L散度&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\alpha$&#39;</span><span class="p">)</span>
+
+<span class="c1"># plot KL</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+<span class="c1"># plot limit point</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">α_arr_x</span><span class="p">,</span> <span class="n">π_lim_arr</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\pi$ lim&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;π lim&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.73</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/da6c31c16f6a1c9ce5d2a6bf73d1258eb99cb3d528a0d420bc04dfc2f37c77c0.png" src="_images/da6c31c16f6a1c9ce5d2a6bf73d1258eb99cb3d528a0d420bc04dfc2f37c77c0.png" />
+</div>
+</div>
+<p>显然，我们的类型1学习者在对其错误设定的统计模型集应用贝叶斯法则时，最终会学习到一个尽可能接近真实模型的近似模型，这种接近程度是通过Kullback-Leibler散度来衡量的。</p>
+</section>
+<section id="id4">
+<h2><span class="section-number">55.6. </span>类型2代理<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<p>现在我们来描述类型2代理如何构建他的学习问题以及他最终学到什么。</p>
+<p>我们的类型2代理理解正确的统计模型，但承认他不知道<span class="math notranslate nohighlight">\(\alpha\)</span>。</p>
+<p>我们应用贝叶斯法则来推导学习<span class="math notranslate nohighlight">\(\alpha\)</span>的算法，假设代理知道</p>
+<div class="math notranslate nohighlight">
+\[
+h(w) = h(w| \alpha)
+\]</div>
+<p>但不知道<span class="math notranslate nohighlight">\(\alpha\)</span>。</p>
+<p>我们假设此人以先验概率<span class="math notranslate nohighlight">\(\pi_0(\alpha)\)</span>开始，其中<span class="math notranslate nohighlight">\(\alpha \in (0,1)\)</span>，这个先验具有我们在<a class="reference internal" href="bayes_nonconj.html"><span class="doc">这个quantecon讲座</span></a>中使用的形式之一。</p>
+<p>我们将启动<code class="docutils literal notranslate"><span class="pre">numpyro</span></code>并将其应用于当前情况。</p>
+<p>贝叶斯法则现在采取以下形式：</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}
+\pi_{t+1}(\alpha) = \frac {h(w_{t+1} | \alpha) \pi_t(\alpha)}\\{ \int h(w_{t+1} | \hat \alpha) \pi_t(\hat \alpha) d \hat \alpha }
+\end{aligned}\end{align} \]</div>
+<p>我们将使用numpyro来近似这个方程。</p>
+<p>我们将创建后验分布<span class="math notranslate nohighlight">\(\pi_t(\alpha)\)</span>的图形，展示当<span class="math notranslate nohighlight">\(t \rightarrow +\infty\)</span>时的变化，这与quantecon讲座<a class="reference external" href="https://python.quantecon.org/bayes_nonconj.html">https://python.quantecon.org/bayes_nonconj.html</a>中展示的图形相对应。</p>
+<p>我们预计，当<span class="math notranslate nohighlight">\(t \rightarrow + \infty\)</span>时，后验分布将会收敛到真实的<span class="math notranslate nohighlight">\(\alpha\)</span>值周围。</p>
+<p>让我们先尝试使用均匀先验分布。</p>
+<p>我们使用Numpyro中的<code class="docutils literal notranslate"><span class="pre">Mixture</span></code>类来构建似然函数。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">α</span> <span class="o">=</span> <span class="mf">0.8</span>
+
+<span class="c1"># 使用真实α值模拟数据</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">draw_lottery</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">25000</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+    <span class="n">α</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s1">&#39;α&#39;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">))</span>
+
+    <span class="n">y_samp</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">,</span>
+        <span class="n">dist</span><span class="o">.</span><span class="n">Mixture</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">α</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">])),</span> <span class="p">[</span><span class="n">dist</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">),</span> <span class="n">dist</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">)]),</span> <span class="n">obs</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">MCMC_run</span><span class="p">(</span><span class="n">ws</span><span class="p">):</span>
+    <span class="s2">&quot;使用MCMC计算观测到ws时的后验分布&quot;</span>
+
+    <span class="n">kernal</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernal</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">rng_key</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">142857</span><span class="p">),</span> <span class="n">w</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ws</span><span class="p">))</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">sample</span><span class="p">[</span><span class="s1">&#39;α&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>以下代码生成了下面的图表，显示了不同历史长度下<span class="math notranslate nohighlight">\(\alpha\)</span>的贝叶斯后验分布。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sizes</span><span class="p">)):</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">MCMC_run</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="n">sizes</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stat</span><span class="o">=</span><span class="s1">&#39;density&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">binwidth</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;t=</span><span class="si">{</span><span class="n">sizes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi_t(\alpha)$ as $t$ increases&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\alpha$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/a6f75841f3f8b165cc6d5f37ae5824f33261ed933bee6d9337f1cef89f9d804b.png" src="_images/a6f75841f3f8b165cc6d5f37ae5824f33261ed933bee6d9337f1cef89f9d804b.png" />
+</div>
+</div>
+<p>显然，随着观测历史长度的增加，贝叶斯后验会逐渐收敛到混合参数的真实值 <span class="math notranslate nohighlight">\(\alpha = .8\)</span>。</p>
+</section>
+<section id="id5">
+<h2><span class="section-number">55.7. </span>总结说明<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>我们的类型1个体使用了一个错误的统计模型。</p>
+<p>他认为要么是 <span class="math notranslate nohighlight">\(f\)</span> 要么是 <span class="math notranslate nohighlight">\(g\)</span> 生成了 <span class="math notranslate nohighlight">\(w\)</span> 过程，只是不知道具体是哪一个。</p>
+<p>这是错误的，因为实际上自然在每个周期都以混合概率 <span class="math notranslate nohighlight">\(\alpha\)</span> 进行混合。</p>
+<p>我们的类型1个体最终会相信要么是 <span class="math notranslate nohighlight">\(f\)</span> 要么是 <span class="math notranslate nohighlight">\(g\)</span> 生成了 <span class="math notranslate nohighlight">\(w\)</span> 序列，具体结果取决于相对于 <span class="math notranslate nohighlight">\(h\)</span> 具有较小KL散度的模型（<span class="math notranslate nohighlight">\(f\)</span> 或 <span class="math notranslate nohighlight">\(g\)</span>）。</p>
+<p>我们的类型2个体有一个不同的统计模型，这个模型是正确设定的。</p>
+<p>他知道统计模型的参数形式，但不知道混合参数 <span class="math notranslate nohighlight">\(\alpha\)</span>。</p>
+<p>他知道自己不知道这个参数。</p>
+<p>但通过结合贝叶斯定律、统计模型和历史数据，他最终能够对<span class="math notranslate nohighlight">\(\alpha\)</span>做出越来越准确的推断。</p>
+<p>这个小实验展示了一些重要的普遍原理，这些原理支配着贝叶斯学习错误设定模型的结果。</p>
+<p>因此，在实证研究中普遍存在以下情况。</p>
+<p>科学家用统计模型流形<span class="math notranslate nohighlight">\(S\)</span>来处理数据，其中<span class="math notranslate nohighlight">\(s(X|\theta)\)</span>是随机向量<span class="math notranslate nohighlight">\(X\)</span>上的概率分布，<span class="math notranslate nohighlight">\(\theta \in \Theta\)</span>是参数向量，而<span class="math notranslate nohighlight">\(\Theta\)</span>索引了模型流形。</p>
+<p>科学家将观测数据解释为随机向量<span class="math notranslate nohighlight">\(X\)</span>的实现值<span class="math notranslate nohighlight">\(x\)</span>，想要解决一个<strong>逆问题</strong>，即某种方式_求逆_<span class="math notranslate nohighlight">\(s(x|\theta)\)</span>以从<span class="math notranslate nohighlight">\(x\)</span>推断<span class="math notranslate nohighlight">\(\theta\)</span>。</p>
+<p>但科学家的模型是错误设定的，它只是自然用来生成<span class="math notranslate nohighlight">\(X\)</span>的未知模型<span class="math notranslate nohighlight">\(h\)</span>的一个近似。</p>
+<p>如果科学家使用贝叶斯定律或相关的基于似然的方法来推断<span class="math notranslate nohighlight">\(\theta\)</span>，通常在大样本量的情况下，这个逆问题会推断出一个使科学家模型<span class="math notranslate nohighlight">\(s\)</span>相对于自然模型<span class="math notranslate nohighlight">\(h\)</span>的KL散度最小化的<span class="math notranslate nohighlight">\(\theta\)</span>值。</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/mix_model.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/mix_model.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/mix_model.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/mix_model.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/mix_model.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "mix_model";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/mix_model.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

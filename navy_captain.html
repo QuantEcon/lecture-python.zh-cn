@@ -1,0 +1,2137 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>56. 贝叶斯与频率主义决策规则的比较 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'navy_captain';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/navy_captain.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="57. LQ控制：基础" href="lqcontrol.html" />
+    <link rel="prev" title="55. 错误模型" href="mix_model.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="贝叶斯与频率主义决策规则的比较"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="贝叶斯与频率主义决策规则的比较" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/navy_captain.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=navy_captain>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">56.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">56.2. 设置</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">56.3. 频率主义决策规则</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">56.4. 贝叶斯决策规则</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">56.5. 海军上尉的直觉是否正确？</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">56.6. 更多细节</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">56.7. 贝叶斯决策规则的决策时间分布</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">56.8. 做出正确决策的概率</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#t">56.9. 在频率学家的 <span class="math notranslate nohighlight">\(t\)</span> 处的似然比分布</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">贝叶斯与频率主义决策规则的比较</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="toc-backref" href="#id11"><span class="section-number">56. </span>贝叶斯与频率主义决策规则的比较</a><a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<div class="contents topic" id="id2">
+<p class="topic-title">目录</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id11">贝叶斯与频率主义决策规则的比较</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id3" id="id12">概述</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id13">设置</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id14">频率主义决策规则</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id15">贝叶斯决策规则</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id16">海军上尉的直觉是否正确？</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id17">更多细节</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id18">贝叶斯决策规则的决策时间分布</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id19">做出正确决策的概率</a></p></li>
+<li><p><a class="reference internal" href="#t" id="id20">在频率学家的 <span class="math notranslate nohighlight">\(t\)</span> 处的似然比分布</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span><span class="p">,</span> <span class="n">prange</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int64</span>
+<span class="kn">from</span> <span class="nn">numba.experimental</span> <span class="kn">import</span> <span class="n">jitclass</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">gamma</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id3">
+<h2><a class="toc-backref" href="#id12"><span class="section-number">56.1. </span>概述</a><a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>本讲座延续了以下讲座中提出的观点：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="wald_friedman.html"><span class="doc">令米尔顿·弗里德曼困惑的问题</span></a></p></li>
+<li><p><a class="reference internal" href="exchangeable.html"><span class="doc">可交换性和贝叶斯更新</span></a></p></li>
+<li><p><a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a></p></li>
+</ul>
+<p>在<a class="reference internal" href="wald_friedman.html"><span class="doc">令米尔顿·弗里德曼困惑的问题</span></a>中，我们描述了二战期间一位海军上尉向米尔顿·弗里德曼提出的问题。</p>
+<p>海军要求上尉使用一个质量控制决策规则，但上尉怀疑可能存在更好的规则。</p>
+<p>（海军命令上尉使用一个<strong>频率主义决策规则</strong>的实例。）</p>
+<p>米尔顿·弗里德曼认识到上尉的推测提出了一个具有挑战性的统计问题，他和哥伦比亚大学美国政府统计研究小组的其他成员随后试图解决这个问题。</p>
+<p>该小组的成员之一，伟大的数学家亚伯拉罕·瓦尔德很快就解决了这个问题。</p>
+<p>用贝叶斯统计中的一些思想来阐述这个问题是一个很好的方法,这些思想我们在讲座<a class="reference internal" href="exchangeable.html"><span class="doc">可交换性和贝叶斯更新</span></a>和讲座<a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a>中有所描述,后者阐述了贝叶斯更新和似然比过程之间的联系。</p>
+<p>本讲座使用Python生成模拟,评估在海军上尉决策问题的一个实例中,<strong>频率主义</strong>和<strong>贝叶斯</strong>决策规则下的期望损失。</p>
+<p>这些模拟验证了海军上尉的直觉,即存在一个比海军命令他使用的规则更好的规则。</p>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id13"><span class="section-number">56.2. </span>设置</a><a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<p>为了形式化米尔顿·弗里德曼和艾伦·沃利斯交给亚伯拉罕·瓦尔德的海军上尉问题,我们考虑一个包含以下部分的设定。</p>
+<ul class="simple">
+<li><p>每个时期决策者都会抽取一个非负随机变量</p></li>
+</ul>
+<p>决策者从一个他并不完全理解的概率分布中获得<span class="math notranslate nohighlight">\(Z\)</span>。他知道可能存在两种概率分布，<span class="math notranslate nohighlight">\(f_{0}\)</span>和<span class="math notranslate nohighlight">\(f_{1}\)</span>，并且无论是哪种分布都会随时间保持不变。决策者认为在时间开始之前，自然界一次性地选择了<span class="math notranslate nohighlight">\(f_{0}\)</span>或<span class="math notranslate nohighlight">\(f_1\)</span>，且选择<span class="math notranslate nohighlight">\(f_0\)</span>的概率为<span class="math notranslate nohighlight">\(\pi^{*}\)</span>。</p>
+<ul class="simple">
+<li><p>决策者从自然界选择的分布中观察到样本<span class="math notranslate nohighlight">\(\left\{ z_{i}\right\} _{i=0}^{t}\)</span>。</p></li>
+</ul>
+<p>决策者想要确定究竟是哪个分布在支配<span class="math notranslate nohighlight">\(Z\)</span>，并且担心两种类型的错误及其带来的损失。</p>
+<ul class="simple">
+<li><p><strong>第一类错误</strong>造成的损失<span class="math notranslate nohighlight">\(\bar L_{1}\)</span>，即当实际分布为<span class="math notranslate nohighlight">\(f=f_{0}\)</span>时却判定<span class="math notranslate nohighlight">\(f=f_{1}\)</span></p></li>
+<li><p><strong>第二类错误</strong>造成的损失<span class="math notranslate nohighlight">\(\bar L_{0}\)</span>，即当实际分布为<span class="math notranslate nohighlight">\(f=f_{1}\)</span>时却判定<span class="math notranslate nohighlight">\(f=f_{0}\)</span></p></li>
+</ul>
+<p>决策者需要支付成本<span class="math notranslate nohighlight">\(c\)</span>来获取另一个<span class="math notranslate nohighlight">\(z\)</span></p>
+<p>我们主要借鉴了quantecon讲座中<a class="reference internal" href="wald_friedman.html"><span class="doc">一个让弗里德曼困惑的问题</span></a>的参数，不过我们将<span class="math notranslate nohighlight">\(\bar L_{0}\)</span>和<span class="math notranslate nohighlight">\(\bar L_{1}\)</span>都从<span class="math notranslate nohighlight">\(25\)</span>增加到了<span class="math notranslate nohighlight">\(100\)</span>，以鼓励频率学派的海军上尉在做决定前进行更多次抽样。</p>
+<p>我们将每次额外抽样的成本<span class="math notranslate nohighlight">\(c\)</span>设为<span class="math notranslate nohighlight">\(1.25\)</span>。</p>
+<p>我们将概率分布<span class="math notranslate nohighlight">\(f_{0}\)</span>和<span class="math notranslate nohighlight">\(f_{1}\)</span>设定为贝塔分布，其中<span class="math notranslate nohighlight">\(a_{0}=b_{0}=1\)</span>，<span class="math notranslate nohighlight">\(a_{1}=3\)</span>，且<span class="math notranslate nohighlight">\(b_{1}=1.2\)</span>。</p>
+<p>下面是设置这些对象的Python代码。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="s2">&quot;贝塔分布。&quot;</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">gamma</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">gamma</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们首先定义一个<code class="docutils literal notranslate"><span class="pre">jitclass</span></code>，用于存储参数和函数，这些参数和函数将用于解决贝叶斯派和频率派海军上尉的问题。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">wf_data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>           <span class="c1"># 失业补偿</span>
+    <span class="p">(</span><span class="s1">&#39;a0&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>          <span class="c1"># beta分布的参数</span>
+    <span class="p">(</span><span class="s1">&#39;b0&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;a1&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;b1&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;L0&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>          <span class="c1"># 当f1为真时选择f0的成本</span>
+    <span class="p">(</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>          <span class="c1"># 当f0为真时选择f1的成本</span>
+    <span class="p">(</span><span class="s1">&#39;π_grid&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>   <span class="c1"># 信念π的网格</span>
+    <span class="p">(</span><span class="s1">&#39;π_grid_size&#39;</span><span class="p">,</span> <span class="n">int64</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;mc_size&#39;</span><span class="p">,</span> <span class="n">int64</span><span class="p">),</span>       <span class="c1"># 蒙特卡洛模拟的规模</span>
+    <span class="p">(</span><span class="s1">&#39;z0&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>       <span class="c1"># 随机值序列</span>
+    <span class="p">(</span><span class="s1">&#39;z1&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:])</span>        <span class="c1"># 随机值序列</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jitclass</span><span class="p">(</span><span class="n">wf_data</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">WaldFriedman</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">c</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span>
+                 <span class="n">a0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">b0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">a1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                 <span class="n">b1</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+                 <span class="n">L0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">L1</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">π_grid_size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                 <span class="n">mc_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">π_grid_size</span> <span class="o">=</span> <span class="n">c</span><span class="p">,</span> <span class="n">π_grid_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b1</span> <span class="o">=</span> <span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L1</span> <span class="o">=</span> <span class="n">L0</span><span class="p">,</span> <span class="n">L1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">π_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">π_grid_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mc_size</span> <span class="o">=</span> <span class="n">mc_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">z0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">,</span> <span class="n">mc_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">mc_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">f0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">f1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">κ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">π</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        使用贝叶斯法则和当前观测值z更新π</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b1</span>
+
+        <span class="n">π_f0</span><span class="p">,</span> <span class="n">π_f1</span> <span class="o">=</span> <span class="n">π</span> <span class="o">*</span> <span class="n">p</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">)</span>
+        <span class="n">π_new</span> <span class="o">=</span> <span class="n">π_f0</span> <span class="o">/</span> <span class="p">(</span><span class="n">π_f0</span> <span class="o">+</span> <span class="n">π_f1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">π_new</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">wf</span> <span class="o">=</span> <span class="n">WaldFriedman</span><span class="p">()</span>
+
+<span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;两个分布&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">f0</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$f_0$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">f1</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$f_1$&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$z$ 值&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;$z_k$ 的密度&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/45e99fa97c689949bcbfa3f2cd91526f231264bd0423664f155b8488692df42b.png" src="_images/45e99fa97c689949bcbfa3f2cd91526f231264bd0423664f155b8488692df42b.png" />
+</div>
+</div>
+<p>上面，我们绘制了两个可能的概率密度 <span class="math notranslate nohighlight">\(f_0\)</span> 和 <span class="math notranslate nohighlight">\(f_1\)</span></p>
+</section>
+<section id="id5">
+<h2><a class="toc-backref" href="#id14"><span class="section-number">56.3. </span>频率主义决策规则</a><a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>海军要求舰长使用频率主义决策规则。</p>
+<p>具体来说，海军给他一个决策规则，这个规则是海军通过使用频率主义统计理论来最小化预期损失函数而设计的。</p>
+<p>该决策规则的特征是由样本量 <span class="math notranslate nohighlight">\(t\)</span> 和与似然比相关的临界值 <span class="math notranslate nohighlight">\(d\)</span> 来确定。</p>
+<p>令 <span class="math notranslate nohighlight">\(L\left(z^{t}\right)=\prod_{i=0}^{t}\frac{f_{0}\left(z_{i}\right)}{f_{1}\left(z_{i}\right)}\)</span> 为观察序列 <span class="math notranslate nohighlight">\(\left\{ z_{i}\right\} _{i=0}^{t}\)</span> 的似然比。</p>
+<p>与样本量 <span class="math notranslate nohighlight">\(t\)</span> 相关的决策规则是：</p>
+<ul class="simple">
+<li><p>如果似然比大于 <span class="math notranslate nohighlight">\(d\)</span>，则判定 <span class="math notranslate nohighlight">\(f_0\)</span> 是分布</p></li>
+</ul>
+<p>为了理解这个规则是如何设计的，让我们设定零假设和备择假设为：</p>
+<ul class="simple">
+<li><p>零假设：<span class="math notranslate nohighlight">\(H_{0}\)</span>：<span class="math notranslate nohighlight">\(f=f_{0}\)</span></p></li>
+<li><p>备择假设 <span class="math notranslate nohighlight">\(H_{1}\)</span>：<span class="math notranslate nohighlight">\(f=f_{1}\)</span></p></li>
+</ul>
+<p>在给定样本量 <span class="math notranslate nohighlight">\(t\)</span> 和临界值 <span class="math notranslate nohighlight">\(d\)</span> 的情况下，在模型中</p>
+<p>如上所述，总损失的数学期望为</p>
+<div class="math notranslate nohighlight" id="equation-val1">
+<span class="eqno">(56.1)<a class="headerlink" href="#equation-val1" title="Permalink to this equation">#</a></span>\[\begin{aligned}
+\bar{V}_{fre}\left(t,d\right)=ct+\pi^{*}PFA\times \bar L_{1}+\left(1-\pi^{*}\right)\left(1-PD\right)\times \bar L_{0}
+\end{aligned}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\textrm{其中} \quad PFA &amp; =\Pr\left\{ L\left(z^{t}\right)&lt;d\mid q=f_{0}\right\} \\
+PD &amp; =\Pr\left\{ L\left(z^{t}\right)&lt;d\mid q=f_{1}\right\}
+\end{aligned}
+\end{split}\]</div>
+<p>这里</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(PFA\)</span> 表示<strong>虚警</strong>的概率，即
+当 <span class="math notranslate nohighlight">\(H_0\)</span> 为真时却拒绝它</p></li>
+<li><p><span class="math notranslate nohighlight">\(PD\)</span> 表示<strong>检测错误</strong>的概率，即
+当 <span class="math notranslate nohighlight">\(H_1\)</span> 为真时却没有拒绝 <span class="math notranslate nohighlight">\(H_0\)</span></p></li>
+</ul>
+<p>对于给定的样本量 <span class="math notranslate nohighlight">\(t\)</span>，<span class="math notranslate nohighlight">\(\left(PFA,PD\right)\)</span> 对
+位于<strong>接收者操作特征曲线</strong>上，可以通过选择 <span class="math notranslate nohighlight">\(d\)</span> 来
+唯一确定。</p>
+<p>要查看一些接收者操作特征曲线，请参阅本课程
+<a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a>。</p>
+<p>要数值求解 <span class="math notranslate nohighlight">\(\bar{V}_{fre}\left(t,d\right)\)</span>，我们首先</p>
+<p>模拟当<span class="math notranslate nohighlight">\(f_0\)</span>或<span class="math notranslate nohighlight">\(f_1\)</span>生成数据时的<span class="math notranslate nohighlight">\(z\)</span>序列。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">100</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z0_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">b0</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+<span class="n">z1_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">a1</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">b1</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">z0_arr</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f0&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">z1_arr</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f1&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/e910f72fa01df23d8a0b6b31a7be10e62e7d09dee6cf4337b8c6bd5f630b231f.png" src="_images/e910f72fa01df23d8a0b6b31a7be10e62e7d09dee6cf4337b8c6bd5f630b231f.png" />
+</div>
+</div>
+<p>我们可以使用模拟样本计算似然比序列。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">wf</span><span class="o">.</span><span class="n">f0</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="n">wf</span><span class="o">.</span><span class="n">f1</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l0_arr</span> <span class="o">=</span> <span class="n">l</span><span class="p">(</span><span class="n">z0_arr</span><span class="p">)</span>
+<span class="n">l1_arr</span> <span class="o">=</span> <span class="n">l</span><span class="p">(</span><span class="n">z1_arr</span><span class="p">)</span>
+
+<span class="n">L0_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">l0_arr</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">L1_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">l1_arr</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>有了似然比的经验分布后，我们可以通过列举每个样本量 <span class="math notranslate nohighlight">\(t\)</span> 下的 <span class="math notranslate nohighlight">\(\left(PFA,PD\right)\)</span> 对来绘制<strong>接收者操作特征曲线</strong>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PFA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+    <span class="n">percentile</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">[:,</span> <span class="n">t</span><span class="p">],</span> <span class="n">PFA</span><span class="p">)</span>
+    <span class="n">PD</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">L1_arr</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">percentile</span><span class="p">]</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">PFA</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="n">PD</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;t=</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;perfect detection&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;random detection&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">arrow</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="n">head_width</span><span class="o">=</span><span class="mf">0.03</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s2">&quot;better&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;虚警概率&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;检测概率&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;接收者操作特征曲线&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/623c2ea2bc7651fe5faee2606b7b95a4c54d0e914d074bbe07b85896eb327372.png" src="_images/623c2ea2bc7651fe5faee2606b7b95a4c54d0e914d074bbe07b85896eb327372.png" />
+</div>
+</div>
+<p>我们的频率学派通过选择<span class="math notranslate nohighlight">\(\left(t,d\right)\)</span>来最小化方程<a class="reference internal" href="#equation-val1">(56.1)</a>中给出的预期总损失。</p>
+<p>这样做会得到预期损失</p>
+<div class="math notranslate nohighlight">
+\[
+\bar{V}_{fre}=\min_{t,d}\bar{V}_{fre}\left(t,d\right).
+\]</div>
+<p>我们首先考虑
+<span class="math notranslate nohighlight">\(\pi^{*}=\Pr\left\{ \text{自然选择}f_{0}\right\} =0.5\)</span>
+的情况。</p>
+<p>我们可以通过两个步骤来解决这个最小化问题。</p>
+<p>首先，我们固定<span class="math notranslate nohighlight">\(t\)</span>并找到最优截断值<span class="math notranslate nohighlight">\(d\)</span>，
+从而得到最小值<span class="math notranslate nohighlight">\(\bar{V}_{fre}\left(t\right)\)</span>。</p>
+<p>以下是执行该操作并绘制有用图表的Python代码。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">V_fre_d_t</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">L0_arr</span><span class="p">,</span> <span class="n">L1_arr</span><span class="p">,</span> <span class="n">π_star</span><span class="p">,</span> <span class="n">wf</span><span class="p">):</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="n">L0_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">PFA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">[:,</span> <span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">PD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">L1_arr</span><span class="p">[:,</span> <span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+
+    <span class="n">V</span> <span class="o">=</span> <span class="n">π_star</span> <span class="o">*</span> <span class="n">PFA</span> <span class="o">*</span><span class="n">wf</span><span class="o">.</span> <span class="n">L1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π_star</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">PD</span><span class="p">)</span> <span class="o">*</span> <span class="n">wf</span><span class="o">.</span><span class="n">L0</span>
+
+    <span class="k">return</span> <span class="n">V</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">V_fre_t</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">L0_arr</span><span class="p">,</span> <span class="n">L1_arr</span><span class="p">,</span> <span class="n">π_star</span><span class="p">,</span> <span class="n">wf</span><span class="p">):</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">V_fre_d_t</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">L0_arr</span><span class="p">,</span> <span class="n">L1_arr</span><span class="p">,</span> <span class="n">π_star</span><span class="p">,</span> <span class="n">wf</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Nelder-Mead&#39;</span><span class="p">)</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">fun</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
+
+    <span class="n">PFA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">[:,</span> <span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">PD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">L1_arr</span><span class="p">[:,</span> <span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+
+    <span class="k">return</span> <span class="n">V</span><span class="p">,</span> <span class="n">PFA</span><span class="p">,</span> <span class="n">PD</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_V_fre</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">,</span> <span class="n">L1_arr</span><span class="p">,</span> <span class="n">π_star</span><span class="p">,</span> <span class="n">wf</span><span class="p">):</span>
+
+    <span class="n">T</span> <span class="o">=</span> <span class="n">L0_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">V_fre_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">PFA_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> 
+    <span class="n">PD_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">V</span><span class="p">,</span> <span class="n">PFA</span><span class="p">,</span> <span class="n">PD</span> <span class="o">=</span> <span class="n">V_fre_t</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">L0_arr</span><span class="p">,</span> <span class="n">L1_arr</span><span class="p">,</span> <span class="n">π_star</span><span class="p">,</span> <span class="n">wf</span><span class="p">)</span>
+        <span class="n">V_fre_arr</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">c</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">V</span>
+        <span class="n">PFA_arr</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">PFA</span>
+        <span class="n">PD_arr</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">PD</span>
+
+    <span class="k">return</span> <span class="n">V_fre_arr</span><span class="p">,</span> <span class="n">PFA_arr</span><span class="p">,</span> <span class="n">PD_arr</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">π_star</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">V_fre_arr</span><span class="p">,</span> <span class="n">PFA_arr</span><span class="p">,</span> <span class="n">PD_arr</span> <span class="o">=</span> <span class="n">compute_V_fre</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">,</span> <span class="n">L1_arr</span><span class="p">,</span> <span class="n">π_star</span><span class="p">,</span> <span class="n">wf</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">V_fre_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\min_</span><span class="si">{d}</span><span class="s1"> \overline</span><span class="si">{V}</span><span class="s1">_</span><span class="si">{fre}</span><span class="s1">(t,d)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;时间t&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi^*=0.5$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/458b8af4660b7889e3219edcb1e36e2297d05725a77ac689868556bf89a31bc5.png" src="_images/458b8af4660b7889e3219edcb1e36e2297d05725a77ac689868556bf89a31bc5.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_optimal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">V_fre_arr</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;上图表明，对t进行最小化告诉频率学家要抽取</span><span class="si">{</span><span class="n">t_optimal</span><span class="si">}</span><span class="s2">个观测值然后做出决定。&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>上图表明，对t进行最小化告诉频率学家要抽取9个观测值然后做出决定。
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在让我们改变 <span class="math notranslate nohighlight">\(\pi^{*}\)</span> 的值，观察决策规则如何变化。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_π</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">π_star_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">n_π</span><span class="p">)</span>
+
+<span class="n">V_fre_bar_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_π</span><span class="p">)</span>
+<span class="n">t_optimal_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_π</span><span class="p">)</span>
+<span class="n">PFA_optimal_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_π</span><span class="p">)</span>
+<span class="n">PD_optimal_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_π</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">π_star</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">):</span>
+    <span class="n">V_fre_arr</span><span class="p">,</span> <span class="n">PFA_arr</span><span class="p">,</span> <span class="n">PD_arr</span> <span class="o">=</span> <span class="n">compute_V_fre</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">,</span> <span class="n">L1_arr</span><span class="p">,</span> <span class="n">π_star</span><span class="p">,</span> <span class="n">wf</span><span class="p">)</span>
+    <span class="n">t_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">V_fre_arr</span><span class="p">)</span>
+
+    <span class="n">V_fre_bar_arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">V_fre_arr</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
+    <span class="n">t_optimal_arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_idx</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">PFA_optimal_arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">PFA_arr</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
+    <span class="n">PD_optimal_arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">PD_arr</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">,</span> <span class="n">V_fre_bar_arr</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi^*$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\overline</span><span class="si">{V}</span><span class="s1">_</span><span class="si">{fre}</span><span class="s1">$&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/2fc5e16d23ee9608f19008509f82d7220ab865fa5270731fa844cf25b05c71d9.png" src="_images/2fc5e16d23ee9608f19008509f82d7220ab865fa5270731fa844cf25b05c71d9.png" />
+</div>
+</div>
+<p>下图展示了当 <span class="math notranslate nohighlight">\(\pi^{*}\)</span> 变化时，最优样本量 <span class="math notranslate nohighlight">\(t\)</span> 和目标 <span class="math notranslate nohighlight">\(\left(PFA,PD\right)\)</span> 如何变化。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">,</span> <span class="n">t_optimal_arr</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi^*$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;optimal sample size given $\pi^*$&#39;</span><span class="p">)</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">,</span> <span class="n">PFA_optimal_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$PFA^*(\pi^*)$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">,</span> <span class="n">PD_optimal_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$PD^*(\pi^*)$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi^*$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;optimal PFA and PD given $\pi^*$&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:5: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:7: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:8: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:11: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:5: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:7: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:8: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:11: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+/tmp/ipykernel_9963/677325419.py:5: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+  axs[0].set_title(&#39;optimal sample size given $\pi^*$&#39;)
+/tmp/ipykernel_9963/677325419.py:7: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+  axs[1].plot(π_star_arr, PFA_optimal_arr, label=&#39;$PFA^*(\pi^*)$&#39;)
+/tmp/ipykernel_9963/677325419.py:8: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+  axs[1].plot(π_star_arr, PD_optimal_arr, label=&#39;$PD^*(\pi^*)$&#39;)
+/tmp/ipykernel_9963/677325419.py:11: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+  axs[1].set_title(&#39;optimal PFA and PD given $\pi^*$&#39;)
+</pre></div>
+</div>
+<img alt="_images/ae29111fa00f3d89c9f4a31bc754c7369fc2c8d6a64f2f183adb3702428123e5.png" src="_images/ae29111fa00f3d89c9f4a31bc754c7369fc2c8d6a64f2f183adb3702428123e5.png" />
+</div>
+</div>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id15"><span class="section-number">56.4. </span>贝叶斯决策规则</a><a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<p>在<a class="reference internal" href="wald_friedman.html"><span class="doc">一个让米尔顿·弗里德曼困惑的问题</span></a>中，我们了解到亚伯拉罕·瓦尔德如何证实了海军上尉的直觉，即存在一个更好的决策规则。</p>
+<p>我们提出了一个贝叶斯程序，指导上尉通过比较他当前的贝叶斯后验概率<span class="math notranslate nohighlight">\(\pi\)</span>与两个临界概率<span class="math notranslate nohighlight">\(\alpha\)</span>和<span class="math notranslate nohighlight">\(\beta\)</span>来做出决策。</p>
+<p>为了继续，我们从quantecon讲座<a class="reference internal" href="wald_friedman.html"><span class="doc">一个让米尔顿·弗里德曼困惑的问题</span></a>中借用一些Python代码，用于计算<span class="math notranslate nohighlight">\(\alpha\)</span>和<span class="math notranslate nohighlight">\(\beta\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">Q</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">wf</span><span class="p">):</span>
+
+    <span class="n">c</span><span class="p">,</span> <span class="n">π_grid</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span>
+    <span class="n">L0</span><span class="p">,</span> <span class="n">L1</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">L0</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">L1</span>
+    <span class="n">z0</span><span class="p">,</span> <span class="n">z1</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">z0</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">z1</span>
+    <span class="n">mc_size</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">mc_size</span>
+
+    <span class="n">κ</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">κ</span>
+
+    <span class="n">h_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">π_grid</span><span class="p">)</span>
+    <span class="n">h_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">π_grid</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">π_grid</span><span class="p">)):</span>
+        <span class="n">π</span> <span class="o">=</span> <span class="n">π_grid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># Find the expected value of J by integrating over z</span>
+        <span class="n">integral_f0</span><span class="p">,</span> <span class="n">integral_f1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mc_size</span><span class="p">):</span>
+            <span class="n">π_0</span> <span class="o">=</span> <span class="n">κ</span><span class="p">(</span><span class="n">z0</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">π</span><span class="p">)</span>  <span class="c1"># Draw z from f0 and update π</span>
+            <span class="n">integral_f0</span> <span class="o">+=</span> <span class="nb">min</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π_0</span><span class="p">)</span> <span class="o">*</span> <span class="n">L0</span><span class="p">,</span> <span class="n">π_0</span> <span class="o">*</span> <span class="n">L1</span><span class="p">,</span> <span class="n">h_func</span><span class="p">(</span><span class="n">π_0</span><span class="p">))</span>
+
+            <span class="n">π_1</span> <span class="o">=</span> <span class="n">κ</span><span class="p">(</span><span class="n">z1</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">π</span><span class="p">)</span>  <span class="c1"># Draw z from f1 and update π</span>
+            <span class="n">integral_f1</span> <span class="o">+=</span> <span class="nb">min</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π_1</span><span class="p">)</span> <span class="o">*</span> <span class="n">L0</span><span class="p">,</span> <span class="n">π_1</span> <span class="o">*</span> <span class="n">L1</span><span class="p">,</span> <span class="n">h_func</span><span class="p">(</span><span class="n">π_1</span><span class="p">))</span>
+
+        <span class="n">integral</span> <span class="o">=</span> <span class="p">(</span><span class="n">π</span> <span class="o">*</span> <span class="n">integral_f0</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π</span><span class="p">)</span> <span class="o">*</span> <span class="n">integral_f1</span><span class="p">)</span> <span class="o">/</span> <span class="n">mc_size</span>
+
+        <span class="n">h_new</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">integral</span>
+
+    <span class="k">return</span> <span class="n">h_new</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">solve_model</span><span class="p">(</span><span class="n">wf</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算延续值函数</span>
+
+<span class="sd">    * wf 是 WaldFriedman 的一个实例</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># 设置循环</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">))</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">tol</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">max_iter</span> <span class="ow">and</span> <span class="n">error</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">:</span>
+        <span class="n">h_new</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">wf</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="n">h_new</span><span class="p">))</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">h_new</span>
+
+    <span class="k">if</span> <span class="n">error</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;未能收敛！&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">h_new</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h_star</span> <span class="o">=</span> <span class="n">solve_model</span><span class="p">(</span><span class="n">wf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">find_cutoff_rule</span><span class="p">(</span><span class="n">wf</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    此函数接收一个延续值函数并返回相应的临界点，</span>
+<span class="sd">    这些临界点表示在继续和选择特定模型之间的转换位置</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">π_grid</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span>
+    <span class="n">L0</span><span class="p">,</span> <span class="n">L1</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">L0</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">L1</span>
+
+    <span class="c1"># 在网格上所有点评估选择模型的成本</span>
+    <span class="n">payoff_f0</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π_grid</span><span class="p">)</span> <span class="o">*</span> <span class="n">L0</span>
+    <span class="n">payoff_f1</span> <span class="o">=</span> <span class="n">π_grid</span> <span class="o">*</span> <span class="n">L1</span>
+
+    <span class="c1"># 通过将这些成本与贝尔曼方程的差值可以找到临界点</span>
+    <span class="c1"># (J始终小于或等于p_c_i)</span>
+    <span class="n">β</span> <span class="o">=</span> <span class="n">π_grid</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
+                              <span class="n">payoff_f1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">payoff_f0</span><span class="p">),</span>
+                              <span class="mf">1e-10</span><span class="p">)</span>
+               <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">α</span> <span class="o">=</span> <span class="n">π_grid</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
+                              <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">payoff_f1</span><span class="p">)</span> <span class="o">-</span> <span class="n">payoff_f0</span><span class="p">,</span>
+                              <span class="mf">1e-10</span><span class="p">)</span>
+               <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">β</span><span class="p">,</span> <span class="n">α</span><span class="p">)</span>
+
+<span class="n">β</span><span class="p">,</span> <span class="n">α</span> <span class="o">=</span> <span class="n">find_cutoff_rule</span><span class="p">(</span><span class="n">wf</span><span class="p">,</span> <span class="n">h_star</span><span class="p">)</span>
+<span class="n">cost_L0</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">)</span> <span class="o">*</span> <span class="n">wf</span><span class="o">.</span><span class="n">L0</span>
+<span class="n">cost_L1</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span> <span class="o">*</span> <span class="n">wf</span><span class="o">.</span><span class="n">L1</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">h_star</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;延续值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">cost_L1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;选择f1&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">cost_L0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;选择f0&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">h_star</span><span class="p">,</span> <span class="n">cost_L0</span><span class="p">,</span> <span class="n">cost_L1</span><span class="p">]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">lw</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;最小成本&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\beta$&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">β</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\alpha$&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">α</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">β</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">β</span> <span class="o">*</span> <span class="n">wf</span><span class="o">.</span><span class="n">L0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">α</span><span class="p">)</span> <span class="o">*</span> <span class="n">wf</span><span class="o">.</span><span class="n">L1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">L0</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">L1</span><span class="p">)),</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;成本&quot;</span><span class="p">,</span>
+       <span class="n">xlabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\pi$&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;值函数&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">borderpad</span><span class="o">=</span><span class="mf">1.1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/6e8fdb5814603b6b2f4ac3e3dad1fcdb395fdbb889275b8f1a2d97e2341d4078.png" src="_images/6e8fdb5814603b6b2f4ac3e3dad1fcdb395fdbb889275b8f1a2d97e2341d4078.png" />
+</div>
+</div>
+<p>上图描绘了价值函数对决策者贝叶斯后验概率的关系。</p>
+<p>图中还显示了概率 <span class="math notranslate nohighlight">\(\alpha\)</span> 和 <span class="math notranslate nohighlight">\(\beta\)</span>。</p>
+<p>贝叶斯决策规则是：</p>
+<ul class="simple">
+<li><p>当 <span class="math notranslate nohighlight">\(\pi \geq \alpha\)</span> 时接受 <span class="math notranslate nohighlight">\(H_0\)</span></p></li>
+<li><p>当 <span class="math notranslate nohighlight">\(\pi \leq \beta\)</span> 时接受 <span class="math notranslate nohighlight">\(H_1\)</span></p></li>
+<li><p>当 <span class="math notranslate nohighlight">\(\beta \leq \pi \leq \alpha\)</span> 时延迟决定并抽取另一个 <span class="math notranslate nohighlight">\(z\)</span></p></li>
+</ul>
+<p>在这种情况下，我们可以计算两个”客观”损失函数，分别基于确知自然选择了 <span class="math notranslate nohighlight">\(f_{0}\)</span> 或 <span class="math notranslate nohighlight">\(f_{1}\)</span> 的条件。</p>
+<ol class="arabic">
+<li><p>在 <span class="math notranslate nohighlight">\(f_{0}\)</span> 下，</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   V^{0}\left(\pi\right)=\begin{cases}
+   0 &amp; \text{if }\alpha\leq\pi,\\
+   c+EV^{0}\left(\pi^{\prime}\right) &amp; \text{if }\beta\leq\pi&lt;\alpha,\\
+   \bar L_{1} &amp; \text{if }\pi&lt;\beta.
+   \end{cases}
+   \end{split}\]</div>
+</li>
+<li><p>在 <span class="math notranslate nohighlight">\(f_{1}\)</span> 下，</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   V^{1}\left(\pi\right)=\begin{cases}
+   \bar L_{0} &amp; \text{if }\alpha\leq\pi,\\
+   c+EV^{1}\left(\pi^{\prime}\right) &amp; \text{if }\beta\leq\pi&lt;\alpha,\\
+   0 &amp; \text{if }\pi&lt;\beta.
+   \end{cases}
+   \end{split}\]</div>
+</li>
+</ol>
+<p>其中</p>
+<p><span class="math notranslate nohighlight">\(\pi^{\prime}=\frac{\pi f_{0}\left(z^{\prime}\right)}{\pi f_{0}\left(z^{\prime}\right)+\left(1-\pi\right)f_{1}\left(z^{\prime}\right)}\)</span>。</p>
+<p>给定先验概率 <span class="math notranslate nohighlight">\(\pi_{0}\)</span>，贝叶斯方法的期望损失为</p>
+<div class="math notranslate nohighlight">
+\[
+\bar{V}_{Bayes}\left(\pi_{0}\right)=\pi^{*}V^{0}\left(\pi_{0}\right)+\left(1-\pi^{*}\right)V^{1}\left(\pi_{0}\right).
+\]</div>
+<p>下面我们编写一些 Python 代码来数值计算 <span class="math notranslate nohighlight">\(V^{0}\left(\pi\right)\)</span> 和 <span class="math notranslate nohighlight">\(V^{1}\left(\pi\right)\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">V_q</span><span class="p">(</span><span class="n">wf</span><span class="p">,</span> <span class="n">flag</span><span class="p">):</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid_size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">z_arr</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">z0</span>
+        <span class="n">V</span><span class="p">[</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span> <span class="o">&lt;</span> <span class="n">β</span><span class="p">]</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">L1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">z_arr</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">z1</span>
+        <span class="n">V</span><span class="p">[</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span> <span class="o">&gt;=</span> <span class="n">α</span><span class="p">]</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">L0</span>
+
+    <span class="n">V_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">V_old</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">V</span><span class="p">[:]</span>
+        <span class="n">V</span><span class="p">[(</span><span class="n">β</span> <span class="o">&lt;=</span> <span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span> <span class="o">&lt;</span> <span class="n">α</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">)):</span>
+            <span class="n">π</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">π</span> <span class="o">&gt;=</span> <span class="n">α</span> <span class="ow">or</span> <span class="n">π</span> <span class="o">&lt;</span> <span class="n">β</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z_arr</span><span class="p">)):</span>
+                <span class="n">π_next</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">κ</span><span class="p">(</span><span class="n">z_arr</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">π</span><span class="p">)</span>
+                <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">wf</span><span class="o">.</span><span class="n">c</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">π_next</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">V_old</span><span class="p">)</span>
+
+            <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="n">wf</span><span class="o">.</span><span class="n">mc_size</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">V</span> <span class="o">-</span> <span class="n">V_old</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1e-5</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">V</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">V0</span> <span class="o">=</span> <span class="n">V_q</span><span class="p">(</span><span class="n">wf</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">V1</span> <span class="o">=</span> <span class="n">V_q</span><span class="p">(</span><span class="n">wf</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">V0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$V^0$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">V1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$V^1$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">β</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">L0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">β</span><span class="o">+</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">L0</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;β&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">L0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">α</span><span class="o">+</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">wf</span><span class="o">.</span><span class="n">L0</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;α&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;目标值函数 $V(\pi)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:11: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:11: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+/tmp/ipykernel_9963/868493359.py:11: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+  plt.title(&#39;目标值函数 $V(\pi)$&#39;)
+</pre></div>
+</div>
+<img alt="_images/f80e1180bd65cb04eeaa21e00a11c7dcea9814dd8507cd3a599ba54feaa9178c.png" src="_images/f80e1180bd65cb04eeaa21e00a11c7dcea9814dd8507cd3a599ba54feaa9178c.png" />
+</div>
+</div>
+<p>给定一个假设值
+<span class="math notranslate nohighlight">\(\pi^{*}=\Pr\left\{ \text{自然选择 }f_{0}\right\}\)</span>，我们就可以
+计算 <span class="math notranslate nohighlight">\(\bar{V}_{Bayes}\left(\pi_{0}\right)\)</span>。</p>
+<p>然后我们可以确定一个初始贝叶斯先验概率 <span class="math notranslate nohighlight">\(\pi_{0}^{*}\)</span>，使其
+最小化这个期望损失的客观概念。</p>
+<p>下面的图9展示了四种情况，分别对应
+<span class="math notranslate nohighlight">\(\pi^{*}=0.25,0.3,0.5,0.7\)</span>。</p>
+<p>我们观察到在每种情况下 <span class="math notranslate nohighlight">\(\pi_{0}^{*}\)</span> 都等于 <span class="math notranslate nohighlight">\(\pi^{*}\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_V_baye_bar</span><span class="p">(</span><span class="n">π_star</span><span class="p">,</span> <span class="n">V0</span><span class="p">,</span> <span class="n">V1</span><span class="p">,</span> <span class="n">wf</span><span class="p">):</span>
+
+    <span class="n">V_baye</span> <span class="o">=</span> <span class="n">π_star</span> <span class="o">*</span> <span class="n">V0</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π_star</span><span class="p">)</span> <span class="o">*</span> <span class="n">V1</span>
+    <span class="n">π_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">V_baye</span><span class="p">)</span>
+    <span class="n">π_optimal</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">[</span><span class="n">π_idx</span><span class="p">]</span>
+    <span class="n">V_baye_bar</span> <span class="o">=</span> <span class="n">V_baye</span><span class="p">[</span><span class="n">π_idx</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">V_baye</span><span class="p">,</span> <span class="n">π_optimal</span><span class="p">,</span> <span class="n">V_baye_bar</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">π_star_arr</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">π_star</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">):</span>
+    <span class="n">row_i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">col_i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span>
+
+    <span class="n">V_baye</span><span class="p">,</span> <span class="n">π_optimal</span><span class="p">,</span> <span class="n">V_baye_bar</span> <span class="o">=</span> <span class="n">compute_V_baye_bar</span><span class="p">(</span><span class="n">π_star</span><span class="p">,</span> <span class="n">V0</span><span class="p">,</span> <span class="n">V1</span><span class="p">,</span> <span class="n">wf</span><span class="p">)</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="n">row_i</span><span class="p">,</span> <span class="n">col_i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">V_baye</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">row_i</span><span class="p">,</span> <span class="n">col_i</span><span class="p">]</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">V_baye_bar</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">row_i</span><span class="p">,</span> <span class="n">col_i</span><span class="p">]</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">π_optimal</span><span class="p">,</span> <span class="n">V_baye_bar</span><span class="p">,</span> <span class="n">V_baye</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">row_i</span><span class="p">,</span> <span class="n">col_i</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">π_optimal</span><span class="o">+</span><span class="mf">0.05</span><span class="p">,</span> <span class="p">(</span><span class="n">V_baye_bar</span> <span class="o">+</span> <span class="n">V_baye</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="s1">&#39;${\pi_0^*}=$&#39;</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">π_optimal</span><span class="si">:</span><span class="s1">0.2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">row_i</span><span class="p">,</span> <span class="n">col_i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi$&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">row_i</span><span class="p">,</span> <span class="n">col_i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\overline</span><span class="si">{V}</span><span class="s1">_</span><span class="si">{baye}</span><span class="s1">(\pi)$&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">row_i</span><span class="p">,</span> <span class="n">col_i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi^*=$&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">π_star</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\overline</span><span class="si">{V}</span><span class="s1">_</span><span class="si">{baye}</span><span class="s1">(\pi)=\pi^*V^0(\pi) + (1-\pi^*)V^1(\pi)$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:15: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:15: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+/tmp/ipykernel_9963/3947394423.py:15: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+  &#39;${\pi_0^*}=$&#39;+f&#39;{π_optimal:0.2f}&#39;)
+</pre></div>
+</div>
+<img alt="_images/a485d172338234e15016accfaa0964174a817ab70effa39ff959d1875c51e6b0.png" src="_images/a485d172338234e15016accfaa0964174a817ab70effa39ff959d1875c51e6b0.png" />
+</div>
+</div>
+<p>这种结果模式具有普遍性。</p>
+<p>因此，以下Python代码生成相关图表，验证了对于所有的<span class="math notranslate nohighlight">\(\pi^{*}\)</span>值，<span class="math notranslate nohighlight">\(\pi_{0}^{*}\)</span>等于<span class="math notranslate nohighlight">\(\pi^{*}\)</span>这一等式都成立。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">π_star_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">n_π</span><span class="p">)</span>
+<span class="n">V_baye_bar_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">)</span>
+<span class="n">π_optimal_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">π_star</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">):</span>
+
+    <span class="n">V_baye</span><span class="p">,</span> <span class="n">π_optimal</span><span class="p">,</span> <span class="n">V_baye_bar</span> <span class="o">=</span> <span class="n">compute_V_baye_bar</span><span class="p">(</span><span class="n">π_star</span><span class="p">,</span> <span class="n">V0</span><span class="p">,</span> <span class="n">V1</span><span class="p">,</span> <span class="n">wf</span><span class="p">)</span>
+
+    <span class="n">V_baye_bar_arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">V_baye_bar</span>
+    <span class="n">π_optimal_arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">π_optimal</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">,</span> <span class="n">V_baye_bar_arr</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi^*$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\overline</span><span class="si">{V}</span><span class="s1">_</span><span class="si">{baye}</span><span class="s1">$&#39;</span><span class="p">)</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">,</span> <span class="n">π_optimal_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;optimal prior&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">π_star_arr</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">π_star_arr</span><span class="o">.</span><span class="n">max</span><span class="p">()],</span>
+            <span class="p">[</span><span class="n">π_star_arr</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">π_star_arr</span><span class="o">.</span><span class="n">max</span><span class="p">()],</span>
+            <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;45 degree line&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi^*$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;optimal prior given $\pi^*$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:23: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:23: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+/tmp/ipykernel_9963/90043130.py:23: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+  axs[1].set_title(&#39;optimal prior given $\pi^*$&#39;)
+</pre></div>
+</div>
+<img alt="_images/d5fcb5f6fc070faa5ae6598e8dc3d2abf9947f90c0f4316d3dced6aeb3b10ce5.png" src="_images/d5fcb5f6fc070faa5ae6598e8dc3d2abf9947f90c0f4316d3dced6aeb3b10ce5.png" />
+</div>
+</div>
+</section>
+<section id="id7">
+<h2><a class="toc-backref" href="#id16"><span class="section-number">56.5. </span>海军上尉的直觉是否正确？</a><a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<p>现在我们比较频率主义和贝叶斯决策规则所得到的平均（即频率主义）损失。</p>
+<p>让我们先从比较<span class="math notranslate nohighlight">\(\pi^{*}=0.5\)</span>时的平均损失函数开始。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">π_star</span> <span class="o">=</span> <span class="mf">0.5</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 频率派</span>
+<span class="n">V_fre_arr</span><span class="p">,</span> <span class="n">PFA_arr</span><span class="p">,</span> <span class="n">PD_arr</span> <span class="o">=</span> <span class="n">compute_V_fre</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">,</span> <span class="n">L1_arr</span><span class="p">,</span> <span class="n">π_star</span><span class="p">,</span> <span class="n">wf</span><span class="p">)</span>
+
+<span class="c1"># 贝叶斯派</span>
+<span class="n">V_baye</span> <span class="o">=</span> <span class="n">π_star</span> <span class="o">*</span> <span class="n">V0</span> <span class="o">+</span> <span class="n">π_star</span> <span class="o">*</span> <span class="n">V1</span>
+<span class="n">V_baye_bar</span> <span class="o">=</span> <span class="n">V_baye</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">V_fre_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\min_</span><span class="si">{d}</span><span class="s1"> \overline</span><span class="si">{V}</span><span class="s1">_</span><span class="si">{fre}</span><span class="s1">(t,d)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="p">[</span><span class="n">V_baye_bar</span><span class="p">,</span> <span class="n">V_baye_bar</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\overline</span><span class="si">{V}</span><span class="s1">_</span><span class="si">{baye}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi^*=0.5$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/e2ccac9035594e5abf6e2879d0e5809736f0e5b16a4daf064344de65273493ce.png" src="_images/e2ccac9035594e5abf6e2879d0e5809736f0e5b16a4daf064344de65273493ce.png" />
+</div>
+</div>
+<p>显然，在任何样本量 <span class="math notranslate nohighlight">\(t\)</span> 下，频率派决策规则都无法获得比贝叶斯规则更低的损失函数。</p>
+<p>此外，下图表明贝叶斯决策规则在所有 <span class="math notranslate nohighlight">\(\pi^{*}\)</span> 值上平均表现都更好。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">,</span> <span class="n">V_fre_bar_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\overline</span><span class="si">{V}</span><span class="s1">_</span><span class="si">{fre}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">,</span> <span class="n">V_baye_bar_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\overline</span><span class="si">{V}</span><span class="s1">_</span><span class="si">{baye}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi^*$&#39;</span><span class="p">)</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_star_arr</span><span class="p">,</span> <span class="n">V_fre_bar_arr</span> <span class="o">-</span> <span class="n">V_baye_bar_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$diff$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\pi^*$&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/00379c5aef41aa97cdb2c8a2f5fc0bca97c20e36e6f9d1bfdce3792fd1217a7c.png" src="_images/00379c5aef41aa97cdb2c8a2f5fc0bca97c20e36e6f9d1bfdce3792fd1217a7c.png" />
+</div>
+</div>
+<p>上图右侧面板绘制了差值<span class="math notranslate nohighlight">\(\bar{V}_{fre}-\bar{V}_{Bayes}\)</span>。</p>
+<p>这个差值始终为正值。</p>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id17"><span class="section-number">56.6. </span>更多细节</a><a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
+<p>我们可以通过聚焦于<span class="math notranslate nohighlight">\(\pi^{*}=0.5=\pi_{0}\)</span>的情况来提供更多见解。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">π_star</span> <span class="o">=</span> <span class="mf">0.5</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>回顾当<span class="math notranslate nohighlight">\(\pi^*=0.5\)</span>时，频率派决策规则会<strong>事先</strong>设定一个样本量<code class="docutils literal notranslate"><span class="pre">t_optimal</span></code>。</p>
+<p>对于我们的参数设置，我们可以计算它的值：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_optimal</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>9
+</pre></div>
+</div>
+</div>
+</div>
+<p>为了方便，让我们将 <code class="docutils literal notranslate"><span class="pre">t_idx</span></code> 定义为对应于 <code class="docutils literal notranslate"><span class="pre">t_optimal</span></code> 样本量的 Python 数组索引。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_idx</span> <span class="o">=</span> <span class="n">t_optimal</span> <span class="o">-</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h2><a class="toc-backref" href="#id18"><span class="section-number">56.7. </span>贝叶斯决策规则的决策时间分布</a><a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
+<p>通过模拟，我们计算贝叶斯决策规则的决策时间频率分布，并将该时间与频率派规则的固定<span class="math notranslate nohighlight">\(t\)</span>进行比较。</p>
+<p>以下Python代码创建了一个图表，显示了贝叶斯决策者的贝叶斯决策时间的频率分布，条件是数据由分布<span class="math notranslate nohighlight">\(q=f_{0}\)</span>或<span class="math notranslate nohighlight">\(q=f_{1}\)</span>生成。</p>
+<p>蓝色和红色虚线显示了贝叶斯决策规则的平均值，而黑色虚线显示了频率派的最优样本量<span class="math notranslate nohighlight">\(t\)</span>。</p>
+<p>当<span class="math notranslate nohighlight">\(q=f_0\)</span>时，贝叶斯规则平均比频率派规则<strong>更早</strong>做出决定，而当<span class="math notranslate nohighlight">\(q=f_1\)</span>时则<strong>更晚</strong>做出决定。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">check_results</span><span class="p">(</span><span class="n">L_arr</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">π0</span><span class="p">):</span>
+
+    <span class="n">N</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">L_arr</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">time_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">correctness</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+
+    <span class="n">π_arr</span> <span class="o">=</span> <span class="n">π0</span> <span class="o">*</span> <span class="n">L_arr</span> <span class="o">/</span> <span class="p">(</span><span class="n">π0</span> <span class="o">*</span> <span class="n">L_arr</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">π0</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">π_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">β</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">π_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">α</span><span class="p">):</span>
+                <span class="n">time_arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">correctness</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">flag</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">π_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">α</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">flag</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">π_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">β</span><span class="p">)</span>
+                <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">time_arr</span><span class="p">,</span> <span class="n">correctness</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time_arr0</span><span class="p">,</span> <span class="n">correctness0</span> <span class="o">=</span> <span class="n">check_results</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">π_star</span><span class="p">)</span>
+<span class="n">time_arr1</span><span class="p">,</span> <span class="n">correctness1</span> <span class="o">=</span> <span class="n">check_results</span><span class="p">(</span><span class="n">L1_arr</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">π_star</span><span class="p">)</span>
+
+<span class="c1"># 无条件分布</span>
+<span class="n">time_arr_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">time_arr0</span><span class="p">,</span> <span class="n">time_arr1</span><span class="p">))</span>
+<span class="n">correctness_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">correctness0</span><span class="p">,</span> <span class="n">correctness1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">time_arr0</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f0生成&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">n2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">time_arr1</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f1生成&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">t_optimal</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">n2</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;频率派&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">time_arr0</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">n2</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+           <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f0下的E(t)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">time_arr1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">n2</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+           <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f1下的E(t)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;时间的条件频率分布&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/c72772b620d978cbbf8b94e0fe289d224f00aaed60f8f8d3ab5a5defc2f1a2cc.png" src="_images/c72772b620d978cbbf8b94e0fe289d224f00aaed60f8f8d3ab5a5defc2f1a2cc.png" />
+</div>
+</div>
+<p>稍后我们将弄清这些分布最终如何影响两种决策规则下的客观期望值。</p>
+<p>首先，让我们看看贝叶斯信念随时间的模拟。</p>
+<p>利用本讲<a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a>中描述的从<span class="math notranslate nohighlight">\(L_{t}\)</span>到<span class="math notranslate nohighlight">\(\pi_{t}\)</span>的一一映射（给定<span class="math notranslate nohighlight">\(\pi_0\)</span>），我们可以轻松计算任意时间<span class="math notranslate nohighlight">\(t\)</span>的更新信念。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">π0_arr</span> <span class="o">=</span> <span class="n">π_star</span> <span class="o">*</span> <span class="n">L0_arr</span> <span class="o">/</span> <span class="p">(</span><span class="n">π_star</span> <span class="o">*</span> <span class="n">L0_arr</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">π_star</span><span class="p">)</span>
+<span class="n">π1_arr</span> <span class="o">=</span> <span class="n">π_star</span> <span class="o">*</span> <span class="n">L1_arr</span> <span class="o">/</span> <span class="p">(</span><span class="n">π_star</span> <span class="o">*</span> <span class="n">L1_arr</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">π_star</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">π0_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">π0_arr</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f0生成&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">π1_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">π1_arr</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f1生成&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$E(\pi_t)$ 或 ($1 - E(\pi_t)$)&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;抽取t个观测值后信念的期望&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">π0_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">π0_arr</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f0生成&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">π1_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">π1_arr</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f1生成&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;var($\pi_t$)&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;抽取t个观测值后信念的方差&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:6: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:13: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:6: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+&lt;&gt;:13: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+/tmp/ipykernel_9963/498829023.py:6: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+  axs[0].set_ylabel(&#39;$E(\pi_t)$ 或 ($1 - E(\pi_t)$)&#39;)
+/tmp/ipykernel_9963/498829023.py:13: SyntaxWarning: invalid escape sequence &#39;\p&#39;
+  axs[1].set_ylabel(&#39;var($\pi_t$)&#39;)
+</pre></div>
+</div>
+<img alt="_images/af56216d6721070dedc19c2af97e1f7be29aad5ceebf1affb533e55978cfcc6a.png" src="_images/af56216d6721070dedc19c2af97e1f7be29aad5ceebf1affb533e55978cfcc6a.png" />
+</div>
+</div>
+<p>上图比较了经过<span class="math notranslate nohighlight">\(t\)</span>次抽样后贝叶斯后验分布的均值和方差。</p>
+<p>左图比较了<span class="math notranslate nohighlight">\(f_{0}\)</span>下的<span class="math notranslate nohighlight">\(E\left(\pi_{t}\right)\)</span>和<span class="math notranslate nohighlight">\(f_{1}\)</span>下的<span class="math notranslate nohighlight">\(1-E\left(\pi_{t}\right)\)</span>：它们完全重合。</p>
+<p>然而,如右图所示,当<span class="math notranslate nohighlight">\(t\)</span>较小时方差存在显著差异：在<span class="math notranslate nohighlight">\(f_{1}\)</span>下方差更小。</p>
+<p>方差的差异是贝叶斯决策者在<span class="math notranslate nohighlight">\(f_{1}\)</span>生成数据时等待更长时间才做出决定的原因。</p>
+<p>下面的代码通过简单地将两个可能分布<span class="math notranslate nohighlight">\(f_0\)</span>和<span class="math notranslate nohighlight">\(f_1\)</span>的模拟数据合并,绘制了无条件分布的结果。</p>
+<p>这个合并分布从某种意义上描述了贝叶斯决策者平均会更早做出决定,这似乎在一定程度上证实了海军上尉的直觉判断。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">time_arr_u</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;bayesian&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">time_arr_u</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
+           <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;bayesian E(t)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">t_optimal</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;frequentist&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Unconditional distribution of times&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/aac14d9ae8444769ce96f8e6228afa3b8f12bde6491d02e33694c94e8f8e8507.png" src="_images/aac14d9ae8444769ce96f8e6228afa3b8f12bde6491d02e33694c94e8f8e8507.png" />
+</div>
+</div>
+</section>
+<section id="id10">
+<h2><a class="toc-backref" href="#id19"><span class="section-number">56.8. </span>做出正确决策的概率</a><a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
+<p>现在我们使用模拟来计算贝叶斯和频率主义决策规则做出正确决定的样本比例。</p>
+<p>对于频率主义规则，在<span class="math notranslate nohighlight">\(f_{1}\)</span>下做出正确决定的概率是我们之前定义的给定<span class="math notranslate nohighlight">\(t\)</span>时的最优检测概率，同样地，在<span class="math notranslate nohighlight">\(f_{0}\)</span>下它等于1减去最优虚警概率。</p>
+<p>下面我们绘制频率主义规则的这两个概率，以及贝叶斯规则在<span class="math notranslate nohighlight">\(t\)</span>之前做出决定<em>且</em>决定正确的条件概率。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 频率主义最优样本量下的最优虚警概率和检测概率</span>
+<span class="n">V</span><span class="p">,</span> <span class="n">PFA</span><span class="p">,</span> <span class="n">PD</span> <span class="o">=</span> <span class="n">V_fre_t</span><span class="p">(</span><span class="n">t_optimal</span><span class="p">,</span> <span class="n">L0_arr</span><span class="p">,</span> <span class="n">L1_arr</span><span class="p">,</span> <span class="n">π_star</span><span class="p">,</span> <span class="n">wf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="n">PD</span><span class="p">,</span> <span class="n">PD</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PD: 正确选择f1的频率&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">PFA</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">PFA</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;1-PFA: 正确选择f0的频率&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">t_optimal</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;频率论最优样本量&#39;</span><span class="p">)</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="n">time_arr0</span><span class="o">.</span><span class="n">size</span>
+<span class="n">T_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T_arr</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">correctness0</span><span class="p">[</span><span class="n">time_arr0</span> <span class="o">&lt;=</span> <span class="n">t</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">T_arr</span><span class="p">],</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">&#39;q=f0且贝叶斯选择f0&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T_arr</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">correctness1</span><span class="p">[</span><span class="n">time_arr1</span> <span class="o">&lt;=</span> <span class="n">t</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">T_arr</span><span class="p">],</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">&#39;q=f1且贝叶斯选择f1&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;概率&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;t之前做出正确决定的条件概率&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/2247028f878246e93c47a230972a2419680c61f53f677d065f4e225a36108b89.png" src="_images/2247028f878246e93c47a230972a2419680c61f53f677d065f4e225a36108b89.png" />
+</div>
+</div>
+<p>通过使用 <span class="math notranslate nohighlight">\(\pi^{*}\)</span> 进行平均，我们还绘制了无条件分布。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[(</span><span class="n">PD</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">PFA</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">PD</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">PFA</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;频率派正确决策&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">t_optimal</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;频率派最优样本量&#39;</span><span class="p">)</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="n">time_arr_u</span><span class="o">.</span><span class="n">size</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T_arr</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">correctness_u</span><span class="p">[</span><span class="n">time_arr_u</span> <span class="o">&lt;=</span> <span class="n">t</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">T_arr</span><span class="p">],</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;贝叶斯派正确决策&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;概率&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;t时刻前做出正确决策的无条件概率&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/49d3e3f81242547d4ebd1efb532c4bd788c73619f5b97b96e33d0161ded8e168.png" src="_images/49d3e3f81242547d4ebd1efb532c4bd788c73619f5b97b96e33d0161ded8e168.png" />
+</div>
+</div>
+</section>
+<section id="t">
+<h2><a class="toc-backref" href="#id20"><span class="section-number">56.9. </span>在频率学家的 <span class="math notranslate nohighlight">\(t\)</span> 处的似然比分布</a><a class="headerlink" href="#t" title="Permalink to this heading">#</a></h2>
+<p>接下来我们使用模拟来构建在 <span class="math notranslate nohighlight">\(t\)</span> 次抽样后的似然比分布。</p>
+<p>作为有用的参考点，我们还展示了对应于贝叶斯截断值 <span class="math notranslate nohighlight">\(\alpha\)</span> 和 <span class="math notranslate nohighlight">\(\beta\)</span> 的似然比。</p>
+<p>为了更清晰地展示分布，我们报告似然比的对数值。</p>
+<p>下面的图表报告了两个分布，一个是在 <span class="math notranslate nohighlight">\(f_0\)</span> 生成数据的条件下的分布，另一个是在 <span class="math notranslate nohighlight">\(f_1\)</span> 生成数据的条件下的分布。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Lα</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π_star</span><span class="p">)</span> <span class="o">*</span>  <span class="n">α</span> <span class="o">/</span> <span class="p">(</span><span class="n">π_star</span> <span class="o">-</span> <span class="n">π_star</span> <span class="o">*</span> <span class="n">α</span><span class="p">)</span>
+<span class="n">Lβ</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π_star</span><span class="p">)</span> <span class="o">*</span>  <span class="n">β</span> <span class="o">/</span> <span class="p">(</span><span class="n">π_star</span> <span class="o">-</span> <span class="n">π_star</span> <span class="o">*</span> <span class="n">β</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">L_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">[:,</span> <span class="n">t_idx</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">L1_arr</span><span class="p">[:,</span> <span class="n">t_idx</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+<span class="n">L_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">[:,</span> <span class="n">t_idx</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">L1_arr</span><span class="p">[:,</span> <span class="n">t_idx</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">bin_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">L_min</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">L_max</span><span class="p">),</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">n0</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">L0_arr</span><span class="p">[:,</span> <span class="n">t_idx</span><span class="p">]),</span> <span class="n">bins</span><span class="o">=</span><span class="n">bin_range</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f0生成&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">L1_arr</span><span class="p">[:,</span> <span class="n">t_idx</span><span class="p">]),</span> <span class="n">bins</span><span class="o">=</span><span class="n">bin_range</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f1生成&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Lβ</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">n0</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">n1</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;log($L_β$)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Lα</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">n0</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">n1</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;log($L_α$)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;log(L)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;频率学派t时对数似然比的条件分布&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/7dd3e8946a4fdf5e61854f2e633b70a0f36f72827117e50bef25d146107257d1.png" src="_images/7dd3e8946a4fdf5e61854f2e633b70a0f36f72827117e50bef25d146107257d1.png" />
+</div>
+</div>
+<p>下一个图表绘制了贝叶斯决策时间的无条件分布，这是通过将两个条件分布合并而构建的。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">L0_arr</span><span class="p">[:,</span> <span class="n">t_idx</span><span class="p">],</span> <span class="n">L1_arr</span><span class="p">[:,</span> <span class="n">t_idx</span><span class="p">]])),</span>
+        <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;log(L)的无条件分布&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Lβ</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">n0</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">n1</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;log($L_β$)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Lα</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">n0</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">n1</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;log($L_α$)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;log(L)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;频率论者t时刻的对数似然比的无条件分布&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/32380c93ec6908ba0c1f59d037cfede4bdd6ef42448bf26a574802b0ae0cf8c0.png" src="_images/32380c93ec6908ba0c1f59d037cfede4bdd6ef42448bf26a574802b0ae0cf8c0.png" />
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/navy_captain.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/navy_captain.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/navy_captain.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/navy_captain.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/navy_captain.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "navy_captain";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/navy_captain.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

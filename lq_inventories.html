@@ -1,0 +1,1761 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>62. 通过库存实现生产平滑 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lq_inventories';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/lq_inventories.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="63. 就业和失业的湖泊模型" href="lake_model.html" />
+    <link rel="prev" title="61. 永久收入 II：线性二次方法" href="perm_income_cons.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="通过库存实现生产平滑"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="通过库存实现生产平滑" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/lq_inventories.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=lq_inventories>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">62.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">62.2. 示例1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">62.3. 库存无用处的情况</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">62.4. 库存有用但被强制设为永远为零</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">62.5. 示例2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">62.6. 示例 3</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">62.7. 示例 4</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">62.8. 示例 5</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">62.9. 示例6</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">62.10. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">通过库存实现生产平滑</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="toc-backref" href="#id14"><span class="section-number">62. </span>通过库存实现生产平滑</a><a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<div class="contents topic" id="id2">
+<p class="topic-title">目录</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id14">通过库存实现生产平滑</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id3" id="id15">概述</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id16">示例1</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id17">库存无用处的情况</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id18">库存有用但被强制设为永远为零</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id19">示例2</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id20">示例 3</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id21">示例 4</a></p></li>
+<li><p><a class="reference internal" href="#id11" id="id22">示例 5</a></p></li>
+<li><p><a class="reference internal" href="#id12" id="id23">示例6</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id24">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>除了Anaconda中包含的库外，本讲座还使用以下库：</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantecon
+</pre></div>
+</div>
+</div>
+<details class="hide below-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell output</span>
+<span class="expanded">Hide code cell output</span>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.0)
+Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (0.60.0)
+Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
+Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
+Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.1)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.2)
+Requirement already satisfied: llvmlite&lt;0.44,&gt;=0.43.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.43.0)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.3.2)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.7)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2.2.3)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2024.8.30)
+Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from sympy-&gt;quantecon) (1.3.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="id3">
+<h2><a class="toc-backref" href="#id15"><span class="section-number">62.1. </span>概述</a><a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>本讲座可以视为这个<a class="reference internal" href="lqcontrol.html"><span class="doc">quantecon讲座</span></a>中线性二次控制理论的一个应用。</p>
+<p>它为一个企业制定了一个折现动态规划问题，该企业需要选择生产计划来平衡：</p>
+<ul class="simple">
+<li><p>跨时期最小化生产成本</p></li>
+<li><p>保持库存持有成本较低</p></li>
+</ul>
+<p>遵循Holt、Modigliani、Muth和Simon <span id="id4">[<a class="reference internal" href="zreferences.html#id47" title="Charles Holt, Franco Modigliani, John F. Muth, and Herbert Simon. Planning Production, Inventories, and Work Force. Prentice-Hall International Series in Management, New Jersey, 1960.">Holt <em>et al.</em>, 1960</a>]</span>的经典著作传统，我们通过将企业问题构建为这个<a class="reference internal" href="lqcontrol.html"><span class="doc">quantecon讲座</span></a>中研究的线性二次折现动态规划问题来简化它。</p>
+<p>由于生产成本随产量增加呈二次增长，如果持有库存的成本不是太高，企业会将库存作为缓冲，以便在时间上平滑生产。</p>
+<p>但企业也希望从现有库存中进行销售，我们用二次方程来表示这种偏好，其中</p>
+<p>某时期的销售额与公司期初库存的差额。</p>
+<p>我们计算示例来说明公司如何在保持库存接近销售的同时实现最优生产平滑。</p>
+<p>为介绍模型的组成部分，令：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(S_t\)</span> 为t时刻的销售额</p></li>
+<li><p><span class="math notranslate nohighlight">\(Q_t\)</span> 为t时刻的生产量</p></li>
+<li><p><span class="math notranslate nohighlight">\(I_t\)</span> 为t时刻期初的库存量</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta \in (0,1)\)</span> 为折现因子</p></li>
+<li><p><span class="math notranslate nohighlight">\(c(Q_t) = c_1 Q_t + c_2 Q_t^2\)</span>，为生产成本函数，其中<span class="math notranslate nohighlight">\(c_1&gt;0, c_2&gt;0\)</span>，为库存成本函数</p></li>
+<li><p><span class="math notranslate nohighlight">\(d(I_t, S_t) = d_1 I_t + d_2 (S_t - I_t)^2\)</span>，其中<span class="math notranslate nohighlight">\(d_1&gt;0, d_2 &gt;0\)</span>，为持有库存成本函数，包含两个组成部分：</p>
+<ul>
+<li><p>持有库存的成本 <span class="math notranslate nohighlight">\(d_1 I_t\)</span>，以及</p></li>
+<li><p>库存偏离销售的成本 <span class="math notranslate nohighlight">\(d_2 (S_t - I_t)^2\)</span></p></li>
+</ul>
+</li>
+<li><p><span class="math notranslate nohighlight">\(p_t = a_0 - a_1 S_t + v_t\)</span> 为公司产品的反需求函数，其中<span class="math notranslate nohighlight">\(a_0&gt;0, a_1 &gt;0\)</span>，且<span class="math notranslate nohighlight">\(v_t\)</span>为t时刻的需求冲击</p></li>
+<li><p><span class="math notranslate nohighlight">\(\pi\_t = p_t S_t - c(Q_t) - d(I_t, S_t)\)</span> 是企业在时间 <span class="math notranslate nohighlight">\(t\)</span> 的利润</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sum_{t=0}^\infty \beta^t \pi_t\)</span> 是企业在时间 <span class="math notranslate nohighlight">\(0\)</span> 的利润现值</p></li>
+<li><p><span class="math notranslate nohighlight">\(I_{t+1} = I_t + Q_t - S_t\)</span> 是库存的变动规律</p></li>
+<li><p><span class="math notranslate nohighlight">\(z_{t+1} = A_{22} z_t + C_2 \epsilon_{t+1}\)</span> 是外生状态向量 <span class="math notranslate nohighlight">\(z_t\)</span> 的变动规律，其中 <span class="math notranslate nohighlight">\(z_t\)</span> 包含时间 <span class="math notranslate nohighlight">\(t\)</span> 时用于预测需求冲击 <span class="math notranslate nohighlight">\(v_t\)</span> 的有用信息</p></li>
+<li><p><span class="math notranslate nohighlight">\(v_t = G z_t\)</span> 将需求冲击与信息集 <span class="math notranslate nohighlight">\(z_t\)</span> 联系起来</p></li>
+<li><p>常数 <span class="math notranslate nohighlight">\(1\)</span> 是 <span class="math notranslate nohighlight">\(z_t\)</span> 的第一个分量</p></li>
+</ul>
+<p>为了将我们的问题映射到线性二次折现动态规划问题（也称为最优线性调节器），我们将时间 <span class="math notranslate nohighlight">\(t\)</span> 的<strong>状态</strong>向量定义为</p>
+<div class="math notranslate nohighlight">
+\[
+x_t = \begin{bmatrix} I_t \cr z_t \end{bmatrix}
+\]</div>
+<p>并将<strong>控制</strong>向量定义为</p>
+<div class="math notranslate nohighlight">
+\[
+u_t =  \begin{bmatrix} Q_t \cr S_t \end{bmatrix}
+\]</div>
+<p>状态向量 <span class="math notranslate nohighlight">\(x_t\)</span> 的变动规律显然是</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}
+\begin{aligned}\\\begin{split}\begin{bmatrix} I_{t+1} \cr z_t \end{bmatrix} = \left[\begin{array}{cc}
+1 &amp; 0\\
+0 &amp; A_{22}
+\end{array}\right] \begin{bmatrix} I_t \cr z_t \end{bmatrix}
+             + \begin{bmatrix} 1 &amp; -1 \cr
+             0 &amp; 0 \end{bmatrix} \begin{bmatrix} Q_t \cr S_t \end{bmatrix}
+             + \begin{bmatrix} 0 \cr C_2 \end{bmatrix} \epsilon_{t+1} \end{aligned}
+\end{split}\end{aligned}\end{align} \]</div>
+<p>或</p>
+<div class="math notranslate nohighlight">
+\[
+x_{t+1} = A x_t + B u_t + C \epsilon_{t+1}
+\]</div>
+<p>(在这里，请原谅我们使用<span class="math notranslate nohighlight">\(Q_t\)</span>表示企业在t时刻的产量，而下面我们用<span class="math notranslate nohighlight">\(Q\)</span>表示在企业单期利润函数中出现的二次型<span class="math notranslate nohighlight">\(u_t' Q u_t\)</span>的矩阵)</p>
+<p>我们可以将企业的利润表示为状态和控制的函数：</p>
+<div class="math notranslate nohighlight">
+\[
+\pi_t =  - (x_t' R x_t + u_t' Q u_t + 2 u_t' N x_t )
+\]</div>
+<p>为了在LQ动态规划问题中构建矩阵<span class="math notranslate nohighlight">\(R, Q, N\)</span>，我们注意到企业在t时刻的利润函数可以表示为</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}
+\begin{aligned}\\\begin{split}\pi_{t} =&amp;p_{t}S_{t}-c\left(Q_{t}\right)-d\left(I_{t},S_{t}\right)  \\
+    =&amp;\left(a_{0}-a_{1}S_{t}+v_{t}\right)S_{t}-c_{1}Q_{t}-c_{2}Q_{t}^{2}-d_{1}I_{t}-d_{2}\left(S_{t}-I_{t}\right)^{2}  \\
+    =&amp;a_{0}S_{t}-a_{1}S_{t}^{2}+Gz_{t}S_{t}-c_{1}Q_{t}-c_{2}Q_{t}^{2}-d_{1}I_{t}-d_{2}S_{t}^{2}-d_{2}I_{t}^{2}+2d_{2}S_{t}I_{t}  \\
+    =&amp;-\left(\underset{x_{t}^{\prime}Rx_{t}}{\underbrace{d_{1}I_{t}+d_{2}I_{t}^{2}}}\underset{u_{t}^{\prime}Qu_{t}}{\underbrace{+a_{1}S_{t}^{2}+d_{2}S_{t}^{2}+c_{2}Q_{t}^{2}}}
+    \underset{2u_{t}^{\prime}N x_{t}}{\underbrace{-a_{0}S_{t}-Gz_{t}S_{t}+c_{1}Q_{t}-2d_{2}S_{t}I_{t}}}\right) \\
+    =&amp;-\left(\left[\begin{array}{cc}
+I_{t} &amp; z_{t}^{\prime}\end{array}\right]\underset{\equiv R}{\underbrace{\left[\begin{array}{cc}
+d_{2} &amp; \frac{d_{1}}{2}S_{c}\\
+\frac{d_{1}}{2}S_{c}^{\prime} &amp; 0
+\end{array}\right]}}\left[\begin{array}{c}
+I_{t}\\
+z_{t}
+\end{array}\right]+\left[\begin{array}{cc}\end{split}\end{aligned}\end{align} \]</div>
+<p>\begin{aligned}
+Q_{t} &amp; S_{t}\end{array}\right]\underset{\equiv Q}{\underbrace{\left[\begin{array}{cc}
+c_{2} &amp; 0\
+0 &amp; a_{1}+d_{2}
+\end{array}\right]}}\left[\begin{array}{c}
+Q_{t}\
+S_{t}
+\end{array}\right]+2\left[\begin{array}{cc}
+Q_{t} &amp; S_{t}\end{array}\right]\underset{\equiv N}{\underbrace{\left[\begin{array}{cc}
+0 &amp; \frac{c_{1}}{2}S_{c}\
+-d_{2} &amp; -\frac{a_{0}}{2}S_{c}-\frac{G}{2}
+\end{array}\right]}}\left[\begin{array}{c}
+I_{t}\
+z_{t}
+\end{array}\right]\right)
+\end{aligned}
+$$</p>
+<p>其中 <span class="math notranslate nohighlight">\(S_{c}=\left[1,0\right]\)</span>。</p>
+<p><strong>符号说明：</strong> QuantEcon库中交叉乘积项的符号是 <span class="math notranslate nohighlight">\(N\)</span>。</p>
+<p>企业的最优决策规则采用以下形式</p>
+<div class="math notranslate nohighlight">
+\[
+u_t = - F x_t
+\]</div>
+<p>在最优决策规则下，状态的演变为</p>
+<div class="math notranslate nohighlight">
+\[
+x_{t+1} = (A - BF ) x_t + C \epsilon_{t+1}
+\]</div>
+<p>企业选择 <span class="math notranslate nohighlight">\(u_t\)</span> 的决策规则以最大化</p>
+<div class="math notranslate nohighlight">
+\[
+E_0 \sum_{t=0}^\infty \beta^t \pi_t
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(x_0\)</span> 给定。</p>
+<p>这是一个随机贴现线性二次动态规划问题。</p>
+<p>以下是用于计算最优决策规则并分析其结果的代码。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1">#设置默认图像大小</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">quantecon</span> <span class="k">as</span> <span class="nn">qe</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SmoothingExample</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    用于构建、求解和绘制库存和销售平滑问题结果的类。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">β</span><span class="o">=</span><span class="mf">0.96</span><span class="p">,</span>           <span class="c1"># 折现因子</span>
+                 <span class="n">c1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>             <span class="c1"># 生产成本</span>
+                 <span class="n">c2</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">d1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>             <span class="c1"># 库存持有成本</span>
+                 <span class="n">d2</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">a0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>            <span class="c1"># 反需求函数</span>
+                 <span class="n">a1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">A22</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span>   <span class="mi">0</span><span class="p">],</span>    <span class="c1"># z过程</span>
+                      <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]],</span>
+                 <span class="n">C2</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                 <span class="n">G</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">β</span> <span class="o">=</span> <span class="n">β</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c2</span> <span class="o">=</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d2</span> <span class="o">=</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span> <span class="o">=</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A22</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">A22</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">C2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+        <span class="c1"># 维度</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C2</span><span class="o">.</span><span class="n">shape</span>        <span class="c1"># 随机部分的维度</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>                   <span class="c1"># 状态数量</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="mi">2</span>                       <span class="c1"># 控制变量数量</span>
+
+        <span class="n">Sc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">Sc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># 构建转移法则矩阵</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+        <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A22</span>
+
+        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+        <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+        <span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span>
+
+        <span class="c1"># 构建单期收益函数矩阵</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+        <span class="n">R</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">d2</span>
+        <span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Sc</span>
+        <span class="n">R</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">d1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Sc</span>
+
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+        <span class="n">Q</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">c2</span>
+        <span class="n">Q</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a1</span> <span class="o">+</span> <span class="n">d2</span>
+
+        <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+        <span class="n">N</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">d2</span>
+        <span class="n">N</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">c1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Sc</span>
+        <span class="n">N</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">a0</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Sc</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">R</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">N</span>
+
+        <span class="c1"># 构建LQ实例</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LQ</span> <span class="o">=</span> <span class="n">qe</span><span class="o">.</span><span class="n">LQ</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">β</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LQ</span><span class="o">.</span><span class="n">stationary_values</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+
+        <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c2</span>
+        <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d2</span>
+        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span>
+
+        <span class="n">x_path</span><span class="p">,</span> <span class="n">u_path</span><span class="p">,</span> <span class="n">w_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LQ</span><span class="o">.</span><span class="n">compute_sequence</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">ts_length</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="n">I_path</span> <span class="o">=</span> <span class="n">x_path</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">z_path</span> <span class="o">=</span> <span class="n">x_path</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">𝜈_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">G</span> <span class="o">@</span> <span class="n">z_path</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">Q_path</span> <span class="o">=</span> <span class="n">u_path</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">S_path</span> <span class="o">=</span> <span class="n">u_path</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">revenue</span> <span class="o">=</span> <span class="p">(</span><span class="n">a0</span> <span class="o">-</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">S_path</span> <span class="o">+</span> <span class="n">𝜈_path</span><span class="p">)</span> <span class="o">*</span> <span class="n">S_path</span>
+        <span class="n">cost_production</span> <span class="o">=</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">Q_path</span> <span class="o">+</span> <span class="n">c2</span> <span class="o">*</span> <span class="n">Q_path</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">cost_inventories</span> <span class="o">=</span> <span class="n">d1</span> <span class="o">*</span> <span class="n">I_path</span> <span class="o">+</span> <span class="n">d2</span> <span class="o">*</span> <span class="p">(</span><span class="n">S_path</span> <span class="o">-</span> <span class="n">I_path</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="n">Q_no_inventory</span> <span class="o">=</span> <span class="p">(</span><span class="n">a0</span> <span class="o">+</span> <span class="n">𝜈_path</span> <span class="o">-</span> <span class="n">c1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">a1</span> <span class="o">+</span> <span class="n">c2</span><span class="p">))</span>
+        <span class="n">Q_hardwired</span> <span class="o">=</span> <span class="p">(</span><span class="n">a0</span> <span class="o">+</span> <span class="n">𝜈_path</span> <span class="o">-</span> <span class="n">c1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">a1</span> <span class="o">+</span> <span class="n">c2</span> <span class="o">+</span> <span class="n">d2</span><span class="p">))</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">I_path</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;库存&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">S_path</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;销售&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">Q_path</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;生产&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;库存、销售和生产&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="p">(</span><span class="n">Q_path</span> <span class="o">-</span> <span class="n">S_path</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;库存变化&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">span</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Q_path</span> <span class="o">-</span> <span class="n">S_path</span><span class="p">))</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="n">span</span><span class="o">*</span><span class="mf">1.1</span><span class="p">,</span> <span class="mi">0</span><span class="o">+</span><span class="n">span</span><span class="o">*</span><span class="mf">1.1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;需求冲击和库存变化&quot;</span><span class="p">)</span>
+
+        <span class="n">ax1_</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+        <span class="n">ax1_</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">𝜈_path</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">ax1_</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;需求冲击&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">span</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">𝜈_path</span><span class="p">))</span>
+        <span class="n">ax1_</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="n">span</span><span class="o">*</span><span class="mf">1.1</span><span class="p">,</span> <span class="mi">0</span><span class="o">+</span><span class="n">span</span><span class="o">*</span><span class="mf">1.1</span><span class="p">)</span>
+
+        <span class="n">ax1_</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">revenue</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;收入&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">cost_production</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;生产成本&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">cost_inventories</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;库存成本&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;利润分解&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">Q_path</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;生产&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">Q_hardwired</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;强制$I_t$为零时的生产&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">Q_no_inventory</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;库存无用时的生产&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;三种生产概念&#39;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>请注意上述代码将参数设置为以下默认值</p>
+<ul class="simple">
+<li><p>贴现因子 <span class="math notranslate nohighlight">\(\beta=0.96\)</span>,</p></li>
+<li><p>反需求函数: <span class="math notranslate nohighlight">\(a0=10, a1=1\)</span></p></li>
+<li><p>生产成本 <span class="math notranslate nohighlight">\(c1=1, c2=1\)</span></p></li>
+<li><p>库存持有成本 <span class="math notranslate nohighlight">\(d1=1, d2=1\)</span></p></li>
+</ul>
+<p>在下面的例子中，我们将改变部分或全部这些参数值。</p>
+</section>
+<section id="id5">
+<h2><a class="toc-backref" href="#id16"><span class="section-number">62.2. </span>示例1</a><a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>在这个例子中，需求冲击遵循AR(1)过程：</p>
+<div class="math notranslate nohighlight">
+\[
+\nu_t = \alpha + \rho \nu_{t-1} + \epsilon_t,
+\]</div>
+<p>这意味着</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+z_{t+1}=\left[\begin{array}{c}
+1\\
+v_{t+1}
+\end{array}\right]=\left[\begin{array}{cc}
+1 &amp; 0\\
+\alpha &amp; \rho
+\end{array}\right]\underset{z_{t}}{\underbrace{\left[\begin{array}{c}
+1\\
+v_{t}
+\end{array}\right]}}+\left[\begin{array}{c}
+0\\
+1
+\end{array}\right]\epsilon_{t+1}.
+\end{split}\]</div>
+<p>我们设置 <span class="math notranslate nohighlight">\(\alpha=1\)</span> 和 <span class="math notranslate nohighlight">\(\rho=0.9\)</span>，这是它们的默认值。</p>
+<p>我们将计算并显示结果，然后在相关图表下方进行讨论。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ex1</span> <span class="o">=</span> <span class="n">SmoothingExample</span><span class="p">()</span>
+
+<span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ex1</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/06d40f658a055ed54c1313f8122fb48c0a1cd7043adc77ee14d3103a43b338b0.png" src="_images/06d40f658a055ed54c1313f8122fb48c0a1cd7043adc77ee14d3103a43b338b0.png" />
+</div>
+</div>
+<p>上述图表展示了最优生产计划的各种特征。</p>
+<p>从零库存开始，企业建立库存并利用它们来平滑面对需求冲击时的高成本生产。</p>
+<p>最优决策显然会对需求冲击做出反应。</p>
+<p>库存总是小于销售量，因此部分销售来自当期生产，这是持有库存成本<span class="math notranslate nohighlight">\(d_1 I_t\)</span>导致的结果。</p>
+<p>右下方的面板显示了最优生产与两种替代生产概念之间的差异 - 这两种概念源于改变企业的成本结构，即其技术。</p>
+<p>这两个概念对应于以下两种不同的经过改变的企业问题：</p>
+<ul class="simple">
+<li><p>一种不需要库存的情况</p></li>
+<li><p>一种需要库存但我们强制企业始终保持<span class="math notranslate nohighlight">\(I_t=0\)</span>的情况</p></li>
+</ul>
+<p>我们使用这两种替代生产概念来阐明基准模型。</p>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id17"><span class="section-number">62.3. </span>库存无用处的情况</a><a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<p>让我们首先来看不需要库存的情况。</p>
+<p>在这个问题中，企业制定一个产出计划，使以下期望值最大化</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{t=0}^\infty \beta^t \{ p_t Q_t - C(Q_t) \}
+\]</div>
+<p>事实证明，这个问题中<span class="math notranslate nohighlight">\(Q_t\)</span>的最优计划也能解决一系列静态问题
+<span class="math notranslate nohighlight">\(\max_{Q_t}\{p_t Q_t - c(Q_t)\}\)</span>。</p>
+<p>当不需要或不使用库存时，销售总是等于生产。</p>
+<p>这简化了问题，无库存生产的最优化就是使以下期望值最大化</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{t=0}^{\infty}\beta^{t}\left\{ p_{t}Q_{t}-C\left(Q_{t}\right)\right\}.
+\]</div>
+<p>最优决策规则是</p>
+<div class="math notranslate nohighlight">
+\[
+Q_{t}^{ni}=\frac{a_{0}+\nu_{t}-c_{1}}{c_{2}+a_{1}}.
+\]</div>
+</section>
+<section id="id7">
+<h2><a class="toc-backref" href="#id18"><span class="section-number">62.4. </span>库存有用但被强制设为永远为零</a><a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<p>接下来，我们来看另一个不同的问题，在这个问题中库存是有用的 -
+意味着销售不等于库存会产生<span class="math notranslate nohighlight">\(d_2 (I_t - S_t)^2\)</span>的成本 - 但我们任意地强加给企业</p>
+<p>这个不持有库存的代价高昂的限制。</p>
+<p>在这里，企业的最大化问题是</p>
+<div class="math notranslate nohighlight">
+\[
+\max_{\{I_t, Q_t, S_t\}}\sum_{t=0}^{\infty}\beta^{t}\left\{ p_{t}S_{t}-C\left(Q_{t}\right)-d\left(I_{t},S_{t}\right)\right\}
+\]</div>
+<p>受限于对所有t都有<span class="math notranslate nohighlight">\(I_{t}=0\)</span>的限制，
+以及<span class="math notranslate nohighlight">\(I_{t+1}=I_{t}+Q_{t}-S_{t}\)</span>。</p>
+<p><span class="math notranslate nohighlight">\(I_t = 0\)</span>的限制意味着<span class="math notranslate nohighlight">\(Q_{t}=S_{t}\)</span>，
+且最大化问题简化为</p>
+<div class="math notranslate nohighlight">
+\[
+\max_{Q_t}\sum_{t=0}^{\infty}\beta^{t}\left\{ p_{t}Q_{t}-C\left(Q_{t}\right)-d\left(0,Q_{t}\right)\right\}
+\]</div>
+<p>这里的最优生产计划是</p>
+<div class="math notranslate nohighlight">
+\[
+Q_{t}^{h}=\frac{a_{0}+\nu_{t}-c_{1}}{c_{2}+a_{1}+d_{2}}.
+\]</div>
+<p>我们引入这个<span class="math notranslate nohighlight">\(I_t\)</span> <strong>硬性设定为零</strong>的规范，
+目的是通过与其他两个版本问题的结果比较，
+来阐明库存所发挥的作用。</p>
+<p>右下方面板显示了我们感兴趣的原始问题的生产路径（蓝线）以及一个</p>
+<p>对于存货无用的模型（绿色路径）以及存货虽然有用但被强制设为零且公司需要为销售量<span class="math notranslate nohighlight">\(S_t\)</span>不等于零而支付成本<span class="math notranslate nohighlight">\(d(0, Q_t)\)</span>的模型（橙色线），这是最优生产路径。</p>
+<p>注意，当存货无用时，公司通常会选择生产更多。在这种情况下，不需要从存货中销售，也不会因销售量偏离存货量而产生成本。</p>
+<p>但是”通常”并不意味着”总是”。</p>
+<p>因此，如果仔细观察，我们会发现在较小的<span class="math notranslate nohighlight">\(t\)</span>值时，右下方面板中绿色的”存货无用时的生产”线位于原始模型的最优生产线之下。</p>
+<p>在原始模型中早期的高最优生产量出现是因为公司希望快速积累存货，以便在后期使用大量存货。</p>
+<p>但是绿线与蓝线在早期的比较关系取决于</p>
+<p>需求冲击的演变，正如我们将在下面分析的确定性季节性需求冲击示例中所看到的。</p>
+<p>在该示例中，由于下一次正向需求冲击在较远的未来，原始企业会选择缓慢积累库存。</p>
+<p>为了更容易看清绿色-蓝色模型的生产对比，让我们将图表限制在前10个周期：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ex1</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/29b7ece58a75e2e48bc5a354615735ec4fff9f4bfed3c4eb18325526d3d501b7.png" src="_images/29b7ece58a75e2e48bc5a354615735ec4fff9f4bfed3c4eb18325526d3d501b7.png" />
+</div>
+</div>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id19"><span class="section-number">62.5. </span>示例2</a><a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
+<p>接下来，我们关闭需求中的随机性，假设需求冲击<span class="math notranslate nohighlight">\(\nu_t\)</span>遵循一个确定性路径：</p>
+<div class="math notranslate nohighlight">
+\[
+\nu_t = \alpha + \rho \nu_{t-1}
+\]</div>
+<p>同样，我们将计算并在一些图表中展示结果</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ex2</span> <span class="o">=</span> <span class="n">SmoothingExample</span><span class="p">(</span><span class="n">C2</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+<span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ex2</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/6df136a27191e818db91707e99d2e3e3281e8b06ea8a2313a3095f7a988ce8c9.png" src="_images/6df136a27191e818db91707e99d2e3e3281e8b06ea8a2313a3095f7a988ce8c9.png" />
+</div>
+</div>
+</section>
+<section id="id9">
+<h2><a class="toc-backref" href="#id20"><span class="section-number">62.6. </span>示例 3</a><a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
+<p>现在我们将随机性重新引入需求冲击过程中，并且假设持有库存的成本为零。</p>
+<p>具体来说，我们将研究一种情况，其中 <span class="math notranslate nohighlight">\(d_1=0\)</span> 但 <span class="math notranslate nohighlight">\(d_2&gt;0\)</span>。</p>
+<p>现在，将销售量大致设置为等于库存量，并利用库存来很好地平滑生产变得最优，如下图所示：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ex3</span> <span class="o">=</span> <span class="n">SmoothingExample</span><span class="p">(</span><span class="n">d1</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ex3</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/0a48aec5b4bbedb0abe8f0ce1cd66dd56a8aca167b61e88a49511ef56a169f89.png" src="_images/0a48aec5b4bbedb0abe8f0ce1cd66dd56a8aca167b61e88a49511ef56a169f89.png" />
+</div>
+</div>
+</section>
+<section id="id10">
+<h2><a class="toc-backref" href="#id21"><span class="section-number">62.7. </span>示例 4</a><a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
+<p>为了突出与线性控制理论中某些技术问题相关的最优策略特征，我们现在暂时假设持有库存是无成本的。</p>
+<p>当我们通过设置<span class="math notranslate nohighlight">\(d_1=0\)</span>和<span class="math notranslate nohighlight">\(d_2=0\)</span>完全取消持有库存的成本时，会发生一些荒谬的情况（因为贝尔曼方程具有机会主义性质且非常智能）。</p>
+<p>（从技术角度来说，我们设置的参数最终违反了确保最优控制状态<strong>稳定性</strong>所需的条件。）</p>
+<p>公司发现最优的选择是设置<span class="math notranslate nohighlight">\(Q_t \equiv Q^* = \frac{-c_1}{2c_2}\)</span>，这个产出水平使生产成本为零（当<span class="math notranslate nohighlight">\(c_1 &gt;0\)</span>时，就像我们的默认设置一样，那么将产量设为负值是最优的，不管这意味着什么！）。</p>
+<p>回顾库存的运动规律</p>
+<div class="math notranslate nohighlight">
+\[
+I_{t+1} = I_t + Q_t - S_t
+\]</div>
+<p>因此，当<span class="math notranslate nohighlight">\(d_1=d_2= 0\)</span>时，公司发现在所有时期<span class="math notranslate nohighlight">\(t\)</span>将<span class="math notranslate nohighlight">\(Q_t = \frac{-c_1}{2c_2}\)</span>设为最优，那么</p>
+<div class="math notranslate nohighlight">
+\[I_{t+1} - I_t = \frac{-c_1}{2c_2} - S_t &lt; 0
+\]</div>
+<p>在我们默认参数下，对于几乎所有保持需求为正的<span class="math notranslate nohighlight">\(S_t\)</span>值都成立。</p>
+<p>动态规划指示企业将生产成本设为零，并通过永远减少库存来<strong>运行庞氏骗局</strong>。</p>
+<p>（我们可以将此理解为企业以某种方式<strong>做空</strong>或<strong>借入</strong>库存）</p>
+<p>以下图表证实了库存无限下降</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ex4</span> <span class="o">=</span> <span class="n">SmoothingExample</span><span class="p">(</span><span class="n">d1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">d2</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ex4</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/e9841d05f3df34d87b0d3f25ed49bbda6abd41377474c8b2cb0b60b187b215c1.png" src="_images/e9841d05f3df34d87b0d3f25ed49bbda6abd41377474c8b2cb0b60b187b215c1.png" />
+</div>
+</div>
+<p>让我们缩短显示的时间跨度以突出显示正在发生的情况。</p>
+<p>我们将用以下代码设置时间范围 <span class="math notranslate nohighlight">\(T =30\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># shorter period</span>
+<span class="n">ex4</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/d1aa0e522c798e5ab99242436b49f71d13abc39085302b221c66a90cf8036309.png" src="_images/d1aa0e522c798e5ab99242436b49f71d13abc39085302b221c66a90cf8036309.png" />
+</div>
+</div>
+</section>
+<section id="id11">
+<h2><a class="toc-backref" href="#id22"><span class="section-number">62.8. </span>示例 5</a><a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h2>
+<p>现在我们假设需求冲击遵循线性时间趋势</p>
+<div class="math notranslate nohighlight">
+\[
+v_t = b + a t  , a&gt; 0, b&gt; 0
+\]</div>
+<p>为了表示这一点，我们设定
+<span class="math notranslate nohighlight">\(C_2 = \begin{bmatrix} 0 \cr 0 \end{bmatrix}\)</span> 和</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+A_{22}=\left[\begin{array}{cc}
+1 &amp; 0\\
+1 &amp; 1
+\end{array}\right],x_{0}=\left[\begin{array}{c}
+1\\
+0
+\end{array}\right],
+G=\left[\begin{array}{cc}
+b &amp; a\end{array}\right]
+\end{split}\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置参数</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">3.</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ex5</span> <span class="o">=</span> <span class="n">SmoothingExample</span><span class="p">(</span><span class="n">A22</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">C2</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">G</span><span class="o">=</span><span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">])</span>
+
+<span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="c1"># 将初始库存设为0</span>
+<span class="n">ex5</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/15e15a6f0c70b42f171e066ceda4b2f953ff76236cf3d3a8bf8d52cbc7e4d1f1.png" src="_images/15e15a6f0c70b42f171e066ceda4b2f953ff76236cf3d3a8bf8d52cbc7e4d1f1.png" />
+</div>
+</div>
+</section>
+<section id="id12">
+<h2><a class="toc-backref" href="#id23"><span class="section-number">62.9. </span>示例6</a><a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h2>
+<p>现在我们假设一个确定性的季节性需求冲击。</p>
+<p>为了表示这一点，我们设定</p>
+<div class="math notranslate nohighlight">
+\[
+A_{22} = \begin{bmatrix}  1 &amp; 0 &amp; 0 &amp; 0 &amp; 0  \cr 0 &amp; 0 &amp; 0 &amp; 0  &amp; 1 \cr
+    0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \cr
+    0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \cr
+    0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \end{bmatrix},
+  C_2 = \begin{bmatrix} 0 \cr 0 \cr 0 \cr 0 \cr 0 \end{bmatrix},  G' = \begin{bmatrix} b \cr a \cr 0 \cr 0 \cr 0
+  \end{bmatrix}
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(a &gt; 0, b&gt;0\)</span> 且</p>
+<div class="math notranslate nohighlight">
+\[
+x_0 = \begin{bmatrix} 1 \cr 0 \cr 1 \cr 0 \cr 0 \end{bmatrix}
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ex6</span> <span class="o">=</span> <span class="n">SmoothingExample</span><span class="p">(</span><span class="n">A22</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span>
+                       <span class="n">C2</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                       <span class="n">G</span><span class="o">=</span><span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+<span class="n">x00</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="c1"># 设置初始库存为0</span>
+<span class="n">ex6</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x00</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/b0455edad58c65876ba8cb531e21a0a09106088832915c6695cdd36012c31d97.png" src="_images/b0455edad58c65876ba8cb531e21a0a09106088832915c6695cdd36012c31d97.png" />
+</div>
+</div>
+<p>现在我们将生成一些更多的例子，这些例子仅仅在开始需求冲击的<strong>季节</strong>上有所不同</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x01</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ex6</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x01</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/f81265436c068e54c183a1152cdcd5759d443eb4aab29f101d71cea16645fd02.png" src="_images/f81265436c068e54c183a1152cdcd5759d443eb4aab29f101d71cea16645fd02.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x02</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ex6</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x02</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/bee2638eb9f05ad8d8e164c37bdde19f79c4dbca94fab7a67c4917a2b50084f7.png" src="_images/bee2638eb9f05ad8d8e164c37bdde19f79c4dbca94fab7a67c4917a2b50084f7.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x03</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">ex6</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x03</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/7d99cf15bf6c9e4188e884242817def20e5291f8531c5fead763995763ebc3f2.png" src="_images/7d99cf15bf6c9e4188e884242817def20e5291f8531c5fead763995763ebc3f2.png" />
+</div>
+</div>
+</section>
+<section id="id13">
+<h2><a class="toc-backref" href="#id24"><span class="section-number">62.10. </span>练习</a><a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h2>
+<p>请尝试使用<code class="docutils literal notranslate"><span class="pre">SmoothingExample</span></code>类分析一些库存销售平滑问题。</p>
+<div class="exercise admonition" id="lqi_ex1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 62.1 </span></p>
+<section id="exercise-content">
+<p>假设需求冲击遵循以下AR(2)过程：</p>
+<div class="math notranslate nohighlight">
+\[
+\nu_{t}=\alpha+\rho_{1}\nu_{t-1}+\rho_{2}\nu_{t-2}+\epsilon_{t}.
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(\alpha=1\)</span>，<span class="math notranslate nohighlight">\(\rho_{1}=1.2\)</span>，且<span class="math notranslate nohighlight">\(\rho_{2}=-0.3\)</span>。
+你需要正确构建<span class="math notranslate nohighlight">\(A22\)</span>、<span class="math notranslate nohighlight">\(C\)</span>和<span class="math notranslate nohighlight">\(G\)</span>矩阵，
+然后将它们作为关键字参数输入到<code class="docutils literal notranslate"><span class="pre">SmoothingExample</span></code>类中。从初始
+条件<span class="math notranslate nohighlight">\(x_0 = \left[0, 1, 0, 0\right]^\prime\)</span>开始模拟路径。</p>
+<p>之后，尝试构建一个非常相似的<code class="docutils literal notranslate"><span class="pre">SmoothingExample</span></code>，
+使用相同的需求冲击过程但排除随机性
+<span class="math notranslate nohighlight">\(\epsilon_t\)</span>。通过长期模拟计算稳态<span class="math notranslate nohighlight">\(\bar{x}\)</span>。
+然后尝试对<span class="math notranslate nohighlight">\(\bar{\nu}_t\)</span>添加不同幅度的冲击并模拟路径。
+通过观察生产计划，你应该能看到企业如何做出不同的响应。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="lq_inventories-solution-1">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#lqi_ex1"> Exercise 62.1</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置参数</span>
+<span class="n">α</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">ρ1</span> <span class="o">=</span> <span class="mf">1.2</span>
+<span class="n">ρ2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">.3</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 构建矩阵</span>
+<span class="n">A22</span> <span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
+          <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ρ1</span><span class="p">,</span> <span class="n">ρ2</span><span class="p">],</span>
+          <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="n">C2</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="n">G</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ex1</span> <span class="o">=</span> <span class="n">SmoothingExample</span><span class="p">(</span><span class="n">A22</span><span class="o">=</span><span class="n">A22</span><span class="p">,</span> <span class="n">C2</span><span class="o">=</span><span class="n">C2</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+
+<span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="c1"># 初始条件</span>
+<span class="n">ex1</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/81244472be43fca58422e7c054a129fddb6c34a5a9f53bf03e1d610b407c088b.png" src="_images/81244472be43fca58422e7c054a129fddb6c34a5a9f53bf03e1d610b407c088b.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 现在消除噪音</span>
+<span class="n">ex1_no_noise</span> <span class="o">=</span> <span class="n">SmoothingExample</span><span class="p">(</span><span class="n">A22</span><span class="o">=</span><span class="n">A22</span><span class="p">,</span> <span class="n">C2</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+
+<span class="c1"># 初始条件</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># 计算稳态</span>
+<span class="n">x_bar</span> <span class="o">=</span> <span class="n">ex1_no_noise</span><span class="o">.</span><span class="n">LQ</span><span class="o">.</span><span class="n">compute_sequence</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">ts_length</span><span class="o">=</span><span class="mi">250</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">x_bar</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 3.69387755,  1.        , 10.        , 10.        ])
+</pre></div>
+</div>
+</div>
+</div>
+<p>在下面的内容中，我们对<span class="math notranslate nohighlight">\(\bar{\nu}_t\)</span>添加小幅和大幅冲击，并比较企业在产量方面的不同反应。由于在我们使用的参数化条件下冲击的持续性不是很强，我们主要关注短期反应。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="mi">40</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 小幅冲击</span>
+<span class="n">x_bar1</span> <span class="o">=</span> <span class="n">x_bar</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">x_bar1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">2</span>
+<span class="n">ex1_no_noise</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x_bar1</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/24da04e7168fd54293b102d6963baa1e1c33680b57e78262dd6438c4e4d0c39b.png" src="_images/24da04e7168fd54293b102d6963baa1e1c33680b57e78262dd6438c4e4d0c39b.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 大幅冲击</span>
+<span class="n">x_bar1</span> <span class="o">=</span> <span class="n">x_bar</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">x_bar1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">10</span>
+<span class="n">ex1_no_noise</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x_bar1</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/e515bdfaa00e63299c522d98a8baf767cde63f271f467417315b2e937dd151b3.png" src="_images/e515bdfaa00e63299c522d98a8baf767cde63f271f467417315b2e937dd151b3.png" />
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="lqi_ex2">
+
+<p class="admonition-title"><span class="caption-number">Exercise 62.2 </span></p>
+<section id="exercise-content">
+<p>改变<span class="math notranslate nohighlight">\(C(Q_t)\)</span>和<span class="math notranslate nohighlight">\(d(I_t, S_t)\)</span>的参数。</p>
+<ol class="arabic simple">
+<li><p>通过设置<span class="math notranslate nohighlight">\(c_2=5\)</span>来提高生产成本。</p></li>
+<li><p>通过设置<span class="math notranslate nohighlight">\(d_2=5\)</span>来增加库存偏离销售的成本。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="lq_inventories-solution-3">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#lqi_ex2"> Exercise 62.2</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SmoothingExample</span><span class="p">(</span><span class="n">c2</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/4d8c789e34944ed914e14fc3084a7fb05aca4c58715df7ecd3eb982b89fc6106.png" src="_images/4d8c789e34944ed914e14fc3084a7fb05aca4c58715df7ecd3eb982b89fc6106.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SmoothingExample</span><span class="p">(</span><span class="n">d2</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/33d186101f9bcebb4e03f346d4ff85994ff4f4ef16d20f6748c0ee0acdc3ad87.png" src="_images/33d186101f9bcebb4e03f346d4ff85994ff4f4ef16d20f6748c0ee0acdc3ad87.png" />
+</div>
+</div>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/lq_inventories.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/lq_inventories.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/lq_inventories.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/lq_inventories.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/lq_inventories.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "lq_inventories";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/lq_inventories.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

@@ -1,0 +1,1707 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>25. 卡尔曼滤波初探 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'kalman';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/kalman.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="26. 卡尔曼滤波器的另一个视角" href="kalman_2.html" />
+    <link rel="prev" title="24. 财富分配动态" href="wealth_dynamics.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="卡尔曼滤波初探"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="卡尔曼滤波初探" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/kalman.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=kalman>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">25.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">25.2. 基本概念</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">25.2.1. 滤波步骤</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kl-forecase-step">25.2.2. 预测步骤</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">25.2.3. 递归程序</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kalman-convergence">25.3. 收敛性</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">25.4. 实现</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">25.5. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">卡尔曼滤波初探</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="toc-backref" href="#id21"><span class="section-number">25. </span>卡尔曼滤波初探</a><a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<div class="contents topic" id="id2">
+<span id="index-0"></span><p class="topic-title">目录</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id21">卡尔曼滤波初探</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id3" id="id22">概述</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id23">基本概念</a></p></li>
+<li><p><a class="reference internal" href="#kalman-convergence" id="id24">收敛性</a></p></li>
+<li><p><a class="reference internal" href="#id16" id="id25">实现</a></p></li>
+<li><p><a class="reference internal" href="#id17" id="id26">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>除了Anaconda中已有的库外，本课程还需要以下库：</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantecon
+</pre></div>
+</div>
+</div>
+<details class="hide below-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell output</span>
+<span class="expanded">Hide code cell output</span>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.0)
+Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (0.60.0)
+Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
+Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
+Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.1)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.2)
+Requirement already satisfied: llvmlite&lt;0.44,&gt;=0.43.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.43.0)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.3.2)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.7)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2.2.3)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2024.8.30)
+Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from sympy-&gt;quantecon) (1.3.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="id3">
+<h2><a class="toc-backref" href="#id22"><span class="section-number">25.1. </span>概述</a><a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>本讲座为卡尔曼滤波提供了一个简单直观的介绍，适合以下读者：</p>
+<ul class="simple">
+<li><p>听说过卡尔曼滤波但不知道它如何工作的人，或者</p></li>
+<li><p>知道卡尔曼滤波方程但不知道这些方程从何而来的人</p></li>
+</ul>
+<p>关于卡尔曼滤波的更多（进阶）阅读材料，请参见：</p>
+<ul class="simple">
+<li><p><span id="id4">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span>，第2.7节</p></li>
+<li><p><span id="id5">[<a class="reference internal" href="zreferences.html#id146" title="D. B. O. Anderson and J. B. Moore. Optimal Filtering. Dover Publications, 2005.">Anderson and Moore, 2005</a>]</span></p></li>
+</ul>
+<p>第二个参考文献对卡尔曼滤波进行了全面的阐述。</p>
+<p>所需知识：熟悉矩阵运算、多元正态分布、协方差矩阵等。</p>
+<p>我们需要以下导入：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1">#set default figure size</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.cm</span> <span class="k">as</span> <span class="nn">cm</span>
+<span class="kn">from</span> <span class="nn">quantecon</span> <span class="kn">import</span> <span class="n">Kalman</span><span class="p">,</span> <span class="n">LinearStateSpace</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">quad</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">eigvals</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id23"><span class="section-number">25.2. </span>基本概念</a><a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<p>卡尔曼滤波在经济学中有许多应用，但现在让我们假装我们是火箭科学家。</p>
+<p>一枚导弹从Y国发射，我们的任务是追踪它。</p>
+<p>让 <span class="math notranslate nohighlight">\(x \in \mathbb{R}^2\)</span> 表示导弹的当前位置——一个表示地图上经纬度坐标的数对。</p>
+<p>在当前时刻，精确位置 <span class="math notranslate nohighlight">\(x\)</span> 是未知的，但我们对 <span class="math notranslate nohighlight">\(x\)</span> 有一些认知。</p>
+<p>总结我们知识的一种方式是点预测 <span class="math notranslate nohighlight">\(\hat x\)</span></p>
+<ul class="simple">
+<li><p>但如果总统想知道导弹目前在日本海上空的概率呢？</p></li>
+<li><p>那么用二元概率密度 <span class="math notranslate nohighlight">\(p\)</span> 来总结我们的初始认知会更好</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(\int_E p(x)dx\)</span> 表示我们认为导弹在区域 E 内的概率。</p></li>
+</ul>
+</li>
+</ul>
+<p>密度 <span class="math notranslate nohighlight">\(p\)</span> 被称为随机变量 <span class="math notranslate nohighlight">\(x\)</span> 的<em>先验</em>。</p>
+<p>为了使我们的例子便于处理，我们假设我们的先验是高斯分布。</p>
+<p>特别地，我们采用</p>
+<div class="math notranslate nohighlight" id="equation-prior">
+<span class="eqno">(25.1)<a class="headerlink" href="#equation-prior" title="Permalink to this equation">#</a></span>\[p = N(\hat x, \Sigma)\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\hat x\)</span> 是分布的均值，<span class="math notranslate nohighlight">\(\Sigma\)</span> 是一个 <span class="math notranslate nohighlight">\(2 \times 2\)</span> 的协方差矩阵。在我们的模拟中，我们假设</p>
+<div class="math notranslate nohighlight" id="equation-kalman-dhxs">
+<span class="eqno">(25.2)<a class="headerlink" href="#equation-kalman-dhxs" title="Permalink to this equation">#</a></span>\[\begin{split}\hat x
+= \left(
+\begin{array}{c}
+    0.2 \\
+    -0.2
+\end{array}
+  \right),
+\qquad
+\Sigma
+= \left(
+\begin{array}{cc}
+    0.4 &amp; 0.3 \\
+    0.3 &amp; 0.45
+\end{array}
+  \right)\end{split}\]</div>
+<p>这个密度 <span class="math notranslate nohighlight">\(p(x)\)</span> 在下面以等高线图的形式显示，其中红色椭圆的中心等于 <span class="math notranslate nohighlight">\(\hat x\)</span>。</p>
+<div class="cell tag_output_scroll docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置高斯先验密度 p</span>
+<span class="n">Σ</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">]]</span>
+<span class="n">Σ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">Σ</span><span class="p">)</span>
+<span class="n">x_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="c1"># 从方程 y = G x + N(0, R) 定义矩阵 G 和 R</span>
+<span class="n">G</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">R</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">Σ</span>
+<span class="c1"># 矩阵 A 和 Q</span>
+<span class="n">A</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">]]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">Σ</span>
+<span class="c1"># y 的观测值</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([</span><span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.9</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># 设置绘图网格</span>
+<span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.9</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">3.1</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="n">y_grid</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">bivariate_normal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">σ_x</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">σ_y</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">μ_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">μ_y</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">σ_xy</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算并返回二元正态分布的概率密度函数</span>
+<span class="sd">    </span>
+<span class="sd">    参数</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : array_like(float)</span>
+<span class="sd">        随机变量</span>
+<span class="sd">        </span>
+<span class="sd">    y : array_like(float)</span>
+<span class="sd">        随机变量</span>
+<span class="sd">        </span>
+<span class="sd">    σ_x : array_like(float)</span>
+<span class="sd">          随机变量 x 的标准差</span>
+<span class="sd">          </span>
+<span class="sd">    σ_y : array_like(float)</span>
+<span class="sd">          随机变量 y 的标准差</span>
+<span class="sd">          </span>
+<span class="sd">    μ_x : scalar(float)</span>
+<span class="sd">          随机变量 x 的均值</span>
+<span class="sd">          </span>
+<span class="sd">    μ_y : scalar(float)</span>
+<span class="sd">          随机变量 y 的均值</span>
+<span class="sd">          </span>
+<span class="sd">    σ_xy : array_like(float)</span>
+<span class="sd">           随机变量 x 和 y 的协方差</span>
+<span class="sd">           </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x_μ</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">μ_x</span>
+    <span class="n">y_μ</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">μ_y</span>
+
+    <span class="n">ρ</span> <span class="o">=</span> <span class="n">σ_xy</span> <span class="o">/</span> <span class="p">(</span><span class="n">σ_x</span> <span class="o">*</span> <span class="n">σ_y</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">x_μ</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">σ_x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y_μ</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">σ_y</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">ρ</span> <span class="o">*</span> <span class="n">x_μ</span> <span class="o">*</span> <span class="n">y_μ</span> <span class="o">/</span> <span class="p">(</span><span class="n">σ_x</span> <span class="o">*</span> <span class="n">σ_y</span><span class="p">)</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">σ_x</span> <span class="o">*</span> <span class="n">σ_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ρ</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ρ</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span> <span class="o">/</span> <span class="n">denom</span>
+
+<span class="k">def</span> <span class="nf">gen_gaussian_plot_vals</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+    <span class="s2">&quot;用于绘制二元高斯 N(μ, C) 的 Z 值&quot;</span>
+    <span class="n">m_x</span><span class="p">,</span> <span class="n">m_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">μ</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">s_x</span><span class="p">,</span> <span class="n">s_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">s_xy</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">bivariate_normal</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">s_x</span><span class="p">,</span> <span class="n">s_y</span><span class="p">,</span> <span class="n">m_x</span><span class="p">,</span> <span class="n">m_y</span><span class="p">,</span> <span class="n">s_xy</span><span class="p">)</span>
+
+<span class="c1"># 绘制图形</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+<span class="n">Z</span> <span class="o">=</span> <span class="n">gen_gaussian_plot_vals</span><span class="p">(</span><span class="n">x_hat</span><span class="p">,</span> <span class="n">Σ</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_8909/2023138113.py:60: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  m_x, m_y = float(μ[0]), float(μ[1])
+</pre></div>
+</div>
+<img alt="_images/3ae9526d9326833ecb9cbc72a709d5ef35d13a30d62a909c3daac329d3b5438b.png" src="_images/3ae9526d9326833ecb9cbc72a709d5ef35d13a30d62a909c3daac329d3b5438b.png" />
+</div>
+</div>
+<section id="id7">
+<h3><span class="section-number">25.2.1. </span>滤波步骤<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<p>现在我们有一些好消息和坏消息。</p>
+<p>好消息是我们的传感器已经定位到导弹，报告显示当前位置是<span class="math notranslate nohighlight">\(y = (2.3, -1.9)\)</span>。</p>
+<p>下图显示了原始先验分布<span class="math notranslate nohighlight">\(p(x)\)</span>和新报告的位置<span class="math notranslate nohighlight">\(y\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+<span class="n">Z</span> <span class="o">=</span> <span class="n">gen_gaussian_plot_vals</span><span class="p">(</span><span class="n">x_hat</span><span class="p">,</span> <span class="n">Σ</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s2">&quot;$y$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_8909/2023138113.py:60: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  m_x, m_y = float(μ[0]), float(μ[1])
+/tmp/ipykernel_8909/3470248806.py:8: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  ax.text(float(y[0]), float(y[1]), &quot;$y$&quot;, fontsize=20, color=&quot;black&quot;)
+</pre></div>
+</div>
+<img alt="_images/76d831a5c981e23cd5e07e911ad691af95833926e70df8533b3fb0340a4703f0.png" src="_images/76d831a5c981e23cd5e07e911ad691af95833926e70df8533b3fb0340a4703f0.png" />
+</div>
+</div>
+<p>坏消息是我们的传感器并不精确。</p>
+<p>具体来说，我们应该将传感器的输出理解为不是
+<span class="math notranslate nohighlight">\(y=x\)</span>，而是</p>
+<div class="math notranslate nohighlight" id="equation-kl-measurement-model">
+<span class="eqno">(25.3)<a class="headerlink" href="#equation-kl-measurement-model" title="Permalink to this equation">#</a></span>\[y = G x + v, \quad \text{where} \quad v \sim N(0, R)\]</div>
+<p>这里 <span class="math notranslate nohighlight">\(G\)</span> 和 <span class="math notranslate nohighlight">\(R\)</span> 是 <span class="math notranslate nohighlight">\(2 \times 2\)</span> 矩阵，其中 <span class="math notranslate nohighlight">\(R\)</span> 是正定矩阵。两者都被假定为已知，且噪声项 <span class="math notranslate nohighlight">\(v\)</span> 被假定与 <span class="math notranslate nohighlight">\(x\)</span> 独立。</p>
+<p>那么，我们应该如何将我们的先验 <span class="math notranslate nohighlight">\(p(x) = N(\hat x, \Sigma)\)</span> 和这个新信息 <span class="math notranslate nohighlight">\(y\)</span> 结合起来，以改进我们对导弹位置的理解呢？</p>
+<p>正如你可能已经猜到的，答案是使用贝叶斯定理，它告诉我们通过以下方式将先验 <span class="math notranslate nohighlight">\(p(x)\)</span> 更新为 <span class="math notranslate nohighlight">\(p(x \,|\, y)\)</span>：</p>
+<div class="math notranslate nohighlight">
+\[
+p(x \,|\, y) = \frac{p(y \,|\, x) \, p(x)} {p(y)}
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(p(y) = \int p(y \,|\, x) \, p(x) dx\)</span>。</p>
+<p>在求解 <span class="math notranslate nohighlight">\(p(x \,|\, y)\)</span> 时，我们观察到：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(p(x) = N(\hat x, \Sigma)\)</span>。</p></li>
+<li><p>根据 <a class="reference internal" href="#equation-kl-measurement-model">(25.3)</a>，条件密度 <span class="math notranslate nohighlight">\(p(y \,|\, x)\)</span> 是 <span class="math notranslate nohighlight">\(N(Gx, R)\)</span>。</p></li>
+<li><p><span class="math notranslate nohighlight">\(p(y)\)</span> 不依赖于 <span class="math notranslate nohighlight">\(x\)</span>，在计算中仅作为归一化常数出现。</p></li>
+</ul>
+<p>由于我们处在线性和高斯框架中，可以通过计算总体线性回归来得到更新后的密度。</p>
+<p>具体来说，已知解<a class="footnote-reference brackets" href="#f1" id="id8">1</a>为</p>
+<div class="math notranslate nohighlight">
+\[
+p(x \,|\, y) = N(\hat x^F, \Sigma^F)
+\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight" id="equation-kl-filter-exp">
+<span class="eqno">(25.4)<a class="headerlink" href="#equation-kl-filter-exp" title="Permalink to this equation">#</a></span>\[\hat x^F := \hat x + \Sigma G' (G \Sigma G' + R)^{-1}(y - G \hat x)
+\quad \text{和} \quad
+\Sigma^F := \Sigma - \Sigma G' (G \Sigma G' + R)^{-1} G \Sigma\]</div>
+<p>这里 <span class="math notranslate nohighlight">\(\Sigma G' (G \Sigma G' + R)^{-1}\)</span> 是隐藏对象 <span class="math notranslate nohighlight">\(x - \hat x\)</span> 对意外值 <span class="math notranslate nohighlight">\(y - G \hat x\)</span> 的总体回归系数矩阵。</p>
+<p>下图通过等高线和色彩图展示了这个新的密度 <span class="math notranslate nohighlight">\(p(x \,|\, y) = N(\hat x^F, \Sigma^F)\)</span>。</p>
+<p>原始密度以等高线的形式保留作为对比</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+<span class="n">Z</span> <span class="o">=</span> <span class="n">gen_gaussian_plot_vals</span><span class="p">(</span><span class="n">x_hat</span><span class="p">,</span> <span class="n">Σ</span><span class="p">)</span>
+<span class="n">cs1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs1</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">Σ</span> <span class="o">*</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">G</span> <span class="o">*</span> <span class="n">Σ</span> <span class="o">*</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">R</span><span class="p">)</span>
+<span class="n">x_hat_F</span> <span class="o">=</span> <span class="n">x_hat</span> <span class="o">+</span> <span class="n">M</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">G</span> <span class="o">*</span> <span class="n">x_hat</span><span class="p">)</span>
+<span class="n">Σ_F</span> <span class="o">=</span> <span class="n">Σ</span> <span class="o">-</span> <span class="n">M</span> <span class="o">*</span> <span class="n">G</span> <span class="o">*</span> <span class="n">Σ</span>
+<span class="n">new_Z</span> <span class="o">=</span> <span class="n">gen_gaussian_plot_vals</span><span class="p">(</span><span class="n">x_hat_F</span><span class="p">,</span> <span class="n">Σ_F</span><span class="p">)</span>
+<span class="n">cs2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">new_Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs2</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">new_Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s2">&quot;$y$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_8909/2023138113.py:60: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  m_x, m_y = float(μ[0]), float(μ[1])
+/tmp/ipykernel_8909/792457825.py:14: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  ax.text(float(y[0]), float(y[1]), &quot;$y$&quot;, fontsize=20, color=&quot;black&quot;)
+</pre></div>
+</div>
+<img alt="_images/e804083b23c3328fe76a5a13b8aa3aab6e005753d81354b90e7234c5dde7b2bf.png" src="_images/e804083b23c3328fe76a5a13b8aa3aab6e005753d81354b90e7234c5dde7b2bf.png" />
+</div>
+</div>
+<p>我们的新密度函数按照由新信息 <span class="math notranslate nohighlight">\(y - G \hat x\)</span> 决定的方向扭转了先验分布 <span class="math notranslate nohighlight">\(p(x)\)</span>。</p>
+<p>在生成图形时，我们将 <span class="math notranslate nohighlight">\(G\)</span> 设为单位矩阵，将 <span class="math notranslate nohighlight">\(R\)</span> 设为 <span class="math notranslate nohighlight">\(0.5 \Sigma\)</span>，其中 <span class="math notranslate nohighlight">\(\Sigma\)</span> 在<a class="reference internal" href="#equation-kalman-dhxs">(25.2)</a>中定义。</p>
+</section>
+<section id="kl-forecase-step">
+<span id="id9"></span><h3><span class="section-number">25.2.2. </span>预测步骤<a class="headerlink" href="#kl-forecase-step" title="Permalink to this heading">#</a></h3>
+<p>到目前为止我们取得了什么成果？</p>
+<p>我们已经获得了基于先验和当前信息的状态（导弹）当前位置的概率。</p>
+<p>这被称为”滤波”而不是预测，因为我们是在过滤噪声而不是展望未来。</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(p(x \,|\, y) = N(\hat x^F, \Sigma^F)\)</span> 被称为<em>滤波分布</em></p></li>
+</ul>
+<p>但现在假设我们有另一个任务：预测导弹在一个时间单位（无论是什么单位）后的位置。</p>
+<p>为此我们需要一个状态演化的模型。</p>
+<p>让我们假设我们有这样一个模型，而且它是线性高斯的。具体来说，</p>
+<div class="math notranslate nohighlight" id="equation-kl-xdynam">
+<span class="eqno">(25.5)<a class="headerlink" href="#equation-kl-xdynam" title="Permalink to this equation">#</a></span>\[x_{t+1} = A x_t + w_{t+1}, \quad \text{where} \quad w_t \sim N(0, Q)\]</div>
+<p>我们的目标是将这个运动定律和我们当前的分布 <span class="math notranslate nohighlight">\(p(x \,|\, y) = N(\hat x^F, \Sigma^F)\)</span> 结合起来，得出一个新的一个时间单位后位置的<em>预测</em>分布。</p>
+<p>根据<a class="reference internal" href="#equation-kl-xdynam">(25.5)</a>，我们只需要引入一个随机向量 <span class="math notranslate nohighlight">\(x^F \sim N(\hat x^F, \Sigma^F)\)</span> 并计算出 <span class="math notranslate nohighlight">\(A x^F + w\)</span> 的分布，其中 <span class="math notranslate nohighlight">\(w\)</span> 与 <span class="math notranslate nohighlight">\(x^F\)</span> 独立且服从分布 <span class="math notranslate nohighlight">\(N(0, Q)\)</span>。</p>
+<p>由于高斯分布的线性组合仍是高斯分布，<span class="math notranslate nohighlight">\(A x^F + w\)</span> 也是高斯分布。</p>
+<p>基本计算和<a class="reference internal" href="#equation-kl-filter-exp">(25.4)</a>中的表达式告诉我们：</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E} [A x^F + w]
+= A \mathbb{E} x^F + \mathbb{E} w
+= A \hat x^F
+= A \hat x + A \Sigma G' (G \Sigma G' + R)^{-1}(y - G \hat x)
+\]</div>
+<p>和</p>
+<div class="math notranslate nohighlight">
+\[
+\operatorname{Var} [A x^F + w]
+= A \operatorname{Var}[x^F] A' + Q
+= A \Sigma^F A' + Q
+= A \Sigma A' - A \Sigma G' (G \Sigma G' + R)^{-1} G \Sigma A' + Q
+\]</div>
+<p>矩阵 <span class="math notranslate nohighlight">\(A \Sigma G' (G \Sigma G' + R)^{-1}\)</span> 通常写作 <span class="math notranslate nohighlight">\(K_{\Sigma}\)</span> 并称为<em>卡尔曼增益</em>。</p>
+<ul class="simple">
+<li><p>添加下标 <span class="math notranslate nohighlight">\(\Sigma\)</span> 是为了提醒我们 <span class="math notranslate nohighlight">\(K_{\Sigma}\)</span> 依赖于 <span class="math notranslate nohighlight">\(\Sigma\)</span>，而不依赖于 <span class="math notranslate nohighlight">\(y\)</span> 或 <span class="math notranslate nohighlight">\(\hat x\)</span>。</p></li>
+</ul>
+<p>使用这个符号，我们可以将结果总结如下。</p>
+<p>我们更新后的预测是密度 <span class="math notranslate nohighlight">\(N(\hat x_{new}, \Sigma_{new})\)</span>，其中</p>
+<div class="math notranslate nohighlight" id="equation-kl-mlom0">
+<span class="eqno">(25.6)<a class="headerlink" href="#equation-kl-mlom0" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{aligned}
+    \hat x_{new} &amp;:= A \hat x + K_{\Sigma} (y - G \hat x) \\
+    \Sigma_{new} &amp;:= A \Sigma A' - K_{\Sigma} G \Sigma A' + Q \nonumber
+\end{aligned}\end{split}\]</div>
+<ul class="simple">
+<li><p>密度 <span class="math notranslate nohighlight">\(p_{new}(x) = N(\hat x_{new}, \Sigma_{new})\)</span> 被称为<em>预测分布</em></p></li>
+</ul>
+<p>预测分布是下图中显示的新密度，其中更新使用了以下参数。</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+A
+= \left(
+\begin{array}{cc}
+    1.2 &amp; 0.0 \\
+    0.0 &amp; -0.2
+\end{array}
+  \right),
+  \qquad
+Q = 0.3 * \Sigma
+\end{split}\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+<span class="c1"># Density 1</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">gen_gaussian_plot_vals</span><span class="p">(</span><span class="n">x_hat</span><span class="p">,</span> <span class="n">Σ</span><span class="p">)</span>
+<span class="n">cs1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs1</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Density 2</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">Σ</span> <span class="o">*</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">G</span> <span class="o">*</span> <span class="n">Σ</span> <span class="o">*</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">R</span><span class="p">)</span>
+<span class="n">x_hat_F</span> <span class="o">=</span> <span class="n">x_hat</span> <span class="o">+</span> <span class="n">M</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">G</span> <span class="o">*</span> <span class="n">x_hat</span><span class="p">)</span>
+<span class="n">Σ_F</span> <span class="o">=</span> <span class="n">Σ</span> <span class="o">-</span> <span class="n">M</span> <span class="o">*</span> <span class="n">G</span> <span class="o">*</span> <span class="n">Σ</span>
+<span class="n">Z_F</span> <span class="o">=</span> <span class="n">gen_gaussian_plot_vals</span><span class="p">(</span><span class="n">x_hat_F</span><span class="p">,</span> <span class="n">Σ_F</span><span class="p">)</span>
+<span class="n">cs2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z_F</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs2</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Density 3</span>
+<span class="n">new_x_hat</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">x_hat_F</span>
+<span class="n">new_Σ</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">Σ_F</span> <span class="o">*</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">Q</span>
+<span class="n">new_Z</span> <span class="o">=</span> <span class="n">gen_gaussian_plot_vals</span><span class="p">(</span><span class="n">new_x_hat</span><span class="p">,</span> <span class="n">new_Σ</span><span class="p">)</span>
+<span class="n">cs3</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">new_Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs3</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">new_Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s2">&quot;$y$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_8909/2023138113.py:60: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  m_x, m_y = float(μ[0]), float(μ[1])
+/tmp/ipykernel_8909/3056082785.py:24: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  ax.text(float(y[0]), float(y[1]), &quot;$y$&quot;, fontsize=20, color=&quot;black&quot;)
+</pre></div>
+</div>
+<img alt="_images/1edc537452f4b18956671a65784bc41e220b045c6cacacb963236a2a0f360b10.png" src="_images/1edc537452f4b18956671a65784bc41e220b045c6cacacb963236a2a0f360b10.png" />
+</div>
+</div>
+</section>
+<section id="id10">
+<h3><span class="section-number">25.2.3. </span>递归程序<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
+<p id="index-1">让我们回顾一下我们所做的工作。</p>
+<p>我们以导弹位置<span class="math notranslate nohighlight">\(x\)</span>的先验分布<span class="math notranslate nohighlight">\(p(x)\)</span>开始当前周期。</p>
+<p>然后我们使用当前测量值<span class="math notranslate nohighlight">\(y\)</span>更新为<span class="math notranslate nohighlight">\(p(x \,|\, y)\)</span>。</p>
+<p>最后，我们使用<span class="math notranslate nohighlight">\(\{x_t\}\)</span>的运动方程<a class="reference internal" href="#equation-kl-xdynam">(25.5)</a>更新为<span class="math notranslate nohighlight">\(p_{new}(x)\)</span>。</p>
+<p>如果我们现在进入下一个周期，我们就可以再次循环，将<span class="math notranslate nohighlight">\(p_{new}(x)\)</span>作为当前先验。</p>
+<p>将符号<span class="math notranslate nohighlight">\(p_t(x)\)</span>替换为<span class="math notranslate nohighlight">\(p(x)\)</span>，将<span class="math notranslate nohighlight">\(p_{t+1}(x)\)</span>替换为<span class="math notranslate nohighlight">\(p_{new}(x)\)</span>，完整的递归程序为：</p>
+<ol class="arabic simple">
+<li><p>以先验分布<span class="math notranslate nohighlight">\(p_t(x) = N(\hat x_t, \Sigma_t)\)</span>开始当前周期。</p></li>
+<li><p>观察当前测量值<span class="math notranslate nohighlight">\(y_t\)</span>。</p></li>
+<li><p>根据<span class="math notranslate nohighlight">\(p_t(x)\)</span>和<span class="math notranslate nohighlight">\(y_t\)</span>计算滤波分布<span class="math notranslate nohighlight">\(p_t(x \,|\, y) = N(\hat x_t^F, \Sigma_t^F)\)</span>，应用贝叶斯法则和条件分布<a class="reference internal" href="#equation-kl-measurement-model">(25.3)</a>。</p></li>
+<li><p>根据滤波分布和<a class="reference internal" href="#equation-kl-xdynam">(25.5)</a>计算预测分布 <span class="math notranslate nohighlight">\(p_{t+1}(x) = N(\hat x_{t+1}, \Sigma_{t+1})\)</span>。</p></li>
+<li><p>将 <span class="math notranslate nohighlight">\(t\)</span> 加一并返回步骤1。</p></li>
+</ol>
+<p>重复<a class="reference internal" href="#equation-kl-mlom0">(25.6)</a>，<span class="math notranslate nohighlight">\(\hat x_t\)</span> 和 <span class="math notranslate nohighlight">\(\Sigma_t\)</span> 的动态方程如下</p>
+<div class="math notranslate nohighlight" id="equation-kalman-lom">
+<span class="eqno">(25.7)<a class="headerlink" href="#equation-kalman-lom" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{aligned}
+    \hat x_{t+1} &amp;= A \hat x_t + K_{\Sigma_t} (y_t - G \hat x_t) \\
+    \Sigma_{t+1} &amp;= A \Sigma_t A' - K_{\Sigma_t} G \Sigma_t A' + Q \nonumber
+\end{aligned}\end{split}\]</div>
+<p>这些是卡尔曼滤波的标准动态方程（参见，例如，<span id="id11">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span>，第58页）。</p>
+</section>
+</section>
+<section id="kalman-convergence">
+<span id="id12"></span><h2><a class="toc-backref" href="#id24"><span class="section-number">25.3. </span>收敛性</a><a class="headerlink" href="#kalman-convergence" title="Permalink to this heading">#</a></h2>
+<p>矩阵 <span class="math notranslate nohighlight">\(\Sigma_t\)</span> 是我们对 <span class="math notranslate nohighlight">\(x_t\)</span> 的预测 <span class="math notranslate nohighlight">\(\hat x_t\)</span> 的不确定性的度量。</p>
+<p>除了特殊情况外，无论经过多长时间，这种不确定性都永远不会完全消除。</p>
+<p>其中一个原因是我们的预测 <span class="math notranslate nohighlight">\(\hat x_t\)</span> 是基于 <span class="math notranslate nohighlight">\(t-1\)</span> 时刻的信息而不是 <span class="math notranslate nohighlight">\(t\)</span> 时刻的信息。</p>
+<p>即使我们知道 <span class="math notranslate nohighlight">\(x_{t-1}\)</span> 的精确值（实际上我们并不知道），转移方程 <a class="reference internal" href="#equation-kl-xdynam">(25.5)</a> 表明 <span class="math notranslate nohighlight">\(x_t = A x_{t-1} + w_t\)</span>。</p>
+<p>由于冲击项 <span class="math notranslate nohighlight">\(w_t\)</span> 在 <span class="math notranslate nohighlight">\(t-1\)</span> 时不可观测，任何在 <span class="math notranslate nohighlight">\(t-1\)</span> 时对 <span class="math notranslate nohighlight">\(x_t\)</span> 的预测都会产生一些误差（除非 <span class="math notranslate nohighlight">\(w_t\)</span> 是退化的）。</p>
+<p>然而，<span class="math notranslate nohighlight">\(\Sigma_t\)</span> 在 <span class="math notranslate nohighlight">\(t \to \infty\)</span> 时收敛到一个常数矩阵是完全可能的。</p>
+<p>为了研究这个问题，让我们展开 <a class="reference internal" href="#equation-kalman-lom">(25.7)</a> 中的第二个方程：</p>
+<div class="math notranslate nohighlight" id="equation-kalman-sdy">
+<span class="eqno">(25.8)<a class="headerlink" href="#equation-kalman-sdy" title="Permalink to this equation">#</a></span>\[\Sigma_{t+1} = A \Sigma_t A' -  A \Sigma_t G' (G \Sigma_t G' + R)^{-1} G \Sigma_t A' + Q\]</div>
+<p>这是一个关于 <span class="math notranslate nohighlight">\(\Sigma_t\)</span> 的非线性差分方程。</p>
+<p><a class="reference internal" href="#equation-kalman-sdy">(25.8)</a> 的不动点是满足以下条件的常数矩阵 <span class="math notranslate nohighlight">\(\Sigma\)</span>：</p>
+<div class="math notranslate nohighlight" id="equation-kalman-dare">
+<span class="eqno">(25.9)<a class="headerlink" href="#equation-kalman-dare" title="Permalink to this equation">#</a></span>\[\Sigma = A \Sigma A' -  A \Sigma G' (G \Sigma G' + R)^{-1} G \Sigma A' + Q\]</div>
+<p>方程 <a class="reference internal" href="#equation-kalman-sdy">(25.8)</a> 被称为离散时间里卡提差分方程。</p>
+<p>方程 <a class="reference internal" href="#equation-kalman-dare">(25.9)</a> 被称为<a class="reference external" href="https://en.wikipedia.org/wiki/Algebraic_Riccati_equation">离散时间代数黎卡提方程</a>。</p>
+<p>关于固定点存在的条件以及序列 <span class="math notranslate nohighlight">\(\{\Sigma_t\}\)</span> 收敛到该固定点的条件在 <span id="id13">[<a class="reference internal" href="zreferences.html#id148" title="E. W. Anderson, L. P. Hansen, E. R. McGrattan, and T. J. Sargent. Mechanics of Forming and Estimating Dynamic Linear Economies. In Handbook of Computational Economics. Elsevier, vol 1 edition, 1996.">Anderson <em>et al.</em>, 1996</a>]</span> 和 <span id="id14">[<a class="reference internal" href="zreferences.html#id146" title="D. B. O. Anderson and J. B. Moore. Optimal Filtering. Dover Publications, 2005.">Anderson and Moore, 2005</a>]</span> 第4章中有详细讨论。</p>
+<p>一个充分（但非必要）条件是 <span class="math notranslate nohighlight">\(A\)</span> 的所有特征值 <span class="math notranslate nohighlight">\(\lambda_i\)</span> 满足 <span class="math notranslate nohighlight">\(|\lambda_i| &lt; 1\)</span>（参见 <span id="id15">[<a class="reference internal" href="zreferences.html#id146" title="D. B. O. Anderson and J. B. Moore. Optimal Filtering. Dover Publications, 2005.">Anderson and Moore, 2005</a>]</span>，第77页）。</p>
+<p>（这个强条件确保了 <span class="math notranslate nohighlight">\(x_t\)</span> 的无条件分布在 <span class="math notranslate nohighlight">\(t \rightarrow + \infty\)</span> 时收敛。）</p>
+<p>在这种情况下，对于任何非负且对称的初始 <span class="math notranslate nohighlight">\(\Sigma_0\)</span> 选择，<a class="reference internal" href="#equation-kalman-sdy">(25.8)</a> 中的序列 <span class="math notranslate nohighlight">\(\{\Sigma_t\}\)</span> 都会收敛到一个非负对称矩阵 <span class="math notranslate nohighlight">\(\Sigma\)</span>，该矩阵是 <a class="reference internal" href="#equation-kalman-dare">(25.9)</a> 的解。</p>
+</section>
+<section id="id16">
+<h2><a class="toc-backref" href="#id25"><span class="section-number">25.4. </span>实现</a><a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h2>
+<p id="index-2">来自 <a class="reference external" href="http://quantecon.org/quantecon-py">QuantEcon.py</a> 包的 <code class="docutils literal notranslate"><span class="pre">Kalman</span></code> 类实现了卡尔曼滤波器</p>
+<ul class="simple">
+<li><p>实例数据包括：</p>
+<ul>
+<li><p>当前先验的矩 <span class="math notranslate nohighlight">\((\hat x_t, \Sigma_t)\)</span></p></li>
+<li><p>来自 <a class="reference external" href="http://quantecon.org/quantecon-py">QuantEcon.py</a> 的 <a class="reference external" href="https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py">LinearStateSpace</a> 类的一个实例</p></li>
+</ul>
+</li>
+</ul>
+<p>后者表示形式如下的线性状态空间模型</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+    x_{t+1} &amp; = A x_t + C w_{t+1}
+    \\
+    y_t &amp; = G x_t + H v_t
+\end{aligned}
+\end{split}\]</div>
+<p>其中冲击项 <span class="math notranslate nohighlight">\(w_t\)</span> 和 <span class="math notranslate nohighlight">\(v_t\)</span> 是独立同分布的标准正态分布。</p>
+<p>为了与本讲座的符号保持一致，我们设定</p>
+<div class="math notranslate nohighlight">
+\[
+Q := CC' \quad \text{和} \quad R := HH'
+\]</div>
+<ul class="simple">
+<li><p>来自 <a class="reference external" href="http://quantecon.org/quantecon-py">QuantEcon.py</a> 包的 <code class="docutils literal notranslate"><span class="pre">Kalman</span></code> 类有许多方法，其中一些我们会等到后续讲座中学习更高级的应用时再使用。</p></li>
+<li><p>与本讲座相关的方法有：</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prior_to_filtered</span></code>，将 <span class="math notranslate nohighlight">\((\hat x_t, \Sigma_t)\)</span> 更新为 <span class="math notranslate nohighlight">\((\hat x_t^F, \Sigma_t^F)\)</span></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">filtered_to_forecast</span></code>，将滤波分布更新为预测分布 – 成为新的先验分布 <span class="math notranslate nohighlight">\((\hat x_{t+1}, \Sigma_{t+1})\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">update</span></code>，结合上述两种方法</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stationary_values</span></code>，计算<a class="reference internal" href="#equation-kalman-dare">(25.9)</a>的解和相应的（稳态）卡尔曼增益</p></li>
+</ul>
+</li>
+</ul>
+<p>你可以在<a class="reference external" href="https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/kalman.py">GitHub</a>上查看程序。</p>
+</section>
+<section id="id17">
+<h2><a class="toc-backref" href="#id26"><span class="section-number">25.5. </span>练习</a><a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h2>
+<div class="exercise admonition" id="kalman_ex1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 25.1 </span></p>
+<section id="exercise-content">
+<p>考虑以下卡尔曼滤波的简单应用，大致基于<span id="id18">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span>第2.9.2节。</p>
+<p>假设</p>
+<ul class="simple">
+<li><p>所有变量都是标量</p></li>
+<li><p>隐藏状态 <span class="math notranslate nohighlight">\(\{x_t\}\)</span> 实际上是常数，等于建模者未知的某个 <span class="math notranslate nohighlight">\(\theta \in \mathbb{R}\)</span></p></li>
+</ul>
+<p>因此，状态动态由<a class="reference internal" href="#equation-kl-xdynam">(25.5)</a>给出，其中 <span class="math notranslate nohighlight">\(A=1\)</span>，<span class="math notranslate nohighlight">\(Q=0\)</span> 且 <span class="math notranslate nohighlight">\(x_0 = \theta\)</span>。</p>
+<p>测量方程为 <span class="math notranslate nohighlight">\(y_t = \theta + v_t\)</span>，其中 <span class="math notranslate nohighlight">\(v_t\)</span> 服从 <span class="math notranslate nohighlight">\(N(0,1)\)</span> 且独立同分布。</p>
+<p>本练习的任务是模拟该模型，并使用 <code class="docutils literal notranslate"><span class="pre">kalman.py</span></code> 中的代码绘制前五个预测密度 <span class="math notranslate nohighlight">\(p_t(x) = N(\hat x_t, \Sigma_t)\)</span>。</p>
+<p>如 <span id="id19">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span> 第2.9.1–2.9.2节所示，这些分布渐近地将所有质量集中在未知值 <span class="math notranslate nohighlight">\(\theta\)</span> 上。</p>
+<p>在模拟中，取 <span class="math notranslate nohighlight">\(\theta = 10\)</span>，<span class="math notranslate nohighlight">\(\hat x_0 = 8\)</span> 和 <span class="math notranslate nohighlight">\(\Sigma_0 = 1\)</span>。</p>
+<p>你的图形应该 – 除去随机性 – 看起来像这样</p>
+<figure class="align-default">
+<img alt="_images/kl_ex1_fig.png" src="_images/kl_ex1_fig.png" />
+</figure>
+</section>
+</div>
+<div class="solution dropdown admonition" id="kalman-solution-1">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#kalman_ex1"> Exercise 25.1</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 参数</span>
+<span class="n">θ</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># 状态 x_t 的常数值</span>
+<span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+<span class="n">ss</span> <span class="o">=</span> <span class="n">LinearStateSpace</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">mu_0</span><span class="o">=</span><span class="n">θ</span><span class="p">)</span>
+
+<span class="c1"># 设置先验，初始化卡尔曼滤波器</span>
+<span class="n">x_hat_0</span><span class="p">,</span> <span class="n">Σ_0</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span>
+<span class="n">kalman</span> <span class="o">=</span> <span class="n">Kalman</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">x_hat_0</span><span class="p">,</span> <span class="n">Σ_0</span><span class="p">)</span>
+
+<span class="c1"># 从状态空间模型中抽取 y 的观测值</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="c1"># 设置图形</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">xgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">θ</span> <span class="o">-</span> <span class="mi">5</span><span class="p">,</span> <span class="n">θ</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="c1"># 记录当前预测的均值和方差</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="p">(</span><span class="n">kalman</span><span class="o">.</span><span class="n">x_hat</span><span class="p">,</span> <span class="n">kalman</span><span class="o">.</span><span class="n">Sigma</span><span class="p">)]</span>
+    <span class="c1"># 绘图，更新滤波器</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xgrid</span><span class="p">,</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">xgrid</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">v</span><span class="p">)),</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$t=</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">kalman</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;当 $</span><span class="se">\\</span><span class="s1">theta = </span><span class="si">{</span><span class="n">θ</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">$ 时的前 </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s1"> 个密度&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_8909/3198606146.py:21: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  m, v = [float(z) for z in (kalman.x_hat, kalman.Sigma)]
+</pre></div>
+</div>
+<img alt="_images/ce4ac69da14029784945dd5147c3e6c145876455d035f1ca37d57ffca9615da1.png" src="_images/ce4ac69da14029784945dd5147c3e6c145876455d035f1ca37d57ffca9615da1.png" />
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="kalman_ex2">
+
+<p class="admonition-title"><span class="caption-number">Exercise 25.2 </span></p>
+<section id="exercise-content">
+<p>前面的图形支持了概率质量收敛到 <span class="math notranslate nohighlight">\(\theta\)</span> 的观点。</p>
+<p>为了更好地理解这一点，选择一个小的 <span class="math notranslate nohighlight">\(\epsilon &gt; 0\)</span> 并计算</p>
+<div class="math notranslate nohighlight">
+\[
+z_t := 1 - \int_{\theta - \epsilon}^{\theta + \epsilon} p_t(x) dx
+\]</div>
+<p>对于 <span class="math notranslate nohighlight">\(t = 0, 1, 2, \ldots, T\)</span>。</p>
+<p>绘制 <span class="math notranslate nohighlight">\(z_t\)</span> 与 <span class="math notranslate nohighlight">\(T\)</span> 的关系图，设置 <span class="math notranslate nohighlight">\(\epsilon = 0.1\)</span> 和 <span class="math notranslate nohighlight">\(T = 600\)</span>。</p>
+<p>你的图应该显示误差不规则地下降，类似这样</p>
+<figure class="align-default">
+<img alt="_images/kl_ex2_fig.png" src="_images/kl_ex2_fig.png" />
+</figure>
+</section>
+</div>
+<div class="solution dropdown admonition" id="kalman-solution-3">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#kalman_ex2"> Exercise 25.2</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ϵ</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">θ</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># 状态x_t的常数值</span>
+<span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+<span class="n">ss</span> <span class="o">=</span> <span class="n">LinearStateSpace</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">mu_0</span><span class="o">=</span><span class="n">θ</span><span class="p">)</span>
+
+<span class="n">x_hat_0</span><span class="p">,</span> <span class="n">Σ_0</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span>
+<span class="n">kalman</span> <span class="o">=</span> <span class="n">Kalman</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">x_hat_0</span><span class="p">,</span> <span class="n">Σ_0</span><span class="p">)</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="mi">600</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+    <span class="c1"># 记录当前预测的均值和方差并绘制其密度</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span> <span class="k">for</span> <span class="n">temp</span> <span class="ow">in</span> <span class="p">(</span><span class="n">kalman</span><span class="o">.</span><span class="n">x_hat</span><span class="p">,</span> <span class="n">kalman</span><span class="o">.</span><span class="n">Sigma</span><span class="p">)]</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+    <span class="n">integral</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">θ</span> <span class="o">-</span> <span class="n">ϵ</span><span class="p">,</span> <span class="n">θ</span> <span class="o">+</span> <span class="n">ϵ</span><span class="p">)</span>
+    <span class="n">z</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">integral</span>
+
+    <span class="n">kalman</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">z</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">z</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_8909/3696317892.py:16: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  m, v = [float(temp) for temp in (kalman.x_hat, kalman.Sigma)]
+</pre></div>
+</div>
+<img alt="_images/7282df8d71fa261761a7f7de8cb12c63d8d65712caadac2b6a4667efb6030c79.png" src="_images/7282df8d71fa261761a7f7de8cb12c63d8d65712caadac2b6a4667efb6030c79.png" />
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="kalman_ex3">
+
+<p class="admonition-title"><span class="caption-number">Exercise 25.3 </span></p>
+<section id="exercise-content">
+<p>如<a class="reference internal" href="#kalman-convergence"><span class="std std-ref">上文所述</span></a>，如果冲击序列 <span class="math notranslate nohighlight">\(\{w_t\}\)</span> 不是退化的，那么在 <span class="math notranslate nohighlight">\(t-1\)</span> 时刻通常无法无误地预测 <span class="math notranslate nohighlight">\(x_t\)</span>（即使我们能观察到 <span class="math notranslate nohighlight">\(x_{t-1}\)</span> 也是如此）。</p>
+<p>让我们现在将卡尔曼滤波得到的预测值 <span class="math notranslate nohighlight">\(\hat x_t\)</span> 与一个<strong>被允许</strong>观察 <span class="math notranslate nohighlight">\(x_{t-1}\)</span> 的竞争者进行比较。</p>
+<p>这个竞争者将使用条件期望 <span class="math notranslate nohighlight">\(\mathbb E[ x_t \,|\, x_{t-1}]\)</span>，在这种情况下等于 <span class="math notranslate nohighlight">\(A x_{t-1}\)</span>。</p>
+<p>条件期望被认为是在最小化均方误差方面的最优预测方法。</p>
+<p>（更准确地说，关于 <span class="math notranslate nohighlight">\(g\)</span> 的 <span class="math notranslate nohighlight">\(\mathbb E \, \| x_t - g(x_{t-1}) \|^2\)</span> 的最小化器是 <span class="math notranslate nohighlight">\(g^*(x_{t-1}) := \mathbb E[ x_t \,|\, x_{t-1}]\)</span>）</p>
+<p>因此，我们是在将卡尔曼滤波与一个拥有更多信息（在能够观察潜在状态的意义上）的竞争者进行比较，并且</p>
+<p>在最小化平方误差方面表现最优。</p>
+<p>我们的对比竞赛将以平方误差来评估。</p>
+<p>具体来说，你的任务是生成一个图表，绘制 <span class="math notranslate nohighlight">\(\| x_t - A x_{t-1} \|^2\)</span> 和 <span class="math notranslate nohighlight">\(\| x_t - \hat x_t \|^2\)</span> 对 <span class="math notranslate nohighlight">\(t\)</span> 的观测值，其中 <span class="math notranslate nohighlight">\(t = 1, \ldots, 50\)</span>。</p>
+<p>对于参数，设定 <span class="math notranslate nohighlight">\(G = I, R = 0.5 I\)</span> 和 <span class="math notranslate nohighlight">\(Q = 0.3 I\)</span>，其中 <span class="math notranslate nohighlight">\(I\)</span> 是 <span class="math notranslate nohighlight">\(2 \times 2\)</span> 单位矩阵。</p>
+<p>设定</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+A
+= \left(
+\begin{array}{cc}
+    0.5 &amp; 0.4 \\
+    0.6 &amp; 0.3
+\end{array}
+  \right)
+\end{split}\]</div>
+<p>要初始化先验密度，设定</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\Sigma_0
+= \left(
+\begin{array}{cc}
+    0.9 &amp; 0.3 \\
+    0.3 &amp; 0.9
+\end{array}
+  \right)
+\end{split}\]</div>
+<p>且 <span class="math notranslate nohighlight">\(\hat x_0 = (8, 8)\)</span>。</p>
+<p>最后，设定 <span class="math notranslate nohighlight">\(x_0 = (0, 0)\)</span>。</p>
+<p>你最终应该得到一个类似下图的图表（考虑随机性的影响）</p>
+<figure class="align-default">
+<img alt="_images/kalman_ex3.png" src="_images/kalman_ex3.png" />
+</figure>
+<p>观察可以发现，在初始学习期之后，卡尔曼滤波器表现得相当好，即使与那些在已知潜在状态的情况下进行最优预测的竞争者相比也是如此。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="kalman-solution-5">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#kalman_ex3"> Exercise 25.3</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 定义 A, C, G, H</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
+     <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]]</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># 设置状态空间模型，初始值 x_0 设为零</span>
+<span class="n">ss</span> <span class="o">=</span> <span class="n">LinearStateSpace</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">mu_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1"># 定义先验密度</span>
+<span class="n">Σ</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+     <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]]</span>
+<span class="n">Σ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Σ</span><span class="p">)</span>
+<span class="n">x_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+
+<span class="c1"># 初始化卡尔曼滤波器</span>
+<span class="n">kn</span> <span class="o">=</span> <span class="n">Kalman</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">Σ</span><span class="p">)</span>
+
+<span class="c1"># 打印 A 的特征值</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A 的特征值：&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">eigvals</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+
+<span class="c1"># 打印平稳 Σ</span>
+<span class="n">S</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="n">kn</span><span class="o">.</span><span class="n">stationary_values</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平稳预测误差方差：&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+
+<span class="c1"># 生成图表</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+
+<span class="n">e1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">e2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+    <span class="n">kn</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">[:,</span><span class="n">t</span><span class="p">])</span>
+    <span class="n">e1</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">x</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">kn</span><span class="o">.</span><span class="n">x_hat</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">e2</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">x</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">A</span> <span class="o">@</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="p">),</span> <span class="n">e1</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">&#39;卡尔曼滤波器误差&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="p">),</span> <span class="n">e2</span><span class="p">,</span> <span class="s1">&#39;g-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">&#39;条件期望误差&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>A 的特征值：
+[ 0.9+0.j -0.1+0.j]
+平稳预测误差方差：
+[[0.40329108 0.1050718 ]
+ [0.1050718  0.41061709]]
+</pre></div>
+</div>
+<img alt="_images/3ce7532b2ac3041fcbd9a2b10189cb4cac556ec6602bfae71669235aab7dacb4.png" src="_images/3ce7532b2ac3041fcbd9a2b10189cb4cac556ec6602bfae71669235aab7dacb4.png" />
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="kalman_ex4">
+
+<p class="admonition-title"><span class="caption-number">Exercise 25.4 </span></p>
+<section id="exercise-content">
+<p>尝试上下调整系数 <span class="math notranslate nohighlight">\(0.3\)</span> (在 <span class="math notranslate nohighlight">\(Q = 0.3 I\)</span> 中)。</p>
+<p>观察平稳解 <span class="math notranslate nohighlight">\(\Sigma\)</span> (参见 <a class="reference internal" href="#equation-kalman-dare">(25.9)</a>) 中的对角线值如何随这个系数增减而变化。</p>
+<p>这说明 <span class="math notranslate nohighlight">\(x_t\)</span> 运动规律中的随机性越大，会导致预测中的(永久性)不确定性越大。</p>
+</section>
+</div>
+<hr class="footnotes docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="f1"><span class="brackets"><a class="fn-backref" href="#id8">1</a></span></dt>
+<dd><p>例如，参见 <span id="id20">[<a class="reference internal" href="zreferences.html#id151" title="C. M. Bishop. Pattern Recognition and Machine Learning. Springer, 2006.">Bishop, 2006</a>]</span> 第93页。要从他的表达式得到上面使用的表达式，你还需要应用 <a class="reference external" href="https://en.wikipedia.org/wiki/Woodbury_matrix_identity">Woodbury矩阵恒等式</a>。</p>
+</dd>
+</dl>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/kalman.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/kalman.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/kalman.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/kalman.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/kalman.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "kalman";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/kalman.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

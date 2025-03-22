@@ -1,0 +1,1928 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>34. Cass-Koopmans模型 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'cass_koopmans_1';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/cass_koopmans_1.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="35. Cass-Koopmans竞争均衡" href="cass_koopmans_2.html" />
+    <link rel="prev" title="33. 求职搜索 VII：McCall工人的Q学习" href="mccall_q.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="Cass-Koopmans模型"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="Cass-Koopmans模型" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/cass_koopmans_1.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=cass_koopmans_1>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">34.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">34.2. 模型</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">34.2.1. 插话：聚合理论</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">34.2.1.1. 一个经济体</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">34.3. 规划问题</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">34.3.1. 线性齐次生产函数的有用性质</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">34.3.2. 一阶必要条件</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">34.4. 打靶算法</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">34.5. 将初始资本设定为稳态资本</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">34.6. 收费公路性质</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">34.7. 极限无限期经济</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">34.8. 稳定流形和相图</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">34.9. 结论</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">34.9.1. 练习</a></li>
+</ul>
+</li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">Cass-Koopmans模型</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="cass-koopmans">
+<h1><span class="section-number">34. </span>Cass-Koopmans模型<a class="headerlink" href="#cass-koopmans" title="Permalink to this heading">#</a></h1>
+<section id="id1">
+<h2><span class="section-number">34.1. </span>概述<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<p>本讲座和<a class="reference internal" href="cass_koopmans_2.html"><span class="doc">Cass-Koopmans竞争均衡</span></a>描述了Tjalling Koopmans <span id="id2">[<a class="reference internal" href="zreferences.html#id91" title="Tjalling C. Koopmans. On the concept of optimal economic growth. In Tjalling C. Koopmans, editor, The Economic Approach to Development Planning, pages 225-287. Chicago, 1965.">Koopmans, 1965</a>]</span>和David Cass <span id="id3">[<a class="reference internal" href="zreferences.html#id92" title="David Cass. Optimum growth in an aggregative model of capital accumulation. Review of Economic Studies, 32(3):233-240, 1965.">Cass, 1965</a>]</span>用来分析最优增长的模型。</p>
+<p>该模型扩展了<a class="reference external" href="https://python-programming.quantecon.org/python_oop.html">早前讲座</a>中描述的Robert Solow模型。
+它通过将储蓄率作为一个决策变量，而不是一个固定的常数来实现这一点。</p>
+<p>（索洛假设储蓄率是模型外部决定的常数。）</p>
+<p>我们将描述该模型的两个版本，本讲中的规划问题，以及在<a class="reference internal" href="cass_koopmans_2.html"><span class="doc">Cass-Koopmans 竞争均衡</span></a>讲中的竞争均衡。</p>
+<p>这两节课共同说明了<strong>计划经济</strong>和以<strong>竞争均衡</strong>形式组织的分散经济之间实际上存在的更普遍联系。</p>
+<p>本讲重点讨论计划经济版本。</p>
+<p>在计划经济中，</p>
+<ul class="simple">
+<li><p>没有价格</p></li>
+<li><p>没有预算约束</p></li>
+</ul>
+<p>相反，有一个决策者告诉人们</p>
+<ul class="simple">
+<li><p>生产什么</p></li>
+<li><p>在实物资本中投资什么</p></li>
+<li><p>谁在什么时候消费什么</p></li>
+</ul>
+<p>本讲使用的重要概念包括</p>
+<ul class="simple">
+<li><p>用于解决规划问题的极小极大问题</p></li>
+<li><p>用于求解差分方程的<strong>射击算法</strong>
+对初始和终端条件。</p></li>
+<li><p>对于长期但有限期限经济的最优路径的<strong>收费公路</strong>性质。</p></li>
+<li><p><strong>稳定流形</strong>和<strong>相位平面</strong></p></li>
+</ul>
+<p>让我们从一些标准导入开始：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span><span class="p">,</span> <span class="n">float64</span>
+<span class="kn">from</span> <span class="nn">numba.experimental</span> <span class="kn">import</span> <span class="n">jitclass</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">quantecon.optimize</span> <span class="kn">import</span> <span class="n">brentq</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2><span class="section-number">34.2. </span>模型<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<p>时间是离散的，取值为 <span class="math notranslate nohighlight">\(t = 0, 1 , \ldots, T\)</span>，其中 <span class="math notranslate nohighlight">\(T\)</span> 是有限的。</p>
+<p>(我们最终会研究 <span class="math notranslate nohighlight">\(T = + \infty\)</span> 的极限情况)</p>
+<p>单一商品可以被消费或投资于实物资本。</p>
+<p>消费品不耐用，如果不立即消费就会完全折旧。</p>
+<p>资本品是耐用的，但会折旧。</p>
+<p>我们用 <span class="math notranslate nohighlight">\(C_t\)</span> 表示在时间 <span class="math notranslate nohighlight">\(t\)</span> 的非耐用消费品的总消费量。</p>
+<p>用 <span class="math notranslate nohighlight">\(K_t\)</span> 表示在时间 <span class="math notranslate nohighlight">\(t\)</span> 的实物资本存量。</p>
+<p>令 <span class="math notranslate nohighlight">\(\vec{C}\)</span> = <span class="math notranslate nohighlight">\(\{C_0,\dots, C_T\}\)</span> 且
+<span class="math notranslate nohighlight">\(\vec{K}\)</span> = <span class="math notranslate nohighlight">\(\{K_0,\dots,K_{T+1}\}\)</span>。</p>
+<section id="id5">
+<h3><span class="section-number">34.2.1. </span>插话：聚合理论<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<p>我们使用代表性消费者的概念，可以理解如下。</p>
+<p>有一个单位质量的相同消费者，用 <span class="math notranslate nohighlight">\(\omega \in [0,1]\)</span> 索引。</p>
+<p>消费者 <span class="math notranslate nohighlight">\(\omega\)</span> 的消费量为 <span class="math notranslate nohighlight">\(c(\omega)\)</span>。</p>
+<p>总消费量为</p>
+<div class="math notranslate nohighlight">
+\[
+C = \int_0^1 c(\omega) d \omega
+\]</div>
+<p>考虑一个福利问题，选择消费者之间的分配 <span class="math notranslate nohighlight">\(\{c(\omega)\}\)</span> 以最大化
+$<span class="math notranslate nohighlight">\(
+ \int_0^1 u(c(\omega)) d \omega
+\)</span>$</p>
+<p>其中 <span class="math notranslate nohighlight">\(u(\cdot)\)</span> 是一个凹效用函数，满足 <span class="math notranslate nohighlight">\(u' &gt;0, u'' &lt; 0\)</span>，且最大化受约束于</p>
+<div class="math notranslate nohighlight" id="equation-eq-feas200">
+<span class="eqno">(34.1)<a class="headerlink" href="#equation-eq-feas200" title="Permalink to this equation">#</a></span>\[
+C = \int_0^1 c(\omega) d \omega .
+\]</div>
+<p>构建拉格朗日函数 <span class="math notranslate nohighlight">\(L = \int_0^1 u(c(\omega)) d \omega + \lambda [C - \int_0^1 c(\omega) d \omega ] \)</span>。</p>
+<p>对每个 <span class="math notranslate nohighlight">\(\omega\)</span> 在积分号下求导，得到一阶必要条件</p>
+<div class="math notranslate nohighlight">
+\[
+u'(c(\omega)) = \lambda.
+\]</div>
+<p>这些条件意味着 <span class="math notranslate nohighlight">\(c(\omega)\)</span> 等于一个与 <span class="math notranslate nohighlight">\(\omega\)</span> 无关的常数 <span class="math notranslate nohighlight">\(c\)</span>。</p>
+<p>要找到 <span class="math notranslate nohighlight">\(c\)</span>，使用可行性约束 <a class="reference internal" href="#equation-eq-feas200">(34.1)</a> 可以得出</p>
+<div class="math notranslate nohighlight">
+\[
+c(\omega) = c = C.
+\]</div>
+<p>这种推导过程揭示了代表性消费者消费量为 <span class="math notranslate nohighlight">\(C\)</span> 背后的特殊<em>聚合理论</em>。</p>
+<p>这在宏观经济学中经常出现。</p>
+<p>我们将在这里以及在这篇讲座 <a class="reference internal" href="cass_koopmans_2.html"><span class="doc">Cass-Koopmans 竞争均衡</span></a> 中使用这个聚合理论。</p>
+<section id="id6">
+<h4><span class="section-number">34.2.1.1. </span>一个经济体<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h4>
+<p>代表性家庭在每个时期<span class="math notranslate nohighlight">\(t\)</span>都拥有一单位的劳动力，并且喜欢在每个时期消费商品。</p>
+<p>代表性家庭在每个时期<span class="math notranslate nohighlight">\(t\)</span>非弹性地供应一单位劳动力<span class="math notranslate nohighlight">\(N_t\)</span>，因此
+<span class="math notranslate nohighlight">\(N_t =1 \text{ 对所有 } t \in \{0, 1, \ldots,  T\}\)</span>。</p>
+<p>代表性家庭对消费组合的偏好由以下效用函数排序：</p>
+<div class="math notranslate nohighlight" id="equation-utility-functional">
+<span class="eqno">(34.2)<a class="headerlink" href="#equation-utility-functional" title="Permalink to this equation">#</a></span>\[U(\vec{C}) = \sum_{t=0}^{T} \beta^t \frac{C_t^{1-\gamma}}{1-\gamma}\]</div>
+<p>其中<span class="math notranslate nohighlight">\(\beta \in (0,1)\)</span>是贴现因子，<span class="math notranslate nohighlight">\(\gamma &gt;0\)</span>
+决定单期效用函数的曲率。</p>
+<p>较大的<span class="math notranslate nohighlight">\(\gamma\)</span>意味着更大的曲率。</p>
+<p>注意</p>
+<div class="math notranslate nohighlight" id="equation-utility-oneperiod">
+<span class="eqno">(34.3)<a class="headerlink" href="#equation-utility-oneperiod" title="Permalink to this equation">#</a></span>\[u(C_t) = \frac{C_t^{1-\gamma}}{1-\gamma}\]</div>
+<p>满足<span class="math notranslate nohighlight">\(u'&gt;0,u''&lt;0\)</span>。</p>
+<p><span class="math notranslate nohighlight">\(u' &gt; 0\)</span>表明消费者偏好更多而不是更少。</p>
+<p><span class="math notranslate nohighlight">\(u''&lt; 0\)</span>表明随着<span class="math notranslate nohighlight">\(C_t\)</span>的增加，边际效用递减。</p>
+<p>我们假设<span class="math notranslate nohighlight">\(K_0 &gt; 0\)</span>是一个外生的初始资本存量。
+存在一个全经济范围的生产函数</p>
+<div class="math notranslate nohighlight" id="equation-production-function">
+<span class="eqno">(34.4)<a class="headerlink" href="#equation-production-function" title="Permalink to this equation">#</a></span>\[F(K_t,N_t) = A K_t^{\alpha}N_t^{1-\alpha}\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(0 &lt; \alpha&lt;1\)</span>，<span class="math notranslate nohighlight">\(A &gt; 0\)</span>。</p>
+<p>一个可行的配置 <span class="math notranslate nohighlight">\(\vec{C}, \vec{K}\)</span> 满足</p>
+<div class="math notranslate nohighlight" id="equation-allocation">
+<span class="eqno">(34.5)<a class="headerlink" href="#equation-allocation" title="Permalink to this equation">#</a></span>\[C_t + K_{t+1} \leq F(K_t,N_t) + (1-\delta) K_t \quad \text{for all } t \in \{0, 1, \ldots,  T\}\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\delta \in (0,1)\)</span> 是资本的折旧率。</p>
+</section>
+</section>
+</section>
+<section id="id7">
+<h2><span class="section-number">34.3. </span>规划问题<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<p>规划者选择配置 <span class="math notranslate nohighlight">\(\{\vec{C},\vec{K}\}\)</span> 以
+最大化 <a class="reference internal" href="#equation-utility-functional">(34.2)</a>，同时受制于 <a class="reference internal" href="#equation-allocation">(34.5)</a>。</p>
+<p>令 <span class="math notranslate nohighlight">\(\vec{\mu}=\{\mu_0,\dots,\mu_T\}\)</span> 为一个
+非负的<strong>拉格朗日乘数</strong>序列。</p>
+<p>为了找到最优配置，构建拉格朗日函数</p>
+<div class="math notranslate nohighlight" id="equation-eq-lagrangian201">
+<span class="eqno">(34.6)<a class="headerlink" href="#equation-eq-lagrangian201" title="Permalink to this equation">#</a></span>\[
+\mathcal{L}(\vec{C} ,\vec{K} ,\vec{\mu} ) =
+\sum_{t=0}^T \beta^t\left\{ u(C_t)+ \mu_t
+\left(F(K_t,1) + (1-\delta) K_t- C_t - K_{t+1} \right)\right\}
+\]</div>
+<p>并提出以下极小极大问题：</p>
+<div class="math notranslate nohighlight" id="equation-min-max-prob">
+<span class="eqno">(34.7)<a class="headerlink" href="#equation-min-max-prob" title="Permalink to this equation">#</a></span>\[\min_{\vec{\mu}} \max_{\vec{C},\vec{K}} \mathcal{L}(\vec{C},\vec{K},\vec{\mu} )\]</div>
+<ul class="simple">
+<li><p><strong>极值化</strong>意味着
+对<span class="math notranslate nohighlight">\(\vec{C}, \vec{K}\)</span>求最大值，
+对<span class="math notranslate nohighlight">\(\vec{\mu}\)</span>求最小值。</p></li>
+<li><p>我们的问题满足
+确保在满足我们即将计算的
+一阶必要条件的配置下，
+二阶条件得到满足的条件。</p></li>
+</ul>
+<p>在计算一阶条件之前，我们先介绍一些实用的公式。</p>
+<section id="id8">
+<h3><span class="section-number">34.3.1. </span>线性齐次生产函数的有用性质<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<p>以下技术细节将对我们有帮助。</p>
+<p>注意到</p>
+<div class="math notranslate nohighlight">
+\[
+F(K_t,N_t) = A K_t^\alpha N_t^{1-\alpha} = N_t A\left(\frac{K_t}{N_t}\right)^\alpha
+\]</div>
+<p>定义<strong>人均产出生产函数</strong></p>
+<div class="math notranslate nohighlight">
+\[
+\frac{F(K_t,N_t)}{N_t} \equiv f\left(\frac{K_t}{N_t}\right) = A\left(\frac{K_t}{N_t}\right)^\alpha
+\]</div>
+<p>其参数是<strong>人均资本</strong>。</p>
+<p>回顾以下关于资本边际产出的计算是很有用的</p>
+<div class="math notranslate nohighlight" id="equation-useful-calc1">
+<span class="eqno">(34.8)<a class="headerlink" href="#equation-useful-calc1" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{aligned}
+\frac{\partial F(K_t,N_t)}{\partial K_t}
+&amp; =
+\frac{\partial N_t f\left( \frac{K_t}{N_t}\right)}{\partial K_t}
+\\ &amp;=
+N_t f'\left(\frac{K_t}{N_t}\right)\frac{1}{N_t} \quad \text{(链式法则)}
+\\ &amp;=
+f'\left.\left(\frac{K_t}{N_t}\right)\right|_{N_t=1}
+\\ &amp;= f'(K_t)
+\end{aligned}\end{split}\]</div>
+<p>以及劳动力的边际产出</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\frac{\partial F(K_t,N_t)}{\partial N_t}
+&amp;=
+\frac{\partial N_t f\left( \frac{K_t}{N_t}\right)}{\partial N_t} \quad \text{(乘积法则)}
+\\ &amp;=
+f\left(\frac{K_t}{N_t}\right){+} N_t f'\left(\frac{K_t}{N_t}\right) \frac{-K_t}{N_t^2} \quad \text{(链式法则)}
+\\ &amp;=
+f\left(\frac{K_t}{N_t}\right){-}\frac{K_t}{N_t}f'\left.\left(\frac{K_t}{N_t}\right)\right|_{N_t=1}
+\\ &amp;=
+f(K_t) - f'(K_t) K_t
+\end{aligned}
+\end{split}\]</div>
+<p>(这里我们使用了对所有 <span class="math notranslate nohighlight">\(t\)</span> 都有 <span class="math notranslate nohighlight">\(N_t = 1\)</span> 的条件，因此 <span class="math notranslate nohighlight">\(K_t = \frac{K_t}{N_t}\)</span>。)</p>
+</section>
+<section id="id9">
+<h3><span class="section-number">34.3.2. </span>一阶必要条件<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
+<p>我们现在计算拉格朗日函数<a class="reference internal" href="#equation-eq-lagrangian201">(34.6)</a>的<strong>一阶必要条件</strong>：</p>
+<div class="math notranslate nohighlight" id="equation-constraint1">
+<span class="eqno">(34.9)<a class="headerlink" href="#equation-constraint1" title="Permalink to this equation">#</a></span>\[C_t: \qquad u'(C_t)-\mu_t=0 \qquad \text{for all} \quad t= 0,1,\dots,T\]</div>
+<div class="math notranslate nohighlight" id="equation-constraint2">
+<span class="eqno">(34.10)<a class="headerlink" href="#equation-constraint2" title="Permalink to this equation">#</a></span>\[K_t: \qquad \beta \mu_t\left[(1-\delta)+f'(K_t)\right] - \mu_{t-1}=0 \qquad \text{for all } \quad t=1,2,\dots,T\]</div>
+<div class="math notranslate nohighlight" id="equation-constraint3">
+<span class="eqno">(34.11)<a class="headerlink" href="#equation-constraint3" title="Permalink to this equation">#</a></span>\[\mu_t:\qquad F(K_t,1)+ (1-\delta) K_t  - C_t - K_{t+1}=0 \qquad \text{for all } \quad t=0,1,\dots,T\]</div>
+<div class="math notranslate nohighlight" id="equation-constraint4">
+<span class="eqno">(34.12)<a class="headerlink" href="#equation-constraint4" title="Permalink to this equation">#</a></span>\[K_{T+1}: \qquad -\mu_T \leq 0, \ \leq 0 \text{ if } K_{T+1}=0; \ =0 \text{ if } K_{T+1}&gt;0\]</div>
+<p>在计算<a class="reference internal" href="#equation-constraint2">(34.10)</a>时，我们注意到<span class="math notranslate nohighlight">\(K_t\)</span>同时出现在时间<span class="math notranslate nohighlight">\(t\)</span>和时间<span class="math notranslate nohighlight">\(t-1\)</span>的可行性约束<a class="reference internal" href="#equation-allocation">(34.5)</a>中。</p>
+<p>限制条件<a class="reference internal" href="#equation-constraint4">(34.12)</a>来自对<span class="math notranslate nohighlight">\(K_{T+1}\)</span>求导，并应用以下<strong>卡鲁什-库恩-塔克条件</strong>（KKT）
+(参见<a class="reference external" href="https://en.wikipedia.org/wiki/Karush-Kuhn-Tucker_conditions">Karush-Kuhn-Tucker条件</a>):</p>
+<div class="math notranslate nohighlight" id="equation-kkt">
+<span class="eqno">(34.13)<a class="headerlink" href="#equation-kkt" title="Permalink to this equation">#</a></span>\[\mu_T K_{T+1}=0\]</div>
+<p>将<a class="reference internal" href="#equation-constraint1">(34.9)</a>和<a class="reference internal" href="#equation-constraint2">(34.10)</a>结合得到</p>
+<div class="math notranslate nohighlight">
+\[
+\beta u'\left(C_t\right)\left[(1-\delta)+f'\left(K_t\right)\right]-u'\left(C_{t-1}\right)=0
+\quad \text{ for all } t=1,2,\dots, T+1
+\]</div>
+<p>可以重新整理为</p>
+<div class="math notranslate nohighlight" id="equation-l12">
+<span class="eqno">(34.14)<a class="headerlink" href="#equation-l12" title="Permalink to this equation">#</a></span>\[\beta u'\left(C_{t+1}\right)\left[(1-\delta)+f'\left(K_{t+1}\right)\right]=
+u'\left(C_{t}\right) \quad \text{ for all } t=0,1,\dots, T\]</div>
+<p>对上述等式两边应用消费的边际效用的反函数得到</p>
+<div class="math notranslate nohighlight">
+\[
+C_{t+1} =u'^{-1}\left(\left(\frac{\beta}{u'(C_t)}[f'(K_{t+1}) +(1-\delta)]\right)^{-1}\right)
+\]</div>
+<p>对于我们的效用函数<a class="reference internal" href="#equation-utility-oneperiod">(34.3)</a>，这就变成了消费的<strong>欧拉方程</strong></p>
+<div class="math notranslate nohighlight" id="equation-eq-consn-euler">
+<span class="eqno">(34.15)<a class="headerlink" href="#equation-eq-consn-euler" title="Permalink to this equation">#</a></span>\[\begin{split}
+\begin{aligned} C_{t+1} =\left(\beta C_t^{\gamma}[f'(K_{t+1}) +
+(1-\delta)]\right)^{1/\gamma} 
+%\notag\\= C_t\left(\beta [f'(K_{t+1}) +
+%(1-\delta)]\right)^{1/\gamma} 
+\end{aligned}
+\end{split}\]</div>
+<p>我们可以将其与可行性约束<a class="reference internal" href="#equation-allocation">(34.5)</a>结合得到</p>
+<div class="math notranslate nohighlight" id="equation-eq-systemdynamics">
+<span class="eqno">(34.16)<a class="headerlink" href="#equation-eq-systemdynamics" title="Permalink to this equation">#</a></span>\[\begin{split} 
+\begin{aligned}
+C_{t+1} &amp; = C_t\left(\beta [f'(F(K_t,1)+ (1-\delta) K_t  - C_t) +
+(1-\delta)]\right)^{1/\gamma}  \\
+K_{t+1}  &amp; = F(K_t,1)+ (1-\delta) K_t  - C_t .
+\end{aligned}
+\end{split}\]</div>
+<p>这是一对非线性一阶差分方程，将<span class="math notranslate nohighlight">\(C_t, K_t\)</span>映射到<span class="math notranslate nohighlight">\(C_{t+1}, K_{t+1}\)</span>，最优序列<span class="math notranslate nohighlight">\(\vec C , \vec K\)</span>必须满足这些方程。</p>
+<p>它还必须满足初始条件:给定<span class="math notranslate nohighlight">\(K_0\)</span>且<span class="math notranslate nohighlight">\(K_{T+1} = 0\)</span>。</p>
+<p>下面我们定义一个<code class="docutils literal notranslate"><span class="pre">jitclass</span></code>来存储定义我们经济的参数和函数。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">planning_data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;γ&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>    <span class="c1"># 相对风险厌恶系数</span>
+    <span class="p">(</span><span class="s1">&#39;β&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>    <span class="c1"># 贴现因子</span>
+    <span class="p">(</span><span class="s1">&#39;δ&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>    <span class="c1"># 资本折旧率</span>
+    <span class="p">(</span><span class="s1">&#39;α&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>    <span class="c1"># 人均资本回报率</span>
+    <span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">)</span>     <span class="c1"># 技术水平</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jitclass</span><span class="p">(</span><span class="n">planning_data</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">PlanningProblem</span><span class="p">():</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">γ</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">β</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">δ</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">α</span><span class="o">=</span><span class="mf">0.33</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">γ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span> <span class="o">=</span> <span class="n">γ</span><span class="p">,</span> <span class="n">β</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">δ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">α</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">δ</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">A</span>
+
+    <span class="k">def</span> <span class="nf">u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        效用函数</span>
+<span class="sd">        注意：如果你有一个难以手动求解的效用函数</span>
+<span class="sd">        你可以使用自动或符号微分</span>
+<span class="sd">        参见 https://github.com/HIPS/autograd</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">γ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">γ</span>
+
+        <span class="k">return</span> <span class="n">c</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">γ</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">γ</span><span class="p">)</span> <span class="k">if</span> <span class="n">γ</span><span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">u_prime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="s1">&#39;效用函数的导数&#39;</span>
+        <span class="n">γ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">γ</span>
+
+        <span class="k">return</span> <span class="n">c</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">γ</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">u_prime_inv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="s1">&#39;效用函数导数的逆函数&#39;</span>
+        <span class="n">γ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">γ</span>
+
+        <span class="k">return</span> <span class="n">c</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">γ</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="s1">&#39;生产函数&#39;</span>
+        <span class="n">α</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">α</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span>
+
+        <span class="k">return</span> <span class="n">A</span> <span class="o">*</span> <span class="n">k</span> <span class="o">**</span> <span class="n">α</span>
+
+    <span class="k">def</span> <span class="nf">f_prime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="s1">&#39;生产函数的导数&#39;</span>
+        <span class="n">α</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">α</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span>
+
+        <span class="k">return</span> <span class="n">α</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">k</span> <span class="o">**</span> <span class="p">(</span><span class="n">α</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">f_prime_inv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="s1">&#39;生产函数导数的逆函数&#39;</span>
+        <span class="n">α</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">α</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">k</span> <span class="o">/</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">α</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">α</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">next_k_c</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;&#39;</span>
+<span class="sd">        给定当前资本Kt和任意可行的</span>
+<span class="sd">        消费选择Ct，通过状态转移定律计算Kt+1</span>
+<span class="sd">        并通过欧拉方程计算最优Ct+1。</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">β</span><span class="p">,</span> <span class="n">δ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">δ</span>
+        <span class="n">u_prime</span><span class="p">,</span> <span class="n">u_prime_inv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_prime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_prime_inv</span>
+        <span class="n">f</span><span class="p">,</span> <span class="n">f_prime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_prime</span>
+
+        <span class="n">k_next</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">δ</span><span class="p">)</span> <span class="o">*</span> <span class="n">k</span> <span class="o">-</span> <span class="n">c</span>
+        <span class="n">c_next</span> <span class="o">=</span> <span class="n">u_prime_inv</span><span class="p">(</span><span class="n">u_prime</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">β</span> <span class="o">*</span> <span class="p">(</span><span class="n">f_prime</span><span class="p">(</span><span class="n">k_next</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">δ</span><span class="p">))))</span>
+
+        <span class="k">return</span> <span class="n">k_next</span><span class="p">,</span> <span class="n">c_next</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们可以用Python代码构建一个经济模型：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pp</span> <span class="o">=</span> <span class="n">PlanningProblem</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id10">
+<h2><span class="section-number">34.4. </span>打靶算法<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
+<p>我们使用<strong>打靶法</strong>来计算最优配置
+<span class="math notranslate nohighlight">\(\vec{C}, \vec{K}\)</span> 和相关的拉格朗日乘数序列
+<span class="math notranslate nohighlight">\(\vec{\mu}\)</span>。</p>
+<p>规划问题的一阶必要条件
+<a class="reference internal" href="#equation-constraint1">(34.9)</a>, <a class="reference internal" href="#equation-constraint2">(34.10)</a>, 和
+<a class="reference internal" href="#equation-constraint3">(34.11)</a> 构成了一个具有两个边界条件的<strong>差分方程</strong>系统：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(K_0\)</span> 是资本的给定<strong>初始条件</strong></p></li>
+<li><p><span class="math notranslate nohighlight">\(K_{T+1} =0\)</span> 是资本的<strong>终端条件</strong>，这是我们从
+<span class="math notranslate nohighlight">\(K_{T+1}\)</span> 的一阶必要条件KKT条件 <a class="reference internal" href="#equation-kkt">(34.13)</a> 推导出来的</p></li>
+</ul>
+<p>我们没有拉格朗日乘数 <span class="math notranslate nohighlight">\(\mu_0\)</span> 的初始条件。</p>
+<p>如果我们有初始条件，我们的工作就会很简单：</p>
+<ul class="simple">
+<li><p>给定 <span class="math notranslate nohighlight">\(\mu_0\)</span> 和 <span class="math notranslate nohighlight">\(k_0\)</span>，我们可以从方程 <a class="reference internal" href="#equation-constraint1">(34.9)</a> 计算出 <span class="math notranslate nohighlight">\(c_0\)</span>，
+然后从方程 <a class="reference internal" href="#equation-constraint3">(34.11)</a> 计算出 <span class="math notranslate nohighlight">\(k_1\)</span>，从方程
+<a class="reference internal" href="#equation-constraint2">(34.10)</a> 计算出 <span class="math notranslate nohighlight">\(\mu_1\)</span>。</p></li>
+<li><p>我们可以用这种方式继续计算
+<span class="math notranslate nohighlight">\(\vec{C}, \vec{K}, \vec{\mu}\)</span> 的其余元素。
+然而，我们无法确保 Kuhn-Tucker 条件 <a class="reference internal" href="#equation-kkt">(34.13)</a> 会得到满足。</p></li>
+</ul>
+<p>此外，我们没有 <span class="math notranslate nohighlight">\(\mu_0\)</span> 的初始条件。</p>
+<p>所以这种方法行不通。</p>
+<p>实际上，我们的任务之一就是计算 <span class="math notranslate nohighlight">\(\mu_0\)</span> 的<strong>最优</strong>值。</p>
+<p>为了计算 <span class="math notranslate nohighlight">\(\mu_0\)</span> 和其他我们想要的对象，对上述程序做一个简单的修改就可以了。</p>
+<p>这被称为<strong>射击算法</strong>。</p>
+<p>这是一个<strong>猜测和验证</strong>算法的实例，包含以下步骤：</p>
+<ul class="simple">
+<li><p>猜测一个初始拉格朗日乘数 <span class="math notranslate nohighlight">\(\mu_0\)</span>。</p></li>
+<li><p>应用上述描述的<strong>简单算法</strong>。</p></li>
+<li><p>计算 <span class="math notranslate nohighlight">\(K_{T+1}\)</span> 并检查它是否等于零。</p></li>
+<li><p>如果 <span class="math notranslate nohighlight">\(K_{T+1} =0\)</span>，我们就解决了这个问题。</p></li>
+<li><p>如果 <span class="math notranslate nohighlight">\(K_{T+1} &gt; 0\)</span>，降低 <span class="math notranslate nohighlight">\(\mu_0\)</span> 并重试。</p></li>
+<li><p>如果 <span class="math notranslate nohighlight">\(K_{T+1} &lt; 0\)</span>，提高 <span class="math notranslate nohighlight">\(\mu_0\)</span> 并重试。</p></li>
+</ul>
+<p>以下 Python 代码为规划问题实现了射击算法。</p>
+<p>（实际上，我们稍微修改了前面的算法，从一个猜测开始
+在以下代码中使用 <span class="math notranslate nohighlight">\(c_0\)</span> 而不是 <span class="math notranslate nohighlight">\(\mu_0\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">shooting</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    给定资本的初始条件k0和消费的初始猜测值c0，</span>
+<span class="sd">    使用状态转移方程和欧拉方程计算T期内c和k的完整路径。</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">c0</span> <span class="o">&gt;</span> <span class="n">pp</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">k0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pp</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span> <span class="o">*</span> <span class="n">k0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;初始消费不可行&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># 初始化c和k的向量</span>
+    <span class="n">c_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">k_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">c_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">c0</span>
+    <span class="n">k_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">k0</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">k_vec</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">c_vec</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">next_k_c</span><span class="p">(</span><span class="n">k_vec</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">c_vec</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+
+    <span class="n">k_vec</span><span class="p">[</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">k_vec</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pp</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span> <span class="o">*</span> <span class="n">k_vec</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">-</span> <span class="n">c_vec</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">c_vec</span><span class="p">,</span> <span class="n">k_vec</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们先从一个错误的猜测开始。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">paths</span> <span class="o">=</span> <span class="n">shooting</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">]</span>
+<span class="n">titles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;消费&#39;</span><span class="p">,</span> <span class="s1">&#39;资本&#39;</span><span class="p">]</span>
+<span class="n">ylabels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;$c_t$&#39;</span><span class="p">,</span> <span class="s1">&#39;$k_t$&#39;</span><span class="p">]</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="n">titles</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/10a476196ce28ff412366e15c7b1c8d9dc0767004ce7b3a9280b8e57ea70b87a.png" src="_images/10a476196ce28ff412366e15c7b1c8d9dc0767004ce7b3a9280b8e57ea70b87a.png" />
+</div>
+</div>
+<p>显然，我们对<span class="math notranslate nohighlight">\(\mu_0\)</span>的初始猜测值太高了，所以初始消费太低。</p>
+<p>我们知道这一点是因为我们超过了目标<span class="math notranslate nohighlight">\(K_{T+1}=0\)</span>。</p>
+<p>现在我们用一个搜索合适<span class="math notranslate nohighlight">\(\mu_0\)</span>的算法来自动化这个过程，当我们达到目标<span class="math notranslate nohighlight">\(K_{t+1} = 0\)</span>时停止。</p>
+<p>我们使用<strong>二分法</strong>。</p>
+<p>我们对<span class="math notranslate nohighlight">\(C_0\)</span>做一个初始猜测（我们可以消除<span class="math notranslate nohighlight">\(\mu_0\)</span>，因为<span class="math notranslate nohighlight">\(C_0\)</span>是<span class="math notranslate nohighlight">\(\mu_0\)</span>的精确函数）。</p>
+<p>我们知道<span class="math notranslate nohighlight">\(C_0\)</span>的最小值只能是<span class="math notranslate nohighlight">\(0\)</span>，最大值是初始产出<span class="math notranslate nohighlight">\(f(K_0)\)</span>。</p>
+<p>猜测<span class="math notranslate nohighlight">\(C_0\)</span>并向前推算到<span class="math notranslate nohighlight">\(T+1\)</span>。</p>
+<p>如果<span class="math notranslate nohighlight">\(K_{T+1}&gt;0\)</span>，我们将其作为<span class="math notranslate nohighlight">\(C_0\)</span>的新<strong>下</strong>界。</p>
+<p>如果<span class="math notranslate nohighlight">\(K_{T+1}&lt;0\)</span>，我们将其作为新的<strong>上</strong>界。</p>
+<p>对<span class="math notranslate nohighlight">\(C_0\)</span>做一个新的猜测，取新的上下界的中间值。</p>
+<p>再次向前推算，重复这些步骤直到收敛。</p>
+<p>当<span class="math notranslate nohighlight">\(K_{T+1}\)</span>足够接近<span class="math notranslate nohighlight">\(0\)</span>（即在误差容限范围内）时，我们停止。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">bisection</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">k_ter</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="c1"># initial boundaries for guess c0</span>
+    <span class="n">c0_upper</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">k0</span><span class="p">)</span>
+    <span class="n">c0_lower</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">c_vec</span><span class="p">,</span> <span class="n">k_vec</span> <span class="o">=</span> <span class="n">shooting</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">k_vec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">k_ter</span>
+
+        <span class="c1"># check if the terminal condition is satisfied</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Converged successfully on iteration &#39;</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">c_vec</span><span class="p">,</span> <span class="n">k_vec</span>
+
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">max_iter</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Convergence failed.&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">c_vec</span><span class="p">,</span> <span class="n">k_vec</span>
+
+        <span class="c1"># if iteration continues, updates boundaries and guess of c0</span>
+        <span class="k">if</span> <span class="n">error</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">c0_lower</span> <span class="o">=</span> <span class="n">c0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">c0_upper</span> <span class="o">=</span> <span class="n">c0</span>
+
+        <span class="n">c0</span> <span class="o">=</span> <span class="p">(</span><span class="n">c0_lower</span> <span class="o">+</span> <span class="n">c0_upper</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_paths</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">T_arr</span><span class="p">,</span> <span class="n">k_ter</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">axs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fix</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">ylabels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;$c_t$&#39;</span><span class="p">,</span> <span class="s1">&#39;$k_t$&#39;</span><span class="p">,</span> <span class="s1">&#39;$\mu_t$&#39;</span><span class="p">]</span>
+    <span class="n">titles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;消费&#39;</span><span class="p">,</span> <span class="s1">&#39;资本&#39;</span><span class="p">,</span> <span class="s1">&#39;拉格朗日乘数&#39;</span><span class="p">]</span>
+
+    <span class="n">c_paths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">k_paths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="n">T_arr</span><span class="p">:</span>
+        <span class="n">c_vec</span><span class="p">,</span> <span class="n">k_vec</span> <span class="o">=</span> <span class="n">bisection</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">k_ter</span><span class="o">=</span><span class="n">k_ter</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">c_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_vec</span><span class="p">)</span>
+        <span class="n">k_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k_vec</span><span class="p">)</span>
+
+        <span class="n">μ_vec</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">u_prime</span><span class="p">(</span><span class="n">c_vec</span><span class="p">)</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_vec</span><span class="p">,</span> <span class="n">k_vec</span><span class="p">,</span> <span class="n">μ_vec</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="n">titles</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="c1"># 绘制资本的稳态值</span>
+        <span class="k">if</span> <span class="n">k_ss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">k_ss</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">paths</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">c_paths</span><span class="p">,</span> <span class="n">k_paths</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:5: SyntaxWarning: invalid escape sequence &#39;\m&#39;
+&lt;&gt;:5: SyntaxWarning: invalid escape sequence &#39;\m&#39;
+/tmp/ipykernel_8403/2545787333.py:5: SyntaxWarning: invalid escape sequence &#39;\m&#39;
+  ylabels = [&#39;$c_t$&#39;, &#39;$k_t$&#39;, &#39;$\mu_t$&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在我们可以求解模型并绘制消费、资本和拉格朗日乘数的路径。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_paths</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/22692c90923f36f0014c11eb319f811b382697c65a260cf4cafc513e22c83655.png" src="_images/22692c90923f36f0014c11eb319f811b382697c65a260cf4cafc513e22c83655.png" />
+</div>
+</div>
+</section>
+<section id="id11">
+<h2><span class="section-number">34.5. </span>将初始资本设定为稳态资本<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h2>
+<p>当 <span class="math notranslate nohighlight">\(T \rightarrow +\infty\)</span> 时，最优配置收敛到
+<span class="math notranslate nohighlight">\(C_t\)</span> 和 <span class="math notranslate nohighlight">\(K_t\)</span> 的稳态值。</p>
+<p>将 <span class="math notranslate nohighlight">\(K_0\)</span> 设定为 <span class="math notranslate nohighlight">\(\lim_{T \rightarrow + \infty } K_t\)</span> 是很有启发性的，我们称之为稳态资本。</p>
+<p>在稳态下，对于所有很大的 <span class="math notranslate nohighlight">\(t\)</span> 都有 <span class="math notranslate nohighlight">\(K_{t+1} = K_t=\bar{K}\)</span>。</p>
+<p>在 <span class="math notranslate nohighlight">\(\bar{K}\)</span> 处评估可行性约束 <a class="reference internal" href="#equation-allocation">(34.5)</a> 得到</p>
+<div class="math notranslate nohighlight" id="equation-feasibility-constraint">
+<span class="eqno">(34.17)<a class="headerlink" href="#equation-feasibility-constraint" title="Permalink to this equation">#</a></span>\[f(\bar{K})-\delta \bar{K} = \bar{C}\]</div>
+<p>将所有 <span class="math notranslate nohighlight">\(t\)</span> 的 <span class="math notranslate nohighlight">\(K_t = \bar K\)</span> 和 <span class="math notranslate nohighlight">\(C_t=\bar C\)</span>
+代入 <a class="reference internal" href="#equation-l12">(34.14)</a> 得到</p>
+<div class="math notranslate nohighlight">
+\[
+1=\beta \frac{u'(\bar{C})}{u'(\bar{C})}[f'(\bar{K})+(1-\delta)]
+\]</div>
+<p>定义 <span class="math notranslate nohighlight">\(\beta = \frac{1}{1+\rho}\)</span>，并消去得到</p>
+<div class="math notranslate nohighlight">
+\[
+1+\rho = 1[f'(\bar{K}) + (1-\delta)]
+\]</div>
+<p>化简得到</p>
+<div class="math notranslate nohighlight">
+\[
+f'(\bar{K}) = \rho +\delta
+\]</div>
+<p>和</p>
+<div class="math notranslate nohighlight">
+\[
+\bar{K} = f'^{-1}(\rho+\delta)
+\]</div>
+<p>对于生产函数 <a class="reference internal" href="#equation-production-function">(34.4)</a>，这变为</p>
+<div class="math notranslate nohighlight">
+\[
+\alpha \bar{K}^{\alpha-1} = \rho + \delta
+\]</div>
+<p>例如，在设定 <span class="math notranslate nohighlight">\(\alpha= .33\)</span>，
+<span class="math notranslate nohighlight">\(\rho = 1/\beta-1 =1/(19/20)-1 = 20/19-19/19 = 1/19\)</span>，<span class="math notranslate nohighlight">\(\delta = 1/50\)</span> 后，
+我们得到</p>
+<div class="math notranslate nohighlight">
+\[
+\bar{K} = \left(\frac{\frac{33}{100}}{\frac{1}{50}+\frac{1}{19}}\right)^{\frac{67}{100}} \approx 9.57583
+\]</div>
+<p>让我们用Python验证这个结果，然后使用这个稳态值
+<span class="math notranslate nohighlight">\(\bar K\)</span> 作为我们的初始资本存量 <span class="math notranslate nohighlight">\(K_0\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ρ</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">pp</span><span class="o">.</span><span class="n">β</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">k_ss</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">f_prime_inv</span><span class="p">(</span><span class="n">ρ</span><span class="o">+</span><span class="n">pp</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;steady state for capital is: </span><span class="si">{</span><span class="n">k_ss</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>steady state for capital is: 9.57583816331462
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在我们绘制图形</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_paths</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">k_ss</span><span class="p">,</span> <span class="p">[</span><span class="mi">150</span><span class="p">],</span> <span class="n">k_ss</span><span class="o">=</span><span class="n">k_ss</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/a561cbb020d50a7e2a9903c551fe13566f2a132c520fab525081afd2d760b994.png" src="_images/a561cbb020d50a7e2a9903c551fe13566f2a132c520fab525081afd2d760b994.png" />
+</div>
+</div>
+<p>显然，当 <span class="math notranslate nohighlight">\(T\)</span> 值较大时，<span class="math notranslate nohighlight">\(K_t\)</span> 会一直保持在接近 <span class="math notranslate nohighlight">\(K_0\)</span> 的水平，直到 <span class="math notranslate nohighlight">\(t\)</span> 接近 <span class="math notranslate nohighlight">\(T\)</span> 时才会发生变化。</p>
+<p>让我们看看当我们将 <span class="math notranslate nohighlight">\(K_0\)</span> 设置为低于 <span class="math notranslate nohighlight">\(\bar K\)</span> 时，规划者会做什么。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_paths</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">150</span><span class="p">],</span> <span class="n">k_ss</span><span class="o">=</span><span class="n">k_ss</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/e4f5ab1de951dedb961b11f92dea5dbc6eec5919673617a6ba0994b3153f3b72.png" src="_images/e4f5ab1de951dedb961b11f92dea5dbc6eec5919673617a6ba0994b3153f3b72.png" />
+</div>
+</div>
+<p>注意观察规划者如何将资本推向稳态，在那里停留一段时间，然后当 <span class="math notranslate nohighlight">\(t\)</span> 接近 <span class="math notranslate nohighlight">\(T\)</span> 时，将 <span class="math notranslate nohighlight">\(K_t\)</span> 推向终值 <span class="math notranslate nohighlight">\(K_{T+1} =0\)</span>。</p>
+<p>下面的图表比较了在不同的 <span class="math notranslate nohighlight">\(T\)</span> 值下的最优结果。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_paths</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">25</span><span class="p">],</span> <span class="n">k_ss</span><span class="o">=</span><span class="n">k_ss</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/585955f7782207941be2bd7523d7601a7a278b70a2235c2a0b518813f95bfa79.png" src="_images/585955f7782207941be2bd7523d7601a7a278b70a2235c2a0b518813f95bfa79.png" />
+</div>
+</div>
+</section>
+<section id="id12">
+<h2><span class="section-number">34.6. </span>收费公路性质<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h2>
+<p>以下计算表明，当 <span class="math notranslate nohighlight">\(T\)</span> 非常大时，最优资本存量在大部分时间里都会保持在接近其稳态值的水平。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_paths</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">250</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">25</span><span class="p">],</span> <span class="n">k_ss</span><span class="o">=</span><span class="n">k_ss</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/d87ee98a4912d3b77c7a9c02d558d9068cc7593ff8a9323bdea7ecc7d22bdf66.png" src="_images/d87ee98a4912d3b77c7a9c02d558d9068cc7593ff8a9323bdea7ecc7d22bdf66.png" />
+</div>
+</div>
+<p>在上图中，不同的颜色对应着不同的规划期限 <span class="math notranslate nohighlight">\(T\)</span>。</p>
+<p>注意，随着规划期限的增加，规划者会让 <span class="math notranslate nohighlight">\(K_t\)</span> 在更长时间内保持接近稳态值 <span class="math notranslate nohighlight">\(\bar K\)</span>。</p>
+<p>这种模式反映了稳态的<strong>转pike</strong>特性。</p>
+<p>对规划者来说，一个经验法则是：</p>
+<ul class="simple">
+<li><p>从 <span class="math notranslate nohighlight">\(K_0\)</span> 开始，将 <span class="math notranslate nohighlight">\(K_t\)</span> 推向
+稳态，并在接近时间 <span class="math notranslate nohighlight">\(T\)</span> 之前保持在稳态附近。</p></li>
+</ul>
+<p>规划者通过调整储蓄率 <span class="math notranslate nohighlight">\(\frac{f(K_t) - C_t}{f(K_t)}\)</span> 来实现这一目标。</p>
+<p>让我们计算并绘制储蓄率。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">saving_rate</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">c_path</span><span class="p">,</span> <span class="n">k_path</span><span class="p">):</span>
+    <span class="s1">&#39;给定 c 和 k 的路径，计算储蓄率的路径。&#39;</span>
+    <span class="n">production</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">k_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">production</span> <span class="o">-</span> <span class="n">c_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">production</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_saving_rate</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">T_arr</span><span class="p">,</span> <span class="n">k_ter</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">s_ss</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">fix</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+
+    <span class="n">c_paths</span><span class="p">,</span> <span class="n">k_paths</span> <span class="o">=</span> <span class="n">plot_paths</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">T_arr</span><span class="p">,</span> <span class="n">k_ter</span><span class="o">=</span><span class="n">k_ter</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">=</span><span class="n">k_ss</span><span class="p">,</span> <span class="n">axs</span><span class="o">=</span><span class="n">axs</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">T</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">T_arr</span><span class="p">):</span>
+        <span class="n">s_path</span> <span class="o">=</span> <span class="n">saving_rate</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">c_paths</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">k_paths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s_path</span><span class="p">)</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;$s_t$&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;储蓄率&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">s_ss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">s_ss</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">T_arr</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_saving_rate</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">250</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="n">k_ss</span><span class="o">=</span><span class="n">k_ss</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/1f25a6b9a562ac2418569bf5d909fdeef57df20dda4d39ceb75ab68ffc6d120f.png" src="_images/1f25a6b9a562ac2418569bf5d909fdeef57df20dda4d39ceb75ab68ffc6d120f.png" />
+</div>
+</div>
+</section>
+<section id="id13">
+<h2><span class="section-number">34.7. </span>极限无限期经济<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h2>
+<p>我们要设定 <span class="math notranslate nohighlight">\(T = +\infty\)</span>。</p>
+<p>合适的做法是将终端条件<a class="reference internal" href="#equation-constraint4">(34.12)</a>替换为</p>
+<div class="math notranslate nohighlight">
+\[
+\lim_{T \rightarrow +\infty} \beta^T u'(C_T) K_{T+1} = 0 ,
+\]</div>
+<p>这个条件将被收敛到最优稳态的路径所满足。</p>
+<p>我们可以通过从任意初始值<span class="math notranslate nohighlight">\(K_0\)</span>开始，向一个较大但有限的<span class="math notranslate nohighlight">\(T+1\)</span>时期的最优稳态<span class="math notranslate nohighlight">\(K\)</span>推进来近似最优路径。</p>
+<p>在下面的代码中，我们对一个较大的<span class="math notranslate nohighlight">\(T\)</span>进行这样的计算，并绘制消费、资本和储蓄率。</p>
+<p>我们知道在稳态时储蓄率是恒定的，且<span class="math notranslate nohighlight">\(\bar s= \frac{f(\bar K)-\bar C}{f(\bar K)}\)</span>。</p>
+<p>根据<a class="reference internal" href="#equation-feasibility-constraint">(34.17)</a>，稳态储蓄率等于</p>
+<div class="math notranslate nohighlight">
+\[
+\bar s =\frac{ \delta \bar{K}}{f(\bar K)}
+\]</div>
+<p>稳态储蓄量<span class="math notranslate nohighlight">\(\bar S = \bar s f(\bar K)\)</span>是每期用于抵消资本折旧所需的数量。
+我们首先研究从稳态水平以下开始的最优资本路径。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 稳态储蓄率</span>
+<span class="n">s_ss</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">δ</span> <span class="o">*</span> <span class="n">k_ss</span> <span class="o">/</span> <span class="n">pp</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">k_ss</span><span class="p">)</span>
+
+<span class="n">plot_saving_rate</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">],</span> <span class="n">k_ter</span><span class="o">=</span><span class="n">k_ss</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">=</span><span class="n">k_ss</span><span class="p">,</span> <span class="n">s_ss</span><span class="o">=</span><span class="n">s_ss</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/fbf0bdb47a8de65da1703b1c646ed5a64da7d04fe5d3e6b229c6b60702c63290.png" src="_images/fbf0bdb47a8de65da1703b1c646ed5a64da7d04fe5d3e6b229c6b60702c63290.png" />
+</div>
+</div>
+<p>由于<span class="math notranslate nohighlight">\(K_0&lt;\bar K\)</span>，所以<span class="math notranslate nohighlight">\(f'(K_0)&gt;\rho +\delta\)</span>。</p>
+<p>规划者选择一个高于稳态储蓄率的正储蓄率。</p>
+<p>注意<span class="math notranslate nohighlight">\(f''(K)&lt;0\)</span>，因此随着<span class="math notranslate nohighlight">\(K\)</span>的增加，<span class="math notranslate nohighlight">\(f'(K)\)</span>下降。</p>
+<p>规划者逐渐降低储蓄率，直到达到<span class="math notranslate nohighlight">\(f'(K)=\rho +\delta\)</span>的稳态。</p>
+</section>
+<section id="id14">
+<h2><span class="section-number">34.8. </span>稳定流形和相图<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h2>
+<p>现在我们描述一个经典图表，用来描述最优的<span class="math notranslate nohighlight">\((K_{t+1}, C_t)\)</span>路径。</p>
+<p>图表的纵轴是<span class="math notranslate nohighlight">\(K\)</span>，横轴是<span class="math notranslate nohighlight">\(C\)</span>。</p>
+<p>对于任意固定的<span class="math notranslate nohighlight">\(K\)</span>，消费欧拉方程<a class="reference internal" href="#equation-eq-consn-euler">(34.15)</a>的固定点<span class="math notranslate nohighlight">\(C\)</span>满足</p>
+<div class="math notranslate nohighlight">
+\[
+C=C\left(\beta\left[f^{\prime}\left(f\left(K\right)+\left(1-\delta\right)K-C\right)+\left(1-\delta\right)\right]\right)^{1/\gamma}
+\]</div>
+<p>这意味着</p>
+<div class="math notranslate nohighlight" id="equation-eq-tildec">
+<span class="eqno">(34.18)<a class="headerlink" href="#equation-eq-tildec" title="Permalink to this equation">#</a></span>\[\begin{split}
+\begin{aligned}
+C &amp;=f\left(K\right)+\left(1-\delta\right)K-f^{\prime-1}\left(\frac{1}{\beta}-\left(1-\delta\right)\right)  \\
+ &amp;\equiv \tilde{C} \left(K\right)
+\end{aligned}
+\end{split}\]</div>
+<p>正固定点 <span class="math notranslate nohighlight">\(C = \tilde C(K)\)</span> 仅在 <span class="math notranslate nohighlight">\(f\left(K\right)+\left(1-\delta\right)K-f^{\prime-1}\left(\frac{1}{\beta}-\left(1-\delta\right)\right)&gt;0\)</span> 时存在</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">C_tilde</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">pp</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">pp</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">K</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pp</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span> <span class="o">*</span> <span class="n">K</span> <span class="o">-</span> <span class="n">pp</span><span class="o">.</span><span class="n">f_prime_inv</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">pp</span><span class="o">.</span><span class="n">β</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">pp</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>接下来注意,给定一个时不变的任意 <span class="math notranslate nohighlight">\(C\)</span>,可行性条件 <a class="reference internal" href="#equation-allocation">(34.5)</a> 的不动点 <span class="math notranslate nohighlight">\(K\)</span> 满足以下方程</p>
+<div class="math notranslate nohighlight">
+\[
+    K = f(K) + (1 - \delta K) - C .
+\]</div>
+<p>上述方程的不动点可以用函数表示为</p>
+<div class="math notranslate nohighlight" id="equation-eq-tildek">
+<span class="eqno">(34.19)<a class="headerlink" href="#equation-eq-tildek" title="Permalink to this equation">#</a></span>\[
+K = \tilde K(C)
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">K_diff</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">pp</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pp</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">K</span><span class="p">)</span> <span class="o">-</span> <span class="n">pp</span><span class="o">.</span><span class="n">δ</span> <span class="o">*</span> <span class="n">K</span> <span class="o">-</span> <span class="n">C</span>
+
+<span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">K_tilde</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">pp</span><span class="p">):</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="n">K_diff</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">pp</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">root</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>稳态 <span class="math notranslate nohighlight">\(\left(K_s, C_s\right)\)</span> 是满足方程 <a class="reference internal" href="#equation-eq-tildec">(34.18)</a> 和 <a class="reference internal" href="#equation-eq-tildek">(34.19)</a> 的一对 <span class="math notranslate nohighlight">\((K,C)\)</span> 值。</p>
+<p>它是我们将在下面图 <a class="reference internal" href="#stable-manifold"><span class="std std-numref">Fig. 34.1</span></a> 中绘制的两条曲线 <span class="math notranslate nohighlight">\(\tilde{C}\)</span> 和 <span class="math notranslate nohighlight">\(\tilde{K}\)</span> 的交点。</p>
+<p>我们可以通过求解方程 <span class="math notranslate nohighlight">\(K_s = \tilde{K}\left(\tilde{C}\left(K_s\right)\right)\)</span> 来计算 <span class="math notranslate nohighlight">\(K_s\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">K_tilde_diff</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">pp</span><span class="p">):</span>
+
+    <span class="n">K_out</span> <span class="o">=</span> <span class="n">K_tilde</span><span class="p">(</span><span class="n">C_tilde</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">pp</span><span class="p">),</span> <span class="n">pp</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">K</span> <span class="o">-</span> <span class="n">K_out</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="n">K_tilde_diff</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">pp</span><span class="p">,))</span>
+
+<span class="n">Ks</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">root</span>
+<span class="n">Cs</span> <span class="o">=</span> <span class="n">C_tilde</span><span class="p">(</span><span class="n">Ks</span><span class="p">,</span> <span class="n">pp</span><span class="p">)</span>
+
+<span class="n">Ks</span><span class="p">,</span> <span class="n">Cs</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(9.575838163314447, 1.9160839808123402)
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们可以使用打靶算法来计算趋近于<span class="math notranslate nohighlight">\(\left(K_s, C_s\right)\)</span>的轨迹。</p>
+<p>对于给定的<span class="math notranslate nohighlight">\(K\)</span>，让我们计算一个较大<span class="math notranslate nohighlight">\(T\)</span>（例如<span class="math notranslate nohighlight">\(=200\)</span>）时的<span class="math notranslate nohighlight">\(\vec{C}\)</span>和<span class="math notranslate nohighlight">\(\vec{K}\)</span>。</p>
+<p>我们通过二分法算法计算<span class="math notranslate nohighlight">\(C_0\)</span>，确保<span class="math notranslate nohighlight">\(K_T=K_s\)</span>。</p>
+<p>让我们计算两条朝向<span class="math notranslate nohighlight">\(\left(K_s, C_s\right)\)</span>的轨迹，这两条轨迹从<span class="math notranslate nohighlight">\(K_s\)</span>的不同侧开始：<span class="math notranslate nohighlight">\(\bar{K}_0=1e-3&lt;K_s&lt;\bar{K}_1=15\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c_vec1</span><span class="p">,</span> <span class="n">k_vec1</span> <span class="o">=</span> <span class="n">bisection</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">k_ter</span><span class="o">=</span><span class="n">Ks</span><span class="p">)</span>
+<span class="n">c_vec2</span><span class="p">,</span> <span class="n">k_vec2</span> <span class="o">=</span> <span class="n">bisection</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">k_ter</span><span class="o">=</span><span class="n">Ks</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Converged successfully on iteration  46
+Converged successfully on iteration  52
+</pre></div>
+</div>
+</div>
+</div>
+<p>以下代码生成图 <a class="reference internal" href="#stable-manifold"><span class="std std-numref">Fig. 34.1</span></a>，这是仿照 <span id="id15">[<a class="reference internal" href="zreferences.html#id3" title="Michael D Intriligator. Mathematical optimization and economic theory. SIAM, 2002.">Intriligator, 2002</a>]</span> 第411页的一个图表制作的。</p>
+<p>图 <a class="reference internal" href="#stable-manifold"><span class="std std-numref">Fig. 34.1</span></a> 是一个经典的”相平面”，其中”状态”变量 <span class="math notranslate nohighlight">\(K\)</span> 在纵轴上，”协态”变量 <span class="math notranslate nohighlight">\(C\)</span> 在横轴上。</p>
+<p>图 <a class="reference internal" href="#stable-manifold"><span class="std std-numref">Fig. 34.1</span></a> 绘制了三条曲线：</p>
+<ul class="simple">
+<li><p>蓝线表示方程 <a class="reference internal" href="#equation-eq-tildec">(34.18)</a> 所描述的固定点 <span class="math notranslate nohighlight">\(C = \tilde C (K)\)</span> 的图像。</p></li>
+<li><p>红线表示方程 <a class="reference internal" href="#equation-eq-tildek">(34.19)</a> 所描述的固定点 <span class="math notranslate nohighlight">\(K = \tilde K(C)\)</span> 的图像。</p></li>
+<li><p>绿线表示从时间0时任意 <span class="math notranslate nohighlight">\(K_0\)</span> 开始收敛到稳态的稳定流形。</p>
+<ul>
+<li><p>对于给定的 <span class="math notranslate nohighlight">\(K_0\)</span>，射击算法将 <span class="math notranslate nohighlight">\(C_0\)</span> 设置为绿线上的坐标，以启动一条收敛到最优稳态的路径。</p></li>
+</ul>
+</li>
+<li><p>绿线上的箭头显示了动态方程<a class="reference internal" href="#equation-eq-systemdynamics">(34.16)</a>推动连续<span class="math notranslate nohighlight">\((K_{t+1}, C_t)\)</span>对的方向。</p></li>
+</ul>
+<p>图<a class="reference internal" href="#stable-manifold"><span class="std std-numref">Fig. 34.1</span></a>除了显示三条曲线外，还绘制了箭头来指示当给定<span class="math notranslate nohighlight">\(K_0\)</span>时，<span class="math notranslate nohighlight">\(C_0\)</span>不在绿线所示稳定流形上时，动态方程<a class="reference internal" href="#equation-eq-systemdynamics">(34.16)</a>驱动系统的方向。</p>
+<ul class="simple">
+<li><p>如果对给定的<span class="math notranslate nohighlight">\(K_0\)</span>，<span class="math notranslate nohighlight">\(C_0\)</span>设置在绿线以下，则积累了过多的资本</p></li>
+<li><p>如果对给定的<span class="math notranslate nohighlight">\(K_0\)</span>，<span class="math notranslate nohighlight">\(C_0\)</span>设置在绿线以上，则积累的资本太少</p></li>
+</ul>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">K_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">1e-1</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">C_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">1e-1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># C tilde</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">K_range</span><span class="p">,</span> <span class="p">[</span><span class="n">C_tilde</span><span class="p">(</span><span class="n">Ks</span><span class="p">,</span> <span class="n">pp</span><span class="p">)</span> <span class="k">for</span> <span class="n">Ks</span> <span class="ow">in</span> <span class="n">K_range</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">11.8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$C=\tilde</span><span class="si">{C}</span><span class="s1">(K)$&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+<span class="c1"># K tilde</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">K_tilde</span><span class="p">(</span><span class="n">Cs</span><span class="p">,</span> <span class="n">pp</span><span class="p">)</span> <span class="k">for</span> <span class="n">Cs</span> <span class="ow">in</span> <span class="n">C_range</span><span class="p">],</span> <span class="n">C_range</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$K=\tilde</span><span class="si">{K}</span><span class="s1">(C)$&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+<span class="c1"># stable branch</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">k_vec1</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">c_vec1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">k_vec2</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">c_vec2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">k_vec1</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">c_vec1</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+          <span class="n">k_vec1</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">-</span><span class="n">k_vec1</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">c_vec1</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">-</span><span class="n">c_vec1</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+          <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">k_vec2</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">c_vec2</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+          <span class="n">k_vec2</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">-</span><span class="n">k_vec2</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">c_vec2</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">-</span><span class="n">c_vec2</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+          <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;稳定分支&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+
+<span class="c1"># (Ks, Cs)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">Ks</span><span class="p">,</span> <span class="n">Cs</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">Ks</span><span class="o">-</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">Cs</span><span class="o">+</span><span class="mf">0.2</span><span class="p">,</span> <span class="s1">&#39;$(K_s, C_s)$&#39;</span><span class="p">)</span>
+
+<span class="c1"># arrows</span>
+<span class="n">K_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">C_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">K_mesh</span><span class="p">,</span> <span class="n">C_mesh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">K_range</span><span class="p">,</span> <span class="n">C_range</span><span class="p">)</span>
+
+<span class="n">next_K</span><span class="p">,</span> <span class="n">next_C</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">next_k_c</span><span class="p">(</span><span class="n">K_mesh</span><span class="p">,</span> <span class="n">C_mesh</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">K_range</span><span class="p">,</span> <span class="n">C_range</span><span class="p">,</span> <span class="n">next_K</span><span class="o">-</span><span class="n">K_mesh</span><span class="p">,</span> <span class="n">next_C</span><span class="o">-</span><span class="n">C_mesh</span><span class="p">)</span>
+
+<span class="c1"># infeasible consumption area</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;不可行</span><span class="se">\n</span><span class="s2">消费区&quot;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$K$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$C$&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<figure class="align-default" id="stable-manifold">
+<img alt="_images/a2568951c500c7177ea9acf1daee6ebc2900cb71aa37962eb57945f79d971119.png" src="_images/a2568951c500c7177ea9acf1daee6ebc2900cb71aa37962eb57945f79d971119.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 34.1 </span><span class="caption-text">稳定流形和相平面</span><a class="headerlink" href="#stable-manifold" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="id16">
+<h2><span class="section-number">34.9. </span>结论<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h2>
+<p>在<a class="reference internal" href="cass_koopmans_2.html"><span class="doc">Cass-Koopmans 竞争均衡</span></a>中，我们研究了一个去中心化的经济版本，其技术和偏好结构与本讲完全相同。</p>
+<p>在那一讲中，我们用亚当·斯密的<strong>看不见的手</strong>替代了本讲中的规划者。</p>
+<p>取代规划者做出的数量选择的是市场价格，这些价格由模型外部的一个”机械神”(即所谓的看不见的手)设定。</p>
+<p>均衡市场价格必须协调由代表性家庭和代表性企业独立做出的不同决策。</p>
+<p>像本讲所研究的计划经济与<a class="reference internal" href="cass_koopmans_2.html"><span class="doc">Cass-Koopmans 竞争均衡</span></a>中研究的市场经济之间的关系是一般均衡理论和福利经济学的基础性主题。</p>
+<section id="id17">
+<h3><span class="section-number">34.9.1. </span>练习<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h3>
+<div class="exercise admonition" id="ck1_ex1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 34.1 </span></p>
+<section id="exercise-content">
+<ul class="simple">
+<li><p>当以下条件时，绘制最优消费、资本和储蓄路径
+初始资本水平从稳态水平的1.5倍开始，
+当我们向着<span class="math notranslate nohighlight">\(T=130\)</span>的稳态推进时。</p></li>
+<li><p>储蓄率为什么会这样响应？</p></li>
+</ul>
+</section>
+</div>
+<div class="solution dropdown admonition" id="cass_koopmans_1-solution-1">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#ck1_ex1"> Exercise 34.1</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_saving_rate</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">*</span><span class="mf">1.5</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">],</span> <span class="n">k_ter</span><span class="o">=</span><span class="n">k_ss</span><span class="p">,</span> <span class="n">k_ss</span><span class="o">=</span><span class="n">k_ss</span><span class="p">,</span> <span class="n">s_ss</span><span class="o">=</span><span class="n">s_ss</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/a4fc84570a5bd42aea064f4aa413d8694b37cd405eb40dcbb84dc24091c0b29c.png" src="_images/a4fc84570a5bd42aea064f4aa413d8694b37cd405eb40dcbb84dc24091c0b29c.png" />
+</div>
+</div>
+</section>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/cass_koopmans_1.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/cass_koopmans_1.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/cass_koopmans_1.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/cass_koopmans_1.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/cass_koopmans_1.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "cass_koopmans_1";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/cass_koopmans_1.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

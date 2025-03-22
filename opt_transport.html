@@ -1,0 +1,2072 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>17. 最优传输 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'opt_transport';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/opt_transport.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="18. 冯·诺依曼增长模型（及其推广）" href="von_neumann_model.html" />
+    <link rel="prev" title="16. Expected Utilities of Random Responses" href="util_rand_resp.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="最优传输"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="最优传输" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/opt_transport.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=opt_transport>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">17.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">17.2. 最优运输问题</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">17.3. 线性规划方法</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">17.3.1. 决策变量矩阵的向量化</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">17.3.2. 应用实例</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">17.3.3. 使用即时编译器</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">17.4. 对偶问题</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">17.4.1. 对偶问题的解释</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python">17.5. Python最优传输包</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">17.5.1. 复现之前的结果</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">17.5.2. 更大的应用程序</a></li>
+</ul>
+</li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">最优传输</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><span class="section-number">17. </span>最优传输<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<section id="id2">
+<h2><span class="section-number">17.1. </span>概述<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<p><strong>运输</strong>或<strong>最优传输</strong>问题之所以有趣，不仅是因为它有许多应用，还因为它在经济理论历史中扮演着重要角色。</p>
+<p>在本讲座中，我们将描述这个问题，说明<a class="reference external" href="https://quantecon.github.io/lecture-intro.zh-cn/lp_intro.html" title="(in Python)"><span class="xref std std-doc">线性规划</span></a>是解决它的关键工具，然后提供一些示例。</p>
+<p>我们将在后续讲座中提供其他应用。</p>
+<p>最优传输问题在早期关于线性规划的研究中就被研究过，例如在<span id="id3">[<a class="reference internal" href="zreferences.html#id40" title="Robert Dorfman, Paul A. Samuelson, and Robert M. Solow. Linear Programming and Economic Analysis: Revised Edition. McGraw Hill, New York, 1958.">Dorfman <em>et al.</em>, 1958</a>]</span>中有总结。关于经济学应用的现代参考文献是<span id="id4">[<a class="reference internal" href="zreferences.html#id41" title="Alfred Galichon. Optimal Transport Methods in Economics. Princeton University Press, Princeton, New Jersey, 2016.">Galichon, 2016</a>]</span>。</p>
+<p>下面，我们将展示如何使用几种线性规划的实现方法来解决最优传输问题，包括：</p>
+<ol class="arabic simple">
+<li><p>这个</p></li>
+</ol>
+<p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html">linprog</a>
+来自SciPy的求解器，
+2. <a class="reference external" href="https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html">linprog_simplex</a> 来自QuantEcon的求解器，以及
+3. <a class="reference external" href="https://pythonot.github.io/">Python Optimal Transport</a> 包中包含的基于单纯形法的求解器。</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>quantecon
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>POT
+</pre></div>
+</div>
+</div>
+<details class="hide below-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell output</span>
+<span class="expanded">Hide code cell output</span>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.0)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (0.60.0)
+Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
+Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
+Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.1)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.2)
+Requirement already satisfied: llvmlite&lt;0.44,&gt;=0.43.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.43.0)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.3.2)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.7)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2.2.3)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2024.8.30)
+Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from sympy-&gt;quantecon) (1.3.0)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting POT
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading POT-0.9.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (34 kB)
+Requirement already satisfied: numpy&gt;=1.16 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from POT) (1.26.4)
+Requirement already satisfied: scipy&gt;=1.6 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from POT) (1.13.1)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Downloading POT-0.9.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (901 kB)
+?25l   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/901.7 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">901.7/901.7 kB</span> <span class=" -Color -Color-Red">30.8 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25h
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: POT
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed POT-0.9.5
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<p>让我们从一些导入语句开始。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">linprog</span>
+<span class="kn">from</span> <span class="nn">quantecon.optimize.linprog_simplex</span> <span class="kn">import</span> <span class="n">linprog_simplex</span>
+<span class="kn">import</span> <span class="nn">ot</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">betabinom</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h2><span class="section-number">17.2. </span>最优运输问题<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>假设有<span class="math notranslate nohighlight">\(m\)</span>个工厂生产的商品必须运送到<span class="math notranslate nohighlight">\(n\)</span>个地点。</p>
+<p>令</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(x_{ij}\)</span> 表示从工厂<span class="math notranslate nohighlight">\(i\)</span>运往地点<span class="math notranslate nohighlight">\(j\)</span>的数量</p></li>
+<li><p><span class="math notranslate nohighlight">\(c_{ij}\)</span> 表示从工厂<span class="math notranslate nohighlight">\(i\)</span>运往地点<span class="math notranslate nohighlight">\(j\)</span>每单位的运输成本</p></li>
+<li><p><span class="math notranslate nohighlight">\(p_i\)</span> 表示工厂<span class="math notranslate nohighlight">\(i\)</span>的产能，<span class="math notranslate nohighlight">\(q_j\)</span>表示地点<span class="math notranslate nohighlight">\(j\)</span>所需的数量</p></li>
+<li><p><span class="math notranslate nohighlight">\(i = 1, 2, \dots, m\)</span> 且 <span class="math notranslate nohighlight">\(j = 1, 2, \dots, n\)</span></p></li>
+</ul>
+<p>规划者希望在以下约束条件下最小化总运输成本：</p>
+<ul class="simple">
+<li><p>从每个工厂运出的数量必须等于其产能</p></li>
+<li><p>运往每个地点的数量必须等于该地点所需的数量</p></li>
+</ul>
+<p>下图展示了当工厂和目标地点分布在平面上时的一种可视化表示。</p>
+<figure class="align-default">
+<img alt="_images/optimal_transport_splitting_experiment.png" src="_images/optimal_transport_splitting_experiment.png" />
+</figure>
+<p>图中顶点的大小与以下内容成正比：</p>
+<ul class="simple">
+<li><p>对于工厂来说，是产能</p></li>
+<li><p>目标地点的需求量。</p></li>
+</ul>
+<p>箭头显示了一个可能的运输方案，该方案遵守上述约束条件。</p>
+<p>规划者的问题可以表示为以下约束最小化问题：</p>
+<div class="math notranslate nohighlight" id="equation-plannerproblem">
+<span class="eqno">(17.1)<a class="headerlink" href="#equation-plannerproblem" title="Permalink to this equation">#</a></span>\[\begin{split}
+\begin{aligned}
+    \min_{x_{ij}} \ &amp; \sum_{i=1}^m \sum_{j=1}^n c_{ij} x_{ij} \\
+    \mbox{subject to } \ &amp; \sum_{j=1}^n x_{ij} = p_i, &amp; i = 1, 2, \dots, m \\
+    &amp; \sum_{i=1}^m x_{ij} = q_j, &amp; j = 1, 2, \dots, n \\
+    &amp; x_{ij} \ge 0 \\
+\end{aligned}
+\end{split}\]</div>
+<p>这是一个<strong>最优运输问题</strong>，包含：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(mn\)</span> 个决策变量，即 <span class="math notranslate nohighlight">\(x_{ij}\)</span> 的条目，以及</p></li>
+<li><p><span class="math notranslate nohighlight">\(m+n\)</span> 个约束条件。</p></li>
+</ul>
+<p>将所有 <span class="math notranslate nohighlight">\(j\)</span> 的 <span class="math notranslate nohighlight">\(q_j\)</span> 相加和所有 <span class="math notranslate nohighlight">\(i\)</span> 的 <span class="math notranslate nohighlight">\(p_i\)</span> 相加表明，所有工厂的总产能等于所有地点的总需求：</p>
+<div class="math notranslate nohighlight" id="equation-sumconstraints">
+<span class="eqno">(17.2)<a class="headerlink" href="#equation-sumconstraints" title="Permalink to this equation">#</a></span>\[
+    \sum_{j=1}^n q_j
+    = \sum_{j=1}^n \sum_{i=1}^m x_{ij}
+    = \sum_{i=1}^m \sum_{j=1}^n x_{ij}
+    = \sum_{i=1}^m p_i
+\]</div>
+<p><a class="reference internal" href="#equation-sumconstraints">(17.2)</a> 中的约束条件将导致我们下面描述的完整约束集中出现一个冗余。</p>
+<p>稍后会详细讨论这一点。</p>
+</section>
+<section id="id6">
+<h2><span class="section-number">17.3. </span>线性规划方法<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<p>本节我们讨论如何使用标准线性规划求解器来解决最优运输问题。</p>
+<section id="id7">
+<h3><span class="section-number">17.3.1. </span>决策变量矩阵的向量化<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<p>在问题 <a class="reference internal" href="#equation-plannerproblem">(17.1)</a> 中出现了决策变量 <span class="math notranslate nohighlight">\(x_{ij}\)</span> 的<em>矩阵</em>。</p>
+<p>SciPy 函数 <code class="docutils literal notranslate"><span class="pre">linprog</span></code> 需要接收决策变量的<em>向量</em>。</p>
+<p>这种情况促使我们需要用决策变量的<em>向量</em>来重写我们的问题。</p>
+<p>令：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(X, C\)</span> 是具有元素 <span class="math notranslate nohighlight">\(x_{ij}, c_{ij}\)</span> 的 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵，</p></li>
+<li><p><span class="math notranslate nohighlight">\(p\)</span> 是具有元素 <span class="math notranslate nohighlight">\(p_i\)</span> 的 <span class="math notranslate nohighlight">\(m\)</span> 维向量，</p></li>
+<li><p><span class="math notranslate nohighlight">\(q\)</span> 是具有元素 <span class="math notranslate nohighlight">\(q_j\)</span> 的 <span class="math notranslate nohighlight">\(n\)</span> 维向量。</p></li>
+</ul>
+<p>用 <span class="math notranslate nohighlight">\(\mathbf{1}_n\)</span> 表示 <span class="math notranslate nohighlight">\(n\)</span> 维列向量 <span class="math notranslate nohighlight">\((1, 1, \dots, 1)'\)</span>，我们的问题现在可以简洁地表示为：</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}
+\begin{aligned}\\\begin{split}\min_{X} \ &amp; \operatorname{tr} (C' X) \\
+    \mbox{subject to } \ &amp; X \ \mathbf{1}_n = p \\
+    &amp; X' \ \mathbf{1}_m = q \\
+    &amp; X \ge 0 \\
+\end{aligned}
+\end{split}\end{aligned}\end{align} \]</div>
+<p>我们可以通过将矩阵<span class="math notranslate nohighlight">\(X\)</span>的所有列堆叠成一个列向量来将其转换为向量。</p>
+<p>这种操作称为<strong>向量化</strong>，我们用<span class="math notranslate nohighlight">\(\operatorname{vec}(X)\)</span>表示。</p>
+<p>同样，我们将矩阵<span class="math notranslate nohighlight">\(C\)</span>转换为<span class="math notranslate nohighlight">\(mn\)</span>维向量<span class="math notranslate nohighlight">\(\operatorname{vec}(C)\)</span>。</p>
+<p>目标函数可以表示为<span class="math notranslate nohighlight">\(\operatorname{vec}(C)\)</span>和<span class="math notranslate nohighlight">\(\operatorname{vec}(X)\)</span>之间的内积：</p>
+<div class="math notranslate nohighlight">
+\[
+    \operatorname{vec}(C)' \cdot \operatorname{vec}(X).
+\]</div>
+<p>为了用<span class="math notranslate nohighlight">\(\operatorname{vec}(X)\)</span>表示约束条件，我们使用<strong>克罗内克积</strong>，用<span class="math notranslate nohighlight">\(\otimes\)</span>表示，定义如下。</p>
+<p>假设<span class="math notranslate nohighlight">\(A\)</span>是一个<span class="math notranslate nohighlight">\(m \times s\)</span>矩阵，其元素为<span class="math notranslate nohighlight">\((a_{ij})\)</span>，而<span class="math notranslate nohighlight">\(B\)</span>是一个<span class="math notranslate nohighlight">\(n \times t\)</span>矩阵。</p>
+<p><strong>克罗内克积</strong>的定义，以分块矩阵形式表示为：</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}
+    A \otimes B =\\\begin{split}\begin{pmatrix}
+    a_{11}B &amp; a_{12}B &amp; \dots &amp; a_{1s}B \\
+    a_{21}B &amp; a_{22}B &amp; \dots &amp; a_{2s}B \\
+      &amp;   &amp; \vdots &amp;   \\
+    a_{m1}B &amp; a_{m2}B &amp; \dots &amp; a_{ms}B \\
+    \end{pmatrix}.
+\end{split}\end{aligned}\end{align} \]</div>
+<p><span class="math notranslate nohighlight">\(A \otimes B\)</span> 是一个 <span class="math notranslate nohighlight">\(mn \times st\)</span> 矩阵。</p>
+<p>它具有这样的性质：对于任意 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span></p>
+<div class="math notranslate nohighlight" id="equation-kroneckerprop">
+<span class="eqno">(17.3)<a class="headerlink" href="#equation-kroneckerprop" title="Permalink to this equation">#</a></span>\[
+    \operatorname{vec}(A'XB) = (B' \otimes A') \operatorname{vec}(X).
+\]</div>
+<p>现在我们可以用 <span class="math notranslate nohighlight">\(\operatorname{vec}(X)\)</span> 来表示我们的约束条件。</p>
+<p>令 <span class="math notranslate nohighlight">\(A = \mathbf{I}_m', B = \mathbf{1}_n\)</span>。</p>
+<p>根据等式 <a class="reference internal" href="#equation-kroneckerprop">(17.3)</a></p>
+<div class="math notranslate nohighlight">
+\[
+    X \ \mathbf{1}_n
+    = \operatorname{vec}(X \ \mathbf{1}_n)
+    = \operatorname{vec}(\mathbf{I}_m X \ \mathbf{1}_n)
+    = (\mathbf{1}_n' \otimes \mathbf{I}_m) \operatorname{vec}(X).
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\mathbf{I}_m\)</span> 表示 <span class="math notranslate nohighlight">\(m \times m\)</span> 单位矩阵。</p>
+<p>约束条件 <span class="math notranslate nohighlight">\(X \ \mathbf{1}_n = p\)</span> 现在可以写成：</p>
+<div class="math notranslate nohighlight">
+\[
+    (\mathbf{1}_n' \otimes \mathbf{I}_m) \operatorname{vec}(X) = p.
+\]</div>
+<p>类似地，约束条件 <span class="math notranslate nohighlight">\(X' \ \mathbf{1}_m = q\)</span> 可以重写为：</p>
+<div class="math notranslate nohighlight">
+\[
+    (\mathbf{I}_n \otimes \mathbf{1}_m') \operatorname{vec}(X) = q.
+\]</div>
+<p>令 <span class="math notranslate nohighlight">\(z := \operatorname{vec}(X)\)</span>，我们的问题现在可以用一个 <span class="math notranslate nohighlight">\(mn\)</span> 维的决策变量向量来表示：</p>
+<div class="math notranslate nohighlight" id="equation-decisionvars">
+<span class="eqno">(17.4)<a class="headerlink" href="#equation-decisionvars" title="Permalink to this equation">#</a></span>\[\begin{split}
+    \begin{aligned}
+        \min_{z} \ &amp; \operatorname{vec}(C)' z \\
+        \mbox{subject to } \ &amp; A z = b \\
+        &amp; z \ge 0 \\
+    \end{aligned}
+\end{split}\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+    A =
+    \begin{pmatrix}
+        \mathbf{1}_n' \otimes \mathbf{I}_m \\
+        \mathbf{I}_n \otimes \mathbf{1}_m' \\
+    \end{pmatrix}
+    \quad \text{和} \quad
+    b = \begin{pmatrix}
+            p \\
+            q \\
+        \end{pmatrix}
+\end{split}\]</div>
+</section>
+<section id="id8">
+<h3><span class="section-number">17.3.2. </span>应用实例<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<p>我们现在提供一个采用 <a class="reference internal" href="#equation-decisionvars">(17.4)</a> 形式的例子，我们将通过使用 <code class="docutils literal notranslate"><span class="pre">linprog</span></code> 函数来求解。</p>
+<p>下表提供了需求向量 <span class="math notranslate nohighlight">\(q\)</span>、产能向量 <span class="math notranslate nohighlight">\(p\)</span> 以及运输成本矩阵 <span class="math notranslate nohighlight">\(C\)</span> 中各项 <span class="math notranslate nohighlight">\(c_{ij}\)</span> 的数值。</p>
+<table>
+    <tr>
+	    <th> </th>
+        <th colspan="3"><center>工厂</center></th>
+	    <th rowspan="2">需求量</th>
+	</tr >
+    <tr>
+        <th> 地点 </th> <th>1</th> <th>2</th> <th>3</th>
+	</tr>
+    <tr>
+	    <td>1</td>  <td>10</td> <td>20</td> <td>30</td> <td>25</td>
+	</tr>
+    <tr>
+	    <td>2</td> <td>15</td> <td>40</td> <td>35</td> <td>115</td>
+	</tr>
+    <tr>
+	    <td>3</td> <td>20</td> <td>15</td> <td>40</td> <td>60</td>
+	</tr>
+    <tr>
+	    <td>4</td> <td>20</td> <td>30</td> <td>55</td> <td>30</td>
+	</tr>
+    <tr>
+	    <td>5</td> <td>40</td> <td>30</td> <td>25</td> <td>70</td>
+	</tr>
+    <tr>
+	    <td>产能</td> <td>50</td> <td>100</td> <td>150</td> <td>300</td>
+	</tr>
+</table><p>上表中的数字告诉我们设定 <span class="math notranslate nohighlight">\(m = 3\)</span>，<span class="math notranslate nohighlight">\(n = 5\)</span>，并构造以下对象：</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\begin{split}
+p = \begin{pmatrix}
+        50 \\
+        100 \\
+        150
+    \end{pmatrix},
+    \quad
+    q =
+    \begin{pmatrix}
+        25 \\
+        115 \\
+        60 \\\end{split}\\\begin{split}30 \\
+        70
+    \end{pmatrix}
+    \quad \text{和} \quad
+    C =
+    \begin{pmatrix}
+        10 &amp;15 &amp;20 &amp;20 &amp;40 \\
+        20 &amp;40 &amp;15 &amp;30 &amp;30 \\
+        30 &amp;35 &amp;40 &amp;55 &amp;25
+    \end{pmatrix}.
+\end{split}\end{aligned}\end{align} \]</div>
+<p>让我们编写Python代码来设置问题并求解。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 定义参数</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">150</span><span class="p">])</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">25</span><span class="p">,</span> <span class="mi">115</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">70</span><span class="p">])</span>
+
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">25</span><span class="p">]])</span>
+
+<span class="c1"># 将矩阵C向量化</span>
+<span class="n">C_vec</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">m</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+
+<span class="c1"># 通过克罗内克积构造矩阵A</span>
+<span class="n">A1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
+<span class="n">A2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">)))</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">])</span>
+
+<span class="c1"># 构造向量b</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">])</span>
+
+<span class="c1"># 求解原问题</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">linprog</span><span class="p">(</span><span class="n">C_vec</span><span class="p">,</span> <span class="n">A_eq</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">b_eq</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+
+<span class="c1"># 打印结果</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;消息:&quot;</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;迭代次数:&quot;</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">nit</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;目标函数值:&quot;</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;z:&quot;</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;X:&quot;</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>消息: Optimization terminated successfully. (HiGHS Status 7: Optimal)
+迭代次数: 8
+目标函数值: 7225.0
+z: [ 0. 10. 15. 50.  0. 65.  0. 60.  0.  0. 30.  0.  0.  0. 70.]
+X: [[ 0. 50.  0.  0.  0.]
+ [10.  0. 60. 30.  0.]
+ [15. 65.  0.  0. 70.]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>注意在 <code class="docutils literal notranslate"><span class="pre">C_vec</span> <span class="pre">=</span> <span class="pre">C.reshape((m*n,</span> <span class="pre">1),</span> <span class="pre">order='F')</span></code> 这一行中，我们谨慎地使用了标志 <code class="docutils literal notranslate"><span class="pre">order='F'</span></code> 来进行向量化。</p>
+<p>这与将矩阵 <span class="math notranslate nohighlight">\(C\)</span> 转换为向量的方式一致，即将其所有列堆叠成一个列向量。</p>
+<p>这里的 <code class="docutils literal notranslate"><span class="pre">'F'</span></code> 代表”Fortran”，我们使用的是Fortran风格的列优先顺序。</p>
+<p>（关于使用Python默认的行优先顺序的另一种方法，请参见<a class="reference external" href="https://www.math-econ-code.org/dynamic-programming">Alfred Galichon的这个讲座</a>。）</p>
+<p><strong>解读警告信息：</strong></p>
+<p>上面来自SciPy的警告信息指出A不是满秩的。</p>
+<p>这表明线性规划中包含了一个或多个冗余约束。</p>
+<p>这里，冗余的来源是限制条件 <a class="reference internal" href="#equation-sumconstraints">(17.2)</a> 的结构。</p>
+<p>让我们通过打印出 <span class="math notranslate nohighlight">\(A\)</span> 并仔细观察来进一步探讨这个问题。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1., 0., 0., 1., 0., 0., 1., 0., 0., 1., 0., 0., 1., 0., 0.],
+       [0., 1., 0., 0., 1., 0., 0., 1., 0., 0., 1., 0., 0., 1., 0.],
+       [0., 0., 1., 0., 0., 1., 0., 0., 1., 0., 0., 1., 0., 0., 1.],
+       [1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 1., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 1., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 1., 1.]])
+</pre></div>
+</div>
+</div>
+</div>
+<p><span class="math notranslate nohighlight">\(A\)</span> 的奇异性反映了前三个约束和后五个约束都要求”总需求等于总容量”，这在<a class="reference internal" href="#equation-sumconstraints">(17.2)</a>中表达。</p>
+<p>这里有一个冗余的等式约束。</p>
+<p>下面我们去掉一个等式约束，只使用其中的7个。</p>
+<p>这样做之后，我们得到了相同的最小成本。</p>
+<p>然而，我们找到了一个不同的运输方案。</p>
+<p>虽然这是一个不同的方案，但它达到了相同的成本！</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">linprog</span><span class="p">(</span><span class="n">C_vec</span><span class="p">,</span> <span class="n">A_eq</span><span class="o">=</span><span class="n">A</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_eq</span><span class="o">=</span><span class="n">b</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>        message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
+        success: True
+         status: 0
+            fun: 7225.0
+              x: [ 0.000e+00  1.000e+01 ...  0.000e+00  7.000e+01]
+            nit: 8
+          lower:  residual: [ 0.000e+00  1.000e+01 ...  0.000e+00
+                              7.000e+01]
+                 marginals: [ 0.000e+00  0.000e+00 ...  1.500e+01
+                              0.000e+00]
+          upper:  residual: [       inf        inf ...        inf
+                                    inf]
+                 marginals: [ 0.000e+00  0.000e+00 ...  0.000e+00
+                              0.000e+00]
+          eqlin:  residual: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00
+                              0.000e+00  0.000e+00  0.000e+00]
+                 marginals: [ 5.000e+00  1.500e+01  2.500e+01  5.000e+00
+                              1.000e+01 -0.000e+00  1.500e+01]
+        ineqlin:  residual: []
+                 marginals: []
+ mip_node_count: 0
+ mip_dual_bound: 0.0
+        mip_gap: 0.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">time</span> linprog(C_vec, A_eq=A[:-1], b_eq=b[:-1])
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 0 ns, sys: 963 μs, total: 963 μs
+Wall time: 865 μs
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>        message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
+        success: True
+         status: 0
+            fun: 7225.0
+              x: [ 0.000e+00  1.000e+01 ...  0.000e+00  7.000e+01]
+            nit: 8
+          lower:  residual: [ 0.000e+00  1.000e+01 ...  0.000e+00
+                              7.000e+01]
+                 marginals: [ 0.000e+00  0.000e+00 ...  1.500e+01
+                              0.000e+00]
+          upper:  residual: [       inf        inf ...        inf
+                                    inf]
+                 marginals: [ 0.000e+00  0.000e+00 ...  0.000e+00
+                              0.000e+00]
+          eqlin:  residual: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00
+                              0.000e+00  0.000e+00  0.000e+00]
+                 marginals: [ 5.000e+00  1.500e+01  2.500e+01  5.000e+00
+                              1.000e+01 -0.000e+00  1.500e+01]
+        ineqlin:  residual: []
+                 marginals: []
+ mip_node_count: 0
+ mip_dual_bound: 0.0
+        mip_gap: 0.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">time</span> linprog(C_vec, A_eq=A, b_eq=b)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 878 μs, sys: 0 ns, total: 878 μs
+Wall time: 831 μs
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>        message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
+        success: True
+         status: 0
+            fun: 7225.0
+              x: [ 0.000e+00  1.000e+01 ...  0.000e+00  7.000e+01]
+            nit: 8
+          lower:  residual: [ 0.000e+00  1.000e+01 ...  0.000e+00
+                              7.000e+01]
+                 marginals: [ 0.000e+00  0.000e+00 ...  1.500e+01
+                              0.000e+00]
+          upper:  residual: [       inf        inf ...        inf
+                                    inf]
+                 marginals: [ 0.000e+00  0.000e+00 ...  0.000e+00
+                              0.000e+00]
+          eqlin:  residual: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00
+                              0.000e+00  0.000e+00  0.000e+00  0.000e+00]
+                 marginals: [ 1.000e+01  2.000e+01  3.000e+01 -0.000e+00
+                              5.000e+00 -5.000e+00  1.000e+01 -5.000e+00]
+        ineqlin:  residual: []
+                 marginals: []
+ mip_node_count: 0
+ mip_dual_bound: 0.0
+        mip_gap: 0.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>显然，处理去掉冗余约束的系统会稍微快一些。</p>
+<p>让我们深入进行更多计算，以帮助我们理解发现<strong>两个</strong>不同的最优运输方案是否反映了我们删除了一个冗余的等式约束。</p>
+<div class="admonition- admonition">
+<p class="admonition-title">提示</p>
+<p>事实将证明，删除冗余等式约束并不是真正重要的。</p>
+</div>
+<p>为了验证我们的提示，我们将简单地使用<strong>所有</strong>原始的等式约束（包括一个冗余约束），但我们只是打乱约束的顺序。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol_found</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># 模拟1000次</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">res_shuffle</span> <span class="o">=</span> <span class="n">linprog</span><span class="p">(</span><span class="n">C_vec</span><span class="p">,</span> <span class="n">A_eq</span><span class="o">=</span><span class="n">A</span><span class="p">[</span><span class="n">arr</span><span class="p">],</span> <span class="n">b_eq</span><span class="o">=</span><span class="n">b</span><span class="p">[</span><span class="n">arr</span><span class="p">])</span>
+
+    <span class="c1"># 如果找到新解</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">res_shuffle</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sol_found</span><span class="p">:</span>
+        <span class="n">sol_found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+        <span class="n">cost</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res_shuffle</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sol_found</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;运输方案 </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: &quot;</span><span class="p">,</span> <span class="n">sol_found</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;     最小成本 </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: &quot;</span><span class="p">,</span> <span class="n">cost</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>运输方案 0:  (0.0, 10.0, 15.0, 50.0, 0.0, 65.0, 0.0, 60.0, 0.0, 0.0, 30.0, 0.0, 0.0, 0.0, 70.0)
+     最小成本 0:  7225.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>**啊哈！**如你所见，在这种情况下以不同顺序放置约束条件揭示了两个实现相同最小成本的最优运输方案。</p>
+<p>这就是我们之前计算出的相同两个方案。</p>
+<p>接下来，我们展示”意外地”省略第一个约束条件会得到我们最初计算的方案。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">linprog</span><span class="p">(</span><span class="n">C_vec</span><span class="p">,</span> <span class="n">A_eq</span><span class="o">=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">b_eq</span><span class="o">=</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>        message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
+        success: True
+         status: 0
+            fun: 7225.0
+              x: [ 0.000e+00  1.000e+01 ...  0.000e+00  7.000e+01]
+            nit: 8
+          lower:  residual: [ 0.000e+00  1.000e+01 ...  0.000e+00
+                              7.000e+01]
+                 marginals: [ 0.000e+00  0.000e+00 ...  1.500e+01
+                              0.000e+00]
+          upper:  residual: [       inf        inf ...        inf
+                                    inf]
+                 marginals: [ 0.000e+00  0.000e+00 ...  0.000e+00
+                              0.000e+00]
+          eqlin:  residual: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00
+                              0.000e+00  0.000e+00  0.000e+00]
+                 marginals: [ 1.000e+01  2.000e+01  1.000e+01  1.500e+01
+                              5.000e+00  2.000e+01  5.000e+00]
+        ineqlin:  residual: []
+                 marginals: []
+ mip_node_count: 0
+ mip_dual_bound: 0.0
+        mip_gap: 0.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们将这个运输方案与</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0., 10., 15., 50.,  0., 65.,  0., 60.,  0.,  0., 30.,  0.,  0.,
+        0., 70.])
+</pre></div>
+</div>
+</div>
+</div>
+<p>这里矩阵 <span class="math notranslate nohighlight">\(X\)</span> 包含的元素 <span class="math notranslate nohighlight">\(x_{ij}\)</span> 表示从工厂 <span class="math notranslate nohighlight">\(i = 1, 2, 3\)</span> <strong>运往</strong>地点 <span class="math notranslate nohighlight">\(j=1,2, \ldots, 5\)</span> 的运输量。</p>
+<p>向量 <span class="math notranslate nohighlight">\(z\)</span> 显然等于 <span class="math notranslate nohighlight">\(\operatorname{vec}(X)\)</span>。</p>
+<p>最优运输方案的最小成本由变量 <span class="math notranslate nohighlight">\(fun\)</span> 给出。</p>
+</section>
+<section id="id9">
+<h3><span class="section-number">17.3.3. </span>使用即时编译器<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
+<p>我们也可以使用 QuantEcon 中的一个强大工具来求解最优运输问题，即 <code class="docutils literal notranslate"><span class="pre">quantecon.optimize.linprog_simplex</span></code>。</p>
+<p>虽然这个程序使用的是与 <code class="docutils literal notranslate"><span class="pre">scipy.optimize.linprog</span></code> 相同的单纯形算法，但通过使用 <code class="docutils literal notranslate"><span class="pre">numba</span></code> 库中的即时编译器，代码运行速度得到了加速。</p>
+<p>如你很快就会看到，使用 <code class="docutils literal notranslate"><span class="pre">scipy.optimize.linprog</span></code> 可以显著减少求解最优运输问题所需的时间。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># construct matrices/vectors for linprog_simplex</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="c1"># Equality constraints</span>
+<span class="n">A_eq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="o">+</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">n</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">A_eq</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">A_eq</span><span class="p">[</span><span class="n">m</span><span class="o">+</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">b_eq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">quantecon.optimize.linprog_simplex</span></code> 执行的是最大化而不是最小化运算，我们需要在向量 <code class="docutils literal notranslate"><span class="pre">c</span></code> 前加上负号。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res_qe</span> <span class="o">=</span> <span class="n">linprog_simplex</span><span class="p">(</span><span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="n">A_eq</span><span class="o">=</span><span class="n">A_eq</span><span class="p">,</span> <span class="n">b_eq</span><span class="o">=</span><span class="n">b_eq</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>由于这两个线性规划求解器使用相同的单纯形算法，我们预期会得到完全相同的解</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res_qe</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[15., 35.,  0.,  0.,  0.],
+       [10.,  0., 60., 30.,  0.],
+       [ 0., 80.,  0.,  0., 70.]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0., 50.,  0.,  0.,  0.],
+       [10.,  0., 60., 30.,  0.],
+       [15., 65.,  0.,  0., 70.]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们比较一下 <code class="docutils literal notranslate"><span class="pre">scipy.optimize.linprog</span></code> 和 <code class="docutils literal notranslate"><span class="pre">quantecon.optimize.linprog_simplex</span></code> 的运行速度。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># scipy.optimize.linprog</span>
+<span class="o">%</span><span class="k">time</span> res = linprog(C_vec, A_eq=A[:-1, :], b_eq=b[:-1])
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.09 ms, sys: 72 μs, total: 1.16 ms
+Wall time: 1.08 ms
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># quantecon.optimize.linprog_simplex</span>
+<span class="o">%</span><span class="k">time</span> out = linprog_simplex(-c, A_eq=A_eq, b_eq=b_eq)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 80 μs, sys: 6 μs, total: 86 μs
+Wall time: 88.5 μs
+</pre></div>
+</div>
+</div>
+</div>
+<p>如您所见，<code class="docutils literal notranslate"><span class="pre">quantecon.optimize.linprog_simplex</span></code> 的速度要快得多。</p>
+<p>(但请注意，SciPy 版本可能比 QuantEcon 版本更稳定，因为它经过了更长时间的广泛测试。)</p>
+</section>
+</section>
+<section id="id10">
+<h2><span class="section-number">17.4. </span>对偶问题<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
+<p>设 <span class="math notranslate nohighlight">\(u, v\)</span> 表示对偶决策变量的向量，其分量为 <span class="math notranslate nohighlight">\((u_i), (v_j)\)</span>。</p>
+<p><a class="reference internal" href="#equation-plannerproblem">(17.1)</a> <strong>最小化</strong>问题的<strong>对偶</strong>是以下<strong>最大化</strong>问题：</p>
+<div class="math notranslate nohighlight" id="equation-dualproblem">
+<span class="eqno">(17.5)<a class="headerlink" href="#equation-dualproblem" title="Permalink to this equation">#</a></span>\[\begin{split}
+\begin{aligned}
+\max_{u_i, v_j} \ &amp; \sum_{i=1}^m p_i u_i + \sum_{j=1}^n q_j v_j \\
+\mbox{subject to } \ &amp; u_i + v_j \le c_{ij}, \ i = 1, 2, \dots, m;\ j = 1, 2, \dots, n \\
+\end{aligned}
+\end{split}\]</div>
+<p>对偶问题也是一个线性规划问题。</p>
+<p>它有 <span class="math notranslate nohighlight">\(m+n\)</span> 个对偶变量和 <span class="math notranslate nohighlight">\(mn\)</span> 个约束。</p>
+<p><strong>值</strong>向量 <span class="math notranslate nohighlight">\(u\)</span> 和 <span class="math notranslate nohighlight">\(v\)</span> 分别附加到原问题的第一组和第二组约束上。</p>
+<p>因此，<span class="math notranslate nohighlight">\(u\)</span> 附加到以下约束上：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\((\mathbf{1}_n' \otimes \mathbf{I}_m) \operatorname{vec}(X) = p\)</span></p></li>
+</ul>
+<p>且 <span class="math notranslate nohighlight">\(v\)</span> 与以下约束相关</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\((\mathbf{I}_n \otimes \mathbf{1}_m') \operatorname{vec}(X) = q.\)</span></p></li>
+</ul>
+<p>向量 <span class="math notranslate nohighlight">\(u\)</span> 和 <span class="math notranslate nohighlight">\(v\)</span> 的各个分量的单位<strong>价值</strong>是这些约束右侧数量的<strong>影子价格</strong>。</p>
+<p>我们可以将对偶问题写作</p>
+<div class="math notranslate nohighlight" id="equation-dualproblem2">
+<span class="eqno">(17.6)<a class="headerlink" href="#equation-dualproblem2" title="Permalink to this equation">#</a></span>\[\begin{split}
+\begin{aligned}
+\max_{u_i, v_j} \ &amp; p u + q v \\
+\mbox{subject to } \ &amp; A' \begin{pmatrix} u \\ v \\ \end{pmatrix} = \operatorname{vec}(C) \\
+\end{aligned}
+\end{split}\]</div>
+<p>对于上述相同的数值示例，让我们求解对偶问题。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Solve the dual problem</span>
+<span class="n">res_dual</span> <span class="o">=</span> <span class="n">linprog</span><span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">,</span> <span class="n">A_ub</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">b_ub</span><span class="o">=</span><span class="n">C_vec</span><span class="p">,</span>
+                   <span class="n">bounds</span><span class="o">=</span><span class="p">[(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">#Print results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;message:&quot;</span><span class="p">,</span> <span class="n">res_dual</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;nit:&quot;</span><span class="p">,</span> <span class="n">res_dual</span><span class="o">.</span><span class="n">nit</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fun:&quot;</span><span class="p">,</span> <span class="n">res_dual</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;u:&quot;</span><span class="p">,</span> <span class="n">res_dual</span><span class="o">.</span><span class="n">x</span><span class="p">[:</span><span class="n">m</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;v:&quot;</span><span class="p">,</span> <span class="n">res_dual</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">:])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
+nit: 9
+fun: -7225.0
+u: [-20. -10.   0.]
+v: [30. 35. 25. 40. 25.]
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们也可以使用<a class="reference external" href="https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html">quantecon.optimize.linprog_simplex</a>来求解对偶问题。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res_dual_qe</span> <span class="o">=</span> <span class="n">linprog_simplex</span><span class="p">(</span><span class="n">b_eq</span><span class="p">,</span> <span class="n">A_ub</span><span class="o">=</span><span class="n">A_eq</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">b_ub</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>两个程序计算出的影子价格是相同的。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res_dual_qe</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 5., 15., 25.,  5., 10.,  0., 15.,  0.])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res_dual</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-20., -10.,   0.,  30.,  35.,  25.,  40.,  25.])
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们可以比较使用这两种工具的计算时间。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">time</span> linprog(-b, A_ub=A.T, b_ub=C_vec, bounds=[(None, None)]*(m+n))
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.26 ms, sys: 13 μs, total: 1.27 ms
+Wall time: 1.16 ms
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>        message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
+        success: True
+         status: 0
+            fun: -7225.0
+              x: [-2.000e+01 -1.000e+01  0.000e+00  3.000e+01  3.500e+01
+                   2.500e+01  4.000e+01  2.500e+01]
+            nit: 9
+          lower:  residual: [       inf        inf        inf        inf
+                                    inf        inf        inf        inf]
+                 marginals: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00
+                              0.000e+00  0.000e+00  0.000e+00  0.000e+00]
+          upper:  residual: [       inf        inf        inf        inf
+                                    inf        inf        inf        inf]
+                 marginals: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00
+                              0.000e+00  0.000e+00  0.000e+00  0.000e+00]
+          eqlin:  residual: []
+                 marginals: []
+        ineqlin:  residual: [ 0.000e+00  0.000e+00 ...  1.500e+01
+                              0.000e+00]
+                 marginals: [-0.000e+00 -1.000e+01 ... -0.000e+00
+                             -7.000e+01]
+ mip_node_count: 0
+ mip_dual_bound: 0.0
+        mip_gap: 0.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">time</span> linprog_simplex(b_eq, A_ub=A_eq.T, b_ub=c)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 259 μs, sys: 13 μs, total: 272 μs
+Wall time: 275 μs
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SimplexResult(x=array([ 5., 15., 25.,  5., 10.,  0., 15.,  0.]), lambd=array([ 0., 35.,  0., 15.,  0., 25.,  0., 60., 15.,  0.,  0., 80.,  0.,
+        0., 70.]), fun=7225.0, success=True, status=0, num_iter=24)
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">quantecon.optimize.linprog_simplex</span></code>求解对偶问题的速度快10倍。</p>
+<p>为了完整性，让我们通过删除一个冗余的等式约束来求解具有非奇异<span class="math notranslate nohighlight">\(A\)</span>矩阵的对偶问题。</p>
+<p>首先尝试去掉第一个约束：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">linprog</span><span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">A_ub</span><span class="o">=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">b_ub</span><span class="o">=</span><span class="n">C_vec</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="o">=</span><span class="p">[(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>        message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
+        success: True
+         status: 0
+            fun: -7225.0
+              x: [ 1.000e+01  2.000e+01  1.000e+01  1.500e+01  5.000e+00
+                   2.000e+01  5.000e+00]
+            nit: 12
+          lower:  residual: [       inf        inf        inf        inf
+                                    inf        inf        inf]
+                 marginals: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00
+                              0.000e+00  0.000e+00  0.000e+00]
+          upper:  residual: [       inf        inf        inf        inf
+                                    inf        inf        inf]
+                 marginals: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00
+                              0.000e+00  0.000e+00  0.000e+00]
+          eqlin:  residual: []
+                 marginals: []
+        ineqlin:  residual: [ 0.000e+00  0.000e+00 ...  1.500e+01
+                              0.000e+00]
+                 marginals: [-1.500e+01 -1.000e+01 ... -0.000e+00
+                             -7.000e+01]
+ mip_node_count: 0
+ mip_dual_bound: 0.0
+        mip_gap: 0.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在让我们去掉最后一个约束条件：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">linprog</span><span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">A_ub</span><span class="o">=</span><span class="n">A</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">b_ub</span><span class="o">=</span><span class="n">C_vec</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="o">=</span><span class="p">[(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>        message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
+        success: True
+         status: 0
+            fun: -7225.0
+              x: [ 5.000e+00  1.500e+01  2.500e+01  5.000e+00  1.000e+01
+                  -0.000e+00  1.500e+01]
+            nit: 9
+          lower:  residual: [       inf        inf        inf        inf
+                                    inf        inf        inf]
+                 marginals: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00
+                              0.000e+00  0.000e+00  0.000e+00]
+          upper:  residual: [       inf        inf        inf        inf
+                                    inf        inf        inf]
+                 marginals: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00
+                              0.000e+00  0.000e+00  0.000e+00]
+          eqlin:  residual: []
+                 marginals: []
+        ineqlin:  residual: [ 0.000e+00  0.000e+00 ...  1.500e+01
+                              0.000e+00]
+                 marginals: [-0.000e+00 -1.000e+01 ... -0.000e+00
+                             -7.000e+01]
+ mip_node_count: 0
+ mip_dual_bound: 0.0
+        mip_gap: 0.0
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id11">
+<h3><span class="section-number">17.4.1. </span>对偶问题的解释<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
+<p>根据<strong>强对偶性</strong>（请参见此讲座
+<a class="reference external" href="https://quantecon.github.io/lecture-intro.zh-cn/lp_intro.html" title="(in Python)"><span class="xref std std-doc">线性规划</span></a>），我们知道：</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{i=1}^m \sum_{j=1}^n c_{ij} x_{ij}  = \sum_{i=1}^m p_i u_i + \sum_{j=1}^n q_j v_j
+\]</div>
+<p>工厂<span class="math notranslate nohighlight">\(i\)</span>增加一个单位的产能，即<span class="math notranslate nohighlight">\(p_i\)</span>，将导致运输成本增加<span class="math notranslate nohighlight">\(u_i\)</span>。</p>
+<p>因此，<span class="math notranslate nohighlight">\(u_i\)</span>描述了<strong>从</strong>工厂<span class="math notranslate nohighlight">\(i\)</span>运出一个单位的成本。</p>
+<p>我们称之为从工厂<span class="math notranslate nohighlight">\(i\)</span>运出一个单位的出货成本。</p>
+<p>类似地，<span class="math notranslate nohighlight">\(v_j\)</span>是运送一个单位<strong>到</strong>地点<span class="math notranslate nohighlight">\(j\)</span>的成本。</p>
+<p>我们称之为运送一个单位到地点<span class="math notranslate nohighlight">\(j\)</span>的进货成本。</p>
+<p>强对偶性表明总运输成本等于总出货成本<strong>加上</strong>总进货成本。</p>
+<p>对于一个单位的产品，出货成本<span class="math notranslate nohighlight">\(u_i\)</span><strong>加上</strong>进货成本<span class="math notranslate nohighlight">\(v_j\)</span>应该等于运输成本<span class="math notranslate nohighlight">\(c_{ij}\)</span>，这是合理的。</p>
+<p>这种相等性由<strong>互补松弛</strong>条件保证，该条件规定当 <span class="math notranslate nohighlight">\(x_{ij} &gt; 0\)</span> 时，即当从工厂 <span class="math notranslate nohighlight">\(i\)</span> 到地点 <span class="math notranslate nohighlight">\(j\)</span> 有正向运输量时，必须满足 <span class="math notranslate nohighlight">\(u_i + v_j = c_{ij}\)</span>。</p>
+</section>
+</section>
+<section id="python">
+<h2><span class="section-number">17.5. </span>Python最优传输包<a class="headerlink" href="#python" title="Permalink to this heading">#</a></h2>
+<p>有一个优秀的<a class="reference external" href="https://pythonot.github.io/">Python包</a>专门用于最优传输，它简化了我们上面采取的一些步骤。</p>
+<p>特别是，该软件包在将数据传递给线性规划程序之前会处理向量化步骤。</p>
+<p>（话虽如此，上面关于向量化的讨论仍然很重要，因为我们想要了解其内部运作原理。）</p>
+<section id="id12">
+<h3><span class="section-number">17.5.1. </span>复现之前的结果<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
+<p>下面这行代码使用线性规划解决了上面讨论的示例应用。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">emd</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+<span class="n">X</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10104/1617639716.py:1: UserWarning: Input histogram consists of integer. The transport plan will be casted accordingly, possibly resulting in a loss of precision. If this behaviour is unwanted, please make sure your input histogram consists of floating point elements.
+  X = ot.emd(p, q, C)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[15, 35,  0,  0,  0],
+       [10,  0, 60, 30,  0],
+       [ 0, 80,  0,  0, 70]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>果然，我们得到了相同的解决方案和相同的成本</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">total_cost</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">C</span><span class="p">)</span>
+<span class="n">total_cost</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7225
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id13">
+<h3><span class="section-number">17.5.2. </span>更大的应用程序<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
+<p>现在让我们尝试在一个稍大的应用程序上使用相同的包。</p>
+<p>该应用程序具有与上述相同的解释，但我们还将为每个节点（即顶点）在平面上赋予一个位置。</p>
+<p>这将使我们能够将得到的运输方案绘制为图中的边。</p>
+<p>以下类通过以下方式定义节点：</p>
+<ul class="simple">
+<li><p>其位置 <span class="math notranslate nohighlight">\((x, y) \in \mathbb R^2\)</span>，</p></li>
+<li><p>其组别（工厂或位置，用<code class="docutils literal notranslate"><span class="pre">p</span></code>或<code class="docutils literal notranslate"><span class="pre">q</span></code>表示）以及</p></li>
+<li><p>其质量（例如，<span class="math notranslate nohighlight">\(p_i\)</span>或<span class="math notranslate nohighlight">\(q_j\)</span>）。</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">mass</span><span class="p">,</span> <span class="n">group</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>接下来我们编写一个函数，重复调用上面的类来构建实例。</p>
+<p>它为创建的节点分配位置、质量和组别。</p>
+<p>位置是随机分配的。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">build_nodes_of_one_type</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">):</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">group</span> <span class="o">==</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">n</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">betabinom</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">group</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">nodes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在我们构建两个节点列表，每个列表包含一种类型（工厂或位置）</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_p</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">n_q</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">p_list</span> <span class="o">=</span> <span class="n">build_nodes_of_one_type</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_p</span><span class="p">)</span>
+<span class="n">q_list</span> <span class="o">=</span> <span class="n">build_nodes_of_one_type</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_q</span><span class="p">)</span>
+
+<span class="n">p_probs</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">mass</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">p_list</span><span class="p">]</span>
+<span class="n">q_probs</span> <span class="o">=</span> <span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">mass</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">q_list</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>对于成本矩阵<span class="math notranslate nohighlight">\(C\)</span>，我们使用每个工厂和位置之间的欧几里得距离。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_p</span><span class="p">,</span> <span class="n">n_q</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_p</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_q</span><span class="p">):</span>
+        <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">p_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">p_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">q_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">q_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x0</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y0</span><span class="o">-</span><span class="n">y1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在我们准备应用求解器</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">time</span> pi = ot.emd(p_probs, q_probs, c)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 0 ns, sys: 669 μs, total: 669 μs
+Wall time: 375 μs
+</pre></div>
+</div>
+</div>
+</div>
+<p>最后，让我们使用<code class="docutils literal notranslate"><span class="pre">networkx</span></code>来绘制结果。</p>
+<p>在下面的图中，</p>
+<ul class="simple">
+<li><p>节点大小与概率质量成正比</p></li>
+<li><p>当在最优运输方案下从<span class="math notranslate nohighlight">\(i\)</span>到<span class="math notranslate nohighlight">\(j\)</span>有正向转移时，会画出一个从<span class="math notranslate nohighlight">\(i\)</span>到<span class="math notranslate nohighlight">\(j\)</span>的边（箭头）。</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">p_list</span><span class="p">])</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">([</span><span class="n">q</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">q_list</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_p</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_q</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">p_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">q_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">pi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+
+<span class="n">node_pos_dict</span><span class="o">=</span><span class="p">{}</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">p_list</span><span class="p">:</span>
+    <span class="n">node_pos_dict</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">q_list</span><span class="p">:</span>
+    <span class="n">node_pos_dict</span><span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">node_color_list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">node_size_list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">scale</span> <span class="o">=</span> <span class="mi">8_000</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">p_list</span><span class="p">:</span>
+    <span class="n">node_color_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+    <span class="n">node_size_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">mass</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">q_list</span><span class="p">:</span>
+    <span class="n">node_color_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+    <span class="n">node_size_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">mass</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span>
+                       <span class="n">node_pos_dict</span><span class="p">,</span>
+                       <span class="n">node_color</span><span class="o">=</span><span class="n">node_color_list</span><span class="p">,</span>
+                       <span class="n">node_size</span><span class="o">=</span><span class="n">node_size_list</span><span class="p">,</span>
+                       <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+                       <span class="n">linewidths</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                       <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                       <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">g</span><span class="p">,</span>
+                       <span class="n">node_pos_dict</span><span class="p">,</span>
+                       <span class="n">arrows</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">connectionstyle</span><span class="o">=</span><span class="s1">&#39;arc3,rad=0.1&#39;</span><span class="p">,</span>
+                       <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/01d0d17d9ff559e49904f680921a4e93df3c85dff232e84594a6d30a6b781125.png" src="_images/01d0d17d9ff559e49904f680921a4e93df3c85dff232e84594a6d30a6b781125.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/opt_transport.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/opt_transport.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/opt_transport.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/opt_transport.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/opt_transport.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "opt_transport";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/opt_transport.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

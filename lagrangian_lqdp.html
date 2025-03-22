@@ -1,0 +1,1835 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>58. LQ控制的拉格朗日方法 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lagrangian_lqdp';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/lagrangian_lqdp.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="59. 消除交叉项" href="cross_product_trick.html" />
+    <link rel="prev" title="57. LQ控制：基础" href="lqcontrol.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="LQ控制的拉格朗日方法"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="LQ控制的拉格朗日方法" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/lagrangian_lqdp.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=lagrangian_lqdp>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">58.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">58.2. 非贴现LQ动态规划问题</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">58.3. 拉格朗日量</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">58.4. 状态-协状态动态</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">58.5. 互反对特性</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">58.6. 舒尔分解</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">58.7. 应用</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">58.8. 其他应用</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">58.9. 贴现问题</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">58.9.1. 转换状态和控制以消除贴现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">58.9.2. 贴现问题的拉格朗日量</a></li>
+</ul>
+</li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">LQ控制的拉格朗日方法</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="lq">
+<h1><span class="section-number">58. </span>LQ控制的拉格朗日方法<a class="headerlink" href="#lq" title="Permalink to this heading">#</a></h1>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantecon
+</pre></div>
+</div>
+</div>
+<details class="hide below-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell output</span>
+<span class="expanded">Hide code cell output</span>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.0)
+Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (0.60.0)
+Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
+Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
+Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.1)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.2)
+Requirement already satisfied: llvmlite&lt;0.44,&gt;=0.43.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.43.0)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.3.2)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.7)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2.2.3)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2024.8.30)
+Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from sympy-&gt;quantecon) (1.3.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">quantecon</span> <span class="kn">import</span> <span class="n">LQ</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">schur</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id1">
+<h2><span class="section-number">58.1. </span>概述<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<p>本讲是 <a class="reference internal" href="lqcontrol.html"><span class="doc">线性二次动态规划</span></a> 的续篇</p>
+<p>也可以视为对我们在 <a class="reference internal" href="re_with_feedback.html"><span class="doc">线性理性预期模型中的稳定性</span></a> 一讲中遇到的<strong>不变子空间</strong>技术的扩展</p>
+<p>我们将介绍一个无限期线性二次无贴现动态规划问题的拉格朗日形式。</p>
+<p>这类问题有时也被称为最优线性调节器问题。</p>
+<p>拉格朗日形式</p>
+<ul class="simple">
+<li><p>能够揭示稳定性和最优性之间的联系</p></li>
+<li><p>是求解黎卡提方程的快速算法的基础</p></li>
+<li><p>为构建不直接来自跨期优化问题的动态系统的解决方案开辟了道路</p></li>
+</ul>
+<p>本讲中的一个关键工具是 <span class="math notranslate nohighlight">\(n \times n\)</span> <strong>辛矩阵</strong>的概念。</p>
+<p>辛矩阵的特征值以<strong>倒数对</strong>的形式出现，这意味着如果<span class="math notranslate nohighlight">\(\lambda_i \in (-1,1)\)</span>是一个特征值，那么<span class="math notranslate nohighlight">\(\lambda_i^{-1}\)</span>也是特征值。</p>
+<p>矩阵特征值具有这种倒数对的性质，这是一个明显的标志，表明该矩阵描述了一个系统方程的联合动态，这些方程描述了构成求解无折扣线性二次无限期优化问题的一阶必要条件的<strong>状态</strong>和<strong>协态</strong>。</p>
+<p>我们感兴趣的辛矩阵描述了最优控制系统中<strong>状态</strong>和<strong>协态</strong>向量的一阶动态。</p>
+<p>在研究这个矩阵的特征值和特征向量时，我们着重分析<strong>不变子空间</strong>。</p>
+<p>这些线性二次动态规划问题的不变子空间表述提供了一个桥梁，连接了递归</p>
+<p>（即动态规划）公式和线性控制与线性滤波问题的经典公式，这些公式使用相关的矩阵分解（参见<a class="reference external" href="https://python-advanced.quantecon.org/lu_tricks.html">这节课</a>和<a class="reference external" href="https://python-advanced.quantecon.org/classical_filtering.html">这节课</a>）。</p>
+<p>虽然本课程大部分内容关注非贴现问题，但后面的章节会描述将贴现问题转换为非贴现问题的便捷方法。</p>
+<p>本课程中的这些技术在我们学习<a class="reference external" href="https://python-advanced.quantecon.org/dyn_stack.html">这节课</a>中的斯塔克伯格和拉姆齐问题时将会很有用。</p>
+</section>
+<section id="id2">
+<h2><span class="section-number">58.2. </span>非贴现LQ动态规划问题<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<p>该问题是要选择一个控制序列 <span class="math notranslate nohighlight">\(\{u_t\}_{t=0}^\infty\)</span> 来最大化以下准则</p>
+<div class="math notranslate nohighlight">
+\[ 
+- \sum_{t=0}^\infty \{x'_t Rx_t+u'_tQu_t\} 
+\]</div>
+<p>约束条件为 <span class="math notranslate nohighlight">\(x_{t+1}=Ax_t+Bu_t\)</span>，其中 <span class="math notranslate nohighlight">\(x_0\)</span> 是给定的初始状态向量。</p>
+<p>这里 <span class="math notranslate nohighlight">\(x_t\)</span> 是一个 <span class="math notranslate nohighlight">\((n\times 1)\)</span> 的状态变量向量，<span class="math notranslate nohighlight">\(u_t\)</span> 是一个 <span class="math notranslate nohighlight">\((k\times 1)\)</span> 的控制向量，<span class="math notranslate nohighlight">\(R\)</span> 是一个半正定对称矩阵，<span class="math notranslate nohighlight">\(Q\)</span> 是一个正定对称矩阵，<span class="math notranslate nohighlight">\(A\)</span> 是一个 <span class="math notranslate nohighlight">\((n\times n)\)</span> 的矩阵，而 <span class="math notranslate nohighlight">\(B\)</span> 是一个 <span class="math notranslate nohighlight">\((n\times k)\)</span> 的矩阵。</p>
+<p>最优值函数被证明是二次型的，<span class="math notranslate nohighlight">\(V(x)= - x'Px\)</span>，其中 <span class="math notranslate nohighlight">\(P\)</span> 是一个半正定对称矩阵。</p>
+<p>使用转移规律消除下一期的状态，贝尔曼方程变为</p>
+<div class="math notranslate nohighlight" id="equation-bellman0">
+<span class="eqno">(58.1)<a class="headerlink" href="#equation-bellman0" title="Permalink to this equation">#</a></span>\[ 
+- x'Px=\max_u \{- x' Rx-u'Qu-(Ax+Bu)' P(Ax+Bu)\}
+\]</div>
+<p>方程 <a class="reference internal" href="#equation-bellman0">(58.1)</a> 右侧最大化问题的一阶必要条件是</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>我们使用以下规则来对二次型和双线性矩阵形式求导：
+<span class="math notranslate nohighlight">\({\partial x' A x \over \partial x} = (A + A') x; {\partial y' B z \over \partial y} = B z, {\partial
+y' B z \over \partial z} = B' y\)</span>。</p>
+</div>
+<div class="math notranslate nohighlight">
+\[
+(Q+B'PB)u=-B'PAx,
+\]</div>
+<p>这意味着 <span class="math notranslate nohighlight">\(u\)</span> 的最优决策规则是</p>
+<div class="math notranslate nohighlight">
+\[\]</div>
+<p>u=-(Q+B’PB)^{-1} B’PAx
+$$</p>
+<p>或</p>
+<div class="math notranslate nohighlight">
+\[
+u=-Fx,
+\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight">
+\[ 
+F=(Q+B'PB)^{-1}B'PA.
+\]</div>
+<p>将 <span class="math notranslate nohighlight">\(u = - (Q+B'PB)^{-1}B'PAx\)</span> 代入方程 <a class="reference internal" href="#equation-bellman0">(58.1)</a> 的右侧并重新整理得到</p>
+<div class="math notranslate nohighlight" id="equation-riccati">
+<span class="eqno">(58.2)<a class="headerlink" href="#equation-riccati" title="Permalink to this equation">#</a></span>\[
+P=R+A'PA-A'PB(Q+B'PB)^{-1} B'PA.
+\]</div>
+<p>方程 <a class="reference internal" href="#equation-riccati">(58.2)</a> 被称为<strong>代数矩阵黎卡提</strong>方程。</p>
+<p>方程 <a class="reference internal" href="#equation-riccati">(58.2)</a> 有多个解。</p>
+<p>但只有一个解是正定的。</p>
+<p>这个正定解与我们问题的最大值相关。</p>
+<p>它将矩阵 <span class="math notranslate nohighlight">\(P\)</span> 表示为矩阵 <span class="math notranslate nohighlight">\(R,Q,A,B\)</span> 的隐函数。</p>
+<p>注意<strong>值函数的梯度</strong>为</p>
+<div class="math notranslate nohighlight" id="equation-eqn-valgrad">
+<span class="eqno">(58.3)<a class="headerlink" href="#equation-eqn-valgrad" title="Permalink to this equation">#</a></span>\[
+\frac{\partial V(x)}{\partial x} = - 2 P x 
+\]</div>
+<p>我们稍后将使用公式 <a class="reference internal" href="#equation-eqn-valgrad">(58.3)</a>。</p>
+</section>
+<section id="id3">
+<h2><span class="section-number">58.3. </span>拉格朗日量<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>对于无折扣最优线性调节器问题，构造拉格朗日量</p>
+<div class="math notranslate nohighlight" id="equation-lag-lqdp-eq1">
+<span class="eqno">(58.4)<a class="headerlink" href="#equation-lag-lqdp-eq1" title="Permalink to this equation">#</a></span>\[ \begin{align}\begin{aligned}
+{\cal L} = - \sum^\infty_{t=0} \biggl\{ x^\prime_t R x_t + u_t^\prime Q u_t +\\2 \mu^\prime_{t+1} [A x_t + B u_t - x_{t+1}]\biggr\}
+\end{aligned}\end{align} \]</div>
+<p>其中 <span class="math notranslate nohighlight">\(2 \mu_{t+1}\)</span> 是时间 <span class="math notranslate nohighlight">\(t\)</span> 转移方程 <span class="math notranslate nohighlight">\(x_{t+1} = A x_t + B u_t\)</span> 的拉格朗日乘子向量。</p>
+<p>（我们在 <span class="math notranslate nohighlight">\(\mu_{t+1}\)</span> 前面加上 <span class="math notranslate nohighlight">\(2\)</span> 是为了使其与方程 <a class="reference internal" href="#equation-eqn-valgrad">(58.3)</a> 很好地对应。）</p>
+<p>关于 <span class="math notranslate nohighlight">\(\{u_t,x_{t+1}\}_{t=0}^\infty\)</span> 的最大化一阶条件是</p>
+<div class="math notranslate nohighlight" id="equation-lag-lqdp-eq2">
+<span class="eqno">(58.5)<a class="headerlink" href="#equation-lag-lqdp-eq2" title="Permalink to this equation">#</a></span>\[
+\begin{aligned}
+2 Q u_t &amp;+ 2B^\prime \mu_{t+1} = 0 \ ,\ t \geq 0 \cr \mu_t &amp;= R x_t + A^\prime \mu_{t+1}\ ,\ t\geq 1.\cr
+\end{aligned}
+\]</div>
+<p>定义 <span class="math notranslate nohighlight">\(\mu_0\)</span> 为 <span class="math notranslate nohighlight">\(x_0\)</span> 的影子价格向量，并对 <a class="reference internal" href="#equation-lag-lqdp-eq1">(58.4)</a> 应用包络条件可推导出</p>
+<div class="math notranslate nohighlight">
+\[
+\mu_0 = R x_0 + A' \mu_1,
+\]</div>
+<p>这是系统 <a class="reference internal" href="#equation-lag-lqdp-eq2">(58.5)</a> 中第二个方程在时间 <span class="math notranslate nohighlight">\(t=0\)</span> 时的对应形式。</p>
+<p>一个重要的事实是</p>
+<div class="math notranslate nohighlight" id="equation-eqn-mupx">
+<span class="eqno">(58.6)<a class="headerlink" href="#equation-eqn-mupx" title="Permalink to this equation">#</a></span>\[ 
+\mu_{t+1} = P x_{t+1}
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(P\)</span> 是一个正定矩阵，它是代数黎卡提方程 <a class="reference internal" href="#equation-riccati">(58.2)</a> 的解。</p>
+<p>因此，根据方程 <a class="reference internal" href="#equation-eqn-valgrad">(58.3)</a> 和 <a class="reference internal" href="#equation-eqn-mupx">(58.6)</a>，<span class="math notranslate nohighlight">\(- 2 \mu_{t}\)</span> 是值函数对 <span class="math notranslate nohighlight">\(x_t\)</span> 的梯度。</p>
+<p>Lagrange乘子向量 <span class="math notranslate nohighlight">\(\mu_{t}\)</span> 通常被称为与<strong>状态</strong>向量 <span class="math notranslate nohighlight">\(x_t\)</span> 对应的<strong>协状态</strong>向量。</p>
+<p>按照以下步骤进行是很有用的：</p>
+<ul class="simple">
+<li><p>从 <a class="reference internal" href="#equation-lag-lqdp-eq2">(58.5)</a> 的第一个方程解出关于 <span class="math notranslate nohighlight">\(\mu_{t+1}\)</span> 的 <span class="math notranslate nohighlight">\(u_t\)</span>。</p></li>
+<li><p>将结果代入运动方程 <span class="math notranslate nohighlight">\(x_{t+1} = A x_t + B u_t\)</span>。</p></li>
+<li><p>将得到的方程和 <a class="reference internal" href="#equation-lag-lqdp-eq2">(58.5)</a> 的第二个方程整理成如下形式</p></li>
+</ul>
+<div class="math notranslate nohighlight" id="equation-eq-systosolve">
+<span class="eqno">(58.7)<a class="headerlink" href="#equation-eq-systosolve" title="Permalink to this equation">#</a></span>\[
+L\ \begin{pmatrix}x_{t+1}\cr \mu_{t+1}\cr\end{pmatrix}\ = \ N\ \begin{pmatrix}x_t\cr \mu_t\cr\end{pmatrix}\
+,\ t \geq 0,
+\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight">
+\[
+L = \ \begin{pmatrix}I &amp; BQ^{-1} B^\prime \cr 0 &amp; A^\prime\cr\end{pmatrix}, \quad N = \
+\begin{pmatrix}A &amp; 0\cr -R &amp; I\cr\end{pmatrix}.
+\]</div>
+<p>当 <span class="math notranslate nohighlight">\(L\)</span> 满秩时（即当 <span class="math notranslate nohighlight">\(A\)</span> 满秩时），我们可以将系统 <a class="reference internal" href="#equation-eq-systosolve">(58.7)</a> 写作</p>
+<div class="math notranslate nohighlight" id="equation-eq4orig">
+<span class="eqno">(58.8)<a class="headerlink" href="#equation-eq4orig" title="Permalink to this equation">#</a></span>\[\begin{pmatrix}x_{t+1}\cr \mu_{t+1}\cr\end{pmatrix}\ = M\ \begin{pmatrix}x_t\cr\mu_t\cr\end{pmatrix}
+\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight" id="equation-mdefn">
+<span class="eqno">(58.9)<a class="headerlink" href="#equation-mdefn" title="Permalink to this equation">#</a></span>\[
+M\equiv L^{-1} N = \begin{pmatrix}A+B Q^{-1} B^\prime A^{\prime-1}R &amp;
+-B Q^{-1} B^\prime A^{\prime-1}\cr -A^{\prime -1} R &amp; A^{\prime -1}\cr\end{pmatrix}.
+\]</div>
+</section>
+<section id="id4">
+<h2><span class="section-number">58.4. </span>状态-协状态动态<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<p>我们寻求解差分方程系统<a class="reference internal" href="#equation-eq4orig">(58.8)</a>，以得到满足以下条件的序列<span class="math notranslate nohighlight">\(\{x_t\}_{t=0}^\infty\)</span>：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(x_0\)</span>的初始条件</p></li>
+<li><p>终端条件<span class="math notranslate nohighlight">\(\lim_{t \rightarrow +\infty} x_t =0\)</span></p></li>
+</ul>
+<p>这个终端条件反映了我们对<strong>稳定</strong>解的需求，即当<span class="math notranslate nohighlight">\(t \rightarrow \infty\)</span>时不会发散的解。</p>
+<p>我们对<span class="math notranslate nohighlight">\(\{x_t\}\)</span>序列稳定性的要求源于最大化以下表达式的愿望：</p>
+<div class="math notranslate nohighlight">
+\[ 
+-\sum_{t=0}^\infty \bigl[ x_t ' R x_t + u_t' Q u_t \bigr],
+\]</div>
+<p>这要求当<span class="math notranslate nohighlight">\(t \rightarrow + \infty\)</span>时，<span class="math notranslate nohighlight">\(x_t' R x_t\)</span>收敛于零。</p>
+</section>
+<section id="id5">
+<h2><span class="section-number">58.5. </span>互反对特性<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>为了继续，我们研究在<a class="reference internal" href="#equation-mdefn">(58.9)</a>中定义的<span class="math notranslate nohighlight">\((2n \times 2n)\)</span>矩阵<span class="math notranslate nohighlight">\(M\)</span>的性质。</p>
+<p>引入一个<span class="math notranslate nohighlight">\((2n \times 2n)\)</span>矩阵会有帮助：</p>
+<div class="math notranslate nohighlight">
+\[
+J = \begin{pmatrix}0 &amp; -I_n\cr I_n &amp; 0\cr\end{pmatrix}.
+\]</div>
+<p>矩阵<span class="math notranslate nohighlight">\(J\)</span>的秩为<span class="math notranslate nohighlight">\(2n\)</span>。</p>
+<p><strong>定义：</strong> 如果矩阵<span class="math notranslate nohighlight">\(M\)</span>满足</p>
+<div class="math notranslate nohighlight" id="equation-lag-lqdp-eq3">
+<span class="eqno">(58.10)<a class="headerlink" href="#equation-lag-lqdp-eq3" title="Permalink to this equation">#</a></span>\[
+MJM^\prime = J.
+\]</div>
+<p>则称其为<strong>辛矩阵</strong>。</p>
+<p>辛矩阵的显著性质包括（容易验证）：</p>
+<ul class="simple">
+<li><p>如果<span class="math notranslate nohighlight">\(M\)</span>是辛矩阵，那么<span class="math notranslate nohighlight">\(M^2\)</span>也是辛矩阵</p></li>
+<li><p>如果<span class="math notranslate nohighlight">\(M\)</span>是辛矩阵，那么<span class="math notranslate nohighlight">\(\textrm{det}(M) = 1\)</span></p></li>
+</ul>
+<p>可以直接验证方程<a class="reference internal" href="#equation-mdefn">(58.9)</a>中的<span class="math notranslate nohighlight">\(M\)</span>是辛矩阵。</p>
+<p>从方程<a class="reference internal" href="#equation-lag-lqdp-eq3">(58.10)</a>和<span class="math notranslate nohighlight">\(J^{-1} = J^\prime = -J\)</span>可以推导出，对任意辛矩阵<span class="math notranslate nohighlight">\(M\)</span>，有</p>
+<div class="math notranslate nohighlight" id="equation-lag-lqdp-eq4">
+<span class="eqno">(58.11)<a class="headerlink" href="#equation-lag-lqdp-eq4" title="Permalink to this equation">#</a></span>\[
+M^\prime = J^{-1} M^{-1} J.
+\]</div>
+<p>方程<a class="reference internal" href="#equation-lag-lqdp-eq4">(58.11)</a>表明<span class="math notranslate nohighlight">\(M^\prime\)</span>与<span class="math notranslate nohighlight">\(M\)</span>的逆矩阵通过<strong>相似变换</strong>相关。</p>
+<p>对于方阵，请记住：</p>
+<ul class="simple">
+<li><p>相似矩阵具有相同的特征值</p></li>
+<li><p>矩阵的逆的特征值是该矩阵特征值的倒数</p></li>
+<li><p>矩阵和它的转置矩阵具有相同的特征值</p></li>
+</ul>
+<p>从方程<a class="reference internal" href="#equation-lag-lqdp-eq4">(58.11)</a>可以得出，<span class="math notranslate nohighlight">\(M\)</span>的特征值成倒数对：如果<span class="math notranslate nohighlight">\(\lambda\)</span>是<span class="math notranslate nohighlight">\(M\)</span>的特征值，那么<span class="math notranslate nohighlight">\(\lambda^{-1}\)</span>也是。</p>
+<p>将方程<a class="reference internal" href="#equation-eq4orig">(58.8)</a>写作</p>
+<div class="math notranslate nohighlight" id="equation-eq658">
+<span class="eqno">(58.12)<a class="headerlink" href="#equation-eq658" title="Permalink to this equation">#</a></span>\[
+y_{t+1} = M y_t
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(y_t = \begin{pmatrix}x_t\cr \mu_t\cr\end{pmatrix}\)</span>。</p>
+<p>考虑<span class="math notranslate nohighlight">\(M\)</span>的<strong>三角化</strong></p>
+<div class="math notranslate nohighlight" id="equation-eqn-triangledecomp">
+<span class="eqno">(58.13)<a class="headerlink" href="#equation-eqn-triangledecomp" title="Permalink to this equation">#</a></span>\[
+V^{-1} M V= \begin{pmatrix}W_{11} &amp; W_{12} \cr 0 &amp; W_{22}\cr\end{pmatrix}
+\]</div>
+<p>其中</p>
+<ul class="simple">
+<li><p>右侧的每个块都是<span class="math notranslate nohighlight">\((n\times n)\)</span>维的</p></li>
+<li><p><span class="math notranslate nohighlight">\(V\)</span>是非奇异的</p></li>
+<li><p><span class="math notranslate nohighlight">\(W_{22}\)</span>的所有特征值的模都大于1</p></li>
+<li><p><span class="math notranslate nohighlight">\(W_{11}\)</span>的所有特征值的模都小于1</p></li>
+</ul>
+</section>
+<section id="id6">
+<h2><span class="section-number">58.6. </span>舒尔分解<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<p><strong>舒尔分解</strong>和<strong>特征值分解</strong>是两种形如<a class="reference internal" href="#equation-eqn-triangledecomp">(58.13)</a>的分解。</p>
+<p>将方程<a class="reference internal" href="#equation-eq658">(58.12)</a>写作</p>
+<div class="math notranslate nohighlight" id="equation-eq659">
+<span class="eqno">(58.14)<a class="headerlink" href="#equation-eq659" title="Permalink to this equation">#</a></span>\[
+y_{t+1} = V W V^{-1} y_t.
+\]</div>
+<p>方程<a class="reference internal" href="#equation-eq659">(58.14)</a>对任意初始条件<span class="math notranslate nohighlight">\(y_0\)</span>的解显然为</p>
+<div class="math notranslate nohighlight" id="equation-eq6510">
+<span class="eqno">(58.15)<a class="headerlink" href="#equation-eq6510" title="Permalink to this equation">#</a></span>\[
+y_{t} = V \left[\begin{matrix}W^t_{11} &amp; W_{12,t}\cr 0 &amp; W^t_{22}\cr\end{matrix}\right]
+\ V^{-1} y_0
+\]</div>
+<p>其中当<span class="math notranslate nohighlight">\(t=1\)</span>时<span class="math notranslate nohighlight">\(W_{12,t} = W_{12}\)</span>，对于<span class="math notranslate nohighlight">\(t \geq 2\)</span>遵循递归关系</p>
+<div class="math notranslate nohighlight">
+\[
+W_{12, t} = W^{t-1}_{11} W_{12,t-1} + W_{12,t-1} W^{t-1}_{22}
+\]</div>
+<p>这里<span class="math notranslate nohighlight">\(W^t_{ii}\)</span>是<span class="math notranslate nohighlight">\(W_{ii}\)</span>的<span class="math notranslate nohighlight">\(t\)</span>次幂。</p>
+<p>将方程<a class="reference internal" href="#equation-eq6510">(58.15)</a>写作</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{pmatrix}y^\ast_{1t}\cr y^\ast_{2t}\cr\end{pmatrix}\ =\ \left[\begin{matrix} W^t_{11} &amp;
+W_{12, t}\cr 0 &amp; W^t_{22}\cr\end{matrix}\right]\quad \begin{pmatrix}y^\ast_{10}\cr
+y^\ast_{20}\cr\end{pmatrix}
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(y^\ast_t = V^{-1} y_t\)</span>，特别地</p>
+<div class="math notranslate nohighlight" id="equation-eq6511">
+<span class="eqno">(58.16)<a class="headerlink" href="#equation-eq6511" title="Permalink to this equation">#</a></span>\[
+y^\ast_{2t} = V^{21} x_t + V^{22} \mu_t,
+\]</div>
+<p>这里<span class="math notranslate nohighlight">\(V^{ij}\)</span>表示分块矩阵<span class="math notranslate nohighlight">\(V^{-1}\)</span>的<span class="math notranslate nohighlight">\((i,j)\)</span>部分。</p>
+<p>由于<span class="math notranslate nohighlight">\(W_{22}\)</span>是一个不稳定矩阵，除非<span class="math notranslate nohighlight">\(y^\ast_{20} = 0\)</span>，否则<span class="math notranslate nohighlight">\(y^\ast_t\)</span>将发散。</p>
+<p>令 <span class="math notranslate nohighlight">\(V^{ij}\)</span> 表示分块矩阵 <span class="math notranslate nohighlight">\(V^{-1}\)</span> 的第 <span class="math notranslate nohighlight">\((i,j)\)</span> 块。</p>
+<p>为了获得稳定性，我们必须设定 <span class="math notranslate nohighlight">\(y^\ast_{20} =0\)</span>，根据方程 <a class="reference internal" href="#equation-eq6511">(58.16)</a> 可得</p>
+<div class="math notranslate nohighlight">
+\[
+V^{21} x_0 + V^{22} \mu_0 = 0
+\]</div>
+<p>或</p>
+<div class="math notranslate nohighlight">
+\[
+\mu_0 = - (V^{22})^{-1} V^{21} x_0.
+\]</div>
+<p>这个方程在时间上会重复出现，即意味着</p>
+<div class="math notranslate nohighlight">
+\[
+\mu_t = - (V^{22})^{-1} V^{21} x_t.
+\]</div>
+<p>但注意，由于 <span class="math notranslate nohighlight">\((V^{21}\ V^{22})\)</span> 是 <span class="math notranslate nohighlight">\(V\)</span> 的逆矩阵的第二行块，因此</p>
+<div class="math notranslate nohighlight">
+\[
+(V^{21} \ V^{22})\quad \begin{pmatrix}V_{11}\cr V_{21}\cr\end{pmatrix} = 0
+\]</div>
+<p>这意味着</p>
+<div class="math notranslate nohighlight">
+\[
+V^{21} V_{11} + V^{22} V_{21} = 0.
+\]</div>
+<p>因此，</p>
+<div class="math notranslate nohighlight">
+\[
+-(V^{22})^{-1} V^{21} = V_{21} V^{-1}_{11}.
+\]</div>
+<p>所以我们可以写成</p>
+<div class="math notranslate nohighlight">
+\[
+\mu_0 = V_{21} V_{11}^{-1} x_0
+\]</div>
+<p>和</p>
+<div class="math notranslate nohighlight">
+\[
+\mu_t = V_{21} V^{-1}_{11} x_t.
+\]</div>
+<p>然而，我们知道 <span class="math notranslate nohighlight">\(\mu_t = P x_t\)</span>，其中 <span class="math notranslate nohighlight">\(P\)</span> 出现在求解黎卡提方程的矩阵中。</p>
+<p>因此，前面的论证确立了</p>
+<div class="math notranslate nohighlight" id="equation-eqn-pvaughn">
+<span class="eqno">(58.17)<a class="headerlink" href="#equation-eqn-pvaughn" title="Permalink to this equation">#</a></span>\[
+P = V_{21} V_{11}^{-1}.
+\]</div>
+<p>值得注意的是，公式<a class="reference internal" href="#equation-eqn-pvaughn">(58.17)</a>为我们提供了一种计算效率高的方法来计算正定矩阵<span class="math notranslate nohighlight">\(P\)</span>，该矩阵可以解决动态规划中出现的代数黎卡提方程<a class="reference internal" href="#equation-riccati">(58.2)</a>。</p>
+<p>即使<span class="math notranslate nohighlight">\(M\)</span>的特征值不以互反对的形式出现，这种方法也可以用来计算任何形如<a class="reference internal" href="#equation-eq4orig">(58.8)</a>的系统的解（如果解存在的话）。</p>
+<p>只要<span class="math notranslate nohighlight">\(M\)</span>的特征值在单位圆内外各半分布，这种方法通常就能奏效。</p>
+<p>当系统是一个存在扭曲的模型的均衡时，特征值（经适当贴现调整后）可能不会以互反对的形式出现，这种扭曲使得均衡无法求解任何最优化问题。参见<span id="id7">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span>第12章。</p>
+</section>
+<section id="id8">
+<h2><span class="section-number">58.7. </span>应用<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
+<p>这里我们通过一个示例来演示计算过程，这个示例是从<a class="reference external" href="https://python.quantecon.org/lqcontrol.html">quantecon讲座</a>中借鉴的确定性版本。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 模型参数</span>
+<span class="n">r</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">c_bar</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">μ</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># 构建为LQ问题</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">A</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">,</span> <span class="o">-</span><span class="n">c_bar</span> <span class="o">+</span> <span class="n">μ</span><span class="p">],</span>
+     <span class="p">[</span><span class="mi">0</span><span class="p">,</span>              <span class="mi">1</span><span class="p">]]</span>
+<span class="n">B</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+     <span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+<span class="c1"># 构造一个LQ实例</span>
+<span class="n">lq</span> <span class="o">=</span> <span class="n">LQ</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>给定矩阵 <span class="math notranslate nohighlight">\(A\)</span>、<span class="math notranslate nohighlight">\(B\)</span>、<span class="math notranslate nohighlight">\(Q\)</span>、<span class="math notranslate nohighlight">\(R\)</span>，我们可以计算 <span class="math notranslate nohighlight">\(L\)</span>、<span class="math notranslate nohighlight">\(N\)</span> 和 <span class="math notranslate nohighlight">\(M=L^{-1}N\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">construct_LNM</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+
+    <span class="n">n</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">lq</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">lq</span><span class="o">.</span><span class="n">k</span>
+
+    <span class="c1"># 构造 L 和 N</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">))</span>
+    <span class="n">L</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">L</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">:]</span> <span class="o">=</span> <span class="n">B</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span> <span class="o">@</span> <span class="n">B</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">L</span><span class="p">[</span><span class="n">n</span><span class="p">:,</span> <span class="n">n</span><span class="p">:]</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">))</span>
+    <span class="n">N</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span>
+    <span class="n">N</span><span class="p">[</span><span class="n">n</span><span class="p">:,</span> <span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">R</span>
+    <span class="n">N</span><span class="p">[</span><span class="n">n</span><span class="p">:,</span> <span class="n">n</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="c1"># 计算 M</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">L</span><span class="p">)</span> <span class="o">@</span> <span class="n">N</span>
+
+    <span class="k">return</span> <span class="n">L</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">M</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">L</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">construct_LNM</span><span class="p">(</span><span class="n">lq</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="n">lq</span><span class="o">.</span><span class="n">B</span><span class="p">,</span> <span class="n">lq</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span> <span class="n">lq</span><span class="o">.</span><span class="n">R</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">M</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 1.05      , -1.        , -0.95238095,  0.        ],
+       [ 0.        ,  1.        ,  0.        ,  0.        ],
+       [ 0.        ,  0.        ,  0.95238095,  0.        ],
+       [ 0.        ,  0.        ,  0.95238095,  1.        ]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们验证 <span class="math notranslate nohighlight">\(M\)</span> 是辛矩阵。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">lq</span><span class="o">.</span><span class="n">n</span>
+<span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">))</span>
+<span class="n">J</span><span class="p">[</span><span class="n">n</span><span class="p">:,</span> <span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">J</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">M</span> <span class="o">@</span> <span class="n">J</span> <span class="o">@</span> <span class="n">M</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">J</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0., 0., 0., 0.],
+       [0., 0., 0., 0.],
+       [0., 0., 0., 0.],
+       [0., 0., 0., 0.]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们可以使用<code class="docutils literal notranslate"><span class="pre">np.linalg.eigvals</span></code>计算矩阵<span class="math notranslate nohighlight">\(M\)</span>的特征值，并按升序排列。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eigvals</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">M</span><span class="p">))</span>
+<span class="n">eigvals</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.9523809523809523, 1.0, 1.0, 1.05]
+</pre></div>
+</div>
+</div>
+</div>
+<p>当我们应用舒尔分解使得<span class="math notranslate nohighlight">\(M=V W V^{-1}\)</span>时，我们希望</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(W\)</span>的左上块<span class="math notranslate nohighlight">\(W_{11}\)</span>的所有特征值的模小于1，并且</p></li>
+<li><p>右下块<span class="math notranslate nohighlight">\(W_{22}\)</span>的特征值的模大于1。</p></li>
+</ul>
+<p>为了得到我们想要的结果，让我们定义一个排序函数，告诉<code class="docutils literal notranslate"><span class="pre">scipy.schur</span></code>将模小于1的对应特征值排序到左上角。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stable_eigvals</span> <span class="o">=</span> <span class="n">eigvals</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">sort_fun</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="s2">&quot;将模小于1的特征值排序到左上角。&quot;</span>
+
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">stable_eigvals</span><span class="p">:</span>
+        <span class="n">stable_eigvals</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">stable_eigvals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<span class="n">W</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">schur</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="n">sort_fun</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 1.        , -0.02316402, -1.00085948, -0.95000594],
+       [ 0.        ,  0.95238095, -0.00237501, -0.95325452],
+       [ 0.        ,  0.        ,  1.05      ,  0.02432222],
+       [ 0.        ,  0.        ,  0.        ,  1.        ]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">V</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0.99875234,  0.00121459, -0.04992284,  0.        ],
+       [ 0.04993762, -0.02429188,  0.99845688,  0.        ],
+       [ 0.        ,  0.04992284,  0.00121459,  0.99875234],
+       [ 0.        , -0.99845688, -0.02429188,  0.04993762]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们可以检查 <span class="math notranslate nohighlight">\(W_{11}\)</span> 和 <span class="math notranslate nohighlight">\(W_{22}\)</span> 的特征值的模。</p>
+<p>由于它们都是三角矩阵，特征值就是对角线元素。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># W11</span>
+<span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">W</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="p">:</span><span class="n">n</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.        , 0.95238095])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># W22</span>
+<span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="n">n</span><span class="p">:,</span> <span class="n">n</span><span class="p">:])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.05, 1.  ])
+</pre></div>
+</div>
+</div>
+</div>
+<p>以下函数封装了 <span class="math notranslate nohighlight">\(M\)</span> 矩阵构建、舒尔分解以及稳定性约束下的 <span class="math notranslate nohighlight">\(P\)</span> 计算。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">stable_solution</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    给定一个线性差分方程系统</span>
+
+<span class="sd">        y&#39; = |a b| y</span>
+<span class="sd">        x&#39; = |c d| x</span>
+
+<span class="sd">    该系统可能不稳定，通过施加稳定性约束来求解。</span>
+
+<span class="sd">    参数</span>
+<span class="sd">    ---------</span>
+<span class="sd">    M : np.ndarray(float)</span>
+<span class="sd">        表示线性差分方程系统的矩阵。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">stable_eigvals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">M</span><span class="p">))[:</span><span class="n">n</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">sort_fun</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="s2">&quot;将模小于1的特征值排序到左上角。&quot;</span>
+
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">stable_eigvals</span><span class="p">:</span>
+            <span class="n">stable_eigvals</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">stable_eigvals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">W</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">schur</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="n">sort_fun</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;特征值：</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    W11: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">W</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="p">:</span><span class="n">n</span><span class="p">])))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    W22: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="n">n</span><span class="p">:,</span> <span class="n">n</span><span class="p">:])))</span>
+
+    <span class="c1"># 计算 V21 V11^{-1}</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">V</span><span class="p">[</span><span class="n">n</span><span class="p">:,</span> <span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">V</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="p">:</span><span class="n">n</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">P</span>
+
+<span class="k">def</span> <span class="nf">stationary_P</span><span class="p">(</span><span class="n">lq</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算表示值函数的矩阵 :math:`P`</span>
+
+<span class="sd">         V(x) = x&#39; P x</span>
+
+<span class="sd">    在无限时域情况下。通过在解路径上施加稳定性约束</span>
+<span class="sd">    并使用舒尔分解来进行计算。</span>
+
+<span class="sd">    参数</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lq : qe.LQ</span>
+<span class="sd">        用于分析无限时域形式的线性二次最优控制问题的</span>
+<span class="sd">        QuantEcon类。</span>
+
+<span class="sd">    返回值</span>
+<span class="sd">    -------</span>
+<span class="sd">    P : array_like(float)</span>
+<span class="sd">        值函数表示中的P矩阵。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">lq</span><span class="o">.</span><span class="n">Q</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">lq</span><span class="o">.</span><span class="n">R</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">lq</span><span class="o">.</span><span class="n">A</span> <span class="o">*</span> <span class="n">lq</span><span class="o">.</span><span class="n">beta</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">lq</span><span class="o">.</span><span class="n">B</span> <span class="o">*</span> <span class="n">lq</span><span class="o">.</span><span class="n">beta</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">n</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">lq</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">lq</span><span class="o">.</span><span class="n">k</span>
+
+    <span class="n">L</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">construct_LNM</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+    <span class="n">W</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">stable_solution</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">P</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 计算P</span>
+<span class="n">stationary_P</span><span class="p">(</span><span class="n">lq</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>特征值：
+
+    W11: [1.         0.95238095]
+    W22: [1.05 1.  ]
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0.1025, -2.05  ],
+       [-2.05  , 41.    ]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>请注意，以这种方式计算得到的矩阵 <span class="math notranslate nohighlight">\(P\)</span> 与 quantecon 中通过迭代 Riccati 差分方程直至收敛来求解代数 Riccati 方程的程序得到的结果非常接近。</p>
+<p>这种微小的差异来自计算误差，可以通过增加最大迭代次数或降低收敛容差来减小。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lq</span><span class="o">.</span><span class="n">stationary_values</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.1025, -2.05  ],
+        [-2.05  , 41.01  ]]),
+ array([[-0.09761905,  1.95238095]]),
+ 0)
+</pre></div>
+</div>
+</div>
+</div>
+<p>使用舒尔分解效率要高得多。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+<span class="n">stationary_P</span><span class="p">(</span><span class="n">lq</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>82.4 μs ± 319 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+<span class="n">lq</span><span class="o">.</span><span class="n">stationary_values</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.23 ms ± 5.5 μs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h2><span class="section-number">58.8. </span>其他应用<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
+<p>上述用于稳定潜在不稳定线性差分方程系统的方法并不仅限于线性二次动态优化问题。</p>
+<p>例如，在我们的<a class="reference external" href="https://python.quantecon.org/re_with_feedback.html#another-perspective">线性理性预期模型中的稳定性</a>讲座中也使用了相同的方法。</p>
+<p>让我们尝试使用本讲座上文定义的<code class="docutils literal notranslate"><span class="pre">stable_solution</span></code>函数来求解该讲座中描述的模型。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">construct_H</span><span class="p">(</span><span class="n">ρ</span><span class="p">,</span> <span class="n">λ</span><span class="p">,</span> <span class="n">δ</span><span class="p">):</span>
+    <span class="s2">&quot;根据参数构建矩阵H。&quot;</span>
+
+    <span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">H</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">ρ</span><span class="p">,</span><span class="n">δ</span>
+    <span class="n">H</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">λ</span><span class="p">)</span> <span class="o">/</span> <span class="n">λ</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">λ</span>
+
+    <span class="k">return</span> <span class="n">H</span>
+
+<span class="n">H</span> <span class="o">=</span> <span class="n">construct_H</span><span class="p">(</span><span class="n">ρ</span><span class="o">=</span><span class="mf">.9</span><span class="p">,</span> <span class="n">λ</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">δ</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">stable_solution</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+<span class="n">P</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>特征值：
+
+    W11: [0.9]
+    W22: [2.]
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.90909091]])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id10">
+<h2><span class="section-number">58.9. </span>贴现问题<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
+<section id="id11">
+<h3><span class="section-number">58.9.1. </span>转换状态和控制以消除贴现<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
+<p>一对有用的转换允许我们将贴现问题转换为非贴现问题。</p>
+<p>假设我们有一个贴现问题，其目标函数为</p>
+<div class="math notranslate nohighlight">
+\[
+ - \sum^\infty_{t=0} \beta^t \biggl\{ x^\prime_t R x_t + u_t^\prime Q u_t \biggr\}
+\]</div>
+<p>且状态转移方程仍为 <span class="math notranslate nohighlight">\(x_{t +1 }=Ax_t+Bu_t\)</span>。</p>
+<p>定义转换后的状态和控制变量</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\hat x_t = \beta^{\frac{t}{2}} x_t \)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\hat u_t = \beta^{\frac{t}{2}} u_t\)</span></p></li>
+</ul>
+<p>以及转换后的转移方程矩阵</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\hat A = \beta^{\frac{1}{2}} A\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\hat B =  \beta^{\frac{1}{2}} B  \)</span></p></li>
+</ul>
+<p>使得调整后的状态和控制变量遵循转移规律</p>
+<div class="math notranslate nohighlight">
+\[
+\hat x_{t+1} = \hat A \hat x_t + \hat B \hat u_t. 
+\]</div>
+<p>那么由 <span class="math notranslate nohighlight">\(A, B, R, Q, \beta\)</span> 定义的贴现最优控制问题，其最优策略由 <span class="math notranslate nohighlight">\(P, F\)</span> 表征，与一个等价的</p>
+<p>由 <span class="math notranslate nohighlight">\(\hat A, \hat B, Q, R\)</span> 定义的非贴现问题具有最优策略，其特征由满足以下方程的 <span class="math notranslate nohighlight">\(\hat F, \hat P\)</span> 表示：</p>
+<div class="math notranslate nohighlight">
+\[
+\hat F=(Q+B'\hat PB)^{-1}\hat B'P \hat A
+\]</div>
+<p>和</p>
+<div class="math notranslate nohighlight">
+\[
+\hat P=R+\hat A'P \hat A-\hat A'P \hat B(Q+B'\hat P \hat B)^{-1} \hat B'P \hat A
+\]</div>
+<p>从 <span class="math notranslate nohighlight">\(\hat A, \hat B\)</span> 的定义可以直接得出 <span class="math notranslate nohighlight">\(\hat F = F\)</span> 和 <span class="math notranslate nohighlight">\(\hat P = P\)</span>。</p>
+<p>通过利用这些转换，我们可以通过求解相关的非贴现问题来解决贴现问题。</p>
+<p>特别地，我们可以先将贴现线性二次问题转换为非贴现问题，然后使用上述拉格朗日和不变子空间方法求解该贴现最优调节器问题。</p>
+<p>例如，当 <span class="math notranslate nohighlight">\(\beta=\frac{1}{1+r}\)</span> 时，我们可以用 <span class="math notranslate nohighlight">\(\hat{A}=\beta^{1/2} A\)</span> 和 <span class="math notranslate nohighlight">\(\hat{B}=\beta^{1/2} B\)</span> 求解 <span class="math notranslate nohighlight">\(P\)</span>。</p>
+<p>这些设置在上面定义的 <code class="docutils literal notranslate"><span class="pre">stationary_P</span></code> 函数中是默认采用的。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">β</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span>
+<span class="n">lq</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">β</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stationary_P</span><span class="p">(</span><span class="n">lq</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>特征值：
+
+    W11: [0.97590007 0.97590007]
+    W22: [1.02469508 1.02469508]
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0.0525, -1.05  ],
+       [-1.05  , 21.    ]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们可以验证该解与使用 quantecon 包中的 <code class="docutils literal notranslate"><span class="pre">LQ.stationary_values</span></code> 例程得到的解是一致的。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lq</span><span class="o">.</span><span class="n">stationary_values</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.0525, -1.05  ],
+        [-1.05  , 21.    ]]),
+ array([[-0.05,  1.  ]]),
+ 0.0)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id12">
+<h3><span class="section-number">58.9.2. </span>贴现问题的拉格朗日量<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
+<p>出于多种目的，有必要简要地明确描述贴现问题的拉格朗日量。</p>
+<p>因此，对于贴现最优线性调节器问题，构建拉格朗日量：</p>
+<div class="math notranslate nohighlight" id="equation-eq661">
+<span class="eqno">(58.18)<a class="headerlink" href="#equation-eq661" title="Permalink to this equation">#</a></span>\[
+{\cal{L}} = - \sum^\infty_{t=0} \beta^t \biggl\{ x^\prime_t R x_t + u_t^\prime Q u_t
++ 2 \beta \mu^\prime_{t+1} [A x_t + B u_t - x_{t+1}]\biggr\}
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(2 \mu_{t+1}\)</span>是状态向量<span class="math notranslate nohighlight">\(x_{t+1}\)</span>的拉格朗日乘子向量。</p>
+<p>对于<span class="math notranslate nohighlight">\(\{u_t,x_{t+1}\}_{t=0}^\infty\)</span>的最大化一阶条件是：</p>
+<div class="math notranslate nohighlight" id="equation-eq662">
+<span class="eqno">(58.19)<a class="headerlink" href="#equation-eq662" title="Permalink to this equation">#</a></span>\[
+\begin{aligned}
+2 Q u_t &amp;+ 2  \beta B^\prime \mu_{t+1} = 0 \ ,\ t \geq 0 \cr \mu_t &amp;= R x_t + \beta A^\prime \mu_{t+1}\ ,\ t\geq 1.\cr
+\end{aligned}
+\]</div>
+<p>定义<span class="math notranslate nohighlight">\(2 \mu_0\)</span>为<span class="math notranslate nohighlight">\(x_0\)</span>的影子价格向量，并对<a class="reference internal" href="#equation-eq661">(58.18)</a>应用包络条件可得：</p>
+<div class="math notranslate nohighlight">
+\[
+\mu_0 = R x_0 + \beta A' \mu_1 ,
+\]</div>
+<p>这是系统<a class="reference internal" href="#equation-eq662">(58.19)</a>中第二个方程在<span class="math notranslate nohighlight">\(t=0\)</span>时刻的对应形式。</p>
+<p>按照上述未贴现系统<a class="reference internal" href="#equation-lag-lqdp-eq2">(58.5)</a>的处理方法,我们可以将一阶条件重新整理为如下系统:</p>
+<div class="math notranslate nohighlight" id="equation-eq663">
+<span class="eqno">(58.20)<a class="headerlink" href="#equation-eq663" title="Permalink to this equation">#</a></span>\[
+\left[\begin{matrix} I &amp; \beta B Q^{-1} B' \cr
+             0 &amp; \beta A' \end{matrix}\right]
+\left[\begin{matrix} x_{t+1} \cr \mu_{t+1} \end{matrix}\right] =
+\left[\begin{matrix} A &amp; 0 \cr
+             - R &amp; I \end{matrix}\right] 
+\left[\begin{matrix} x_t \cr \mu_t \end{matrix}\right]
+\]</div>
+<p>在特殊情况<span class="math notranslate nohighlight">\(\beta = 1\)</span>时,该式与方程<a class="reference internal" href="#equation-lag-lqdp-eq2">(58.5)</a>一致,这是符合预期的。</p>
+<p>通过观察系统<a class="reference internal" href="#equation-eq663">(58.20)</a>,我们可以推断出一些揭示最优线性调节器问题结构的恒等式。其中一些在<a class="reference external" href="https://python-advanced.quantecon.org/dyn_stack.html">这篇讲座</a>中会很有用,当我们应用和扩展本讲座的方法来研究斯塔克尔伯格和拉姆齐问题时。</p>
+<p>首先,注意方程系统<a class="reference internal" href="#equation-eq663">(58.20)</a>的第一个区块表明,当<span class="math notranslate nohighlight">\(\mu_{t+1} = P x_{t+1}\)</span>时,</p>
+<div class="math notranslate nohighlight">
+\[(I + \beta Q^{-1} B' P B P ) x_{t+1} = A x_t, 
+\]</div>
+<p>可以重新整理为</p>
+<div class="math notranslate nohighlight">
+\[
+x_{t+1} = (I + \beta B Q^{-1} B' P)^{-1}  A x_t .
+\]</div>
+<p>状态最优闭环动态的这个表达式必须与我们之前通过动态规划得到的另一个表达式一致,即:</p>
+<div class="math notranslate nohighlight">
+\[
+x_{t+1} = (A - BF) x_t .
+\]</div>
+<p>但使用</p>
+<div class="math notranslate nohighlight" id="equation-eqn-optimalfformula">
+<span class="eqno">(58.21)<a class="headerlink" href="#equation-eqn-optimalfformula" title="Permalink to this equation">#</a></span>\[
+F=\beta (Q+\beta B'PB)^{-1} B'PA 
+\]</div>
+<p>可以推导出</p>
+<div class="math notranslate nohighlight">
+\[ 
+A- B F = (I - \beta B (Q+ \beta B' P B)^{-1} B' P) A .
+\]</div>
+<p>因此,我们的两个闭环动态表达式当且仅当满足以下条件时才相等:</p>
+<div class="math notranslate nohighlight" id="equation-eqn-twofeedbackloops">
+<span class="eqno">(58.22)<a class="headerlink" href="#equation-eqn-twofeedbackloops" title="Permalink to this equation">#</a></span>\[ 
+(I + \beta B Q^{-1} B' P )^{-1} =    (I - \beta B (Q+\beta  B' P B)^{-1} B' P) .
+\]</div>
+<p>矩阵方程<a class="reference internal" href="#equation-eqn-twofeedbackloops">(58.22)</a>可以通过应用分块矩阵求逆公式来验证。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>只需对适当选择的矩阵<span class="math notranslate nohighlight">\(a, b, c, d\)</span>使用公式<span class="math notranslate nohighlight">\((a - b d^{-1} c)^{-1} = a^{-1} + a^{-1} b (d - c a^{-1} b)^{-1} c a^{-1}\)</span>即可。</p>
+</div>
+<p>接下来，注意对于<em>任何</em>固定的<span class="math notranslate nohighlight">\(F\)</span>，只要<span class="math notranslate nohighlight">\(A-BF\)</span>的特征值的模小于<span class="math notranslate nohighlight">\(\frac{1}{\beta}\)</span>，使用这个规则的值函数永远是<span class="math notranslate nohighlight">\(-x_0 \tilde P x_0\)</span>，其中<span class="math notranslate nohighlight">\(\tilde P\)</span>满足以下矩阵方程：</p>
+<div class="math notranslate nohighlight" id="equation-eq666">
+<span class="eqno">(58.23)<a class="headerlink" href="#equation-eq666" title="Permalink to this equation">#</a></span>\[
+\tilde P = (R + F' Q F) + \beta (A - B F)' P (A - BF) .
+\]</div>
+<p>显然，只有当<span class="math notranslate nohighlight">\(F\)</span>满足公式<a class="reference internal" href="#equation-eqn-optimalfformula">(58.21)</a>时，<span class="math notranslate nohighlight">\(\tilde P = P\)</span>才成立。</p>
+<p>接下来，注意系统<a class="reference internal" href="#equation-eq663">(58.20)</a>的第二个方程暗示了拉格朗日乘数的”前瞻”方程</p>
+<div class="math notranslate nohighlight">
+\[ 
+\mu_t = R x_t + \beta A' \mu_{t+1}
+\]</div>
+<p>其解为</p>
+<div class="math notranslate nohighlight">
+\[
+\mu_t = P x_t ,
+\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight" id="equation-eq667">
+<span class="eqno">(58.24)<a class="headerlink" href="#equation-eq667" title="Permalink to this equation">#</a></span>\[
+P = R + \beta A' P (A - BF)  
+\]</div>
+<p>这里我们必须要求<span class="math notranslate nohighlight">\(F\)</span>满足方程<a class="reference internal" href="#equation-eqn-optimalfformula">(58.21)</a>。</p>
+<p>方程<a class="reference internal" href="#equation-eq666">(58.23)</a>和<a class="reference internal" href="#equation-eq667">(58.24)</a>为最优值函数提供了不同的视角。</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/lagrangian_lqdp.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/lagrangian_lqdp.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/lagrangian_lqdp.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/lagrangian_lqdp.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/lagrangian_lqdp.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "lagrangian_lqdp";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/lagrangian_lqdp.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

@@ -1,0 +1,1976 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>5. 奇异值分解（SVD） &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'svd_intro';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/svd_intro.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="6. 向量自回归和动态模态分解" href="var_dmd.html" />
+    <link rel="prev" title="4. 循环矩阵" href="eig_circulant.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="奇异值分解（SVD）"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="奇异值分解（SVD）" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/svd_intro.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=svd_intro>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">5.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">5.2. 基本设定</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">5.3. 奇异值分解</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">5.4. 四个基本子空间</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eckart-young">5.5. Eckart-Young定理</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#svdsvd">5.6. 完全SVD和简化SVD</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">5.7. 极分解</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pca">5.8. 应用：主成分分析(PCA)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pcasvd">5.9. PCA与SVD的关系</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">5.10. 基于特征值和特征向量的PCA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">5.11. 联系</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">5.12. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">奇异值分解（SVD）</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="svd">
+<h1><span class="section-number">5. </span>奇异值分解（SVD）<a class="headerlink" href="#svd" title="Permalink to this heading">#</a></h1>
+<section id="id1">
+<h2><span class="section-number">5.1. </span>概述<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<p><strong>奇异值分解</strong>（SVD）是最小二乘投影应用中的重要工具，它构成了许多统计和机器学习方法的基础。</p>
+<p>在定义SVD之后，我们将描述它与以下内容的联系：</p>
+<ul class="simple">
+<li><p>线性代数中的<strong>四个基本空间</strong></p></li>
+<li><p>欠定和超定的<strong>最小二乘回归</strong></p></li>
+<li><p><strong>主成分分析</strong>（PCA）</p></li>
+</ul>
+<p>与主成分分析（PCA）类似，DMD可以被视为一种数据降维程序，通过将数据投影到有限的因子集上来表示显著的模式。</p>
+<p>在这个关于<a class="reference internal" href="var_dmd.html"><span class="doc">动态模式分解</span></a>的后续讲座中，我们将描述如何使用SVD快速计算一阶向量自回归（VARs）的降阶近似。</p>
+</section>
+<section id="id2">
+<h2><span class="section-number">5.2. </span>基本设定<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<p>设<span class="math notranslate nohighlight">\(X\)</span>是一个秩为<span class="math notranslate nohighlight">\(p\)</span>的<span class="math notranslate nohighlight">\(m \times n\)</span>矩阵。</p>
+<p>必然地，<span class="math notranslate nohighlight">\(p \leq \min(m,n)\)</span>。</p>
+<p>在本讲座的大部分内容中，我们将把<span class="math notranslate nohighlight">\(X\)</span>视为一个<strong>数据</strong>矩阵，其中：</p>
+<ul class="simple">
+<li><p>每一列是一个<strong>个体</strong>——根据应用场景可以是时间段或个人</p></li>
+<li><p>每一行是一个<strong>随机变量</strong>，描述时间段或个人的某个属性，具体取决于应用场景</p></li>
+</ul>
+<p>我们将关注两种情况：</p>
+<ul class="simple">
+<li><p><strong>矮胖</strong>情况，即<span class="math notranslate nohighlight">\(m &lt;&lt; n\)</span>，表示列数（个体）远多于行数（属性）。</p></li>
+<li><p><strong>高瘦</strong>情况，即<span class="math notranslate nohighlight">\(m &gt;&gt; n\)</span>，表示行数（属性）远多于列数（个体）。</p></li>
+</ul>
+<p>我们将在这两种情况下对<span class="math notranslate nohighlight">\(X\)</span>进行<strong>奇异值分解</strong>。</p>
+<p>在 <span class="math notranslate nohighlight">\(m &lt;&lt; n\)</span> 的情况下，即个体数量 <span class="math notranslate nohighlight">\(n\)</span> 远大于属性数量 <span class="math notranslate nohighlight">\(m\)</span> 时，我们可以通过对观测值函数取平均来计算联合分布的样本矩。</p>
+<p>在这种 <span class="math notranslate nohighlight">\(m &lt;&lt; n\)</span> 的情况下，我们将使用<strong>奇异值分解</strong>来进行<strong>主成分分析</strong>(PCA)以寻找<strong>模式</strong>。</p>
+<p>在 <span class="math notranslate nohighlight">\(m &gt;&gt; n\)</span> 的情况下，即属性数量 <span class="math notranslate nohighlight">\(m\)</span> 远大于个体数量 <span class="math notranslate nohighlight">\(n\)</span>，且在时间序列环境中 <span class="math notranslate nohighlight">\(n\)</span> 等于数据集 <span class="math notranslate nohighlight">\(X\)</span> 中所覆盖的时间段数量时，我们将采用不同的方法。</p>
+<p>我们将再次使用<strong>奇异值分解</strong>，但这次是用来构建<strong>动态模态分解</strong>(DMD)。</p>
+</section>
+<section id="id3">
+<h2><span class="section-number">5.3. </span>奇异值分解<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>一个秩为 <span class="math notranslate nohighlight">\(p \leq \min(m,n)\)</span> 的 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span> 的<strong>奇异值分解</strong>为：</p>
+<div class="math notranslate nohighlight" id="equation-eq-svd101">
+<span class="eqno">(5.1)<a class="headerlink" href="#equation-eq-svd101" title="Permalink to this equation">#</a></span>\[
+X  = U \Sigma V^\top
+\]</div>
+<p>其中：</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}
+\begin{aligned}
+UU^\top  &amp;  = I  &amp;  \quad U^\top  U = I \cr\\VV^\top  &amp; = I &amp; \quad V^\top  V = I
+\end{aligned}
+\end{aligned}\end{align} \]</div>
+<p>且</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(U\)</span> 是 <span class="math notranslate nohighlight">\(X\)</span> 的 <span class="math notranslate nohighlight">\(m \times m\)</span> 正交矩阵，由<strong>左奇异向量</strong>组成</p></li>
+<li><p><span class="math notranslate nohighlight">\(U\)</span> 的列是 <span class="math notranslate nohighlight">\(X X^\top \)</span> 的特征向量</p></li>
+<li><p><span class="math notranslate nohighlight">\(V\)</span> 是 <span class="math notranslate nohighlight">\(X\)</span> 的 <span class="math notranslate nohighlight">\(n \times n\)</span> 正交矩阵，由<strong>右奇异向量</strong>组成</p></li>
+<li><p><span class="math notranslate nohighlight">\(V\)</span> 的列是 <span class="math notranslate nohighlight">\(X^\top  X\)</span> 的特征向量</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Sigma\)</span> 是一个 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵，其主对角线上的前 <span class="math notranslate nohighlight">\(p\)</span> 个位置是正数 <span class="math notranslate nohighlight">\(\sigma_1, \sigma_2, \ldots, \sigma_p\)</span>，称为<strong>奇异值</strong>；<span class="math notranslate nohighlight">\(\Sigma\)</span> 的其余元素都为零</p></li>
+<li><p>这 <span class="math notranslate nohighlight">\(p\)</span> 个奇异值是 <span class="math notranslate nohighlight">\(m \times m\)</span> 矩阵 <span class="math notranslate nohighlight">\(X X^\top \)</span> 以及 <span class="math notranslate nohighlight">\(n \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X^\top  X\)</span> 的特征值的正平方根</p></li>
+<li><p>我们约定，当 <span class="math notranslate nohighlight">\(U\)</span> 是复值矩阵时，<span class="math notranslate nohighlight">\(U^\top \)</span> 表示 <span class="math notranslate nohighlight">\(U\)</span> 的<strong>共轭转置</strong>或<strong>厄米特转置</strong>，即 <span class="math notranslate nohighlight">\(U_{ij}^\top \)</span> 是 <span class="math notranslate nohighlight">\(U_{ji}\)</span> 的复共轭。</p></li>
+<li><p>类似地，当 <span class="math notranslate nohighlight">\(V\)</span> 是复值矩阵时，<span class="math notranslate nohighlight">\(V^\top\)</span> 表示 <span class="math notranslate nohighlight">\(V\)</span> 的<strong>共轭转置</strong>或<strong>厄米特转置</strong></p></li>
+</ul>
+<p>矩阵 <span class="math notranslate nohighlight">\(U,\Sigma,V\)</span> 通过以下方式对向量进行线性变换：</p>
+<ul class="simple">
+<li><p>用酉矩阵 <span class="math notranslate nohighlight">\(U\)</span> 和 <span class="math notranslate nohighlight">\(V\)</span> 乘以向量会使其<strong>旋转</strong>，但保持<strong>向量之间的角度</strong>和<strong>向量的长度</strong>不变。</p></li>
+<li><p>用对角矩阵 <span class="math notranslate nohighlight">\(\Sigma\)</span> 乘以向量会保持<strong>向量之间的角度</strong>不变，但会<strong>重新缩放</strong>向量。</p></li>
+</ul>
+<p>因此，表示式 <a class="reference internal" href="#equation-eq-svd101">(5.1)</a> 表明，用 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span> 乘以 <span class="math notranslate nohighlight">\(n \times 1\)</span> 向量 <span class="math notranslate nohighlight">\(y\)</span> 相当于按顺序执行以下三个乘法运算：</p>
+<ul class="simple">
+<li><p>通过计算 <span class="math notranslate nohighlight">\(V^\top y\)</span> 来<strong>旋转</strong> <span class="math notranslate nohighlight">\(y\)</span></p></li>
+<li><p>通过乘以 <span class="math notranslate nohighlight">\(\Sigma\)</span> 来<strong>重新缩放</strong> <span class="math notranslate nohighlight">\(V^\top y\)</span></p></li>
+<li><p>通过乘以 <span class="math notranslate nohighlight">\(U\)</span> 来<strong>旋转</strong> <span class="math notranslate nohighlight">\(\Sigma V^\top y\)</span></p></li>
+</ul>
+<p><span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span> 的这种结构为构建系统开启了大门</p>
+<p>数据<strong>编码器</strong>和<strong>解码器</strong>。</p>
+<p>因此，</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(V^\top y\)</span> 是一个编码器</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Sigma\)</span> 是一个应用于编码数据的运算符</p></li>
+<li><p><span class="math notranslate nohighlight">\(U\)</span> 是一个解码器，用于处理将运算符 <span class="math notranslate nohighlight">\(\Sigma\)</span> 应用于编码数据后的输出</p></li>
+</ul>
+<p>我们将在本讲稍后研究动态模态分解时应用这些概念。</p>
+<p><strong>未来路线</strong></p>
+<p>我们上面描述的是所谓的<strong>完全</strong> SVD。</p>
+<p>在<strong>完全</strong> SVD中，<span class="math notranslate nohighlight">\(U\)</span>、<span class="math notranslate nohighlight">\(\Sigma\)</span> 和 <span class="math notranslate nohighlight">\(V\)</span> 的形状分别为 <span class="math notranslate nohighlight">\(\left(m, m\right)\)</span>、<span class="math notranslate nohighlight">\(\left(m, n\right)\)</span>、<span class="math notranslate nohighlight">\(\left(n, n\right)\)</span>。</p>
+<p>稍后我们还将描述<strong>经济型</strong>或<strong>简化</strong> SVD。</p>
+<p>在研究<strong>简化</strong> SVD之前，我们将进一步讨论<strong>完全</strong> SVD的性质。</p>
+</section>
+<section id="id4">
+<h2><span class="section-number">5.4. </span>四个基本子空间<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<p>让 <span class="math notranslate nohighlight">\({\mathcal C}\)</span> 表示列空间，<span class="math notranslate nohighlight">\({\mathcal N}\)</span> 表示零空间，<span class="math notranslate nohighlight">\({\mathcal R}\)</span> 表示行空间。</p>
+<p>让我们首先回顾一下秩为 <span class="math notranslate nohighlight">\(p\)</span> 的 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span> 的四个基本子空间。</p>
+<ul class="simple">
+<li><p><strong>列空间</strong><span class="math notranslate nohighlight">\(X\)</span>，记作<span class="math notranslate nohighlight">\({\mathcal C}(X)\)</span>，是<span class="math notranslate nohighlight">\(X\)</span>的列向量的张成空间，即所有可以写成<span class="math notranslate nohighlight">\(X\)</span>的列向量的线性组合的向量<span class="math notranslate nohighlight">\(y\)</span>。其维数为<span class="math notranslate nohighlight">\(p\)</span>。</p></li>
+<li><p><strong>零空间</strong><span class="math notranslate nohighlight">\(X\)</span>，记作<span class="math notranslate nohighlight">\({\mathcal N}(X)\)</span>，包含所有满足<span class="math notranslate nohighlight">\(Xy=0\)</span>的向量<span class="math notranslate nohighlight">\(y\)</span>。其维数为<span class="math notranslate nohighlight">\(n-p\)</span>。</p></li>
+<li><p><strong>行空间</strong><span class="math notranslate nohighlight">\(X\)</span>，记作<span class="math notranslate nohighlight">\({\mathcal R}(X)\)</span>，是<span class="math notranslate nohighlight">\(X^\top\)</span>的列空间。它包含所有可以写成<span class="math notranslate nohighlight">\(X\)</span>的行向量的线性组合的向量<span class="math notranslate nohighlight">\(z\)</span>。其维数为<span class="math notranslate nohighlight">\(p\)</span>。</p></li>
+<li><p><strong>左零空间</strong><span class="math notranslate nohighlight">\(X\)</span>，记作<span class="math notranslate nohighlight">\({\mathcal N}(X^\top)\)</span>，包含所有满足<span class="math notranslate nohighlight">\(X^\top z=0\)</span>的向量<span class="math notranslate nohighlight">\(z\)</span>。其维数为<span class="math notranslate nohighlight">\(m-p\)</span>。</p></li>
+</ul>
+<p>对于矩阵<span class="math notranslate nohighlight">\(X\)</span>的完全奇异值分解，左奇异向量矩阵<span class="math notranslate nohighlight">\(U\)</span>和右奇异向量矩阵<span class="math notranslate nohighlight">\(V\)</span>包含了所有四个子空间的正交基。</p>
+<p>它们形成两对正交子空间，我们现在来描述。</p>
+<p>令<span class="math notranslate nohighlight">\(u_i, i = 1, \ldots, m\)</span>为<span class="math notranslate nohighlight">\(U\)</span>的<span class="math notranslate nohighlight">\(m\)</span>个列向量，令</p>
+<p>设 <span class="math notranslate nohighlight">\(v_i, i = 1, \ldots, n\)</span> 为 <span class="math notranslate nohighlight">\(V\)</span> 的 <span class="math notranslate nohighlight">\(n\)</span> 个列向量。</p>
+<p>让我们将 X 的完整奇异值分解写作</p>
+<div class="math notranslate nohighlight" id="equation-eq-fullsvdpartition">
+<span class="eqno">(5.2)<a class="headerlink" href="#equation-eq-fullsvdpartition" title="Permalink to this equation">#</a></span>\[
+X = \begin{bmatrix} U_L &amp; U_R \end{bmatrix} \begin{bmatrix} \Sigma_p &amp; 0 \cr 0 &amp; 0 \end{bmatrix}
+     \begin{bmatrix} V_L &amp; V_R \end{bmatrix}^\top
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\Sigma_p\)</span> 是一个 <span class="math notranslate nohighlight">\(p \times p\)</span> 对角矩阵，对角线上是 <span class="math notranslate nohighlight">\(p\)</span> 个奇异值，且</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{aligned}
+U_L &amp; = \begin{bmatrix}u_1 &amp; \cdots  &amp; u_p \end{bmatrix},  \quad U_R  = \begin{bmatrix}u_{p+1} &amp; \cdots u_m \end{bmatrix}  \cr
+V_L &amp; = \begin{bmatrix}v_1 &amp; \cdots  &amp; v_p \end{bmatrix} , \quad U_R  = \begin{bmatrix}v_{p+1} &amp; \cdots u_n \end{bmatrix}
+\end{aligned}
+\]</div>
+<p>表示式 <a class="reference internal" href="#equation-eq-fullsvdpartition">(5.2)</a> 意味着</p>
+<div class="math notranslate nohighlight">
+\[
+X \begin{bmatrix} V_L &amp; V_R \end{bmatrix} = \begin{bmatrix} U_L &amp; U_R \end{bmatrix} \begin{bmatrix} \Sigma_p &amp; 0 \cr 0 &amp; 0 \end{bmatrix}
+\]</div>
+<p>或</p>
+<div class="math notranslate nohighlight" id="equation-eq-xfour1a">
+<span class="eqno">(5.3)<a class="headerlink" href="#equation-eq-xfour1a" title="Permalink to this equation">#</a></span>\[
+\begin{aligned}
+X V_L &amp; = U_L \Sigma_p \cr
+X V_R &amp; = 0
+\end{aligned}
+\]</div>
+<p>或</p>
+<div class="math notranslate nohighlight" id="equation-eq-orthoortho1">
+<span class="eqno">(5.4)<a class="headerlink" href="#equation-eq-orthoortho1" title="Permalink to this equation">#</a></span>\[ \begin{align}\begin{aligned}
+\begin{aligned}\\X v_i &amp; = \sigma_i u_i , \quad i = 1, \ldots, p \cr
+X v_i &amp; = 0 ,  \quad i = p+1, \ldots, n
+\end{aligned}
+\end{aligned}\end{align} \]</div>
+<p>方程 <a class="reference internal" href="#equation-eq-orthoortho1">(5.4)</a> 说明了变换 <span class="math notranslate nohighlight">\(X\)</span> 如何将一对正交单位向量 <span class="math notranslate nohighlight">\(v_i, v_j\)</span>（其中 <span class="math notranslate nohighlight">\(i\)</span> 和 <span class="math notranslate nohighlight">\(j\)</span> 都小于或等于 <span class="math notranslate nohighlight">\(X\)</span> 的秩 <span class="math notranslate nohighlight">\(p\)</span>）映射到一对正交单位向量 <span class="math notranslate nohighlight">\(u_i, u_j\)</span>。</p>
+<p>方程 <a class="reference internal" href="#equation-eq-xfour1a">(5.3)</a> 表明</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{aligned}
+{\mathcal C}(X) &amp; = {\mathcal C}(U_L) \cr
+{\mathcal N}(X) &amp; = {\mathcal C} (V_R)
+\end{aligned}
+\]</div>
+<p>对表示式 <a class="reference internal" href="#equation-eq-fullsvdpartition">(5.2)</a> 两边取转置得到</p>
+<div class="math notranslate nohighlight">
+\[
+X^\top  \begin{bmatrix} U_L &amp; U_R \end{bmatrix} = \begin{bmatrix} V_L &amp; V_R \end{bmatrix} \begin{bmatrix} \Sigma_p &amp; 0 \cr 0 &amp; 0 \end{bmatrix}
+\]</div>
+<p>或</p>
+<div class="math notranslate nohighlight" id="equation-eq-xfour1b">
+<span class="eqno">(5.5)<a class="headerlink" href="#equation-eq-xfour1b" title="Permalink to this equation">#</a></span>\[
+\begin{aligned}
+X^\top  U_L &amp; = V_L \Sigma_p \cr
+X^\top  U_R &amp; = 0
+\end{aligned}
+\]</div>
+<p>或</p>
+<div class="math notranslate nohighlight" id="equation-eq-orthoortho2">
+<span class="eqno">(5.6)<a class="headerlink" href="#equation-eq-orthoortho2" title="Permalink to this equation">#</a></span>\[
+\begin{aligned}
+X^\top  u_i &amp; = \sigma_i v_i, \quad i=1, \ldots, p \cr
+X^\top  u_i &amp; = 0 \quad i= p+1, \ldots, m
+\end{aligned}\]</div>
+<p>注意方程 <a class="reference internal" href="#equation-eq-orthoortho2">(5.6)</a> 表明变换 <span class="math notranslate nohighlight">\(X^\top\)</span> 将一对不同的正交单位向量 <span class="math notranslate nohighlight">\(u_i, u_j\)</span>（其中 <span class="math notranslate nohighlight">\(i\)</span> 和 <span class="math notranslate nohighlight">\(j\)</span> 都小于或等于 <span class="math notranslate nohighlight">\(X\)</span> 的秩 <span class="math notranslate nohighlight">\(p\)</span>）映射到一对不同的正交单位向量 <span class="math notranslate nohighlight">\(v_i, v_j\)</span>。</p>
+<p>方程 <a class="reference internal" href="#equation-eq-xfour1b">(5.5)</a> 表明：</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{aligned}
+{\mathcal R}(X) &amp; \equiv  {\mathcal C}(X^\top ) = {\mathcal C} (V_L) \cr
+{\mathcal N}(X^\top ) &amp; = {\mathcal C}(U_R)
+\end{aligned}
+\]</div>
+<p>因此，方程组 <a class="reference internal" href="#equation-eq-xfour1a">(5.3)</a> 和 <a class="reference internal" href="#equation-eq-xfour1b">(5.5)</a> 共同描述了 <span class="math notranslate nohighlight">\(X\)</span> 的四个基本子空间，如下所示：</p>
+<div class="math notranslate nohighlight" id="equation-eq-fourspacesvd">
+<span class="eqno">(5.7)<a class="headerlink" href="#equation-eq-fourspacesvd" title="Permalink to this equation">#</a></span>\[ \begin{align}\begin{aligned}
+\begin{aligned}
+{\mathcal C}(X) &amp; = {\mathcal C}(U_L) \cr
+{\mathcal N}(X^\top ) &amp; = {\mathcal C}(U_R) \cr
+{\mathcal R}(X) &amp; \equiv  {\mathcal C}(X^\top ) = {\mathcal C} (V_L) \cr
+{\mathcal N}(X) &amp; = {\mathcal C} (V_R) \cr\\\end{aligned}
+\end{aligned}\end{align} \]</div>
+<p>由于 <span class="math notranslate nohighlight">\(U\)</span> 和 <span class="math notranslate nohighlight">\(V\)</span> 都是正交矩阵，集合 <a class="reference internal" href="#equation-eq-fourspacesvd">(5.7)</a> 表明</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(U_L\)</span> 是 <span class="math notranslate nohighlight">\(X\)</span> 列空间的标准正交基</p></li>
+<li><p><span class="math notranslate nohighlight">\(U_R\)</span> 是 <span class="math notranslate nohighlight">\(X^\top\)</span> 零空间的标准正交基</p></li>
+<li><p><span class="math notranslate nohighlight">\(V_L\)</span> 是 <span class="math notranslate nohighlight">\(X\)</span> 行空间的标准正交基</p></li>
+<li><p><span class="math notranslate nohighlight">\(V_R\)</span> 是 <span class="math notranslate nohighlight">\(X\)</span> 零空间的标准正交基</p></li>
+</ul>
+<p>我们通过执行<a class="reference internal" href="#equation-eq-fullsvdpartition">(5.2)</a>右侧要求的乘法并读取结果，已经验证了<a class="reference internal" href="#equation-eq-fourspacesvd">(5.7)</a>中的四个声明。</p>
+<p><a class="reference internal" href="#equation-eq-fourspacesvd">(5.7)</a>中的声明以及<span class="math notranslate nohighlight">\(U\)</span>和<span class="math notranslate nohighlight">\(V\)</span>都是酉矩阵（即正交矩阵）这一事实意味着：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(X\)</span>的列空间与<span class="math notranslate nohighlight">\(X^\top\)</span>的零空间正交</p></li>
+<li><p><span class="math notranslate nohighlight">\(X\)</span>的零空间与<span class="math notranslate nohighlight">\(X\)</span>的行空间正交</p></li>
+</ul>
+<p>这些性质有时用以下两对正交补空间来描述：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\({\mathcal C}(X)\)</span>是<span class="math notranslate nohighlight">\({\mathcal N}(X^\top)\)</span>的正交补</p></li>
+<li><p><span class="math notranslate nohighlight">\({\mathcal R}(X)\)</span>是<span class="math notranslate nohighlight">\({\mathcal N}(X)\)</span>的正交补</p></li>
+</ul>
+<p>让我们看一个例子。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="k">as</span> <span class="nn">LA</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>导入这些模块后，让我们来看示例。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># 定义矩阵</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
+
+<span class="c1"># 计算矩阵的奇异值分解</span>
+<span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># 计算矩阵的秩</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_rank</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+<span class="c1"># 打印矩阵的秩</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;矩阵的秩:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;S: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+
+<span class="c1"># 计算四个基本子空间</span>
+<span class="n">row_space</span> <span class="o">=</span> <span class="n">U</span><span class="p">[:,</span> <span class="p">:</span><span class="n">rank</span><span class="p">]</span>
+<span class="n">col_space</span> <span class="o">=</span> <span class="n">V</span><span class="p">[:,</span> <span class="p">:</span><span class="n">rank</span><span class="p">]</span>
+<span class="n">null_space</span> <span class="o">=</span> <span class="n">V</span><span class="p">[:,</span> <span class="n">rank</span><span class="p">:]</span>
+<span class="n">left_null_space</span> <span class="o">=</span> <span class="n">U</span><span class="p">[:,</span> <span class="n">rank</span><span class="p">:]</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;U:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">U</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;列空间:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">col_space</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;左零空间:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">left_null_space</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;V.T:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">V</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;行空间:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">row_space</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;右零空间:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">null_space</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>矩阵的秩:
+ 2
+S: 
+ [2.69e+01 1.86e+00 8.62e-16 5.26e-16 2.77e-17]
+U:
+ [[-0.27 -0.73 -0.53 -0.34  0.03]
+ [-0.35 -0.42  0.24  0.8  -0.07]
+ [-0.43 -0.11  0.67 -0.41  0.43]
+ [-0.51  0.19  0.09 -0.22 -0.8 ]
+ [-0.59  0.5  -0.46  0.17  0.4 ]]
+列空间:
+ [[-0.27 -0.35]
+ [ 0.73  0.42]
+ [-0.03  0.16]
+ [-0.51  0.82]
+ [ 0.37  0.06]]
+左零空间:
+ [[-0.53 -0.34  0.03]
+ [ 0.24  0.8  -0.07]
+ [ 0.67 -0.41  0.43]
+ [ 0.09 -0.22 -0.8 ]
+ [-0.46  0.17  0.4 ]]
+V.T:
+ [[-0.27  0.73 -0.03 -0.51  0.37]
+ [-0.35  0.42  0.16  0.82  0.06]
+ [-0.43  0.11  0.25 -0.23 -0.83]
+ [-0.51 -0.19 -0.84  0.04 -0.02]
+ [-0.59 -0.5   0.46 -0.12  0.41]]
+行空间:
+ [[-0.27 -0.35 -0.43 -0.51 -0.59]
+ [-0.73 -0.42 -0.11  0.19  0.5 ]]
+右零空间:
+ [[-0.43  0.11  0.25 -0.23 -0.83]
+ [-0.51 -0.19 -0.84  0.04 -0.02]
+ [-0.59 -0.5   0.46 -0.12  0.41]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="eckart-young">
+<h2><span class="section-number">5.5. </span>Eckart-Young定理<a class="headerlink" href="#eckart-young" title="Permalink to this heading">#</a></h2>
+<p>假设我们要构造一个<span class="math notranslate nohighlight">\(m \times n\)</span>矩阵<span class="math notranslate nohighlight">\(X\)</span>的最佳秩<span class="math notranslate nohighlight">\(r\)</span>近似。</p>
+<p>这里的最佳，指的是在所有秩为<span class="math notranslate nohighlight">\(r &lt; p\)</span>的矩阵中，找到一个矩阵<span class="math notranslate nohighlight">\(X_r\)</span>使得以下范数最小：</p>
+<div class="math notranslate nohighlight">
+\[ 
+|| X - X_r || 
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(|| \cdot ||\)</span>表示矩阵<span class="math notranslate nohighlight">\(X\)</span>的范数，且<span class="math notranslate nohighlight">\(X_r\)</span>属于所有维度为<span class="math notranslate nohighlight">\(m \times n\)</span>的秩<span class="math notranslate nohighlight">\(r\)</span>矩阵空间。</p>
+<p>一个<span class="math notranslate nohighlight">\(m \times n\)</span>矩阵<span class="math notranslate nohighlight">\(X\)</span>的三种常用<strong>矩阵范数</strong>可以用<span class="math notranslate nohighlight">\(X\)</span>的奇异值表示：</p>
+<ul class="simple">
+<li><p><strong>谱范数</strong>或<span class="math notranslate nohighlight">\(l^2\)</span>范数 <span class="math notranslate nohighlight">\(|| X ||_2 = \max_{||y|| \neq 0} \frac{||X y ||}{||y||} = \sigma_1\)</span></p></li>
+<li><p><strong>Frobenius范数</strong> <span class="math notranslate nohighlight">\(||X ||_F = \sqrt{\sigma_1^2 + \cdots + \sigma_p^2}\)</span></p></li>
+<li><p><strong>核范数</strong> <span class="math notranslate nohighlight">\( || X ||_N = \sigma_1 + \cdots + \sigma_p \)</span></p></li>
+</ul>
+<p>Eckart-Young定理指出，对于这三种范数，最佳的秩<span class="math notranslate nohighlight">\(r\)</span>矩阵是相同的，等于：</p>
+<div class="math notranslate nohighlight" id="equation-eq-ekart">
+<span class="eqno">(5.8)<a class="headerlink" href="#equation-eq-ekart" title="Permalink to this equation">#</a></span>\[
+\hat X_r = \sigma_1 U_1 V_1^\top  + \sigma_2 U_2 V_2^\top  + \cdots + \sigma_r U_r V_r^\top
+\]</div>
+<p>这是一个非常强大的定理，它表明我们可以将一个非满秩的 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span> 通过SVD分解，用一个满秩的 <span class="math notranslate nohighlight">\(p \times p\)</span> 矩阵来最佳近似。</p>
+<p>此外，如果这些 <span class="math notranslate nohighlight">\(p\)</span> 个奇异值中有些携带的信息比其他的更多，而我们想用最少的数据获得最多的信息，我们可以取按大小排序的 <span class="math notranslate nohighlight">\(r\)</span> 个主要奇异值。</p>
+<p>在介绍主成分分析时，我们会对此进行更详细的讨论。</p>
+<p>你可以在<a class="reference external" href="https://en.wikipedia.org/wiki/Low-rank_approximation">这里</a>阅读关于Eckart-Young定理及其应用的内容。</p>
+<p>在讨论主成分分析(PCA)和动态模态分解(DMD)时，我们将会用到这个定理。</p>
+</section>
+<section id="svdsvd">
+<h2><span class="section-number">5.6. </span>完全SVD和简化SVD<a class="headerlink" href="#svdsvd" title="Permalink to this heading">#</a></h2>
+<p>到目前为止，我们描述的是<strong>完全</strong>SVD的性质，其中 <span class="math notranslate nohighlight">\(U\)</span>、<span class="math notranslate nohighlight">\(\Sigma\)</span> 和 <span class="math notranslate nohighlight">\(V\)</span> 的形状分别为 <span class="math notranslate nohighlight">\(\left(m, m\right)\)</span>、<span class="math notranslate nohighlight">\(\left(m, n\right)\)</span>、<span class="math notranslate nohighlight">\(\left(n, n\right)\)</span>。</p>
+<p>有一种替代性的矩阵分解记法，称为<strong>经济型</strong>或<strong>简化型</strong> SVD，其中 <span class="math notranslate nohighlight">\(U, \Sigma\)</span> 和 <span class="math notranslate nohighlight">\(V\)</span> 的形状与完全SVD中的不同。</p>
+<p>注意，因为我们假设 <span class="math notranslate nohighlight">\(X\)</span> 的秩为 <span class="math notranslate nohighlight">\(p\)</span>，所以只有 <span class="math notranslate nohighlight">\(p\)</span> 个非零奇异值，其中 <span class="math notranslate nohighlight">\(p=\textrm{rank}(X)\leq\min\left(m, n\right)\)</span>。</p>
+<p><strong>简化型</strong> SVD利用这一事实，将 <span class="math notranslate nohighlight">\(U\)</span>、<span class="math notranslate nohighlight">\(\Sigma\)</span> 和 <span class="math notranslate nohighlight">\(V\)</span> 表示为形状分别为 <span class="math notranslate nohighlight">\(\left(m, p\right)\)</span>、<span class="math notranslate nohighlight">\(\left(p, p\right)\)</span>、<span class="math notranslate nohighlight">\(\left(n, p\right)\)</span> 的矩阵。</p>
+<p>你可以在这里了解简化型和完全型SVD
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.svd.html">https://numpy.org/doc/stable/reference/generated/numpy.linalg.svd.html</a></p>
+<p>对于完全型SVD，</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{aligned}
+UU^\top  &amp;  = I  &amp;  \quad U^\top  U = I \cr
+VV^\top  &amp; = I &amp; \quad V^\top  V = I
+\end{aligned}
+\]</div>
+<p>但这些性质并非都适用于<strong>简化型</strong> SVD。</p>
+<p>哪些性质成立取决于我们处理的是<strong>高瘦型</strong>矩阵还是<strong>矮胖型</strong>矩阵。</p>
+<ul class="simple">
+<li><p>在<strong>高瘦型</strong>情况下，即 <span class="math notranslate nohighlight">\(m &gt; &gt; n\)</span>，对于<strong>简化型</strong> SVD</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}
+\begin{aligned}\\UU^\top  &amp;  \neq I  &amp;  \quad U^\top  U = I \cr
+VV^\top  &amp; = I &amp; \quad V^\top  V = I
+\end{aligned}
+\end{aligned}\end{align} \]</div>
+<ul class="simple">
+<li><p>在<strong>短胖</strong>情况下(即 <span class="math notranslate nohighlight">\(m &lt; &lt; n\)</span>),对于<strong>简化</strong>SVD</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
+\begin{aligned}
+UU^\top  &amp;  = I  &amp;  \quad U^\top  U = I \cr
+VV^\top  &amp; = I &amp; \quad V^\top  V \neq I
+\end{aligned}
+\]</div>
+<p>当我们研究动态模态分解时,我们需要记住这些性质,因为我们会使用简化SVD来计算一些DMD表示。</p>
+<p>让我们做一个练习来比较<strong>完全</strong>和<strong>简化</strong>SVD。</p>
+<p>回顾一下,</p>
+<ul class="simple">
+<li><p>在<strong>完全</strong>SVD中</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(U\)</span> 是 <span class="math notranslate nohighlight">\(m \times m\)</span> 维</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Sigma\)</span> 是 <span class="math notranslate nohighlight">\(m \times n\)</span> 维</p></li>
+<li><p><span class="math notranslate nohighlight">\(V\)</span> 是 <span class="math notranslate nohighlight">\(n \times n\)</span> 维</p></li>
+</ul>
+</li>
+<li><p>在<strong>简化</strong>SVD中</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(U\)</span> 是 <span class="math notranslate nohighlight">\(m \times p\)</span> 维</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Sigma\)</span> 是 <span class="math notranslate nohighlight">\(p \times p\)</span> 维</p></li>
+<li><p><span class="math notranslate nohighlight">\(V\)</span> 是 <span class="math notranslate nohighlight">\(n \times p\)</span> 维</p></li>
+</ul>
+</li>
+</ul>
+<p>首先,让我们研究一个 <span class="math notranslate nohighlight">\(m = 5 &gt; n = 2\)</span> 的情况。</p>
+<p>(这是我们在研究<strong>动态模态分解</strong>时会遇到的<strong>高瘦</strong>情况的一个小例子。)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># 完全SVD</span>
+<span class="n">Uhat</span><span class="p">,</span> <span class="n">Shat</span><span class="p">,</span> <span class="n">Vhat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># 经济SVD</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;U, S, V =&#39;</span><span class="p">)</span>
+<span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>U, S, V =
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[-0.4 , -0.15, -0.59, -0.52, -0.44],
+        [-0.26, -0.23,  0.17,  0.64, -0.67],
+        [-0.54,  0.32,  0.68, -0.37, -0.09],
+        [-0.35,  0.74, -0.4 ,  0.39,  0.14],
+        [-0.6 , -0.52, -0.05,  0.19,  0.58]]),
+ array([1.71, 0.69]),
+ array([[-0.73, -0.68],
+        [ 0.68, -0.73]]))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Uhat, Shat, Vhat = &#39;</span><span class="p">)</span>
+<span class="n">Uhat</span><span class="p">,</span> <span class="n">Shat</span><span class="p">,</span> <span class="n">Vhat</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Uhat, Shat, Vhat = 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[-0.4 , -0.15],
+        [-0.26, -0.23],
+        [-0.54,  0.32],
+        [-0.35,  0.74],
+        [-0.6 , -0.52]]),
+ array([1.71, 0.69]),
+ array([[-0.73, -0.68],
+        [ 0.68, -0.73]]))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_rank</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;X的秩 = </span><span class="si">{</span><span class="n">rr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>X的秩 = 2
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>性质：</strong></p>
+<ul class="simple">
+<li><p>当<span class="math notranslate nohighlight">\(U\)</span>通过完全SVD构造时，<span class="math notranslate nohighlight">\(U^\top U = I_{m\times m}\)</span> 且 <span class="math notranslate nohighlight">\(U U^\top = I_{m \times m}\)</span></p></li>
+<li><p>当<span class="math notranslate nohighlight">\(\hat U\)</span>通过简化SVD构造时，虽然<span class="math notranslate nohighlight">\(\hat U^\top \hat U = I_{p\times p}\)</span>，但<span class="math notranslate nohighlight">\(\hat U \hat U^\top \neq I_{m \times m}\)</span></p></li>
+</ul>
+<p>我们通过以下代码单元来说明这些性质。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">UTU</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">T</span><span class="nd">@U</span>
+<span class="n">UUT</span> <span class="o">=</span> <span class="n">U</span><span class="nd">@U</span><span class="o">.</span><span class="n">T</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;UUT, UTU = &#39;</span><span class="p">)</span>
+<span class="n">UUT</span><span class="p">,</span> <span class="n">UTU</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>UUT, UTU = 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 1.00e+00,  5.55e-17, -1.39e-17,  1.39e-17,  1.11e-16],
+        [ 5.55e-17,  1.00e+00,  0.00e+00, -1.53e-16,  1.67e-16],
+        [-1.39e-17,  0.00e+00,  1.00e+00,  9.89e-17,  1.39e-17],
+        [ 1.39e-17, -1.53e-16,  9.89e-17,  1.00e+00, -1.39e-16],
+        [ 1.11e-16,  1.67e-16,  1.39e-17, -1.39e-16,  1.00e+00]]),
+ array([[ 1.00e+00,  1.11e-16, -1.18e-16,  1.39e-17,  0.00e+00],
+        [ 1.11e-16,  1.00e+00,  5.20e-17, -1.39e-16,  5.55e-17],
+        [-1.18e-16,  5.20e-17,  1.00e+00, -4.86e-17, -6.94e-18],
+        [ 1.39e-17, -1.39e-16, -4.86e-17,  1.00e+00, -1.39e-17],
+        [ 0.00e+00,  5.55e-17, -6.94e-18, -1.39e-17,  1.00e+00]]))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">UhatUhatT</span> <span class="o">=</span> <span class="n">Uhat</span><span class="nd">@Uhat</span><span class="o">.</span><span class="n">T</span>
+<span class="n">UhatTUhat</span> <span class="o">=</span> <span class="n">Uhat</span><span class="o">.</span><span class="n">T</span><span class="nd">@Uhat</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;UhatUhatT, UhatTUhat= &#39;</span><span class="p">)</span>
+<span class="n">UhatUhatT</span><span class="p">,</span> <span class="n">UhatTUhat</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>UhatUhatT, UhatTUhat= 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.18,  0.14,  0.17,  0.03,  0.32],
+        [ 0.14,  0.12,  0.06, -0.08,  0.27],
+        [ 0.17,  0.06,  0.39,  0.42,  0.16],
+        [ 0.03, -0.08,  0.42,  0.67, -0.18],
+        [ 0.32,  0.27,  0.16, -0.18,  0.63]]),
+ array([[1.00e+00, 1.11e-16],
+        [1.11e-16, 1.00e+00]]))
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>注释：</strong></p>
+<p>上述单元格展示了 <code class="docutils literal notranslate"><span class="pre">full_matrices=True</span></code> 和 <code class="docutils literal notranslate"><span class="pre">full_matrices=False</span></code> 选项的应用。
+使用 <code class="docutils literal notranslate"><span class="pre">full_matrices=False</span></code> 会返回一个简化的奇异值分解。</p>
+<p><strong>完整</strong>和<strong>简化</strong>的奇异值分解都能准确地分解一个 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span></p>
+<p>当我们在后面学习动态模态分解时，记住在这种高瘦矩阵情况下完整和简化奇异值分解的上述性质将很重要。</p>
+<p>现在让我们来看一个矮胖矩阵的情况。</p>
+<p>为了说明这种情况，我们将设置 <span class="math notranslate nohighlight">\(m = 2 &lt; 5 = n\)</span>，并计算完整和简化的奇异值分解。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># 完整SVD</span>
+<span class="n">Uhat</span><span class="p">,</span> <span class="n">Shat</span><span class="p">,</span> <span class="n">Vhat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># 经济SVD</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;U, S, V = &#39;</span><span class="p">)</span>
+<span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>U, S, V = 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.66, -0.75],
+        [ 0.75,  0.66]]),
+ array([2.01, 0.65]),
+ array([[ 0.43,  0.15,  0.67,  0.46,  0.35],
+        [ 0.58, -0.41, -0.09, -0.57,  0.41],
+        [-0.51, -0.36,  0.68, -0.38, -0.02],
+        [-0.15, -0.77, -0.2 ,  0.56,  0.17],
+        [-0.45,  0.29, -0.18, -0.04,  0.83]]))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Uhat, Shat, Vhat = &#39;</span><span class="p">)</span>
+<span class="n">Uhat</span><span class="p">,</span> <span class="n">Shat</span><span class="p">,</span> <span class="n">Vhat</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Uhat, Shat, Vhat = 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.66, -0.75],
+        [ 0.75,  0.66]]),
+ array([2.01, 0.65]),
+ array([[ 0.43,  0.15,  0.67,  0.46,  0.35],
+        [ 0.58, -0.41, -0.09, -0.57,  0.41]]))
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们验证我们的简化SVD是否准确表示<span class="math notranslate nohighlight">\(X\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SShat</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">Shat</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Uhat</span><span class="nd">@SShat@Vhat</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h2><span class="section-number">5.7. </span>极分解<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>矩阵 <span class="math notranslate nohighlight">\(X\)</span> 的<strong>简化</strong>奇异值分解(SVD)与其<strong>极分解</strong>相关</p>
+<div class="math notranslate nohighlight">
+\[
+X = SQ
+\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{aligned}
+S &amp; = U\Sigma U^\top \cr
+Q &amp; = UV^\top
+\end{aligned}
+\]</div>
+<p>这里</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(S\)</span> 是一个 <span class="math notranslate nohighlight">\(m \times m\)</span> <strong>对称</strong>矩阵</p></li>
+<li><p><span class="math notranslate nohighlight">\(Q\)</span> 是一个 <span class="math notranslate nohighlight">\(m \times n\)</span> <strong>正交</strong>矩阵</p></li>
+</ul>
+<p>在我们的简化SVD中</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(U\)</span> 是一个 <span class="math notranslate nohighlight">\(m \times p\)</span> 正交矩阵</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Sigma\)</span> 是一个 <span class="math notranslate nohighlight">\(p \times p\)</span> 对角矩阵</p></li>
+<li><p><span class="math notranslate nohighlight">\(V\)</span> 是一个 <span class="math notranslate nohighlight">\(n \times p\)</span> 正交矩阵</p></li>
+</ul>
+</section>
+<section id="pca">
+<h2><span class="section-number">5.8. </span>应用：主成分分析(PCA)<a class="headerlink" href="#pca" title="Permalink to this heading">#</a></h2>
+<p>让我们从 <span class="math notranslate nohighlight">\(n &gt;&gt; m\)</span> 的情况开始，即个体数量 <span class="math notranslate nohighlight">\(n\)</span> 远大于属性数量 <span class="math notranslate nohighlight">\(m\)</span> 的情况。</p>
+<p>在 <span class="math notranslate nohighlight">\(n &gt;&gt; m\)</span> 的情况下，矩阵 <span class="math notranslate nohighlight">\(X\)</span> 是<strong>矮胖型</strong>的，这与后面要讨论的 <span class="math notranslate nohighlight">\(m &gt;&gt; n\)</span> 情况下的<strong>高瘦型</strong>相对。</p>
+<p>我们将 <span class="math notranslate nohighlight">\(X\)</span> 视为一个 <span class="math notranslate nohighlight">\(m \times n\)</span> 的<strong>数据</strong>矩阵：</p>
+<div class="math notranslate nohighlight">
+\[
+X = \begin{bmatrix} X_1 \mid X_2 \mid \cdots \mid X_n\end{bmatrix}
+\]</div>
+<p>其中对于 <span class="math notranslate nohighlight">\(j = 1, \ldots, n\)</span>，列向量 <span class="math notranslate nohighlight">\(X_j = \begin{bmatrix}x_{1j}\\x_{2j}\\\vdots\\x_{mj}\end{bmatrix}\)</span> 是变量 <span class="math notranslate nohighlight">\(\begin{bmatrix}X_1\\X_2\\\vdots\\X_m\end{bmatrix}\)</span> 的观测值向量。</p>
+<p>在<strong>时间序列</strong>设置中，我们将列 <span class="math notranslate nohighlight">\(j\)</span> 视为观测随机变量的不同__时间__点的索引，而行则索引不同的随机变量。</p>
+<p>在<strong>横截面</strong>设置中，我们将列 <span class="math notranslate nohighlight">\(j\)</span> 视为观测随机变量的不同__个体__的索引，而行则索引不同的<strong>属性</strong>。</p>
+<p>如我们之前所见，SVD是将矩阵分解为有用组件的一种方法，就像极分解、特征分解和许多其他方法一样。</p>
+<p>另一方面，PCA是一种基于SVD来分析数据的方法。其目标是应用特定步骤，使用统计工具捕捉数据中最重要的模式，以帮助更好地可视化数据中的模式。</p>
+<p><strong>第1步：标准化数据：</strong></p>
+<p>由于我们的数据矩阵可能包含不同单位和尺度的变量，我们首先需要对数据进行标准化。</p>
+<p>首先计算 <span class="math notranslate nohighlight">\(X\)</span> 的每一行的平均值。</p>
+<div class="math notranslate nohighlight">
+\[
+\bar{X_i}= \frac{1}{n} \sum_{j = 1}^{n} x_{ij}
+\]</div>
+<p>然后用这些平均值创建一个平均值矩阵：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\bar{X} =  \begin{bmatrix} \bar{X_1} \\ \bar{X_2} \\ \ldots \\ \bar{X_m}\end{bmatrix}\begin{bmatrix}1 \mid 1 \mid \cdots \mid 1 \end{bmatrix}
+\end{split}\]</div>
+<p>从原始矩阵中减去平均值矩阵以创建一个均值中心化矩阵：</p>
+<div class="math notranslate nohighlight">
+\[
+B = X - \bar{X}
+\]</div>
+<p><strong>步骤2：计算协方差矩阵：</strong></p>
+<p>然后因为我们想要提取变量之间的关系而不是仅仅它们的大小，换句话说，我们想知道它们如何相互解释，我们计算 <span class="math notranslate nohighlight">\(B\)</span> 的协方差矩阵。</p>
+<div class="math notranslate nohighlight">
+\[
+C = \frac{1}{n} BB^{\top}
+\]</div>
+<p><strong>步骤3：分解协方差矩阵并排列奇异值：</strong></p>
+<p>由于矩阵<span class="math notranslate nohighlight">\(C\)</span>是正定的，我们可以对其进行特征值分解，找出其特征值，并按降序重新排列特征值和特征向量矩阵。</p>
+<p><span class="math notranslate nohighlight">\(C\)</span>的特征值分解可以通过分解<span class="math notranslate nohighlight">\(B\)</span>来得到。由于<span class="math notranslate nohighlight">\(B\)</span>不是方阵，我们对<span class="math notranslate nohighlight">\(B\)</span>进行SVD分解：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+B B^\top &amp;= U \Sigma V^\top (U \Sigma V^{\top})^{\top}\\
+&amp;= U \Sigma V^\top V \Sigma^\top U^\top\\
+&amp;= U \Sigma \Sigma^\top U^\top
+\end{aligned}
+\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[
+C = \frac{1}{n} U \Sigma \Sigma^\top U^\top
+\]</div>
+<p>然后我们可以重新排列矩阵<span class="math notranslate nohighlight">\(U\)</span>和<span class="math notranslate nohighlight">\(\Sigma\)</span>中的列，使奇异值按降序排列。</p>
+<p><strong>第4步：选择奇异值，（可选）截断其余部分：</strong></p>
+<p>我们现在可以根据想要保留的方差量来决定选择多少个奇异值（例如，保留95%的总方差）。</p>
+<p>我们可以通过计算前<span class="math notranslate nohighlight">\(r\)</span>个因子包含的方差除以总方差来获得百分比：</p>
+<div class="math notranslate nohighlight">
+\[\frac{\sum_{i = 1}^{r} \sigma^2_{i}}{\sum_{i = 1}^{p} \sigma^2_{i}}
+\]</div>
+<p><strong>第5步：创建得分矩阵：</strong></p>
+<div class="math notranslate nohighlight">
+\[
+\begin{aligned}
+T&amp;= BV \cr
+&amp;= U\Sigma V^\top V \cr
+&amp;= U\Sigma
+\end{aligned}
+\]</div>
+</section>
+<section id="pcasvd">
+<h2><span class="section-number">5.9. </span>PCA与SVD的关系<a class="headerlink" href="#pcasvd" title="Permalink to this heading">#</a></h2>
+<p>要将SVD与数据集<span class="math notranslate nohighlight">\(X\)</span>的PCA联系起来，首先构建数据矩阵<span class="math notranslate nohighlight">\(X\)</span>的SVD：</p>
+<p>让我们假设所有变量的样本均值为零，因此我们不需要标准化矩阵。</p>
+<div class="math notranslate nohighlight" id="equation-eq-pca1">
+<span class="eqno">(5.9)<a class="headerlink" href="#equation-eq-pca1" title="Permalink to this equation">#</a></span>\[
+X = U \Sigma V^\top  = \sigma_1 U_1 V_1^\top  + \sigma_2 U_2 V_2^\top  + \cdots + \sigma_p U_p V_p^\top
+\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight">
+\[
+U=\begin{bmatrix}U_1|U_2|\ldots|U_m\end{bmatrix}
+\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+V^\top  = \begin{bmatrix}V_1^\top \\V_2^\top \\\ldots\\V_n^\top \end{bmatrix}
+\end{split}\]</div>
+<p>在方程<a class="reference internal" href="#equation-eq-pca1">(5.9)</a>中，每个<span class="math notranslate nohighlight">\(m \times n\)</span>矩阵<span class="math notranslate nohighlight">\(U_{j}V_{j}^\top \)</span>显然是秩1的。</p>
+<p>因此，我们有</p>
+<div class="math notranslate nohighlight" id="equation-eq-pca2">
+<span class="eqno">(5.10)<a class="headerlink" href="#equation-eq-pca2" title="Permalink to this equation">#</a></span>\[\begin{split}X = \sigma_1 \begin{pmatrix}U_{11}V_{1}^\top \\U_{21}V_{1}^\top \\\cdots\\U_{m1}V_{1}^\top \\\end{pmatrix} + \sigma_2\begin{pmatrix}U_{12}V_{2}^\top \\U_{22}V_{2}^\top \\\cdots\\U_{m2}V_{2}^\top \\\end{pmatrix}+\ldots + \sigma_p\begin{pmatrix}U_{1p}V_{p}^\top \\U_{2p}V_{p}^\top \\\cdots\\U_{mp}V_{p}^\top \\\end{pmatrix}
+\end{split}\]</div>
+<p>以下是我们如何在时间序列上下文中解释矩阵方程<a class="reference internal" href="#equation-eq-pca2">(5.10)</a>中的对象：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( \textrm{对于每个} \ k=1, \ldots, n \)</span>，对象 <span class="math notranslate nohighlight">\(\lbrace V_{kj} \rbrace_{j=1}^n\)</span> 是第<span class="math notranslate nohighlight">\(k\)</span>个<strong>主成分</strong>的时间序列</p></li>
+<li><p><span class="math notranslate nohighlight">\(U_j = \begin{bmatrix}U_{1k}\\U_{2k}\\\ldots\\U_{mk}\end{bmatrix} \ k=1, \ldots, m\)</span>
+是变量<span class="math notranslate nohighlight">\(X_i\)</span>在第<span class="math notranslate nohighlight">\(k\)</span>个主成分上的<strong>载荷</strong>向量，其中<span class="math notranslate nohighlight">\(i=1, \ldots, m\)</span></p></li>
+<li><p>对于每个<span class="math notranslate nohighlight">\(k=1, \ldots, p\)</span>，<span class="math notranslate nohighlight">\(\sigma_k\)</span>是第<span class="math notranslate nohighlight">\(k\)</span>个<strong>主成分</strong>的强度，这里的强度指的是对<span class="math notranslate nohighlight">\(X\)</span>的整体协方差的贡献。</p></li>
+</ul>
+</section>
+<section id="id6">
+<h2><span class="section-number">5.10. </span>基于特征值和特征向量的PCA<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<p>现在我们使用样本协方差矩阵的特征分解来进行PCA。</p>
+<p>设<span class="math notranslate nohighlight">\(X_{m \times n}\)</span>为我们的<span class="math notranslate nohighlight">\(m \times n\)</span>数据矩阵。</p>
+<p>假设所有变量的样本均值都为零。</p>
+<p>我们可以通过减去样本均值的<strong>预处理</strong>来确保这一点。</p>
+<p>定义样本协方差矩阵<span class="math notranslate nohighlight">\(\Omega\)</span>为</p>
+<div class="math notranslate nohighlight">
+\[
+\Omega = XX^\top
+\]</div>
+<p>然后使用特征分解将<span class="math notranslate nohighlight">\(\Omega\)</span>表示如下：</p>
+<div class="math notranslate nohighlight">
+\[
+\Omega =P\Lambda P^\top
+\]</div>
+<p>这里</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P\)</span>是<span class="math notranslate nohighlight">\(\Omega\)</span>的<span class="math notranslate nohighlight">\(m×m\)</span>特征向量矩阵</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Lambda\)</span>是<span class="math notranslate nohighlight">\(\Omega\)</span>的特征值对角矩阵</p></li>
+</ul>
+<p>我们可以将<span class="math notranslate nohighlight">\(X\)</span>表示为</p>
+<div class="math notranslate nohighlight">
+\[
+X=P\epsilon
+\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight">
+\[
+\epsilon = P^{-1} X
+\]</div>
+<p>且</p>
+<div class="math notranslate nohighlight">
+\[
+\epsilon\epsilon^\top =\Lambda .
+\]</div>
+<p>我们可以验证</p>
+<div class="math notranslate nohighlight" id="equation-eq-xxo">
+<span class="eqno">(5.11)<a class="headerlink" href="#equation-eq-xxo" title="Permalink to this equation">#</a></span>\[
+XX^\top =P\Lambda P^\top  .
+\]</div>
+<p>因此，我们可以将数据矩阵<span class="math notranslate nohighlight">\(X\)</span>表示为</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{equation*}
+X=\begin{bmatrix}X_1|X_2|\ldots|X_m\end{bmatrix} =\begin{bmatrix}P_1|P_2|\ldots|P_m\end{bmatrix}
+\begin{bmatrix}\epsilon_1\\\epsilon_2\\\ldots\\\epsilon_m\end{bmatrix}
+
+= P_1\epsilon_1+P_2\epsilon_2+\ldots+P_m\epsilon_m
+\end{equation*}\]</div>
+<p>为了将前面的表示与我们之前通过SVD获得的PCA相协调，我们首先注意到<span class="math notranslate nohighlight">\(\epsilon_j^2=\lambda_j\equiv\sigma^2_j\)</span>。</p>
+<p>现定义<span class="math notranslate nohighlight">\(\tilde{\epsilon_j} = \frac{\epsilon_j}{\sqrt{\lambda_j}}\)</span>，
+这意味着<span class="math notranslate nohighlight">\(\tilde{\epsilon}_j\tilde{\epsilon}_j^\top =1\)</span>。</p>
+<p>因此</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+X&amp;=\sqrt{\lambda_1}P_1\tilde{\epsilon_1}+\sqrt{\lambda_2}P_2\tilde{\epsilon_2}+\ldots+\sqrt{\lambda_m}P_m\tilde{\epsilon_m}\\
+&amp;=\sigma_1P_1\tilde{\epsilon_2}+\sigma_2P_2\tilde{\epsilon_2}+\ldots+\sigma_mP_m\tilde{\epsilon_m} ,
+\end{aligned}
+\end{split}\]</div>
+<p>这与下式一致</p>
+<div class="math notranslate nohighlight">
+\[
+X=\sigma_1U_1{V_1}^{T}+\sigma_2 U_2{V_2}^{T}+\ldots+\sigma_{r} U_{r}{V_{r}}^{T}
+\]</div>
+<p>只要我们设定</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(U_j=P_j\)</span>（变量在第j个主成分上的载荷向量）</p></li>
+<li><p><span class="math notranslate nohighlight">\({V_k}^{T}=\tilde{\epsilon_k}\)</span>（第k个主成分）</p></li>
+</ul>
+<p>由于计算数据矩阵<span class="math notranslate nohighlight">\(X\)</span>的<span class="math notranslate nohighlight">\(P\)</span>和<span class="math notranslate nohighlight">\(U\)</span>有不同的算法，根据所使用的算法，我们可能会得到符号差异或特征向量顺序的不同。</p>
+<p>我们可以通过以下方式解决关于<span class="math notranslate nohighlight">\(U\)</span>和<span class="math notranslate nohighlight">\(P\)</span>的这些歧义：</p>
+<ol class="arabic simple">
+<li><p>将特征值和奇异值按降序排列</p></li>
+<li><p>在<span class="math notranslate nohighlight">\(P\)</span>和<span class="math notranslate nohighlight">\(U\)</span>中强制使对角线为正，并相应地调整<span class="math notranslate nohighlight">\(V^\top\)</span>中的符号</p></li>
+</ol>
+</section>
+<section id="id7">
+<h2><span class="section-number">5.11. </span>联系<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<p>为了将这些内容联系起来，把上面提到的一些公式组合并比较是很有用的。</p>
+<p>首先，考虑一个<span class="math notranslate nohighlight">\(m \times n\)</span>矩阵的SVD：</p>
+<div class="math notranslate nohighlight">
+\[
+X = U\Sigma V^\top
+\]</div>
+<p>计算：</p>
+<div class="math notranslate nohighlight" id="equation-eq-xxcompare">
+<span class="eqno">(5.12)<a class="headerlink" href="#equation-eq-xxcompare" title="Permalink to this equation">#</a></span>\[
+\begin{aligned}
+XX^\top &amp;=U\Sigma V^\top V\Sigma^\top  U^\top \cr
+&amp;\equiv U\Sigma\Sigma^\top U^\top \cr
+&amp;\equiv U\Lambda U^\top
+\end{aligned}
+\]</div>
+<p>将表示式<a class="reference internal" href="#equation-eq-xxcompare">(5.12)</a>与上面的方程<a class="reference internal" href="#equation-eq-xxo">(5.11)</a>进行比较。</p>
+<p>显然，SVD中的<span class="math notranslate nohighlight">\(U\)</span>就是<span class="math notranslate nohighlight">\(XX^\top\)</span>的特征向量矩阵<span class="math notranslate nohighlight">\(P\)</span>，而<span class="math notranslate nohighlight">\(\Sigma \Sigma^\top\)</span>就是特征值矩阵<span class="math notranslate nohighlight">\(\Lambda\)</span>。</p>
+<p>其次，让我们计算</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+X^\top X &amp;=V\Sigma^\top  U^\top U\Sigma V^\top \\
+&amp;=V\Sigma^\top {\Sigma}V^\top
+\end{aligned}
+\end{split}\]</div>
+<p>因此，SVD中的矩阵<span class="math notranslate nohighlight">\(V\)</span>是<span class="math notranslate nohighlight">\(X^\top X\)</span>的特征向量矩阵。</p>
+<p>总结并将各部分组合在一起，我们得到样本协方差矩阵的特征分解</p>
+<div class="math notranslate nohighlight">
+\[
+X X^\top  = P \Lambda P^\top
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(P\)</span>是一个正交矩阵。</p>
+<p>此外，从<span class="math notranslate nohighlight">\(X\)</span>的SVD分解，我们知道</p>
+<div class="math notranslate nohighlight">
+\[
+X X^\top  = U \Sigma \Sigma^\top  U^\top
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(U\)</span>是一个正交矩阵。</p>
+<p>因此，<span class="math notranslate nohighlight">\(P = U\)</span>，我们得到<span class="math notranslate nohighlight">\(X\)</span>的表示</p>
+<div class="math notranslate nohighlight">
+\[
+X = P \epsilon = U \Sigma V^\top
+\]</div>
+<p>由此可得</p>
+<div class="math notranslate nohighlight">
+\[
+U^\top  X = \Sigma V^\top  = \epsilon
+\]</div>
+<p>注意上述推导意味着</p>
+<div class="math notranslate nohighlight">
+\[
+\epsilon \epsilon^\top  = \Sigma V^\top  V \Sigma^\top  = \Sigma \Sigma^\top  = \Lambda ,
+\]</div>
+<p>这样所有部分都完美契合。</p>
+<p>下面我们定义一个<code class="docutils literal notranslate"><span class="pre">DecomAnalysis</span></code>类，用于对给定的数据矩阵<code class="docutils literal notranslate"><span class="pre">X</span></code>进行PCA和SVD分析。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DecomAnalysis</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    用于进行PCA和SVD分析的类。</span>
+<span class="sd">    X: 数据矩阵</span>
+<span class="sd">    r_component: 最佳近似所选择的秩</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">r_component</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ω</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">matrix_rank</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r_component</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_component</span> <span class="o">=</span> <span class="n">r_component</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_component</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span>
+
+    <span class="k">def</span> <span class="nf">pca</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">𝜆</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Ω</span><span class="p">)</span>    <span class="c1"># P的列是特征向量</span>
+
+        <span class="n">ind</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">𝜆</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">𝜆</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 按特征值排序</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">𝜆</span> <span class="o">=</span> <span class="n">𝜆</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">P</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="n">P</span> <span class="o">@</span> <span class="n">diag_sign</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Λ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">𝜆</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">explained_ratio_pca</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">𝜆</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">𝜆</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># 计算N乘T的主成分矩阵</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">𝜖</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span>
+
+        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">r_component</span><span class="p">]</span>
+        <span class="n">𝜖</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">𝜖</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">r_component</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1"># 转换数据</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X_pca</span> <span class="o">=</span> <span class="n">P</span> <span class="o">@</span> <span class="n">𝜖</span>
+
+    <span class="k">def</span> <span class="nf">svd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">U</span><span class="p">,</span> <span class="n">𝜎</span><span class="p">,</span> <span class="n">VT</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="n">ind</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">𝜎</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">𝜎</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 按特征值排序</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">𝜎</span> <span class="o">=</span> <span class="n">𝜎</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="n">U</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">diag_sign</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">U</span> <span class="o">=</span> <span class="n">U</span> <span class="o">@</span> <span class="n">D</span>
+        <span class="n">VT</span><span class="p">[:</span><span class="n">d</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">D</span> <span class="o">@</span> <span class="n">VT</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">VT</span> <span class="o">=</span> <span class="n">VT</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Σ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Σ</span><span class="p">[:</span><span class="n">d</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">𝜎</span><span class="p">)</span>
+
+        <span class="n">𝜎_sq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">𝜎</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">explained_ratio_svd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">𝜎_sq</span><span class="p">)</span> <span class="o">/</span> <span class="n">𝜎_sq</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># 按使用的成分数量切片矩阵</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">[:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">r_component</span><span class="p">]</span>
+        <span class="n">Σ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Σ</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">r_component</span><span class="p">,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">r_component</span><span class="p">]</span>
+        <span class="n">VT</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">VT</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">r_component</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1"># 转换数据</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X_svd</span> <span class="o">=</span> <span class="n">U</span> <span class="o">@</span> <span class="n">Σ</span> <span class="o">@</span> <span class="n">VT</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_component</span><span class="p">):</span>
+
+        <span class="c1"># pca</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[:,</span> <span class="p">:</span><span class="n">r_component</span><span class="p">]</span>
+        <span class="n">𝜖</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">𝜖</span><span class="p">[:</span><span class="n">r_component</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1"># 转换数据</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X_pca</span> <span class="o">=</span> <span class="n">P</span> <span class="o">@</span> <span class="n">𝜖</span>
+
+        <span class="c1"># svd</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">[:,</span> <span class="p">:</span><span class="n">r_component</span><span class="p">]</span>
+        <span class="n">Σ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Σ</span><span class="p">[:</span><span class="n">r_component</span><span class="p">,</span> <span class="p">:</span><span class="n">r_component</span><span class="p">]</span>
+        <span class="n">VT</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">VT</span><span class="p">[:</span><span class="n">r_component</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1"># 转换数据</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X_svd</span> <span class="o">=</span> <span class="n">U</span> <span class="o">@</span> <span class="n">Σ</span> <span class="o">@</span> <span class="n">VT</span>
+
+<span class="k">def</span> <span class="nf">diag_sign</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="s2">&quot;计算矩阵A对角线元素的符号&quot;</span>
+
+    <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">A</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">D</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们还定义一个函数来打印信息，以便比较不同算法得到的分解结果。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compare_pca_svd</span><span class="p">(</span><span class="n">da</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    比较PCA和SVD的结果。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">da</span><span class="o">.</span><span class="n">pca</span><span class="p">()</span>
+    <span class="n">da</span><span class="o">.</span><span class="n">svd</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;特征值和奇异值</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;λ = </span><span class="si">{</span><span class="n">da</span><span class="o">.</span><span class="n">λ</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;σ^2 = </span><span class="si">{</span><span class="n">da</span><span class="o">.</span><span class="n">σ</span><span class="o">**</span><span class="mi">2</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 载荷矩阵</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;载荷&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">U</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;U&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># 主成分</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;主成分&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">ε</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;ε&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">VT</span><span class="p">[:</span><span class="n">da</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">λ</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;$V^</span><span class="se">\t</span><span class="s1">op *\sqrt{\lambda}$&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:32: SyntaxWarning: invalid escape sequence &#39;\s&#39;
+&lt;&gt;:32: SyntaxWarning: invalid escape sequence &#39;\s&#39;
+/tmp/ipykernel_10555/569060777.py:32: SyntaxWarning: invalid escape sequence &#39;\s&#39;
+  axs[1].set_title(&#39;$V^\top *\sqrt{\lambda}$&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id8">
+<h2><span class="section-number">5.12. </span>练习<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
+<div class="exercise admonition" id="svd_ex1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 5.1 </span></p>
+<section id="exercise-content">
+<p>在普通最小二乘法(OLS)中，我们学会计算 <span class="math notranslate nohighlight">\( \hat{\beta} = (X^\top X)^{-1} X^\top y \)</span>，但在某些情况下，比如当我们遇到共线性或欠定系统时：即<strong>短而宽</strong>的矩阵。</p>
+<p>在这些情况下，<span class="math notranslate nohighlight">\( (X^\top X) \)</span>矩阵不可逆（其行列式为零）或病态（其行列式非常接近零）。</p>
+<p>我们可以改用所谓的<a class="reference external" href="https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse">伪逆</a>，即创建一个满秩的逆矩阵近似，以此来计算 <span class="math notranslate nohighlight">\( \hat{\beta} \)</span>。</p>
+<p>根据Eckart-Young定理，构建伪逆矩阵 <span class="math notranslate nohighlight">\( X^{+} \)</span> 并用它来计算 <span class="math notranslate nohighlight">\( \hat{\beta} \)</span>。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="svd_intro-solution-1">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#svd_ex1"> Exercise 5.1</a></p>
+<section id="solution-content">
+<p>我们可以使用SVD来计算伪逆：</p>
+<div class="math notranslate nohighlight">
+\[
+X  = U \Sigma V^\top
+\]</div>
+<p>对X求逆，我们得到：</p>
+<div class="math notranslate nohighlight">
+\[
+X^{+}  = V \Sigma^{+} U^\top
+\]</div>
+<p>其中：</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}
+\Sigma^{+} = \begin{bmatrix}\\\begin{split}\frac{1}{\sigma_1} &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\
+0 &amp; \frac{1}{\sigma_2} &amp; \cdots &amp; 0 &amp; 0 \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots \\
+0 &amp; 0 &amp; \cdots &amp; \frac{1}{\sigma_p} &amp; 0 \\
+0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\
+\end{bmatrix}
+\end{split}\end{aligned}\end{align} \]</div>
+<p>最后：</p>
+<div class="math notranslate nohighlight">
+\[
+\hat{\beta} = X^{+}y = V \Sigma^{+} U^\top y 
+\]</div>
+</section>
+</div>
+<p>关于PCA应用于分析智力测试结构的示例，请参见本讲座 <a class="reference internal" href="multivariate_normal.html"><span class="doc">多元正态分布</span></a>。</p>
+<p>查看该讲座中描述和说明经典因子分析模型的部分。</p>
+<p>如前所述，在后续关于 <a class="reference internal" href="var_dmd.html"><span class="doc">动态模态分解</span></a> 的讲座中，我们将描述SVD如何提供快速计算一阶向量自回归(VARs)的降阶近似的方法。</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/svd_intro.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/svd_intro.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/svd_intro.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/svd_intro.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/svd_intro.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "svd_intro";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/svd_intro.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

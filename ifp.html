@@ -1,0 +1,1737 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>44. 收入波动问题 I：基本模型 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ifp';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/ifp.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="45. 收入波动问题 II：资产随机收益" href="ifp_advanced.html" />
+    <link rel="prev" title="43. 最优增长 IV：内生网格法" href="egm_policy_iter.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="收入波动问题 I：基本模型"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="收入波动问题 I：基本模型" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/ifp.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=ifp>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">44.1. 概述</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">44.1.1. 参考文献</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">44.2. 最优储蓄问题</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">44.2.1. 设置</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">44.2.2. 价值函数和欧拉方程</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">44.2.3. 最优性结果</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ifp-computation">44.3. 计算</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">44.3.1. 时间迭代</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">44.3.2. 一些技术细节</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">44.4. 实现</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">44.4.1. 合理性检查</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">44.5. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">收入波动问题 I：基本模型</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="i">
+<h1><a class="toc-backref" href="#id29"><span class="section-number">44. </span><span class="target" id="index-0"></span>收入波动问题 I：基本模型</a><a class="headerlink" href="#i" title="Permalink to this heading">#</a></h1>
+<div class="contents topic" id="id1">
+<p class="topic-title">目录</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#i" id="id29">收入波动问题 I：基本模型</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id30">概述</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id31">最优储蓄问题</a></p></li>
+<li><p><a class="reference internal" href="#ifp-computation" id="id32">计算</a></p></li>
+<li><p><a class="reference internal" href="#id24" id="id33">实现</a></p></li>
+<li><p><a class="reference internal" href="#id26" id="id34">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>除了Anaconda中已有的库外，本讲座还需要以下库：</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantecon
+</pre></div>
+</div>
+</div>
+<details class="hide below-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell output</span>
+<span class="expanded">Hide code cell output</span>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.0)
+Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (0.60.0)
+Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
+Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
+Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.1)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.2)
+Requirement already satisfied: llvmlite&lt;0.44,&gt;=0.43.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.43.0)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.3.2)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.7)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2.2.3)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2024.8.30)
+Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from sympy-&gt;quantecon) (1.3.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="id2">
+<h2><a class="toc-backref" href="#id30"><span class="section-number">44.1. </span>概述</a><a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<p>在本讲中，我们研究一个无限生命期消费者的最优储蓄问题——即<span id="id3">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span>第1.3节中描述的”共同祖先”。</p>
+<p>这是许多代表性宏观经济模型的重要子问题</p>
+<ul class="simple">
+<li><p><span id="id4">[<a class="reference internal" href="zreferences.html#id141" title="S Rao Aiyagari. Uninsured Idiosyncratic Risk and Aggregate Saving. The Quarterly Journal of Economics, 109(3):659–684, 1994.">Aiyagari, 1994</a>]</span></p></li>
+<li><p><span id="id5">[<a class="reference internal" href="zreferences.html#id176" title="Mark Huggett. The risk-free rate in heterogeneous-agent incomplete-insurance economies. Journal of Economic Dynamics and Control, 17(5-6):953–969, 1993.">Huggett, 1993</a>]</span></p></li>
+<li><p>等等</p></li>
+</ul>
+<p>它与<a class="reference internal" href="optgrowth.html"><span class="doc">随机最优增长模型</span></a>中的决策问题相关，但在重要方面有所不同。</p>
+<p>例如，代理人的选择问题包含一个加性收入项，这导致了一个偶尔会出现的约束条件。</p>
+<p>此外，在本讲及后续讲座中，我们将引入更多现实的特征，如相关性冲击。</p>
+<p>为了求解该模型，我们将使用基于欧拉方程的时间迭代法，这在我们研究<a class="reference internal" href="optgrowth.html"><span class="doc">随机最优增长模型</span></a>时被证明是<a class="reference internal" href="coleman_policy_iter.html"><span class="doc">快速且准确的</span></a>。</p>
+<p>在温和的假设条件下，时间迭代在全局范围内是收敛的，即使效用是无界的（上下都无界）。</p>
+<p>我们需要以下导入：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">quantecon.optimize</span> <span class="kn">import</span> <span class="n">brentq</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span><span class="p">,</span> <span class="n">float64</span>
+<span class="kn">from</span> <span class="nn">numba.experimental</span> <span class="kn">import</span> <span class="n">jitclass</span>
+<span class="kn">from</span> <span class="nn">quantecon</span> <span class="kn">import</span> <span class="n">MarkovChain</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id6">
+<h3><span class="section-number">44.1.1. </span>参考文献<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<p>我们的演示是<span id="id7">[<a class="reference internal" href="zreferences.html#id256" title="Qingyin Ma, John Stachurski, and Alexis Akira Toda. The income fluctuation problem and the evolution of wealth. Journal of Economic Theory, 187:105003, 2020.">Ma <em>et al.</em>, 2020</a>]</span>的简化版本。</p>
+<p>其他参考文献包括<span id="id8">[<a class="reference internal" href="zreferences.html#id157" title="Angus Deaton. Saving and Liquidity Constraints. Econometrica, 59(5):1221–1248, 1991.">Deaton, 1991</a>]</span>、<span id="id9">[<a class="reference internal" href="zreferences.html#id159" title="Wouter J Den Haan. Comparison of solutions to the incomplete markets model with aggregate uncertainty. Journal of Economic Dynamics and Control, 34(1):4–27, 2010.">Den Haan, 2010</a>]</span>、
+<span id="id10">[<a class="reference internal" href="zreferences.html#id182" title="Moritz Kuhn. Recursive Equilibria In An Aiyagari-Style Economy With Permanent Income Shocks. International Economic Review, 54:807–835, 2013.">Kuhn, 2013</a>]</span>、<span id="id11">[<a class="reference internal" href="zreferences.html#id206" title="Guillaume Rabault. When do borrowing constraints bind? Some new results on the income fluctuation problem. Journal of Economic Dynamics and Control, 26(2):217–245, 2002.">Rabault, 2002</a>]</span>、<span id="id12">[<a class="reference internal" href="zreferences.html#id208" title="Michael Reiter. Solving heterogeneous-agent models by projection and perturbation. Journal of Economic Dynamics and Control, 33(3):649–665, 2009.">Reiter, 2009</a>]</span>和
+<span id="id13">[<a class="reference internal" href="zreferences.html#id211" title="Jack Schechtman and Vera L S Escudero. Some results on an income fluctuation problem. Journal of Economic Theory, 16(2):151–166, 1977.">Schechtman and Escudero, 1977</a>]</span>。</p>
+</section>
+</section>
+<section id="id14">
+<h2><a class="toc-backref" href="#id31"><span class="section-number">44.2. </span>最优储蓄问题</a><a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h2>
+<p id="index-1">让我们先写下模型，然后讨论如何求解。</p>
+<section id="id15">
+<h3><span class="section-number">44.2.1. </span>设置<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
+<p>考虑一个家庭，选择状态相关的消费计划<span class="math notranslate nohighlight">\(\{c_t\}_{t \geq 0}\)</span>以最大化</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E} \, \sum_{t=0}^{\infty} \beta^t u(c_t)
+\]</div>
+<p>约束条件为</p>
+<div class="math notranslate nohighlight" id="equation-eqst">
+<span class="eqno">(44.1)<a class="headerlink" href="#equation-eqst" title="Permalink to this equation">#</a></span>\[a_{t+1} \leq  R(a_t - c_t)  + Y_{t+1},
+\quad c_t \geq 0,
+\quad a_t \geq 0
+\quad t = 0, 1, \ldots\]</div>
+<p>这里</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\beta \in (0,1)\)</span>是贴现因子</p></li>
+<li><p><span class="math notranslate nohighlight">\(a_t\)</span>是t时期的资产持有量，借贷约束为<span class="math notranslate nohighlight">\(a_t \geq 0\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(c_t\)</span>是消费</p></li>
+<li><p><span class="math notranslate nohighlight">\(Y_t\)</span>是非资本收入（工资、失业补偿等）</p></li>
+<li><p><span class="math notranslate nohighlight">\(R := 1 + r\)</span>，其中<span class="math notranslate nohighlight">\(r &gt; 0\)</span>是储蓄利率</p></li>
+</ul>
+<p>时间安排如下：</p>
+<ol class="arabic simple">
+<li><p>在第 <span class="math notranslate nohighlight">\(t\)</span> 期开始时，家庭选择消费
+<span class="math notranslate nohighlight">\(c_t\)</span>。</p></li>
+<li><p>家庭在整个期间提供劳动，并在第 <span class="math notranslate nohighlight">\(t\)</span> 期末收到劳动收入
+<span class="math notranslate nohighlight">\(Y_{t+1}\)</span>。</p></li>
+<li><p>金融收入 <span class="math notranslate nohighlight">\(R(a_t - c_t)\)</span> 在第 <span class="math notranslate nohighlight">\(t\)</span> 期末收到。</p></li>
+<li><p>时间转移到 <span class="math notranslate nohighlight">\(t+1\)</span> 并重复此过程。</p></li>
+</ol>
+<p>非资本收入 <span class="math notranslate nohighlight">\(Y_t\)</span> 由 <span class="math notranslate nohighlight">\(Y_t = y(Z_t)\)</span> 给出，其中
+<span class="math notranslate nohighlight">\(\{Z_t\}\)</span> 是一个外生状态过程。</p>
+<p>按照文献中的常见做法，我们将 <span class="math notranslate nohighlight">\(\{Z_t\}\)</span> 视为一个有限状态
+马尔可夫链，取值于 <span class="math notranslate nohighlight">\(\mathsf Z\)</span>，具有马尔可夫矩阵 <span class="math notranslate nohighlight">\(P\)</span>。</p>
+<p>我们进一步假设</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(\beta R &lt; 1\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(u\)</span> 是光滑的、严格递增和严格凹的，且 <span class="math notranslate nohighlight">\(\lim_{c \to 0} u'(c) = \infty\)</span> 和 <span class="math notranslate nohighlight">\(\lim_{c \to \infty} u'(c) = 0\)</span></p></li>
+</ol>
+<p>资产空间是 <span class="math notranslate nohighlight">\(\mathbb R_+\)</span>，状态是对 <span class="math notranslate nohighlight">\((a,z)
+\in \mathsf S := \mathbb R_+ \times \mathsf Z\)</span>。</p>
+<p>从 <span class="math notranslate nohighlight">\((a,z) \in \mathsf S\)</span> 开始的<em>可行消费路径</em>是一个消费</p>
+<p>序列 <span class="math notranslate nohighlight">\(\{c_t\}\)</span> 满足 <span class="math notranslate nohighlight">\(\{c_t\}\)</span> 及其导出的资产路径 <span class="math notranslate nohighlight">\(\{a_t\}\)</span> 需要：</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\((a_0, z_0) = (a, z)\)</span></p></li>
+<li><p>满足<a class="reference internal" href="#equation-eqst">(44.1)</a>中的可行性约束，以及</p></li>
+<li><p>可测性，即 <span class="math notranslate nohighlight">\(c_t\)</span> 是直到时间 <span class="math notranslate nohighlight">\(t\)</span> 的随机结果的函数，而不是之后的。</p></li>
+</ol>
+<p>第三点的含义仅仅是时间 <span class="math notranslate nohighlight">\(t\)</span> 的消费不能是尚未观察到的结果的函数。</p>
+<p>事实上，对于这个问题，可以通过仅让消费依赖于当前状态来实现最优选择。</p>
+<p>最优性定义如下。</p>
+</section>
+<section id="id16">
+<h3><span class="section-number">44.2.2. </span>价值函数和欧拉方程<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
+<p><em>价值函数</em> <span class="math notranslate nohighlight">\(V \colon \mathsf S \to \mathbb{R}\)</span> 定义为</p>
+<div class="math notranslate nohighlight" id="equation-eqvf">
+<span class="eqno">(44.2)<a class="headerlink" href="#equation-eqvf" title="Permalink to this equation">#</a></span>\[V(a, z) := \max \, \mathbb{E}
+\left\{
+\sum_{t=0}^{\infty} \beta^t u(c_t)
+\right\}\]</div>
+<p>其中最大化是针对从<span class="math notranslate nohighlight">\((a,z)\)</span>出发的所有可行消费路径。</p>
+<p>从<span class="math notranslate nohighlight">\((a,z)\)</span>出发的<em>最优消费路径</em>是从<span class="math notranslate nohighlight">\((a,z)\)</span>出发的可行消费路径中实现<a class="reference internal" href="#equation-eqvf">(44.2)</a>中上确界的路径。</p>
+<p>为了确定这些路径，我们可以使用欧拉方程的一个版本，在当前设定中为</p>
+<div class="math notranslate nohighlight" id="equation-ee00">
+<span class="eqno">(44.3)<a class="headerlink" href="#equation-ee00" title="Permalink to this equation">#</a></span>\[u' (c_t)
+\geq \beta R \,  \mathbb{E}_t  u'(c_{t+1})\]</div>
+<p>和</p>
+<div class="math notranslate nohighlight" id="equation-ee01">
+<span class="eqno">(44.4)<a class="headerlink" href="#equation-ee01" title="Permalink to this equation">#</a></span>\[c_t &lt; a_t
+\; \implies \;
+u' (c_t) = \beta R \,  \mathbb{E}_t  u'(c_{t+1})\]</div>
+<p>当 <span class="math notranslate nohighlight">\(c_t = a_t\)</span> 时，我们显然有 <span class="math notranslate nohighlight">\(u'(c_t) = u'(a_t)\)</span>，</p>
+<p>当 <span class="math notranslate nohighlight">\(c_t\)</span> 达到上界 <span class="math notranslate nohighlight">\(a_t\)</span> 时，严格不等式 <span class="math notranslate nohighlight">\(u' (c_t) &gt; \beta R \,  \mathbb{E}_t  u'(c_{t+1})\)</span> 可能出现，因为 <span class="math notranslate nohighlight">\(c_t\)</span> 无法充分增加以达到等式。</p>
+<p>（最优解中永远不会出现下界情况 <span class="math notranslate nohighlight">\(c_t = 0\)</span>，因为 <span class="math notranslate nohighlight">\(u'(0) = \infty\)</span>。）</p>
+<p>经过一些思考，可以证明 <a class="reference internal" href="#equation-ee00">(44.3)</a> 和 <a class="reference internal" href="#equation-ee01">(44.4)</a> 等价于</p>
+<div class="math notranslate nohighlight" id="equation-eqeul0">
+<span class="eqno">(44.5)<a class="headerlink" href="#equation-eqeul0" title="Permalink to this equation">#</a></span>\[u' (c_t)
+= \max \left\{
+    \beta R \,  \mathbb{E}_t  u'(c_{t+1})  \,,\;  u'(a_t)
+\right\}\]</div>
+</section>
+<section id="id17">
+<h3><span class="section-number">44.2.3. </span>最优性结果<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h3>
+<p>如 <span id="id18">[<a class="reference internal" href="zreferences.html#id256" title="Qingyin Ma, John Stachurski, and Alexis Akira Toda. The income fluctuation problem and the evolution of wealth. Journal of Economic Theory, 187:105003, 2020.">Ma <em>et al.</em>, 2020</a>]</span> 所示，</p>
+<ol class="arabic simple">
+<li><p>对于每个 <span class="math notranslate nohighlight">\((a,z) \in \mathsf S\)</span>，从 <span class="math notranslate nohighlight">\((a,z)\)</span> 出发存在唯一的最优消费路径</p></li>
+<li><p>这条路径是从<span class="math notranslate nohighlight">\((a,z)\)</span>出发的唯一可行路径，它满足欧拉等式<a class="reference internal" href="#equation-eqeul0">(44.5)</a>和横截条件</p></li>
+</ol>
+<div class="math notranslate nohighlight" id="equation-eqtv">
+<span class="eqno">(44.6)<a class="headerlink" href="#equation-eqtv" title="Permalink to this equation">#</a></span>\[\lim_{t \to \infty} \beta^t \, \mathbb{E} \, [ u'(c_t) a_{t+1} ] = 0\]</div>
+<p>此外，存在一个<em>最优消费函数</em><span class="math notranslate nohighlight">\(\sigma^* \colon \mathsf S \to \mathbb R_+\)</span>，使得从<span class="math notranslate nohighlight">\((a,z)\)</span>生成的路径</p>
+<div class="math notranslate nohighlight">
+\[
+(a_0, z_0) = (a, z),
+\quad
+c_t = \sigma^*(a_t, Z_t)
+\quad \text{和} \quad
+a_{t+1} = R (a_t - c_t) + Y_{t+1}
+\]</div>
+<p>同时满足<a class="reference internal" href="#equation-eqeul0">(44.5)</a>和<a class="reference internal" href="#equation-eqtv">(44.6)</a>，因此是从<span class="math notranslate nohighlight">\((a,z)\)</span>出发的唯一最优路径。</p>
+<p>因此，为了解决这个优化问题，我们需要计算策略<span class="math notranslate nohighlight">\(\sigma^*\)</span>。</p>
+</section>
+</section>
+<section id="ifp-computation">
+<span id="id19"></span><h2><a class="toc-backref" href="#id32"><span class="section-number">44.3. </span>计算</a><a class="headerlink" href="#ifp-computation" title="Permalink to this heading">#</a></h2>
+<p id="index-2">计算<span class="math notranslate nohighlight">\(\sigma^*\)</span>有两种标准方法</p>
+<ol class="arabic simple">
+<li><p>使用欧拉等式的时间迭代法</p></li>
+<li><p>值函数迭代法</p></li>
+</ol>
+<p>我们对蛋糕食用问题和随机最优增长的研究</p>
+<p>模型表明时间迭代将更快且更准确。</p>
+<p>这就是我们下面要采用的方法。</p>
+<section id="id20">
+<h3><span class="section-number">44.3.1. </span>时间迭代<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h3>
+<p>我们可以重写<a class="reference internal" href="#equation-eqeul0">(44.5)</a>，使其成为关于函数而不是随机变量的表述。</p>
+<p>具体来说，考虑函数方程</p>
+<div class="math notranslate nohighlight" id="equation-eqeul1">
+<span class="eqno">(44.7)<a class="headerlink" href="#equation-eqeul1" title="Permalink to this equation">#</a></span>\[(u' \circ \sigma)  (a, z)
+= \max \left\{
+\beta R \, \mathbb E_z (u' \circ \sigma)
+    [R (a - \sigma(a, z)) + \hat Y, \, \hat Z]
+\, , \;
+     u'(a)
+     \right\}\]</div>
+<p>其中</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\((u' \circ \sigma)(s) := u'(\sigma(s))\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbb E_z\)</span>表示基于当前状态<span class="math notranslate nohighlight">\(z\)</span>的条件期望，<span class="math notranslate nohighlight">\(\hat X\)</span>表示随机变量<span class="math notranslate nohighlight">\(X\)</span>的下一期值</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma\)</span>是未知函数</p></li>
+</ul>
+<p>我们需要为最优消费政策选择一个合适的候选解类别。</p>
+<p>选择这样一个类别的正确方法是考虑解可能具有什么性质，以便限制搜索空间并确保迭代表现良好。</p>
+<p>为此，令 <span class="math notranslate nohighlight">\(\mathscr C\)</span> 为连续函数 <span class="math notranslate nohighlight">\(\sigma \colon \mathbf S \to \mathbb R\)</span> 的空间，其中 <span class="math notranslate nohighlight">\(\sigma\)</span> 对第一个参数是递增的，对所有 <span class="math notranslate nohighlight">\((a,z) \in \mathbf S\)</span> 都有 <span class="math notranslate nohighlight">\(0 &lt; \sigma(a,z) \leq a\)</span>，且</p>
+<div class="math notranslate nohighlight" id="equation-ifpc4">
+<span class="eqno">(44.8)<a class="headerlink" href="#equation-ifpc4" title="Permalink to this equation">#</a></span>\[\sup_{(a,z) \in \mathbf S}
+\left| (u' \circ \sigma)(a,z) - u'(a) \right| &lt; \infty\]</div>
+<p>这将是我们的候选类。</p>
+<p>此外，令 <span class="math notranslate nohighlight">\(K \colon \mathscr{C} \to \mathscr{C}\)</span> 定义如下。</p>
+<p>对给定的 <span class="math notranslate nohighlight">\(\sigma \in \mathscr{C}\)</span>，<span class="math notranslate nohighlight">\(K \sigma (a,z)\)</span> 是解决以下方程的唯一 <span class="math notranslate nohighlight">\(c \in [0, a]\)</span>：</p>
+<div class="math notranslate nohighlight" id="equation-eqsifc">
+<span class="eqno">(44.9)<a class="headerlink" href="#equation-eqsifc" title="Permalink to this equation">#</a></span>\[u'(c)
+= \max \left\{
+           \beta R \, \mathbb E_z (u' \circ \sigma) \,
+           [R (a - c) + \hat Y, \, \hat Z]
+           \, , \;
+           u'(a)
+     \right\}\]</div>
+<p>我们将 <span class="math notranslate nohighlight">\(K\)</span> 称为 Coleman–Reffett 算子。</p>
+<p>构造算子 <span class="math notranslate nohighlight">\(K\)</span> 的目的是使得 <span class="math notranslate nohighlight">\(K\)</span> 的不动点与泛函方程 <a class="reference internal" href="#equation-eqeul1">(44.7)</a> 的解重合。</p>
+<p>在<span id="id21">[<a class="reference internal" href="zreferences.html#id256" title="Qingyin Ma, John Stachurski, and Alexis Akira Toda. The income fluctuation problem and the evolution of wealth. Journal of Economic Theory, 187:105003, 2020.">Ma <em>et al.</em>, 2020</a>]</span>中显示，通过选取任意<span class="math notranslate nohighlight">\(\sigma \in \mathscr{C}\)</span>并使用<a class="reference internal" href="#equation-eqsifc">(44.9)</a>中定义的算子<span class="math notranslate nohighlight">\(K\)</span>进行迭代，可以计算出唯一的最优策略。</p>
+</section>
+<section id="id22">
+<h3><span class="section-number">44.3.2. </span>一些技术细节<a class="headerlink" href="#id22" title="Permalink to this heading">#</a></h3>
+<p>最后这个结论的证明在技术上有些复杂，但这里给出一个简要总结：</p>
+<p>在<span id="id23">[<a class="reference internal" href="zreferences.html#id256" title="Qingyin Ma, John Stachurski, and Alexis Akira Toda. The income fluctuation problem and the evolution of wealth. Journal of Economic Theory, 187:105003, 2020.">Ma <em>et al.</em>, 2020</a>]</span>中证明，在以下度量下，<span class="math notranslate nohighlight">\(K\)</span>是<span class="math notranslate nohighlight">\(\mathscr{C}\)</span>上的压缩映射</p>
+<div class="math notranslate nohighlight">
+\[
+\rho(c, d) := \| \, u' \circ \sigma_1 - u' \circ \sigma_2 \, \|
+    := \sup_{s \in S} | \, u'(\sigma_1(s))  - u'(\sigma_2(s)) \, |
+ \qquad \quad (\sigma_1, \sigma_2 \in \mathscr{C})
+\]</div>
+<p>该度量计算边际效用的最大差异。</p>
+<p>（这种距离度量的好处在于，虽然<span class="math notranslate nohighlight">\(\mathscr C\)</span>中的元素通常不是有界的，但在我们的假设下<span class="math notranslate nohighlight">\(\rho\)</span>始终是有限的。）</p>
+<p>还证明了度量<span class="math notranslate nohighlight">\(\rho\)</span>在<span class="math notranslate nohighlight">\(\mathscr{C}\)</span>上是完备的。</p>
+<p>因此，<span class="math notranslate nohighlight">\(K\)</span> 在 <span class="math notranslate nohighlight">\(\mathscr{C}\)</span> 中有唯一的不动点 <span class="math notranslate nohighlight">\(\sigma^*\)</span>，且对于任意 <span class="math notranslate nohighlight">\(\sigma \in \mathscr{C}\)</span>，当 <span class="math notranslate nohighlight">\(n \to \infty\)</span> 时，<span class="math notranslate nohighlight">\(K^n c \to \sigma^*\)</span>。</p>
+<p>根据 <span class="math notranslate nohighlight">\(K\)</span> 的定义，<span class="math notranslate nohighlight">\(K\)</span> 在 <span class="math notranslate nohighlight">\(\mathscr{C}\)</span> 中的不动点与方程 <a class="reference internal" href="#equation-eqeul1">(44.7)</a> 在 <span class="math notranslate nohighlight">\(\mathscr{C}\)</span> 中的解相一致。</p>
+<p>因此，从 <span class="math notranslate nohighlight">\((a_0,z_0) \in S\)</span> 出发，使用策略函数 <span class="math notranslate nohighlight">\(\sigma^*\)</span> 生成的路径 <span class="math notranslate nohighlight">\(\{c_t\}\)</span> 是从 <span class="math notranslate nohighlight">\((a_0,z_0) \in S\)</span> 出发的唯一最优路径。</p>
+</section>
+</section>
+<section id="id24">
+<h2><a class="toc-backref" href="#id33"><span class="section-number">44.4. </span>实现</a><a class="headerlink" href="#id24" title="Permalink to this heading">#</a></h2>
+<p id="index-3">我们使用 CRRA 效用函数规范</p>
+<div class="math notranslate nohighlight">
+\[
+u(c) = \frac{c^{1 - \gamma}} {1 - \gamma}
+\]</div>
+<p>外生状态过程 <span class="math notranslate nohighlight">\(\{Z_t\}\)</span> 默认为一个两状态马尔可夫链，其状态空间为 <span class="math notranslate nohighlight">\(\{0, 1\}\)</span>，转移矩阵为 <span class="math notranslate nohighlight">\(P\)</span>。</p>
+<p>这里我们构建一个名为 <code class="docutils literal notranslate"><span class="pre">IFP</span></code> 的类来存储模型的基本要素。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifp_data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>              <span class="c1"># 利率 1 + r</span>
+    <span class="p">(</span><span class="s1">&#39;β&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>              <span class="c1"># 贴现因子</span>
+    <span class="p">(</span><span class="s1">&#39;γ&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>              <span class="c1"># 偏好参数</span>
+    <span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:,</span> <span class="p">:]),</span>        <span class="c1"># Z_t 的二元马尔可夫矩阵</span>
+    <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>           <span class="c1"># 收入为 Y_t = y[Z_t]</span>
+    <span class="p">(</span><span class="s1">&#39;asset_grid&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:])</span>   <span class="c1"># 网格（数组）</span>
+<span class="p">]</span>
+
+<span class="nd">@jitclass</span><span class="p">(</span><span class="n">ifp_data</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">IFP</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">r</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+                 <span class="n">β</span><span class="o">=</span><span class="mf">0.96</span><span class="p">,</span>
+                 <span class="n">γ</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+                 <span class="n">P</span><span class="o">=</span><span class="p">((</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">)),</span>
+                 <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+                 <span class="n">grid_max</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+                 <span class="n">grid_size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">γ</span> <span class="o">=</span> <span class="n">β</span><span class="p">,</span> <span class="n">γ</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">P</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">asset_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">grid_max</span><span class="p">,</span> <span class="n">grid_size</span><span class="p">)</span>
+
+        <span class="c1"># 注意我们需要 R β &lt; 1 以确保收敛</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;稳定性条件被违反。&quot;</span>
+
+    <span class="k">def</span> <span class="nf">u_prime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">c</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">γ</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>接下来我们提供一个函数来计算差值</p>
+<div class="math notranslate nohighlight" id="equation-euler-diff-eq">
+<span class="eqno">(44.10)<a class="headerlink" href="#equation-euler-diff-eq" title="Permalink to this equation">#</a></span>\[u'(c) - \max \left\{
+           \beta R \, \mathbb E_z (u' \circ \sigma) \,
+           [R (a - c) + \hat Y, \, \hat Z]
+           \, , \;
+           u'(a)
+     \right\}\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">euler_diff</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">σ_vals</span><span class="p">,</span> <span class="n">ifp</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    欧拉方程左右两边的差值，基于当前策略σ。</span>
+
+<span class="sd">        * c 是消费选择</span>
+<span class="sd">        * (a, z) 是状态，其中 z 在 {0, 1} 中</span>
+<span class="sd">        * σ_vals 是以矩阵形式表示的策略</span>
+<span class="sd">        * ifp 是 IFP 的一个实例</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># 简化名称</span>
+    <span class="n">R</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">γ</span>  <span class="o">=</span> <span class="n">ifp</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">γ</span>
+    <span class="n">asset_grid</span><span class="p">,</span> <span class="n">u_prime</span> <span class="o">=</span> <span class="n">ifp</span><span class="o">.</span><span class="n">asset_grid</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">u_prime</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+
+    <span class="c1"># 通过线性插值将策略转换为函数</span>
+    <span class="k">def</span> <span class="nf">σ</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">asset_grid</span><span class="p">,</span> <span class="n">σ_vals</span><span class="p">[:,</span> <span class="n">z</span><span class="p">])</span>
+
+    <span class="c1"># 计算基于当前z的期望值</span>
+    <span class="n">expect</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">z_hat</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">expect</span> <span class="o">+=</span> <span class="n">u_prime</span><span class="p">(</span><span class="n">σ</span><span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="n">z_hat</span><span class="p">],</span> <span class="n">z_hat</span><span class="p">))</span> <span class="o">*</span> <span class="n">P</span><span class="p">[</span><span class="n">z</span><span class="p">,</span> <span class="n">z_hat</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">u_prime</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="n">β</span> <span class="o">*</span> <span class="n">R</span> <span class="o">*</span> <span class="n">expect</span><span class="p">,</span> <span class="n">u_prime</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>请注意，我们沿着资产网格使用线性插值来近似策略函数。</p>
+<p>下一步是求取欧拉方程差的根。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">K</span><span class="p">(</span><span class="n">σ</span><span class="p">,</span> <span class="n">ifp</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    算子K。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">σ_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">σ</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ifp</span><span class="o">.</span><span class="n">asset_grid</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="n">euler_diff</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">ifp</span><span class="p">))</span>
+            <span class="n">σ_new</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">root</span>
+
+    <span class="k">return</span> <span class="n">σ_new</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>有了算子 <span class="math notranslate nohighlight">\(K\)</span> 之后，我们可以选择一个初始条件并开始迭代。</p>
+<p>下面的函数进行迭代直至收敛，并返回近似的最优策略。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">solve_model_time_iter</span><span class="p">(</span><span class="n">model</span><span class="p">,</span>    <span class="c1"># Class with model information</span>
+                          <span class="n">σ</span><span class="p">,</span>        <span class="c1"># Initial condition</span>
+                          <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+                          <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                          <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">print_skip</span><span class="o">=</span><span class="mi">25</span><span class="p">):</span>
+
+    <span class="c1"># Set up loop</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">tol</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">max_iter</span> <span class="ow">and</span> <span class="n">error</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">:</span>
+        <span class="n">σ_new</span> <span class="o">=</span> <span class="n">K</span><span class="p">(</span><span class="n">σ</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">σ</span> <span class="o">-</span> <span class="n">σ_new</span><span class="p">))</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">%</span> <span class="n">print_skip</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at iteration </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">σ</span> <span class="o">=</span> <span class="n">σ_new</span>
+
+    <span class="k">if</span> <span class="n">error</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed to converge!&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Converged in </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> iterations.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">σ_new</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们使用<code class="docutils literal notranslate"><span class="pre">IFP</span></code>类的默认参数来执行这个过程：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifp</span> <span class="o">=</span> <span class="n">IFP</span><span class="p">()</span>
+
+<span class="c1"># 设置初始消费策略，即在所有z状态下消费所有资产</span>
+<span class="n">z_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ifp</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
+<span class="n">a_grid</span> <span class="o">=</span> <span class="n">ifp</span><span class="o">.</span><span class="n">asset_grid</span>
+<span class="n">a_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a_grid</span><span class="p">)</span>
+<span class="n">σ_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">a_grid</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">z_size</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">σ_star</span> <span class="o">=</span> <span class="n">solve_model_time_iter</span><span class="p">(</span><span class="n">ifp</span><span class="p">,</span> <span class="n">σ_init</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Error at iteration 25 is 0.011629589188244083.
+Error at iteration 50 is 0.0003857183099458261.
+
+Converged in 60 iterations.
+</pre></div>
+</div>
+</div>
+</div>
+<p>这是每个外生状态 <span class="math notranslate nohighlight">\(z\)</span> 对应的最优策略图。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">z_size</span><span class="p">):</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="sa">rf</span><span class="s1">&#39;$\sigma^*(\cdot, </span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s1">)$&#39;</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_grid</span><span class="p">,</span> <span class="n">σ_star</span><span class="p">[:,</span> <span class="n">z</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;资产&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;消费&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/0a29c8f256553e525022a9e4b297eda627a26f561dd045c3d924a6ace760ca9e.png" src="_images/0a29c8f256553e525022a9e4b297eda627a26f561dd045c3d924a6ace760ca9e.png" />
+</div>
+</div>
+<p>以下练习将带您完成几个需要计算政策函数的应用。</p>
+<section id="id25">
+<h3><span class="section-number">44.4.1. </span>合理性检查<a class="headerlink" href="#id25" title="Permalink to this heading">#</a></h3>
+<p>检查我们结果的一种方法是</p>
+<ul class="simple">
+<li><p>将每个状态的劳动收入设为零</p></li>
+<li><p>将总利率 <span class="math notranslate nohighlight">\(R\)</span> 设为1。</p></li>
+</ul>
+<p>在这种情况下，我们的收入波动问题就变成了一个蛋糕消费问题。</p>
+<p>我们知道，在这种情况下，价值函数和最优消费政策由以下给出：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">c_star</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">γ</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">γ</span><span class="p">))</span> <span class="o">*</span> <span class="n">x</span>
+
+
+<span class="k">def</span> <span class="nf">v_star</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">γ</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">γ</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">γ</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">γ</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">γ</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们看看是否匹配：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifp_cake_eating</span> <span class="o">=</span> <span class="n">IFP</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+
+<span class="n">σ_star</span> <span class="o">=</span> <span class="n">solve_model_time_iter</span><span class="p">(</span><span class="n">ifp_cake_eating</span><span class="p">,</span> <span class="n">σ_init</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_grid</span><span class="p">,</span> <span class="n">σ_star</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;数值解&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_grid</span><span class="p">,</span> <span class="n">c_star</span><span class="p">(</span><span class="n">a_grid</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">γ</span><span class="p">),</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;解析解&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;资产&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;消费&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Error at iteration 25 is 0.02333227263054538.
+Error at iteration 50 is 0.005301238424249455.
+Error at iteration 75 is 0.0019706324625650695.
+Error at iteration 100 is 0.0008675521337955794.
+Error at iteration 125 is 0.00041073542212261005.
+Error at iteration 150 is 0.00020120334010526042.
+Error at iteration 175 is 0.00010021430795070785.
+
+Converged in 176 iterations.
+</pre></div>
+</div>
+<img alt="_images/be9211451c9eb45eb33a09a40c1c0fb72c8120be4ae5d45f35bdd1b46912d523.png" src="_images/be9211451c9eb45eb33a09a40c1c0fb72c8120be4ae5d45f35bdd1b46912d523.png" />
+</div>
+</div>
+<p>成功！</p>
+</section>
+</section>
+<section id="id26">
+<h2><a class="toc-backref" href="#id34"><span class="section-number">44.5. </span>练习</a><a class="headerlink" href="#id26" title="Permalink to this heading">#</a></h2>
+<div class="exercise admonition" id="ifp_ex1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 44.1 </span></p>
+<section id="exercise-content">
+<p>让我们考虑利率如何影响消费。</p>
+<p>复现下图，该图显示了不同利率下的（近似）最优消费策略</p>
+<figure class="align-default">
+<img alt="_images/ifp_policies.png" src="_images/ifp_policies.png" />
+</figure>
+<ul class="simple">
+<li><p>除了<code class="docutils literal notranslate"><span class="pre">r</span></code>外，所有参数都使用默认值。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">r</span></code>的取值范围为<code class="docutils literal notranslate"><span class="pre">np.linspace(0,</span> <span class="pre">0.04,</span> <span class="pre">4)</span></code>。</p></li>
+<li><p>消费相对于资产绘制，收入冲击固定在最小值。</p></li>
+</ul>
+<p>图中显示，较高的利率会促进储蓄，从而抑制消费。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="ifp-solution-1">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#ifp_ex1"> Exercise 44.1</a></p>
+<section id="solution-content">
+<p>这是一个解决方案：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">r_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">r_val</span> <span class="ow">in</span> <span class="n">r_vals</span><span class="p">:</span>
+    <span class="n">ifp</span> <span class="o">=</span> <span class="n">IFP</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">r_val</span><span class="p">)</span>
+    <span class="n">σ_star</span> <span class="o">=</span> <span class="n">solve_model_time_iter</span><span class="p">(</span><span class="n">ifp</span><span class="p">,</span> <span class="n">σ_init</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ifp</span><span class="o">.</span><span class="n">asset_grid</span><span class="p">,</span> <span class="n">σ_star</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$r = </span><span class="si">{</span><span class="n">r_val</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;资产水平&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;消费（低收入）&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/48b90a2e031454b4aaf5cbd64199c1a7ce6c495ea9734bf193be9c522a649765.png" src="_images/48b90a2e031454b4aaf5cbd64199c1a7ce6c495ea9734bf193be9c522a649765.png" />
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="ifp_ex2">
+
+<p class="admonition-title"><span class="caption-number">Exercise 44.2 </span></p>
+<section id="exercise-content">
+<p>现在让我们考虑在默认参数下家庭长期持有的资产水平。</p>
+<p>下图是一个45度图,显示了在消费最优时资产的变动规律</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifp</span> <span class="o">=</span> <span class="n">IFP</span><span class="p">()</span>
+
+<span class="n">σ_star</span> <span class="o">=</span> <span class="n">solve_model_time_iter</span><span class="p">(</span><span class="n">ifp</span><span class="p">,</span> <span class="n">σ_init</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">ifp</span><span class="o">.</span><span class="n">asset_grid</span>
+<span class="n">R</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ifp</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">y</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">z</span><span class="p">,</span> <span class="n">lb</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;低收入&#39;</span><span class="p">,</span> <span class="s1">&#39;高收入&#39;</span><span class="p">)):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">R</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">σ_star</span><span class="p">[:,</span> <span class="n">z</span><span class="p">])</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="n">z</span><span class="p">]</span> <span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lb</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;当前资产&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;下一期资产&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/92d26b20b5656a1cd9e3d073b68243e18635bc4c8b6f6463788f366df32ae5f6.png" src="_images/92d26b20b5656a1cd9e3d073b68243e18635bc4c8b6f6463788f366df32ae5f6.png" />
+</div>
+</div>
+<p>实线显示了每个 <span class="math notranslate nohighlight">\(z\)</span> 值下资产的更新函数，即</p>
+<div class="math notranslate nohighlight">
+\[
+a \mapsto R (a - \sigma^*(a, z)) + y(z)
+\]</div>
+<p>虚线是45度线。</p>
+<p>从图中可以看出，这个动态过程是稳定的 — 即使在最高状态下，资产也不会发散。</p>
+<p>事实上，存在一个我们可以通过模拟计算的唯一的平稳分布</p>
+<ul class="simple">
+<li><p>这可以通过<span id="id27">[<a class="reference internal" href="zreferences.html#id173" title="Hugo A Hopenhayn and Edward C Prescott. Stochastic Monotonicity and Stationary Distributions for Dynamic Economies. Econometrica, 60(6):1387–1406, 1992.">Hopenhayn and Prescott, 1992</a>]</span>的定理2来证明。</p></li>
+<li><p>它表示当家庭面临特质性冲击时，家庭之间资产的长期分布情况。</p></li>
+</ul>
+<p>这里符合遍历性，因此平稳概率可以通过对单个长时间序列取平均值来计算。</p>
+<p>因此，为了近似平稳分布，我们可以模拟一个较长的资产时间序列并绘制其直方图。</p>
+<p>你的任务是生成这样一个直方图。</p>
+<ul class="simple">
+<li><p>使用一个长度为500,000的单一时间序列 <span class="math notranslate nohighlight">\(\{a_t\}\)</span>。</p></li>
+<li><p>考虑到这个时间序列的长度，初始条件 <span class="math notranslate nohighlight">\((a_0, z_0)\)</span> 并不重要。</p></li>
+<li><p>使用<code class="docutils literal notranslate"><span class="pre">quantecon</span></code>中的<code class="docutils literal notranslate"><span class="pre">MarkovChain</span></code>类可能会对你有帮助。</p></li>
+</ul>
+</section>
+</div>
+<div class="solution dropdown admonition" id="ifp-solution-3">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#ifp_ex2"> Exercise 44.2</a></p>
+<section id="solution-content">
+<p>首先我们编写一个函数来计算长期资产序列。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_asset_series</span><span class="p">(</span><span class="n">ifp</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">500_000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    模拟资产的长度为T的时间序列，基于最优储蓄行为。</span>
+<span class="sd">    </span>
+<span class="sd">    ifp是IFP的一个实例</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">P</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">ifp</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">R</span>  <span class="c1"># 简化名称</span>
+    
+    <span class="c1"># 求解最优策略</span>
+    <span class="n">σ_star</span> <span class="o">=</span> <span class="n">solve_model_time_iter</span><span class="p">(</span><span class="n">ifp</span><span class="p">,</span> <span class="n">σ_init</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">σ</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ifp</span><span class="o">.</span><span class="n">asset_grid</span><span class="p">,</span> <span class="n">σ_star</span><span class="p">[:,</span> <span class="n">z</span><span class="p">])</span>
+    
+    <span class="c1"># 模拟外生状态过程</span>
+    <span class="n">mc</span> <span class="o">=</span> <span class="n">MarkovChain</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+    <span class="n">z_seq</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+    
+    <span class="c1"># 模拟资产路径</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">z_seq</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">a</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">σ</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">z</span><span class="p">))</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="n">z</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">a</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在我们调用函数，生成序列并绘制直方图：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifp</span> <span class="o">=</span> <span class="n">IFP</span><span class="p">()</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">compute_asset_series</span><span class="p">(</span><span class="n">ifp</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;资产&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/3d4a09d5280354d09bd27b9253f4572bb2ddc180a793fc087be31b8124afa272.png" src="_images/3d4a09d5280354d09bd27b9253f4572bb2ddc180a793fc087be31b8124afa272.png" />
+</div>
+</div>
+<p>资产分布的形状不够真实。</p>
+<p>这里呈现为左偏态，而实际上应该具有长右尾。</p>
+<p>在<a class="reference internal" href="ifp_advanced.html"><span class="doc">后续讲座</span></a>中，我们将通过在模型中添加更多真实特征来纠正这一点。</p>
+</section>
+</div>
+<div class="exercise admonition" id="ifp_ex3">
+
+<p class="admonition-title"><span class="caption-number">Exercise 44.3 </span></p>
+<section id="exercise-content">
+<p>在练习1和2的基础上，让我们来看看储蓄和总体资产持有量如何随利率变化</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>可以参考<span id="id28">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span>第18.6节获取本练习所涉及主题的更多背景知识。</p>
+</div>
+<p>对于模型的给定参数化，资产稳态分布的均值可以被解释为一个经济体中的总资本，该经济体中有单位质量的面临特质性冲击的<em>事前</em>相同的家庭。</p>
+<p>你的任务是研究这个总资本衡量指标如何随利率变化。</p>
+<p>按照传统，将价格（即利率）放在纵轴上。</p>
+<p>在横轴上放置总资本，该值通过给定利率下的平稳分布的均值计算得出。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="ifp-solution-5">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#ifp_ex3"> Exercise 44.3</a></p>
+<section id="solution-content">
+<p>这是一个解决方案</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">r_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="n">asset_mean</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">r_vals</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Solving model at r = </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">ifp</span> <span class="o">=</span> <span class="n">IFP</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">compute_asset_series</span><span class="p">(</span><span class="n">ifp</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">250_000</span><span class="p">))</span>
+    <span class="n">asset_mean</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">asset_mean</span><span class="p">,</span> <span class="n">r_vals</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;capital&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;interest rate&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.0
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.0008333333333333334
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.0016666666666666668
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.0025
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.0033333333333333335
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.004166666666666667
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.005
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.005833333333333334
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.006666666666666667
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.007500000000000001
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.008333333333333333
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.009166666666666667
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.01
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.010833333333333334
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.011666666666666667
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.0125
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.013333333333333334
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.014166666666666668
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.015000000000000001
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.015833333333333335
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.016666666666666666
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.0175
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.018333333333333333
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.01916666666666667
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solving model at r = 0.02
+</pre></div>
+</div>
+<img alt="_images/324d69285ce63478771b28a49271ef062140a79b2ac34c71a508daa3f7e7ac78.png" src="_images/324d69285ce63478771b28a49271ef062140a79b2ac34c71a508daa3f7e7ac78.png" />
+</div>
+</div>
+<p>正如预期的那样，总储蓄随着利率的上升而增加。</p>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/ifp.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/ifp.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/ifp.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/ifp.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/ifp.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "ifp";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/ifp.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

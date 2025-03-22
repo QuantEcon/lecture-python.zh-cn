@@ -1,0 +1,2007 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>10. 概率的两种含义 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=bd0785fbb14d8d2bd4d9ae501d79ed8d3bc089ec" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=d9faaf6c4b57726f74ba012412af1f5681bdff87"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'prob_meaning';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/prob_meaning.html" />
+    <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="11. 多元超几何分布" href="multi_hyper.html" />
+    <link rel="prev" title="9. 大数定律 和 中心极限定理" href="lln_clt.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="概率的两种含义"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="概率的两种含义" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/prob_meaning.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=prob_meaning>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">10.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">10.2. 频率主义解释</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">10.3. 贝叶斯解释</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">10.4. 共轭先验的作用</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">概率的两种含义</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><span class="section-number">10. </span>概率的两种含义<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<section id="id2">
+<h2><span class="section-number">10.1. </span>概述<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<p>本讲座说明了<strong>概率分布</strong>的两种不同解释</p>
+<ul class="simple">
+<li><p>频率主义解释：预期在大规模独立同分布样本中出现的<strong>相对频率</strong></p></li>
+<li><p>贝叶斯解释：在观察一系列数据后对参数或参数列表的<strong>个人观点</strong></p></li>
+</ul>
+<p>我们建议观看这个关于频率主义方法中<strong>假设检验</strong>的视频</p>
+<div class="video_wrapper" style="">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/8JIe_cz6qGA" style="border: 0; height: 345px; width: 560px">
+</iframe></div><p>观看完该视频后，请观看以下关于贝叶斯方法构建<strong>覆盖区间</strong>的视频</p>
+<div class="video_wrapper" style="">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/Pahyv9i_X2k" style="border: 0; height: 345px; width: 560px">
+</iframe></div><p>在您熟悉这些视频中的内容后，本讲座将使用苏格拉底方法来帮助巩固您对以下两种方法所回答的不同问题的理解：</p>
+<ul class="simple">
+<li><p>频率主义置信区间</p></li>
+<li><p>贝叶斯覆盖区间</p></li>
+</ul>
+<p>我们通过邀请您编写一些Python代码来实现这一点。</p>
+<p>在继续阅读讲座的其余部分之前，建议您在我们提出的每个问题后尝试编写代码。</p>
+<p>随着讲座的展开，我们会提供我们自己的答案，但如果您在阅读和运行我们的代码之前尝试编写自己的代码，您会学到更多。</p>
+<p><strong>回答问题的代码：</strong></p>
+<p>除了Anaconda中包含的内容外，本讲座还将使用以下库：</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">prettytable</span>
+</pre></div>
+</div>
+</div>
+<details class="hide below-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell output</span>
+<span class="expanded">Hide code cell output</span>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: prettytable in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (3.15.1)
+Requirement already satisfied: wcwidth in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from prettytable) (0.2.5)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Note: you may need to restart the kernel to use updated packages.
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<p>为了回答我们的编程问题，我们先导入一些库</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">prettytable</span> <span class="k">as</span> <span class="nn">pt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">binom</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">st</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>有了这些Python工具，我们现在来探索上述两种含义。</p>
+</section>
+<section id="id3">
+<h2><span class="section-number">10.2. </span>频率主义解释<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>考虑以下经典例子。</p>
+<p>随机变量 <span class="math notranslate nohighlight">\(X\)</span> 可能取值为 <span class="math notranslate nohighlight">\(k = 0, 1, 2, \ldots, n\)</span>，其概率为</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{Prob}(X =  k | \theta) =
+\left(\frac{n!}{k! (n-k)!} \right) \theta^k (1-\theta)^{n-k}
+\]</div>
+<p>其中固定参数 <span class="math notranslate nohighlight">\(\theta \in (0,1)\)</span>。</p>
+<p>这被称为__二项分布__。</p>
+<p>这里</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\theta\)</span> 是一次硬币投掷出现正面的概率，我们将这个结果编码为 <span class="math notranslate nohighlight">\(Y = 1\)</span>。</p></li>
+<li><p><span class="math notranslate nohighlight">\(1 -\theta\)</span> 是一次硬币投掷出现反面的概率，我们将这个结果表示为 <span class="math notranslate nohighlight">\(Y = 0\)</span>。</p></li>
+<li><p><span class="math notranslate nohighlight">\(X\)</span> 是投掷硬币 <span class="math notranslate nohighlight">\(n\)</span> 次后出现正面的总次数。</p></li>
+</ul>
+<p>考虑以下实验：</p>
+<p>进行 <span class="math notranslate nohighlight">\(I\)</span> 次<strong>独立</strong>的硬币投掷序列，每次序列包含 <span class="math notranslate nohighlight">\(n\)</span> 次<strong>独立</strong>的投掷</p>
+<p>注意这里重复使用了<strong>独立</strong>这个形容词：</p>
+<ul class="simple">
+<li><p>我们用它来描述从参数为 <span class="math notranslate nohighlight">\(\theta\)</span> 的<strong>伯努利</strong>分布中进行 <span class="math notranslate nohighlight">\(n\)</span> 次独立抽样，从而得到一个参数为 <span class="math notranslate nohighlight">\(\theta,n\)</span> 的<strong>二项</strong>分布的一次抽样。</p></li>
+<li><p>我们再次使用它来描述我们进行 <span class="math notranslate nohighlight">\(I\)</span> 次这样的 <span class="math notranslate nohighlight">\(n\)</span> 次投币序列。</p></li>
+</ul>
+<p>令 <span class="math notranslate nohighlight">\(y_h^i \in \{0, 1\}\)</span> 表示第 <span class="math notranslate nohighlight">\(i\)</span> 次序列中第 <span class="math notranslate nohighlight">\(h\)</span> 次投掷的 <span class="math notranslate nohighlight">\(Y\)</span> 的实际值。</p>
+<p>令 <span class="math notranslate nohighlight">\(\sum_{h=1}^n y_h^i\)</span> 表示第 <span class="math notranslate nohighlight">\(i\)</span> 次 <span class="math notranslate nohighlight">\(n\)</span> 次独立投币序列中出现正面的总次数。</p>
+<p>令 <span class="math notranslate nohighlight">\(f_k\)</span> 记录长度为 <span class="math notranslate nohighlight">\(n\)</span> 的样本中满足 <span class="math notranslate nohighlight">\(\sum_{h=1}^n y_h^i = k\)</span> 的比例:</p>
+<div class="math notranslate nohighlight">
+\[
+f_k^I = \frac{\textrm{满足} \sum_{h=1}^n y_h^i = k \textrm{的长度为n的样本数}}{
+    I}
+\]</div>
+<p>概率 <span class="math notranslate nohighlight">\(\textrm{Prob}(X = k | \theta)\)</span> 回答了以下问题:</p>
+<ul class="simple">
+<li><p>当 <span class="math notranslate nohighlight">\(I\)</span> 变大时,在 <span class="math notranslate nohighlight">\(I\)</span> 次独立的 <span class="math notranslate nohighlight">\(n\)</span> 次硬币投掷中,我们应该预期有多大比例会出现 <span class="math notranslate nohighlight">\(k\)</span> 次正面?</p></li>
+</ul>
+<p>像往常一样,大数定律证明了这个答案。</p>
+<div class="exercise admonition" id="pm_ex1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 10.1 </span></p>
+<section id="exercise-content">
+<ol class="arabic simple">
+<li><p>请编写一个Python类来计算 <span class="math notranslate nohighlight">\(f_k^I\)</span></p></li>
+<li><p>请使用你的代码计算 <span class="math notranslate nohighlight">\(f_k^I, k = 0, \ldots , n\)</span> 并将其与不同 <span class="math notranslate nohighlight">\(\theta, n\)</span> 和 <span class="math notranslate nohighlight">\(I\)</span> 值下的
+<span class="math notranslate nohighlight">\(\textrm{Prob}(X = k | \theta)\)</span> 进行比较</p></li>
+<li><p>结合大数定律,用你的代码说明一些现象</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="prob_meaning-solution-1">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#pm_ex1"> Exercise 10.1</a></p>
+<section id="solution-content">
+<p>这是一个解决方案:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">frequentist</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">θ</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">I</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        初始化</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        参数:</span>
+<span class="sd">        θ : 一次硬币投掷出现正面(Y = 1)的概率</span>
+<span class="sd">        n : 每个独立序列中的独立投掷次数</span>
+<span class="sd">        I : 独立序列的数量</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">θ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">I</span> <span class="o">=</span> <span class="n">θ</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">I</span>
+
+    <span class="k">def</span> <span class="nf">binomial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;计算特定输入k的理论概率&#39;&#39;&#39;</span>
+
+        <span class="n">θ</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">θ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="n">binom</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">θ</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;为I个独立序列进行n次独立投掷&#39;&#39;&#39;</span>
+
+        <span class="n">θ</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">θ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">I</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">sample</span> <span class="o">&lt;=</span> <span class="n">θ</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span>
+
+    <span class="k">def</span> <span class="nf">compute_fk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kk</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;计算特定输入k的f_{k}^I&#39;&#39;&#39;</span>
+
+        <span class="n">Y</span><span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">I</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">f_kI</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">K</span> <span class="o">==</span> <span class="n">kk</span><span class="p">)</span> <span class="o">/</span> <span class="n">I</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_kI</span> <span class="o">=</span> <span class="n">f_kI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kk</span> <span class="o">=</span> <span class="n">kk</span>
+
+    <span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;计算并打印比较结果&#39;&#39;&#39;</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span>
+        <span class="n">comp</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">PrettyTable</span><span class="p">()</span>
+        <span class="n">comp</span><span class="o">.</span><span class="n">field_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;理论值&#39;</span><span class="p">,</span> <span class="s1">&#39;频率值&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_fk</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">comp</span><span class="o">.</span><span class="n">add_row</span><span class="p">([</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_kI</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">θ</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1_000_000</span>
+
+<span class="n">freq</span> <span class="o">=</span> <span class="n">frequentist</span><span class="p">(</span><span class="n">θ</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">I</span><span class="p">)</span>
+
+<span class="n">freq</span><span class="o">.</span><span class="n">compare</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>+----+------------------------+----------+
+| k  |         理论值         |  频率值  |
++----+------------------------+----------+
+| 1  | 1.6271660538000033e-09 |   0.0    |
+| 2  | 3.606884752589999e-08  |   0.0    |
+| 3  |  5.04963865362601e-07  |  1e-06   |
+| 4  | 5.007558331512455e-06  |  3e-06   |
+| 5  | 3.7389768875293014e-05 | 4.6e-05  |
+| 6  | 0.00021810698510587546 | 0.000194 |
+| 7  |  0.001017832597160754  | 0.00101  |
+| 8  |  0.003859281930901185  | 0.00394  |
+| 9  |  0.012006654896137007  | 0.012252 |
+| 10 |  0.030817080900085007  | 0.030874 |
+| 11 |  0.06536956554563476   | 0.065412 |
+| 12 |  0.11439673970486108   | 0.11479  |
+| 13 |   0.1642619852172365   | 0.164104 |
+| 14 |  0.19163898275344252   | 0.191443 |
+| 15 |  0.17886305056987967   | 0.178595 |
+| 16 |   0.1304209743738704   | 0.130174 |
+| 17 |  0.07160367220526209   | 0.071648 |
+| 18 |  0.027845872524268643  | 0.027948 |
+| 19 |  0.006839337111223895  | 0.006771 |
+| 20 | 0.0007979226629761189  | 0.000795 |
++----+------------------------+----------+
+</pre></div>
+</div>
+</div>
+</div>
+<p>从上表中，你能看出大数定律在起作用吗？</p>
+</section>
+</div>
+<p>让我们进行更多计算。</p>
+<p><strong>不同<span class="math notranslate nohighlight">\(\theta\)</span>值的比较</strong></p>
+<p>现在我们固定</p>
+<div class="math notranslate nohighlight">
+\[
+n=20, k=10, I=1,000,000
+\]</div>
+<p>我们将<span class="math notranslate nohighlight">\(\theta\)</span>从<span class="math notranslate nohighlight">\(0.01\)</span>变化到<span class="math notranslate nohighlight">\(0.99\)</span>，并绘制结果与<span class="math notranslate nohighlight">\(\theta\)</span>的关系图。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">θ_low</span><span class="p">,</span> <span class="n">θ_high</span><span class="p">,</span> <span class="n">npt</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mi">50</span>
+<span class="n">thetas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">θ_low</span><span class="p">,</span> <span class="n">θ_high</span><span class="p">,</span> <span class="n">npt</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">f_kI</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npt</span><span class="p">):</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">frequentist</span><span class="p">(</span><span class="n">thetas</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">n</span><span class="p">,</span> <span class="n">I</span><span class="p">)</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">compute_fk</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
+    <span class="n">f_kI</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">f_kI</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thetas</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;理论值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thetas</span><span class="p">,</span> <span class="n">f_kI</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;分数&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;不同$\theta$值的比较&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\theta$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;分数&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20998 (\N{CJK UNIFIED IDEOGRAPH-5206}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 25968 (\N{CJK UNIFIED IDEOGRAPH-6570}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+Font &#39;default&#39; does not have a glyph for &#39;\u4e0d&#39; [U+4e0d], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u540c&#39; [U+540c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u503c&#39; [U+503c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u7684&#39; [U+7684], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u6bd4&#39; [U+6bd4], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u8f83&#39; [U+8f83], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 29702 (\N{CJK UNIFIED IDEOGRAPH-7406}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 35770 (\N{CJK UNIFIED IDEOGRAPH-8BBA}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20540 (\N{CJK UNIFIED IDEOGRAPH-503C}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+Font &#39;default&#39; does not have a glyph for &#39;\u4e0d&#39; [U+4e0d], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u540c&#39; [U+540c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u503c&#39; [U+503c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u7684&#39; [U+7684], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u6bd4&#39; [U+6bd4], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u8f83&#39; [U+8f83], substituting with a dummy symbol.
+</pre></div>
+</div>
+<img alt="_images/0c278ad416a687861251a697bb21fa108bdb7014b8067c363f0fdccfbf50ac09.png" src="_images/0c278ad416a687861251a697bb21fa108bdb7014b8067c363f0fdccfbf50ac09.png" />
+</div>
+</div>
+<p><strong>不同 <span class="math notranslate nohighlight">\(n\)</span> 值的比较</strong></p>
+<p>现在我们固定 <span class="math notranslate nohighlight">\(\theta=0.7, k=10, I=1,000,000\)</span> 并将 <span class="math notranslate nohighlight">\(n\)</span> 从 <span class="math notranslate nohighlight">\(1\)</span> 变化到 <span class="math notranslate nohighlight">\(100\)</span>。</p>
+<p>然后我们将绘制结果。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_low</span><span class="p">,</span> <span class="n">n_high</span><span class="p">,</span> <span class="n">nn</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span>
+<span class="n">ns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">n_low</span><span class="p">,</span> <span class="n">n_high</span><span class="p">,</span> <span class="n">nn</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">f_kI</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nn</span><span class="p">):</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">frequentist</span><span class="p">(</span><span class="n">θ</span><span class="p">,</span> <span class="n">ns</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">I</span><span class="p">)</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">compute_fk</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
+    <span class="n">f_kI</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">f_kI</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;理论值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">f_kI</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;频率派&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;不同$n$值的比较&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$n$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;比例&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 27604 (\N{CJK UNIFIED IDEOGRAPH-6BD4}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20363 (\N{CJK UNIFIED IDEOGRAPH-4F8B}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+Font &#39;default&#39; does not have a glyph for &#39;\u4e0d&#39; [U+4e0d], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u540c&#39; [U+540c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u503c&#39; [U+503c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u7684&#39; [U+7684], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u6bd4&#39; [U+6bd4], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u8f83&#39; [U+8f83], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 39057 (\N{CJK UNIFIED IDEOGRAPH-9891}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 29575 (\N{CJK UNIFIED IDEOGRAPH-7387}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 27966 (\N{CJK UNIFIED IDEOGRAPH-6D3E}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+Font &#39;default&#39; does not have a glyph for &#39;\u4e0d&#39; [U+4e0d], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u540c&#39; [U+540c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u503c&#39; [U+503c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u7684&#39; [U+7684], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u6bd4&#39; [U+6bd4], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u8f83&#39; [U+8f83], substituting with a dummy symbol.
+</pre></div>
+</div>
+<img alt="_images/d0ab17892ad501e5b59e8cb5fb63a88aede5de8dc463ed01cced093ec2daa01c.png" src="_images/d0ab17892ad501e5b59e8cb5fb63a88aede5de8dc463ed01cced093ec2daa01c.png" />
+</div>
+</div>
+<p><strong>不同 <span class="math notranslate nohighlight">\(I\)</span> 值的比较</strong></p>
+<p>现在我们固定 <span class="math notranslate nohighlight">\(\theta=0.7, n=20, k=10\)</span>，并将 <span class="math notranslate nohighlight">\(\log(I)\)</span> 从 <span class="math notranslate nohighlight">\(2\)</span> 变化到 <span class="math notranslate nohighlight">\(7\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">I_log_low</span><span class="p">,</span> <span class="n">I_log_high</span><span class="p">,</span> <span class="n">nI</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">200</span>
+<span class="n">log_Is</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">I_log_low</span><span class="p">,</span> <span class="n">I_log_high</span><span class="p">,</span> <span class="n">nI</span><span class="p">)</span>
+<span class="n">Is</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">log_Is</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">f_kI</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nI</span><span class="p">):</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">frequentist</span><span class="p">(</span><span class="n">θ</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">Is</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">compute_fk</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
+    <span class="n">f_kI</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">f_kI</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Is</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;理论值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Is</span><span class="p">,</span> <span class="n">f_kI</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;分数&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;不同 $I$ 值的比较&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$I$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;分数&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u4e0d&#39; [U+4e0d], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u540c&#39; [U+540c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u503c&#39; [U+503c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u7684&#39; [U+7684], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u6bd4&#39; [U+6bd4], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u8f83&#39; [U+8f83], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u4e0d&#39; [U+4e0d], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u540c&#39; [U+540c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u503c&#39; [U+503c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u7684&#39; [U+7684], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u6bd4&#39; [U+6bd4], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u8f83&#39; [U+8f83], substituting with a dummy symbol.
+</pre></div>
+</div>
+<img alt="_images/5fabc4f55a90833a94d9d69f95060d81766832b1fa749a639314e872d56e74a8.png" src="_images/5fabc4f55a90833a94d9d69f95060d81766832b1fa749a639314e872d56e74a8.png" />
+</div>
+</div>
+<p>从上面的图表中，我们可以看到**<span class="math notranslate nohighlight">\(I\)</span>，即独立序列的数量，**起着重要作用。</p>
+<p>当<span class="math notranslate nohighlight">\(I\)</span>变大时，理论概率和频率估计之间的差异变小。</p>
+<p>而且，只要<span class="math notranslate nohighlight">\(I\)</span>足够大，改变<span class="math notranslate nohighlight">\(\theta\)</span>或<span class="math notranslate nohighlight">\(n\)</span>都不会实质性地改变观察到的分数作为<span class="math notranslate nohighlight">\(\theta\)</span>的近似值的准确性。</p>
+<p>这里体现了大数定律。</p>
+<p>对于每个独立序列的抽取，<span class="math notranslate nohighlight">\(\textrm{Prob}(X_i =  k | \theta)\)</span>都是相同的，所以所有抽取的聚合形成了一个二元随机变量<span class="math notranslate nohighlight">\(\rho_{k,i},i=1,2,...I\)</span>的独立同分布序列，其均值为<span class="math notranslate nohighlight">\(\textrm{Prob}(X =  k | \theta)\)</span>，方差为</p>
+<div class="math notranslate nohighlight">
+\[
+n \cdot \textrm{Prob}(X =  k | \theta) \cdot (1-\textrm{Prob}(X =  k | \theta)).
+\]</div>
+<p>因此，根据大数定律，<span class="math notranslate nohighlight">\(P_{k,i}\)</span>的平均值收敛于：</p>
+<div class="math notranslate nohighlight">
+\[
+E[\rho_{k,i}] = \textrm{Prob}(X =  k | \theta) = \left(\frac{n!}{k! (n-k)!} \right) \theta^k (1-\theta)^{n-k}
+\]</div>
+<p>当<span class="math notranslate nohighlight">\(I\)</span>趋向于无穷时。</p>
+</section>
+<section id="id4">
+<h2><span class="section-number">10.3. </span>贝叶斯解释<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<p>我们再次使用二项分布。</p>
+<p>但现在我们不把<span class="math notranslate nohighlight">\(\theta\)</span>看作是一个固定的数。</p>
+<p>相反，我们把它看作是一个<strong>随机变量</strong>。</p>
+<p><span class="math notranslate nohighlight">\(\theta\)</span>由一个概率分布来描述。</p>
+<p>但现在这个概率分布的含义与我们在大规模独立同分布样本中能预期出现的相对频率不同。</p>
+<p>相反，<span class="math notranslate nohighlight">\(\theta\)</span>的概率分布现在是我们对<span class="math notranslate nohighlight">\(\theta\)</span>可能值的看法的总结，这些看法要么是</p>
+<ul class="simple">
+<li><p>在我们<strong>完全没有看到</strong>任何数据之前，或者</p></li>
+<li><p>在我们已经看到<strong>一些</strong>数据之后，但在看到<strong>更多</strong>数据之前</p></li>
+</ul>
+<p>因此，假设在看到任何数据之前，你有一个个人先验概率分布，表示为</p>
+<div class="math notranslate nohighlight">
+\[
+P(\theta) = \frac{\theta^{\alpha-1}(1-\theta)^{\beta -1}}{B(\alpha, \beta)}
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(B(\alpha, \beta)\)</span>是一个<strong>贝塔函数</strong>，所以<span class="math notranslate nohighlight">\(P(\theta)\)</span>是一个带参数<span class="math notranslate nohighlight">\(\alpha, \beta\)</span>的<strong>贝塔分布</strong>。</p>
+<div class="exercise admonition" id="pm_ex2">
+
+<p class="admonition-title"><span class="caption-number">Exercise 10.2 </span></p>
+<section id="exercise-content">
+<p><strong>a)</strong> 请写出从参数为<span class="math notranslate nohighlight">\(\theta\)</span>的二项分布中抽取长度为<span class="math notranslate nohighlight">\(n\)</span>的样本的<strong>似然函数</strong>。</p>
+<p><strong>b)</strong> 请写出观察到一次硬币翻转后<span class="math notranslate nohighlight">\(\theta\)</span>的<strong>后验</strong>分布。</p>
+<p><strong>c)</strong> 现在假设<span class="math notranslate nohighlight">\(\theta\)</span>的真实值为<span class="math notranslate nohighlight">\(.4\)</span>，而某个不知道这一点的人有一个参数为<span class="math notranslate nohighlight">\(\beta = \alpha = .5\)</span>的贝塔先验分布。请编写一个Python类来模拟这个人对于一个长度为<span class="math notranslate nohighlight">\(n\)</span>的_单个_序列的<span class="math notranslate nohighlight">\(\theta\)</span>的个人后验分布。</p>
+<p><strong>d)</strong> 请绘制当<span class="math notranslate nohighlight">\(n\)</span>增长为<span class="math notranslate nohighlight">\(1, 2, \ldots\)</span>时，<span class="math notranslate nohighlight">\(\theta\)</span>的后验分布关于<span class="math notranslate nohighlight">\(\theta\)</span>的函数图。</p>
+<p><strong>e)</strong> 对于不同的<span class="math notranslate nohighlight">\(n\)</span>值，请描述并计算区间<span class="math notranslate nohighlight">\([.45, .55]\)</span>的贝叶斯覆盖区间。</p>
+<p><strong>f)</strong> 请说明贝叶斯覆盖区间回答了什么问题。</p>
+<p><strong>g)</strong> 请计算对于不同的样本大小<span class="math notranslate nohighlight">\(n\)</span>，后验概率<span class="math notranslate nohighlight">\(P(\theta \in [.45, .55])\)</span>的值。</p>
+<p><strong>h)</strong> 请使用您的Python类来研究当 <span class="math notranslate nohighlight">\(n \rightarrow + \infty\)</span> 时后验分布会发生什么变化，同样假设 <span class="math notranslate nohighlight">\(\theta\)</span> 的真实值为 <span class="math notranslate nohighlight">\(.4\)</span>，尽管对于通过贝叶斯定律进行更新的人来说这是未知的。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="prob_meaning-solution-3">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#pm_ex2"> Exercise 10.2</a></p>
+<section id="solution-content">
+<p><strong>a)</strong> 请写出观察到一次硬币翻转后 <span class="math notranslate nohighlight">\(\theta\)</span> 的<strong>似然函数</strong>和<strong>后验</strong>分布。</p>
+<p>假设结果为 <strong>Y</strong>。</p>
+<p>似然函数为：</p>
+<div class="math notranslate nohighlight">
+\[
+L(Y|\theta)= \textrm{Prob}(X =  Y | \theta) =
+\theta^Y (1-\theta)^{1-Y}
+\]</div>
+<p><strong>b)</strong> 请写出观察到一次硬币翻转后 <span class="math notranslate nohighlight">\(\theta\)</span> 的<strong>后验</strong>分布。</p>
+<p>先验分布为：</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{Prob}(\theta) = \frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)}
+\]</div>
+<p>我们可以通过以下方式推导 <span class="math notranslate nohighlight">\(\theta\)</span> 的后验分布：</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+  \textrm{Prob}(\theta | Y) &amp;= \frac{\textrm{Prob}(Y | \theta) \textrm{Prob}(\theta)}{\textrm{Prob}(Y)} \\
+  &amp;=\frac{\textrm{Prob}(Y | \theta) \textrm{Prob}(\theta)}{\int_{0}^{1} \textrm{Prob}(Y | \theta) \textrm{Prob}(\theta) d \theta }\\
+  &amp;= \frac{\theta^Y (1-\theta)^{1-Y}\frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)}}{\int_{0}^{1}\theta^Y (1-\theta)^{1-Y}\frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)} d \theta } \\
+  &amp;= \frac{ \theta^{Y+\alpha - 1} (1 - \theta)^{1-Y+\beta - 1}}{\int_{0}^{1}\theta^{Y+\alpha - 1} (1 - \theta)^{1-Y+\beta - 1} d \theta}
+\end{align*}\]</div>
+<p>这意味着</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{Prob}(\theta | Y) \sim \textrm{Beta}(\alpha + Y, \beta + (1-Y))
+\]</div>
+<p>现在假设 <span class="math notranslate nohighlight">\(\theta\)</span> 的真实值为 <span class="math notranslate nohighlight">\(.4\)</span>，并且有一个不知道这一点的人，他有一个 <span class="math notranslate nohighlight">\(\beta = \alpha = .5\)</span> 的beta先验分布。</p>
+<p><strong>c)</strong> 现在假设 <span class="math notranslate nohighlight">\(\theta\)</span> 的真实值为 <span class="math notranslate nohighlight">\(.4\)</span>，并且有一个不知道这一点的人，他有一个参数为 <span class="math notranslate nohighlight">\(\beta = \alpha = .5\)</span> 的beta先验分布。请编写一个Python类来模拟这个人对于_单个_长度为 <span class="math notranslate nohighlight">\(n\)</span> 的序列的 <span class="math notranslate nohighlight">\(\theta\)</span> 的个人后验分布。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Bayesian</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">θ</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">,</span> <span class="n">α</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">β</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        参数:</span>
+<span class="sd">        ----------</span>
+<span class="sd">        θ : float, 范围在 [0,1] 之间。</span>
+<span class="sd">           一次硬币投掷得到正面（Y = 1）的概率</span>
+
+<span class="sd">        n : int.</span>
+<span class="sd">           独立序列中独立投掷的次数</span>
+
+<span class="sd">        α&amp;β : int 或 float.</span>
+<span class="sd">             θ 的先验分布的参数</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">θ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">α</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span> <span class="o">=</span> <span class="n">θ</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">β</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prior</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="n">β</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        模拟一个长度为 n 的单个序列，给定概率 θ</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draws</span> <span class="o">=</span> <span class="p">(</span><span class="n">array</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">θ</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">form_single_posterior</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_num</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        在观察到序列的前 step_num 个元素后形成后验分布</span>
+
+<span class="sd">        参数</span>
+<span class="sd">        ----------</span>
+<span class="sd">        step_num: int.</span>
+<span class="sd">               用于形成后验分布的观察步数</span>
+
+<span class="sd">        返回</span>
+<span class="sd">        ------</span>
+<span class="sd">        后验分布，用于后续步骤的绘图</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">heads_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">draws</span><span class="p">[:</span><span class="n">step_num</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">tails_num</span> <span class="o">=</span> <span class="n">step_num</span> <span class="o">-</span> <span class="n">heads_num</span>
+
+        <span class="k">return</span> <span class="n">st</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">α</span><span class="o">+</span><span class="n">heads_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="o">+</span><span class="n">tails_num</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">form_posterior_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">num_obs_list</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        形成一系列后验分布，这些分布是在观察不同数量的抽样后形成的。</span>
+
+<span class="sd">        参数</span>
+<span class="sd">        ----------</span>
+<span class="sd">        num_obs_list: int 列表。</span>
+<span class="sd">               用于形成一系列后验分布的观察数量列表。</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">posterior_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">num_obs_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">posterior_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form_single_posterior</span><span class="p">(</span><span class="n">num</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>d)</strong> 请绘制<span class="math notranslate nohighlight">\(\theta\)</span>的后验分布随着<span class="math notranslate nohighlight">\(n\)</span>从<span class="math notranslate nohighlight">\(1, 2, \ldots\)</span>增长时的函数图。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Bay_stat</span> <span class="o">=</span> <span class="n">Bayesian</span><span class="p">()</span>
+<span class="n">Bay_stat</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+<span class="n">num_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="c1"># 此行用于有限n</span>
+            <span class="mi">5000</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">,</span> <span class="mi">50_000</span><span class="p">,</span> <span class="mi">100_000</span><span class="p">,</span> <span class="mi">200_000</span><span class="p">,</span> <span class="mi">300_000</span><span class="p">]</span>  <span class="c1"># 此行用于近似无穷n</span>
+
+<span class="n">Bay_stat</span><span class="o">.</span><span class="n">form_posterior_series</span><span class="p">(</span><span class="n">num_list</span><span class="p">)</span>
+
+<span class="n">θ_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">θ_values</span><span class="p">,</span> <span class="n">Bay_stat</span><span class="o">.</span><span class="n">prior</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">θ_values</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;先验分布&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">num_list</span><span class="p">[:</span><span class="mi">14</span><span class="p">]):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">θ_values</span><span class="p">,</span> <span class="n">Bay_stat</span><span class="o">.</span><span class="n">posterior_list</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">θ_values</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;n = </span><span class="si">%d</span><span class="s1"> 时的后验分布&#39;</span> <span class="o">%</span> <span class="n">num</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;后验分布的概率密度函数&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\theta$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 21518 (\N{CJK UNIFIED IDEOGRAPH-540E}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 39564 (\N{CJK UNIFIED IDEOGRAPH-9A8C}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 24067 (\N{CJK UNIFIED IDEOGRAPH-5E03}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 30340 (\N{CJK UNIFIED IDEOGRAPH-7684}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 27010 (\N{CJK UNIFIED IDEOGRAPH-6982}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 23494 (\N{CJK UNIFIED IDEOGRAPH-5BC6}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20989 (\N{CJK UNIFIED IDEOGRAPH-51FD}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20808 (\N{CJK UNIFIED IDEOGRAPH-5148}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 26102 (\N{CJK UNIFIED IDEOGRAPH-65F6}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+</pre></div>
+</div>
+<img alt="_images/e4d0038c659fd61b92e85ec583451415b500985783bb2d500fc2392c1e78f044.png" src="_images/e4d0038c659fd61b92e85ec583451415b500985783bb2d500fc2392c1e78f044.png" />
+</div>
+</div>
+<p><strong>e)</strong> 对于不同的 <span class="math notranslate nohighlight">\(n\)</span> 值，请描述并计算后验概率的 <span class="math notranslate nohighlight">\(.05\)</span> 和 <span class="math notranslate nohighlight">\(.95\)</span> 分位数。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">upper_bound</span> <span class="o">=</span> <span class="p">[</span><span class="n">ii</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">Bay_stat</span><span class="o">.</span><span class="n">posterior_list</span><span class="p">[:</span><span class="mi">14</span><span class="p">]]</span>
+<span class="n">lower_bound</span> <span class="o">=</span> <span class="p">[</span><span class="n">ii</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.95</span><span class="p">)</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">Bay_stat</span><span class="o">.</span><span class="n">posterior_list</span><span class="p">[:</span><span class="mi">14</span><span class="p">]]</span>
+
+<span class="n">interval_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="n">interval_df</span><span class="p">[</span><span class="s1">&#39;upper&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">upper_bound</span>
+<span class="n">interval_df</span><span class="p">[</span><span class="s1">&#39;lower&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lower_bound</span>
+<span class="n">interval_df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">num_list</span><span class="p">[:</span><span class="mi">14</span><span class="p">]</span>
+<span class="n">interval_df</span> <span class="o">=</span> <span class="n">interval_df</span><span class="o">.</span><span class="n">T</span>
+<span class="n">interval_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>10</th>
+      <th>20</th>
+      <th>30</th>
+      <th>50</th>
+      <th>70</th>
+      <th>100</th>
+      <th>300</th>
+      <th>500</th>
+      <th>1000</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>upper</th>
+      <td>0.001543</td>
+      <td>0.097308</td>
+      <td>0.062413</td>
+      <td>0.046007</td>
+      <td>0.036447</td>
+      <td>0.017892</td>
+      <td>0.121508</td>
+      <td>0.127460</td>
+      <td>0.220799</td>
+      <td>0.268394</td>
+      <td>0.303401</td>
+      <td>0.334893</td>
+      <td>0.362493</td>
+      <td>0.382656</td>
+    </tr>
+    <tr>
+      <th>lower</th>
+      <td>0.771480</td>
+      <td>0.902692</td>
+      <td>0.764466</td>
+      <td>0.650707</td>
+      <td>0.562845</td>
+      <td>0.330563</td>
+      <td>0.428620</td>
+      <td>0.375605</td>
+      <td>0.434206</td>
+      <td>0.454460</td>
+      <td>0.461664</td>
+      <td>0.426809</td>
+      <td>0.434377</td>
+      <td>0.433737</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>随着<span class="math notranslate nohighlight">\(n\)</span>的增加，我们可以看到贝叶斯覆盖区间变窄并趋向于<span class="math notranslate nohighlight">\(0.4\)</span>。</p>
+<p><strong>f)</strong> 请说明贝叶斯覆盖区间回答了什么问题。</p>
+<p>贝叶斯覆盖区间表示后验分布的累积概率分布(CDF)中[<span class="math notranslate nohighlight">\(p_1\)</span>, <span class="math notranslate nohighlight">\(p_2\)</span>]分位数对应的<span class="math notranslate nohighlight">\(\theta\)</span>的范围。</p>
+<p>要构建覆盖区间，我们首先计算未知参数<span class="math notranslate nohighlight">\(\theta\)</span>的后验分布。</p>
+<p>如果CDF为<span class="math notranslate nohighlight">\(F(\theta)\)</span>，那么区间<span class="math notranslate nohighlight">\([p_1,p_2]\)</span>的贝叶斯覆盖区间<span class="math notranslate nohighlight">\([a,b]\)</span>由以下等式描述：</p>
+<div class="math notranslate nohighlight">
+\[
+F(a)=p_1,F(b)=p_2
+\]</div>
+<p><strong>g)</strong> 请计算不同样本量<span class="math notranslate nohighlight">\(n\)</span>下<span class="math notranslate nohighlight">\(\theta \in [.45, .55]\)</span>的后验概率。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_value</span> <span class="o">=</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.55</span>
+
+<span class="n">posterior_prob_list</span><span class="o">=</span><span class="p">[</span><span class="n">ii</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">right_value</span><span class="p">)</span><span class="o">-</span><span class="n">ii</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">left_value</span><span class="p">)</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">Bay_stat</span><span class="o">.</span><span class="n">posterior_list</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">posterior_prob_list</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;后验概率：&#39;</span><span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;$\theta$&quot;</span> <span class="o">+</span><span class="s1">&#39;的范围从</span><span class="si">%.2f</span><span class="s1">到</span><span class="si">%.2f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_value</span><span class="p">),</span>
+             <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">posterior_prob_list</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">num_list</span><span class="p">[::</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观测数量&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u540e&#39; [U+540e], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u9a8c&#39; [U+9a8c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u6982&#39; [U+6982], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u7387&#39; [U+7387], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\uff1a&#39; [U+ff1a], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u7684&#39; [U+7684], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u8303&#39; [U+8303], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u56f4&#39; [U+56f4], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u4ece&#39; [U+4ece], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u5230&#39; [U+5230], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 35266 (\N{CJK UNIFIED IDEOGRAPH-89C2}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 27979 (\N{CJK UNIFIED IDEOGRAPH-6D4B}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 25968 (\N{CJK UNIFIED IDEOGRAPH-6570}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+Font &#39;default&#39; does not have a glyph for &#39;\u540e&#39; [U+540e], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u9a8c&#39; [U+9a8c], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u6982&#39; [U+6982], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u7387&#39; [U+7387], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\uff1a&#39; [U+ff1a], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u7684&#39; [U+7684], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u8303&#39; [U+8303], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u56f4&#39; [U+56f4], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u4ece&#39; [U+4ece], substituting with a dummy symbol.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Font &#39;default&#39; does not have a glyph for &#39;\u5230&#39; [U+5230], substituting with a dummy symbol.
+</pre></div>
+</div>
+<img alt="_images/787f0b78fc7344fa8b126400c61ae5f00f9a94c11a7f6f54eb5e731ba795801f.png" src="_images/787f0b78fc7344fa8b126400c61ae5f00f9a94c11a7f6f54eb5e731ba795801f.png" />
+</div>
+</div>
+<p>注意在上图中，当 <span class="math notranslate nohighlight">\(n\)</span> 增加时，<span class="math notranslate nohighlight">\(\theta \in [.45, .55]\)</span> 的后验概率通常呈现出驼峰形状。</p>
+<p>这里有两种相互对立的力量在起作用。</p>
+<p>第一种力量是，个体在观察到新的结果时会调整他的信念，使他的后验概率分布变得越来越符合实际，这解释了后验概率的上升。</p>
+<p>然而，<span class="math notranslate nohighlight">\([.45, .55]\)</span> 实际上排除了生成数据的真实 <span class="math notranslate nohighlight">\(\theta =.4\)</span>。</p>
+<p>因此，随着更大的样本量使他的 <span class="math notranslate nohighlight">\(\theta\)</span> 后验概率分布变得更加精确，后验概率开始下降。</p>
+<p>下降看起来如此陡峭，仅仅是因为图表的尺度使得观测数量增加不成比例。</p>
+<p>当观测数量变得足够大时，我们的贝叶斯学习者对 <span class="math notranslate nohighlight">\(\theta\)</span> 变得如此确信，以至于他认为 <span class="math notranslate nohighlight">\(\theta \in [.45, .55]\)</span> 的可能性非常小。</p>
+<p>这就是为什么当观测数量超过500时，我们看到一条几乎水平的线。</p>
+<p><strong>h)</strong> 请使用你的Python类来研究当 <span class="math notranslate nohighlight">\(n \rightarrow + \infty\)</span> 时后验分布会发生什么，同样假设 <span class="math notranslate nohighlight">\(\theta = .4\)</span> 是真实值，尽管对于通过贝叶斯法则进行更新的人来说这是未知的。</p>
+<p>使用我们上面创建的Python类，我们可以看到后验分布随着 <span class="math notranslate nohighlight">\(n\)</span> 趋向于无穷大时的演变。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">num_list</span><span class="p">[</span><span class="mi">14</span><span class="p">:]):</span>
+    <span class="n">ii</span> <span class="o">+=</span> <span class="mi">14</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">θ_values</span><span class="p">,</span> <span class="n">Bay_stat</span><span class="o">.</span><span class="n">posterior_list</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">θ_values</span><span class="p">),</span>
+            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Posterior with n=</span><span class="si">%d</span><span class="s1"> thousand&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="o">/</span><span class="mi">1000</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;P.D.F of Posterior Distributions&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\theta$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/f864af0c9a4a116096f53d5e416db298963de594c9604c5dab64d371a5744e70.png" src="_images/f864af0c9a4a116096f53d5e416db298963de594c9604c5dab64d371a5744e70.png" />
+</div>
+</div>
+<p>随着 <span class="math notranslate nohighlight">\(n\)</span> 的增加，我们可以看到概率密度函数在 <span class="math notranslate nohighlight">\(0.4\)</span>（即 <span class="math notranslate nohighlight">\(\theta\)</span> 的真实值）处_集中_。</p>
+<p>这里后验均值收敛于 <span class="math notranslate nohighlight">\(0.4\)</span>，而后验标准差从上方收敛于 <span class="math notranslate nohighlight">\(0\)</span>。</p>
+<p>为了展示这一点，我们计算后验分布的均值和方差统计量。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mean_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ii</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">Bay_stat</span><span class="o">.</span><span class="n">posterior_list</span><span class="p">]</span>
+<span class="n">std_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ii</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">Bay_stat</span><span class="o">.</span><span class="n">posterior_list</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_list</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;后验分布的均值&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">mean_list</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">num_list</span><span class="p">[::</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观测数量&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">std_list</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;后验分布的标准差&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">std_list</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">num_list</span><span class="p">[::</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观测数量&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 21518 (\N{CJK UNIFIED IDEOGRAPH-540E}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 39564 (\N{CJK UNIFIED IDEOGRAPH-9A8C}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20998 (\N{CJK UNIFIED IDEOGRAPH-5206}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 24067 (\N{CJK UNIFIED IDEOGRAPH-5E03}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 30340 (\N{CJK UNIFIED IDEOGRAPH-7684}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 22343 (\N{CJK UNIFIED IDEOGRAPH-5747}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20540 (\N{CJK UNIFIED IDEOGRAPH-503C}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 35266 (\N{CJK UNIFIED IDEOGRAPH-89C2}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 27979 (\N{CJK UNIFIED IDEOGRAPH-6D4B}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 25968 (\N{CJK UNIFIED IDEOGRAPH-6570}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 26631 (\N{CJK UNIFIED IDEOGRAPH-6807}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20934 (\N{CJK UNIFIED IDEOGRAPH-51C6}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 24046 (\N{CJK UNIFIED IDEOGRAPH-5DEE}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+</pre></div>
+</div>
+<img alt="_images/8fdbedc369034188c7e0163601b1bf8785e964868a20a6b85d8570b5db193d7f.png" src="_images/8fdbedc369034188c7e0163601b1bf8785e964868a20a6b85d8570b5db193d7f.png" />
+</div>
+</div>
+</section>
+</div>
+<p>我们应该如何解读上述模式？</p>
+<p>答案就在贝叶斯更新公式中。</p>
+<p>将单步贝叶斯更新自然延伸到 n 步贝叶斯更新是很合理的。</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{Prob}(\theta|k) = \frac{\textrm{Prob}(\theta,k)}{\textrm{Prob}(k)}=\frac{\textrm{Prob}(k|\theta)*\textrm{Prob}(\theta)}{\textrm{Prob}(k)}=\frac{\textrm{Prob}(k|\theta)*\textrm{Prob}(\theta)}{\int_0^1 \textrm{Prob}(k|\theta)*\textrm{Prob}(\theta) d\theta}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+=\frac{{N \choose k} (1 - \theta)^{N-k} \theta^k*\frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)}}{\int_0^1 {N \choose k} (1 - \theta)^{N-k} \theta^k*\frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)} d\theta}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+=\frac{(1 -\theta)^{\beta+N-k-1}* \theta^{\alpha+k-1}}{\int_0^1 (1 - \theta)^{\beta+N-k-1}* \theta^{\alpha+k-1} d\theta}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+={Beta}(\alpha + k, \beta+N-k)
+\]</div>
+<p>具有 <span class="math notranslate nohighlight">\(\alpha\)</span> 和 <span class="math notranslate nohighlight">\(\beta\)</span> 参数的贝塔分布有以下均值和方差。</p>
+<p>均值是 <span class="math notranslate nohighlight">\(\frac{\alpha}{\alpha + \beta}\)</span></p>
+<p>方差是 <span class="math notranslate nohighlight">\(\frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}\)</span></p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\alpha\)</span> 可以视为成功次数</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta\)</span> 可以视为失败次数</p></li>
+</ul>
+<p>随机变量 <span class="math notranslate nohighlight">\(k\)</span> 和 <span class="math notranslate nohighlight">\(N-k\)</span> 服从参数为 <span class="math notranslate nohighlight">\(\theta=0.4\)</span> 的二项分布。</p>
+<p>这就是真实的数据生成过程。</p>
+<p>根据大数定律，对于大量观测值，观测到的频率 <span class="math notranslate nohighlight">\(k\)</span> 和 <span class="math notranslate nohighlight">\(N-k\)</span> 将由真实的数据生成过程来描述，即我们在计算机上生成观测值时假设的总体概率分布。（参见 <a class="reference internal" href="#pm_ex1"><span class="std std-numref">Exercise 10.1</span></a>）。</p>
+<p>因此，后验分布的均值收敛于 <span class="math notranslate nohighlight">\(0.4\)</span>，且方差趋近于零。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">upper_bound</span> <span class="o">=</span> <span class="p">[</span><span class="n">ii</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.95</span><span class="p">)</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">Bay_stat</span><span class="o">.</span><span class="n">posterior_list</span><span class="p">]</span>
+<span class="n">lower_bound</span> <span class="o">=</span> <span class="p">[</span><span class="n">ii</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">Bay_stat</span><span class="o">.</span><span class="n">posterior_list</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">)),</span> <span class="n">upper_bound</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;95 分位数&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">)),</span> <span class="n">lower_bound</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;05 分位数&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">num_list</span><span class="p">[::</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观测值数量&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;后验分布的贝叶斯覆盖区间&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 21518 (\N{CJK UNIFIED IDEOGRAPH-540E}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 39564 (\N{CJK UNIFIED IDEOGRAPH-9A8C}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20998 (\N{CJK UNIFIED IDEOGRAPH-5206}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 24067 (\N{CJK UNIFIED IDEOGRAPH-5E03}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 30340 (\N{CJK UNIFIED IDEOGRAPH-7684}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 36125 (\N{CJK UNIFIED IDEOGRAPH-8D1D}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 21494 (\N{CJK UNIFIED IDEOGRAPH-53F6}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 26031 (\N{CJK UNIFIED IDEOGRAPH-65AF}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 35206 (\N{CJK UNIFIED IDEOGRAPH-8986}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 30422 (\N{CJK UNIFIED IDEOGRAPH-76D6}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 21306 (\N{CJK UNIFIED IDEOGRAPH-533A}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 38388 (\N{CJK UNIFIED IDEOGRAPH-95F4}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 35266 (\N{CJK UNIFIED IDEOGRAPH-89C2}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 27979 (\N{CJK UNIFIED IDEOGRAPH-6D4B}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20540 (\N{CJK UNIFIED IDEOGRAPH-503C}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 25968 (\N{CJK UNIFIED IDEOGRAPH-6570}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20301 (\N{CJK UNIFIED IDEOGRAPH-4F4D}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+</pre></div>
+</div>
+<img alt="_images/38bbe7ff10c87e26b2b2b26febd5af76e7f11e98f875b8a7c0210c58c14caa23.png" src="_images/38bbe7ff10c87e26b2b2b26febd5af76e7f11e98f875b8a7c0210c58c14caa23.png" />
+</div>
+</div>
+<p>在观察了大量结果后，后验分布收敛在<span class="math notranslate nohighlight">\(0.4\)</span>周围。</p>
+<p>因此，贝叶斯统计学家认为<span class="math notranslate nohighlight">\(\theta\)</span>接近<span class="math notranslate nohighlight">\(.4\)</span>。</p>
+<p>如上图所示，随着观测数量的增加，贝叶斯置信区间(BCIs)在<span class="math notranslate nohighlight">\(0.4\)</span>周围变得越来越窄。</p>
+<p>然而，如果仔细观察，你会发现BCIs的中心并不完全是<span class="math notranslate nohighlight">\(0.4\)</span>，这是由于先验分布的持续影响和模拟路径的随机性造成的。</p>
+</section>
+<section id="id5">
+<h2><span class="section-number">10.4. </span>共轭先验的作用<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>我们做出了一些假设，将似然函数和先验的函数形式联系起来，这大大简化了我们的计算。</p>
+<p>特别是，我们假设似然函数是<strong>二项分布</strong>，而先验分布是<strong>beta分布</strong>，这导致贝叶斯定律推导出的后验分布也是<strong>beta分布</strong>。</p>
+<p>所以后验和先验都是beta分布，只是它们的参数不同。</p>
+<p>当似然函数和先验像手和手套一样完美匹配时，我们可以说先验和后验是<strong>共轭分布</strong>。</p>
+<p>在这种情况下，我们有时也说我们有似然函数<span class="math notranslate nohighlight">\(\textrm{Prob}(X | \theta)\)</span>的<strong>共轭先验</strong>。</p>
+<p>通常，似然函数的函数形式决定了<strong>共轭先验</strong>的函数形式。</p>
+<p>一个自然的问题是，为什么一个人对参数<span class="math notranslate nohighlight">\(\theta\)</span>的个人先验必须局限于共轭先验的形式？</p>
+<p>为什么不能是其他更真实地描述个人信念的函数形式？</p>
+<p>从争辩的角度来说，人们可以问，为什么似然函数的形式应该对我关于<span class="math notranslate nohighlight">\(\theta\)</span>的个人信念有<em>任何</em>影响？</p>
+<p>对这个问题的一个得体回答是，确实不应该有影响，但如果你想要轻松地计算后验分布，使用与似然函数共轭的先验会让你更愉快。</p>
+<p>否则，你的后验分布将不会有一个方便的解析形式，你就会需要使用<a class="reference internal" href="bayes_nonconj.html"><span class="doc">这个 quantecon 讲座</span></a>中部署的马尔可夫链蒙特卡洛技术。</p>
+<p>我们也在<a class="reference internal" href="ar1_bayes.html"><span class="doc">这个 quantecon 讲座</span></a>和<a class="reference internal" href="ar1_turningpts.html"><span class="doc">这个 quantecon 讲座</span></a>中应用这些强大的方法来近似非共轭先验的贝叶斯后验分布。</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  工具与技术
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解（SVD）
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   9. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   10. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   11. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   12. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   13. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   14. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   15. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   16. Expected Utilities of Random Responses
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   17. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   18. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   19. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   20. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   21. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   22. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   23. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   24. 财富分配动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   25. 卡尔曼滤波初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   26. 卡尔曼滤波器的另一个视角
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   27. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   28. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   29. 求职搜索 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   30. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   31. 职业搜索 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   32. 在职搜索 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   33. 求职搜索 VII：McCall工人的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   34. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   35. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   36. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   37. 重叠世代模型中的转换
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   38. 蛋糕食用问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   39. 蛋糕食用问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   40. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   41. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   42. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   43. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   44. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   45. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   46. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   47. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   48. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 求职搜索 VII: 带学习的搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   50. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   51. 计算似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   52. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   53. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   54. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   55. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   56. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   57. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   58. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   59. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   60. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   61. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   62. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   63. 就业和失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   64. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   65. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   66. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   67. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   68. 艾亚加里模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   69. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   70. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   71. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   72. 面板数据的Pandas使用
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   73. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   74. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   75. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   76. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   77. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   78. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   79. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/prob_meaning.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/prob_meaning.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/prob_meaning.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/prob_meaning.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/prob_meaning.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "prob_meaning";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/prob_meaning.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>
