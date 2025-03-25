@@ -49,7 +49,7 @@ McCall 搜索模型 {cite}`McCall1970` 帮助改变了经济学家思考劳动�
 
 为了解决这个决策问题，McCall 使用了动态规划。
 
-在这里，我们将建立 McCall 的模型并使用动态规划来分析它。
+在本讲中，我们将建立 McCall 的模型并使用动态规划来分析它。
 
 我们将看到，McCall 的模型不仅本身很有趣，而且是学习动态规划的绝佳载体。
 
@@ -90,7 +90,7 @@ from quantecon.distributions import BetaBinomial
 1. 接受工作机会，并以固定工资$w_t$永久工作。
 1. 拒绝工作机会，获得失业补助$c$，并在下一期重新考虑。
 
-假设失业者具有无限生命，其目标是最大化折现收益总和的期望值
+假设失业者具有无限长的生命，其目标是最大化折现收益总和的期望值
 
 $$
 \mathbb{E} \sum_{t=0}^{\infty} \beta^t y_t
@@ -165,7 +165,7 @@ $$
 
 * max运算中的第二项是**延续值**，即拒绝当前工作机会并在随后所有时期做出最优行为的终身收益。
 
-如果我们从这两个选项中选择最佳选项，我们就能获得当前报价 $w$ 下的最大终身价值。
+通过从这两个选项中选择最优的一个，我们就能得到在当前工资报价 $w$ 下的最大终身价值。
 
 而这恰恰就是 {eq}`odu_pv` 左边的 $v^*(w)$。
 
@@ -278,7 +278,7 @@ v'(i)
 
 ### 不动点理论
 
-这些想法背后的数学原理是什么？
+这个算法背后的数学原理是什么？
 
 首先，通过以下方式定义从 $\mathbb R^n$ 到自身的映射 $T$：
 
@@ -301,7 +301,7 @@ v'(i)
 
 * 这是从初始猜测 $v$ 开始，应用 $k$ 次 $T$ 的结果
 
-可以证明，$T$ 在 $\mathbb R^n$ 上满足[巴拿赫不动点定理](https://en.wikipedia.org/wiki/Banach_fixed-point_theorem)的条件。
+可以证明，$T$ 在 $\mathbb R^n$ 上满足[巴拿赫不动点定理](https://baike.baidu.com/item/%E5%B7%B4%E6%8B%BF%E8%B5%AB%E4%B8%8D%E5%8A%A8%E7%82%B9%E5%AE%9A%E7%90%86/9492042)的条件。
 
 一个推论是 $T$ 在 $\mathbb R^n$ 中有唯一的不动点。
 
@@ -313,7 +313,7 @@ v'(i)
 
 ### 实现
 
-对于状态过程的分布 $q$，我们的默认选择是[Beta-二项分布](https://en.wikipedia.org/wiki/Beta-binomial_distribution)。
+对于状态过程的分布 $q$，我们的默认选择是[Beta-二项分布](https://docs.scipy.org.cn/doc/scipy/tutorial/stats/discrete_betabinom.html)。
 
 ```{code-cell} ipython3
 n, a, b = 50, 200, 100                        # 默认参数
@@ -460,7 +460,7 @@ def compute_reservation_wage(mcm,
     return (1 - β) * (c + β * np.sum(v * q))
 ```
 
-下一行计算在默认参数下的保留工资
+现在我们计算在默认参数下的保留工资
 
 ```{code-cell} ipython3
 compute_reservation_wage(mcm)
@@ -572,7 +572,7 @@ h'
 
 我们可以再次使用巴拿赫不动点定理来证明这个过程总是收敛的。
 
-这里的一个重大区别是，我们是在对一个标量 $h$ 进行迭代，而不是对一个 $n$ 维向量 $v(i), i = 1, \ldots, n$ 进行迭代。
+与之前的方法相比，这里有一个重要区别：我们现在是对单个标量 $h$ 进行迭代，而不是像之前那样对 $n$ 维向量 $v(i), i = 1, \ldots, n$ 进行迭代，这使得计算过程更加简单。
 
 以下是实现代码：
 
@@ -605,7 +605,7 @@ def compute_reservation_wage_two(mcm,
     return (1 - β) * h
 ```
 
-你可以使用以下代码来进行下面的练习。
+你可以使用以上代码来完成下面的练习。
 
 ## 练习
 
@@ -762,7 +762,7 @@ def compute_reservation_wage_continuous(mcmc, max_iter=500, tol=1e-5):
 
     c, β, σ, μ, w_draws = mcmc.c, mcmc.β, mcmc.σ, mcmc.μ, mcmc.w_draws
 
-    h = np.mean(w_draws) / (1 - β)  # 初始猜测
+    h = np.mean(w_draws) / (1 - β)  # 初始值猜测
     i = 0
     error = tol + 1
     while i < max_iter and error > tol:
