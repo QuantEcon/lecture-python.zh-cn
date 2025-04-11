@@ -664,11 +664,11 @@ P = np.array([[0.4, 0.6],
 
 从数学角度看，当将$P$视为从（行）向量到（行）向量的映射$\psi \mapsto \psi P$时，平稳分布是$P$的不动点。
 
-**定理：**每个随机矩阵$P$至少有一个平稳分布。
+**定理：** 每个随机矩阵$P$至少有一个平稳分布。
 
 (我们在此假设状态空间 $S$ 是有限的；如果不是则需要更多假设)
 
-对于这个结果的证明，你可以应用[布劳威尔不动点定理](https://en.wikipedia.org/wiki/Brouwer_fixed-point_theorem)，或参见[EDTC](https://johnstachurski.net/edtc.html)中的定理4.3.5。
+对于这个结果的证明，你可以应用[布劳威尔不动点定理](https://baike.baidu.com/item/%E5%B8%83%E5%8A%B3%E5%A8%81%E5%B0%94%E4%B8%8D%E5%8A%A8%E7%82%B9%E5%AE%9A%E7%90%86/12757191)，或参见[EDTC](https://johnstachurski.net/edtc.html)中的定理4.3.5。
 
 对于给定的随机矩阵 $P$，可能存在多个平稳分布。
 
