@@ -18,7 +18,7 @@ kernelspec:
 </div>
 ```
 
-# 职业搜索 V：职业选择建模
+# 工作搜寻 V：职业选择建模
 
 ```{index} single: Modeling; Career Choice
 ```

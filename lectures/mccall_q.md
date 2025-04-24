@@ -11,7 +11,7 @@ kernelspec:
   name: python3
 ---
 
-# 求职搜索 VII：McCall工人的Q学习
+# 工作搜寻 VII：McCall工人的Q学习
 
 ## 概述
 
