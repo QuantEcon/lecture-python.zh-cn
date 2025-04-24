@@ -3,8 +3,10 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.16.7
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
@@ -28,22 +30,22 @@ kernelspec:
 
 ## 概述
 
-在本讲座中，我们将研究遵循所谓s-S库存动态的企业的库存时间路径。
+在本讲座中，我们将研究企业的库存时间路径，其遵循所谓的s-S库存动态。
 
 这些企业
 
-1. 等待直到库存降至某个水平$s$以下，然后
-1. 订购足够数量以将库存补充到容量$S$。
+1. 等待直到库存下降至某个水平$s$以下，然后
+2. 订购足够数量的产品，将库存补充到容量$S$。
 
-这类政策在实践中很常见，并且在某些情况下也是最优的。
+这种管理库存的方式在实践中很常见，并且在某些情况下也是最优的。
 
-早期文献综述和一些宏观经济含义可以在{cite}`caplin1985variability`中找到。
+早期文献和其宏观经济影响可以在{cite}`caplin1985variability`中找到。
 
-我们的主要目标是学习更多关于模拟、时间序列和马尔可夫动态的知识。
+我们的本节的目标是学习更多关于模拟、时间序列和马尔可夫动态的知识。
 
-虽然我们的马尔可夫环境和许多我们考虑的概念与{doc}`有限马尔可夫链讲座 <finite_markov>`中的概念相关，但在当前应用中状态空间是连续的。
+尽管我们的马尔可夫环境和涉及的概念与{doc}`有限马尔可夫链讲座 <finite_markov>`的概念是相关的，但在当前应用中状态空间是连续的。
 
-让我们从一些导入开始
+让我们从导入一些库开始
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
@@ -60,7 +62,7 @@ from numba.experimental import jitclass
 
 ## 样本路径
 
-考虑一个拥有库存 $X_t$ 的公司。
+假设有一个公司，拥有库存 $X_t$ 。
 
 当库存 $X_t \leq s$ 时，公司会补货至 $S$ 单位。
 
@@ -84,12 +86,12 @@ $$
 
 其中 $\mu$ 和 $\sigma$ 是参数，$\{Z_t\}$ 是独立同分布的标准正态分布。
 
-这里有一个类，用于存储参数并生成库存的时间路径。
+下面是一个类，它用于存储参数并生成库存的时间路径。
 
 ```{code-cell} ipython3
 firm_data = [
-   ('s', float64),          # 补货触发水平
-   ('S', float64),          # 容量
+   ('s', float64),          # 触发补货水平
+   ('S', float64),          # 库存总容量
    ('mu', float64),         # 冲击位置参数
    ('sigma', float64)       # 冲击规模参数
 ]
@@ -405,7 +407,6 @@ def compute_freq(sim_length=50, x_init=70, num_firms=1_000_000):
     return firm_counter / num_firms
 ```
 
-
 记录程序运行所需的时间和输出结果。
 
 ```{code-cell} ipython3
@@ -423,4 +424,3 @@ print(f"至少发生两次缺货的频率 = {freq}")
 
 ```{solution-end}
 ```
-
