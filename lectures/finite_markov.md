@@ -364,7 +364,7 @@ mc.simulate_indices(ts_length=4)
 
 考虑任意状态 $y \in S$，我们想计算系统在下一时刻处于状态 $y$ 的概率。
 
-根据[全概率公式](https://en.wikipedia.org/wiki/Law_of_total_probability)，我们可以将这个概率表示为：
+根据[全概率公式](https://baike.baidu.com/item/%E5%85%A8%E6%A6%82%E7%8E%87%E5%85%AC%E5%BC%8F/9980676)，我们可以将这个概率表示为：
 
 $$
 \mathbb P \{X_{t+1} = y \}
@@ -1031,13 +1031,16 @@ ax.grid()
 ax.hlines(0, 0, N, lw=2, alpha=0.6)   # 在零处画水平线
 
 for x0, col in ((0, 'blue'), (1, 'green')):
+
     # 生成从x0开始的工人的时间序列
     X = mc.simulate(N, init=x0)
+
     # 计算每个n的失业时间比例
     X_bar = (X == 0).cumsum() / (1 + np.arange(N, dtype=float))
+
     # 绘图
     ax.fill_between(range(N), np.zeros(N), X_bar - p, color=col, alpha=0.1)
-    ax.plot(X_bar - p, color=col, label=f'$X_0 = \, {x0} $')
+    ax.plot(X_bar - p, color=col, label=fr'$X_0 = \, {x0} $')
     ax.plot(X_bar - p, 'k-', alpha=0.6)
 
 ax.legend(loc='upper right')
@@ -1232,19 +1235,22 @@ Q = np.zeros((n, n), dtype=int)
 with open(infile) as f:
     edges = f.readlines()
 for edge in edges:
-    from_node, to_node = re.findall('\w', edge)
+    from_node, to_node = re.findall(r'\w', edge)
     i, j = alphabet.index(from_node), alphabet.index(to_node)
     Q[i, j] = 1
+
 # 创建相应的马尔可夫矩阵P
 P = np.empty((n, n))
 for i in range(n):
     P[i, :] = Q[i, :] / Q[i, :].sum()
 mc = MarkovChain(P)
-# 计算稳态分布r
+
+# 计算平稳分布r
 r = mc.stationary_distributions[0]
 ranked_pages = {alphabet[i] : r[i] for i in range(n)}
-# 打印解决方案，从最高排名到最低排名排序
-print('排名\n ***')
+
+# 输出解，从最高排名到最低排名排序
+print(r'排名\n ***')
 for name, rank in sorted(ranked_pages.items(), key=itemgetter(1), reverse=1):
     print(f'{name}: {rank:.4}')
 ```
@@ -1322,7 +1328,7 @@ $P$，如上所述。
 :class: dropdown
 
 可以在[QuantEcon.py](http://quantecon.org/quantecon-py)库中找到解决方案，
-具体见[这里](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/markov/approximation.py)。
+具体可见[这里](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/markov/approximation.py)。
 
 ```
 
