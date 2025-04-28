@@ -3,8 +3,10 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.16.4
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
@@ -26,10 +28,9 @@ kernelspec:
 
 除了Anaconda中已有的库外，本讲座还需要以下库：
 
-```{code-cell} ipython
----
-tags: [hide-output]
----
+```{code-cell} ipython3
+:tags: [hide-output]
+
 !pip install quantecon
 ```
 
@@ -51,7 +52,7 @@ tags: [hide-output]
 
 首先，让我们导入需要的库：
 
-```{code-cell} ipython
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -197,7 +198,7 @@ $$
 
 从矩阵中我们可以看出，如果经济当前处于正常增长阶段，那么下个月仍然保持正常增长的概率高达0.971。
 
-注意矩阵主对角线上的元素普遍较大，这表明经济状态往往具有一定的持久性——当经济处于某一特定状态时，它倾向于在该状态停留一段时间。
+注意矩阵主对角线上的元素普遍较大，这表明经济状态往往具有一定的持续性——当经济处于某一特定状态时，它倾向于在该状态停留一段时间。
 
 这个马尔可夫链也可以通过下面的有向图来直观表示，图中的箭头上标注了相应的转移概率：
 
@@ -291,7 +292,7 @@ X = mc_sample_path(P, ψ_0=[0.1, 0.9], sample_size=100_000)
 np.mean(X == 0)
 ```
 
-你可以尝试修改初始分布，会发现输出始终接近0.25，至少对于我们上面定义的`P`矩阵是这样。
+你可以尝试修改初始分布，使用我们上面定义的`P`矩阵，你会发现输出始终接近0.25。
 
 ### 使用QuantEcon库
 
@@ -309,11 +310,11 @@ np.mean(X == 0)
 
 [QuantEcon.py](http://quantecon.org/quantecon-py)库使用了[JIT编译](https://python-programming.quantecon.org/numba.html#numba-link)，因此运行速度明显更快。
 
-```{code-cell} ipython
+```{code-cell} ipython3
 %time mc_sample_path(P, sample_size=1_000_000) # 我们自制代码版本
 ```
 
-```{code-cell} ipython
+```{code-cell} ipython3
 %time mc.simulate(ts_length=1_000_000) # qe代码版本
 ```
 
@@ -463,8 +464,7 @@ $$
 
 ```{index} single: Markov Chains; Cross-Sectional Distributions
 ```
-
-我们研究的边际分布不仅可以解释为概率，还可以理解为大数定律下在大样本中预期出现的横截面频率。
+我们研究的边际分布不仅可以解释为概率，还可以被理解为大数定律下大样本中实际观察到的横截面分布。
 
 为了更好地理解这一点，让我们回到{ref}`前面讨论的<mc_eg1>`工人就业/失业动态模型。
 
@@ -713,7 +713,7 @@ $$
 p = \frac{\beta}{\alpha + \beta}
 $$
 
-这在一定程度上代表了失业的长期稳态概率 --- 关于这个解释的更多细节见下文。
+这个值表示长期来看，工人处于失业状态的平均时间比例 -- 我们将在后续章节中详细讨论这一解释。
 
 不出所料，当$\beta \to 0$时，它趋近于零；当$\alpha \to 0$时，它趋近于一。
 
@@ -768,11 +768,11 @@ mc.stationary_distributions  # 显示所有平稳分布
 ```
 马尔可夫链收敛定理的第2部分{ref}`如上所述<mc_conv_thm>`表明，无论初始状态如何，$X_t$的边际分布最终都会收敛到平稳分布。
 
-这一结果有力地支持了我们将$\psi^*$视为系统长期随机行为稳定状态的解释。
+这一结果强有力地证明了我们可以将$\psi^*$理解为系统长期随机行为的稳定状态，无论系统最初处于什么状态。
 
 以下图形直观地展示了这一收敛过程
 
-```{code-cell} ipython
+```{code-cell} ipython3
 P = ((0.971, 0.029, 0.000),
      (0.145, 0.778, 0.077),
      (0.000, 0.508, 0.492))
@@ -831,14 +831,14 @@ plt.show()
 
 这里
 
-* $\mathbf{1}\{X_t = x\}$ 是指示函数，当 $X_t = x$ 时取值为1，否则为0
-* 收敛的概率为1（也称为"几乎必然"）
-* 这个结果不依赖于初始状态 $X_0$ 的分布
+* $\mathbf{1}\{X_t = x\}$ 是指示函数，当 $X_t = x$ 时等于1，否则等于0
+* 收敛是以概率1发生的（也称为"几乎必然"收敛）
+* 无论初始状态 $X_0$ 如何分布，这个结果都成立
 
-这个结果告诉我们，随着时间推移，马尔可夫链在状态 $x$ 停留的时间比例将趋近于 $\psi^*(x)$。
+直观地说，这个结果表明，随着时间的推移，马尔可夫链在状态 $x$ 停留的时间比例将收敛到 $\psi^*(x)$。
 
 (new_interp_sd)=
-这为平稳分布提供了另一种直观解释 — 只要{eq}`llnfmc0`中的收敛成立。
+这给了我们平稳分布的另一种解释方式——它代表了长期内系统在各状态停留的时间比例，前提是{eq}`llnfmc0`中的收敛成立。
 
 {eq}`llnfmc0`实际上是马尔可夫链大数定律的一个特例 — 有兴趣的读者可以参考[EDTC](http://johnstachurski.net/edtc.html)第4.3.4节获取更多细节。
 
@@ -857,7 +857,7 @@ $$
 
 从横截面角度看，$p$ 表示整个人口中失业者的比例。
 
-而根据刚才介绍的遍历性结果，$p$ 也等于单个工人在长期内处于失业状态的平均时间比例。
+而根据刚才介绍的遍历性结果，$p$ 也表示单个工人长期来看处于失业状态的时间占比。
 
 这意味着，从长期来看，群体的横截面平均值与个体的时间序列平均值是一致的。
 
@@ -969,7 +969,7 @@ $$
 (I - \beta P)^{-1}  = I + \beta P + \beta^2 P^2 + \cdots
 $$
 
-乘以 $(I - \beta P)^{-1}$ 相当于"应用**预解算子**"。
+乘以 $(I - \beta P)^{-1}$ 相当于应用**预解算子**（resolvent operator）。
 
 ## 练习
 
@@ -1147,7 +1147,7 @@ d -> h;
 
 下面显示了这个图的数据，当单元格执行时，这些数据被读入名为`web_graph_data.txt`的文件中。
 
-```{code-cell} ipython
+```{code-cell} ipython3
 %%file web_graph_data.txt
 a -> d;
 a -> f;
@@ -1327,4 +1327,3 @@ $P$，如上所述。
 ```
 
 [^pm]: 提示：首先证明如果P和Q是随机矩阵，那么它们的乘积也是随机矩阵——要检查行和，试着用一列1向量进行后乘。最后，用归纳法论证P^n是随机矩阵。
-
