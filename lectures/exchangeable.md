@@ -34,7 +34,7 @@ DeFinetti的工作对经济学家的相关性在David Kreps的{cite}`Kreps88`第
 
 我们在本讲座中研究的一个例子是{doc}`这个讲座 <odu>`的一个关键组成部分，它扩充了
 
-{doc}`classic <mccall_model>` McCall的经典工作搜索模型{cite}`McCall1970`通过为失业工人提供一个统计推断问题来展示。
+{doc}`classic <mccall_model>` McCall的经典工作搜索模型{cite}`McCall1970`通过为失业劳动者提供一个统计推断问题来展示。
 
 我们创建图表来说明似然比在贝叶斯定律中所起的作用。
 

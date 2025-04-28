@@ -169,9 +169,9 @@ w(r) = A  (1 - \alpha)  (A \alpha / (r + \delta))^{\alpha / (1 - \alpha)}
 * 价格诱导的行为产生的总量与价格一致
 * 总量和价格随时间保持不变
 
-更详细地说，SREE列出了价格、储蓄和生产政策的集合，使得：
+更详细地说，SREE列出了价格、储蓄和生产策略的集合，使得：
 
-* 家庭在给定价格下选择指定的储蓄政策
+* 家庭在给定价格下选择指定的储蓄策略
 * 企业在相同价格下最大化利润
 * 产生的总量与价格一致；特别是，资本需求等于供给
 * 总量（定义为横截面平均值）保持不变
@@ -180,8 +180,8 @@ w(r) = A  (1 - \alpha)  (A \alpha / (r + \delta))^{\alpha / (1 - \alpha)}
 
 1. 选择一个提议的总资本量 $K$
 2. 确定相应的价格，其中利率 $r$ 由 {eq}`aiy_rgk` 决定，工资率 $w(r)$ 由 {eq}`aiy_wgr` 给出
-3. 确定给定这些价格下家庭的共同最优储蓄政策
-4. 计算给定这个储蓄政策下的稳态资本平均值
+3. 确定给定这些价格下家庭的共同最优储蓄策略
+4. 计算给定这个储蓄策略下的稳态资本平均值
 
 如果最终数量与 $K$ 一致，那么我们就得到了一个SREE。
 
@@ -214,7 +214,7 @@ w(r) = A  (1 - \alpha)  (A \alpha / (r + \delta))^{\alpha / (1 - \alpha)}
 class Household:
     """
     这个类接收定义家庭资产积累问题的参数，并计算相应的回报和转移矩阵R
-    和Q，这些矩阵是生成DiscreteDP实例所必需的，从而求解最优政策。
+    和Q，这些矩阵是生成DiscreteDP实例所必需的，从而求解最优策略。
 
     关于索引的说明：我们需要将状态空间S枚举为序列S = {0, ..., n}。
     为此，(a_i, z_i)索引对根据以下规则映射到s_i索引：
@@ -313,7 +313,7 @@ def asset_marginal(s_probs, a_size, z_size):
     return a_probs
 ```
 
-作为第一个例子，让我们计算并绘制在固定价格下的最优积累政策。
+作为第一个例子，让我们计算并绘制在固定价格下的最优积累策略。
 
 ```{code-cell} python3
 # 示例价格
@@ -353,7 +353,7 @@ ax.legend(loc='upper left')
 plt.show()
 ```
 
-该图显示了在不同外生状态值下的资产积累政策。
+该图显示了在不同外生状态值下的资产积累策略。
 
 现在我们要计算均衡。
 
@@ -399,7 +399,7 @@ def prices_to_capital_stock(am, r):
     w = r_to_w(r)
     am.set_prices(r, w)
     aiyagari_ddp = DiscreteDP(am.R, am.Q, β)
-    # 计算最优政策
+    # 计算最优策略
     results = aiyagari_ddp.solve(method='policy_iteration')
     # 计算稳态分布
     stationary_probs = results.mc.stationary_distributions[0]
