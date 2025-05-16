@@ -257,9 +257,7 @@
 </ul>
 </div>
 <blockquote class="epigraph">
-<div><p>“询问一个McCall工人就像与一个失业的朋友对话：
-‘也许你的期望值定得太高了’，或者’为什么你在找到新工作之前就辞掉了原来的工作？’这就是真正的社会科学：试图通过观察人们所处的情况、他们面临的选择来建模，以理解人类行为</p>
-<p>“以及他们自己所认为的优缺点。” – 罗伯特·卢卡斯（小）</p>
+<div><p>“询问一个McCall工人就像与一个失业的朋友对话：‘也许你的期望值定得太高了’，或者’为什么你在找到新工作之前就辞掉了原来的工作？’这就是真正的社会科学：试图通过观察人们所处的情况、他们面临的选择、以及他们自己所认为的优缺点来建模，以理解人类行为。” – 小罗伯特·卢卡斯</p>
 </div></blockquote>
 <p>除了Anaconda中已有的内容外，本讲座还需要以下库：</p>
 <div class="cell tag_hide-output docutils container">
@@ -279,7 +277,7 @@ Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/
 Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
 Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
 Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.1)
-Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.2)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.14.0)
 Requirement already satisfied: llvmlite&lt;0.44,&gt;=0.43.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.43.0)
 Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.3.2)
 Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.7)
@@ -296,13 +294,13 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <p>McCall 搜索模型 <span id="id3">[<a class="reference internal" href="zreferences.html#id194" title="J J McCall. Economics of Information and Job Search. The Quarterly Journal of Economics, 84(1):113–126, 1970.">McCall, 1970</a>]</span> 帮助改变了经济学家思考劳动力市场的方式。</p>
 <p>为了阐明”非自愿”失业等概念，McCall 从以下因素建模了失业工人的决策问题：</p>
 <ul class="simple">
-<li><p>当前和可能的未来工资</p></li>
-<li><p>不耐心程度</p></li>
+<li><p>当前工资和可能的未来工资</p></li>
+<li><p>耐心程度</p></li>
 <li><p>失业补助</p></li>
 </ul>
 <p>为了解决这个决策问题，McCall 使用了动态规划。</p>
-<p>在这里，我们将建立 McCall 的模型并使用动态规划来分析它。</p>
-<p>我们将看到，McCall 的模型不仅本身很有趣，而且也是学习动态规划的绝佳载体。</p>
+<p>在本讲中，我们将建立 McCall 的模型并使用动态规划来分析它。</p>
+<p>我们将看到，McCall 的模型不仅本身很有趣，而且是学习动态规划的绝佳载体。</p>
 <p>让我们从一些导入开始：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -312,7 +310,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1">#set default figure size</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1">#设置默认图片尺寸</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span><span class="p">,</span> <span class="n">float64</span>
 <span class="kn">from</span> <span class="nn">numba.experimental</span> <span class="kn">import</span> <span class="n">jitclass</span>
@@ -325,30 +323,30 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </section>
 <section id="id4">
 <h2><a class="toc-backref" href="#id17"><span class="section-number">27.2. </span>McCall模型</a><a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
-<p id="index-0">一个失业者在每个时期都会收到工资为<span class="math notranslate nohighlight">\(w_t\)</span>的工作机会。</p>
+<p id="index-0">一个失业者在每个时期都会收到一个工资为<span class="math notranslate nohighlight">\(w_t\)</span>的工作机会。</p>
 <p>在本讲中，我们采用以下简单环境：</p>
 <ul class="simple">
 <li><p>工资序列<span class="math notranslate nohighlight">\(\{w_t\}_{t \geq 0}\)</span>是独立同分布的，其中<span class="math notranslate nohighlight">\(q(w)\)</span>是在有限集合<span class="math notranslate nohighlight">\(\mathbb{W}\)</span>中观察到工资<span class="math notranslate nohighlight">\(w\)</span>的概率。</p></li>
-<li><p>代理人在<span class="math notranslate nohighlight">\(t\)</span>期开始时观察到<span class="math notranslate nohighlight">\(w_t\)</span>。</p></li>
-<li><p>代理人知道<span class="math notranslate nohighlight">\(\{w_t\}\)</span>是具有共同分布<span class="math notranslate nohighlight">\(q\)</span>的独立同分布序列，并可以利用这一点计算期望值。</p></li>
+<li><p>失业者在<span class="math notranslate nohighlight">\(t\)</span>期的开始观察到<span class="math notranslate nohighlight">\(w_t\)</span>。</p></li>
+<li><p>失业者知道<span class="math notranslate nohighlight">\(\{w_t\}\)</span>是具有共同分布<span class="math notranslate nohighlight">\(q\)</span>的独立同分布序列，并可以利用这一点计算期望值。</p></li>
 </ul>
 <p>（在后续讲座中，我们将放宽这些假设。）</p>
-<p>在时间<span class="math notranslate nohighlight">\(t\)</span>，我们的代理人有两个选择：</p>
+<p>在时间<span class="math notranslate nohighlight">\(t\)</span>，失业者有两个选择：</p>
 <ol class="arabic simple">
-<li><p>接受工作机会并以固定工资<span class="math notranslate nohighlight">\(w_t\)</span>永久工作。</p></li>
+<li><p>接受工作机会，并以固定工资<span class="math notranslate nohighlight">\(w_t\)</span>永久工作。</p></li>
 <li><p>拒绝工作机会，获得失业补助<span class="math notranslate nohighlight">\(c\)</span>，并在下一期重新考虑。</p></li>
 </ol>
-<p>代理人具有无限生命，目标是最大化预期的折现收益总和</p>
+<p>假设失业者具有无限长的生命，其目标是最大化折现收益总和的期望值</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E} \sum_{t=0}^{\infty} \beta^t y_t
 \]</div>
 <p>常数<span class="math notranslate nohighlight">\(\beta\)</span>位于<span class="math notranslate nohighlight">\((0, 1)\)</span>之间，被称为<strong>折现因子</strong>。</p>
-<p><span class="math notranslate nohighlight">\(\beta\)</span> 越小，代理人对未来效用的折现程度相对于当前效用就越高。</p>
-<p>变量 <span class="math notranslate nohighlight">\(y_t\)</span> 是收入，等于</p>
+<p><span class="math notranslate nohighlight">\(\beta\)</span> 越小，未来效用的折现值越高。</p>
+<p>变量 <span class="math notranslate nohighlight">\(y_t\)</span> 是收入，</p>
 <ul class="simple">
-<li><p>就业时的工资 <span class="math notranslate nohighlight">\(w_t\)</span></p></li>
-<li><p>失业时的失业补助金 <span class="math notranslate nohighlight">\(c\)</span></p></li>
+<li><p>当就业时，它等于工资 <span class="math notranslate nohighlight">\(w_t\)</span></p></li>
+<li><p>当失业时，它等于失业补助金 <span class="math notranslate nohighlight">\(c\)</span></p></li>
 </ul>
 <section id="id5">
 <h3><span class="section-number">27.2.1. </span>权衡取舍<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
@@ -374,39 +372,37 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </ol>
 <p>为了权衡决策问题的这两个方面，我们需要给状态赋予<em>价值</em>。</p>
 <p>为此，让<span class="math notranslate nohighlight">\(v^*(w)\)</span>表示当工资为<span class="math notranslate nohighlight">\(w \in \mathbb{W}\)</span>时，一个失业工人在当前时期开始时的总生命周期<em>价值</em>。</p>
-<p>具体来说，该个体手头有工资offer <span class="math notranslate nohighlight">\(w\)</span>。</p>
-<p>更准确地说，<span class="math notranslate nohighlight">\(v^*(w)\)</span>表示当处于这种情况下的个体在当前和未来所有时间点做出<em>最优</em>决策时，目标函数<a class="reference internal" href="mccall_model_with_separation.html#equation-objective">(28.1)</a>的价值。</p>
+<p>具体来说，我们考虑这样一种情况：一个失业者现在面临一个工资为 <span class="math notranslate nohighlight">\(w\)</span> 的工作机会。</p>
+<p>那么，<span class="math notranslate nohighlight">\(v^*(w)\)</span>表示的是该失业者在当前和未来所有时间点做出<em>最优</em>决策时，目标函数<a class="reference internal" href="mccall_model_with_separation.html#equation-objective">(28.1)</a>的价值。</p>
 <p>当然，计算<span class="math notranslate nohighlight">\(v^*(w)\)</span>并不简单，因为我们还不知道哪些决策是最优的，哪些不是！</p>
-<p>但是可以将<span class="math notranslate nohighlight">\(v^*\)</span>看作一个函数，它为每个可能的工资<span class="math notranslate nohighlight">\(s\)</span>分配在手头有该offer时可获得的最大生命周期价值。</p>
-<p>一个关键的观察是，这个函数<span class="math notranslate nohighlight">\(v^*\)</span>必须满足以下递归关系</p>
+<p>但是可以将<span class="math notranslate nohighlight">\(v^*\)</span>看作一个函数，它为每个可能的工资<span class="math notranslate nohighlight">\(w\)</span>分配在持有该工作机会时可获得的最大终身价值。</p>
+<p>一个关键点是，这个函数<span class="math notranslate nohighlight">\(v^*\)</span>必须满足以下递归关系： 对于 <span class="math notranslate nohighlight">\(\mathbb{W}\)</span> 中的每一个可能的 <span class="math notranslate nohighlight">\(w\)</span>，我们有</p>
 <div class="math notranslate nohighlight" id="equation-odu-pv">
 <span class="eqno">(27.1)<a class="headerlink" href="#equation-odu-pv" title="Permalink to this equation">#</a></span>\[v^*(w)
 = \max \left\{
         \frac{w}{1 - \beta}, \, c + \beta
         \sum_{w' \in \mathbb{W}} v^*(w') q (w')
     \right\}\]</div>
-<p>对于 <span class="math notranslate nohighlight">\(\mathbb{W}\)</span> 中的每一个可能的 <span class="math notranslate nohighlight">\(w\)</span>。</p>
 <p>这个重要的方程是<strong>贝尔曼方程</strong>的一个版本，这个方程在经济动态学和其他涉及长期规划的领域中无处不在。</p>
 <p>其背后的直观理解如下：</p>
 <ul class="simple">
-<li><p>max运算中的第一项是接受当前报价的终身收益，因为</p></li>
+<li><p>max运算中的第一项是接受当前工作机会的终身收益，因为</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[
     \frac{w}{1 - \beta} = w + \beta w + \beta^2 w + \cdots
 \]</div>
 <ul class="simple">
-<li><p>max运算中的第二项是<strong>延续价值</strong>，即拒绝当前报价并在随后所有时期做出最优行为的终身收益</p></li>
+<li><p>max运算中的第二项是<strong>延续值</strong>，即拒绝当前工作机会并在随后所有时期做出最优行为的终身收益。</p></li>
 </ul>
-<p>如果我们优化并从这两个选项中选择最佳选项，我们就能获得当前报价 <span class="math notranslate nohighlight">\(w\)</span> 下的最大终身价值。</p>
-<p>但这恰恰就是 <a class="reference internal" href="#equation-odu-pv">(27.1)</a> 左边的 <span class="math notranslate nohighlight">\(v^*(w)\)</span>。</p>
+<p>通过从这两个选项中选择最优的一个，我们就能得到在当前工资报价 <span class="math notranslate nohighlight">\(w\)</span> 下的最大终身价值。</p>
+<p>而这恰恰就是 <a class="reference internal" href="#equation-odu-pv">(27.1)</a> 左边的 <span class="math notranslate nohighlight">\(v^*(w)\)</span>。</p>
 </section>
 <section id="id7">
 <h3><span class="section-number">27.2.3. </span>最优策略<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
 <p>假设现在我们能够求解 <a class="reference internal" href="#equation-odu-pv">(27.1)</a> 得到未知函数 <span class="math notranslate nohighlight">\(v^*\)</span>。</p>
-<p>一旦我们掌握了这个函数，我们就可以做出最优行为（即做出</p>
-<p>在右侧选择最大值（在接受和拒绝之间）。</p>
-<p>我们只需要在<a class="reference internal" href="#equation-odu-pv">(27.1)</a>右侧选择最大值即可。</p>
+<p>一旦我们掌握了这个函数，我们就可以做出最优行为（即在接受和拒绝之间做出正确选择）。</p>
+<p>我们只需要在<a class="reference internal" href="#equation-odu-pv">(27.1)</a>的右侧选择最大值即可。</p>
 <p>最优行动最好被理解为一个<strong>策略</strong>，它通常是一个从状态到行动的映射。</p>
 <p>对于<em>任何</em><span class="math notranslate nohighlight">\(w\)</span>，我们都可以通过在<a class="reference internal" href="#equation-odu-pv">(27.1)</a>右侧选择最大值来得到相应的最佳选择（接受或拒绝）。</p>
 <p>因此，我们有一个从<span class="math notranslate nohighlight">\(\mathbb R\)</span>到<span class="math notranslate nohighlight">\(\{0, 1\}\)</span>的映射，其中1表示接受，0表示拒绝。</p>
@@ -429,7 +425,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <div class="math notranslate nohighlight" id="equation-reswage">
 <span class="eqno">(27.2)<a class="headerlink" href="#equation-reswage" title="Permalink to this equation">#</a></span>\[    \bar w := (1 - \beta) \left\{ c + \beta \sum_{w'} v^*(w') q (w') \right\}\]</div>
 <p>这里的 <span class="math notranslate nohighlight">\(\bar w\)</span>（称为<em>保留工资</em>）是一个取决于 <span class="math notranslate nohighlight">\(\beta, c\)</span> 和工资分布的常数。</p>
-<p>代理应当当且仅当当前工资报价超过保留工资时接受。</p>
+<p>失业者当且仅当当前工作机会的工资超过保留工资时接受该工作。</p>
 <p>根据<a class="reference internal" href="#equation-reswage">(27.2)</a>，如果我们能计算出价值函数，就能计算出这个保留工资。</p>
 </section>
 </section>
@@ -465,16 +461,16 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
             v(j) q (j)
     \right\}
 \quad
-\text{for } i = 1, \ldots, n\]</div>
+\text{对于 } i = 1, \ldots, n\]</div>
 <p>第3步：计算 <span class="math notranslate nohighlight">\(v\)</span> 和 <span class="math notranslate nohighlight">\(v'\)</span> 之间的差异度量，例如 <span class="math notranslate nohighlight">\(\max_i |v(i)- v'(i)|\)</span>。</p>
 <p>第4步：如果偏差大于某个固定的容差，则令 <span class="math notranslate nohighlight">\(v = v'\)</span> 并返回第2步，否则继续。</p>
 <p>第5步：返回 <span class="math notranslate nohighlight">\(v\)</span>。</p>
-<p>对于较小的容差，返回的函数 <span class="math notranslate nohighlight">\(v\)</span> 是值函数 <span class="math notranslate nohighlight">\(v^*\)</span> 的近似值。</p>
+<p>对于较小的容差，返回的函数 <span class="math notranslate nohighlight">\(v\)</span> 是价值函数 <span class="math notranslate nohighlight">\(v^*\)</span> 的近似值。</p>
 <p>下面的理论将详细说明这一点。</p>
 </section>
 <section id="id10">
 <h3><span class="section-number">27.3.2. </span>不动点理论<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
-<p>这些想法背后的数学原理是什么？</p>
+<p>这个算法背后的数学原理是什么？</p>
 <p>首先，通过以下方式定义从 <span class="math notranslate nohighlight">\(\mathbb R^n\)</span> 到自身的映射 <span class="math notranslate nohighlight">\(T\)</span>：</p>
 <div class="math notranslate nohighlight" id="equation-odu-pv3">
 <span class="eqno">(27.5)<a class="headerlink" href="#equation-odu-pv3" title="Permalink to this equation">#</a></span>\[ \begin{align}\begin{aligned}(Tv)(i)
@@ -488,17 +484,17 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <ul class="simple">
 <li><p>这是从初始猜测 <span class="math notranslate nohighlight">\(v\)</span> 开始，应用 <span class="math notranslate nohighlight">\(k\)</span> 次 <span class="math notranslate nohighlight">\(T\)</span> 的结果</p></li>
 </ul>
-<p>可以证明，<span class="math notranslate nohighlight">\(T\)</span> 在 <span class="math notranslate nohighlight">\(\mathbb R^n\)</span> 上满足<a class="reference external" href="https://en.wikipedia.org/wiki/Banach_fixed-point_theorem">巴拿赫不动点定理</a>的条件。</p>
-<p>其中一个推论是 <span class="math notranslate nohighlight">\(T\)</span> 在 <span class="math notranslate nohighlight">\(\mathbb R^n\)</span> 中有唯一的不动点。</p>
+<p>可以证明，<span class="math notranslate nohighlight">\(T\)</span> 在 <span class="math notranslate nohighlight">\(\mathbb R^n\)</span> 上满足<a class="reference external" href="https://baike.baidu.com/item/%E5%B7%B4%E6%8B%BF%E8%B5%AB%E4%B8%8D%E5%8A%A8%E7%82%B9%E5%AE%9A%E7%90%86/9492042">巴拿赫不动点定理</a>的条件。</p>
+<p>一个推论是 <span class="math notranslate nohighlight">\(T\)</span> 在 <span class="math notranslate nohighlight">\(\mathbb R^n\)</span> 中有唯一的不动点。</p>
 <ul class="simple">
 <li><p>即存在唯一的向量 <span class="math notranslate nohighlight">\(\bar v\)</span> 使得 <span class="math notranslate nohighlight">\(T \bar v = \bar v\)</span>。</p></li>
 </ul>
-<p>此外，从 <span class="math notranslate nohighlight">\(T\)</span> 的定义可以直接得出这个不动点就是 <span class="math notranslate nohighlight">\(v^*\)</span>。</p>
+<p>而且，从 <span class="math notranslate nohighlight">\(T\)</span> 的定义可以直接得出这个不动点就是 <span class="math notranslate nohighlight">\(v^*\)</span>。</p>
 <p>巴拿赫收缩映射定理的第二个推论是，无论 <span class="math notranslate nohighlight">\(v\)</span> 取何值，序列 <span class="math notranslate nohighlight">\(\{ T^k v \}\)</span> 都会收敛到不动点 <span class="math notranslate nohighlight">\(v^*\)</span>。</p>
 </section>
 <section id="id11">
 <h3><span class="section-number">27.3.3. </span>实现<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
-<p>对于状态过程的分布 <span class="math notranslate nohighlight">\(q\)</span>，我们的默认选择是<a class="reference external" href="https://en.wikipedia.org/wiki/Beta-binomial_distribution">Beta-二项分布</a>。</p>
+<p>对于状态过程的分布 <span class="math notranslate nohighlight">\(q\)</span>，我们的默认选择是<a class="reference external" href="https://docs.scipy.org.cn/doc/scipy/tutorial/stats/discrete_betabinom.html">Beta-二项分布</a>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">100</span>                        <span class="c1"># 默认参数</span>
@@ -534,7 +530,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 <p>我们将使用Numba来加速我们的代码。</p>
 <ul class="simple">
-<li><p>特别参见<a class="reference external" href="https://python-programming.quantecon.org/numba.html">我们关于Numba的讲座</a>中对<code class="docutils literal notranslate"><span class="pre">&#64;jitclass</span></code>的讨论。</p></li>
+<li><p>参见<a class="reference external" href="https://python-programming.quantecon.org/numba.html">我们关于Numba的讲座</a>中对<code class="docutils literal notranslate"><span class="pre">&#64;jitclass</span></code>的讨论。</p></li>
 </ul>
 <p>以下内容通过提供一些类型来帮助Numba</p>
 <div class="cell docutils container">
@@ -549,9 +545,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </div>
 </div>
-<p>这是一个用于存储数据并计算状态-动作对值的类，
-即计算贝尔曼方程 <a class="reference internal" href="#equation-odu-pv2p">(27.4)</a> 右侧最大括号中的值，
-基于当前状态和任意可行动作。</p>
+<p>这是一个用于存储数据并计算状态-行动对的值的类，即基于当前状态和任意可行的行动，计算贝尔曼方程 <a class="reference internal" href="#equation-odu-pv2p">(27.4)</a> 右侧最大值括号中的值。</p>
 <p>类中包含了默认参数值。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -569,8 +563,8 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># 简化名称</span>
         <span class="n">c</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
-        <span class="c1"># 评估每个状态-动作对的值</span>
-        <span class="c1"># 考虑动作 = 接受或拒绝当前报价</span>
+        <span class="c1"># 评估每个状态-行动对的值</span>
+        <span class="c1"># 考虑行动 = 接受或拒绝当前报价</span>
         <span class="n">accept</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span><span class="p">)</span>
         <span class="n">reject</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">β</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="n">q</span><span class="p">)</span>
 
@@ -625,7 +619,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <img alt="_images/2dd7545c08a2d3350e84e9d0e0169a3519e7cbd186333bb6c54d2a1b3f417815.png" src="_images/2dd7545c08a2d3350e84e9d0e0169a3519e7cbd186333bb6c54d2a1b3f417815.png" />
 </div>
 </div>
-<p>你可以看到收敛正在发生：连续的迭代值越来越接近。</p>
+<p>你可以看到收敛的发生：连续的迭代值越来越接近。</p>
 <p>这里有一个更严谨的迭代计算极限的方法，它会持续计算直到连续迭代之间的测量偏差小于容差值。</p>
 <p>一旦我们获得了对极限的良好近似，我们将用它来计算保留工资。</p>
 <p>我们将通过Numba的JIT编译来加速我们的循环。</p>
@@ -663,7 +657,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </div>
 </div>
-<p>下一行计算在默认参数下的保留工资</p>
+<p>现在我们计算在默认参数下的保留工资</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">compute_reservation_wage</span><span class="p">(</span><span class="n">mcm</span><span class="p">)</span>
@@ -729,7 +723,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <span id="id13"></span><h2><a class="toc-backref" href="#id19"><span class="section-number">27.4. </span>计算最优策略：方法二</a><a class="headerlink" href="#mm-op2" title="Permalink to this heading">#</a></h2>
 <p>刚才描述的动态规划方法是标准且广泛适用的。</p>
 <p>但对于我们的McCall搜索模型来说，还有一个更简单的方法，可以避免计算价值函数。</p>
-<p>让 <span class="math notranslate nohighlight">\(h\)</span> 表示继续值：</p>
+<p>让 <span class="math notranslate nohighlight">\(h\)</span> 表示延续值：</p>
 <div class="math notranslate nohighlight" id="equation-j1">
 <span class="eqno">(27.6)<a class="headerlink" href="#equation-j1" title="Permalink to this equation">#</a></span>\[h
 = c + \beta
@@ -764,7 +758,7 @@ v^*(s')
 <p>第3步：计算偏差 <span class="math notranslate nohighlight">\(|h - h'|\)</span>。</p>
 <p>第4步：如果偏差大于某个固定的容差，则设置 <span class="math notranslate nohighlight">\(h = h'\)</span> 并返回第2步，否则返回 <span class="math notranslate nohighlight">\(h\)</span>。</p>
 <p>我们可以再次使用巴拿赫不动点定理来证明这个过程总是收敛的。</p>
-<p>这里的一个重大区别是，我们是在对一个标量 <span class="math notranslate nohighlight">\(h\)</span> 进行迭代，而不是对一个 <span class="math notranslate nohighlight">\(n\)</span> 维向量 <span class="math notranslate nohighlight">\(v(i), i = 1, \ldots, n\)</span> 进行迭代。</p>
+<p>与之前的方法相比，这里有一个重要区别：我们现在是对单个标量 <span class="math notranslate nohighlight">\(h\)</span> 进行迭代，而不是像之前那样对 <span class="math notranslate nohighlight">\(n\)</span> 维向量 <span class="math notranslate nohighlight">\(v(i), i = 1, \ldots, n\)</span> 进行迭代，这使得计算过程更加简单。</p>
 <p>以下是实现代码：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -798,7 +792,7 @@ v^*(s')
 </div>
 </div>
 </div>
-<p>你可以使用以下代码来解决下面的练习。</p>
+<p>你可以使用以上代码来完成下面的练习。</p>
 </section>
 <section id="id14">
 <h2><a class="toc-backref" href="#id20"><span class="section-number">27.5. </span>练习</a><a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h2>
@@ -810,7 +804,7 @@ v^*(s')
 <blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">c_vals</span> <span class="pre">=</span> <span class="pre">np.linspace(10,</span> <span class="pre">40,</span> <span class="pre">25)</span></code></p>
 </div></blockquote>
-<p>也就是说，让代理人从失业状态开始，根据给定参数计算其保留工资，然后模拟看需要多长时间才能接受工作。</p>
+<p>也就是说，让失业者从失业状态开始，根据给定参数计算其保留工资，然后模拟看需要多长时间才能接受工作。</p>
 <p>重复多次并取平均值。</p>
 <p>绘制平均失业持续时间与 <code class="docutils literal notranslate"><span class="pre">c_vals</span></code> 中的 <span class="math notranslate nohighlight">\(c\)</span> 值的函数关系图。</p>
 </section>
@@ -819,7 +813,7 @@ v^*(s')
 
 <p class="admonition-title">Solution to<a class="reference internal" href="#mm_ex1"> Exercise 27.1</a></p>
 <section id="solution-content">
-<p>这是一个解决方案</p>
+<p>参考答案</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">q_default</span><span class="p">)</span>
@@ -875,7 +869,7 @@ v^*(s')
 <p class="admonition-title"><span class="caption-number">Exercise 27.2 </span></p>
 <section id="exercise-content">
 <p>本练习的目的是展示如何将上文使用的离散工资分布替换为连续分布。</p>
-<p>这是一个重要的主题，因为许多常用的分布都是连续的(即具有密度函数)。</p>
+<p>这是一个重要内容，因为许多常用的分布都是连续的(即具有密度函数)。</p>
 <p>幸运的是，在我们的简单模型中理论变化很小。</p>
 <p>回想一下，<a class="reference internal" href="#equation-j1">(27.6)</a>中的<span class="math notranslate nohighlight">\(h\)</span>表示在本期不接受工作但在随后所有期间表现最优的价值：</p>
 <p>要转换为连续分布，我们可以用以下式子替换<a class="reference internal" href="#equation-j1">(27.6)</a>：</p>
@@ -909,7 +903,7 @@ v^*(s')
 
 <p class="admonition-title">Solution to<a class="reference internal" href="#mm_ex2"> Exercise 27.2</a></p>
 <section id="solution-content">
-<p>这是一个解决方案：</p>
+<p>参考答案：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mccall_data_continuous</span> <span class="o">=</span> <span class="p">[</span>
@@ -938,7 +932,7 @@ v^*(s')
 
     <span class="n">c</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">μ</span><span class="p">,</span> <span class="n">w_draws</span> <span class="o">=</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">σ</span><span class="p">,</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">μ</span><span class="p">,</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">w_draws</span>
 
-    <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">w_draws</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span><span class="p">)</span>  <span class="c1"># 初始猜测</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">w_draws</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span><span class="p">)</span>  <span class="c1"># 初始值猜测</span>
     <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">error</span> <span class="o">=</span> <span class="n">tol</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">max_iter</span> <span class="ow">and</span> <span class="n">error</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">:</span>
@@ -959,7 +953,7 @@ v^*(s')
 </div>
 </div>
 <p>现在我们研究保留工资如何随着 <span class="math notranslate nohighlight">\(c\)</span> 和 <span class="math notranslate nohighlight">\(\beta\)</span> 变化。</p>
-<p>我们将使用等高线图来进行这项研究。</p>
+<p>我们将使用等值线图来分析这个问题。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grid_size</span> <span class="o">=</span> <span class="mi">25</span>
@@ -1147,7 +1141,7 @@ v^*(s')
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="util_rand_resp.html">
-   16. Expected Utilities of Random Responses
+   16. 随机回答的期望效用
   </a>
  </li>
 </ul>
@@ -1233,7 +1227,7 @@ v^*(s')
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   29. 求职搜索 III: 拟合值函数迭代
+   29. 工作搜寻 III: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
@@ -1243,17 +1237,17 @@ v^*(s')
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   31. 职业搜索 V：职业选择建模
+   31. 工作搜寻 V：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   32. 在职搜索 VI：在职搜索
+   32. 工作搜寻 VI：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_q.html">
-   33. 求职搜索 VII：McCall工人的Q学习
+   33. 工作搜寻 VII：McCall工人的Q学习
   </a>
  </li>
 </ul>

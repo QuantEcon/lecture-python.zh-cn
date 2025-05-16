@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>33. 求职搜索 VII：McCall工人的Q学习 &#8212; Python中级数量经济学</title>
+    <title>33. 工作搜寻 VII：McCall工人的Q学习 &#8212; Python中级数量经济学</title>
     <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
@@ -119,7 +119,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="34. Cass-Koopmans模型" href="cass_koopmans_1.html" />
-    <link rel="prev" title="32. 在职搜索 VI：在职搜索" href="jv.html" />
+    <link rel="prev" title="32. 工作搜寻 VI：在职搜索" href="jv.html" />
 
 <!-- Normal Meta Tags -->
 <meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
@@ -129,13 +129,13 @@
 <!-- Twitter tags -->
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@quantecon" />
-<meta name="twitter:title" content="求职搜索 VII：McCall工人的Q学习"/>
+<meta name="twitter:title" content="工作搜寻 VII：McCall工人的Q学习"/>
 <meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
 <meta name="twitter:creator" content="@quantecon">
 <meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
 
 <!-- Opengraph tags -->
-<meta property="og:title" content="求职搜索 VII：McCall工人的Q学习" />
+<meta property="og:title" content="工作搜寻 VII：McCall工人的Q学习" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://python.quantecon-zh-cn.org/mccall_q.html" />
 <meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
@@ -205,7 +205,7 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">求职搜索 VII：McCall工人的Q学习</p>
+                        <p class="qe-page__header-subheading">工作搜寻 VII：McCall工人的Q学习</p>
 
                     </div>
                     <!-- length 2, since its a string and empty dict has length 2 - {} -->
@@ -232,7 +232,7 @@
                     <div>
                         
   <section class="tex2jax_ignore mathjax_ignore" id="vii-mccallq">
-<h1><span class="section-number">33. </span>求职搜索 VII：McCall工人的Q学习<a class="headerlink" href="#vii-mccallq" title="Permalink to this heading">#</a></h1>
+<h1><span class="section-number">33. </span>工作搜寻 VII：McCall工人的Q学习<a class="headerlink" href="#vii-mccallq" title="Permalink to this heading">#</a></h1>
 <section id="id1">
 <h2><span class="section-number">33.1. </span>概述<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
 <p>本讲解介绍一种强大的机器学习技术——Q学习。</p>
@@ -282,7 +282,7 @@ Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/
 Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
 Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
 Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.1)
-Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.2)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.14.0)
 Requirement already satisfied: llvmlite&lt;0.44,&gt;=0.43.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.43.0)
 Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.3.2)
 Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.7)
@@ -793,17 +793,17 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[2657.50381313    0.        ]
- [5380.93737543 5244.38477597]
- [5309.20700437 5264.60834136]
- [5288.26792787 5217.60801654]
- [5332.23695984 5292.71744907]
- [5339.88817251 5317.28600885]
- [5282.40230193 5278.64846135]
- [5429.91809689 5290.00737313]
- [5298.38644797 5299.51067889]
- [5372.36975512 5500.        ]
- [5346.011863   6000.        ]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[5317.43072555 2635.2144793 ]
+ [5324.4940733  5201.03911545]
+ [5336.84890661 5305.28931122]
+ [5307.10131002 5281.26220423]
+ [5415.83272729 5337.85661118]
+ [5684.61944128 5291.06052825]
+ [5366.2287901  5350.04039686]
+ [5380.9097729  5346.70440737]
+ [5347.06720354 5323.42069   ]
+ [5409.49835686 5500.00012258]
+ [5335.16728609 6000.        ]]
 </pre></div>
 </div>
 </div>
@@ -818,8 +818,8 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2657.50381313 5380.93737543 5309.20700437 5288.26792787 5332.23695984
- 5339.88817251 5282.40230193 5429.91809689 5299.51067889 5500.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[5317.43072555 5324.4940733  5336.84890661 5307.10131002 5415.83272729
+ 5684.61944128 5366.2287901  5380.9097729  5347.06720354 5500.00012258
  6000.        ]
 </pre></div>
 </div>
@@ -840,7 +840,7 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/1604196af524ff4357ad0f75d1491069045f136cd3caac272bd0d8ead55b954f.png" src="_images/1604196af524ff4357ad0f75d1491069045f136cd3caac272bd0d8ead55b954f.png" />
+<img alt="_images/aec73ec30e93e818a48adcecf0f1c4060fba3905cf4cb8763ff702f7bdca5348.png" src="_images/aec73ec30e93e818a48adcecf0f1c4060fba3905cf4cb8763ff702f7bdca5348.png" />
 </div>
 </div>
 <p>现在，让我们计算一个更大状态空间的情况：<span class="math notranslate nohighlight">\(n=30\)</span>（而不是<span class="math notranslate nohighlight">\(n=10\)</span>）。</p>
@@ -956,7 +956,7 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 进度: 训练轮数 = 200000
 </pre></div>
 </div>
-<img alt="_images/36ced6596ce6cf48259d84c2ade43a9a440be4438f6254804d1f32a1fa02313d.png" src="_images/36ced6596ce6cf48259d84c2ade43a9a440be4438f6254804d1f32a1fa02313d.png" />
+<img alt="_images/9ddab87c75b3e7a66fd7744d527e529ef2261ac65d02d047b6559eef9c4f7b0a.png" src="_images/9ddab87c75b3e7a66fd7744d527e529ef2261ac65d02d047b6559eef9c4f7b0a.png" />
 </div>
 </div>
 <p>上述图表表明：</p>
@@ -1025,7 +1025,7 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 200000
 </pre></div>
 </div>
-<img alt="_images/5773c0638ad26c35c78dc6c25e5cceb97658a6c19640d67a2b4a43211e9afd35.png" src="_images/5773c0638ad26c35c78dc6c25e5cceb97658a6c19640d67a2b4a43211e9afd35.png" />
+<img alt="_images/0eb5ca4b2d0a60fb0e9273e1053877a68f9eb14b0582916042d0e9d9ca0e98bc.png" src="_images/0eb5ca4b2d0a60fb0e9273e1053877a68f9eb14b0582916042d0e9d9ca0e98bc.png" />
 </div>
 </div>
 </section>
@@ -1178,7 +1178,7 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="util_rand_resp.html">
-   16. Expected Utilities of Random Responses
+   16. 随机回答的期望效用
   </a>
  </li>
 </ul>
@@ -1264,7 +1264,7 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   29. 求职搜索 III: 拟合值函数迭代
+   29. 工作搜寻 III: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
@@ -1274,17 +1274,17 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   31. 职业搜索 V：职业选择建模
+   31. 工作搜寻 V：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   32. 在职搜索 VI：在职搜索
+   32. 工作搜寻 VI：在职搜索
   </a>
  </li>
  <li class="toctree-l1 current active active">
   <a class="current reference internal" href="#">
-   33. 求职搜索 VII：McCall工人的Q学习
+   33. 工作搜寻 VII：McCall工人的Q学习
   </a>
  </li>
 </ul>

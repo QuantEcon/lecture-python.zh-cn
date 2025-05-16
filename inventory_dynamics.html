@@ -231,7 +231,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1><a class="toc-backref" href="#id8"><span class="section-number">20. </span>库存动态</a><a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
 <div class="contents topic" id="id2">
-<span id="index-0"></span><p class="topic-title">目录</p>
+<p class="topic-title">目录</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#id1" id="id8">库存动态</a></p>
 <ul>
@@ -245,17 +245,17 @@
 </div>
 <section id="id3">
 <h2><a class="toc-backref" href="#id9"><span class="section-number">20.1. </span>概述</a><a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
-<p>在本讲座中，我们将研究遵循所谓s-S库存动态的企业的库存时间路径。</p>
-<p>这些企业</p>
+<p>在本讲座中，我们将研究企业的库存时间路径，其遵循所谓的s-S库存动态。</p>
+<p>这些企业遵循以下补货规则：</p>
 <ol class="arabic simple">
-<li><p>等待直到库存降至某个水平<span class="math notranslate nohighlight">\(s\)</span>以下，然后</p></li>
-<li><p>订购足够数量以将库存补充到容量<span class="math notranslate nohighlight">\(S\)</span>。</p></li>
+<li><p>当库存水平下降至某个临界值<span class="math notranslate nohighlight">\(s\)</span>以下时，</p></li>
+<li><p>企业会订购足够数量的产品，将库存补充到目标水平<span class="math notranslate nohighlight">\(S\)</span>。</p></li>
 </ol>
-<p>这类政策在实践中很常见，并且在某些情况下也是最优的。</p>
-<p>早期文献综述和一些宏观经济含义可以在<span id="id4">[<a class="reference internal" href="zreferences.html#id51" title="Andrew S Caplin. The variability of aggregate demand with (s, s) inventory policies. Econometrica, pages 1395–1409, 1985.">Caplin, 1985</a>]</span>中找到。</p>
-<p>我们的主要目标是学习更多关于模拟、时间序列和马尔可夫动态的知识。</p>
-<p>虽然我们的马尔可夫环境和许多我们考虑的概念与<a class="reference internal" href="finite_markov.html"><span class="doc">有限马尔可夫链讲座</span></a>中的概念相关，但在当前应用中状态空间是连续的。</p>
-<p>让我们从一些导入开始</p>
+<p>这种管理库存的方式在实践中很常见，并且在某些情况下也是最优的。</p>
+<p>早期文献和其对宏观经济的影响可以在<span id="id4">[<a class="reference internal" href="zreferences.html#id51" title="Andrew S Caplin. The variability of aggregate demand with (s, s) inventory policies. Econometrica, pages 1395–1409, 1985.">Caplin, 1985</a>]</span>中找到。</p>
+<p>我们的本节的目标是学习更多关于模拟、时间序列和马尔可夫动态的知识。</p>
+<p>尽管我们的马尔可夫环境和涉及的概念与<a class="reference internal" href="finite_markov.html"><span class="doc">有限马尔可夫链讲座</span></a>的概念是相关的，但在当前应用中状态空间是连续的。</p>
+<p>让我们从导入一些库开始</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -275,7 +275,7 @@
 </section>
 <section id="id5">
 <h2><a class="toc-backref" href="#id10"><span class="section-number">20.2. </span>样本路径</a><a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
-<p>考虑一个拥有库存 <span class="math notranslate nohighlight">\(X_t\)</span> 的公司。</p>
+<p>假设有一个公司，拥有库存 <span class="math notranslate nohighlight">\(X_t\)</span>。</p>
 <p>当库存 <span class="math notranslate nohighlight">\(X_t \leq s\)</span> 时，公司会补货至 <span class="math notranslate nohighlight">\(S\)</span> 单位。</p>
 <p>公司面临随机需求 <span class="math notranslate nohighlight">\(\{ D_t \}\)</span>，我们假设这是独立同分布的。</p>
 <p>使用符号 <span class="math notranslate nohighlight">\(a^+ := \max\{a, 0\}\)</span>，库存动态可以写作</p>
@@ -293,12 +293,12 @@ X_{t+1} =
 D_t = \exp(\mu + \sigma Z_t)
 \]</div>
 <p>其中 <span class="math notranslate nohighlight">\(\mu\)</span> 和 <span class="math notranslate nohighlight">\(\sigma\)</span> 是参数，<span class="math notranslate nohighlight">\(\{Z_t\}\)</span> 是独立同分布的标准正态分布。</p>
-<p>这里有一个类，用于存储参数并生成库存的时间路径。</p>
+<p>下面是一个类，它用于存储参数并生成库存的时间路径。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">firm_data</span> <span class="o">=</span> <span class="p">[</span>
-   <span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>          <span class="c1"># 补货触发水平</span>
-   <span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>          <span class="c1"># 容量</span>
+   <span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>          <span class="c1"># 触发补货水平</span>
+   <span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>          <span class="c1"># 库存总容量</span>
    <span class="p">(</span><span class="s1">&#39;mu&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>         <span class="c1"># 冲击位置参数</span>
    <span class="p">(</span><span class="s1">&#39;sigma&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">)</span>       <span class="c1"># 冲击规模参数</span>
 <span class="p">]</span>
@@ -363,10 +363,10 @@ D_t = \exp(\mu + \sigma Z_t)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/d570e00b1479e0c0c2f0cb4272948f9fb902684cd392e3494c142c71a38bba11.png" src="_images/d570e00b1479e0c0c2f0cb4272948f9fb902684cd392e3494c142c71a38bba11.png" />
+<img alt="_images/6bf008acb762d648742a33272bd67f6fc445bb3f4236791ef8897fceeb24eb5d.png" src="_images/6bf008acb762d648742a33272bd67f6fc445bb3f4236791ef8897fceeb24eb5d.png" />
 </div>
 </div>
-<p>现在让我们模拟多条路径，以便更全面地了解不同结果的概率：</p>
+<p>现在让我们模拟多条路径，这样可以更好地了解库存动态的整体行为和可能的库存分布：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sim_length</span><span class="o">=</span><span class="mi">200</span>
@@ -386,16 +386,16 @@ D_t = \exp(\mu + \sigma Z_t)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/bed39c14a86ed47ad86a7ad91f1a34e99d0935f1b3590e0b7276e07f529350e0.png" src="_images/bed39c14a86ed47ad86a7ad91f1a34e99d0935f1b3590e0b7276e07f529350e0.png" />
+<img alt="_images/2789ec72e23de775966ae05c09f47b201e21ae8b10653d00834f5517322db5fe.png" src="_images/2789ec72e23de775966ae05c09f47b201e21ae8b10653d00834f5517322db5fe.png" />
 </div>
 </div>
 </section>
 <section id="id6">
 <h2><a class="toc-backref" href="#id11"><span class="section-number">20.3. </span>边际分布</a><a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
-<p>现在让我们来看看某个固定时间点 <span class="math notranslate nohighlight">\(T\)</span> 时 <span class="math notranslate nohighlight">\(X_T\)</span> 的边际分布 <span class="math notranslate nohighlight">\(\psi_T\)</span>。</p>
-<p>我们将通过在给定初始条件 <span class="math notranslate nohighlight">\(X_0\)</span> 的情况下生成多个 <span class="math notranslate nohighlight">\(X_T\)</span> 的样本来实现这一点。</p>
+<p>现在让我们来看看某一固定时间点 <span class="math notranslate nohighlight">\(T\)</span> 时 <span class="math notranslate nohighlight">\(X_T\)</span> 的边际分布 <span class="math notranslate nohighlight">\(\psi_T\)</span>。</p>
+<p>我们将通过在给定初始条件 <span class="math notranslate nohighlight">\(X_0\)</span> 的情况下，生成多个 <span class="math notranslate nohighlight">\(X_T\)</span> 的样本来实现。</p>
 <p>通过这些 <span class="math notranslate nohighlight">\(X_T\)</span> 的样本，我们可以构建其分布 <span class="math notranslate nohighlight">\(\psi_T\)</span> 的图像。</p>
-<p>这里是一个可视化示例，其中 <span class="math notranslate nohighlight">\(T=50\)</span>。</p>
+<p>下面是<span class="math notranslate nohighlight">\(T=50\)</span>的情况下的一个可视化示例。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="mi">50</span>
@@ -438,10 +438,10 @@ D_t = \exp(\mu + \sigma Z_t)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/898662854d87a71d21549d659b7db44f98a1b788b6642de4819bd16ff47bf205.png" src="_images/898662854d87a71d21549d659b7db44f98a1b788b6642de4819bd16ff47bf205.png" />
+<img alt="_images/87ec0b8fef349b3722421bc07459b73bfab45c63095b0ecbd1135ed16c828c62.png" src="_images/87ec0b8fef349b3722421bc07459b73bfab45c63095b0ecbd1135ed16c828c62.png" />
 </div>
 </div>
-<p>通过绘制更多样本，我们可以得到一个更清晰的图像</p>
+<p>通过抽取更多样本，我们可以得到一个更清晰的图像</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="mi">50</span>
@@ -465,18 +465,18 @@ D_t = \exp(\mu + \sigma Z_t)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c634c1fd8fdc19b85d627dca403315ebc2745ff2b492880f45f7a111a118765e.png" src="_images/c634c1fd8fdc19b85d627dca403315ebc2745ff2b492880f45f7a111a118765e.png" />
+<img alt="_images/247379a83759560eb4bf894bb5db2ef9305b20ffce8090da37c56178774c77aa.png" src="_images/247379a83759560eb4bf894bb5db2ef9305b20ffce8090da37c56178774c77aa.png" />
 </div>
 </div>
-<p>请注意分布呈双峰</p>
+<p>注意到分布呈双峰</p>
 <ul class="simple">
-<li><p>大多数公司已经补货两次，但少数公司只补货一次（见上图路径）。</p></li>
-<li><p>第二类公司的库存较低。</p></li>
+<li><p>大多数公司已经补了两次货，但也有少部分公司只补货一次（见上图路径）。</p></li>
+<li><p>第二种公司的库存较少。</p></li>
 </ul>
-<p>我们也可以使用<a class="reference external" href="https://en.wikipedia.org/wiki/Kernel_density_estimation">核密度估计</a>来近似这个分布。</p>
+<p>我们还可以使用<a class="reference external" href="https://baike.baidu.com/item/%E6%A0%B8%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1/10349033">核密度估计</a>来近似这个分布。</p>
 <p>核密度估计可以被理解为平滑的直方图。</p>
-<p>当被估计的分布可能是平滑的时候，核密度估计比直方图更可取。</p>
-<p>我们将使用<a class="reference external" href="https://scikit-learn.org/stable/">scikit-learn</a>中的核密度估计器</p>
+<p>当我们认为底层分布是平滑的时候，核密度估计通常比直方图提供更准确的图像。</p>
+<p>我们将使用<a class="reference external" href="https://scikit-learn.org/stable/">scikit-learn</a>中的核密度估计量</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KernelDensity</span>
@@ -502,10 +502,10 @@ D_t = \exp(\mu + \sigma Z_t)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/0e4cbb99b4c32ca51b585722fb857f918eca49e949e9a02e0c8bc5e276892e56.png" src="_images/0e4cbb99b4c32ca51b585722fb857f918eca49e949e9a02e0c8bc5e276892e56.png" />
+<img alt="_images/9c23ed483256ec44d0f00003d55349e5283afb12871c3ccff39bd340d6181160.png" src="_images/9c23ed483256ec44d0f00003d55349e5283afb12871c3ccff39bd340d6181160.png" />
 </div>
 </div>
-<p>概率质量的分配与上面直方图所显示的类似。</p>
+<p>概率密度的分配与上面直方图所显示的类似。</p>
 </section>
 <section id="id7">
 <h2><a class="toc-backref" href="#id12"><span class="section-number">20.4. </span>练习</a><a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
@@ -514,22 +514,22 @@ D_t = \exp(\mu + \sigma Z_t)
 <p class="admonition-title"><span class="caption-number">Exercise 20.1 </span></p>
 <section id="exercise-content">
 <p>这个模型是渐近平稳的，具有唯一的平稳分布。</p>
-<p>（有关平稳性的背景讨论，请参见<a class="reference external" href="https://quantecon.github.io/lecture-intro.zh-cn/ar1_processes.html" title="(in Python)"><span class="xref std std-doc">我们关于AR(1)过程的讲座</span></a>——基本概念是相同的。）</p>
-<p>特别是，边际分布序列<span class="math notranslate nohighlight">\(\{\psi_t\}\)</span>正在收敛到一个唯一的极限分布，该分布不依赖于初始条件。</p>
-<p>虽然我们在这里不会证明这一点，但我们可以通过模拟来研究它。</p>
-<p>你的任务是根据上述讨论，在时间点<span class="math notranslate nohighlight">\(t = 10, 50, 250, 500, 750\)</span>生成并绘制序列<span class="math notranslate nohighlight">\(\{\psi_t\}\)</span>。</p>
-<p>（核密度估计器可能是呈现每个分布的最佳方式。）</p>
-<p>你应该能看到收敛性，体现在连续分布之间的差异越来越小。</p>
-<p>尝试不同的初始条件来验证，从长远来看，分布在不同初始条件下是不变的。</p>
+<p>（作为背景知识，有关平稳性的讨论，请参见<a class="reference external" href="https://quantecon.github.io/lecture-intro.zh-cn/ar1_processes.html" title="(in Python)"><span class="xref std std-doc">我们关于AR(1)过程的讲座</span></a>——基本概念是相同的。）</p>
+<p>特别是，边际分布序列<span class="math notranslate nohighlight">\(\{\psi_t\}\)</span>正在收敛到一个唯一的极限分布，且该分布不依赖于初始条件。</p>
+<p>虽然我们不会在此证明这一点，但我们可以通过模拟来研究这一性质。</p>
+<p>你的任务是，根据上述讨论，在时间点<span class="math notranslate nohighlight">\(t = 10, 50, 250, 500, 750\)</span>生成并绘制序列<span class="math notranslate nohighlight">\(\{\psi_t\}\)</span>。</p>
+<p>（核密度估计量可能是呈现每个分布最佳的方式。）</p>
+<p>你应该能看到收敛性，体现在两个连续分布之间的差异越来越小。</p>
+<p>尝试使用不同的初始条件来验证，无论从哪个初始状态开始，长期分布都会收敛到相同的平稳分布。</p>
 </section>
 </div>
 <div class="solution dropdown admonition" id="inventory_dynamics-solution-1">
 
 <p class="admonition-title">Solution to<a class="reference internal" href="#id_ex1"> Exercise 20.1</a></p>
 <section id="solution-content">
-<p>以下是一个可能的解决方案：</p>
-<p>这些计算涉及大量的CPU周期，所以我们试图高效地编写代码。</p>
-<p>这意味着编写一个专门的函数，而不是使用上面的类。</p>
+<p>以下是其中一种解法：</p>
+<p>由于这个计算需要大量的计算资源，我们需要编写更高效的代码。</p>
+<p>为此，我们将创建一个专门的函数来替代之前使用的类，以提高计算效率。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="n">firm</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">firm</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">firm</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="n">firm</span><span class="o">.</span><span class="n">sigma</span>
@@ -583,30 +583,30 @@ D_t = \exp(\mu + \sigma Z_t)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/6a76457e62799b09c5d32f585040c8ad5c549210ea0980418b451eb8846c7067.png" src="_images/6a76457e62799b09c5d32f585040c8ad5c549210ea0980418b451eb8846c7067.png" />
+<img alt="_images/e4f7aafbc247b8bd67a987479cbd99e7fb85d14bfe5854d1d50fdf743325178b.png" src="_images/e4f7aafbc247b8bd67a987479cbd99e7fb85d14bfe5854d1d50fdf743325178b.png" />
 </div>
 </div>
-<p>注意到在 <span class="math notranslate nohighlight">\(t=500\)</span> 或 <span class="math notranslate nohighlight">\(t=750\)</span> 时密度几乎不再变化。</p>
-<p>我们已经得到了平稳密度的合理近似。</p>
-<p>你可以通过测试几个不同的初始条件来确信初始条件并不重要。</p>
-<p>例如，尝试用所有公司从 <span class="math notranslate nohighlight">\(X_0 = 20\)</span> 或 <span class="math notranslate nohighlight">\(X_0 = 80\)</span> 开始重新运行上面的代码。</p>
+<p>从图中可以看出，随着时间的推移，分布逐渐收敛到一个稳定状态。</p>
+<p>在 t=500 和 t=750 时的分布几乎完全重合，表明我们已经得到了平稳密度的良好近似。</p>
+<p>你可以通过测试多个不同的初始条件，来确定初始条件确实不重要。</p>
+<p>例如，你可以尝试将所有公司的初始库存设置为 <span class="math notranslate nohighlight">\(X_0 = 20\)</span> 或 <span class="math notranslate nohighlight">\(X_0 = 80\)</span>，然后重新运行上面的代码，观察分布最终是否收敛到相同的稳态分布。</p>
 </section>
 </div>
 <div class="exercise admonition" id="id_ex2">
 
 <p class="admonition-title"><span class="caption-number">Exercise 20.2 </span></p>
 <section id="exercise-content">
-<p>使用模拟计算从 <span class="math notranslate nohighlight">\(X_0 = 70\)</span> 开始的公司在前50个周期内需要订货两次或更多次的概率。</p>
-<p>你需要一个较大的样本量来获得准确的结果。</p>
+<p>使用模拟的方法，估计一家初始库存为 <span class="math notranslate nohighlight">\(X_0 = 70\)</span> 的公司在前50个时期内至少需要补充库存两次的概率。</p>
+<p>为了获得统计上可靠的结果，请确保使用足够大的样本量。</p>
 </section>
 </div>
 <div class="solution dropdown admonition" id="inventory_dynamics-solution-3">
 
 <p class="admonition-title">Solution to<a class="reference internal" href="#id_ex2"> Exercise 20.2</a></p>
 <section id="solution-content">
-<p>这是一个解决方案。</p>
-<p>同样，由于计算量相对较大，我们编写了一个专门的函数而不是使用上面的类。</p>
-<p>我们还将使用跨公司的并行化处理。</p>
+<p>这里是一种解法。</p>
+<p>同样地，由于计算量相对较大，我们编写了一个专门的函数而不是使用上面的类。</p>
+<p>我们将利用并行计算来同时处理多家公司的模拟，以提高计算效率。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -645,16 +645,16 @@ D_t = \exp(\mu + \sigma Z_t)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>至少发生两次缺货的频率 = 0.447169
-CPU times: user 2.57 s, sys: 4 ms, total: 2.58 s
-Wall time: 929 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>至少发生两次缺货的频率 = 0.448064
+CPU times: user 2.6 s, sys: 4.98 ms, total: 2.6 s
+Wall time: 944 ms
 </pre></div>
 </div>
 </div>
 </div>
-<p>尝试将上面jitted函数中的<code class="docutils literal notranslate"><span class="pre">parallel</span></code>标志改为<code class="docutils literal notranslate"><span class="pre">False</span></code>。</p>
+<p>尝试将上面<code class="docutils literal notranslate"><span class="pre">&#64;jit</span></code><a class="reference external" href="https://zhuanlan.zhihu.com/p/53666925">装饰器</a>中的<code class="docutils literal notranslate"><span class="pre">parallel</span></code>参数改为<code class="docutils literal notranslate"><span class="pre">False</span></code>。</p>
 <p>根据你的系统配置，运行速度的差异可能会很大。</p>
-<p>（在我们的台式机上，速度提升了5倍。）</p>
+<p>（在我们的系统上运行速度提升了5倍！）</p>
 </section>
 </div>
 </section>
@@ -801,7 +801,7 @@ Wall time: 929 ms
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="util_rand_resp.html">
-   16. Expected Utilities of Random Responses
+   16. 随机回答的期望效用
   </a>
  </li>
 </ul>
@@ -887,7 +887,7 @@ Wall time: 929 ms
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   29. 求职搜索 III: 拟合值函数迭代
+   29. 工作搜寻 III: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
@@ -897,17 +897,17 @@ Wall time: 929 ms
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   31. 职业搜索 V：职业选择建模
+   31. 工作搜寻 V：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   32. 在职搜索 VI：在职搜索
+   32. 工作搜寻 VI：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_q.html">
-   33. 求职搜索 VII：McCall工人的Q学习
+   33. 工作搜寻 VII：McCall工人的Q学习
   </a>
  </li>
 </ul>

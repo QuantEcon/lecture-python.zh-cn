@@ -17,7 +17,7 @@ kernelspec:
 </div>
 ```
 
-# 求职搜索 III: 拟合值函数迭代
+# 工作搜寻 III: 拟合值函数迭代
 
 ```{contents} 目录
 :depth: 2
