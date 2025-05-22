@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>33. 工作搜寻 VII：McCall工人的Q学习 &#8212; Python中级数量经济学</title>
+    <title>33. 求职搜索 VII：McCall劳动者的Q学习 &#8212; Python中级数量经济学</title>
     <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
@@ -119,7 +119,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="34. Cass-Koopmans模型" href="cass_koopmans_1.html" />
-    <link rel="prev" title="32. 工作搜寻 VI：在职搜索" href="jv.html" />
+    <link rel="prev" title="32. 求职搜索 VI：在职搜索" href="jv.html" />
 
 <!-- Normal Meta Tags -->
 <meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
@@ -129,13 +129,13 @@
 <!-- Twitter tags -->
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@quantecon" />
-<meta name="twitter:title" content="工作搜寻 VII：McCall工人的Q学习"/>
+<meta name="twitter:title" content="求职搜索 VII：McCall劳动者的Q学习"/>
 <meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
 <meta name="twitter:creator" content="@quantecon">
 <meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
 
 <!-- Opengraph tags -->
-<meta property="og:title" content="工作搜寻 VII：McCall工人的Q学习" />
+<meta property="og:title" content="求职搜索 VII：McCall劳动者的Q学习" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://python.quantecon-zh-cn.org/mccall_q.html" />
 <meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
@@ -173,8 +173,8 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#q">33.3. 隐含质量函数 <span class="math notranslate nohighlight">\(Q\)</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">33.4. 从概率到样本</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">33.5. Q-学习</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">33.6. 在职工人不能辞职</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">33.7. 可能的扩展</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">33.6. 禁止在职劳动者辞职的情况</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">33.7. 进一步的研究方向</a></li>
 </ul>
                             <p class="logo">
                                 
@@ -205,7 +205,7 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">工作搜寻 VII：McCall工人的Q学习</p>
+                        <p class="qe-page__header-subheading">求职搜索 VII：McCall劳动者的Q学习</p>
 
                     </div>
                     <!-- length 2, since its a string and empty dict has length 2 - {} -->
@@ -232,36 +232,34 @@
                     <div>
                         
   <section class="tex2jax_ignore mathjax_ignore" id="vii-mccallq">
-<h1><span class="section-number">33. </span>工作搜寻 VII：McCall工人的Q学习<a class="headerlink" href="#vii-mccallq" title="Permalink to this heading">#</a></h1>
+<h1><span class="section-number">33. </span>求职搜索 VII：McCall劳动者的Q学习<a class="headerlink" href="#vii-mccallq" title="Permalink to this heading">#</a></h1>
 <section id="id1">
 <h2><span class="section-number">33.1. </span>概述<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
-<p>本讲解介绍一种强大的机器学习技术——Q学习。</p>
-<p><span id="id2">[<a class="reference internal" href="zreferences.html#id32" title="Richard S Sutton and Andrew G Barto. Reinforcement learning: An introduction. MIT press, 2018.">Sutton and Barto, 2018</a>]</span>介绍了Q学习和其他各种统计学习程序。</p>
-<p>Q学习算法结合了以下思想：</p>
+<p>本讲介绍一种强大的机器学习方法——Q学习。</p>
+<p><span id="id2">[<a class="reference internal" href="zreferences.html#id32" title="Richard S Sutton and Andrew G Barto. Reinforcement learning: An introduction. MIT press, 2018.">Sutton and Barto, 2018</a>]</span>对Q学习和其他各种统计学习方法进行了详细介绍。</p>
+<p>Q学习算法融合了两个关键思想：</p>
 <ul class="simple">
-<li><p>动态规划</p></li>
-<li><p>最小二乘法的递归版本，即<a class="reference external" href="https://en.wikipedia.org/wiki/Temporal_difference_learning">时间差分学习</a>。</p></li>
+<li><p>动态规划的原理</p></li>
+<li><p>最小二乘法的递归形式，也称为<a class="reference external" href="https://rl.qiwihui.com/zh-cn/latest/partI/chapter6/temporal_difference_learning.html">时序差分学习 (Temporal Difference Learning or TD Learning)</a></p></li>
 </ul>
-<p>本讲将Q学习算法应用于McCall工人所面临的情况。</p>
-<p>本讲还考虑了McCall工人可以选择辞去当前工作的情况。</p>
-<p>相对于我们在 <a class="reference internal" href="mccall_model.html"><span class="doc">quantecon 讲座</span></a> 中学习的 McCall 工人模型的动态规划方法，Q-学习算法让工人对以下方面的了解更少：</p>
+<p>在本讲中，我们将Q学习算法应用到McCall求职模型中，探讨劳动者如何通过这种方法做出最优决策。</p>
+<p>我们还将扩展模型，考虑劳动者不仅可以接受或拒绝工作机会，还可以选择辞去当前工作的情况。</p>
+<p>与我们在 <a class="reference internal" href="mccall_model.html"><span class="doc">quantecon 讲座</span></a> 中学习的 McCall 劳动者模型的动态规划方法相比，Q-学习算法的一个显著特点是：
+劳动者不需要完全了解</p>
 <ul class="simple">
-<li><p>生成工资序列的随机过程</p></li>
-<li><p>描述接受或拒绝工作后果的奖励函数</p></li>
+<li><p>工资是如何随机生成的</p></li>
+<li><p>接受或拒绝工作机会会带来什么样的奖励</p></li>
 </ul>
-<p>Q-学习算法调用统计学习模型来学习这些内容。</p>
-<p>统计学习通常可以归结为某种形式的最小二乘法，在这里也是如此。</p>
-<p>每当我们提到<strong>统计学习</strong>时，我们都必须说明正在学习的对象是什么。</p>
-<p>对于 Q-学习来说，要学习的对象并不是动态规划所关注的<strong>价值函数</strong>。</p>
-<p>但它与价值函数密切相关。</p>
-<p>在本讲座研究的有限动作、有限状态的情况下，要统计学习的对象是一个 <strong>Q-表</strong>，它是针对有限集合的 <strong>Q-函数</strong>的一个实例。</p>
-<p>有时 Q-函数或 Q-表也被称为质量函数或质量表。</p>
-<p>Q-表的行和列对应着智能体可能遇到的状态，以及在每个状态下可以采取的可能行动。</p>
-<p>一个类似贝尔曼方程的等式在算法中起着重要作用。</p>
-<p>它与我们在<a class="reference internal" href="mccall_model.html"><span class="doc">这个 quantecon 讲座</span></a>中看到的 McCall 模型的贝尔曼方程不同。</p>
+<p>Q-学习算法通过统计学习方法来获取这些信息，这通常可以简化为某种形式的最小二乘法。</p>
+<p>在讨论统计学习时，我们需要明确指出学习的目标是什么。</p>
+<p>对于Q-学习来说，学习的对象不是动态规划中常见的价值函数，尽管两者密切相关。</p>
+<p>在我们研究的有限状态、有限动作环境中，学习目标是一个称为<strong>Q-表</strong> (Q-table) 的结构，它是Q-函数 (Q-function) 在有限集合上的具体表现形式。</p>
+<p>这些Q-函数（或Q-表）有时也被称为质量函数或质量表。</p>
+<p>Q-表的结构很直观：行代表智能体可能处于的各种状态，列代表在每个状态下可以采取的不同行动。</p>
+<p>算法的核心是一个类似贝尔曼方程的等式，但它与我们在<a class="reference internal" href="mccall_model.html"><span class="doc">McCall模型讲座</span></a>中看到的贝尔曼方程有所不同。</p>
 <p>在本讲座中，我们将学习一些关于：</p>
 <ul class="simple">
-<li><p>与任何马尔可夫决策问题相关的<strong>Q-函数</strong>或<strong>质量函数</strong>，其最优值函数满足贝尔曼方程</p></li>
+<li><p>与马尔可夫决策问题相关的<strong>Q-函数</strong>或<strong>质量函数</strong>，其最优值函数满足贝尔曼方程</p></li>
 <li><p><strong>时序差分学习</strong>，Q-学习算法的一个关键组成部分</p></li>
 </ul>
 <p>像往常一样，让我们先导入一些 Python 模块。</p>
@@ -308,7 +306,6 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
 
-
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -318,28 +315,28 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <section id="mccall">
 <h2><span class="section-number">33.2. </span>McCall 模型回顾<a class="headerlink" href="#mccall" title="Permalink to this heading">#</a></h2>
 <p>我们首先回顾在<a class="reference internal" href="mccall_model.html"><span class="doc">这个 quantecon 讲座</span></a>中描述的 McCall 模型。</p>
-<p>我们将计算一个最优值函数和实现该值的政策。</p>
-<p>我们最终会将这个最优政策与 Q-learning McCall 工人所学到的进行比较。</p>
+<p>我们将计算一个最优值函数和实现该值的策略。</p>
+<p>我们最终会将这个最优策略与 Q-learning McCall 劳动者所学到的进行比较。</p>
 <p>McCall 模型的特征由参数 <span class="math notranslate nohighlight">\(\beta,c\)</span> 和已知的工资分布 <span class="math notranslate nohighlight">\(F\)</span> 来描述。</p>
-<p>McCall 工人想要最大化预期的终身收入折现总和</p>
+<p>McCall 劳动者想要最大化预期的终身收入折现总和</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E} \sum_{t=0}^{\infty} \beta^t y_t
 \]</div>
-<p>工人的收入 <span class="math notranslate nohighlight">\(y_t\)</span> 在就业时等于他的工资 <span class="math notranslate nohighlight">\(w\)</span>，在失业时等于失业补助 <span class="math notranslate nohighlight">\(c\)</span>。</p>
-<p>对于刚收到工资offer <span class="math notranslate nohighlight">\(w\)</span> 并正在决定是接受还是拒绝的 McCall 工人来说，最优值 <span class="math notranslate nohighlight">\(V\left(w\right)\)</span> 满足贝尔曼方程</p>
+<p>劳动者的收入 <span class="math notranslate nohighlight">\(y_t\)</span> 在就业时等于他的工资 <span class="math notranslate nohighlight">\(w\)</span>，在失业时等于失业补助 <span class="math notranslate nohighlight">\(c\)</span>。</p>
+<p>对于刚收到工资offer <span class="math notranslate nohighlight">\(w\)</span> 并正在决定是接受还是拒绝的 McCall 劳动者来说，最优值 <span class="math notranslate nohighlight">\(V\left(w\right)\)</span> 满足贝尔曼方程</p>
 <div class="math notranslate nohighlight" id="equation-eq-mccallbellman">
 <span class="eqno">(33.1)<a class="headerlink" href="#equation-eq-mccallbellman" title="Permalink to this equation">#</a></span>\[
 V\left(w\right)=\max_{\text{accept, reject}}\;\left\{ \frac{w}{1-\beta},c+\beta\int V\left(w'\right)dF\left(w'\right)\right\}
 \]</div>
-<p>为了与Q-learning的结果进行比较基准，我们首先近似最优值函数。</p>
-<p>在有限离散状态空间中，可能的状态由<span class="math notranslate nohighlight">\(\{1,2,...,n\}\)</span>索引，我们对值函数<span class="math notranslate nohighlight">\(v\in\mathbb{R}^{n}\)</span>做一个初始猜测，然后对贝尔曼方程进行迭代：</p>
+<p>为了与Q-学习的结果进行比较基准，我们首先近似最优值函数。</p>
+<p>在有限离散状态空间中，可能的状态由<span class="math notranslate nohighlight">\(\{1,2,...,n\}\)</span>索引，我们对价值函数<span class="math notranslate nohighlight">\(v\in\mathbb{R}^{n}\)</span>做一个初始猜测，然后对贝尔曼方程进行迭代：</p>
 <div class="math notranslate nohighlight">
 \[
 v^{\prime}(i)=\max \left\{\frac{w(i)}{1-\beta}, c+\beta \sum_{1 \leq j \leq n} v(j) q(j)\right\} \quad \text { for } i=1, \ldots, n
 \]</div>
 <p>让我们使用<a class="reference internal" href="mccall_model.html"><span class="doc">这个quantecon讲座</span></a>中的Python代码。</p>
-<p>我们使用一个名为<code class="docutils literal notranslate"><span class="pre">VFI</span></code>的Python方法，通过值函数迭代来计算最优值函数。</p>
+<p>我们使用一个名为<code class="docutils literal notranslate"><span class="pre">VFI</span></code>的Python方法，通过价值函数迭代来计算最优值函数。</p>
 <p>我们构造一个假设的工资分布，并用以下Python代码绘制：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -363,7 +360,7 @@ v^{\prime}(i)=\max \left\{\frac{w(i)}{1-\beta}, c+\beta \sum_{1 \leq j \leq n} v
 <img alt="_images/f566092c708fcfad5266753751af6d8824e0ecf4c02313ee6406818654e17141.png" src="_images/f566092c708fcfad5266753751af6d8824e0ecf4c02313ee6406818654e17141.png" />
 </div>
 </div>
-<p>接下来我们将通过对贝尔曼方程进行迭代收敛来计算工人的最优价值函数。</p>
+<p>接下来我们将通过对贝尔曼方程进行迭代收敛来计算劳动者的最优价值函数。</p>
 <p>然后我们将绘制贝尔曼算子的各种迭代结果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -371,7 +368,7 @@ v^{\prime}(i)=\max \left\{\frac{w(i)}{1-\beta}, c+\beta \sum_{1 \leq j \leq n} v
     <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>      <span class="c1"># 失业补偿</span>
     <span class="p">(</span><span class="s1">&#39;β&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>      <span class="c1"># 贴现因子</span>
     <span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>   <span class="c1"># 工资值数组，w[i] = 状态i下的工资</span>
-    <span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>    <span class="c1"># 概率数组</span>
+    <span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>   <span class="c1"># 概率数组</span>
 <span class="p">]</span>
 
 
@@ -390,7 +387,7 @@ v^{\prime}(i)=\max \left\{\frac{w(i)}{1-\beta}, c+\beta \sum_{1 \leq j \leq n} v
         <span class="c1"># 简化名称</span>
         <span class="n">c</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
         <span class="c1"># 评估每个状态-行动对的值</span>
-        <span class="c1"># 考虑行动 = 接受或拒绝当前offer</span>
+        <span class="c1"># 考虑行动： 接受或拒绝当前offer</span>
         <span class="n">accept</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span><span class="p">)</span>
         <span class="n">reject</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">β</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="n">q</span><span class="p">)</span>
 
@@ -421,8 +418,8 @@ v^{\prime}(i)=\max \left\{\frac{w(i)}{1-\beta}, c+\beta \sum_{1 \leq j \leq n} v
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    绘制一系列价值函数。</span>
 
-<span class="sd">        * mcm 是 McCallModel 的一个实例</span>
-<span class="sd">        * ax 是实现了plot方法的轴对象</span>
+<span class="sd">        * mcm: McCallModel的实例</span>
+<span class="sd">        * ax: 用于绘图的matplotlib轴对象</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -459,7 +456,7 @@ v^{\prime}(i)=\max \left\{\frac{w(i)}{1-\beta}, c+\beta \sum_{1 \leq j \leq n} v
 </div>
 </div>
 <p>接下来我们将打印出迭代序列的极限值。</p>
-<p>这是通过值函数迭代得到的McCall工人价值函数的近似值。</p>
+<p>这是通过价值函数迭代得到的McCall劳动者价值函数的近似值。</p>
 <p>在我们完成Q学习之后，我们将使用这个值函数作为基准。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -480,17 +477,17 @@ v^{\prime}(i)=\max \left\{\frac{w(i)}{1-\beta}, c+\beta \sum_{1 \leq j \leq n} v
 <h2><span class="section-number">33.3. </span>隐含质量函数 <span class="math notranslate nohighlight">\(Q\)</span><a class="headerlink" href="#q" title="Permalink to this heading">#</a></h2>
 <p><strong>质量函数</strong> <span class="math notranslate nohighlight">\(Q\)</span> 将状态-动作对映射为最优值。</p>
 <p>它们与最优值函数紧密相连。</p>
-<p>但值函数仅是状态的函数，而不包含动作。</p>
+<p>但价值函数仅是状态的函数，而不包含动作。</p>
 <p>对于每个给定状态，质量函数给出从该状态开始可以达到的最优值列表，列表的每个组成部分表示可以采取的一种可能动作。</p>
-<p>对于我们的McCall工人模型，假设有有限的可能工资集合：</p>
+<p>对于我们的McCall劳动者模型，假设有有限的可能工资集合：</p>
 <ul class="simple">
 <li><p>状态空间 <span class="math notranslate nohighlight">\(\mathcal{W}=\{w_1,w_2,...,w_n\}\)</span> 由整数 <span class="math notranslate nohighlight">\(1,2,...,n\)</span> 索引</p></li>
 <li><p>动作空间为 <span class="math notranslate nohighlight">\(\mathcal{A}=\{\text{accept}, \text{reject}\}\)</span></p></li>
 </ul>
 <p>令 <span class="math notranslate nohighlight">\(a \in \mathcal{A}\)</span> 为两个可能动作之一，即接受或拒绝。</p>
-<p>对于我们的McCall工人，最优Q函数 <span class="math notranslate nohighlight">\(Q(w,a)\)</span> 等于一个此前失业的工人在手头有offer <span class="math notranslate nohighlight">\(w\)</span> 时，如果他采取动作 <span class="math notranslate nohighlight">\(a\)</span> 所能获得的最大价值。</p>
-<p><span class="math notranslate nohighlight">\(Q(w,a)\)</span> 的这个定义假设工人在随后的时期会采取最优行动。</p>
-<p>我们的 McCall 工人的最优 Q-函数满足</p>
+<p>对于我们的McCall劳动者，最优Q函数 <span class="math notranslate nohighlight">\(Q(w,a)\)</span> 等于一个此前失业的劳动者在手头有offer <span class="math notranslate nohighlight">\(w\)</span> 时，如果他采取动作 <span class="math notranslate nohighlight">\(a\)</span> 所能获得的最大价值。</p>
+<p><span class="math notranslate nohighlight">\(Q(w,a)\)</span> 的这个定义假设劳动者在随后的时期会采取最优行动。</p>
+<p>我们的 McCall 劳动者的最优 Q-函数满足</p>
 <div class="math notranslate nohighlight" id="equation-eq-impliedq">
 <span class="eqno">(33.2)<a class="headerlink" href="#equation-eq-impliedq" title="Permalink to this equation">#</a></span>\[\begin{split}
 \begin{aligned}
@@ -498,8 +495,8 @@ Q\left(w,\text{accept}\right) &amp; =\frac{w}{1-\beta} \\
 Q\left(w,\text{reject}\right) &amp; =c+\beta\int\max_{\text{accept, reject}}\left\{ \frac{w'}{1-\beta},Q\left(w',\text{reject}\right)\right\} dF\left(w'\right)
 \end{aligned}
 \end{split}\]</div>
-<p>注意，系统<a class="reference internal" href="#equation-eq-impliedq">(33.2)</a>的第一个方程假设在代理人接受了一个报价后，他将来不会拒绝同样的报价。</p>
-<p>这些方程与我们在<a class="reference internal" href="mccall_model.html"><span class="doc">这个 quantecon 讲座</span></a>中研究的工人最优值函数的贝尔曼方程是一致的。</p>
+<p>注意，系统<a class="reference internal" href="#equation-eq-impliedq">(33.2)</a>的第一个方程假设在个体接受了一个报价后，他将来不会拒绝同样的报价。</p>
+<p>这些方程与我们在<a class="reference internal" href="mccall_model.html"><span class="doc">这个 quantecon 讲座</span></a>中研究的劳动者最优值函数的贝尔曼方程是一致的。</p>
 <p>显然，在那个讲座中描述的最优值函数 <span class="math notranslate nohighlight">\(V(w)\)</span> 与我们的 Q-函数有如下关系：</p>
 <div class="math notranslate nohighlight">
 \[
@@ -510,13 +507,13 @@ V(w) = \max_{\textrm{accept},\textrm{reject}} \left\{ Q(w, \text{accept} \right)
 <div class="math notranslate nohighlight">
 \[ Q_r := Q\left(w,\text{reject}\right) \quad \forall \, w\in\mathcal{W}.
 \]</div>
-<p>这一事实为我们提供了一种替代方案，而且事实证明，在这种情况下，这是一种更快的方法来计算McCall工人模型的最优值函数和相关的最优策略。</p>
-<p>与我们上面使用的值函数迭代不同，我们可以对系统<a class="reference internal" href="#equation-eq-impliedq">(33.2)</a>中第二个方程的一个版本进行迭代直至收敛，该方程将<span class="math notranslate nohighlight">\(Q_r\)</span>的估计值映射为改进的估计值<span class="math notranslate nohighlight">\(Q_r'\)</span>：</p>
+<p>这一事实为我们提供了一种替代方案，而且事实证明，在这种情况下，这是一种更快的方法来计算McCall劳动者模型的最优值函数和相关的最优策略。</p>
+<p>与我们上面使用的价值函数迭代不同，我们可以对系统<a class="reference internal" href="#equation-eq-impliedq">(33.2)</a>中第二个方程的一个版本进行迭代直至收敛，该方程将<span class="math notranslate nohighlight">\(Q_r\)</span>的估计值映射为改进的估计值<span class="math notranslate nohighlight">\(Q_r'\)</span>：</p>
 <div class="math notranslate nohighlight">
 \[
 Q_{r}^\prime=c+\beta\int\max_{\text{}}\left\{ \frac{w'}{1-\beta},Q_{r}\right\} dF\left(w'\right)
 \]</div>
-<p>在<span class="math notranslate nohighlight">\(Q_r\)</span>序列收敛后，我们可以从以下公式恢复McCall工人模型的最优值函数<span class="math notranslate nohighlight">\(V(w)\)</span>：</p>
+<p>在<span class="math notranslate nohighlight">\(Q_r\)</span>序列收敛后，我们可以从以下公式复原McCall劳动者模型的最优值函数<span class="math notranslate nohighlight">\(V(w)\)</span>：</p>
 <div class="math notranslate nohighlight">
 \[
 V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
@@ -524,7 +521,7 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 </section>
 <section id="id3">
 <h2><span class="section-number">33.4. </span>从概率到样本<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
-<p>我们之前提到，McCall工人模型的最优Q函数满足以下贝尔曼方程：</p>
+<p>我们之前提到，McCall劳动者模型的最优Q函数满足以下贝尔曼方程：</p>
 <div class="math notranslate nohighlight" id="equation-eq-probtosample1">
 <span class="eqno">(33.3)<a class="headerlink" href="#equation-eq-probtosample1" title="Permalink to this equation">#</a></span>\[
 \begin{aligned}
@@ -533,9 +530,8 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 \end{aligned}
 \]</div>
 <p>注意第二行中对<span class="math notranslate nohighlight">\(F(w')\)</span>的积分。</p>
-<p>删除积分符号为我们开始思考Q-learning提供了一个不严谨但有启发性的思路。</p>
-<p>因此，构建一个保留<a class="reference internal" href="#equation-eq-probtosample1">(33.3)</a>第一个方程的差分方程系统。</p>
-<p>但是第二个方程通过去除对<span class="math notranslate nohighlight">\(F (w')\)</span>的积分来替代：</p>
+<p>为了开始思考Q-learning，我们可以尝试一个不严谨但有启发性的方法：移除积分符号。</p>
+<p>这样，我们可以构建一个差分方程系统，保留<a class="reference internal" href="#equation-eq-probtosample1">(33.3)</a>的第一个方程，但将第二个方程中对<span class="math notranslate nohighlight">\(F(w')\)</span>的积分替换为：</p>
 <div class="math notranslate nohighlight" id="equation-eq-probtosample2">
 <span class="eqno">(33.4)<a class="headerlink" href="#equation-eq-probtosample2" title="Permalink to this equation">#</a></span>\[
 \begin{aligned}
@@ -545,7 +541,7 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 \]</div>
 <p>第二个方程不可能对我们状态空间的笛卡尔积中的所有<span class="math notranslate nohighlight">\(w, w'\)</span>对都成立。</p>
 <p>但是，也许我们可以借助大数定律，希望它能对一个长时间序列中抽取的<span class="math notranslate nohighlight">\(w_t, w_{t+1}\)</span>对<strong>平均</strong>成立，这里我们把<span class="math notranslate nohighlight">\(w_t\)</span>看作<span class="math notranslate nohighlight">\(w\)</span>，把<span class="math notranslate nohighlight">\(w_{t+1}\)</span>看作<span class="math notranslate nohighlight">\(w'\)</span>。</p>
-<p>Q-learning的基本思想是从<span class="math notranslate nohighlight">\(F\)</span>中抽取一个长样本序列（虽然我们假设工人不知道<span class="math notranslate nohighlight">\(F\)</span>，但我们是知道的）并对递归式进行迭代</p>
+<p>Q-learning的基本思想是从<span class="math notranslate nohighlight">\(F\)</span>中抽取一个长样本序列（虽然我们假设劳动者不知道<span class="math notranslate nohighlight">\(F\)</span>，但我们是知道的）并对递归式进行迭代</p>
 <p>将日期 <span class="math notranslate nohighlight">\(t\)</span> 时的 Q 函数估计值 <span class="math notranslate nohighlight">\(\hat Q_t\)</span> 映射到日期 <span class="math notranslate nohighlight">\(t+1\)</span> 时的改进估计值 <span class="math notranslate nohighlight">\(\hat Q_{t+1}\)</span>。</p>
 <p>为了建立这样一个算法，我们首先定义一些误差或”差异”</p>
 <div class="math notranslate nohighlight" id="equation-eq-old105">
@@ -555,14 +551,14 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
          c  &amp; +\beta \max_{\text{accept, reject}}\left\{ \hat Q_t(w_{t+1}, \textrm{accept}),\hat Q_t\left(w_{t+1},\text{reject}\right)\right\}  - \hat Q_t\left(w_t,\text{reject}\right)  = \textrm{diff}_{\textrm{reject},t}  \cr
 \end{aligned}
 \]</div>
-<p>自适应学习方案将是以下形式</p>
+<p>我们的自适应学习方案可以表示为</p>
 <div class="math notranslate nohighlight" id="equation-eq-old106">
 <span class="eqno">(33.6)<a class="headerlink" href="#equation-eq-old106" title="Permalink to this equation">#</a></span>\[
 \hat Q_{t+1} = \hat Q_t + \alpha \ \textrm{diff}_t
 \]</div>
-<p>其中 <span class="math notranslate nohighlight">\(\alpha \in (0,1)\)</span> 是一个小的<strong>增益</strong>参数，用于控制学习速率，而 <span class="math notranslate nohighlight">\(\hat Q_t\)</span> 和 <span class="math notranslate nohighlight">\(\textrm{diff}_t\)</span> 是对应的 <span class="math notranslate nohighlight">\(2 \times 1\)</span> 向量</p>
-<p>对应方程组 <a class="reference internal" href="#equation-eq-old105">(33.5)</a> 中的对象。</p>
-<p>这个非正式的论述将我们引向 Q-学习的门槛。</p>
+<p>其中 <span class="math notranslate nohighlight">\(\alpha \in (0,1)\)</span> 是一个小的<strong>学习率</strong>参数，控制每次更新的步长大小，而 <span class="math notranslate nohighlight">\(\hat Q_t\)</span> 和 <span class="math notranslate nohighlight">\(\textrm{diff}_t\)</span> 分别是 <span class="math notranslate nohighlight">\(2 \times 1\)</span> 向量，</p>
+<p>它们对应于方程组 <a class="reference internal" href="#equation-eq-old105">(33.5)</a> 中的相应元素。</p>
+<p>这种非正式的推导为我们打开了通往 Q-学习的大门。</p>
 </section>
 <section id="id4">
 <h2><span class="section-number">33.5. </span>Q-学习<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
@@ -573,10 +569,9 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 <p>在本讲中研究的例子里，我们有一个有限的动作空间和有限的状态空间。</p>
 <p>这意味着我们可以将 Q-函数表示为矩阵或 Q-表，<span class="math notranslate nohighlight">\(\widetilde{Q}(w,a)\)</span>。</p>
 <p>Q-学习通过更新 Q-函数来进行，决策者在模拟生成的工资序列路径上获得经验。</p>
-<p>在学习过程中，我们的 McCall 工人采取行动并体验这些行动带来的奖励。</p>
-<p>他同时学习关于环境（在这种情况下是工资分布）和奖励函数的知识。</p>
-<p>在这种情况下，失业补偿 <span class="math notranslate nohighlight">\(c\)</span> 和工资的现值。</p>
-<p>更新算法基于对如下递归的略微修改（稍后将描述）：</p>
+<p>在学习过程中，我们的 McCall 劳动者会采取各种行动，并从这些行动中获得相应的奖励。</p>
+<p>在这个过程中，他逐渐学习工资分布这一环境特征，以及与不同决策相关的奖励——包括失业补偿 <span class="math notranslate nohighlight">\(c\)</span> 和接受工作后获得的工资现值。</p>
+<p>Q学习的核心是一个递归更新过程，其基本形式如下（我们稍后会详细讨论其修改版本）：</p>
 <div class="math notranslate nohighlight" id="equation-eq-old3">
 <span class="eqno">(33.7)<a class="headerlink" href="#equation-eq-old3" title="Permalink to this equation">#</a></span>\[
 \widetilde{Q}^{new}\left(w,a\right)=\widetilde{Q}^{old}\left(w,a\right)+\alpha \widetilde{TD}\left(w,a\right)
@@ -589,9 +584,10 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 \widetilde{TD}\left(w,\text{reject}\right) &amp; = \left[ c+\beta\max_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w',a'\right) \right]-\widetilde{Q}^{old}\left(w,\text{reject}\right),\;w'\sim F
 \end{aligned}
 \end{split}\]</div>
-<p>对于 <span class="math notranslate nohighlight">\(a = \left\{\textrm{accept,reject} \right\}\)</span>，项 <span class="math notranslate nohighlight">\(\widetilde{TD}(w,a)\)</span> 是驱动更新的<strong>时间差分误差</strong>。</p>
-<p>因此，这个系统是我们在方程 <a class="reference internal" href="#equation-eq-old106">(33.6)</a> 中非正式描述的自适应系统的一个版本。</p>
-<p>方程组<a class="reference internal" href="#equation-eq-old4">(33.8)</a>尚未捕捉到算法的一个方面，即我们通过偶尔随机替换的<strong>实验性</strong>尝试</p>
+<p>对于 <span class="math notranslate nohighlight">\(a \in \{\textrm{accept}, \textrm{reject}\}\)</span>，<span class="math notranslate nohighlight">\(\widetilde{TD}(w,a)\)</span> 表示<strong>时序差分误差</strong> （TD error），这是驱动Q值更新的关键因素。</p>
+<p>这个更新机制实际上就是我们在方程 <a class="reference internal" href="#equation-eq-old106">(33.6)</a> 中简要描述的自适应学习系统的具体实现。</p>
+<p>然而，方程组 <a class="reference internal" href="#equation-eq-old4">(33.8)</a> 还没有体现算法的一个重要特性：为了促进探索，我们需要通过随机实验来打破纯粹的贪婪策略</p>
+<p>我们偶尔将</p>
 <div class="math notranslate nohighlight">
 \[
 \textrm{argmax}_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w,a'\right)
@@ -601,8 +597,7 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 \[
 \textrm{argmin}_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w,a'\right)
 \]</div>
-<p>并且
-偶尔替换</p>
+<p>并且偶尔将</p>
 <div class="math notranslate nohighlight">
 \[
 \textrm{argmax}_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w',a'\right)
@@ -612,7 +607,7 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 \[
 \textrm{argmin}_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w',a'\right)
 \]</div>
-<p>在以下McCall工人Q-学习的伪代码的第3步中，我们以概率<span class="math notranslate nohighlight">\(\epsilon\)</span>激活这种实验：</p>
+<p>在以下McCall劳动者Q-学习的伪代码的第3步中，我们以概率<span class="math notranslate nohighlight">\(\epsilon\)</span>激活这种实验：</p>
 <ol class="arabic simple">
 <li><p>设置一个任意的初始Q表。</p></li>
 <li><p>从<span class="math notranslate nohighlight">\(F\)</span>中抽取初始工资报价<span class="math notranslate nohighlight">\(w\)</span>。</p></li>
@@ -623,28 +618,28 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 </li>
 </ol>
 <ul class="simple">
-<li><p>以概率 <span class="math notranslate nohighlight">\(\epsilon\)</span> 选择替代行动。</p></li>
+<li><p>以概率 <span class="math notranslate nohighlight">\(\epsilon\)</span> 随机选择另一个行动。</p></li>
 </ul>
 <ol class="arabic simple" start="4">
 <li><p>更新与所选行动相关的状态，并根据<a class="reference internal" href="#equation-eq-old4">(33.8)</a>计算 <span class="math notranslate nohighlight">\(\widetilde{TD}\)</span>，然后根据<a class="reference internal" href="#equation-eq-old3">(33.7)</a>更新 <span class="math notranslate nohighlight">\(\widetilde{Q}\)</span>。</p></li>
 <li><p>如果需要则抽取新的状态 <span class="math notranslate nohighlight">\(w'\)</span>，否则采用现有工资，并再次根据<a class="reference internal" href="#equation-eq-old3">(33.7)</a>更新Q表。</p></li>
-<li><p>当新旧Q表足够接近时停止，即对于给定的 <span class="math notranslate nohighlight">\(\delta\)</span>，满足 <span class="math notranslate nohighlight">\(\lVert\tilde{Q}^{new}-\tilde{Q}^{old}\rVert_{\infty}\leq\delta\)</span>，或者当工人连续接受 <span class="math notranslate nohighlight">\(T\)</span> 期（对于预先规定的 <span class="math notranslate nohighlight">\(T\)</span>）时停止。</p></li>
+<li><p>当新旧Q表足够接近时停止，即对于给定的 <span class="math notranslate nohighlight">\(\delta\)</span>，满足 <span class="math notranslate nohighlight">\(\lVert\tilde{Q}^{new}-\tilde{Q}^{old}\rVert_{\infty}\leq\delta\)</span>，或者当劳动者连续接受 <span class="math notranslate nohighlight">\(T\)</span> 期（对于预先规定的 <span class="math notranslate nohighlight">\(T\)</span>）时停止。</p></li>
 <li><p>带着更新后的Q表返回步骤2。</p></li>
 </ol>
 <p>重复此程序 <span class="math notranslate nohighlight">\(N\)</span> 次回合或直到更新的Q表收敛。</p>
 <p>我们将步骤2到7的一次完整过程称为时序差分学习的一个”回合”或”轮次”。</p>
 <p>在我们的情境中，每个回合都始于代理人抽取一个初始工资报价，即一个新状态。</p>
-<p>智能体根据预设的Q表采取行动，获得奖励，然后进入由本期行动所暗示的新状态。</p>
-<p>Q表通过时序差分学习进行更新。</p>
-<p>我们重复这个过程直到Q表收敛或达到一个回合的最大长度。</p>
-<p>多个回合使智能体能够重新开始，并访问那些从前一个回合的终止状态较难访问到的状态。</p>
-<p>例如，一个基于其Q表接受了工资报价的智能体将较少可能从工资分布的其他部分获得新的报价。</p>
-<p>通过使用<span class="math notranslate nohighlight">\(\epsilon\)</span>-贪婪方法并增加回合数，Q学习算法在探索和利用之间取得平衡。</p>
-<p><strong>注意：</strong> 注意在<a class="reference internal" href="#equation-eq-old3">(33.7)</a>中定义的与最优Q表相关的<span class="math notranslate nohighlight">\(\widetilde{TD}\)</span>自动满足对所有状态-动作对<span class="math notranslate nohighlight">\(\widetilde{TD}=0\)</span>。我们的Q-learning算法的极限是否收敛到最优Q表，取决于算法是否足够频繁地访问所有状态-动作对。</p>
-<p>我们在Python类中实现这个伪代码。</p>
-<p>为了简单和方便，我们让<code class="docutils literal notranslate"><span class="pre">s</span></code>表示介于<span class="math notranslate nohighlight">\(0\)</span>和<span class="math notranslate nohighlight">\(n=50\)</span>之间的状态索引，且<span class="math notranslate nohighlight">\(w_s=w[s]\)</span>。</p>
-<p>Q表的第一列表示拒绝工资的相关值，第二列表示接受工资的相关值。</p>
-<p>我们使用<code class="docutils literal notranslate"><span class="pre">numba</span></code>编译来加速计算。</p>
+<p>代理人根据当前的Q表选择行动，获得奖励，然后转移到由本期行动决定的新状态。</p>
+<p>Q表通过时序差分学习不断更新。</p>
+<p>我们重复这个过程直到Q表收敛或达到预设的最大回合数。</p>
+<p>多个回合使代理人能够从不同起点开始探索，访问那些在单一回合中难以到达的状态。</p>
+<p>例如，如果代理人接受了某个工资报价，他就会停留在该就业状态，无法探索其他可能的工资水平。</p>
+<p>通过使用<span class="math notranslate nohighlight">\(\epsilon\)</span>-贪婪策略并增加回合数，Q学习算法在探索新可能性和利用已知信息之间取得平衡。</p>
+<p><strong>注意：</strong> 在<a class="reference internal" href="#equation-eq-old3">(33.7)</a>中定义的最优Q表对应的<span class="math notranslate nohighlight">\(\widetilde{TD}\)</span>值在所有状态-动作对上都等于零。我们的Q-learning算法是否能收敛到最优Q表，取决于算法是否能充分探索所有可能的状态-动作组合。</p>
+<p>下面我们将这个算法实现为Python类。</p>
+<p>为了简化，我们用<code class="docutils literal notranslate"><span class="pre">s</span></code>表示介于<span class="math notranslate nohighlight">\(0\)</span>和<span class="math notranslate nohighlight">\(n=50\)</span>之间的状态索引，其中<span class="math notranslate nohighlight">\(w_s=w[s]\)</span>表示对应的工资值。</p>
+<p>Q表的结构很直观：第一列表示拒绝工资的价值，第二列表示接受工资的价值。</p>
+<p>我们使用<code class="docutils literal notranslate"><span class="pre">numba</span></code>编译来提高计算效率。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params</span><span class="o">=</span><span class="p">[</span>
@@ -793,17 +788,17 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[5317.43072555 2635.2144793 ]
- [5324.4940733  5201.03911545]
- [5336.84890661 5305.28931122]
- [5307.10131002 5281.26220423]
- [5415.83272729 5337.85661118]
- [5684.61944128 5291.06052825]
- [5366.2287901  5350.04039686]
- [5380.9097729  5346.70440737]
- [5347.06720354 5323.42069   ]
- [5409.49835686 5500.00012258]
- [5335.16728609 6000.        ]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[5355.66803398    0.        ]
+ [5319.81193728 5229.19785352]
+ [5258.16108457 5258.93451549]
+ [5346.68016818 5269.94281646]
+ [5322.86129483 5276.99966878]
+ [5464.74606832 5295.43218503]
+ [5456.68433284 5311.77405221]
+ [5460.70885025 5335.36211294]
+ [5470.81228276 5277.12087676]
+ [5440.62386814 5500.00003416]
+ [5318.68235546 6000.        ]]
 </pre></div>
 </div>
 </div>
@@ -818,8 +813,8 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[5317.43072555 5324.4940733  5336.84890661 5307.10131002 5415.83272729
- 5684.61944128 5366.2287901  5380.9097729  5347.06720354 5500.00012258
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[5355.66803398 5319.81193728 5258.93451549 5346.68016818 5322.86129483
+ 5464.74606832 5456.68433284 5460.70885025 5470.81228276 5500.00003416
  6000.        ]
 </pre></div>
 </div>
@@ -840,7 +835,7 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/aec73ec30e93e818a48adcecf0f1c4060fba3905cf4cb8763ff702f7bdca5348.png" src="_images/aec73ec30e93e818a48adcecf0f1c4060fba3905cf4cb8763ff702f7bdca5348.png" />
+<img alt="_images/a8bcc451d63465564fef5ab09b81e9df4f6f8227f2fa2ae4106893b3c79dd19c.png" src="_images/a8bcc451d63465564fef5ab09b81e9df4f6f8227f2fa2ae4106893b3c79dd19c.png" />
 </div>
 </div>
 <p>现在，让我们计算一个更大状态空间的情况：<span class="math notranslate nohighlight">\(n=30\)</span>（而不是<span class="math notranslate nohighlight">\(n=10\)</span>）。</p>
@@ -956,23 +951,22 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 进度: 训练轮数 = 200000
 </pre></div>
 </div>
-<img alt="_images/9ddab87c75b3e7a66fd7744d527e529ef2261ac65d02d047b6559eef9c4f7b0a.png" src="_images/9ddab87c75b3e7a66fd7744d527e529ef2261ac65d02d047b6559eef9c4f7b0a.png" />
+<img alt="_images/cff0850839ecd4a07beed6c00436c16aef39f9199d3ea882be9ca6edc88c0bc0.png" src="_images/cff0850839ecd4a07beed6c00436c16aef39f9199d3ea882be9ca6edc88c0bc0.png" />
 </div>
 </div>
-<p>上述图表表明：</p>
+<p>从上述图表中，我们可以观察到两个重要现象：</p>
 <ul class="simple">
-<li><p>Q-learning算法在学习那些很少被抽取到的工资水平的Q表时会遇到困难</p></li>
-<li><p>随着训练周期的延长，对通过值函数迭代计算得到的”真实”值函数的近似质量会提高</p></li>
+<li><p>Q-learning算法在学习较少出现的工资水平时表现不佳，这反映了算法对样本频率的依赖性</p></li>
+<li><p>随着训练轮数增加，算法逐渐接近通过值函数迭代得到的”真实”值函数，表明学习质量随时间提高</p></li>
 </ul>
 </section>
 <section id="id5">
-<h2><span class="section-number">33.6. </span>在职工人不能辞职<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
-<p>在方程组<a class="reference internal" href="#equation-eq-old4">(33.8)</a>中描述的前述时序差分Q-learning版本允许在职工人辞职，即拒绝其现有工资，转而在本期领取失业补助并在下期获得新的工作机会。</p>
-<p>这是<a class="reference internal" href="mccall_model.html"><span class="doc">这个QuantEcon讲座</span></a>中描述的McCall工人不会选择的选项。</p>
-<p>参见<span id="id6">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span>第6章关于搜索的证明。</p>
-<p>但在Q-learning的背景下，给予工人辞职并在失业期间获得失业补助的选项，实际上通过促进探索而非过早地进行利用，加快了学习过程。</p>
-<p>为了说明这一点，我们将修改时间差分公式，以禁止已就业的工人辞去她之前接受的工作。</p>
-<p>基于对可选择项的这种理解，我们得到以下时间差分值：</p>
+<h2><span class="section-number">33.6. </span>禁止在职劳动者辞职的情况<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>我们之前讨论的时序差分Q-learning版本（见方程<a class="reference internal" href="#equation-eq-old4">(33.8)</a>）允许已就业的劳动者辞去当前工作，从而在当期获得失业补助，并在下期有机会获得新的工作offer。</p>
+<p>这一选项在<a class="reference internal" href="mccall_model.html"><span class="doc">标准McCall模型</span></a>中并不存在，正如<span id="id6">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span>第6章中关于求职搜索的分析所证明的那样。</p>
+<p>然而，从学习算法的角度看，允许辞职选项实际上有助于加速学习过程。这是因为辞职选项促进了状态空间的探索，避免了过早地固定在某一决策上（即过早利用而非探索）。</p>
+<p>为了展示不允许辞职的情况，我们需要修改策略公式，限制已就业劳动者必须保持其当前工作。</p>
+<p>基于这种限制，我们可以得到以下修改后的策略值：</p>
 <div class="math notranslate nohighlight" id="equation-eq-temp-diff">
 <span class="eqno">(33.9)<a class="headerlink" href="#equation-eq-temp-diff" title="Permalink to this equation">#</a></span>\[\begin{split}
 \begin{aligned}
@@ -980,11 +974,11 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 \widetilde{TD}\left(w,\text{reject}\right) &amp; = \left[ c+\beta\max_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w',a'\right) \right]-\widetilde{Q}^{old}\left(w,\text{reject}\right),\;w'\sim F
 \end{aligned}
 \end{split}\]</div>
-<p>事实证明，公式<a class="reference internal" href="#equation-eq-temp-diff">(33.9)</a>与我们的Q学习递归<a class="reference internal" href="#equation-eq-old3">(33.7)</a>结合使用，可以让我们的智能体最终学习到最优值函数，就像在可以重新抽取选项的情况下一样。</p>
-<p>但是学习速度较慢，因为如果代理人过早接受工资报价，就会失去在同一回合中探索新状态和调整该状态相关价值的机会。</p>
-<p>当训练轮数/回合数较低时，这可能导致次优结果。</p>
-<p>但是如果我们增加训练轮数/回合数，我们可以观察到误差会减小，结果会变得更好。</p>
-<p>我们用以下代码和图表来说明这些可能性。</p>
+<p>实际上，当我们将公式<a class="reference internal" href="#equation-eq-temp-diff">(33.9)</a>与Q学习递归<a class="reference internal" href="#equation-eq-old3">(33.7)</a>结合使用时，智能体仍然能够最终学习到最优值函数，就像在允许辞职的情况下一样。</p>
+<p>然而，这种学习过程会变得更加缓慢。这是因为一旦代理人接受了工资报价，他就失去了在当前回合中继续探索其他状态和更新相应价值估计的机会。</p>
+<p>在训练初期阶段（即训练轮数较少时），这种限制往往会导致次优的学习结果。</p>
+<p>不过，随着我们增加训练轮数，学习误差会逐渐减小，最终结果会越来越接近最优解。</p>
+<p>下面的代码和图表将直观地展示这一学习过程。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_epochs</span><span class="p">(</span><span class="n">epochs_to_plot</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">200000</span><span class="p">],</span> <span class="n">quit_allowed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -1025,15 +1019,15 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>进度: 训练轮数 = 200000
 </pre></div>
 </div>
-<img alt="_images/0eb5ca4b2d0a60fb0e9273e1053877a68f9eb14b0582916042d0e9d9ca0e98bc.png" src="_images/0eb5ca4b2d0a60fb0e9273e1053877a68f9eb14b0582916042d0e9d9ca0e98bc.png" />
+<img alt="_images/46ac6897e7dca0900ae7b1b4ee2edaf35df4d0568d1c478a8c8f8863aa065cbd.png" src="_images/46ac6897e7dca0900ae7b1b4ee2edaf35df4d0568d1c478a8c8f8863aa065cbd.png" />
 </div>
 </div>
 </section>
 <section id="id7">
-<h2><span class="section-number">33.7. </span>可能的扩展<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
-<p>要将算法扩展到处理连续状态空间的问题，一个典型的方法是限制Q函数和策略函数采用特定的函数形式。</p>
-<p>这就是<strong>深度Q学习</strong>的方法，其核心思想是使用多层神经网络作为良好的函数逼近器。</p>
-<p>我们将在后续的quantecon课程中讨论这个主题。</p>
+<h2><span class="section-number">33.7. </span>进一步的研究方向<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<p>当我们需要处理连续状态空间的问题时，Q学习算法需要进行适当的扩展。一种常见的方法是采用特定函数形式来近似Q函数和策略函数。</p>
+<p>这种思路发展出了<strong>深度Q学习</strong>（Deep Q-Learning）方法，它利用多层神经网络的强大表达能力来逼近复杂的Q函数。神经网络作为通用函数逼近器，能够有效捕捉连续状态空间中的价值信息。</p>
+<p>在后续的quantecon课程中，我们将深入探讨深度Q学习及其在更复杂经济模型中的应用。</p>
 </section>
 </section>
 
@@ -1254,37 +1248,37 @@ V\left(w\right)=\max\left\{ \frac{w}{1-\beta},Q_{r}\right\}
 <ul class="current nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model.html">
-   27. 工作搜寻 I: McCall搜寻模型
+   27. 求职搜索 I: McCall搜寻模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model_with_separation.html">
-   28. 工作搜寻 II：搜寻与离职
+   28. 求职搜索 II：搜寻与离职
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   29. 工作搜寻 III: 拟合值函数迭代
+   29. 求职搜索 III: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_correlated.html">
-   30. 工作搜寻 IV：相关工资报价
+   30. 求职搜索 IV：相关工资报价
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   31. 工作搜寻 V：职业选择建模
+   31. 求职搜索 V：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   32. 工作搜寻 VI：在职搜索
+   32. 求职搜索 VI：在职搜索
   </a>
  </li>
  <li class="toctree-l1 current active active">
   <a class="current reference internal" href="#">
-   33. 工作搜寻 VII：McCall工人的Q学习
+   33. 求职搜索 VII：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
