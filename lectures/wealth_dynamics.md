@@ -24,7 +24,7 @@ kernelspec:
 ```
 
 ```{seealso}
-本讲座使用`GPU`的[版本](https://jax.quantecon.org/wealth_dynamics.html)可在[这里](https://jax.quantecon.org/wealth_dynamics.html)找到
+使用`GPU`[版本]的本讲座(https://jax.quantecon.org/wealth_dynamics.html)可在[这里]找到(https://jax.quantecon.org/wealth_dynamics.html)
 ```
 
 除了Anaconda中已有的库外，本讲座还需要以下库：
@@ -38,38 +38,38 @@ tags: [hide-output]
 
 ## 概述
 
-本笔记介绍了财富分配动态，重点关注
+本课程介绍了财富分配动态，重点要
 
 * 通过模拟建模和计算财富分配，
-* 不平等的衡量指标，如洛伦兹曲线和基尼系数，以及
+* 介绍不平等的衡量指标，如洛伦兹曲线和基尼系数
 * 工资收入和资产回报的特性如何影响不平等。
 
-我们讨论的财富分配的一个有趣特性是帕累托尾部。
+我们这里讨论的财富分配，有一个有趣的特性是帕累托尾部。
 
 许多国家的财富分配都表现出帕累托尾部
 
 * 参见{doc}`本讲座<intro:heavy_tails>`获取定义。
-* 关于实证证据的综述，请参见{cite}`benhabib2018skewed`。
+* 关于相关实证证据的综述，请参见{cite}`benhabib2018skewed`。
 
-这与最富有家庭中的财富高度集中是一致的。
+这与现实中，财富高度集中在最富有的一部分家庭的情况相一致。
 
-这也为我们提供了一种通过尾部指数来量化这种集中度的方法。
+这一特性也为我们提供了一种量化这种集中度的方法：通过尾部指数。
 
-一个值得关注的问题是，我们是否能从一个相对简单的模型中复制出帕累托尾部。
+一个值得关注的问题是，我们是否能从一个相对简单的模型中复现出帕累托尾部。
 
 ### 关于假设的说明
 
-任何给定家庭的财富演变取决于其
+任何给定家庭的财富变动取决于其
 
 储蓄行为。
 
-对这种行为的建模将成为本系列讲座的重要组成部分。
+对这种储蓄行为的建模将成为本系列讲座的要点。
 
-然而，在本次讲座中，我们将满足于相对随意（但合理）的储蓄规则。
+然而，在本次讲座中，我们假设相对随意（但合理）的储蓄规则就足够。
 
-我们这样做是为了更容易探索不同收入动态和投资回报规格的影响。
+我们这样做是为了探索不同收入动态和投资回报规格的影响。
 
-同时，这里讨论的所有技术都可以应用到使用优化来获得储蓄规则的模型中。
+同时，这里讨论的所有技术都可以应用到基于优化来获得储蓄规则的模型中。
 
 我们将使用以下导入。
 
@@ -101,7 +101,7 @@ from numba.experimental import jitclass
 
 ```{code-cell} ipython3
 n = 10_000                      # 样本大小
-w = np.exp(np.random.randn(n))  # 对数正态分布抽样
+w = np.exp(np.random.randn(n))  # 生成对数正态分布的随机样本
 ```
 
 数据代表了10,000个家庭的财富分布。
@@ -128,7 +128,7 @@ plt.show()
 
 例如，最底层80%的人口拥有大约40%的总财富。
 
-这里是另一个例子，展示了当底层分布发生变化时洛伦兹曲线如何移动。
+这里有另一个例子，展示了当底层分布发生变化时洛伦兹曲线如何移动。
 
 我们使用帕累托分布和一系列参数生成10,000个观测值，然后计算对应于每组观测值的洛伦兹曲线。
 
@@ -177,11 +177,11 @@ for a in a_vals:
     y = np.random.weibull(a, size=n)
     ginis.append(qe.gini_coefficient(y))
     ginis_theoretical.append(1 - 2**(-1/a))
-ax.plot(a_vals, ginis, label='estimated gini coefficient')
-ax.plot(a_vals, ginis_theoretical, label='theoretical gini coefficient')
+ax.plot(a_vals, ginis, label='基尼系数估值')
+ax.plot(a_vals, ginis_theoretical, label='基尼系数理论值')
 ax.legend()
-ax.set_xlabel("Weibull parameter $a$")
-ax.set_ylabel("Gini coefficient")
+ax.set_xlabel("韦伯分布参数 $a$")
+ax.set_ylabel("基尼系数")
 plt.show()
 ```
 
@@ -189,7 +189,7 @@ plt.show()
 
 ## 财富动态模型
 
-在讨论了不平等度量之后，让我们现在转向财富动态。
+在讨论了不平等的度量方法后，我们转向财富动态。
 
 我们要研究的模型是
 
@@ -201,9 +201,9 @@ w_{t+1} = (1 + r_{t+1}) s(w_t) + y_{t+1}
 
 其中
 
-- $w_t$ 是某个家庭在t时刻的财富，
-- $r_t$ 是金融资产的收益率，
-- $y_t$ 是当前非金融（如劳动）收入，
+- $w_t$ 是某个家庭在t时刻持有的财富，
+- $r_t$ 是金融资产t时刻的收益率，
+- $y_t$ 是当前非金融（如，劳动）收入，
 - $s(w_t)$ 是当前财富减去消费后的净值
 
 令 $\{z_t\}$ 为具有以下形式的相关状态过程：
@@ -326,7 +326,7 @@ class WealthDynamics:
         w_hat, s_0, c_y, μ_y, σ_y, c_r, μ_r, σ_r, a, b, σ_z = params
         zp = a * z + b + σ_z * np.random.randn()
 
-        # 更新财富
+        # 更新财富值
         y = c_y * np.exp(zp) + np.exp(μ_y + σ_y * np.random.randn())
         wp = y
         if w >= w_hat:
@@ -371,12 +371,12 @@ def update_cross_section(wdy, w_distribution, shift_length=500):
     """
     将一组家庭的横截面数据在时间上向前推移
 
-    * wdy: WealthDynamics的实例
-    * w_distribution: array_like, 表示当前的横截面分布
+    * wdy: WealthDynamics的一个实例
+    * w_distribution: array_like, 表示当前的截面分布
 
-    接收当前财富值分布w_distribution作为输入
+    接收当前家庭财富值分布作为w_distribution输入
     并将每个w_t更新为w_{t+j},其中
-    j = shift_length。
+    j = shift_length。（步长）
 
     返回新的分布。
 
@@ -393,7 +393,7 @@ def update_cross_section(wdy, w_distribution, shift_length=500):
     return new_distribution
 ```
 
-在上述函数中，并行化非常有效，因为一旦已知总体状态的路径，每个家庭的时间路径就可以独立计算。
+在上述函数中，并行化非常高效，因为一旦已知总体状态的路径，每个家庭的时间路径就可以独立计算。
 
 ## 应用
 
@@ -484,7 +484,7 @@ plt.show()
 
 我们再次看到，随着金融收入回报的增加，不平等程度也在上升。
 
-让我们通过研究改变金融回报的波动率项$\sigma_r$时会发生什么来结束本节。
+让我们通过研究改变金融回报的波动率项$\sigma_r$时会发生什么，来结束本节课程。
 
 ```{code-cell} ipython3
 %%time
@@ -515,9 +515,9 @@ plt.show()
 
 事实上，可以证明帕累托分布的基尼系数，当尾部指数为$a$时，等于$1/(2a - 1)$。
 
-请尽可能通过模拟来验证这一点。
+请尽可能通过代码模拟来验证这一点。
 
-具体来说，绘制一个图表，展示基尼系数与尾部指数的关系，同时使用上述理论值和通过`qe.gini_coefficient`从样本计算得出的值。
+具体来说，绘制一个图表，同时使用上述理论值和通过`qe.gini_coefficient`从样本中计算得出的值，来展示基尼系数与尾部指数的关系。
 
 对于尾部指数的值，使用`a_vals = np.linspace(1, 10, 25)`。
 
@@ -533,7 +533,7 @@ plt.show()
 这是一个解决方案，它在理论和模拟之间产生了很好的匹配。
 
 ```{code-cell} ipython3
-a_vals = np.linspace(1, 10, 25)  # Pareto尾部指数
+a_vals = np.linspace(1, 10, 25)  # 帕累托尾部指数
 ginis = np.empty_like(a_vals)
 
 n = 1000                         # 每个样本的大小
@@ -551,7 +551,7 @@ plt.show()
 
 这意味着财富的极端值较少，因此更加平等。
 
-更多的平等转化为较低的基尼系数。
+更大程度的平等转化为更低的基尼系数。
 
 ```{solution-end}
 ```
@@ -560,7 +560,7 @@ plt.show()
 :label: wd_ex2
 ```
 
-财富过程{eq}`wealth_dynam_ah`类似于{doc}`Kesten过程<kesten_processes>`。
+{eq}`wealth_dynam_ah`中介绍的财富过程类似于{doc}`Kesten过程<kesten_processes>`。
 
 这是因为，根据{eq}`sav_ah`，在所有高于$\hat w$的财富水平上，储蓄是恒定的。
 
@@ -621,4 +621,5 @@ plt.show()
 
 ```{solution-end}
 ```
+
 
