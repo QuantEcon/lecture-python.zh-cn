@@ -24,7 +24,7 @@ kernelspec:
 ```
 
 ```{seealso}
-使用`GPU`[版本]的本讲座(https://jax.quantecon.org/wealth_dynamics.html)可在[这里]找到(https://jax.quantecon.org/wealth_dynamics.html)
+本讲座的`GPU`版本可在[这里](https://jax.quantecon.org/wealth_dynamics.html)找到
 ```
 
 除了Anaconda中已有的库外，本讲座还需要以下库：
@@ -38,20 +38,20 @@ tags: [hide-output]
 
 ## 概述
 
-本课程介绍了财富分配动态，重点要
+本课程介绍了财富分配动态，在本讲中，我们
 
 * 通过模拟建模和计算财富分配，
 * 介绍不平等的衡量指标，如洛伦兹曲线和基尼系数
-* 工资收入和资产回报的特性如何影响不平等。
+* 以及探究工资收入和资产回报的特性如何影响不平等。
 
-我们这里讨论的财富分配，有一个有趣的特性是帕累托尾部。
+我们这里讨论的财富分配，有一个有趣的特性是帕累托尾。
 
-许多国家的财富分配都表现出帕累托尾部
+许多国家的财富分配都表现出帕累托尾
 
-* 参见{doc}`本讲座<intro:heavy_tails>`获取定义。
+* 参见{doc}`本讲座<intro:heavy_tails>`中的定义。
 * 关于相关实证证据的综述，请参见{cite}`benhabib2018skewed`。
 
-这与现实中，财富高度集中在最富有的一部分家庭的情况相一致。
+这与现实中，财富高度集中在最富有的一部分家庭的情况一致。
 
 这一特性也为我们提供了一种量化这种集中度的方法：通过尾部指数。
 
@@ -59,13 +59,11 @@ tags: [hide-output]
 
 ### 关于假设的说明
 
-任何给定家庭的财富变动取决于其
-
-储蓄行为。
+任何给定家庭的财富变动取决于其储蓄行为。
 
 对这种储蓄行为的建模将成为本系列讲座的要点。
 
-然而，在本次讲座中，我们假设相对随意（但合理）的储蓄规则就足够。
+然而，在本次讲座中，我们假设相对简单（但合理）的储蓄规则就足够。
 
 我们这样做是为了探索不同收入动态和投资回报规格的影响。
 
@@ -80,7 +78,7 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  # 设置默认图形大小
 import numpy as np
 import quantecon as qe
 from numba import jit, float64, prange
@@ -97,14 +95,12 @@ from numba.experimental import jitclass
 
 上面已经导入的[QuantEcon.py](https://github.com/QuantEcon/QuantEcon.py)包含了计算洛伦兹曲线的函数。
 
-举例说明，假设：
+举例说明，假设以下数据代表了10,000个家庭的财富分布
 
 ```{code-cell} ipython3
 n = 10_000                      # 样本大小
 w = np.exp(np.random.randn(n))  # 生成对数正态分布的随机样本
 ```
-
-数据代表了10,000个家庭的财富分布。
 
 我们可以按如下方式计算并绘制洛伦兹曲线：
 
@@ -118,7 +114,7 @@ ax.legend()
 plt.show()
 ```
 
-这条曲线可以这样理解：如果点$(x,y)$位于曲线上，这意味着最底层$(100x)\%$的人口collectively拥有$(100y)\%$的财富。
+这条曲线可以这样理解：如果点$(x,y)$位于曲线上，这意味着最底层$(100x)\%$的人口拥有$(100y)\%$的财富。
 
 "平等"线是45度线（在图中可能不完全是45度，这取决于图形的纵横比）。
 
@@ -152,7 +148,7 @@ plt.show()
 
 ### 基尼系数
 
-基尼系数的定义和解释可以在相应的[维基百科页面](https://en.wikipedia.org/wiki/Gini_coefficient)上找到。
+基尼系数的定义和解释可以在相应的[百科页面](https://baike.baidu.com/item/%E5%9F%BA%E5%B0%BC%E7%B3%BB%E6%95%B0/88365)上找到。
 
 0值表示完全平等（对应洛伦兹曲线与45度线重合的情况），1值表示完全不平等（所有财富都由最富有的家庭持有）。
 
@@ -228,7 +224,7 @@ $$
 
 $c_r$ 的值应该接近于零，因为资产收益率不会表现出较大的趋势。
 
-当我们模拟家庭人口时，我们假设所有冲击都是特殊性的（即，特定于个别家庭且彼此之间相互独立）。
+当我们模拟家庭人口时，我们假设所有冲击都是特质的（即，特定于个别家庭且彼此之间相互独立）。
 
 关于储蓄函数$s$，我们的默认模型将是
 
@@ -269,7 +265,7 @@ wealth_dynamics_data = [
 ]
 ```
 
-这是一个存储实例数据并实现更新总体状态和家庭财富方法的类。
+下面是一个类，用于存储模型参数并实现更新总体状态和家庭财富的方法。
 
 ```{code-cell} ipython3
 
@@ -335,7 +331,7 @@ class WealthDynamics:
         return wp, zp
 ```
 
-这是一个用于模拟单个家庭财富时间序列的函数。
+以下是一个用于模拟单个家庭财富时间序列的函数。
 
 ```{code-cell} ipython3
 
@@ -360,9 +356,9 @@ def wealth_time_series(wdy, w_0, n):
     return w
 ```
 
-以下是模拟一组家庭财富随时间变化的函数。
+下面是模拟一组家庭财富随时间变化的函数。
 
-注意使用并行化来加快计算速度。
+我们使用并行计算来加快计算速度。
 
 ```{code-cell} ipython3
 
@@ -374,7 +370,7 @@ def update_cross_section(wdy, w_distribution, shift_length=500):
     * wdy: WealthDynamics的一个实例
     * w_distribution: array_like, 表示当前的截面分布
 
-    接收当前家庭财富值分布作为w_distribution输入
+    接收当前家庭财富值分布作为w_distribution的输入
     并将每个w_t更新为w_{t+j},其中
     j = shift_length。（步长）
 
@@ -428,7 +424,7 @@ plt.show()
 ```{code-cell} ipython3
 def generate_lorenz_and_gini(wdy, num_households=100_000, T=500):
     """
-    通过将num_households向前模拟到时间T，生成与WealthDynamics模型
+    通过将num_households个家庭向前模拟到时间T，生成与WealthDynamics模型
     相对应的洛伦兹曲线数据和基尼系数。
     """
     ψ_0 = np.full(num_households, wdy.y_mean)
@@ -472,7 +468,7 @@ plt.show()
 
 由于代码经过高效的JIT编译并完全并行化，如果不更改硬件，几乎不可能让这些任务序列运行得更快。
 
-现在让我们检查基尼系数。
+现在让我们看一看基尼系数。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
@@ -484,7 +480,7 @@ plt.show()
 
 我们再次看到，随着金融收入回报的增加，不平等程度也在上升。
 
-让我们通过研究改变金融回报的波动率项$\sigma_r$时会发生什么，来结束本节课程。
+最后，让我们通过研究改变金融回报的波动率项$\sigma_r$时会发生什么。
 
 ```{code-cell} ipython3
 %%time
@@ -499,7 +495,7 @@ for σ_r in σ_r_vals:
     ax.plot(f_vals, l_vals, label=fr'$\psi^*$ at $\sigma_r = {σ_r:0.2}$')
     gini_vals.append(gv)
 
-ax.plot(f_vals, f_vals, label='equality')
+ax.plot(f_vals, f_vals, label='不平等')
 ax.legend(loc="upper left")
 plt.show()
 ```
@@ -530,7 +526,7 @@ plt.show()
 :class: dropdown
 ```
 
-这是一个解决方案，它在理论和模拟之间产生了很好的匹配。
+这是一个解法，它在理论和模拟之间产生了很好的匹配。
 
 ```{code-cell} ipython3
 a_vals = np.linspace(1, 10, 25)  # 帕累托尾部指数
@@ -541,8 +537,8 @@ fig, ax = plt.subplots()
 for i, a in enumerate(a_vals):
     y = np.random.uniform(size=n)**(-1/a)
     ginis[i] = qe.gini_coefficient(y)
-ax.plot(a_vals, ginis, label='sampled')
-ax.plot(a_vals, 1/(2*a_vals - 1), label='theoretical')
+ax.plot(a_vals, ginis, label='抽样值')
+ax.plot(a_vals, 1/(2*a_vals - 1), label='理论值')
 ax.legend()
 plt.show()
 ```
@@ -606,14 +602,14 @@ z_0 = wdy.z_mean
 ψ_star = update_cross_section(wdy, ψ_0, shift_length=T)
 ```
 
-现在让我们看看等级-规模图:
+现在让我们看看排名-规模图:
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 rank_data, size_data = qe.rank_size(ψ_star, c=0.001)
 ax.loglog(rank_data, size_data, 'o', markersize=3.0, alpha=0.5)
-ax.set_xlabel("对数等级")
+ax.set_xlabel("对数排名")
 ax.set_ylabel("对数规模")
 
 plt.show()
