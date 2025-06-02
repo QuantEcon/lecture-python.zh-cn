@@ -17,7 +17,7 @@ kernelspec:
 </div>
 ```
 
-# 财富分配动态
+# 财富分布动态
 
 ```{contents} 目录
 :depth: 2
@@ -38,15 +38,15 @@ tags: [hide-output]
 
 ## 概述
 
-本课程介绍了财富分配动态，在本讲中，我们
+本课程介绍了财富分布动态，在本讲中，我们
 
-* 通过模拟建模和计算财富分配，
+* 通过模拟建模和计算财富分布，
 * 介绍不平等的衡量指标，如洛伦兹曲线和基尼系数
 * 以及探究工资收入和资产回报的特性如何影响不平等。
 
-我们这里讨论的财富分配，有一个有趣的特性是帕累托尾。
+我们这里讨论的财富分布，有一个有趣的特性是帕累托尾。
 
-许多国家的财富分配都表现出帕累托尾
+许多国家的财富分布都表现出帕累托尾
 
 * 参见{doc}`本讲座<intro:heavy_tails>`中的定义。
 * 关于相关实证证据的综述，请参见{cite}`benhabib2018skewed`。
@@ -129,7 +129,7 @@ plt.show()
 我们使用帕累托分布和一系列参数生成10,000个观测值，然后计算对应于每组观测值的洛伦兹曲线。
 
 ```{code-cell} ipython3
-a_vals = (1, 2, 5)              # Pareto尾部指数
+a_vals = (1, 2, 5)              # 帕累托分布的尾部指数
 n = 10_000                      # 每个样本的大小
 fig, ax = plt.subplots()
 for a in a_vals:
@@ -137,7 +137,7 @@ for a in a_vals:
     y = u**(-1/a)               # 服从尾部指数为a的帕累托分布
     f_vals, l_vals = qe.lorenz_curve(y)
     ax.plot(f_vals, l_vals, label=f'$a = {a}$')
-ax.plot(f_vals, f_vals, label='equality')
+ax.plot(f_vals, f_vals, label='平等')
 ax.legend()
 plt.show()
 ```
@@ -393,7 +393,7 @@ def update_cross_section(wdy, w_distribution, shift_length=500):
 
 ## 应用
 
-让我们尝试在不同参数值下模拟该模型，并研究其对财富分配的影响。
+让我们尝试在不同参数值下模拟该模型，并研究其对财富分布的影响。
 
 ### 时间序列
 
@@ -434,7 +434,7 @@ def generate_lorenz_and_gini(wdy, num_households=100_000, T=500):
     return qe.gini_coefficient(ψ_star), qe.lorenz_curve(ψ_star)
 ```
 
-现在我们研究随着储蓄回报率的变化，财富分配的洛伦兹曲线如何变化。
+现在我们研究随着储蓄回报率的变化，财富分布的洛伦兹曲线如何变化。
 
 下面的代码绘制了三个不同 $\mu_r$ 值对应的洛伦兹曲线。
 
@@ -457,7 +457,7 @@ for μ_r in μ_r_vals:
     ax.plot(f_vals, l_vals, label=fr'$\psi^*$ at $\mu_r = {μ_r:0.2}$')
     gini_vals.append(gv)
 
-ax.plot(f_vals, f_vals, label='equality')
+ax.plot(f_vals, f_vals, label='平等')
 ax.legend(loc="upper left")
 plt.show()
 ```
@@ -472,7 +472,7 @@ plt.show()
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
-ax.plot(μ_r_vals, gini_vals, label='gini coefficient')
+ax.plot(μ_r_vals, gini_vals, label='基尼系数')
 ax.set_xlabel(r"$\mu_r$")
 ax.legend()
 plt.show()
@@ -495,7 +495,7 @@ for σ_r in σ_r_vals:
     ax.plot(f_vals, l_vals, label=fr'$\psi^*$ at $\sigma_r = {σ_r:0.2}$')
     gini_vals.append(gv)
 
-ax.plot(f_vals, f_vals, label='不平等')
+ax.plot(f_vals, f_vals, label='平等')
 ax.legend(loc="upper left")
 plt.show()
 ```
