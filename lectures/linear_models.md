@@ -1308,7 +1308,7 @@ $V_j$收敛的一个充分条件是$A$的特征值的模都严格小于1。
 
 你可能不太熟悉的一个Python结构是在`moment_sequence()`方法中使用生成器函数。
 
-如果你忘记了生成器函数是如何工作的，请回去[阅读相关文档](https://python-programming.quantecon.org/python_advanced_features.html#generators)。
+若你忘记了生成器函数是如何工作的，请回去[阅读相关文档](https://python-programming.quantecon.org/python_advanced_features.html#generators)。
 
 具体示例详见习题解答部分。
 
