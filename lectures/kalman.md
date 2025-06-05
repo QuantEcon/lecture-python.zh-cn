@@ -18,7 +18,7 @@ kernelspec:
 </div>
 ```
 
-# 卡尔曼滤波初探
+# 卡尔曼滤波器的初步介绍
 
 ```{index} single: 卡尔曼滤波
 ```
@@ -38,17 +38,17 @@ tags: [hide-output]
 
 ## 概述
 
-本讲座为卡尔曼滤波提供了一个简单直观的介绍，适合以下读者：
+本讲座为卡尔曼滤波器提供了一个简单直观的介绍，适合以下读者：
 
-* 听说过卡尔曼滤波但不知道它如何工作的人，或者
-* 知道卡尔曼滤波方程但不知道这些方程从何而来的人
+* 听说过卡尔曼滤波器但不知道它如何工作的人，或者
+* 知道卡尔曼滤波的方程但不知道这些方程从何而来的人
 
 关于卡尔曼滤波的更多（进阶）阅读材料，请参见：
 
 * {cite}`Ljungqvist2012`，第2.7节
 * {cite}`AndersonMoore2005`
 
-第二个参考文献对卡尔曼滤波进行了全面的阐述。
+第二个参考文献对卡尔曼滤波器进行了全面的阐述。
 
 所需知识：熟悉矩阵运算、多元正态分布、协方差矩阵等。
 
@@ -73,7 +73,7 @@ from scipy.linalg import eigvals
 
 ## 基本概念
 
-卡尔曼滤波在经济学中有许多应用，但现在让我们假装我们是火箭科学家。
+卡尔曼滤波器在经济学中有许多应用，但现在让我们假装我们是火箭科学家。
 
 一枚导弹从Y国发射，我们的任务是追踪它。
 
@@ -89,7 +89,7 @@ from scipy.linalg import eigvals
 
 密度 $p$ 被称为随机变量 $x$ 的*先验*。
 
-为了使我们的例子便于处理，我们假设我们的先验是高斯分布。
+为了使我们的例子便于处理，我们假设我们的先验分布是高斯分布。
 
 特别地，我们采用
 
@@ -127,7 +127,7 @@ p = N(\hat x, \Sigma)
 ---
 tags: [output_scroll]
 ---
-# 设置高斯先验密度 p
+# 设定高斯先验分布 p
 Σ = [[0.4, 0.3], [0.3, 0.45]]
 Σ = np.matrix(Σ)
 x_hat = np.matrix([0.2, -0.2]).T
@@ -142,7 +142,7 @@ Q = 0.3 * Σ
 # y 的观测值
 y = np.matrix([2.3, -1.9]).T
 
-# 设置绘图网格
+# 设定绘图网格
 x_grid = np.linspace(-1.5, 2.9, 100)
 y_grid = np.linspace(-3.1, 1.7, 100)
 X, Y = np.meshgrid(x_grid, y_grid)
@@ -227,8 +227,7 @@ plt.show()
 
 坏消息是我们的传感器并不精确。
 
-具体来说，我们应该将传感器的输出理解为不是
-$y=x$，而是
+具体来说，我们不应该将传感器的输出理解为$y=x$，而是
 
 ```{math}
 :label: kl_measurement_model
@@ -238,9 +237,9 @@ y = G x + v, \quad \text{where} \quad v \sim N(0, R)
 
 这里 $G$ 和 $R$ 是 $2 \times 2$ 矩阵，其中 $R$ 是正定矩阵。两者都被假定为已知，且噪声项 $v$ 被假定与 $x$ 独立。
 
-那么，我们应该如何将我们的先验 $p(x) = N(\hat x, \Sigma)$ 和这个新信息 $y$ 结合起来，以改进我们对导弹位置的理解呢？
+那么，我们应该如何将我们的先验分布 $p(x) = N(\hat x, \Sigma)$ 和这个新信息 $y$ 结合起来，以提高我们对导弹位置的了解呢？
 
-正如你可能已经猜到的，答案是使用贝叶斯定理，它告诉我们通过以下方式将先验 $p(x)$ 更新为 $p(x \,|\, y)$：
+你可能已经猜到了，答案是使用贝叶斯定理，它告诉我们通过以下方式将先验分布 $p(x)$ 更新为 $p(x \,|\, y)$：
 
 $$
 p(x \,|\, y) = \frac{p(y \,|\, x) \, p(x)} {p(y)}
@@ -257,7 +256,7 @@ $$
 
 由于我们处在线性和高斯框架中，可以通过计算总体线性回归来得到更新后的密度。
 
-具体来说，已知解[^f1]为
+具体来说，我们可以得出解[^f1]为
 
 $$
 p(x \,|\, y) = N(\hat x^F, \Sigma^F)
@@ -307,13 +306,13 @@ plt.show()
 
 到目前为止我们取得了什么成果？
 
-我们已经获得了基于先验和当前信息的状态（导弹）当前位置的概率。
+我们在给定先验分布和当前信息的情况下，已经获得了状态（导弹）当前位置的概率。
 
 这被称为"滤波"而不是预测，因为我们是在过滤噪声而不是展望未来。
 
 * $p(x \,|\, y) = N(\hat x^F, \Sigma^F)$ 被称为*滤波分布*
 
-但现在假设我们有另一个任务：预测导弹在一个时间单位（无论是什么单位）后的位置。
+但现在假设我们有另一个任务：预测导弹在一个时间单位后（无论是什么单位）的位置。
 
 为此我们需要一个状态演化的模型。
 
@@ -422,9 +421,9 @@ plt.show()
 
 然后我们使用当前测量值$y$更新为$p(x \,|\, y)$。
 
-最后，我们使用$\{x_t\}$的运动方程{eq}`kl_xdynam`更新为$p_{new}(x)$。
+最后，我们使用$\{x_t\}$的运动方程{eq}`kl_xdynam`将其更新为$p_{new}(x)$。
 
-如果我们现在进入下一个周期，我们就可以再次循环，将$p_{new}(x)$作为当前先验。
+如果我们现在进入下一个周期，我们就可以再次循环，将$p_{new}(x)$作为当前的先验分布。
 
 将符号$p_t(x)$替换为$p(x)$，将$p_{t+1}(x)$替换为$p_{new}(x)$，完整的递归程序为：
 
@@ -473,7 +472,7 @@ plt.show()
 
 这是一个关于 $\Sigma_t$ 的非线性差分方程。
 
-{eq}`kalman_sdy` 的不动点是满足以下条件的常数矩阵 $\Sigma$：
+{eq}`kalman_sdy` 的固定点是满足以下条件的常数矩阵 $\Sigma$：
 
 ```{math}
 :label: kalman_dare
@@ -481,7 +480,7 @@ plt.show()
 \Sigma = A \Sigma A' -  A \Sigma G' (G \Sigma G' + R)^{-1} G \Sigma A' + Q
 ```
 
-方程 {eq}`kalman_sdy` 被称为离散时间里卡提差分方程。
+方程 {eq}`kalman_sdy` 被称为离散时间黎卡提差分方程。
 
 方程 {eq}`kalman_dare` 被称为[离散时间代数黎卡提方程](https://en.wikipedia.org/wiki/Algebraic_Riccati_equation)。
 
@@ -498,10 +497,10 @@ plt.show()
 ```{index} single: Kalman Filter; Programming Implementation
 ```
 
-来自 [QuantEcon.py](http://quantecon.org/quantecon-py) 包的 `Kalman` 类实现了卡尔曼滤波器
+[QuantEcon.py](http://quantecon.org/quantecon-py) 包的 `Kalman` 类实现了卡尔曼滤波器
 
 * 实例数据包括：
-    * 当前先验的矩 $(\hat x_t, \Sigma_t)$
+    * 当前先验分布的矩 $(\hat x_t, \Sigma_t)$
     * 来自 [QuantEcon.py](http://quantecon.org/quantecon-py) 的 [LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py) 类的一个实例
 
 后者表示形式如下的线性状态空间模型
@@ -516,16 +515,16 @@ $$
 
 其中冲击项 $w_t$ 和 $v_t$ 是独立同分布的标准正态分布。
 
-为了与本讲座的符号保持一致，我们设定
+为了与本章节的符号保持一致，我们设定
 
 $$
 Q := CC' \quad \text{和} \quad R := HH'
 $$
 
-* 来自 [QuantEcon.py](http://quantecon.org/quantecon-py) 包的 `Kalman` 类有许多方法，其中一些我们会等到后续讲座中学习更高级的应用时再使用。
+* [QuantEcon.py](http://quantecon.org/quantecon-py) 包的 `Kalman` 类有许多方法，其中一些我们会等到后续章节中学习更高级的应用时再使用。
 * 与本讲座相关的方法有：
 
-* `prior_to_filtered`，将 $(\hat x_t, \Sigma_t)$ 更新为 $(\hat x_t^F, \Sigma_t^F)$
+    * `prior_to_filtered`，将 $(\hat x_t, \Sigma_t)$ 更新为 $(\hat x_t^F, \Sigma_t^F)$
     * `filtered_to_forecast`，将滤波分布更新为预测分布 -- 成为新的先验分布 $(\hat x_{t+1}, \Sigma_{t+1})$
     * `update`，结合上述两种方法
     * `stationary_values`，计算{eq}`kalman_dare`的解和相应的（稳态）卡尔曼增益
@@ -574,7 +573,7 @@ $$
 A, C, G, H = 1, 0, 1, 1
 ss = LinearStateSpace(A, C, G, H, mu_0=θ)
 
-# 设置先验，初始化卡尔曼滤波器
+# 设定先验分布，初始化卡尔曼滤波器
 x_hat_0, Σ_0 = 8, 1
 kalman = Kalman(ss, x_hat_0, Σ_0)
 
@@ -583,7 +582,7 @@ N = 5
 x, y = ss.simulate(N)
 y = y.flatten()
 
-# 设置图形
+# 设定图形
 fig, ax = plt.subplots(figsize=(10,8))
 xgrid = np.linspace(θ - 5, θ + 2, 200)
 
@@ -614,9 +613,9 @@ $$
 z_t := 1 - \int_{\theta - \epsilon}^{\theta + \epsilon} p_t(x) dx
 $$
 
-对于 $t = 0, 1, 2, \ldots, T$。
+其中 $t = 0, 1, 2, \ldots, T$。
 
-绘制 $z_t$ 与 $T$ 的关系图，设置 $\epsilon = 0.1$ 和 $T = 600$。
+绘制 $z_t$ 与 $T$ 的关系图，设定 $\epsilon = 0.1$ 和 $T = 600$。
 
 你的图应该显示误差不规则地下降，类似这样
 
@@ -670,21 +669,21 @@ plt.show()
 :label: kalman_ex3
 ```
 
-如{ref}`上文所述 <kalman_convergence>`，如果冲击序列 $\{w_t\}$ 不是退化的，那么在 $t-1$ 时刻通常无法无误地预测 $x_t$（即使我们能观察到 $x_{t-1}$ 也是如此）。
+如{ref}`上文所述 <kalman_convergence>`，如果冲击序列 $\{w_t\}$ 不是退化的，那么在 $t-1$ 时刻通常无法无误地预测 $x_t$（即使我们能观察到 $x_{t-1}$ ，情况也是如此）。
 
-让我们现在将卡尔曼滤波得到的预测值 $\hat x_t$ 与一个**被允许**观察 $x_{t-1}$ 的竞争者进行比较。
+让我们现在将在卡尔曼滤波器得到的预测值 $\hat x_t$ 与一个**被允许**观察 $x_{t-1}$ 的竞争者进行比较。
 
 这个竞争者将使用条件期望 $\mathbb E[ x_t \,|\, x_{t-1}]$，在这种情况下等于 $A x_{t-1}$。
 
 条件期望被认为是在最小化均方误差方面的最优预测方法。
 
-（更准确地说，关于 $g$ 的 $\mathbb E \, \| x_t - g(x_{t-1}) \|^2$ 的最小化器是 $g^*(x_{t-1}) := \mathbb E[ x_t \,|\, x_{t-1}]$）
+（更准确地说， $\mathbb E \, \| x_t - g(x_{t-1}) \|^2$ 关于 $g$ 的最小值是 $g^*(x_{t-1}) := \mathbb E[ x_t \,|\, x_{t-1}]$）
 
-因此，我们是在将卡尔曼滤波与一个拥有更多信息（在能够观察潜在状态的意义上）的竞争者进行比较，并且
+因此，我们是在将卡尔曼滤波器与一个拥有更多信息（能够观察潜在状态）的竞争者进行比较，并且
 
 在最小化平方误差方面表现最优。
 
-我们的对比竞赛将以平方误差来评估。
+我们的赛马式竞争将以平方误差来评估。
 
 具体来说，你的任务是生成一个图表，绘制 $\| x_t - A x_{t-1} \|^2$ 和 $\| x_t - \hat x_t \|^2$ 对 $t$ 的观测值，其中 $t = 1, \ldots, 50$。
 
@@ -702,7 +701,7 @@ A
   \right)
 $$
 
-要初始化先验密度，设定
+要初始化先验分布，设定
 
 $$
 \Sigma_0
@@ -741,10 +740,10 @@ A = [[0.5, 0.4],
      [0.6, 0.3]]
 C = np.sqrt(0.3) * np.identity(2)
 
-# 设置状态空间模型，初始值 x_0 设为零
+# 设定状态空间模型，初始值 x_0 设为零
 ss = LinearStateSpace(A, C, G, H, mu_0 = np.zeros(2))
 
-# 定义先验密度
+# 定义先验分布
 Σ = [[0.9, 0.3],
      [0.3, 0.9]]
 Σ = np.array(Σ)
@@ -759,7 +758,7 @@ print(eigvals(A))
 
 # 打印平稳 Σ
 S, K = kn.stationary_values()
-print("平稳预测误差方差：")
+print("平稳的预测误差方差：")
 print(S)
 
 # 生成图表
@@ -789,7 +788,7 @@ plt.show()
 ```{exercise}
 :label: kalman_ex4
 
-尝试上下调整系数 $0.3$ (在 $Q = 0.3 I$ 中)。
+尝试上下调整$Q = 0.3 I$ 中的系数 $0.3$。
 
 观察平稳解 $\Sigma$ (参见 {eq}`kalman_dare`) 中的对角线值如何随这个系数增减而变化。
 
