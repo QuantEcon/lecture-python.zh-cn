@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>24. 财富分配动态 &#8212; Python中级数量经济学</title>
+    <title>24. 财富分布动态 &#8212; Python中级数量经济学</title>
     <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
@@ -129,13 +129,13 @@
 <!-- Twitter tags -->
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@quantecon" />
-<meta name="twitter:title" content="财富分配动态"/>
+<meta name="twitter:title" content="财富分布动态"/>
 <meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
 <meta name="twitter:creator" content="@quantecon">
 <meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
 
 <!-- Opengraph tags -->
-<meta property="og:title" content="财富分配动态" />
+<meta property="og:title" content="财富分布动态" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://python.quantecon-zh-cn.org/wealth_dynamics.html" />
 <meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
@@ -215,7 +215,7 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">财富分配动态</p>
+                        <p class="qe-page__header-subheading">财富分布动态</p>
 
                     </div>
                     <!-- length 2, since its a string and empty dict has length 2 - {} -->
@@ -242,11 +242,11 @@
                     <div>
                         
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1><a class="toc-backref" href="#id15"><span class="section-number">24. </span>财富分配动态</a><a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<h1><a class="toc-backref" href="#id15"><span class="section-number">24. </span>财富分布动态</a><a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
 <div class="contents topic" id="id2">
 <p class="topic-title">目录</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#id1" id="id15">财富分配动态</a></p>
+<li><p><a class="reference internal" href="#id1" id="id15">财富分布动态</a></p>
 <ul>
 <li><p><a class="reference internal" href="#id3" id="id16">概述</a></p></li>
 <li><p><a class="reference internal" href="#id6" id="id17">洛伦兹曲线和基尼系数</a></p></li>
@@ -260,7 +260,7 @@
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>本讲座使用<code class="docutils literal notranslate"><span class="pre">GPU</span></code>的<a class="reference external" href="https://jax.quantecon.org/wealth_dynamics.html">版本</a>可在<a class="reference external" href="https://jax.quantecon.org/wealth_dynamics.html">这里</a>找到</p>
+<p>本讲座的<code class="docutils literal notranslate"><span class="pre">GPU</span></code>版本可在<a class="reference external" href="https://jax.quantecon.org/wealth_dynamics.html">这里</a>找到</p>
 </div>
 <p>除了Anaconda中已有的库外，本讲座还需要以下库：</p>
 <div class="cell tag_hide-output docutils container">
@@ -275,18 +275,28 @@
 <span class="expanded">Hide code cell output</span>
 </summary>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.0)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting quantecon
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading quantecon-0.8.0-py3-none-any.whl.metadata (5.2 kB)
 Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (0.60.0)
 Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
 Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
 Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.1)
-Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.14.0)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.13.2)
 Requirement already satisfied: llvmlite&lt;0.44,&gt;=0.43.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.43.0)
 Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.3.2)
 Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (3.7)
 Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2.2.3)
 Requirement already satisfied: certifi&gt;=2017.4.17 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from requests-&gt;quantecon) (2024.8.30)
 Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from sympy-&gt;quantecon) (1.3.0)
+Downloading quantecon-0.8.0-py3-none-any.whl (322 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: quantecon
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed quantecon-0.8.0
 </pre></div>
 </div>
 </div>
@@ -294,29 +304,28 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 <section id="id3">
 <h2><a class="toc-backref" href="#id16"><span class="section-number">24.1. </span>概述</a><a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
-<p>本笔记介绍了财富分配动态，重点关注</p>
+<p>本课程介绍了财富分布动态，在本讲中，我们</p>
 <ul class="simple">
-<li><p>通过模拟建模和计算财富分配，</p></li>
-<li><p>不平等的衡量指标，如洛伦兹曲线和基尼系数，以及</p></li>
-<li><p>工资收入和资产回报的特性如何影响不平等。</p></li>
+<li><p>通过模拟建模和计算财富分布，</p></li>
+<li><p>介绍不平等的衡量指标，如洛伦兹曲线和基尼系数</p></li>
+<li><p>以及探究工资收入和资产回报的特性如何影响不平等。</p></li>
 </ul>
-<p>我们讨论的财富分配的一个有趣特性是帕累托尾部。</p>
-<p>许多国家的财富分配都表现出帕累托尾部</p>
+<p>我们这里讨论的财富分布，有一个有趣的特性是帕累托尾。</p>
+<p>许多国家的财富分布都表现出帕累托尾</p>
 <ul class="simple">
-<li><p>参见<a class="reference external" href="https://quantecon.github.io/lecture-intro.zh-cn/heavy_tails.html" title="(in Python)"><span class="xref std std-doc">本讲座</span></a>获取定义。</p></li>
-<li><p>关于实证证据的综述，请参见<span id="id4">[<a class="reference internal" href="zreferences.html#id70" title="Jess Benhabib and Alberto Bisin. Skewed wealth distributions: theory and empirics. Journal of Economic Literature, 56(4):1261–91, 2018.">Benhabib and Bisin, 2018</a>]</span>。</p></li>
+<li><p>参见<a class="reference external" href="https://quantecon.github.io/lecture-intro.zh-cn/heavy_tails.html" title="(in Python)"><span class="xref std std-doc">本讲座</span></a>中的定义。</p></li>
+<li><p>关于相关实证证据的综述，请参见<span id="id4">[<a class="reference internal" href="zreferences.html#id70" title="Jess Benhabib and Alberto Bisin. Skewed wealth distributions: theory and empirics. Journal of Economic Literature, 56(4):1261–91, 2018.">Benhabib and Bisin, 2018</a>]</span>。</p></li>
 </ul>
-<p>这与最富有家庭中的财富高度集中是一致的。</p>
-<p>这也为我们提供了一种通过尾部指数来量化这种集中度的方法。</p>
-<p>一个值得关注的问题是，我们是否能从一个相对简单的模型中复制出帕累托尾部。</p>
+<p>这与现实中，财富高度集中在最富有的一部分家庭的情况一致。</p>
+<p>这一特性也为我们提供了一种量化这种集中度的方法：通过尾部指数。</p>
+<p>一个值得关注的问题是，我们是否能从一个相对简单的模型中复现出帕累托尾部。</p>
 <section id="id5">
 <h3><span class="section-number">24.1.1. </span>关于假设的说明<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
-<p>任何给定家庭的财富演变取决于其</p>
-<p>储蓄行为。</p>
-<p>对这种行为的建模将成为本系列讲座的重要组成部分。</p>
-<p>然而，在本次讲座中，我们将满足于相对随意（但合理）的储蓄规则。</p>
-<p>我们这样做是为了更容易探索不同收入动态和投资回报规格的影响。</p>
-<p>同时，这里讨论的所有技术都可以应用到使用优化来获得储蓄规则的模型中。</p>
+<p>任何给定家庭的财富变动取决于其储蓄行为。</p>
+<p>对这种储蓄行为的建模将成为本系列讲座的要点。</p>
+<p>然而，在本次讲座中，我们假设相对简单（但合理）的储蓄规则就足够。</p>
+<p>我们这样做是为了探索不同收入动态和投资回报规格的影响。</p>
+<p>同时，这里讨论的所有技术都可以应用到基于优化来获得储蓄规则的模型中。</p>
 <p>我们将使用以下导入。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -326,7 +335,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1">#set default figure size</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># 设置默认图形大小</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">quantecon</span> <span class="k">as</span> <span class="nn">qe</span>
 <span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">prange</span>
@@ -344,16 +353,15 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <h3><span class="section-number">24.2.1. </span>洛伦兹曲线<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Lorenz_curve">洛伦兹曲线</a>是一种广受欢迎的不平等图形度量方法。</p>
 <p>上面已经导入的<a class="reference external" href="https://github.com/QuantEcon/QuantEcon.py">QuantEcon.py</a>包含了计算洛伦兹曲线的函数。</p>
-<p>举例说明，假设：</p>
+<p>举例说明，假设以下数据代表了10,000个家庭的财富分布</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">10_000</span>                      <span class="c1"># 样本大小</span>
-<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>  <span class="c1"># 对数正态分布抽样</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>  <span class="c1"># 生成对数正态分布的随机样本</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>数据代表了10,000个家庭的财富分布。</p>
 <p>我们可以按如下方式计算并绘制洛伦兹曲线：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -368,19 +376,19 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/7621701e12e5b56bdaa11e8d145711431a0a28de476f538515fc3ef874dab834.png" src="_images/7621701e12e5b56bdaa11e8d145711431a0a28de476f538515fc3ef874dab834.png" />
+<img alt="_images/4e598d96e4db4a3d6d873d35b789781fa944f884bc7b442381c44e12a5f61f09.png" src="_images/4e598d96e4db4a3d6d873d35b789781fa944f884bc7b442381c44e12a5f61f09.png" />
 </div>
 </div>
-<p>这条曲线可以这样理解：如果点<span class="math notranslate nohighlight">\((x,y)\)</span>位于曲线上，这意味着最底层<span class="math notranslate nohighlight">\((100x)\%\)</span>的人口collectively拥有<span class="math notranslate nohighlight">\((100y)\%\)</span>的财富。</p>
+<p>这条曲线可以这样理解：如果点<span class="math notranslate nohighlight">\((x,y)\)</span>位于曲线上，这意味着最底层<span class="math notranslate nohighlight">\((100x)\%\)</span>的人口拥有<span class="math notranslate nohighlight">\((100y)\%\)</span>的财富。</p>
 <p>“平等”线是45度线（在图中可能不完全是45度，这取决于图形的纵横比）。</p>
 <p>产生这条线的样本表现出完全平等。</p>
 <p>图中的另一条线是对数正态样本的洛伦兹曲线，它与完全平等线有显著偏离。</p>
 <p>例如，最底层80%的人口拥有大约40%的总财富。</p>
-<p>这里是另一个例子，展示了当底层分布发生变化时洛伦兹曲线如何移动。</p>
+<p>这里有另一个例子，展示了当底层分布发生变化时洛伦兹曲线如何移动。</p>
 <p>我们使用帕累托分布和一系列参数生成10,000个观测值，然后计算对应于每组观测值的洛伦兹曲线。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a_vals</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>              <span class="c1"># Pareto尾部指数</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a_vals</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>              <span class="c1"># 帕累托分布的尾部指数</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">10_000</span>                      <span class="c1"># 每个样本的大小</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">a_vals</span><span class="p">:</span>
@@ -388,14 +396,14 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
     <span class="n">y</span> <span class="o">=</span> <span class="n">u</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">a</span><span class="p">)</span>               <span class="c1"># 服从尾部指数为a的帕累托分布</span>
     <span class="n">f_vals</span><span class="p">,</span> <span class="n">l_vals</span> <span class="o">=</span> <span class="n">qe</span><span class="o">.</span><span class="n">lorenz_curve</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">l_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$a = </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">f_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;equality&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">f_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;平等&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/81549d8b9c68e265b6c50d21d05c9640a198d87c3b97ad0855d3e66fa33eac7a.png" src="_images/81549d8b9c68e265b6c50d21d05c9640a198d87c3b97ad0855d3e66fa33eac7a.png" />
+<img alt="_images/8321ba132afdc2b13c6dd3f96083223f27c6ed32a9b92ba64d146c8f629167e5.png" src="_images/8321ba132afdc2b13c6dd3f96083223f27c6ed32a9b92ba64d146c8f629167e5.png" />
 </div>
 </div>
 <p>你可以看到，随着帕累托分布的尾部参数增加，不平等程度降低。</p>
@@ -403,7 +411,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </section>
 <section id="id8">
 <h3><span class="section-number">24.2.2. </span>基尼系数<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
-<p>基尼系数的定义和解释可以在相应的<a class="reference external" href="https://en.wikipedia.org/wiki/Gini_coefficient">维基百科页面</a>上找到。</p>
+<p>基尼系数的定义和解释可以在相应的<a class="reference external" href="https://baike.baidu.com/item/%E5%9F%BA%E5%B0%BC%E7%B3%BB%E6%95%B0/88365">百科页面</a>上找到。</p>
 <p>0值表示完全平等（对应洛伦兹曲线与45度线重合的情况），1值表示完全不平等（所有财富都由最富有的家庭持有）。</p>
 <p><a class="reference external" href="https://github.com/QuantEcon/QuantEcon.py">QuantEcon.py</a>库包含一个计算基尼系数的函数。</p>
 <p>我们可以在参数为<span class="math notranslate nohighlight">\(a\)</span>的韦伯分布上测试它，其基尼系数已知为</p>
@@ -424,17 +432,17 @@ G = 1 - 2^{-1/a}
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">weibull</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
     <span class="n">ginis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qe</span><span class="o">.</span><span class="n">gini_coefficient</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
     <span class="n">ginis_theoretical</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">a</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_vals</span><span class="p">,</span> <span class="n">ginis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;estimated gini coefficient&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_vals</span><span class="p">,</span> <span class="n">ginis_theoretical</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;theoretical gini coefficient&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_vals</span><span class="p">,</span> <span class="n">ginis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;基尼系数估值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_vals</span><span class="p">,</span> <span class="n">ginis_theoretical</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;基尼系数理论值&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Weibull parameter $a$&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Gini coefficient&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;韦伯分布参数 $a$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;基尼系数&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/ee7c014a37c1d64745c5373157af30c85fed8438d04e83796669f7c2fc80f7db.png" src="_images/ee7c014a37c1d64745c5373157af30c85fed8438d04e83796669f7c2fc80f7db.png" />
+<img alt="_images/5ae71cf7f383dd516d2193a707a58722db935f422cbd789cea55caf54e08af6f.png" src="_images/5ae71cf7f383dd516d2193a707a58722db935f422cbd789cea55caf54e08af6f.png" />
 </div>
 </div>
 <p>模拟结果显示拟合效果良好。</p>
@@ -442,15 +450,15 @@ G = 1 - 2^{-1/a}
 </section>
 <section id="id9">
 <h2><a class="toc-backref" href="#id18"><span class="section-number">24.3. </span>财富动态模型</a><a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
-<p>在讨论了不平等度量之后，让我们现在转向财富动态。</p>
+<p>在讨论了不平等的度量方法后，我们转向财富动态。</p>
 <p>我们要研究的模型是</p>
 <div class="math notranslate nohighlight" id="equation-wealth-dynam-ah">
 <span class="eqno">(24.1)<a class="headerlink" href="#equation-wealth-dynam-ah" title="Permalink to this equation">#</a></span>\[w_{t+1} = (1 + r_{t+1}) s(w_t) + y_{t+1}\]</div>
 <p>其中</p>
 <ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(w_t\)</span> 是某个家庭在t时刻的财富，</p></li>
-<li><p><span class="math notranslate nohighlight">\(r_t\)</span> 是金融资产的收益率，</p></li>
-<li><p><span class="math notranslate nohighlight">\(y_t\)</span> 是当前非金融（如劳动）收入，</p></li>
+<li><p><span class="math notranslate nohighlight">\(w_t\)</span> 是某个家庭在t时刻持有的财富，</p></li>
+<li><p><span class="math notranslate nohighlight">\(r_t\)</span> 是金融资产t时刻的收益率，</p></li>
+<li><p><span class="math notranslate nohighlight">\(y_t\)</span> 是当前非金融（如，劳动）收入，</p></li>
 <li><p><span class="math notranslate nohighlight">\(s(w_t)\)</span> 是当前财富减去消费后的净值</p></li>
 </ul>
 <p>令 <span class="math notranslate nohighlight">\(\{z_t\}\)</span> 为具有以下形式的相关状态过程：</p>
@@ -470,7 +478,7 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
 \]</div>
 <p>这里 <span class="math notranslate nohighlight">\(\{ (\epsilon_t, \xi_t, \zeta_t) \}\)</span> 是在 <span class="math notranslate nohighlight">\(\mathbb R^3\)</span> 中的独立同分布标准正态分布。</p>
 <p><span class="math notranslate nohighlight">\(c_r\)</span> 的值应该接近于零，因为资产收益率不会表现出较大的趋势。</p>
-<p>当我们模拟家庭人口时，我们假设所有冲击都是特殊性的（即，特定于个别家庭且彼此之间相互独立）。</p>
+<p>当我们模拟家庭人口时，我们假设所有冲击都是特质的（即，特定于个别家庭且彼此之间相互独立）。</p>
 <p>关于储蓄函数<span class="math notranslate nohighlight">\(s\)</span>，我们的默认模型将是</p>
 <div class="math notranslate nohighlight" id="equation-sav-ah">
 <span class="eqno">(24.2)<a class="headerlink" href="#equation-sav-ah" title="Permalink to this equation">#</a></span>\[s(w) = s_0 w \cdot \mathbb 1\{w \geq \hat w\}\]</div>
@@ -504,7 +512,7 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
 </div>
 </div>
 </div>
-<p>这是一个存储实例数据并实现更新总体状态和家庭财富方法的类。</p>
+<p>下面是一个类，用于存储模型参数并实现更新总体状态和家庭财富的方法。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jitclass</span><span class="p">(</span><span class="n">wealth_dynamics_data</span><span class="p">)</span>
@@ -560,7 +568,7 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
         <span class="n">w_hat</span><span class="p">,</span> <span class="n">s_0</span><span class="p">,</span> <span class="n">c_y</span><span class="p">,</span> <span class="n">μ_y</span><span class="p">,</span> <span class="n">σ_y</span><span class="p">,</span> <span class="n">c_r</span><span class="p">,</span> <span class="n">μ_r</span><span class="p">,</span> <span class="n">σ_r</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">σ_z</span> <span class="o">=</span> <span class="n">params</span>
         <span class="n">zp</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">z</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">σ_z</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
 
-        <span class="c1"># 更新财富</span>
+        <span class="c1"># 更新财富值</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">c_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">zp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">μ_y</span> <span class="o">+</span> <span class="n">σ_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">())</span>
         <span class="n">wp</span> <span class="o">=</span> <span class="n">y</span>
         <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;=</span> <span class="n">w_hat</span><span class="p">:</span>
@@ -571,7 +579,7 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
 </div>
 </div>
 </div>
-<p>这是一个用于模拟单个家庭财富时间序列的函数。</p>
+<p>以下是一个用于模拟单个家庭财富时间序列的函数。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span>
@@ -597,8 +605,8 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
 </div>
 </div>
 </div>
-<p>以下是模拟一组家庭财富随时间变化的函数。</p>
-<p>注意使用并行化来加快计算速度。</p>
+<p>下面是模拟一组家庭财富随时间变化的函数。</p>
+<p>我们使用并行计算来加快计算速度。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -606,12 +614,12 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    将一组家庭的横截面数据在时间上向前推移</span>
 
-<span class="sd">    * wdy: WealthDynamics的实例</span>
-<span class="sd">    * w_distribution: array_like, 表示当前的横截面分布</span>
+<span class="sd">    * wdy: WealthDynamics的一个实例</span>
+<span class="sd">    * w_distribution: array_like, 表示当前的截面分布</span>
 
-<span class="sd">    接收当前财富值分布w_distribution作为输入</span>
+<span class="sd">    接收当前家庭财富值分布作为w_distribution的输入</span>
 <span class="sd">    并将每个w_t更新为w_{t+j},其中</span>
-<span class="sd">    j = shift_length。</span>
+<span class="sd">    j = shift_length。（步长）</span>
 
 <span class="sd">    返回新的分布。</span>
 
@@ -630,11 +638,11 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
 </div>
 </div>
 </div>
-<p>在上述函数中，并行化非常有效，因为一旦已知总体状态的路径，每个家庭的时间路径就可以独立计算。</p>
+<p>在上述函数中，并行化非常高效，因为一旦已知总体状态的路径，每个家庭的时间路径就可以独立计算。</p>
 </section>
 <section id="id11">
 <h2><a class="toc-backref" href="#id20"><span class="section-number">24.5. </span>应用</a><a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h2>
-<p>让我们尝试在不同参数值下模拟该模型，并研究其对财富分配的影响。</p>
+<p>让我们尝试在不同参数值下模拟该模型，并研究其对财富分布的影响。</p>
 <section id="id12">
 <h3><span class="section-number">24.5.1. </span>时间序列<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
 <p>让我们看看单个家庭的财富动态。</p>
@@ -656,7 +664,7 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/a8153ca37028fd241fd15f42f600def292abe0f5f6d9ccb192b4e65396ae1454.png" src="_images/a8153ca37028fd241fd15f42f600def292abe0f5f6d9ccb192b4e65396ae1454.png" />
+<img alt="_images/8b1a5408a4771c6e4bf921fd9b0d93f1e741cd4b08ac01f7e2b642396093f00b.png" src="_images/8b1a5408a4771c6e4bf921fd9b0d93f1e741cd4b08ac01f7e2b642396093f00b.png" />
 </div>
 </div>
 <p>注意财富随时间变化的大幅波动。</p>
@@ -670,7 +678,7 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_lorenz_and_gini</span><span class="p">(</span><span class="n">wdy</span><span class="p">,</span> <span class="n">num_households</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    通过将num_households向前模拟到时间T，生成与WealthDynamics模型</span>
+<span class="sd">    通过将num_households个家庭向前模拟到时间T，生成与WealthDynamics模型</span>
 <span class="sd">    相对应的洛伦兹曲线数据和基尼系数。</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ψ_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">num_households</span><span class="p">,</span> <span class="n">wdy</span><span class="o">.</span><span class="n">y_mean</span><span class="p">)</span>
@@ -682,7 +690,7 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
 </div>
 </div>
 </div>
-<p>现在我们研究随着储蓄回报率的变化，财富分配的洛伦兹曲线如何变化。</p>
+<p>现在我们研究随着储蓄回报率的变化，财富分布的洛伦兹曲线如何变化。</p>
 <p>下面的代码绘制了三个不同 <span class="math notranslate nohighlight">\(\mu_r\)</span> 值对应的洛伦兹曲线。</p>
 <p>如果你自己运行这段代码，请注意它需要一到两分钟才能执行完成。</p>
 <p>这是不可避免的，因为我们正在执行一个CPU密集型任务。</p>
@@ -701,15 +709,15 @@ y_t = c_y \exp(z_t) + \exp(\mu_y + \sigma_y \zeta_t)
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">l_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">fr</span><span class="s1">&#39;$\psi^*$ at $\mu_r = </span><span class="si">{</span><span class="n">μ_r</span><span class="si">:</span><span class="s1">0.2</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
     <span class="n">gini_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gv</span><span class="p">)</span>
 
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">f_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;equality&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">f_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;平等&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/47f535a578629559dd2662fd454b5a67a1064dcdaa1e3703bc271284d3a53813.png" src="_images/47f535a578629559dd2662fd454b5a67a1064dcdaa1e3703bc271284d3a53813.png" />
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 51.3 s, sys: 73.3 ms, total: 51.4 s
+<img alt="_images/1611db771c49f5bd2d8db0f2182c46aa14c9203680d529fe937b19252a5f88de.png" src="_images/1611db771c49f5bd2d8db0f2182c46aa14c9203680d529fe937b19252a5f88de.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 51.3 s, sys: 82.1 ms, total: 51.4 s
 Wall time: 13.6 s
 </pre></div>
 </div>
@@ -718,11 +726,11 @@ Wall time: 13.6 s
 <p>随着金融收入回报的增加，洛伦兹曲线向下移动，表明不平等程度上升。</p>
 <p>我们将通过下面的基尼系数再次研究这一点，但首先请看看上述代码执行时系统资源的以下图像：</p>
 <p>由于代码经过高效的JIT编译并完全并行化，如果不更改硬件，几乎不可能让这些任务序列运行得更快。</p>
-<p>现在让我们检查基尼系数。</p>
+<p>现在让我们看一看基尼系数。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">μ_r_vals</span><span class="p">,</span> <span class="n">gini_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;gini coefficient&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">μ_r_vals</span><span class="p">,</span> <span class="n">gini_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;基尼系数&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\mu_r$&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -730,11 +738,11 @@ Wall time: 13.6 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/8807ce6e0d260ba8e69c32b951da39ee6ca82f79f52c9fdaac922b9b6ad1c729.png" src="_images/8807ce6e0d260ba8e69c32b951da39ee6ca82f79f52c9fdaac922b9b6ad1c729.png" />
+<img alt="_images/72dea3bbb72edf2099108aacc93c6dbd10b1cca86a8595cc2fa7e0cbee646726.png" src="_images/72dea3bbb72edf2099108aacc93c6dbd10b1cca86a8595cc2fa7e0cbee646726.png" />
 </div>
 </div>
 <p>我们再次看到，随着金融收入回报的增加，不平等程度也在上升。</p>
-<p>让我们通过研究改变金融回报的波动率项<span class="math notranslate nohighlight">\(\sigma_r\)</span>时会发生什么来结束本节。</p>
+<p>最后，让我们通过研究改变金融回报的波动率项<span class="math notranslate nohighlight">\(\sigma_r\)</span>时会发生什么。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
@@ -749,16 +757,16 @@ Wall time: 13.6 s
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">l_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">fr</span><span class="s1">&#39;$\psi^*$ at $\sigma_r = </span><span class="si">{</span><span class="n">σ_r</span><span class="si">:</span><span class="s1">0.2</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
     <span class="n">gini_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gv</span><span class="p">)</span>
 
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">f_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;equality&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">f_vals</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;平等&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/5433e97f7b99069d49d6a9584b447fafe2d9a8a1ccfbb4d64054c11352b00e72.png" src="_images/5433e97f7b99069d49d6a9584b447fafe2d9a8a1ccfbb4d64054c11352b00e72.png" />
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 50.7 s, sys: 31.9 ms, total: 50.7 s
-Wall time: 12.9 s
+<img alt="_images/362e59676273a76b26a664af404e8b5d218556ecc485154e611b0a6557160510.png" src="_images/362e59676273a76b26a664af404e8b5d218556ecc485154e611b0a6557160510.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 50.8 s, sys: 26.2 ms, total: 50.8 s
+Wall time: 13.1 s
 </pre></div>
 </div>
 </div>
@@ -774,8 +782,8 @@ Wall time: 12.9 s
 <section id="exercise-content">
 <p>对于具有帕累托尾部的财富或收入分布，更高的尾部指数表明不平等程度更低。</p>
 <p>事实上，可以证明帕累托分布的基尼系数，当尾部指数为<span class="math notranslate nohighlight">\(a\)</span>时，等于<span class="math notranslate nohighlight">\(1/(2a - 1)\)</span>。</p>
-<p>请尽可能通过模拟来验证这一点。</p>
-<p>具体来说，绘制一个图表，展示基尼系数与尾部指数的关系，同时使用上述理论值和通过<code class="docutils literal notranslate"><span class="pre">qe.gini_coefficient</span></code>从样本计算得出的值。</p>
+<p>请尽可能通过代码模拟来验证这一点。</p>
+<p>具体来说，绘制一个图表，同时使用上述理论值和通过<code class="docutils literal notranslate"><span class="pre">qe.gini_coefficient</span></code>从样本中计算得出的值，来展示基尼系数与尾部指数的关系。</p>
 <p>对于尾部指数的值，使用<code class="docutils literal notranslate"><span class="pre">a_vals</span> <span class="pre">=</span> <span class="pre">np.linspace(1,</span> <span class="pre">10,</span> <span class="pre">25)</span></code>。</p>
 <p>对于每个<span class="math notranslate nohighlight">\(a\)</span>，使用1,000个样本，并采用在讨论帕累托分布的洛伦兹曲线时使用的采样方法来生成帕累托分布的随机数。</p>
 <p>请尽可能解释基尼指数与<span class="math notranslate nohighlight">\(a\)</span>之间的单调关系。</p>
@@ -785,10 +793,10 @@ Wall time: 12.9 s
 
 <p class="admonition-title">Solution to<a class="reference internal" href="#wd_ex1"> Exercise 24.1</a></p>
 <section id="solution-content">
-<p>这是一个解决方案，它在理论和模拟之间产生了很好的匹配。</p>
+<p>这是一个解法，它在理论和模拟之间产生了很好的匹配。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>  <span class="c1"># Pareto尾部指数</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>  <span class="c1"># 帕累托尾部指数</span>
 <span class="n">ginis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a_vals</span><span class="p">)</span>
 
 <span class="n">n</span> <span class="o">=</span> <span class="mi">1000</span>                         <span class="c1"># 每个样本的大小</span>
@@ -796,27 +804,27 @@ Wall time: 12.9 s
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">a_vals</span><span class="p">):</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">a</span><span class="p">)</span>
     <span class="n">ginis</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">qe</span><span class="o">.</span><span class="n">gini_coefficient</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_vals</span><span class="p">,</span> <span class="n">ginis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;sampled&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_vals</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">a_vals</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;theoretical&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_vals</span><span class="p">,</span> <span class="n">ginis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;抽样值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_vals</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">a_vals</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;理论值&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/38bd7caea5d790729dffb3d49314a41a87d12b6b3ce5d47e45e334d7eca66310.png" src="_images/38bd7caea5d790729dffb3d49314a41a87d12b6b3ce5d47e45e334d7eca66310.png" />
+<img alt="_images/8afd5c562d37b8503ce19c9f48a82f6404becd7cc1a03b5b6b2666df40de78cf.png" src="_images/8afd5c562d37b8503ce19c9f48a82f6404becd7cc1a03b5b6b2666df40de78cf.png" />
 </div>
 </div>
 <p>一般来说，对于帕累托分布，较高的尾部指数意味着右尾的权重较小。</p>
 <p>这意味着财富的极端值较少，因此更加平等。</p>
-<p>更多的平等转化为较低的基尼系数。</p>
+<p>更大程度的平等转化为更低的基尼系数。</p>
 </section>
 </div>
 <div class="exercise admonition" id="wd_ex2">
 
 <p class="admonition-title"><span class="caption-number">Exercise 24.2 </span></p>
 <section id="exercise-content">
-<p>财富过程<a class="reference internal" href="#equation-wealth-dynam-ah">(24.1)</a>类似于<a class="reference internal" href="kesten_processes.html"><span class="doc">Kesten过程</span></a>。</p>
+<p><a class="reference internal" href="#equation-wealth-dynam-ah">(24.1)</a>中介绍的财富过程类似于<a class="reference internal" href="kesten_processes.html"><span class="doc">Kesten过程</span></a>。</p>
 <p>这是因为，根据<a class="reference internal" href="#equation-sav-ah">(24.2)</a>，在所有高于<span class="math notranslate nohighlight">\(\hat w\)</span>的财富水平上，储蓄是恒定的。</p>
 <p>当储蓄恒定时，财富过程具有与Kesten过程相同的准线性结构，包含乘性和加性冲击。</p>
 <p>Kesten-Goldie定理告诉我们，在一系列参数化条件下，Kesten过程具有帕累托尾部。</p>
@@ -856,14 +864,14 @@ Wall time: 12.9 s
 </div>
 </div>
 </div>
-<p>现在让我们看看等级-规模图:</p>
+<p>现在让我们看看排名-规模图:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
 <span class="n">rank_data</span><span class="p">,</span> <span class="n">size_data</span> <span class="o">=</span> <span class="n">qe</span><span class="o">.</span><span class="n">rank_size</span><span class="p">(</span><span class="n">ψ_star</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">rank_data</span><span class="p">,</span> <span class="n">size_data</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;对数等级&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;对数排名&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;对数规模&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -871,7 +879,7 @@ Wall time: 12.9 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/ca3f311ac29012bcefd9b088ffec9fe7521c698f3ff85d33a56502c74817d136.png" src="_images/ca3f311ac29012bcefd9b088ffec9fe7521c698f3ff85d33a56502c74817d136.png" />
+<img alt="_images/df6b8d60fd3816ff2b21be40b0ea4809c2aa6280b4e17c5b0c9184670df97780.png" src="_images/df6b8d60fd3816ff2b21be40b0ea4809c2aa6280b4e17c5b0c9184670df97780.png" />
 </div>
 </div>
 </section>
@@ -1074,7 +1082,7 @@ Wall time: 12.9 s
  </li>
  <li class="toctree-l1 current active active">
   <a class="current reference internal" href="#">
-   24. 财富分配动态
+   24. 财富分布动态
   </a>
  </li>
  <li class="toctree-l1">

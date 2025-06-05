@@ -467,7 +467,7 @@ y_{t} &amp; = G \hat x_t + a_t
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_6483/2927621375.py:11: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10037/2927621375.py:11: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   y_hat_t[t-1] = worker.G @ x_hat
 </pre></div>
 </div>
@@ -500,726 +500,7 @@ y_{t} &amp; = G \hat x_t + a_t
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>---------------------------------------------------------------------------
-RuntimeError                              Traceback (most recent call last)
-Cell In[6], line 17
-     14 ax[1].set_title(cjk(&#39;推断的工作伦理随时间变化&#39;))
-     15 ax[1].legend()
----&gt; 17 fig.tight_layout()
-     18 plt.show()
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/figure.py:3545, in Figure.tight_layout(self, pad, h_pad, w_pad, rect)
-   3543 previous_engine = self.get_layout_engine()
-   3544 self.set_layout_engine(engine)
--&gt; 3545 engine.execute(self)
-   3546 if previous_engine is not None and not isinstance(
-   3547     previous_engine, (TightLayoutEngine, PlaceHolderLayoutEngine)
-   3548 ):
-   3549     _api.warn_external(&#39;The figure layout has changed to tight&#39;)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/layout_engine.py:183, in TightLayoutEngine.execute(self, fig)
-    181 renderer = fig._get_renderer()
-    182 with getattr(renderer, &quot;_draw_disabled&quot;, nullcontext)():
---&gt; 183     kwargs = get_tight_layout_figure(
-    184         fig, fig.axes, get_subplotspec_list(fig.axes), renderer,
-    185         pad=info[&#39;pad&#39;], h_pad=info[&#39;h_pad&#39;], w_pad=info[&#39;w_pad&#39;],
-    186         rect=info[&#39;rect&#39;])
-    187 if kwargs:
-    188     fig.subplots_adjust(**kwargs)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/_tight_layout.py:266, in get_tight_layout_figure(fig, axes_list, subplotspec_list, renderer, pad, h_pad, w_pad, rect)
-    261         return {}
-    262     span_pairs.append((
-    263         slice(ss.rowspan.start * div_row, ss.rowspan.stop * div_row),
-    264         slice(ss.colspan.start * div_col, ss.colspan.stop * div_col)))
---&gt; 266 kwargs = _auto_adjust_subplotpars(fig, renderer,
-    267                                   shape=(max_nrows, max_ncols),
-    268                                   span_pairs=span_pairs,
-    269                                   subplot_list=subplot_list,
-    270                                   ax_bbox_list=ax_bbox_list,
-    271                                   pad=pad, h_pad=h_pad, w_pad=w_pad)
-    273 # kwargs can be none if tight_layout fails...
-    274 if rect is not None and kwargs is not None:
-    275     # if rect is given, the whole subplots area (including
-    276     # labels) will fit into the rect instead of the
-   (...)
-    280     # auto_adjust_subplotpars twice, where the second run
-    281     # with adjusted rect parameters.
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/_tight_layout.py:82, in _auto_adjust_subplotpars(fig, renderer, shape, span_pairs, subplot_list, ax_bbox_list, pad, h_pad, w_pad, rect)
-     80 for ax in subplots:
-     81     if ax.get_visible():
----&gt; 82         bb += [martist._get_tightbbox_for_layout_only(ax, renderer)]
-     84 tight_bbox_raw = Bbox.union(bb)
-     85 tight_bbox = fig.transFigure.inverted().transform_bbox(tight_bbox_raw)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/artist.py:1410, in _get_tightbbox_for_layout_only(obj, *args, **kwargs)
-   1404 &quot;&quot;&quot;
-   1405 Matplotlib&#39;s `.Axes.get_tightbbox` and `.Axis.get_tightbbox` support a
-   1406 *for_layout_only* kwarg; this helper tries to use the kwarg but skips it
-   1407 when encountering third-party subclasses that do not support it.
-   1408 &quot;&quot;&quot;
-   1409 try:
--&gt; 1410     return obj.get_tightbbox(*args, **{**kwargs, &quot;for_layout_only&quot;: True})
-   1411 except TypeError:
-   1412     return obj.get_tightbbox(*args, **kwargs)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/_api/deprecation.py:457, in make_keyword_only.&lt;locals&gt;.wrapper(*args, **kwargs)
-    451 if len(args) &gt; name_idx:
-    452     warn_deprecated(
-    453         since, message=&quot;Passing the %(name)s %(obj_type)s &quot;
-    454         &quot;positionally is deprecated since Matplotlib %(since)s; the &quot;
-    455         &quot;parameter will become keyword-only %(removal)s.&quot;,
-    456         name=name, obj_type=f&quot;parameter of {func.__name__}()&quot;)
---&gt; 457 return func(*args, **kwargs)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axes/_base.py:4476, in _AxesBase.get_tightbbox(self, renderer, call_axes_locator, bbox_extra_artists, for_layout_only)
-   4474 for axis in self._axis_map.values():
-   4475     if self.axison and axis.get_visible():
--&gt; 4476         ba = martist._get_tightbbox_for_layout_only(axis, renderer)
-   4477         if ba:
-   4478             bb.append(ba)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/artist.py:1410, in _get_tightbbox_for_layout_only(obj, *args, **kwargs)
-   1404 &quot;&quot;&quot;
-   1405 Matplotlib&#39;s `.Axes.get_tightbbox` and `.Axis.get_tightbbox` support a
-   1406 *for_layout_only* kwarg; this helper tries to use the kwarg but skips it
-   1407 when encountering third-party subclasses that do not support it.
-   1408 &quot;&quot;&quot;
-   1409 try:
--&gt; 1410     return obj.get_tightbbox(*args, **{**kwargs, &quot;for_layout_only&quot;: True})
-   1411 except TypeError:
-   1412     return obj.get_tightbbox(*args, **kwargs)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:1372, in Axis.get_tightbbox(self, renderer, for_layout_only)
-   1369     renderer = self.figure._get_renderer()
-   1370 ticks_to_draw = self._update_ticks()
--&gt; 1372 self._update_label_position(renderer)
-   1374 # go back to just this axis&#39;s tick labels
-   1375 tlb1, tlb2 = self._get_ticklabel_bboxes(ticks_to_draw, renderer)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:2413, in XAxis._update_label_position(self, renderer)
-   2409     return
-   2411 # get bounding boxes for this axis and any siblings
-   2412 # that have been set by `fig.align_xlabels()`
--&gt; 2413 bboxes, bboxes2 = self._get_tick_boxes_siblings(renderer=renderer)
-   2415 x, y = self.label.get_position()
-   2416 if self.label_position == &#39;bottom&#39;:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:2206, in Axis._get_tick_boxes_siblings(self, renderer)
-   2204 axis = ax._axis_map[name]
-   2205 ticks_to_draw = axis._update_ticks()
--&gt; 2206 tlb, tlb2 = axis._get_ticklabel_bboxes(ticks_to_draw, renderer)
-   2207 bboxes.extend(tlb)
-   2208 bboxes2.extend(tlb2)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:1351, in Axis._get_ticklabel_bboxes(self, ticks, renderer)
-   1349 if renderer is None:
-   1350     renderer = self.figure._get_renderer()
--&gt; 1351 return ([tick.label1.get_window_extent(renderer)
-   1352          for tick in ticks if tick.label1.get_visible()],
-   1353         [tick.label2.get_window_extent(renderer)
-   1354          for tick in ticks if tick.label2.get_visible()])
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:959, in Text.get_window_extent(self, renderer, dpi)
-    954     raise RuntimeError(
-    955         &quot;Cannot get window extent of text w/o renderer. You likely &quot;
-    956         &quot;want to call &#39;figure.draw_without_rendering()&#39; first.&quot;)
-    958 with cbook._setattr_cm(self.figure, dpi=dpi):
---&gt; 959     bbox, info, descent = self._get_layout(self._renderer)
-    960     x, y = self.get_unitless_position()
-    961     x, y = self.get_transform().transform((x, y))
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:373, in Text._get_layout(self, renderer)
-    370 ys = []
-    372 # Full vertical extent of font, including ascenders and descenders:
---&gt; 373 _, lp_h, lp_d = _get_text_metrics_with_cache(
-    374     renderer, &quot;lp&quot;, self._fontproperties,
-    375     ismath=&quot;TeX&quot; if self.get_usetex() else False, dpi=self.figure.dpi)
-    376 min_dy = (lp_h - lp_d) * self._linespacing
-    378 for i, line in enumerate(lines):
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:69, in _get_text_metrics_with_cache(renderer, text, fontprop, ismath, dpi)
-     66 &quot;&quot;&quot;Call ``renderer.get_text_width_height_descent``, caching the results.&quot;&quot;&quot;
-     67 # Cached based on a copy of fontprop so that later in-place mutations of
-     68 # the passed-in argument do not mess up the cache.
----&gt; 69 return _get_text_metrics_with_cache_impl(
-     70     weakref.ref(renderer), text, fontprop.copy(), ismath, dpi)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:77, in _get_text_metrics_with_cache_impl(renderer_ref, text, fontprop, ismath, dpi)
-     73 @functools.lru_cache(4096)
-     74 def _get_text_metrics_with_cache_impl(
-     75         renderer_ref, text, fontprop, ismath, dpi):
-     76     # dpi is unused, but participates in cache invalidation (via the renderer).
----&gt; 77     return renderer_ref().get_text_width_height_descent(text, fontprop, ismath)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/backends/backend_agg.py:212, in RendererAgg.get_text_width_height_descent(self, s, prop, ismath)
-    210 _api.check_in_list([&quot;TeX&quot;, True, False], ismath=ismath)
-    211 if ismath == &quot;TeX&quot;:
---&gt; 212     return super().get_text_width_height_descent(s, prop, ismath)
-    214 if ismath:
-    215     ox, oy, width, height, descent, font_image = \
-    216         self.mathtext_parser.parse(s, self.dpi, prop)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/backend_bases.py:597, in RendererBase.get_text_width_height_descent(self, s, prop, ismath)
-    593 fontsize = prop.get_size_in_points()
-    595 if ismath == &#39;TeX&#39;:
-    596     # todo: handle properties
---&gt; 597     return self.get_texmanager().get_text_width_height_descent(
-    598         s, fontsize, renderer=self)
-    600 dpi = self.points_to_pixels(72)
-    601 if ismath:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/texmanager.py:363, in TexManager.get_text_width_height_descent(cls, tex, fontsize, renderer)
-    361 if tex.strip() == &#39;&#39;:
-    362     return 0, 0, 0
---&gt; 363 dvifile = cls.make_dvi(tex, fontsize)
-    364 dpi_fraction = renderer.points_to_pixels(1.) if renderer else 1
-    365 with dviread.Dvi(dvifile, 72 * dpi_fraction) as dvi:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/texmanager.py:295, in TexManager.make_dvi(cls, tex, fontsize)
-    293     with TemporaryDirectory(dir=cwd) as tmpdir:
-    294         tmppath = Path(tmpdir)
---&gt; 295         cls._run_checked_subprocess(
-    296             [&quot;latex&quot;, &quot;-interaction=nonstopmode&quot;, &quot;--halt-on-error&quot;,
-    297              f&quot;--output-directory={tmppath.name}&quot;,
-    298              f&quot;{texfile.name}&quot;], tex, cwd=cwd)
-    299         (tmppath / Path(dvifile).name).replace(dvifile)
-    300 return dvifile
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/texmanager.py:258, in TexManager._run_checked_subprocess(cls, command, tex, cwd)
-    254     raise RuntimeError(
-    255         f&#39;Failed to process string with tex because {command[0]} &#39;
-    256         &#39;could not be found&#39;) from exc
-    257 except subprocess.CalledProcessError as exc:
---&gt; 258     raise RuntimeError(
-    259         &#39;{prog} was not able to process the following string:\n&#39;
-    260         &#39;{tex!r}\n\n&#39;
-    261         &#39;Here is the full command invocation and its output:\n\n&#39;
-    262         &#39;{format_command}\n\n&#39;
-    263         &#39;{exc}\n\n&#39;.format(
-    264             prog=command[0],
-    265             format_command=cbook._pformat_subprocess(command),
-    266             tex=tex.encode(&#39;unicode_escape&#39;),
-    267             exc=exc.output.decode(&#39;utf-8&#39;, &#39;backslashreplace&#39;))
-    268         ) from None
-    269 _log.debug(report)
-    270 return report
-
-RuntimeError: latex was not able to process the following string:
-b&#39;lp&#39;
-
-Here is the full command invocation and its output:
-
-latex -interaction=nonstopmode --halt-on-error --output-directory=tmp7no0wvhd c47aad118656eb7c905401f2906e87a5.tex
-
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=latex)
- restricted \write18 enabled.
-entering extended mode
-(./c47aad118656eb7c905401f2906e87a5.tex
-LaTeX2e &lt;2023-11-01&gt; patch level 1
-L3 programming layer &lt;2024-01-22&gt;
-(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
-Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
-(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo))
-(/usr/share/texlive/texmf-dist/tex/latex/type1cm/type1cm.sty)
-(/usr/share/texmf/tex/latex/cm-super/type1ec.sty
-(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmr.fd))
-(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty)
-(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
-(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty)
-(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
-(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty)))
-
-! LaTeX Error: File `CJKutf8.sty&#39; not found.
-
-Type X to quit or &lt;RETURN&gt; to proceed,
-or enter new name. (Default extension: sty)
-
-Enter file name: 
-! Emergency stop.
-&lt;read *&gt; 
-         
-l.16         \usepackage
-                        {{amsmath}}^^M
-No pages of output.
-Transcript written on tmp7no0wvhd/c47aad118656eb7c905401f2906e87a5.log.
-
-
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Error in callback &lt;function _draw_all_if_interactive at 0x7f9fa335a660&gt; (for post_execute), with arguments args (),kwargs {}:
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>---------------------------------------------------------------------------
-RuntimeError                              Traceback (most recent call last)
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/pyplot.py:268, in _draw_all_if_interactive()
-    266 def _draw_all_if_interactive() -&gt; None:
-    267     if matplotlib.is_interactive():
---&gt; 268         draw_all()
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/_pylab_helpers.py:131, in Gcf.draw_all(cls, force)
-    129 for manager in cls.get_all_fig_managers():
-    130     if force or manager.canvas.figure.stale:
---&gt; 131         manager.canvas.draw_idle()
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/backend_bases.py:1905, in FigureCanvasBase.draw_idle(self, *args, **kwargs)
-   1903 if not self._is_idle_drawing:
-   1904     with self._idle_draw_cntx():
--&gt; 1905         self.draw(*args, **kwargs)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/backends/backend_agg.py:387, in FigureCanvasAgg.draw(self)
-    384 # Acquire a lock on the shared font cache.
-    385 with (self.toolbar._wait_cursor_for_draw_cm() if self.toolbar
-    386       else nullcontext()):
---&gt; 387     self.figure.draw(self.renderer)
-    388     # A GUI class may be need to update a window using this draw, so
-    389     # don&#39;t forget to call the superclass.
-    390     super().draw()
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/artist.py:95, in _finalize_rasterization.&lt;locals&gt;.draw_wrapper(artist, renderer, *args, **kwargs)
-     93 @wraps(draw)
-     94 def draw_wrapper(artist, renderer, *args, **kwargs):
----&gt; 95     result = draw(artist, renderer, *args, **kwargs)
-     96     if renderer._rasterizing:
-     97         renderer.stop_rasterizing()
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/artist.py:72, in allow_rasterization.&lt;locals&gt;.draw_wrapper(artist, renderer)
-     69     if artist.get_agg_filter() is not None:
-     70         renderer.start_filter()
----&gt; 72     return draw(artist, renderer)
-     73 finally:
-     74     if artist.get_agg_filter() is not None:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/figure.py:3162, in Figure.draw(self, renderer)
-   3159             # ValueError can occur when resizing a window.
-   3161     self.patch.draw(renderer)
--&gt; 3162     mimage._draw_list_compositing_images(
-   3163         renderer, self, artists, self.suppressComposite)
-   3165     renderer.close_group(&#39;figure&#39;)
-   3166 finally:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/image.py:132, in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-    130 if not_composite or not has_images:
-    131     for a in artists:
---&gt; 132         a.draw(renderer)
-    133 else:
-    134     # Composite any adjacent images together
-    135     image_group = []
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/artist.py:72, in allow_rasterization.&lt;locals&gt;.draw_wrapper(artist, renderer)
-     69     if artist.get_agg_filter() is not None:
-     70         renderer.start_filter()
----&gt; 72     return draw(artist, renderer)
-     73 finally:
-     74     if artist.get_agg_filter() is not None:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axes/_base.py:3101, in _AxesBase.draw(self, renderer)
-   3098     for spine in self.spines.values():
-   3099         artists.remove(spine)
--&gt; 3101 self._update_title_position(renderer)
-   3103 if not self.axison:
-   3104     for _axis in self._axis_map.values():
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axes/_base.py:3045, in _AxesBase._update_title_position(self, renderer)
-   3043 top = max(top, bb.ymax)
-   3044 if title.get_text():
--&gt; 3045     ax.yaxis.get_tightbbox(renderer)  # update offsetText
-   3046     if ax.yaxis.offsetText.get_text():
-   3047         bb = ax.yaxis.offsetText.get_tightbbox(renderer)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:1372, in Axis.get_tightbbox(self, renderer, for_layout_only)
-   1369     renderer = self.figure._get_renderer()
-   1370 ticks_to_draw = self._update_ticks()
--&gt; 1372 self._update_label_position(renderer)
-   1374 # go back to just this axis&#39;s tick labels
-   1375 tlb1, tlb2 = self._get_ticklabel_bboxes(ticks_to_draw, renderer)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:2654, in YAxis._update_label_position(self, renderer)
-   2650     return
-   2652 # get bounding boxes for this axis and any siblings
-   2653 # that have been set by `fig.align_ylabels()`
--&gt; 2654 bboxes, bboxes2 = self._get_tick_boxes_siblings(renderer=renderer)
-   2655 x, y = self.label.get_position()
-   2656 if self.label_position == &#39;left&#39;:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:2206, in Axis._get_tick_boxes_siblings(self, renderer)
-   2204 axis = ax._axis_map[name]
-   2205 ticks_to_draw = axis._update_ticks()
--&gt; 2206 tlb, tlb2 = axis._get_ticklabel_bboxes(ticks_to_draw, renderer)
-   2207 bboxes.extend(tlb)
-   2208 bboxes2.extend(tlb2)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:1351, in Axis._get_ticklabel_bboxes(self, ticks, renderer)
-   1349 if renderer is None:
-   1350     renderer = self.figure._get_renderer()
--&gt; 1351 return ([tick.label1.get_window_extent(renderer)
-   1352          for tick in ticks if tick.label1.get_visible()],
-   1353         [tick.label2.get_window_extent(renderer)
-   1354          for tick in ticks if tick.label2.get_visible()])
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:959, in Text.get_window_extent(self, renderer, dpi)
-    954     raise RuntimeError(
-    955         &quot;Cannot get window extent of text w/o renderer. You likely &quot;
-    956         &quot;want to call &#39;figure.draw_without_rendering()&#39; first.&quot;)
-    958 with cbook._setattr_cm(self.figure, dpi=dpi):
---&gt; 959     bbox, info, descent = self._get_layout(self._renderer)
-    960     x, y = self.get_unitless_position()
-    961     x, y = self.get_transform().transform((x, y))
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:373, in Text._get_layout(self, renderer)
-    370 ys = []
-    372 # Full vertical extent of font, including ascenders and descenders:
---&gt; 373 _, lp_h, lp_d = _get_text_metrics_with_cache(
-    374     renderer, &quot;lp&quot;, self._fontproperties,
-    375     ismath=&quot;TeX&quot; if self.get_usetex() else False, dpi=self.figure.dpi)
-    376 min_dy = (lp_h - lp_d) * self._linespacing
-    378 for i, line in enumerate(lines):
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:69, in _get_text_metrics_with_cache(renderer, text, fontprop, ismath, dpi)
-     66 &quot;&quot;&quot;Call ``renderer.get_text_width_height_descent``, caching the results.&quot;&quot;&quot;
-     67 # Cached based on a copy of fontprop so that later in-place mutations of
-     68 # the passed-in argument do not mess up the cache.
----&gt; 69 return _get_text_metrics_with_cache_impl(
-     70     weakref.ref(renderer), text, fontprop.copy(), ismath, dpi)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:77, in _get_text_metrics_with_cache_impl(renderer_ref, text, fontprop, ismath, dpi)
-     73 @functools.lru_cache(4096)
-     74 def _get_text_metrics_with_cache_impl(
-     75         renderer_ref, text, fontprop, ismath, dpi):
-     76     # dpi is unused, but participates in cache invalidation (via the renderer).
----&gt; 77     return renderer_ref().get_text_width_height_descent(text, fontprop, ismath)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/backends/backend_agg.py:212, in RendererAgg.get_text_width_height_descent(self, s, prop, ismath)
-    210 _api.check_in_list([&quot;TeX&quot;, True, False], ismath=ismath)
-    211 if ismath == &quot;TeX&quot;:
---&gt; 212     return super().get_text_width_height_descent(s, prop, ismath)
-    214 if ismath:
-    215     ox, oy, width, height, descent, font_image = \
-    216         self.mathtext_parser.parse(s, self.dpi, prop)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/backend_bases.py:597, in RendererBase.get_text_width_height_descent(self, s, prop, ismath)
-    593 fontsize = prop.get_size_in_points()
-    595 if ismath == &#39;TeX&#39;:
-    596     # todo: handle properties
---&gt; 597     return self.get_texmanager().get_text_width_height_descent(
-    598         s, fontsize, renderer=self)
-    600 dpi = self.points_to_pixels(72)
-    601 if ismath:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/texmanager.py:363, in TexManager.get_text_width_height_descent(cls, tex, fontsize, renderer)
-    361 if tex.strip() == &#39;&#39;:
-    362     return 0, 0, 0
---&gt; 363 dvifile = cls.make_dvi(tex, fontsize)
-    364 dpi_fraction = renderer.points_to_pixels(1.) if renderer else 1
-    365 with dviread.Dvi(dvifile, 72 * dpi_fraction) as dvi:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/texmanager.py:295, in TexManager.make_dvi(cls, tex, fontsize)
-    293     with TemporaryDirectory(dir=cwd) as tmpdir:
-    294         tmppath = Path(tmpdir)
---&gt; 295         cls._run_checked_subprocess(
-    296             [&quot;latex&quot;, &quot;-interaction=nonstopmode&quot;, &quot;--halt-on-error&quot;,
-    297              f&quot;--output-directory={tmppath.name}&quot;,
-    298              f&quot;{texfile.name}&quot;], tex, cwd=cwd)
-    299         (tmppath / Path(dvifile).name).replace(dvifile)
-    300 return dvifile
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/texmanager.py:258, in TexManager._run_checked_subprocess(cls, command, tex, cwd)
-    254     raise RuntimeError(
-    255         f&#39;Failed to process string with tex because {command[0]} &#39;
-    256         &#39;could not be found&#39;) from exc
-    257 except subprocess.CalledProcessError as exc:
---&gt; 258     raise RuntimeError(
-    259         &#39;{prog} was not able to process the following string:\n&#39;
-    260         &#39;{tex!r}\n\n&#39;
-    261         &#39;Here is the full command invocation and its output:\n\n&#39;
-    262         &#39;{format_command}\n\n&#39;
-    263         &#39;{exc}\n\n&#39;.format(
-    264             prog=command[0],
-    265             format_command=cbook._pformat_subprocess(command),
-    266             tex=tex.encode(&#39;unicode_escape&#39;),
-    267             exc=exc.output.decode(&#39;utf-8&#39;, &#39;backslashreplace&#39;))
-    268         ) from None
-    269 _log.debug(report)
-    270 return report
-
-RuntimeError: latex was not able to process the following string:
-b&#39;lp&#39;
-
-Here is the full command invocation and its output:
-
-latex -interaction=nonstopmode --halt-on-error --output-directory=tmp87px4f45 c47aad118656eb7c905401f2906e87a5.tex
-
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=latex)
- restricted \write18 enabled.
-entering extended mode
-(./c47aad118656eb7c905401f2906e87a5.tex
-LaTeX2e &lt;2023-11-01&gt; patch level 1
-L3 programming layer &lt;2024-01-22&gt;
-(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
-Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
-(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo))
-(/usr/share/texlive/texmf-dist/tex/latex/type1cm/type1cm.sty)
-(/usr/share/texmf/tex/latex/cm-super/type1ec.sty
-(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmr.fd))
-(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty)
-(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
-(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty)
-(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
-(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty)))
-
-! LaTeX Error: File `CJKutf8.sty&#39; not found.
-
-Type X to quit or &lt;RETURN&gt; to proceed,
-or enter new name. (Default extension: sty)
-
-Enter file name: 
-! Emergency stop.
-&lt;read *&gt; 
-         
-l.16         \usepackage
-                        {{amsmath}}^^M
-No pages of output.
-Transcript written on tmp87px4f45/c47aad118656eb7c905401f2906e87a5.log.
-
-
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>---------------------------------------------------------------------------
-RuntimeError                              Traceback (most recent call last)
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/formatters.py:343, in BaseFormatter.__call__(self, obj)
-    341     pass
-    342 else:
---&gt; 343     return printer(obj)
-    344 # Finally look for special method names
-    345 method = get_real_method(obj, self.print_method)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/IPython/core/pylabtools.py:170, in print_figure(fig, fmt, bbox_inches, base64, **kwargs)
-    167     from matplotlib.backend_bases import FigureCanvasBase
-    168     FigureCanvasBase(fig)
---&gt; 170 fig.canvas.print_figure(bytes_io, **kw)
-    171 data = bytes_io.getvalue()
-    172 if fmt == &#39;svg&#39;:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/backend_bases.py:2175, in FigureCanvasBase.print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, pad_inches, bbox_extra_artists, backend, **kwargs)
-   2172     # we do this instead of `self.figure.draw_without_rendering`
-   2173     # so that we can inject the orientation
-   2174     with getattr(renderer, &quot;_draw_disabled&quot;, nullcontext)():
--&gt; 2175         self.figure.draw(renderer)
-   2176 if bbox_inches:
-   2177     if bbox_inches == &quot;tight&quot;:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/artist.py:95, in _finalize_rasterization.&lt;locals&gt;.draw_wrapper(artist, renderer, *args, **kwargs)
-     93 @wraps(draw)
-     94 def draw_wrapper(artist, renderer, *args, **kwargs):
----&gt; 95     result = draw(artist, renderer, *args, **kwargs)
-     96     if renderer._rasterizing:
-     97         renderer.stop_rasterizing()
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/artist.py:72, in allow_rasterization.&lt;locals&gt;.draw_wrapper(artist, renderer)
-     69     if artist.get_agg_filter() is not None:
-     70         renderer.start_filter()
----&gt; 72     return draw(artist, renderer)
-     73 finally:
-     74     if artist.get_agg_filter() is not None:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/figure.py:3162, in Figure.draw(self, renderer)
-   3159             # ValueError can occur when resizing a window.
-   3161     self.patch.draw(renderer)
--&gt; 3162     mimage._draw_list_compositing_images(
-   3163         renderer, self, artists, self.suppressComposite)
-   3165     renderer.close_group(&#39;figure&#39;)
-   3166 finally:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/image.py:132, in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-    130 if not_composite or not has_images:
-    131     for a in artists:
---&gt; 132         a.draw(renderer)
-    133 else:
-    134     # Composite any adjacent images together
-    135     image_group = []
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/artist.py:72, in allow_rasterization.&lt;locals&gt;.draw_wrapper(artist, renderer)
-     69     if artist.get_agg_filter() is not None:
-     70         renderer.start_filter()
----&gt; 72     return draw(artist, renderer)
-     73 finally:
-     74     if artist.get_agg_filter() is not None:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axes/_base.py:3101, in _AxesBase.draw(self, renderer)
-   3098     for spine in self.spines.values():
-   3099         artists.remove(spine)
--&gt; 3101 self._update_title_position(renderer)
-   3103 if not self.axison:
-   3104     for _axis in self._axis_map.values():
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axes/_base.py:3045, in _AxesBase._update_title_position(self, renderer)
-   3043 top = max(top, bb.ymax)
-   3044 if title.get_text():
--&gt; 3045     ax.yaxis.get_tightbbox(renderer)  # update offsetText
-   3046     if ax.yaxis.offsetText.get_text():
-   3047         bb = ax.yaxis.offsetText.get_tightbbox(renderer)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:1372, in Axis.get_tightbbox(self, renderer, for_layout_only)
-   1369     renderer = self.figure._get_renderer()
-   1370 ticks_to_draw = self._update_ticks()
--&gt; 1372 self._update_label_position(renderer)
-   1374 # go back to just this axis&#39;s tick labels
-   1375 tlb1, tlb2 = self._get_ticklabel_bboxes(ticks_to_draw, renderer)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:2654, in YAxis._update_label_position(self, renderer)
-   2650     return
-   2652 # get bounding boxes for this axis and any siblings
-   2653 # that have been set by `fig.align_ylabels()`
--&gt; 2654 bboxes, bboxes2 = self._get_tick_boxes_siblings(renderer=renderer)
-   2655 x, y = self.label.get_position()
-   2656 if self.label_position == &#39;left&#39;:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:2206, in Axis._get_tick_boxes_siblings(self, renderer)
-   2204 axis = ax._axis_map[name]
-   2205 ticks_to_draw = axis._update_ticks()
--&gt; 2206 tlb, tlb2 = axis._get_ticklabel_bboxes(ticks_to_draw, renderer)
-   2207 bboxes.extend(tlb)
-   2208 bboxes2.extend(tlb2)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/axis.py:1351, in Axis._get_ticklabel_bboxes(self, ticks, renderer)
-   1349 if renderer is None:
-   1350     renderer = self.figure._get_renderer()
--&gt; 1351 return ([tick.label1.get_window_extent(renderer)
-   1352          for tick in ticks if tick.label1.get_visible()],
-   1353         [tick.label2.get_window_extent(renderer)
-   1354          for tick in ticks if tick.label2.get_visible()])
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:959, in Text.get_window_extent(self, renderer, dpi)
-    954     raise RuntimeError(
-    955         &quot;Cannot get window extent of text w/o renderer. You likely &quot;
-    956         &quot;want to call &#39;figure.draw_without_rendering()&#39; first.&quot;)
-    958 with cbook._setattr_cm(self.figure, dpi=dpi):
---&gt; 959     bbox, info, descent = self._get_layout(self._renderer)
-    960     x, y = self.get_unitless_position()
-    961     x, y = self.get_transform().transform((x, y))
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:373, in Text._get_layout(self, renderer)
-    370 ys = []
-    372 # Full vertical extent of font, including ascenders and descenders:
---&gt; 373 _, lp_h, lp_d = _get_text_metrics_with_cache(
-    374     renderer, &quot;lp&quot;, self._fontproperties,
-    375     ismath=&quot;TeX&quot; if self.get_usetex() else False, dpi=self.figure.dpi)
-    376 min_dy = (lp_h - lp_d) * self._linespacing
-    378 for i, line in enumerate(lines):
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:69, in _get_text_metrics_with_cache(renderer, text, fontprop, ismath, dpi)
-     66 &quot;&quot;&quot;Call ``renderer.get_text_width_height_descent``, caching the results.&quot;&quot;&quot;
-     67 # Cached based on a copy of fontprop so that later in-place mutations of
-     68 # the passed-in argument do not mess up the cache.
----&gt; 69 return _get_text_metrics_with_cache_impl(
-     70     weakref.ref(renderer), text, fontprop.copy(), ismath, dpi)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/text.py:77, in _get_text_metrics_with_cache_impl(renderer_ref, text, fontprop, ismath, dpi)
-     73 @functools.lru_cache(4096)
-     74 def _get_text_metrics_with_cache_impl(
-     75         renderer_ref, text, fontprop, ismath, dpi):
-     76     # dpi is unused, but participates in cache invalidation (via the renderer).
----&gt; 77     return renderer_ref().get_text_width_height_descent(text, fontprop, ismath)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/backends/backend_agg.py:212, in RendererAgg.get_text_width_height_descent(self, s, prop, ismath)
-    210 _api.check_in_list([&quot;TeX&quot;, True, False], ismath=ismath)
-    211 if ismath == &quot;TeX&quot;:
---&gt; 212     return super().get_text_width_height_descent(s, prop, ismath)
-    214 if ismath:
-    215     ox, oy, width, height, descent, font_image = \
-    216         self.mathtext_parser.parse(s, self.dpi, prop)
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/backend_bases.py:597, in RendererBase.get_text_width_height_descent(self, s, prop, ismath)
-    593 fontsize = prop.get_size_in_points()
-    595 if ismath == &#39;TeX&#39;:
-    596     # todo: handle properties
---&gt; 597     return self.get_texmanager().get_text_width_height_descent(
-    598         s, fontsize, renderer=self)
-    600 dpi = self.points_to_pixels(72)
-    601 if ismath:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/texmanager.py:363, in TexManager.get_text_width_height_descent(cls, tex, fontsize, renderer)
-    361 if tex.strip() == &#39;&#39;:
-    362     return 0, 0, 0
---&gt; 363 dvifile = cls.make_dvi(tex, fontsize)
-    364 dpi_fraction = renderer.points_to_pixels(1.) if renderer else 1
-    365 with dviread.Dvi(dvifile, 72 * dpi_fraction) as dvi:
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/texmanager.py:295, in TexManager.make_dvi(cls, tex, fontsize)
-    293     with TemporaryDirectory(dir=cwd) as tmpdir:
-    294         tmppath = Path(tmpdir)
---&gt; 295         cls._run_checked_subprocess(
-    296             [&quot;latex&quot;, &quot;-interaction=nonstopmode&quot;, &quot;--halt-on-error&quot;,
-    297              f&quot;--output-directory={tmppath.name}&quot;,
-    298              f&quot;{texfile.name}&quot;], tex, cwd=cwd)
-    299         (tmppath / Path(dvifile).name).replace(dvifile)
-    300 return dvifile
-
-File ~/miniconda3/envs/quantecon/lib/python3.12/site-packages/matplotlib/texmanager.py:258, in TexManager._run_checked_subprocess(cls, command, tex, cwd)
-    254     raise RuntimeError(
-    255         f&#39;Failed to process string with tex because {command[0]} &#39;
-    256         &#39;could not be found&#39;) from exc
-    257 except subprocess.CalledProcessError as exc:
---&gt; 258     raise RuntimeError(
-    259         &#39;{prog} was not able to process the following string:\n&#39;
-    260         &#39;{tex!r}\n\n&#39;
-    261         &#39;Here is the full command invocation and its output:\n\n&#39;
-    262         &#39;{format_command}\n\n&#39;
-    263         &#39;{exc}\n\n&#39;.format(
-    264             prog=command[0],
-    265             format_command=cbook._pformat_subprocess(command),
-    266             tex=tex.encode(&#39;unicode_escape&#39;),
-    267             exc=exc.output.decode(&#39;utf-8&#39;, &#39;backslashreplace&#39;))
-    268         ) from None
-    269 _log.debug(report)
-    270 return report
-
-RuntimeError: latex was not able to process the following string:
-b&#39;lp&#39;
-
-Here is the full command invocation and its output:
-
-latex -interaction=nonstopmode --halt-on-error --output-directory=tmpwc49c69g c47aad118656eb7c905401f2906e87a5.tex
-
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=latex)
- restricted \write18 enabled.
-entering extended mode
-(./c47aad118656eb7c905401f2906e87a5.tex
-LaTeX2e &lt;2023-11-01&gt; patch level 1
-L3 programming layer &lt;2024-01-22&gt;
-(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
-Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
-(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo))
-(/usr/share/texlive/texmf-dist/tex/latex/type1cm/type1cm.sty)
-(/usr/share/texmf/tex/latex/cm-super/type1ec.sty
-(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmr.fd))
-(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty)
-(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
-(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty)
-(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
-(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty)))
-
-! LaTeX Error: File `CJKutf8.sty&#39; not found.
-
-Type X to quit or &lt;RETURN&gt; to proceed,
-or enter new name. (Default extension: sty)
-
-Enter file name: 
-! Emergency stop.
-&lt;read *&gt; 
-         
-l.16         \usepackage
-                        {{amsmath}}^^M
-No pages of output.
-Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
-
-
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 640x480 with 2 Axes&gt;
-</pre></div>
-</div>
+<img alt="_images/44b04229f55e481ca93e8c329fe568578263463657ff613cf83b16ced252b0f8.png" src="_images/44b04229f55e481ca93e8c329fe568578263463657ff613cf83b16ced252b0f8.png" />
 </div>
 </div>
 </section>
@@ -1232,10 +513,22 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[4. 0.]
+ [0. 4.]]
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">Σ_t</span><span class="p">[:,</span> <span class="p">:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.08805027 0.00100377]
+ [0.00100377 0.00398351]]
 </pre></div>
 </div>
 </div>
@@ -1282,6 +575,9 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/b62072a46470297cbadf45133e0cf8c7398563838dc71301660a8cf214225254.png" src="_images/b62072a46470297cbadf45133e0cf8c7398563838dc71301660a8cf214225254.png" />
+</div>
 </div>
 <p>注意证据 <span class="math notranslate nohighlight">\(y^t\)</span> 的积累如何随着样本量 <span class="math notranslate nohighlight">\(t\)</span> 的增长影响置信椭圆的形状。</p>
 <p>现在让我们使用我们的代码将隐藏状态 <span class="math notranslate nohighlight">\(x_0\)</span> 设置为特定的向量，以观察公司如何从我们感兴趣的某个 <span class="math notranslate nohighlight">\(x_0\)</span> 开始学习。</p>
@@ -1309,6 +605,12 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>h_0 = 0.0
+u_0 = 4.0
+</pre></div>
+</div>
+</div>
 </div>
 <p>实现相同目标的另一种方式是使用以下代码：</p>
 <div class="cell docutils container">
@@ -1332,6 +634,12 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
 <span class="n">h_0</span><span class="p">,</span> <span class="n">u_0</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;h_0 =&#39;</span><span class="p">,</span> <span class="n">h_0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;u_0 =&#39;</span><span class="p">,</span> <span class="n">u_0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>h_0 = 0.0
+u_0 = 4.0
 </pre></div>
 </div>
 </div>
@@ -1377,6 +685,15 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10037/1508403343.py:13: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  y_hat_t[t-1] = worker.G @ x_hat
+/tmp/ipykernel_10037/1508403343.py:14: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  u_hat_t[t-1] = x_hat[1]
+</pre></div>
+</div>
+<img alt="_images/96ab9671f931919315b6eba55ca19ce4c6ccc9fd659568fe0ac4a4f3c6edd548.png" src="_images/96ab9671f931919315b6eba55ca19ce4c6ccc9fd659568fe0ac4a4f3c6edd548.png" />
+</div>
 </div>
 <p>更一般地，我们可以在 <code class="docutils literal notranslate"><span class="pre">create_worker</span></code> namedtuple 中更改定义劳动者的部分或全部参数。</p>
 <p>这是一个例子：</p>
@@ -1387,6 +704,15 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
                         <span class="n">hhat_0</span><span class="o">=</span><span class="mf">7.0</span><span class="p">,</span> <span class="n">uhat_0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">σ_h</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">σ_u</span><span class="o">=</span><span class="mf">3.2</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">hard_working_worker</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WorkerModel(A=array([[0.4, 0.8],
+       [0. , 1. ]]), C=array([[0.2],
+       [0. ]]), G=array([1., 1.]), R=0.5, xhat_0=array([[  7.],
+       [100.]]), Σ_0=array([[2.5, 0. ],
+       [0. , 3.2]]))
 </pre></div>
 </div>
 </div>
@@ -1474,6 +800,15 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10037/3278495301.py:30: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  y_hat_t[i] = worker.G @ x_hat
+/tmp/ipykernel_10037/3278495301.py:31: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  u_hat_t[i] = x_hat[1]
+</pre></div>
+</div>
+<img alt="_images/82d699c66dc8a8636963d958e3ddb6f9d7457165d75bf60df142b8d3e2e13a8a.png" src="_images/82d699c66dc8a8636963d958e3ddb6f9d7457165d75bf60df142b8d3e2e13a8a.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1498,6 +833,15 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10037/3278495301.py:30: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  y_hat_t[i] = worker.G @ x_hat
+/tmp/ipykernel_10037/3278495301.py:31: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  u_hat_t[i] = x_hat[1]
+</pre></div>
+</div>
+<img alt="_images/17200ca9d9577576475e7bfbdfb18b94ab50d7442c8496078cf1514427a28500.png" src="_images/17200ca9d9577576475e7bfbdfb18b94ab50d7442c8496078cf1514427a28500.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1530,6 +874,15 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10037/3278495301.py:30: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  y_hat_t[i] = worker.G @ x_hat
+/tmp/ipykernel_10037/3278495301.py:31: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  u_hat_t[i] = x_hat[1]
+</pre></div>
+</div>
+<img alt="_images/48ed34e10aff82cc1dddce6b3592e82575abab8e287667d20277394eb332bf54.png" src="_images/48ed34e10aff82cc1dddce6b3592e82575abab8e287667d20277394eb332bf54.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1561,6 +914,15 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10037/3278495301.py:30: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  y_hat_t[i] = worker.G @ x_hat
+/tmp/ipykernel_10037/3278495301.py:31: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  u_hat_t[i] = x_hat[1]
+</pre></div>
+</div>
+<img alt="_images/62eb992c37f7ad1f8419bfedddb3f3d60023a9967dc66004c55c3224e892002e.png" src="_images/62eb992c37f7ad1f8419bfedddb3f3d60023a9967dc66004c55c3224e892002e.png" />
 </div>
 </div>
 </section>
@@ -1765,7 +1127,7 @@ Transcript written on tmpwc49c69g/c47aad118656eb7c905401f2906e87a5.log.
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="wealth_dynamics.html">
-   24. 财富分配动态
+   24. 财富分布动态
   </a>
  </li>
  <li class="toctree-l1">
