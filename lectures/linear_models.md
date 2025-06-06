@@ -106,13 +106,12 @@ import random
 ```
 
 (lss_pgs)=
-### 基本要素
+### 基本参数
 
-模型的基本要素是
+模型的基本参数是
 
 1. 矩阵 $A, C, G$
 1. 冲击分布，我们将其特定为 $N(0,I)$
-
 1. 初始条件$x_0$的分布，我们已设定为$N(\mu_0, \Sigma_0)$
 
 给定$A, C, G$以及$x_0$和$w_1, w_2, \ldots$的抽样值，模型{eq}`st_space_rep`确定了序列$\{x_t\}$和$\{y_t\}$的值。
@@ -121,7 +120,7 @@ import random
 
 稍后我们将看到如何计算这些分布及其矩。
 
-#### 鞅差异冲击
+#### 鞅差分冲击
 
 ```{index} single: Linear State Space Models; Martingale Difference Shocks
 ```
@@ -139,15 +138,15 @@ $$
 \mathbb{E} [w_{t+1} | x_t, x_{t-1}, \ldots ] = 0
 $$
 
-这个条件比 $\{w_t\}$ 是独立同分布且 $w_{t+1} \sim N(0,I)$ 的条件要弱。
+这是一个比 $\{w_t\}$ 是独立同分布且 $w_{t+1} \sim N(0,I)$ 还更弱的条件。
 
 ### 示例
 
-通过适当选择基本要素，各种动态系统都可以用线性状态空间模型来表示。
+通过适当选择基本参数，各种动态系统都可以用线性状态空间模型来表示。
 
-以下示例有助于突出这一点。
+让我们来看几个例子来说明这一点。
 
-这些示例也说明了"找到状态是一门艺术"这一智慧格言。
+这些示例也阐明了"找到状态是一门艺术"这一智慧格言。
 
 (lss_sode)=
 #### 二阶差分方程
@@ -188,7 +187,7 @@ C= \begin{bmatrix}
 G = \begin{bmatrix} 0 & 1 & 0 \end{bmatrix}
 $$
 
-你可以确认在这些定义下，{eq}`st_space_rep`和{eq}`st_ex_1`是一致的。
+通过代入这些定义，我们可以验证状态空间表示{eq}`st_space_rep`确实等价于原始的差分方程{eq}`st_ex_1`。
 
 下图显示了当$\phi_0 = 1.1, \phi_1=0.8, \phi_2 = -0.8, y_0 = y_{-1} = 1$时，这个过程的动态变化。
 
@@ -225,7 +224,7 @@ G = [0, 1, 0]
 plot_lss(A, C, G)
 ```
 
-稍后将要求您重新创建这个图形。
+稍后我们将尝试重现这个图示。
 
 #### 单变量自回归过程
 
@@ -265,7 +264,7 @@ C = \begin{bmatrix}
      \end{bmatrix}
 $$
 
-矩阵$A$具有向量$\begin{bmatrix}\phi_1 &  \phi_2 & \phi_3 & \phi_4 \end{bmatrix}$的*伴随矩阵*形式。
+矩阵$A$具有向量$\begin{bmatrix}\phi_1 &  \phi_2 & \phi_3 & \phi_4 \end{bmatrix}$*伴随矩阵*的形式。
 
 下图显示了当
 
@@ -274,7 +273,7 @@ $$
 y_{-3} = 1
 $$
 
-时该过程的动态变化
+该过程的动态变化
 
 (lss_uap_fig)=
 ```{code-cell} ipython3
@@ -367,7 +366,7 @@ A = \begin{bmatrix}
     \end{bmatrix}
 $$
 
-容易验证$A^4 = I$，这意味着$x_t$是严格周期的，周期为4：[^foot1]
+容易验证$A^4 = I$，这意味着$x_t$是一个周期严格为 4 的序列：[^foot1]
 
 $$
 x_{t+4} = x_t
@@ -505,7 +504,7 @@ $$
 
 其中 $x_{1t}$ 是 $x_t$ 的第一个元素。
 
-右边的第一项是鞅差的累积和，因此是一个[鞅](https://en.wikipedia.org/wiki/Martingale_%28probability_theory%29)。
+右边的第一项是鞅差的累积和，因此是一个[鞅](https://baike.baidu.com/item/%E9%9E%85/56830519)。
 
 第二项是时间的平移线性函数。
 
@@ -531,7 +530,7 @@ $$
 :label: lss_mut_linear_models
 
 \mu_{t+1} = A \mu_t
-\quad \text{with} \quad \mu_0 \text{ given}
+\quad \text{且} \quad \mu_0 \text{ 已知}
 ```
 
 这里的 $\mu_0$ 是在 {eq}`st_space_rep` 中给出的初始值。
@@ -544,7 +543,7 @@ $x_t$ 的方差-协方差矩阵是 $\Sigma_t := \mathbb{E} [ (x_t - \mu_t) (x_t 
 :label: eqsigmalaw_linear_models
 
 \Sigma_{t+1}  = A \Sigma_t A' + C C'
-\quad \text{with} \quad \Sigma_0 \text{ given}
+\quad \text{且} \quad \Sigma_0 \text{ 已知}
 ```
 
 与 $\mu_0$ 一样，矩阵 $\Sigma_0$ 是在 {eq}`st_space_rep` 中给出的初始值。
@@ -581,11 +580,11 @@ $y_t$ 的方差-协方差矩阵可以很容易地证明为
 ```{index} single: Linear State Space Models; Distributions
 ```
 
-一般来说，知道随机向量的均值和方差-协方差矩阵并不如知道完整的分布那么好。
+一般来说，知道一个随机向量的均值和方差-协方差矩阵，并不完全等同于知道其完整分布。
 
 然而，在某些情况下，仅仅这些矩就能告诉我们所需要知道的一切。
 
-这些情况是指均值向量和协方差矩阵是确定总体分布的所有**参数**的情况。
+这种情况发生在分布完全由其均值向量和协方差矩阵决定的时候。
 
 其中一种情况是当所讨论的向量服从高斯分布（即正态分布）时。
 
@@ -594,7 +593,7 @@ $y_t$ 的方差-协方差矩阵可以很容易地证明为
 1. 我们对基本量的高斯分布假设
 1. 正态性在线性运算下得以保持
 
-事实上，[众所周知](https://en.wikipedia.org/wiki/Multivariate_normal_distribution#Affine_transformation)
+事实上，[众所周知](https://baike.baidu.com/item/%E7%9F%A9%E9%98%B5%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83/22800089?fromModule=lemma_inlink)
 
 ```{math}
 :label: lss_glig
@@ -628,7 +627,7 @@ x_t \sim N(\mu_t, \Sigma_t)
 y_t \sim N(G \mu_t, G \Sigma_t G')
 ```
 
-### 集合解释
+### 系综解释
 
 我们应该如何解释{eq}`lss_mgs_x`--{eq}`lss_mgs_y`定义的分布？
 
@@ -665,7 +664,7 @@ def cross_section_plot(A,
     ax = axes[0]
     ax.set_ylim(ymin, ymax)
     ax.set_ylabel('$y_t$', fontsize=12)
-    ax.set_xlabel('time', fontsize=12)
+    ax.set_xlabel('时间', fontsize=12)
     ax.vlines((T,), -1.5, 1.5)
 
     ax.set_xticks((T,))
@@ -683,7 +682,7 @@ def cross_section_plot(A,
     y = y.flatten()
     axes[1].set_ylim(ymin, ymax)
     axes[1].set_ylabel('$y_t$', fontsize=12)
-    axes[1].set_xlabel('relative frequency', fontsize=12)
+    axes[1].set_xlabel('相对频率', fontsize=12)
     axes[1].hist(sample, bins=16, density=True, orientation='horizontal', alpha=0.5)
     plt.show()
 ```
@@ -704,7 +703,7 @@ G_2 = [1, 0, 0, 0]
 cross_section_plot(A_2, C_2, G_2)
 ```
 
-在右侧图中，这些数值被转换成一个旋转的直方图，显示了我们从20个$y_T$样本中得到的相对频率。
+右侧图展示了从20个$y_T$样本中得到的相对频率分布，以横向直方图的形式呈现。
 
 这是另一个图，这次有100个观测值
 
@@ -725,12 +724,12 @@ ar = LinearStateSpace(A_2, C_2, G_2, mu_0=np.ones(4))
 fig, ax = plt.subplots()
 x, y = ar.simulate(sample_size)
 mu_x, mu_y, Sigma_x, Sigma_y, Sigma_yx = ar.stationary_distributions()
-f_y = norm(loc=float(mu_y), scale=float(np.sqrt(Sigma_y)))
+f_y = norm(loc=float(mu_y.item()), scale=float(np.sqrt(Sigma_y).item()))
 y = y.flatten()
 ygrid = np.linspace(ymin, ymax, 150)
 
 ax.hist(y, bins=50, density=True, alpha=0.4)
-ax.plot(ygrid, f_y.pdf(ygrid), 'k-', lw=2, alpha=0.8, label='true density')
+ax.plot(ygrid, f_y.pdf(ygrid), 'k-', lw=2, alpha=0.8, label='真实密度')
 ax.set_xlim(ymin, ymax)
 ax.set_xlabel('$y_t$', fontsize=12)
 ax.set_ylabel('相对频率', fontsize=12)
@@ -744,7 +743,7 @@ plt.show()
 
 通过观察图形并尝试不同的参数，你可以理解总体分布是如何依赖于{ref}`上面列出的<lss_pgs>`模型基本要素的，这种依赖关系是通过分布的参数体现的。
 
-#### 集合均值
+#### 系综均值
 
 在前面的图中，我们通过以下方式近似了$y_T$的总体分布：
 
@@ -752,15 +751,15 @@ plt.show()
 1. 记录每个观测值$y^i_T$
 1. 对这个样本制作直方图
 
-正如直方图近似总体分布一样，*集合*或*横截面*平均值
+正如直方图近似总体分布一样，*系综*或*横截面*平均值
 
 $$
 \bar y_T := \frac{1}{I} \sum_{i=1}^I y_T^i
 $$
 
-近似期望值$\mathbb{E} [y_T] = G \mu_T$（这是由大数定律所暗示的）。
+近似期望值$\mathbb{E} [y_T] = G \mu_T$（由大数定律所示）。
 
-这里是一个模拟，比较了在时间点$t=0,\ldots,50$处的集合平均值和总体均值。
+这里是一个模拟，比较了在时间点$t=0,\ldots,50$处的系综平均值和总体均值。
 
 参数与前面的图表相同，样本量相对较小（$I=20$）。
 
@@ -789,7 +788,7 @@ m = ar.moment_sequence()
 population_means = []
 for t in range(T):
     μ_x, μ_y, Σ_x, Σ_y = next(m)
-    population_means.append(float(μ_y))
+    population_means.append(float(μ_y.item()))
 
 ax.plot(population_means, color='g', lw=2, alpha=0.8, label=r'$G\mu_t$')
 ax.set_ylim(ymin, ymax)
@@ -799,7 +798,7 @@ ax.legend(ncol=2)
 plt.show()
 ```
 
-$x_t$ 的集成均值为
+$x_t$ 的系综均值为
 
 $$
 \bar x_T := \frac{1}{I} \sum_{i=1}^I x_T^i \to \mu_T
@@ -831,7 +830,7 @@ $$
 
 要计算 $x_0, x_1, \ldots, x_T$ 的联合分布，回想
 
-联合密度和条件密度通过以下规则相关联
+联合密度与条件密度存在如下关系
 
 $$
 p(x, y) = p(y \, | \, x) p(x)
@@ -846,7 +845,7 @@ $$
 p(x_0, x_1, \ldots, x_T) =  p(x_0) \prod_{t=0}^{T-1} p(x_{t+1} \,|\, x_t)
 $$
 
-边际密度 $p(x_0)$ 就是原始的 $N(\mu_0, \Sigma_0)$。
+边缘密度 $p(x_0)$ 就是原始的 $N(\mu_0, \Sigma_0)$。
 
 根据{eq}`st_space_rep`，条件密度为
 
@@ -864,7 +863,7 @@ $$
 \Sigma_{t+j, t} := \mathbb{E} [ (x_{t+j} - \mu_{t+j})(x_t - \mu_t)' ]
 ```
 
-基本计算表明
+通过基本计算可知
 
 ```{math}
 :label: eqnautocov
@@ -913,7 +912,7 @@ def cross_plot(A,
     ax.grid(alpha=0.4)
     ax.set_ylim(ymin, ymax)
     ax.set_ylabel('$y_t$', fontsize=12)
-    ax.set_xlabel('$time$', fontsize=12)
+    ax.set_xlabel('时间', fontsize=12)
 
     ax.vlines((T0, T1, T2), -1.5, 1.5)
     ax.set_xticks((T0, T1, T2))
@@ -1033,7 +1032,7 @@ $$
 
 由于状态向量中的第一个分量是常数，我们永远不会有 $\mu_t \to 0$。
 
-我们如何找到满足常数状态分量的平稳解？
+我们如何求解具有常数状态分量的平稳解？
 
 #### 具有常数状态分量的过程
 
@@ -1116,11 +1115,11 @@ $\Sigma_t$ 和 $\Sigma_{t+j,t}$ 的平稳值满足
 
 假设我们正在处理一个协方差平稳过程。
 
-在这种情况下，我们知道当样本量 $I$ 趋向无穷时，整体均值将收敛到 $\mu_{\infty}$。
+在这种情况下，我们知道当样本量 $I$ 趋向无穷时，系综均值将收敛到 $\mu_{\infty}$。
 
 #### 时间平均
 
-理论上，跨模拟的整体平均很有趣，但在现实生活中，我们通常只观察到*单个*实现 $\{x_t, y_t\}_{t=0}^T$。
+虽然模拟的系综平均在理论上很有意义，但在现实中，我们通常只能观测到*单个*实现 $\{x_t, y_t\}_{t=0}^T$。
 
 因此现在让我们取一个单独的实现并形成时间序列平均值
 
@@ -1151,7 +1150,7 @@ $$
 
 在某些情况下，观测方程 $y_t = Gx_t$ 会被修改以包含一个误差项。
 
-这个误差项通常表示真实状态只能被不完美地观测到这一概念。
+通常这个误差项反映了真实状态只能被不完全观测的特性。
 
 为了在观测中引入误差项，我们引入
 
@@ -1172,7 +1171,7 @@ $$
 
 序列$\{v_t\}$被假定与$\{w_t\}$相互独立。
 
-过程$\{x_t\}$不会被观测方程中的噪声所修改，其矩、分布和稳定性特征保持不变。
+过程$\{x_t\}$不受观测方程噪声的影响，其矩、分布及稳定性性质均保持不变。
 
 $y_t$的无条件矩从{eq}`lss_umy`和{eq}`lss_uvy`现在变为
 
@@ -1240,7 +1239,7 @@ x_{t+j} = A^j x_t + A^{j-1} C w_{t+1} + A^{j-2} C w_{t+2} +
 \cdots + A^0 C w_{t+j}
 $$
 
-根据IID特性，当前和过去的状态值不能提供关于未来冲击值的任何信息。
+根据IID性质，当前及过去的状态值无法提供关于冲击未来值的任何信息。
 
 因此$\mathbb{E}_t[w_{t+k}] = \mathbb{E}[w_{t+k}] = 0$。
 
@@ -1260,7 +1259,7 @@ $$
 
 ### 预测误差的协方差
 
-计算$j$步超前预测误差向量的协方差矩阵是很有用的
+让我们来计算$j$步预测误差向量的协方差矩阵，这对我们的分析很重要
 
 ```{math}
 :label: eqob8
@@ -1303,15 +1302,15 @@ $V_j$收敛的一个充分条件是$A$的特征值的模都严格小于1。
 (lm_fgs)=
 ## 代码
 
-我们之前的模拟和计算都基于[QuantEcon.py](http://quantecon.org/quantecon-py)包中的[lss.py](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)文件。
+我们之前的模拟和计算都是基于[QuantEcon.py](http://quantecon.org/quantecon-py)包中的[lss.py](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)文件。
 
 该代码实现了一个用于处理线性状态空间模型的类(包括模拟、计算矩等功能)。
 
 你可能不太熟悉的一个Python结构是在`moment_sequence()`方法中使用生成器函数。
 
-如果你忘记了生成器函数是如何工作的，请回去[阅读相关文档](https://python-programming.quantecon.org/python_advanced_features.html#generators)。
+若你忘记了生成器函数是如何工作的，请回去[阅读相关文档](https://python-programming.quantecon.org/python_advanced_features.html#generators)。
 
-使用示例在练习的解答中给出。
+具体示例详见习题解答部分。
 
 ## 练习
 
@@ -1377,7 +1376,5 @@ $$
 [^foot1]: $A$ 的特征值是 $(1,-1, i,-i)$。
 
 [^fn_ag]: 正确的论证方法是通过归纳法。假设 $x_t$ 是高斯分布的。那么 {eq}`st_space_rep` 和
-
-
 {eq}`lss_glig` 表明 $x_{t+1}$ 是高斯分布的。由于假设 $x_0$ 是高斯分布的，因此可以推导出每个 $x_t$ 都是高斯分布的。显然，这也意味着每个 $y_t$ 都是高斯分布的。
 
