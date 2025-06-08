@@ -17,7 +17,7 @@ kernelspec:
 </div>
 ```
 
-# 财富分配动态
+# 财富分布动态
 
 ```{contents} 目录
 :depth: 2
