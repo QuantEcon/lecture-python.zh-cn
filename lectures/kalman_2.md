@@ -88,9 +88,9 @@ def cjk(text):
 :label: worker_model
 
 \begin{aligned}
-h_{t+1} &= \alpha h_t + \beta u_t + c w_{t+1}, \quad c_{t+1} \sim {\mathcal N}(0,1) \\
+h_{t+1} &= \alpha h_t + \beta u_t + c w_{t+1}, \quad w_{t+1} \sim {N}(0,1) \\
 u_{t+1} & = u_t \\
-y_t & = g h_t + v_t , \quad v_t \sim {\mathcal N} (0, R)
+y_t & = g h_t + v_t , \quad v_t \sim {N} (0, R)
 \end{aligned}
 ```
 
@@ -99,8 +99,8 @@ y_t & = g h_t + v_t , \quad v_t \sim {\mathcal N} (0, R)
 * $h_t$ 是时间 $t$ 时的人力资本对数
 * $u_t$ 是时间 $t$ 时劳动者投入人力资本积累的努力程度的对数
 * $y_t$ 是时间 $t$ 时劳动者产出的对数
-* $h_0 \sim {\mathcal N}(\hat h_0, \sigma_{h,0})$
-* $u_0 \sim {\mathcal N}(\hat u_0, \sigma_{u,0})$
+* $h_0 \sim {N}(\hat h_0, \sigma_{h,0})$
+* $u_0 \sim {N}(\hat u_0, \sigma_{u,0})$
 
 模型的参数包括 $\alpha, \beta, c, R, g, \hat h_0, \hat u_0, \sigma_h, \sigma_u$。
 
@@ -110,7 +110,7 @@ y_t & = g h_t + v_t , \quad v_t \sim {\mathcal N} (0, R)
 
 在时间 $0$ 开始时，公司既无法观察到劳动者的初始人力资本 $h_0$，也无法观察到其固有的永久努力水平 $u_0$。
 
-公司认为特定劳动者的 $u_0$ 服从高斯概率分布，因此由 $u_0 \sim {\mathcal N}(\hat u_0, \sigma_{u,0})$ 描述。
+公司认为特定劳动者的 $u_0$ 服从高斯概率分布，因此由 $u_0 \sim {N}(\hat u_0, \sigma_{u,0})$ 描述。
 
 劳动者"类型"中的 $h_t$ 部分随时间变化，但努力程度部分 $u_t = u_0$ 保持不变。
 
@@ -156,7 +156,7 @@ y_t & = \begin{bmatrix} g & 0 \end{bmatrix} \begin{bmatrix} h_{t} \cr u_{t} \end
 \begin{aligned} 
 x_{t+1} & = A x_t + C w_{t+1} \cr
 y_t & = G x_t + v_t \cr
-x_0 & \sim {\mathcal N}(\hat x_0, \Sigma_0) 
+x_0 & \sim {N}(\hat x_0, \Sigma_0) 
 \end{aligned}
 ```
 
