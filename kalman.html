@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>25. 卡尔曼滤波初探 &#8212; Python中级数量经济学</title>
+    <title>25. 初见卡尔曼滤波器 &#8212; Python中级数量经济学</title>
     <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
@@ -118,7 +118,7 @@
     <link rel="shortcut icon" href="_static/lectures-favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="26. 卡尔曼滤波器的另一个视角" href="kalman_2.html" />
+    <link rel="next" title="26. 卡尔曼滤波器进阶" href="kalman_2.html" />
     <link rel="prev" title="24. 财富分布动态" href="wealth_dynamics.html" />
 
 <!-- Normal Meta Tags -->
@@ -129,13 +129,13 @@
 <!-- Twitter tags -->
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@quantecon" />
-<meta name="twitter:title" content="卡尔曼滤波初探"/>
+<meta name="twitter:title" content="初见卡尔曼滤波器"/>
 <meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
 <meta name="twitter:creator" content="@quantecon">
 <meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
 
 <!-- Opengraph tags -->
-<meta property="og:title" content="卡尔曼滤波初探" />
+<meta property="og:title" content="初见卡尔曼滤波器" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://python.quantecon-zh-cn.org/kalman.html" />
 <meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
@@ -208,7 +208,7 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">卡尔曼滤波初探</p>
+                        <p class="qe-page__header-subheading">初见卡尔曼滤波器</p>
 
                     </div>
                     <!-- length 2, since its a string and empty dict has length 2 - {} -->
@@ -235,11 +235,11 @@
                     <div>
                         
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1><a class="toc-backref" href="#id21"><span class="section-number">25. </span>卡尔曼滤波初探</a><a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<h1><a class="toc-backref" href="#id21"><span class="section-number">25. </span>初见卡尔曼滤波器</a><a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
 <div class="contents topic" id="id2">
 <span id="index-0"></span><p class="topic-title">目录</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#id1" id="id21">卡尔曼滤波初探</a></p>
+<li><p><a class="reference internal" href="#id1" id="id21">初见卡尔曼滤波器</a></p>
 <ul>
 <li><p><a class="reference internal" href="#id3" id="id22">概述</a></p></li>
 <li><p><a class="reference internal" href="#id6" id="id23">基本概念</a></p></li>
@@ -263,7 +263,7 @@
 <span class="expanded">Hide code cell output</span>
 </summary>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.0)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.1)
 Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (0.60.0)
 Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
 Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
@@ -282,17 +282,17 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 <section id="id3">
 <h2><a class="toc-backref" href="#id22"><span class="section-number">25.1. </span>概述</a><a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
-<p>本讲座为卡尔曼滤波提供了一个简单直观的介绍，适合以下读者：</p>
+<p>本讲座为卡尔曼滤波器提供了一个简单直观的介绍，适合以下读者：</p>
 <ul class="simple">
-<li><p>听说过卡尔曼滤波但不知道它如何工作的人，或者</p></li>
-<li><p>知道卡尔曼滤波方程但不知道这些方程从何而来的人</p></li>
+<li><p>听说过卡尔曼滤波器但不知道它如何运作的人，或者</p></li>
+<li><p>知道卡尔曼滤波的方程但不知道这些方程从何而来的人</p></li>
 </ul>
 <p>关于卡尔曼滤波的更多（进阶）阅读材料，请参见：</p>
 <ul class="simple">
 <li><p><span id="id4">[<a class="reference internal" href="zreferences.html#id186" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span>，第2.7节</p></li>
 <li><p><span id="id5">[<a class="reference internal" href="zreferences.html#id146" title="D. B. O. Anderson and J. B. Moore. Optimal Filtering. Dover Publications, 2005.">Anderson and Moore, 2005</a>]</span></p></li>
 </ul>
-<p>第二个参考文献对卡尔曼滤波进行了全面的阐述。</p>
+<p>第二个参考文献对卡尔曼滤波器进行了全面的阐述。</p>
 <p>所需知识：熟悉矩阵运算、多元正态分布、协方差矩阵等。</p>
 <p>我们需要以下导入：</p>
 <div class="cell docutils container">
@@ -318,21 +318,16 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </section>
 <section id="id6">
 <h2><a class="toc-backref" href="#id23"><span class="section-number">25.2. </span>基本概念</a><a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
-<p>卡尔曼滤波在经济学中有许多应用，但现在让我们假装我们是火箭科学家。</p>
+<p>卡尔曼滤波器在经济学中有许多应用，但现在让我们假装我们是火箭科学家。</p>
 <p>一枚导弹从Y国发射，我们的任务是追踪它。</p>
 <p>让 <span class="math notranslate nohighlight">\(x \in \mathbb{R}^2\)</span> 表示导弹的当前位置——一个表示地图上经纬度坐标的数对。</p>
 <p>在当前时刻，精确位置 <span class="math notranslate nohighlight">\(x\)</span> 是未知的，但我们对 <span class="math notranslate nohighlight">\(x\)</span> 有一些认知。</p>
 <p>总结我们知识的一种方式是点预测 <span class="math notranslate nohighlight">\(\hat x\)</span></p>
-<ul class="simple">
-<li><p>但如果总统想知道导弹目前在日本海上空的概率呢？</p></li>
-<li><p>那么用二元概率密度 <span class="math notranslate nohighlight">\(p\)</span> 来总结我们的初始认知会更好</p>
-<ul>
-<li><p><span class="math notranslate nohighlight">\(\int_E p(x)dx\)</span> 表示我们认为导弹在区域 E 内的概率。</p></li>
-</ul>
-</li>
-</ul>
-<p>密度 <span class="math notranslate nohighlight">\(p\)</span> 被称为随机变量 <span class="math notranslate nohighlight">\(x\)</span> 的<em>先验</em>。</p>
-<p>为了使我们的例子便于处理，我们假设我们的先验是高斯分布。</p>
+<p>然而，点预测可能不够用。例如，我们可能需要回答”导弹目前在日本海上空的概率是多少”这样的问题。</p>
+<p>为了回答这类问题，我们需要用二元概率密度函数 <span class="math notranslate nohighlight">\(p\)</span> 来描述我们对导弹位置的认知。</p>
+<p>对于任意区域 <span class="math notranslate nohighlight">\(E\)</span>，积分 <span class="math notranslate nohighlight">\(\int_E p(x)dx\)</span> 给出了我们认为导弹在该区域内的概率。</p>
+<p>密度 <span class="math notranslate nohighlight">\(p\)</span> 被称为随机变量 <span class="math notranslate nohighlight">\(x\)</span> 的<em>先验分布</em>。</p>
+<p>为了使我们的例子便于处理，我们假设我们的先验分布是高斯分布。</p>
 <p>特别地，我们采用</p>
 <div class="math notranslate nohighlight" id="equation-prior">
 <span class="eqno">(25.1)<a class="headerlink" href="#equation-prior" title="Permalink to this equation">#</a></span>\[p = N(\hat x, \Sigma)\]</div>
@@ -356,7 +351,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <p>这个密度 <span class="math notranslate nohighlight">\(p(x)\)</span> 在下面以等高线图的形式显示，其中红色椭圆的中心等于 <span class="math notranslate nohighlight">\(\hat x\)</span>。</p>
 <div class="cell tag_output_scroll docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置高斯先验密度 p</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设定高斯先验分布 p</span>
 <span class="n">Σ</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">]]</span>
 <span class="n">Σ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">Σ</span><span class="p">)</span>
 <span class="n">x_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
@@ -371,7 +366,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <span class="c1"># y 的观测值</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([</span><span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.9</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
 
-<span class="c1"># 设置绘图网格</span>
+<span class="c1"># 设定绘图网格</span>
 <span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.9</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">3.1</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="n">y_grid</span><span class="p">)</span>
@@ -415,7 +410,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 
 <span class="k">def</span> <span class="nf">gen_gaussian_plot_vals</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
     <span class="s2">&quot;用于绘制二元高斯 N(μ, C) 的 Z 值&quot;</span>
-    <span class="n">m_x</span><span class="p">,</span> <span class="n">m_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">μ</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">m_x</span><span class="p">,</span> <span class="n">m_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span> <span class="nb">float</span><span class="p">(</span><span class="n">μ</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
     <span class="n">s_x</span><span class="p">,</span> <span class="n">s_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
     <span class="n">s_xy</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">bivariate_normal</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">s_x</span><span class="p">,</span> <span class="n">s_y</span><span class="p">,</span> <span class="n">m_x</span><span class="p">,</span> <span class="n">m_y</span><span class="p">,</span> <span class="n">s_xy</span><span class="p">)</span>
@@ -435,10 +430,6 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9986/2023138113.py:60: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
-  m_x, m_y = float(μ[0]), float(μ[1])
-</pre></div>
-</div>
 <img alt="_images/3ae9526d9326833ecb9cbc72a709d5ef35d13a30d62a909c3daac329d3b5438b.png" src="_images/3ae9526d9326833ecb9cbc72a709d5ef35d13a30d62a909c3daac329d3b5438b.png" />
 </div>
 </div>
@@ -463,9 +454,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9986/2023138113.py:60: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
-  m_x, m_y = float(μ[0]), float(μ[1])
-/tmp/ipykernel_9986/3470248806.py:8: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9932/3470248806.py:8: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   ax.text(float(y[0]), float(y[1]), &quot;$y$&quot;, fontsize=20, color=&quot;black&quot;)
 </pre></div>
 </div>
@@ -473,13 +462,12 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </div>
 <p>坏消息是我们的传感器并不精确。</p>
-<p>具体来说，我们应该将传感器的输出理解为不是
-<span class="math notranslate nohighlight">\(y=x\)</span>，而是</p>
+<p>具体来说，我们不应该将传感器的输出理解为<span class="math notranslate nohighlight">\(y=x\)</span>，而是</p>
 <div class="math notranslate nohighlight" id="equation-kl-measurement-model">
-<span class="eqno">(25.3)<a class="headerlink" href="#equation-kl-measurement-model" title="Permalink to this equation">#</a></span>\[y = G x + v, \quad \text{where} \quad v \sim N(0, R)\]</div>
+<span class="eqno">(25.3)<a class="headerlink" href="#equation-kl-measurement-model" title="Permalink to this equation">#</a></span>\[y = G x + v, \quad \text{且} \quad v \sim N(0, R)\]</div>
 <p>这里 <span class="math notranslate nohighlight">\(G\)</span> 和 <span class="math notranslate nohighlight">\(R\)</span> 是 <span class="math notranslate nohighlight">\(2 \times 2\)</span> 矩阵，其中 <span class="math notranslate nohighlight">\(R\)</span> 是正定矩阵。两者都被假定为已知，且噪声项 <span class="math notranslate nohighlight">\(v\)</span> 被假定与 <span class="math notranslate nohighlight">\(x\)</span> 独立。</p>
-<p>那么，我们应该如何将我们的先验 <span class="math notranslate nohighlight">\(p(x) = N(\hat x, \Sigma)\)</span> 和这个新信息 <span class="math notranslate nohighlight">\(y\)</span> 结合起来，以改进我们对导弹位置的理解呢？</p>
-<p>正如你可能已经猜到的，答案是使用贝叶斯定理，它告诉我们通过以下方式将先验 <span class="math notranslate nohighlight">\(p(x)\)</span> 更新为 <span class="math notranslate nohighlight">\(p(x \,|\, y)\)</span>：</p>
+<p>那么，我们应该如何将我们的先验分布 <span class="math notranslate nohighlight">\(p(x) = N(\hat x, \Sigma)\)</span> 和这个新信息 <span class="math notranslate nohighlight">\(y\)</span> 结合起来，以提高我们对导弹位置的了解呢？</p>
+<p>你可能已经猜到了，答案是使用贝叶斯定理，它告诉我们通过以下方式将先验分布 <span class="math notranslate nohighlight">\(p(x)\)</span> 更新为 <span class="math notranslate nohighlight">\(p(x \,|\, y)\)</span>：</p>
 <div class="math notranslate nohighlight">
 \[
 p(x \,|\, y) = \frac{p(y \,|\, x) \, p(x)} {p(y)}
@@ -492,7 +480,7 @@ p(x \,|\, y) = \frac{p(y \,|\, x) \, p(x)} {p(y)}
 <li><p><span class="math notranslate nohighlight">\(p(y)\)</span> 不依赖于 <span class="math notranslate nohighlight">\(x\)</span>，在计算中仅作为归一化常数出现。</p></li>
 </ul>
 <p>由于我们处在线性和高斯框架中，可以通过计算总体线性回归来得到更新后的密度。</p>
-<p>具体来说，已知解<a class="footnote-reference brackets" href="#f1" id="id8">1</a>为</p>
+<p>具体来说，我们可以得出解<a class="footnote-reference brackets" href="#f1" id="id8">1</a>为</p>
 <div class="math notranslate nohighlight">
 \[
 p(x \,|\, y) = N(\hat x^F, \Sigma^F)
@@ -520,19 +508,13 @@ p(x \,|\, y) = N(\hat x^F, \Sigma^F)
 <span class="n">cs2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">new_Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs2</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">new_Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s2">&quot;$y$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span> <span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span> <span class="s2">&quot;$y$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9986/2023138113.py:60: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
-  m_x, m_y = float(μ[0]), float(μ[1])
-/tmp/ipykernel_9986/792457825.py:14: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
-  ax.text(float(y[0]), float(y[1]), &quot;$y$&quot;, fontsize=20, color=&quot;black&quot;)
-</pre></div>
-</div>
 <img alt="_images/e804083b23c3328fe76a5a13b8aa3aab6e005753d81354b90e7234c5dde7b2bf.png" src="_images/e804083b23c3328fe76a5a13b8aa3aab6e005753d81354b90e7234c5dde7b2bf.png" />
 </div>
 </div>
@@ -542,16 +524,16 @@ p(x \,|\, y) = N(\hat x^F, \Sigma^F)
 <section id="kl-forecase-step">
 <span id="id9"></span><h3><span class="section-number">25.2.2. </span>预测步骤<a class="headerlink" href="#kl-forecase-step" title="Permalink to this heading">#</a></h3>
 <p>到目前为止我们取得了什么成果？</p>
-<p>我们已经获得了基于先验和当前信息的状态（导弹）当前位置的概率。</p>
+<p>我们在给定先验分布和当前信息的情况下，已经获得了状态（导弹）当前位置的概率。</p>
 <p>这被称为”滤波”而不是预测，因为我们是在过滤噪声而不是展望未来。</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(p(x \,|\, y) = N(\hat x^F, \Sigma^F)\)</span> 被称为<em>滤波分布</em></p></li>
 </ul>
-<p>但现在假设我们有另一个任务：预测导弹在一个时间单位（无论是什么单位）后的位置。</p>
+<p>但现在假设我们有另一个任务：预测导弹在一个时间单位后（无论是什么单位）的位置。</p>
 <p>为此我们需要一个状态演化的模型。</p>
 <p>让我们假设我们有这样一个模型，而且它是线性高斯的。具体来说，</p>
 <div class="math notranslate nohighlight" id="equation-kl-xdynam">
-<span class="eqno">(25.5)<a class="headerlink" href="#equation-kl-xdynam" title="Permalink to this equation">#</a></span>\[x_{t+1} = A x_t + w_{t+1}, \quad \text{where} \quad w_t \sim N(0, Q)\]</div>
+<span class="eqno">(25.5)<a class="headerlink" href="#equation-kl-xdynam" title="Permalink to this equation">#</a></span>\[x_{t+1} = A x_t + w_{t+1}, \quad \text{且} \quad w_t \sim N(0, Q)\]</div>
 <p>我们的目标是将这个运动定律和我们当前的分布 <span class="math notranslate nohighlight">\(p(x \,|\, y) = N(\hat x^F, \Sigma^F)\)</span> 结合起来，得出一个新的一个时间单位后位置的<em>预测</em>分布。</p>
 <p>根据<a class="reference internal" href="#equation-kl-xdynam">(25.5)</a>，我们只需要引入一个随机向量 <span class="math notranslate nohighlight">\(x^F \sim N(\hat x^F, \Sigma^F)\)</span> 并计算出 <span class="math notranslate nohighlight">\(A x^F + w\)</span> 的分布，其中 <span class="math notranslate nohighlight">\(w\)</span> 与 <span class="math notranslate nohighlight">\(x^F\)</span> 独立且服从分布 <span class="math notranslate nohighlight">\(N(0, Q)\)</span>。</p>
 <p>由于高斯分布的线性组合仍是高斯分布，<span class="math notranslate nohighlight">\(A x^F + w\)</span> 也是高斯分布。</p>
@@ -623,19 +605,13 @@ Q = 0.3 * \Sigma
 <span class="n">cs3</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">new_Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs3</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">new_Z</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s2">&quot;$y$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span> <span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span> <span class="s2">&quot;$y$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9986/2023138113.py:60: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
-  m_x, m_y = float(μ[0]), float(μ[1])
-/tmp/ipykernel_9986/3056082785.py:24: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
-  ax.text(float(y[0]), float(y[1]), &quot;$y$&quot;, fontsize=20, color=&quot;black&quot;)
-</pre></div>
-</div>
 <img alt="_images/1edc537452f4b18956671a65784bc41e220b045c6cacacb963236a2a0f360b10.png" src="_images/1edc537452f4b18956671a65784bc41e220b045c6cacacb963236a2a0f360b10.png" />
 </div>
 </div>
@@ -645,8 +621,8 @@ Q = 0.3 * \Sigma
 <p id="index-1">让我们回顾一下我们所做的工作。</p>
 <p>我们以导弹位置<span class="math notranslate nohighlight">\(x\)</span>的先验分布<span class="math notranslate nohighlight">\(p(x)\)</span>开始当前周期。</p>
 <p>然后我们使用当前测量值<span class="math notranslate nohighlight">\(y\)</span>更新为<span class="math notranslate nohighlight">\(p(x \,|\, y)\)</span>。</p>
-<p>最后，我们使用<span class="math notranslate nohighlight">\(\{x_t\}\)</span>的运动方程<a class="reference internal" href="#equation-kl-xdynam">(25.5)</a>更新为<span class="math notranslate nohighlight">\(p_{new}(x)\)</span>。</p>
-<p>如果我们现在进入下一个周期，我们就可以再次循环，将<span class="math notranslate nohighlight">\(p_{new}(x)\)</span>作为当前先验。</p>
+<p>最后，我们使用<span class="math notranslate nohighlight">\(\{x_t\}\)</span>的运动方程<a class="reference internal" href="#equation-kl-xdynam">(25.5)</a>将其更新为<span class="math notranslate nohighlight">\(p_{new}(x)\)</span>。</p>
+<p>如果我们现在进入下一个周期，我们就可以再次循环，将<span class="math notranslate nohighlight">\(p_{new}(x)\)</span>作为当前的先验分布。</p>
 <p>将符号<span class="math notranslate nohighlight">\(p_t(x)\)</span>替换为<span class="math notranslate nohighlight">\(p(x)\)</span>，将<span class="math notranslate nohighlight">\(p_{t+1}(x)\)</span>替换为<span class="math notranslate nohighlight">\(p_{new}(x)\)</span>，完整的递归程序为：</p>
 <ol class="arabic simple">
 <li><p>以先验分布<span class="math notranslate nohighlight">\(p_t(x) = N(\hat x_t, \Sigma_t)\)</span>开始当前周期。</p></li>
@@ -676,11 +652,11 @@ Q = 0.3 * \Sigma
 <div class="math notranslate nohighlight" id="equation-kalman-sdy">
 <span class="eqno">(25.8)<a class="headerlink" href="#equation-kalman-sdy" title="Permalink to this equation">#</a></span>\[\Sigma_{t+1} = A \Sigma_t A' -  A \Sigma_t G' (G \Sigma_t G' + R)^{-1} G \Sigma_t A' + Q\]</div>
 <p>这是一个关于 <span class="math notranslate nohighlight">\(\Sigma_t\)</span> 的非线性差分方程。</p>
-<p><a class="reference internal" href="#equation-kalman-sdy">(25.8)</a> 的不动点是满足以下条件的常数矩阵 <span class="math notranslate nohighlight">\(\Sigma\)</span>：</p>
+<p><a class="reference internal" href="#equation-kalman-sdy">(25.8)</a> 的固定点是满足以下条件的常数矩阵 <span class="math notranslate nohighlight">\(\Sigma\)</span>：</p>
 <div class="math notranslate nohighlight" id="equation-kalman-dare">
 <span class="eqno">(25.9)<a class="headerlink" href="#equation-kalman-dare" title="Permalink to this equation">#</a></span>\[\Sigma = A \Sigma A' -  A \Sigma G' (G \Sigma G' + R)^{-1} G \Sigma A' + Q\]</div>
-<p>方程 <a class="reference internal" href="#equation-kalman-sdy">(25.8)</a> 被称为离散时间里卡提差分方程。</p>
-<p>方程 <a class="reference internal" href="#equation-kalman-dare">(25.9)</a> 被称为<a class="reference external" href="https://en.wikipedia.org/wiki/Algebraic_Riccati_equation">离散时间代数黎卡提方程</a>。</p>
+<p>方程 <a class="reference internal" href="#equation-kalman-sdy">(25.8)</a> 被称为离散时间黎卡提差分方程。</p>
+<p>方程 <a class="reference internal" href="#equation-kalman-dare">(25.9)</a> 被称为<a class="reference external" href="https://zhuanlan.zhihu.com/p/692283143">离散时间代数黎卡提方程</a>。</p>
 <p>关于固定点存在的条件以及序列 <span class="math notranslate nohighlight">\(\{\Sigma_t\}\)</span> 收敛到该固定点的条件在 <span id="id13">[<a class="reference internal" href="zreferences.html#id148" title="E. W. Anderson, L. P. Hansen, E. R. McGrattan, and T. J. Sargent. Mechanics of Forming and Estimating Dynamic Linear Economies. In Handbook of Computational Economics. Elsevier, vol 1 edition, 1996.">Anderson <em>et al.</em>, 1996</a>]</span> 和 <span id="id14">[<a class="reference internal" href="zreferences.html#id146" title="D. B. O. Anderson and J. B. Moore. Optimal Filtering. Dover Publications, 2005.">Anderson and Moore, 2005</a>]</span> 第4章中有详细讨论。</p>
 <p>一个充分（但非必要）条件是 <span class="math notranslate nohighlight">\(A\)</span> 的所有特征值 <span class="math notranslate nohighlight">\(\lambda_i\)</span> 满足 <span class="math notranslate nohighlight">\(|\lambda_i| &lt; 1\)</span>（参见 <span id="id15">[<a class="reference internal" href="zreferences.html#id146" title="D. B. O. Anderson and J. B. Moore. Optimal Filtering. Dover Publications, 2005.">Anderson and Moore, 2005</a>]</span>，第77页）。</p>
 <p>（这个强条件确保了 <span class="math notranslate nohighlight">\(x_t\)</span> 的无条件分布在 <span class="math notranslate nohighlight">\(t \rightarrow + \infty\)</span> 时收敛。）</p>
@@ -688,11 +664,11 @@ Q = 0.3 * \Sigma
 </section>
 <section id="id16">
 <h2><a class="toc-backref" href="#id25"><span class="section-number">25.4. </span>实现</a><a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h2>
-<p id="index-2">来自 <a class="reference external" href="http://quantecon.org/quantecon-py">QuantEcon.py</a> 包的 <code class="docutils literal notranslate"><span class="pre">Kalman</span></code> 类实现了卡尔曼滤波器</p>
+<p id="index-2"><a class="reference external" href="http://quantecon.org/quantecon-py">QuantEcon.py</a> 包的 <code class="docutils literal notranslate"><span class="pre">Kalman</span></code> 类实现了卡尔曼滤波器</p>
 <ul class="simple">
 <li><p>实例数据包括：</p>
 <ul>
-<li><p>当前先验的矩 <span class="math notranslate nohighlight">\((\hat x_t, \Sigma_t)\)</span></p></li>
+<li><p>当前先验分布的矩 <span class="math notranslate nohighlight">\((\hat x_t, \Sigma_t)\)</span></p></li>
 <li><p>来自 <a class="reference external" href="http://quantecon.org/quantecon-py">QuantEcon.py</a> 的 <a class="reference external" href="https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py">LinearStateSpace</a> 类的一个实例</p></li>
 </ul>
 </li>
@@ -707,16 +683,16 @@ Q = 0.3 * \Sigma
 \end{aligned}
 \end{split}\]</div>
 <p>其中冲击项 <span class="math notranslate nohighlight">\(w_t\)</span> 和 <span class="math notranslate nohighlight">\(v_t\)</span> 是独立同分布的标准正态分布。</p>
-<p>为了与本讲座的符号保持一致，我们设定</p>
+<p>为了与本章节的符号保持一致，我们设定</p>
 <div class="math notranslate nohighlight">
 \[
 Q := CC' \quad \text{和} \quad R := HH'
 \]</div>
 <ul class="simple">
-<li><p>来自 <a class="reference external" href="http://quantecon.org/quantecon-py">QuantEcon.py</a> 包的 <code class="docutils literal notranslate"><span class="pre">Kalman</span></code> 类有许多方法，其中一些我们会等到后续讲座中学习更高级的应用时再使用。</p></li>
-<li><p>与本讲座相关的方法有：</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">prior_to_filtered</span></code>，将 <span class="math notranslate nohighlight">\((\hat x_t, \Sigma_t)\)</span> 更新为 <span class="math notranslate nohighlight">\((\hat x_t^F, \Sigma_t^F)\)</span></p>
+<li><p><a class="reference external" href="http://quantecon.org/quantecon-py">QuantEcon.py</a> 包的 <code class="docutils literal notranslate"><span class="pre">Kalman</span></code> 类有许多方法，其中一些我们会等到后续章节中学习更高级的应用时再使用。</p></li>
+<li><p>与本讲座相关的方法有：</p>
 <ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">prior_to_filtered</span></code>，将 <span class="math notranslate nohighlight">\((\hat x_t, \Sigma_t)\)</span> 更新为 <span class="math notranslate nohighlight">\((\hat x_t^F, \Sigma_t^F)\)</span></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">filtered_to_forecast</span></code>，将滤波分布更新为预测分布 – 成为新的先验分布 <span class="math notranslate nohighlight">\((\hat x_{t+1}, \Sigma_{t+1})\)</span></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">update</span></code>，结合上述两种方法</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">stationary_values</span></code>，计算<a class="reference internal" href="#equation-kalman-dare">(25.9)</a>的解和相应的（稳态）卡尔曼增益</p></li>
@@ -759,7 +735,7 @@ Q := CC' \quad \text{和} \quad R := HH'
 <span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
 <span class="n">ss</span> <span class="o">=</span> <span class="n">LinearStateSpace</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">mu_0</span><span class="o">=</span><span class="n">θ</span><span class="p">)</span>
 
-<span class="c1"># 设置先验，初始化卡尔曼滤波器</span>
+<span class="c1"># 设定先验分布，初始化卡尔曼滤波器</span>
 <span class="n">x_hat_0</span><span class="p">,</span> <span class="n">Σ_0</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span>
 <span class="n">kalman</span> <span class="o">=</span> <span class="n">Kalman</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">x_hat_0</span><span class="p">,</span> <span class="n">Σ_0</span><span class="p">)</span>
 
@@ -768,7 +744,7 @@ Q := CC' \quad \text{和} \quad R := HH'
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
-<span class="c1"># 设置图形</span>
+<span class="c1"># 设定图形</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
 <span class="n">xgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">θ</span> <span class="o">-</span> <span class="mi">5</span><span class="p">,</span> <span class="n">θ</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
 
@@ -786,11 +762,11 @@ Q := CC' \quad \text{和} \quad R := HH'
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9986/3198606146.py:21: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9932/3457786953.py:21: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   m, v = [float(z) for z in (kalman.x_hat, kalman.Sigma)]
 </pre></div>
 </div>
-<img alt="_images/32f9ddab76bff719a2d27e723f56c3f69c08e0f5f91989d5775f1d0be57a93a4.png" src="_images/32f9ddab76bff719a2d27e723f56c3f69c08e0f5f91989d5775f1d0be57a93a4.png" />
+<img alt="_images/39aec031a5d1bbcf7fb1a6ddeccf47a361112d3457f1e721dd1735ea8fc8ec1b.png" src="_images/39aec031a5d1bbcf7fb1a6ddeccf47a361112d3457f1e721dd1735ea8fc8ec1b.png" />
 </div>
 </div>
 </section>
@@ -805,8 +781,8 @@ Q := CC' \quad \text{和} \quad R := HH'
 \[
 z_t := 1 - \int_{\theta - \epsilon}^{\theta + \epsilon} p_t(x) dx
 \]</div>
-<p>对于 <span class="math notranslate nohighlight">\(t = 0, 1, 2, \ldots, T\)</span>。</p>
-<p>绘制 <span class="math notranslate nohighlight">\(z_t\)</span> 与 <span class="math notranslate nohighlight">\(T\)</span> 的关系图，设置 <span class="math notranslate nohighlight">\(\epsilon = 0.1\)</span> 和 <span class="math notranslate nohighlight">\(T = 600\)</span>。</p>
+<p>其中 <span class="math notranslate nohighlight">\(t = 0, 1, 2, \ldots, T\)</span>。</p>
+<p>绘制 <span class="math notranslate nohighlight">\(z_t\)</span> 与 <span class="math notranslate nohighlight">\(T\)</span> 的关系图，设定 <span class="math notranslate nohighlight">\(\epsilon = 0.1\)</span> 和 <span class="math notranslate nohighlight">\(T = 600\)</span>。</p>
 <p>你的图应该显示误差不规则地下降，类似这样</p>
 <figure class="align-default">
 <img alt="_images/kl_ex2_fig.png" src="_images/kl_ex2_fig.png" />
@@ -834,7 +810,7 @@ z_t := 1 - \int_{\theta - \epsilon}^{\theta + \epsilon} p_t(x) dx
 
 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
     <span class="c1"># 记录当前预测的均值和方差并绘制其密度</span>
-    <span class="n">m</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span> <span class="k">for</span> <span class="n">temp</span> <span class="ow">in</span> <span class="p">(</span><span class="n">kalman</span><span class="o">.</span><span class="n">x_hat</span><span class="p">,</span> <span class="n">kalman</span><span class="o">.</span><span class="n">Sigma</span><span class="p">)]</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">item</span><span class="p">())</span> <span class="k">for</span> <span class="n">temp</span> <span class="ow">in</span> <span class="p">(</span><span class="n">kalman</span><span class="o">.</span><span class="n">x_hat</span><span class="p">,</span> <span class="n">kalman</span><span class="o">.</span><span class="n">Sigma</span><span class="p">)]</span>
 
     <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
     <span class="n">integral</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">θ</span> <span class="o">-</span> <span class="n">ϵ</span><span class="p">,</span> <span class="n">θ</span> <span class="o">+</span> <span class="n">ϵ</span><span class="p">)</span>
@@ -852,11 +828,7 @@ z_t := 1 - \int_{\theta - \epsilon}^{\theta + \epsilon} p_t(x) dx
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9986/3696317892.py:16: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
-  m, v = [float(temp) for temp in (kalman.x_hat, kalman.Sigma)]
-</pre></div>
-</div>
-<img alt="_images/f8ae7485d1e972b49a60c5020fcd89cafeb809e4d9a57ad4471dc14356c605ff.png" src="_images/f8ae7485d1e972b49a60c5020fcd89cafeb809e4d9a57ad4471dc14356c605ff.png" />
+<img alt="_images/2a30ad6ee5e2d8511b09cb1b180ff61bab3ee3acf380b0e285b5214164c96b2e.png" src="_images/2a30ad6ee5e2d8511b09cb1b180ff61bab3ee3acf380b0e285b5214164c96b2e.png" />
 </div>
 </div>
 </section>
@@ -865,14 +837,14 @@ z_t := 1 - \int_{\theta - \epsilon}^{\theta + \epsilon} p_t(x) dx
 
 <p class="admonition-title"><span class="caption-number">Exercise 25.3 </span></p>
 <section id="exercise-content">
-<p>如<a class="reference internal" href="#kalman-convergence"><span class="std std-ref">上文所述</span></a>，如果冲击序列 <span class="math notranslate nohighlight">\(\{w_t\}\)</span> 不是退化的，那么在 <span class="math notranslate nohighlight">\(t-1\)</span> 时刻通常无法无误地预测 <span class="math notranslate nohighlight">\(x_t\)</span>（即使我们能观察到 <span class="math notranslate nohighlight">\(x_{t-1}\)</span> 也是如此）。</p>
-<p>让我们现在将卡尔曼滤波得到的预测值 <span class="math notranslate nohighlight">\(\hat x_t\)</span> 与一个<strong>被允许</strong>观察 <span class="math notranslate nohighlight">\(x_{t-1}\)</span> 的竞争者进行比较。</p>
+<p>如<a class="reference internal" href="#kalman-convergence"><span class="std std-ref">上文所述</span></a>，如果冲击序列 <span class="math notranslate nohighlight">\(\{w_t\}\)</span> 不是退化的，那么在 <span class="math notranslate nohighlight">\(t-1\)</span> 时刻通常无法无误地预测 <span class="math notranslate nohighlight">\(x_t\)</span>（即使我们能观察到 <span class="math notranslate nohighlight">\(x_{t-1}\)</span> ，情况也是如此）。</p>
+<p>让我们现在将在卡尔曼滤波器得到的预测值 <span class="math notranslate nohighlight">\(\hat x_t\)</span> 与一个<strong>被允许</strong>观察 <span class="math notranslate nohighlight">\(x_{t-1}\)</span> 的竞争者进行比较。</p>
 <p>这个竞争者将使用条件期望 <span class="math notranslate nohighlight">\(\mathbb E[ x_t \,|\, x_{t-1}]\)</span>，在这种情况下等于 <span class="math notranslate nohighlight">\(A x_{t-1}\)</span>。</p>
 <p>条件期望被认为是在最小化均方误差方面的最优预测方法。</p>
-<p>（更准确地说，关于 <span class="math notranslate nohighlight">\(g\)</span> 的 <span class="math notranslate nohighlight">\(\mathbb E \, \| x_t - g(x_{t-1}) \|^2\)</span> 的最小化器是 <span class="math notranslate nohighlight">\(g^*(x_{t-1}) := \mathbb E[ x_t \,|\, x_{t-1}]\)</span>）</p>
-<p>因此，我们是在将卡尔曼滤波与一个拥有更多信息（在能够观察潜在状态的意义上）的竞争者进行比较，并且</p>
+<p>（更准确地说， <span class="math notranslate nohighlight">\(\mathbb E \, \| x_t - g(x_{t-1}) \|^2\)</span> 关于 <span class="math notranslate nohighlight">\(g\)</span> 的最小值是 <span class="math notranslate nohighlight">\(g^*(x_{t-1}) := \mathbb E[ x_t \,|\, x_{t-1}]\)</span>）</p>
+<p>因此，我们是在将卡尔曼滤波器与一个拥有更多信息（能够观察潜在状态）的竞争者进行比较，并且</p>
 <p>在最小化平方误差方面表现最优。</p>
-<p>我们的对比竞赛将以平方误差来评估。</p>
+<p>我们的赛马式竞争将以平方误差来评估。</p>
 <p>具体来说，你的任务是生成一个图表，绘制 <span class="math notranslate nohighlight">\(\| x_t - A x_{t-1} \|^2\)</span> 和 <span class="math notranslate nohighlight">\(\| x_t - \hat x_t \|^2\)</span> 对 <span class="math notranslate nohighlight">\(t\)</span> 的观测值，其中 <span class="math notranslate nohighlight">\(t = 1, \ldots, 50\)</span>。</p>
 <p>对于参数，设定 <span class="math notranslate nohighlight">\(G = I, R = 0.5 I\)</span> 和 <span class="math notranslate nohighlight">\(Q = 0.3 I\)</span>，其中 <span class="math notranslate nohighlight">\(I\)</span> 是 <span class="math notranslate nohighlight">\(2 \times 2\)</span> 单位矩阵。</p>
 <p>设定</p>
@@ -886,7 +858,7 @@ A
 \end{array}
   \right)
 \end{split}\]</div>
-<p>要初始化先验密度，设定</p>
+<p>要初始化先验分布，设定</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \Sigma_0
@@ -920,10 +892,10 @@ A
      <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]]</span>
 <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
-<span class="c1"># 设置状态空间模型，初始值 x_0 设为零</span>
+<span class="c1"># 设定状态空间模型，初始值 x_0 设为零</span>
 <span class="n">ss</span> <span class="o">=</span> <span class="n">LinearStateSpace</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">mu_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 
-<span class="c1"># 定义先验密度</span>
+<span class="c1"># 定义先验分布</span>
 <span class="n">Σ</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
      <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]]</span>
 <span class="n">Σ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Σ</span><span class="p">)</span>
@@ -938,7 +910,7 @@ A
 
 <span class="c1"># 打印平稳 Σ</span>
 <span class="n">S</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="n">kn</span><span class="o">.</span><span class="n">stationary_values</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平稳预测误差方差：&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平稳的预测误差方差：&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 
 <span class="c1"># 生成图表</span>
@@ -966,12 +938,12 @@ A
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>A 的特征值：
 [ 0.9+0.j -0.1+0.j]
-平稳预测误差方差：
+平稳的预测误差方差：
 [[0.40329108 0.1050718 ]
  [0.1050718  0.41061709]]
 </pre></div>
 </div>
-<img alt="_images/c6cee369ae2199d992d9e35edf44a6eaafeb46e353f63994aa7b10fcd95809dd.png" src="_images/c6cee369ae2199d992d9e35edf44a6eaafeb46e353f63994aa7b10fcd95809dd.png" />
+<img alt="_images/2aebe7b28d8cd5d80d198a2dd416ab9d01c7f56dc13acca645438b416c1fb2e4.png" src="_images/2aebe7b28d8cd5d80d198a2dd416ab9d01c7f56dc13acca645438b416c1fb2e4.png" />
 </div>
 </div>
 </section>
@@ -980,7 +952,7 @@ A
 
 <p class="admonition-title"><span class="caption-number">Exercise 25.4 </span></p>
 <section id="exercise-content">
-<p>尝试上下调整系数 <span class="math notranslate nohighlight">\(0.3\)</span> (在 <span class="math notranslate nohighlight">\(Q = 0.3 I\)</span> 中)。</p>
+<p>尝试上下调整<span class="math notranslate nohighlight">\(Q = 0.3 I\)</span> 中的系数 <span class="math notranslate nohighlight">\(0.3\)</span>。</p>
 <p>观察平稳解 <span class="math notranslate nohighlight">\(\Sigma\)</span> (参见 <a class="reference internal" href="#equation-kalman-dare">(25.9)</a>) 中的对角线值如何随这个系数增减而变化。</p>
 <p>这说明 <span class="math notranslate nohighlight">\(x_t\)</span> 运动规律中的随机性越大，会导致预测中的(永久性)不确定性越大。</p>
 </section>
@@ -988,7 +960,7 @@ A
 <hr class="footnotes docutils" />
 <dl class="footnote brackets">
 <dt class="label" id="f1"><span class="brackets"><a class="fn-backref" href="#id8">1</a></span></dt>
-<dd><p>例如，参见 <span id="id20">[<a class="reference internal" href="zreferences.html#id151" title="C. M. Bishop. Pattern Recognition and Machine Learning. Springer, 2006.">Bishop, 2006</a>]</span> 第93页。要从他的表达式得到上面使用的表达式，你还需要应用 <a class="reference external" href="https://en.wikipedia.org/wiki/Woodbury_matrix_identity">Woodbury矩阵恒等式</a>。</p>
+<dd><p>例如，参见 <span id="id20">[<a class="reference internal" href="zreferences.html#id151" title="C. M. Bishop. Pattern Recognition and Machine Learning. Springer, 2006.">Bishop, 2006</a>]</span> 第93页。要从他的表达式得到上面使用的表达式，你还需要应用 <a class="reference external" href="https://zhuanlan.zhihu.com/p/388027547">Woodbury矩阵恒等式</a>。</p>
 </dd>
 </dl>
 </section>
@@ -1194,12 +1166,12 @@ A
  </li>
  <li class="toctree-l1 current active active">
   <a class="current reference internal" href="#">
-   25. 卡尔曼滤波初探
+   25. 初见卡尔曼滤波器
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman_2.html">
-   26. 卡尔曼滤波器的另一个视角
+   26. 卡尔曼滤波器进阶
   </a>
  </li>
 </ul>

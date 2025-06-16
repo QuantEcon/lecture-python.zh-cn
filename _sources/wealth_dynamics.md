@@ -91,7 +91,7 @@ from numba.experimental import jitclass
 
 ### 洛伦兹曲线
 
-[洛伦兹曲线](https://en.wikipedia.org/wiki/Lorenz_curve)是一种广受欢迎的不平等图形度量方法。
+[洛伦兹曲线](https://baike.baidu.com/item/%E6%B4%9B%E4%BC%A6%E5%85%B9%E6%9B%B2%E7%BA%BF/2903864)是一种广受欢迎的不平等图形度量方法。
 
 上面已经导入的[QuantEcon.py](https://github.com/QuantEcon/QuantEcon.py)包含了计算洛伦兹曲线的函数。
 
@@ -617,5 +617,4 @@ plt.show()
 
 ```{solution-end}
 ```
-
 

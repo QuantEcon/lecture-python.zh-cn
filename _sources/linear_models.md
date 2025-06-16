@@ -112,7 +112,6 @@ import random
 
 1. 矩阵 $A, C, G$
 1. 冲击分布，我们将其特定为 $N(0,I)$
-
 1. 初始条件$x_0$的分布，我们已设定为$N(\mu_0, \Sigma_0)$
 
 给定$A, C, G$以及$x_0$和$w_1, w_2, \ldots$的抽样值，模型{eq}`st_space_rep`确定了序列$\{x_t\}$和$\{y_t\}$的值。
@@ -145,7 +144,7 @@ $$
 
 通过适当选择基本参数，各种动态系统都可以用线性状态空间模型来表示。
 
-以下示例有助于突出这一点。
+让我们来看几个例子来说明这一点。
 
 这些示例也阐明了"找到状态是一门艺术"这一智慧格言。
 
@@ -188,7 +187,7 @@ C= \begin{bmatrix}
 G = \begin{bmatrix} 0 & 1 & 0 \end{bmatrix}
 $$
 
-你可以确认在这些定义下，{eq}`st_space_rep`和{eq}`st_ex_1`是一致的。
+通过代入这些定义，我们可以验证状态空间表示{eq}`st_space_rep`确实等价于原始的差分方程{eq}`st_ex_1`。
 
 下图显示了当$\phi_0 = 1.1, \phi_1=0.8, \phi_2 = -0.8, y_0 = y_{-1} = 1$时，这个过程的动态变化。
 
@@ -225,7 +224,7 @@ G = [0, 1, 0]
 plot_lss(A, C, G)
 ```
 
-后续将请你重现该图示。
+稍后我们将尝试重现这个图示。
 
 #### 单变量自回归过程
 
@@ -531,7 +530,7 @@ $$
 :label: lss_mut_linear_models
 
 \mu_{t+1} = A \mu_t
-\quad \text{with} \quad \mu_0 \text{ given}
+\quad \text{且} \quad \mu_0 \text{ 已知}
 ```
 
 这里的 $\mu_0$ 是在 {eq}`st_space_rep` 中给出的初始值。
@@ -544,7 +543,7 @@ $x_t$ 的方差-协方差矩阵是 $\Sigma_t := \mathbb{E} [ (x_t - \mu_t) (x_t 
 :label: eqsigmalaw_linear_models
 
 \Sigma_{t+1}  = A \Sigma_t A' + C C'
-\quad \text{with} \quad \Sigma_0 \text{ given}
+\quad \text{且} \quad \Sigma_0 \text{ 已知}
 ```
 
 与 $\mu_0$ 一样，矩阵 $\Sigma_0$ 是在 {eq}`st_space_rep` 中给出的初始值。
@@ -585,7 +584,7 @@ $y_t$ 的方差-协方差矩阵可以很容易地证明为
 
 然而，在某些情况下，仅仅这些矩就能告诉我们所需要知道的一切。
 
-这些情况是指均值向量和协方差矩阵是确定总体分布的所有**参数**的情况。
+这种情况发生在分布完全由其均值向量和协方差矩阵决定的时候。
 
 其中一种情况是当所讨论的向量服从高斯分布（即正态分布）时。
 
@@ -665,7 +664,7 @@ def cross_section_plot(A,
     ax = axes[0]
     ax.set_ylim(ymin, ymax)
     ax.set_ylabel('$y_t$', fontsize=12)
-    ax.set_xlabel('time', fontsize=12)
+    ax.set_xlabel('时间', fontsize=12)
     ax.vlines((T,), -1.5, 1.5)
 
     ax.set_xticks((T,))
@@ -683,7 +682,7 @@ def cross_section_plot(A,
     y = y.flatten()
     axes[1].set_ylim(ymin, ymax)
     axes[1].set_ylabel('$y_t$', fontsize=12)
-    axes[1].set_xlabel('relative frequency', fontsize=12)
+    axes[1].set_xlabel('相对频率', fontsize=12)
     axes[1].hist(sample, bins=16, density=True, orientation='horizontal', alpha=0.5)
     plt.show()
 ```
@@ -704,7 +703,7 @@ G_2 = [1, 0, 0, 0]
 cross_section_plot(A_2, C_2, G_2)
 ```
 
-在右侧图中，这些数值被转换成一个旋转的直方图，显示了我们从20个$y_T$样本中得到的相对频率。
+右侧图展示了从20个$y_T$样本中得到的相对频率分布，以横向直方图的形式呈现。
 
 这是另一个图，这次有100个观测值
 
@@ -725,12 +724,12 @@ ar = LinearStateSpace(A_2, C_2, G_2, mu_0=np.ones(4))
 fig, ax = plt.subplots()
 x, y = ar.simulate(sample_size)
 mu_x, mu_y, Sigma_x, Sigma_y, Sigma_yx = ar.stationary_distributions()
-f_y = norm(loc=float(mu_y), scale=float(np.sqrt(Sigma_y)))
+f_y = norm(loc=float(mu_y.item()), scale=float(np.sqrt(Sigma_y).item()))
 y = y.flatten()
 ygrid = np.linspace(ymin, ymax, 150)
 
 ax.hist(y, bins=50, density=True, alpha=0.4)
-ax.plot(ygrid, f_y.pdf(ygrid), 'k-', lw=2, alpha=0.8, label='true density')
+ax.plot(ygrid, f_y.pdf(ygrid), 'k-', lw=2, alpha=0.8, label='真实密度')
 ax.set_xlim(ymin, ymax)
 ax.set_xlabel('$y_t$', fontsize=12)
 ax.set_ylabel('相对频率', fontsize=12)
@@ -789,7 +788,7 @@ m = ar.moment_sequence()
 population_means = []
 for t in range(T):
     μ_x, μ_y, Σ_x, Σ_y = next(m)
-    population_means.append(float(μ_y))
+    population_means.append(float(μ_y.item()))
 
 ax.plot(population_means, color='g', lw=2, alpha=0.8, label=r'$G\mu_t$')
 ax.set_ylim(ymin, ymax)
@@ -832,6 +831,7 @@ $$
 要计算 $x_0, x_1, \ldots, x_T$ 的联合分布，回想
 
 联合密度与条件密度存在如下关系
+
 $$
 p(x, y) = p(y \, | \, x) p(x)
 \qquad \text{(联合密度 }=\text{ 条件密度 }\times\text{ 边际密度)}
@@ -912,7 +912,7 @@ def cross_plot(A,
     ax.grid(alpha=0.4)
     ax.set_ylim(ymin, ymax)
     ax.set_ylabel('$y_t$', fontsize=12)
-    ax.set_xlabel('$time$', fontsize=12)
+    ax.set_xlabel('时间', fontsize=12)
 
     ax.vlines((T0, T1, T2), -1.5, 1.5)
     ax.set_xticks((T0, T1, T2))
@@ -1259,7 +1259,7 @@ $$
 
 ### 预测误差的协方差
 
-计算$j$步超前预测误差向量的协方差矩阵是很有用的
+让我们来计算$j$步预测误差向量的协方差矩阵，这对我们的分析很重要
 
 ```{math}
 :label: eqob8
@@ -1376,7 +1376,5 @@ $$
 [^foot1]: $A$ 的特征值是 $(1,-1, i,-i)$。
 
 [^fn_ag]: 正确的论证方法是通过归纳法。假设 $x_t$ 是高斯分布的。那么 {eq}`st_space_rep` 和
-
-
 {eq}`lss_glig` 表明 $x_{t+1}$ 是高斯分布的。由于假设 $x_0$ 是高斯分布的，因此可以推导出每个 $x_t$ 都是高斯分布的。显然，这也意味着每个 $y_t$ 都是高斯分布的。
 

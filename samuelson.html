@@ -182,9 +182,9 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">22.3.1. 描述特征多项式含义的函数</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">22.3.2. 绘制路径的函数</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">22.3.3. 手动或”人工”求根计算</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">22.3.4. 反向工程参数以生成阻尼周期</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">22.3.4. 反向推导参数以生成阻尼周期</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numpy">22.3.5. 使用Numpy求根</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">22.3.6. 反向工程复数根：示例</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">22.3.6. 反向推导复数根：示例</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sympy">22.3.7. 题外话：使用 Sympy 求根</a></li>
 </ul>
 </li>
@@ -279,7 +279,7 @@
 </li>
 </ul>
 </div>
-<p>除了Anaconda中已有的库外，本讲座还需要以下库：</p>
+<p>除了Anaconda中已有的库外，这节课程还需要以下库：</p>
 <div class="cell tag_hide-output docutils container">
 <div class="cell_input above-output-prompt docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantecon
@@ -292,7 +292,7 @@
 <span class="expanded">Hide code cell output</span>
 </summary>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.0)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.1)
 Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (0.60.0)
 Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
 Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
@@ -311,15 +311,15 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 <section id="id3">
 <h2><a class="toc-backref" href="#id31"><span class="section-number">22.1. </span>概述</a><a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
-<p>本讲将创建保罗·萨缪尔森著名的乘数加速模型的非随机和随机版本 <span id="id4">[<a class="reference internal" href="zreferences.html#id88" title="Paul A. Samuelson. Interactions between the multiplier analysis and the principle of acceleration. Review of Economic Studies, 21(2):75–78, 1939.">Samuelson, 1939</a>]</span>。</p>
-<p>在此过程中，我们将扩展<a class="reference external" href="https://python-programming.quantecon.org/python_oop.html">面向对象编程第二讲</a>中的索洛模型类示例。</p>
-<p>我们的目标是：</p>
+<p>本讲将介绍保罗·萨缪尔森著名的乘数加速模型,包括其非随机和随机两个版本 <span id="id4">[<a class="reference internal" href="zreferences.html#id88" title="Paul A. Samuelson. Interactions between the multiplier analysis and the principle of acceleration. Review of Economic Studies, 21(2):75–78, 1939.">Samuelson, 1939</a>]</span>。</p>
+<p>在此过程中，我们将扩展<a class="reference external" href="https://python-programming.quantecon.org/python_oop.html#example-the-solow-growth-model">面向对象编程第二讲</a>中的索洛模型类示例。</p>
+<p>本讲的主要目标包括：</p>
 <ul class="simple">
-<li><p>提供面向对象编程和类的更详细示例</p></li>
-<li><p>回顾一个著名模型</p></li>
-<li><p>回顾线性差分方程，包括确定性和随机性两种</p></li>
+<li><p>通过萨缪尔森模型深入学习面向对象编程和类的使用</p></li>
+<li><p>深入理解这个经典的经济学模型</p></li>
+<li><p>复习线性差分方程的相关知识，包括非随机和随机两种情况</p></li>
 </ul>
-<p>让我们从一些标准导入开始：</p>
+<p>让我们从一些标准的导入开始：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -334,7 +334,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </div>
 </div>
-<p>我们还将使用以下内容来完成下面描述的各种任务：</p>
+<p>我们还将使用以下Python库：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">quantecon</span> <span class="kn">import</span> <span class="n">LinearStateSpace</span>
@@ -349,23 +349,23 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 <section id="id5">
 <h3><span class="section-number">22.1.1. </span>萨缪尔森模型<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
-<p>萨缪尔森使用<em>二阶线性差分方程</em>来表示一个基于三个组成部分的国民产出模型：</p>
+<p>萨缪尔森（Samuelson）使用<em>二阶线性差分方程</em>来表示一个基于三个组成部分的国民产出模型：</p>
 <ul class="simple">
 <li><p><em>国民产出恒等式</em>，表明国民产出或国民收入是消费、投资和政府购买的总和。</p></li>
-<li><p>凯恩斯式<em>消费函数</em>，表明t时期的消费等于一个常数乘以t-1时期的国民产出。</p></li>
-<li><p>投资<em>加速器</em>，表明t时期的投资等于一个称为<em>加速系数</em>的常数乘以t-1时期和t-2时期产出之差。</p></li>
+<li><p>凯恩斯式的<em>消费函数</em>，表明<span class="math notranslate nohighlight">\(t\)</span>时期的消费等于一个常数乘以<span class="math notranslate nohighlight">\(t-1\)</span>时期的国民产出。</p></li>
+<li><p>投资<em>加速器</em>，表明<span class="math notranslate nohighlight">\(t\)</span>时期的投资等于一个称为<em>加速系数</em>的常数乘以<span class="math notranslate nohighlight">\(t-1\)</span>时期和<span class="math notranslate nohighlight">\(t-2\)</span>时期产出之差。</p></li>
 </ul>
-<p>消费加投资加政府购买构成了<em>总需求</em>，这自动引致相等数量的<em>总供给</em>。</p>
-<p>（关于线性差分方程的内容请参见<a class="reference external" href="https://en.wikipedia.org/wiki/Linear_difference_equation">这里</a>或<span id="id6">[<a class="reference internal" href="zreferences.html#id210" title="Thomas J Sargent. Macroeconomic Theory. Academic Press, New York, 2nd edition, 1987.">Sargent, 1987</a>]</span>的第九章。）</p>
-<p>Samuelson使用该模型分析了边际消费倾向和加速系数的特定值如何可能导致国民产出出现暂时性的<em>商业周期</em>。</p>
-<p>可能的动态特性包括：</p>
+<p>消费、投资和政府购买的总和构成了<em>总需求</em>，根据供需平衡，这必然对应了相同数量的<em>总供给</em>。</p>
+<p>（关于线性差分方程的内容请参见<a class="reference external" href="https://baike.baidu.com/item/%E5%B8%B8%E7%B3%BB%E6%95%B0%E7%BA%BF%E6%80%A7%E9%80%92%E6%8E%A8%E6%95%B0%E5%88%97/8017610">这里</a>或<span id="id6">[<a class="reference internal" href="zreferences.html#id210" title="Thomas J Sargent. Macroeconomic Theory. Academic Press, New York, 2nd edition, 1987.">Sargent, 1987</a>]</span>的第九章。）</p>
+<p>萨缪尔森使用该模型分析了边际消费倾向和加速系数的特定值如何在一定概率上导致国民产出出现暂时性的<em>商业周期</em>。</p>
+<p>可能的动态特性包括以下几种：</p>
 <ul class="simple">
-<li><p>平稳收敛到一个固定的产出水平</p></li>
+<li><p>动态平稳收敛到一个固定的产出水平</p></li>
 <li><p>最终收敛到固定产出水平的衰减商业周期</p></li>
 <li><p>既不衰减也不发散的持续性商业周期</p></li>
 </ul>
 <p>后面我们将介绍一个扩展模型，在国民收入恒等式右侧加入一个随机冲击项，代表总需求的随机波动。</p>
-<p>这一修改使国民产出受到二阶<em>随机线性差分方程</em>的支配，在适当的参数值下，会产生反复出现的不规则商业周期。</p>
+<p>这一修改使国民产出受到二阶<em>随机线性差分方程</em>的影响，在适当的参数值下，会产生反复出现的不规则商业周期。</p>
 <p>(关于随机线性差分方程的内容，请参见<span id="id7">[<a class="reference internal" href="zreferences.html#id210" title="Thomas J Sargent. Macroeconomic Theory. Academic Press, New York, 2nd edition, 1987.">Sargent, 1987</a>]</span>的第XI章。)</p>
 </section>
 </section>
@@ -382,40 +382,40 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <li><p><span class="math notranslate nohighlight">\(\{Y_t\}\)</span> 是国民收入水平的序列，也是一个内生变量。</p></li>
 </ul>
 <ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(a\)</span> 是凯恩斯消费函数 <span class="math notranslate nohighlight">\(C_t = a Y_{t-1} + \gamma\)</span> 中的边际消费倾向。</p></li>
-<li><p><span class="math notranslate nohighlight">\(b\)</span> 是”投资加速器”<span class="math notranslate nohighlight">\(I_t = b (Y_{t-1} - Y_{t-2})\)</span> 中的”加速系数”。</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha\)</span> 是凯恩斯消费函数 <span class="math notranslate nohighlight">\(C_t = \alpha Y_{t-1} + \gamma\)</span> 中的边际消费倾向。</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta\)</span> 是”投资加速器” <span class="math notranslate nohighlight">\(I_t = \beta (Y_{t-1} - Y_{t-2})\)</span> 中的”加速系数”。</p></li>
 <li><p><span class="math notranslate nohighlight">\(\{\epsilon_{t}\}\)</span> 是一个独立同分布的标准正态随机变量序列。</p></li>
 <li><p><span class="math notranslate nohighlight">\(\sigma \geq 0\)</span> 是一个”波动性”参数 — 当设定 <span class="math notranslate nohighlight">\(\sigma = 0\)</span> 时，
 我们将得到最初要研究的非随机情况。</p></li>
 </ul>
 <p>该模型结合了消费函数</p>
 <div class="math notranslate nohighlight" id="equation-consumption">
-<span class="eqno">(22.1)<a class="headerlink" href="#equation-consumption" title="Permalink to this equation">#</a></span>\[C_t = a Y_{t-1} + \gamma\]</div>
+<span class="eqno">(22.1)<a class="headerlink" href="#equation-consumption" title="Permalink to this equation">#</a></span>\[C_t = \alpha Y_{t-1} + \gamma\]</div>
 <p>和投资加速器</p>
 <div class="math notranslate nohighlight" id="equation-accelerator">
-<span class="eqno">(22.2)<a class="headerlink" href="#equation-accelerator" title="Permalink to this equation">#</a></span>\[I_t = b (Y_{t-1} - Y_{t-2})\]</div>
+<span class="eqno">(22.2)<a class="headerlink" href="#equation-accelerator" title="Permalink to this equation">#</a></span>\[I_t = \beta (Y_{t-1} - Y_{t-2})\]</div>
 <p>以及国民收入恒等式</p>
 <div class="math notranslate nohighlight" id="equation-income-identity">
 <span class="eqno">(22.3)<a class="headerlink" href="#equation-income-identity" title="Permalink to this equation">#</a></span>\[Y_t = C_t + I_t + G_t\]</div>
 <ul class="simple">
-<li><p>参数 <span class="math notranslate nohighlight">\(a\)</span> 是人们的收入<em>边际消费倾向</em></p>
+<li><p>参数 <span class="math notranslate nohighlight">\(\alpha\)</span> 是人们的收入<em>边际消费倾向</em></p>
 <ul>
-<li><p>方程 <a class="reference internal" href="#equation-consumption">(22.1)</a> 表明人们会消费每增加一美元收入中的 <span class="math notranslate nohighlight">\(a \in (0,1)\)</span> 部分。</p></li>
+<li><p>方程 <a class="reference internal" href="#equation-consumption">(22.1)</a> 表明人们会消费每增加一美元收入中的 <span class="math notranslate nohighlight">\(\alpha \in (0,1)\)</span> 部分。</p></li>
 </ul>
 </li>
-<li><p>参数 <span class="math notranslate nohighlight">\(b &gt; 0\)</span> 是投资加速系数 - 方程
+<li><p>参数 <span class="math notranslate nohighlight">\(\beta &gt; 0\)</span> 是投资加速系数 - 方程
 <a class="reference internal" href="#equation-accelerator">(22.2)</a> 表明当收入增加时人们会投资实物资本，当收入减少时会减少投资。</p></li>
 </ul>
 <p>方程 <a class="reference internal" href="#equation-consumption">(22.1)</a>、<a class="reference internal" href="#equation-accelerator">(22.2)</a> 和 <a class="reference internal" href="#equation-income-identity">(22.3)</a>
 推导出以下关于国民收入的二阶线性差分方程：</p>
 <div class="math notranslate nohighlight">
 \[
-Y_t = (a+b) Y_{t-1} - b Y_{t-2} + (\gamma + G_t)
+Y_t = (\alpha+\beta) Y_{t-1} - \beta Y_{t-2} + (\gamma + G_t)
 \]</div>
 <p>或</p>
 <div class="math notranslate nohighlight" id="equation-second-order">
 <span class="eqno">(22.4)<a class="headerlink" href="#equation-second-order" title="Permalink to this equation">#</a></span>\[Y_t = \rho_1 Y_{t-1} + \rho_2 Y_{t-2} + (\gamma + G_t)\]</div>
-<p>其中 <span class="math notranslate nohighlight">\(\rho_1 = (a+b)\)</span> 且 <span class="math notranslate nohighlight">\(\rho_2 = -b\)</span>。</p>
+<p>其中 <span class="math notranslate nohighlight">\(\rho_1 = (\alpha+\beta)\)</span> 且 <span class="math notranslate nohighlight">\(\rho_2 = -\beta\)</span>。</p>
 <p>为完成这个模型，我们需要两个<strong>初始条件</strong>。</p>
 <p>如果模型要生成 <span class="math notranslate nohighlight">\(t=0, \ldots, T\)</span> 的时间序列，我们</p>
 <p>需要初始值</p>
@@ -423,20 +423,20 @@ Y_t = (a+b) Y_{t-1} - b Y_{t-2} + (\gamma + G_t)
 \[
 Y_{-1} = \bar Y_{-1}, \quad  Y_{-2} = \bar Y_{-2}
 \]</div>
-<p>我们通常会设置参数<span class="math notranslate nohighlight">\((a,b)\)</span>，使得从任意一对初始条件<span class="math notranslate nohighlight">\((\bar Y_{-1}, \bar Y_{-2})\)</span>开始，国民收入<span class="math notranslate nohighlight">\(Y_t\)</span>在<span class="math notranslate nohighlight">\(t\)</span>变大时会收敛到一个常数值。</p>
-<p>我们感兴趣的是研究</p>
+<p>我们通常会设置参数<span class="math notranslate nohighlight">\((\alpha,\beta)\)</span>，使得从任意一对初始条件<span class="math notranslate nohighlight">\((\bar Y_{-1}, \bar Y_{-2})\)</span>开始，国民收入<span class="math notranslate nohighlight">\(Y_t\)</span>在<span class="math notranslate nohighlight">\(t\)</span>变大时会收敛到一个常数值。</p>
+<p>也就是说，我们感兴趣的是：</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(Y_t\)</span>在收敛到其<strong>稳态</strong>水平过程中的暂时波动</p></li>
-<li><p>其收敛到稳态水平的<strong>速率</strong></p></li>
+<li><p>及其收敛到稳态水平的<strong>速率</strong></p></li>
 </ul>
-<p>到目前为止所描述的确定性版本的模型——意味着没有随机冲击影响总需求——只有暂时的波动。</p>
-<p>我们可以通过在总需求中加入随机冲击，将模型转换为具有持续不规则波动的模型。</p>
+<p>到目前为止我们讨论的是模型的非随机版本，即没有随机冲击影响总需求的情况。在这种情况下，模型只会产生暂时的波动。</p>
+<p>为了使模型更贴近现实，我们可以在总需求中引入随机冲击，这样就能产生持续的、不规则的经济波动。</p>
 <section id="id9">
 <h3><span class="section-number">22.2.1. </span>模型的随机版本<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
 <p>我们通过在方程<a class="reference internal" href="#equation-second-order">(22.4)</a>的右侧加入一个<strong>冲击</strong>或<strong>扰动</strong>的随机过程<span class="math notranslate nohighlight">\(\{\sigma \epsilon_t \}\)</span>，创建模型的<strong>随机</strong>版本，</p>
-<p>导致<strong>二阶标量线性随机差分方程</strong>：</p>
+<p>由此得出<strong>二阶标量线性随机差分方程</strong>：</p>
 <div class="math notranslate nohighlight" id="equation-second-stochastic">
-<span class="eqno">(22.5)<a class="headerlink" href="#equation-second-stochastic" title="Permalink to this equation">#</a></span>\[Y_t = G_t + a (1-b) Y_{t-1} - a b Y_{t-2} + \sigma \epsilon_{t}\]</div>
+<span class="eqno">(22.5)<a class="headerlink" href="#equation-second-stochastic" title="Permalink to this equation">#</a></span>\[Y_t = \gamma + G_t + (α+β) Y_{t-1} - β Y_{t-2} + \sigma \epsilon_{t}\]</div>
 </section>
 <section id="id10">
 <h3><span class="section-number">22.2.2. </span>模型的数学分析<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
@@ -488,8 +488,8 @@ Y_t = \rho_1 Y_{t-1} + \rho_2 Y_{t-2}
 Y_t = \lambda_1^t c_1 + \lambda_2^t c_2
 \]</div>
 <p>其中 <span class="math notranslate nohighlight">\(c_1\)</span> 和 <span class="math notranslate nohighlight">\(c_2\)</span> 是取决于两个初始条件和 <span class="math notranslate nohighlight">\(\rho_1, \rho_2\)</span> 的常数。</p>
-<p>当根为复数时，进行以下计算是有用的。</p>
-<p>注意到</p>
+<p>当根为复数时，以下的计算将非常有用。</p>
+<p>注意</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
@@ -514,11 +514,11 @@ c_1 = v e^{i \theta},  \  \ c_2 = v e^{- i \theta}
       &amp; = &amp; 2 v r^t  \cos (\omega t + \theta)
  \end{aligned}
 \end{split}\]</div>
-<p>其中<span class="math notranslate nohighlight">\(v\)</span>和<span class="math notranslate nohighlight">\(\theta\)</span>是必须选择的常数，以满足<span class="math notranslate nohighlight">\(Y_{-1}, Y_{-2}\)</span>的初始条件。</p>
+<p>其中<span class="math notranslate nohighlight">\(v\)</span>和<span class="math notranslate nohighlight">\(\theta\)</span>是确定的常数，可以通过<span class="math notranslate nohighlight">\(Y_{-1}, Y_{-2}\)</span>的初始条件得到。</p>
 <p>这个公式表明，当根为复数时，<span class="math notranslate nohighlight">\(Y_t\)</span>表现出具有<strong>周期</strong><span class="math notranslate nohighlight">\(\check p = \frac{2 \pi}{\omega}\)</span>和<strong>衰减因子</strong><span class="math notranslate nohighlight">\(r\)</span>的振荡。</p>
 <p>我们称<span class="math notranslate nohighlight">\(\check p\)</span>为<strong>周期</strong>，是因为在这段时间内，余弦波<span class="math notranslate nohighlight">\(\cos(\omega t + \theta)\)</span>恰好完成一个完整的周期。</p>
-<p>（请画一个余弦函数来说服自己这一点）</p>
-<p><strong>注释：</strong> 遵循<span id="id11">[<a class="reference internal" href="zreferences.html#id88" title="Paul A. Samuelson. Interactions between the multiplier analysis and the principle of acceleration. Review of Economic Studies, 21(2):75–78, 1939.">Samuelson, 1939</a>]</span>，我们要选择模型的参数<span class="math notranslate nohighlight">\(a, b\)</span>，使得特征多项式的（可能是复数的）根<span class="math notranslate nohighlight">\(\lambda_1, \lambda_2\)</span>的绝对值都严格小于1：</p>
+<p>（请画一个余弦函数来辅助自己理解）</p>
+<p><strong>注释：</strong> 遵循<span id="id11">[<a class="reference internal" href="zreferences.html#id88" title="Paul A. Samuelson. Interactions between the multiplier analysis and the principle of acceleration. Review of Economic Studies, 21(2):75–78, 1939.">Samuelson, 1939</a>]</span>，我们要选择模型的参数<span class="math notranslate nohighlight">\(\alpha, \beta\)</span>，使得特征多项式的（可能是复数的）根<span class="math notranslate nohighlight">\(\lambda_1, \lambda_2\)</span>的绝对值都严格小于1：</p>
 <div class="math notranslate nohighlight">
 \[
 | \lambda_j | &lt; 1 \quad \quad \text{对于 } j = 1, 2
@@ -529,19 +529,19 @@ c_1 = v e^{i \theta},  \  \ c_2 = v e^{- i \theta}
 <h3><span class="section-number">22.2.3. </span>本讲内容<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
 <p>我们编写一个函数来生成<span class="math notranslate nohighlight">\(\{Y_t\}\)</span>序列的模拟，将其作为时间的函数。</p>
 <p>该函数需要我们输入<span class="math notranslate nohighlight">\(Y_{-1}, Y_{-2}\)</span>的初始条件。</p>
-<p>该函数会检查<span class="math notranslate nohighlight">\(a, b\)</span>的设置是否使得<span class="math notranslate nohighlight">\(\lambda_1, \lambda_2\)</span>的绝对值（也称为”模”）小于1。</p>
+<p>该函数会检查<span class="math notranslate nohighlight">\(\alpha, \beta\)</span>的设置是否使得<span class="math notranslate nohighlight">\(\lambda_1, \lambda_2\)</span>的绝对值（也称为”模”）小于1。</p>
 <p>该函数还会告诉我们根是否为复数，如果是复数，则会返回它们的实部和虚部。</p>
 <p>如果两个根都是实数，函数会返回它们的值。</p>
 <p>我们使用编写的函数来模拟随机路径（当<span class="math notranslate nohighlight">\(\sigma &gt;0\)</span>时）。</p>
 <p>我们编写函数的方式允许我们输入几种简单形式的<span class="math notranslate nohighlight">\(\{G_t\}\)</span>路径，例如：</p>
 <ul class="simple">
-<li><p>在某个时间点G的一次性跳跃</p></li>
-<li><p>在某个时间点发生的G的永久性跳跃</p></li>
+<li><p>在某个时间点<span class="math notranslate nohighlight">\(G\)</span>的一次性跳跃</p></li>
+<li><p>在某个时间点发生的<span class="math notranslate nohighlight">\(G\)</span>的永久性跳跃</p></li>
 </ul>
-<p>我们继续使用萨缪尔森乘数-加速器模型作为实验室来制作一个简单的面向对象编程示例。</p>
+<p>我们继续将萨缪尔森的乘数-加速器模型作为实验工具，用来构建一个简单的面向对象编程示例。</p>
 <p>决定下一期<span class="math notranslate nohighlight">\(Y_{t+1}\)</span>的”状态”现在不仅仅是当前值<span class="math notranslate nohighlight">\(Y_t\)</span>，还包括滞后一期的值<span class="math notranslate nohighlight">\(Y_{t-1}\)</span>。</p>
-<p>这需要比索洛模型类定义更多的记录工作。</p>
-<p>我们使用萨缪尔森乘数-加速器模型作为载体，来教授如何逐步为类添加更多功能。</p>
+<p>因此这比在 Solow 模型的类定义中所需的记录工作要稍微多一些。</p>
+<p>我们以萨缪尔森的乘数-加速器模型为例，说明如何逐步为类添加功能。</p>
 <p>我们希望在类中有一个方法可以自动生成模拟，既可以是非随机的（<span class="math notranslate nohighlight">\(\sigma=0\)</span>）也可以是随机的（<span class="math notranslate nohighlight">\(\sigma &gt; 0\)</span>）。</p>
 <p>我们还将展示如何将 Samuelson 模型映射到<a class="reference external" href="https://python.quantecon.org/linear_models.html">这里</a>描述的<code class="docutils literal notranslate"><span class="pre">LinearStateSpace</span></code>类的一个简单实例中。</p>
 <p>我们可以使用<code class="docutils literal notranslate"><span class="pre">LinearStateSpace</span></code>实例来完成上面用我们自制函数和类所做的各种事情。</p>
@@ -635,14 +635,14 @@ A = \begin{bmatrix} 1 &amp; 0 &amp; 0 \cr
 <img alt="_images/3888a3768163b9c6192f64a742929b735383286bd2017d72c404493ef15ef203.png" src="_images/3888a3768163b9c6192f64a742929b735383286bd2017d72c404493ef15ef203.png" />
 </div>
 </div>
-<p>该图显示了在萨缪尔森模型中由差分方程参数对<span class="math notranslate nohighlight">\((\rho_1 = (a+b), \rho_2 = - b)\)</span>所隐含的<span class="math notranslate nohighlight">\((\lambda_1, \lambda_2)\)</span>根对所在的区域，这些区域表示：</p>
+<p>该图显示了在萨缪尔森模型中由差分方程参数对<span class="math notranslate nohighlight">\((\rho_1 = (\alpha + \beta), \rho_2 = - \beta)\)</span>所隐含的<span class="math notranslate nohighlight">\((\lambda_1, \lambda_2)\)</span>根对所在的区域，这些区域表示：</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\((\lambda_1, \lambda_2)\)</span>是复数且模小于<span class="math notranslate nohighlight">\(1\)</span> - 在这种情况下，<span class="math notranslate nohighlight">\(\{Y_t\}\)</span>序列呈现衰减振荡。</p></li>
 <li><p><span class="math notranslate nohighlight">\((\lambda_1, \lambda_2)\)</span>都是实数，但其中一个严格大于<span class="math notranslate nohighlight">\(1\)</span> - 这导致爆炸性增长。</p></li>
 <li><p><span class="math notranslate nohighlight">\((\lambda_1, \lambda_2)\)</span>都是实数，但其中一个严格小于<span class="math notranslate nohighlight">\(-1\)</span> - 这导致爆炸性振荡。</p></li>
 <li><p><span class="math notranslate nohighlight">\((\lambda_1, \lambda_2)\)</span>都是实数且绝对值都小于<span class="math notranslate nohighlight">\(1\)</span> - 在这种情况下，会平滑地收敛到稳态，没有衰减循环。</p></li>
 </ul>
-<p>稍后我们将在图上用红色标记显示由<span class="math notranslate nohighlight">\((a,b)\)</span>设置所隐含的特定点。</p>
+<p>稍后我们将在图上用红色标记显示由<span class="math notranslate nohighlight">\((\alpha, \beta)\)</span>设置所隐含的特定点。</p>
 <section id="id15">
 <h3><span class="section-number">22.3.1. </span>描述特征多项式含义的函数<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
@@ -685,7 +685,7 @@ A = \begin{bmatrix} 1 &amp; 0 &amp; 0 \cr
 </section>
 <section id="id16">
 <h3><span class="section-number">22.3.2. </span>绘制路径的函数<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
-<p>对于我们接下来的工作，以下是一个有用的函数</p>
+<p>我们再定义一个对接下来的工作很有用的函数</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_y</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -775,7 +775,7 @@ A = \begin{bmatrix} 1 &amp; 0 &amp; 0 \cr
 </div>
 </section>
 <section id="id18">
-<h3><span class="section-number">22.3.4. </span>反向工程参数以生成阻尼周期<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h3>
+<h3><span class="section-number">22.3.4. </span>反向推导参数以生成阻尼周期<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h3>
 <p>下一个单元格编写的代码以极坐标形式的一对共轭复数的模 <span class="math notranslate nohighlight">\(r\)</span> 和相位 <span class="math notranslate nohighlight">\(\phi\)</span> 作为输入</p>
 <div class="math notranslate nohighlight">
 \[
@@ -783,11 +783,11 @@ A = \begin{bmatrix} 1 &amp; 0 &amp; 0 \cr
 \]</div>
 <ul class="simple">
 <li><p>代码假设这两个复数是特征多项式的根</p></li>
-<li><p>然后反向推导出能生成这些根的 <span class="math notranslate nohighlight">\((a,b)\)</span> 和 <span class="math notranslate nohighlight">\((\rho_1, \rho_2)\)</span> 对</p></li>
+<li><p>然后反向推导出能生成这些根的 <span class="math notranslate nohighlight">\((\alpha, \beta)\)</span> 和 <span class="math notranslate nohighlight">\((\rho_1, \rho_2)\)</span> 对</p></li>
 </ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">### 反向工程周期的代码</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">### 反向推导周期的代码</span>
 <span class="c1">### y_t = r^t (c_1 cos(ϕ t) + c2 sin(ϕ t))</span>
 <span class="c1">###</span>
 
@@ -797,15 +797,15 @@ A = \begin{bmatrix} 1 &amp; 0 &amp; 0 \cr
 <span class="sd">    并创建特征多项式的 ρ1 和 ρ2，其中</span>
 <span class="sd">    r exp(j ϕ) 和 r exp(- j ϕ) 是复根。</span>
 
-<span class="sd">    返回验证这些根的乘数系数 a 和加速器系数 b。</span>
+<span class="sd">    返回验证这些根的乘数系数 α 和加速器系数 β。</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">g1</span> <span class="o">=</span> <span class="n">cmath</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ϕ</span><span class="p">)</span>  <span class="c1"># 生成两个复根</span>
     <span class="n">g2</span> <span class="o">=</span> <span class="n">cmath</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="o">-</span><span class="n">ϕ</span><span class="p">)</span>
     <span class="n">ρ1</span> <span class="o">=</span> <span class="n">g1</span> <span class="o">+</span> <span class="n">g2</span>           <span class="c1"># 隐含的 ρ1, ρ2</span>
     <span class="n">ρ2</span> <span class="o">=</span> <span class="o">-</span><span class="n">g1</span> <span class="o">*</span> <span class="n">g2</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="n">ρ2</span>                <span class="c1"># 反向推导验证这些的 a 和 b</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">ρ1</span> <span class="o">-</span> <span class="n">b</span>
-    <span class="k">return</span> <span class="n">ρ1</span><span class="p">,</span> <span class="n">ρ2</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span>
+    <span class="n">β</span> <span class="o">=</span> <span class="o">-</span><span class="n">ρ2</span>                <span class="c1"># 反向推导验证这些的 α 和 β</span>
+    <span class="n">α</span> <span class="o">=</span> <span class="n">ρ1</span> <span class="o">-</span> <span class="n">β</span>
+    <span class="k">return</span> <span class="n">ρ1</span><span class="p">,</span> <span class="n">ρ2</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">β</span>
 
 <span class="c1">## 现在让我们在示例中使用这个函数</span>
 <span class="c1">## 这里是示例参数</span>
@@ -816,15 +816,15 @@ A = \begin{bmatrix} 1 &amp; 0 &amp; 0 \cr
 
 <span class="c1">## 应用函数</span>
 
-<span class="n">ρ1</span><span class="p">,</span> <span class="n">ρ2</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ϕ</span><span class="p">)</span>
+<span class="n">ρ1</span><span class="p">,</span> <span class="n">ρ2</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">β</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ϕ</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a, b = </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;α, β = </span><span class="si">{</span><span class="n">α</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">β</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ρ1, ρ2 = </span><span class="si">{</span><span class="n">ρ1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ρ2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>α, β = (0.6346322893124001+0j), (0.9024999999999999-0j)
 ρ1, ρ2 = (1.5371322893124+0j), (-0.9024999999999999+0j)
 </pre></div>
 </div>
@@ -850,7 +850,7 @@ A = \begin{bmatrix} 1 &amp; 0 &amp; 0 \cr
 </section>
 <section id="numpy">
 <h3><span class="section-number">22.3.5. </span>使用Numpy求根<a class="headerlink" href="#numpy" title="Permalink to this heading">#</a></h3>
-<p>我们将使用numpy来计算特征多项式的根</p>
+<p>我们将使用<code class="docutils literal notranslate"><span class="pre">numpy</span></code>来计算特征多项式的根</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roots</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">ρ1</span><span class="p">,</span> <span class="o">-</span><span class="n">ρ2</span><span class="p">])</span>
@@ -862,7 +862,7 @@ A = \begin{bmatrix} 1 &amp; 0 &amp; 0 \cr
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;p1, p2 = </span><span class="si">{</span><span class="n">p1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">p2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="c1"># print(f&quot;g1, g2 = {g1}, {g2}&quot;)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a, b = </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;α, β = </span><span class="si">{</span><span class="n">α</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">β</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ρ1, ρ2 = </span><span class="si">{</span><span class="n">ρ1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ρ2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -870,7 +870,7 @@ A = \begin{bmatrix} 1 &amp; 0 &amp; 0 \cr
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>r, ϕ = 0.95, 0.6283185307179586
 p1, p2 = (0.95, 0.6283185307179586), (0.95, -0.6283185307179586)
-a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
+α, β = (0.6346322893124001+0j), (0.9024999999999999-0j)
 ρ1, ρ2 = 1.5371322893124, -0.9024999999999999
 </pre></div>
 </div>
@@ -937,8 +937,8 @@ a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
 </div>
 </section>
 <section id="id19">
-<h3><span class="section-number">22.3.6. </span>反向工程复数根：示例<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h3>
-<p>下一个单元研究反向工程复数根的含义。</p>
+<h3><span class="section-number">22.3.6. </span>反向推导复数根：示例<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h3>
+<p>下一个单元研究反向推导复数根的含义。</p>
 <p>我们将生成一个周期为10的<strong>无阻尼</strong>循环</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -947,23 +947,23 @@ a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
 <span class="n">period</span> <span class="o">=</span> <span class="mi">10</span>   <span class="c1"># 时间单位中的循环长度</span>
 <span class="n">ϕ</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">period</span>
 
-<span class="c1">## 应用反向工程函数f</span>
+<span class="c1">## 应用反向推导函数f</span>
 
-<span class="n">ρ1</span><span class="p">,</span> <span class="n">ρ2</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ϕ</span><span class="p">)</span>
+<span class="n">ρ1</span><span class="p">,</span> <span class="n">ρ2</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">β</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ϕ</span><span class="p">)</span>
 
 <span class="c1"># 去掉虚部，使其成为y_nonstochastic的有效输入</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">real</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">real</span>
+<span class="n">α</span> <span class="o">=</span> <span class="n">α</span><span class="o">.</span><span class="n">real</span>
+<span class="n">β</span> <span class="o">=</span> <span class="n">β</span><span class="o">.</span><span class="n">real</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a, b = </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;α, β = </span><span class="si">{</span><span class="n">α</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">β</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="n">ytemp</span> <span class="o">=</span> <span class="n">y_nonstochastic</span><span class="p">(</span><span class="n">α</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">β</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">y_0</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">y_1</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">ytemp</span> <span class="o">=</span> <span class="n">y_nonstochastic</span><span class="p">(</span><span class="n">α</span><span class="o">=</span><span class="n">α</span><span class="p">,</span> <span class="n">β</span><span class="o">=</span><span class="n">β</span><span class="p">,</span> <span class="n">y_0</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">y_1</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 <span class="n">plot_y</span><span class="p">(</span><span class="n">ytemp</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>a, b = 0.6180339887498949, 1.0
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>α, β = 0.6180339887498949, 1.0
 根是复数且模小于1；因此是衰减振荡
 根为 [0.80901699+0.58778525j 0.80901699-0.58778525j]
 根为复数
@@ -996,10 +996,10 @@ a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;α&quot;</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;β&quot;</span><span class="p">)</span>
-<span class="n">r1</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
-<span class="n">r2</span> <span class="o">=</span> <span class="o">-</span><span class="n">b</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">α</span> <span class="o">=</span> <span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;α&quot;</span><span class="p">)</span>
+<span class="n">β</span> <span class="o">=</span> <span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;β&quot;</span><span class="p">)</span>
+<span class="n">r1</span> <span class="o">=</span> <span class="n">α</span> <span class="o">+</span> <span class="n">β</span>
+<span class="n">r2</span> <span class="o">=</span> <span class="o">-</span><span class="n">β</span>
 
 <span class="n">sympy</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">r1</span><span class="o">*</span><span class="n">z</span> <span class="o">-</span> <span class="n">r2</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
 </pre></div>
@@ -1074,7 +1074,7 @@ a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
 根的绝对值小于1
 </pre></div>
 </div>
-<img alt="_images/bf4c164197f9ed247c6a3e1e1c1495c9d08e18da08f9ae8dcedc900a4f60779f.png" src="_images/bf4c164197f9ed247c6a3e1e1c1495c9d08e18da08f9ae8dcedc900a4f60779f.png" />
+<img alt="_images/d1a5d626d76a3d89960c30486caf2f6549f2467032a5867ee11ac4a2f41fa93a.png" src="_images/d1a5d626d76a3d89960c30486caf2f6549f2467032a5867ee11ac4a2f41fa93a.png" />
 </div>
 </div>
 <p>让我们进行一个模拟，其中存在冲击且特征多项式具有复根</p>
@@ -1085,28 +1085,28 @@ a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
 <span class="n">period</span> <span class="o">=</span> <span class="mi">10</span>   <span class="c1"># 时间单位中的周期长度</span>
 <span class="n">ϕ</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">period</span>
 
-<span class="c1">### 应用反向工程函数f</span>
+<span class="c1">### 应用反向推导函数f</span>
 
-<span class="n">ρ1</span><span class="p">,</span> <span class="n">ρ2</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ϕ</span><span class="p">)</span>
+<span class="n">ρ1</span><span class="p">,</span> <span class="n">ρ2</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">β</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ϕ</span><span class="p">)</span>
 
 <span class="c1"># 去掉虚部，使其成为y_nonstochastic的有效输入</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">real</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">real</span>
+<span class="n">α</span> <span class="o">=</span> <span class="n">α</span><span class="o">.</span><span class="n">real</span>
+<span class="n">β</span> <span class="o">=</span> <span class="n">β</span><span class="o">.</span><span class="n">real</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a, b = </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">plot_y</span><span class="p">(</span><span class="n">y_stochastic</span><span class="p">(</span><span class="n">y_0</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">y_1</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span> <span class="n">α</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">β</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">σ</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;α, β = </span><span class="si">{</span><span class="n">α</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">β</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plot_y</span><span class="p">(</span><span class="n">y_stochastic</span><span class="p">(</span><span class="n">y_0</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">y_1</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span> <span class="n">α</span><span class="o">=</span><span class="n">α</span><span class="p">,</span> <span class="n">β</span><span class="o">=</span><span class="n">β</span><span class="p">,</span> <span class="n">σ</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>a, b = 0.6285929690873979, 0.9409000000000001
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>α, β = 0.6285929690873979, 0.9409000000000001
 根是复数且模小于1；因此是衰减振荡
 [0.78474648+0.57015169j 0.78474648-0.57015169j]
 根是复数
 根的绝对值小于1
 </pre></div>
 </div>
-<img alt="_images/3d9c153539af7cae8227195b4100d2c268f779f48b6041aee214f88632e03710.png" src="_images/3d9c153539af7cae8227195b4100d2c268f779f48b6041aee214f88632e03710.png" />
+<img alt="_images/e2c2c8b97f667ae97aee5618462da15732904cf4269e6a463822191c0ef06e42.png" src="_images/e2c2c8b97f667ae97aee5618462da15732904cf4269e6a463822191c0ef06e42.png" />
 </div>
 </div>
 </section>
@@ -1214,7 +1214,7 @@ a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
 根小于1
 </pre></div>
 </div>
-<img alt="_images/1d8741aa4f9cf505fecb27e893b00b13fafaec406f8ea0ec6cfe71aa880bb948.png" src="_images/1d8741aa4f9cf505fecb27e893b00b13fafaec406f8ea0ec6cfe71aa880bb948.png" />
+<img alt="_images/bf652c2365f28ed7799387cba6ac23414720b7161bf483cc07669b3cd5757c1a.png" src="_images/bf652c2365f28ed7799387cba6ac23414720b7161bf483cc07669b3cd5757c1a.png" />
 </div>
 </div>
 <p>我们还可以观察一次性政府支出增加所带来的响应</p>
@@ -1231,7 +1231,7 @@ a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
 根小于1
 </pre></div>
 </div>
-<img alt="_images/cb93b14e21514eb25dc96c7b46711f8d1d467d06dd3955f75a425dd00c2abccb.png" src="_images/cb93b14e21514eb25dc96c7b46711f8d1d467d06dd3955f75a425dd00c2abccb.png" />
+<img alt="_images/67b72d8cdedeaefff36a10ef9328bab79ab904e183debf1654da497b4d88e660.png" src="_images/67b72d8cdedeaefff36a10ef9328bab79ab904e183debf1654da497b4d88e660.png" />
 </div>
 </div>
 </section>
@@ -1250,7 +1250,7 @@ a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        Y_t =  + \alpha (1 + \beta) Y_{t-1} - \alpha \beta Y_{t-2}</span>
+<span class="sd">        Y_t = + (α + β) Y_{t-1} - β Y_{t-2}</span>
 
 <span class="sd">    参数</span>
 <span class="sd">    ----------</span>
@@ -1392,9 +1392,13 @@ a, b = (0.6346322893124001+0j), (0.9024999999999999-0j)
         <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
 
         <span class="c1"># 在图中添加参数值</span>
-        <span class="n">paramstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">alpha=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">α</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$ </span><span class="se">\n</span><span class="s1"> $</span><span class="se">\\</span><span class="s1">beta=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$ </span><span class="se">\n</span><span class="s1"> </span><span class="se">\</span>
-<span class="s1">        $</span><span class="se">\\</span><span class="s1">gamma=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">γ</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$ </span><span class="se">\n</span><span class="s1"> $</span><span class="se">\\</span><span class="s1">sigma=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">σ</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$ </span><span class="se">\n</span><span class="s1"> </span><span class="se">\</span>
-<span class="s1">        $</span><span class="se">\\</span><span class="s1">rho_1=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ρ1</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$ </span><span class="se">\n</span><span class="s1"> $</span><span class="se">\\</span><span class="s1">rho_2=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ρ2</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$&#39;</span>
+        <span class="n">paramstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        $</span><span class="se">\\</span><span class="s1">alpha=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">α</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$</span>
+<span class="s1">        $</span><span class="se">\\</span><span class="s1">beta=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">β</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$ </span>
+<span class="s1">        $</span><span class="se">\\</span><span class="s1">gamma=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">γ</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$</span>
+<span class="s1">        $</span><span class="se">\\</span><span class="s1">sigma=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">σ</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$</span>
+<span class="s1">        $</span><span class="se">\\</span><span class="s1">rho_1=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ρ1</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$</span>
+<span class="s1">        $</span><span class="se">\\</span><span class="s1">rho_2=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ρ2</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$&#39;&#39;&#39;</span>
         <span class="n">props</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fc</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.87</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">paramstr</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
                 <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">props</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
@@ -1462,7 +1466,7 @@ Permanent 政府支出冲击发生在 t = 20
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/e8b508c1f98be6639b7b5de6a028847f22da51c069c0deaad2c6fd510eb26099.png" src="_images/e8b508c1f98be6639b7b5de6a028847f22da51c069c0deaad2c6fd510eb26099.png" />
+<img alt="_images/2b9ac982a8e1c98badffe63d7a19b822569db818776a69affd380f3cd0a05770.png" src="_images/2b9ac982a8e1c98badffe63d7a19b822569db818776a69affd380f3cd0a05770.png" />
 </div>
 </div>
 </section>
@@ -1532,7 +1536,7 @@ Permanent 政府支出冲击发生在 t = 20
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/48a8ec305c100b7ed4d97b5ef8e31081964fae0140afed6d0466856ebba5b9d8.png" src="_images/48a8ec305c100b7ed4d97b5ef8e31081964fae0140afed6d0466856ebba5b9d8.png" />
+<img alt="_images/d67d28f6f9654de0c72e4095cd4cd1b27148a56d303e639a5d93b1f35b4b59d3.png" src="_images/d67d28f6f9654de0c72e4095cd4cd1b27148a56d303e639a5d93b1f35b4b59d3.png" />
 </div>
 </div>
 <section id="id24">
@@ -1697,7 +1701,7 @@ Permanent 政府支出冲击发生在 t = 20
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/5d2f7d32087337120e8f9d7e54e7f976f23537640b6edf5a637f0a4c9e965471.png" src="_images/5d2f7d32087337120e8f9d7e54e7f976f23537640b6edf5a637f0a4c9e965471.png" />
+<img alt="_images/e57d1d0254532310a1baf6e974eb67a0ed60270cac22a4e563475c3bc9ee13ca.png" src="_images/e57d1d0254532310a1baf6e974eb67a0ed60270cac22a4e563475c3bc9ee13ca.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1708,7 +1712,7 @@ Permanent 政府支出冲击发生在 t = 20
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/b1f211d246529e2b47e69e81b0f9223f05a7064de2738116e7742603abe5bcdd.png" src="_images/b1f211d246529e2b47e69e81b0f9223f05a7064de2738116e7742603abe5bcdd.png" />
+<img alt="_images/58261234b2e63755b913ab11e3336f7068fd575f965914eed7ce8c2a88c4057a.png" src="_images/58261234b2e63755b913ab11e3336f7068fd575f965914eed7ce8c2a88c4057a.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1756,8 +1760,8 @@ Permanent 政府支出冲击发生在 t = 20
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/6e13e9e14353a2257d48a14754bc84a0fc337587241c63193330ab289d9553b6.png" src="_images/6e13e9e14353a2257d48a14754bc84a0fc337587241c63193330ab289d9553b6.png" />
-<img alt="_images/6e13e9e14353a2257d48a14754bc84a0fc337587241c63193330ab289d9553b6.png" src="_images/6e13e9e14353a2257d48a14754bc84a0fc337587241c63193330ab289d9553b6.png" />
+<img alt="_images/eac8572caf78dc4bc744f3ab02e6173c092580339b31081c3151a7054b8e5226.png" src="_images/eac8572caf78dc4bc744f3ab02e6173c092580339b31081c3151a7054b8e5226.png" />
+<img alt="_images/eac8572caf78dc4bc744f3ab02e6173c092580339b31081c3151a7054b8e5226.png" src="_images/eac8572caf78dc4bc744f3ab02e6173c092580339b31081c3151a7054b8e5226.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1774,8 +1778,8 @@ Permanent 政府支出冲击发生在 t = 20
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/3c9f713b24167133569116f410b37d2c1b842d9eca881a6881a792d75a7f6d98.png" src="_images/3c9f713b24167133569116f410b37d2c1b842d9eca881a6881a792d75a7f6d98.png" />
-<img alt="_images/3c9f713b24167133569116f410b37d2c1b842d9eca881a6881a792d75a7f6d98.png" src="_images/3c9f713b24167133569116f410b37d2c1b842d9eca881a6881a792d75a7f6d98.png" />
+<img alt="_images/f2e54d73e4567acedf1cde14fabaebd48e694cf3c0d3d771563d622ac77135c0.png" src="_images/f2e54d73e4567acedf1cde14fabaebd48e694cf3c0d3d771563d622ac77135c0.png" />
+<img alt="_images/f2e54d73e4567acedf1cde14fabaebd48e694cf3c0d3d771563d622ac77135c0.png" src="_images/f2e54d73e4567acedf1cde14fabaebd48e694cf3c0d3d771563d622ac77135c0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1792,7 +1796,7 @@ Permanent 政府支出冲击发生在 t = 20
 </section>
 <section id="id28">
 <h2><a class="toc-backref" href="#id39"><span class="section-number">22.9. </span>总结</a><a class="headerlink" href="#id28" title="Permalink to this heading">#</a></h2>
-<p>在本讲中，我们编写了函数和类来表示萨缪尔森(1939)乘数-加速器模型的非随机和随机版本，该模型在<span id="id29">[<a class="reference internal" href="zreferences.html#id88" title="Paul A. Samuelson. Interactions between the multiplier analysis and the principle of acceleration. Review of Economic Studies, 21(2):75–78, 1939.">Samuelson, 1939</a>]</span>中有所描述。</p>
+<p>在本讲中，我们编写了函数和类来表示萨缪尔森乘数-加速器模型的非随机和随机版本，该模型在<span id="id29">[<a class="reference internal" href="zreferences.html#id88" title="Paul A. Samuelson. Interactions between the multiplier analysis and the principle of acceleration. Review of Economic Studies, 21(2):75–78, 1939.">Samuelson, 1939</a>]</span>中有所描述。</p>
 <p>我们看到不同的参数值会导致不同的输出路径，这些路径可能是平稳的、发散的或振荡的。</p>
 <p>我们还能够使用<a class="reference external" href="http://quantecon.org/quantecon-py">QuantEcon.py</a>的<a class="reference external" href="https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py">LinearStateSpace</a>类来表示该模型。</p>
 </section>
@@ -1998,12 +2002,12 @@ Permanent 政府支出冲击发生在 t = 20
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman.html">
-   25. 卡尔曼滤波初探
+   25. 初见卡尔曼滤波器
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman_2.html">
-   26. 卡尔曼滤波器的另一个视角
+   26. 卡尔曼滤波器进阶
   </a>
  </li>
 </ul>

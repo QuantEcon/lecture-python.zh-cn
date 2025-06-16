@@ -261,7 +261,7 @@
 <span class="expanded">Hide code cell output</span>
 </summary>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.0)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (0.8.1)
 Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (0.60.0)
 Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (1.26.4)
 Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.12/site-packages (from quantecon) (2.32.3)
@@ -280,8 +280,8 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 <section id="id2">
 <h2><a class="toc-backref" href="#id9"><span class="section-number">30.1. </span>概述</a><a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
-<p>在本讲座中，我们求解一个具有持久性和暂时性工资成分的<a class="reference internal" href="mccall_model.html"><span class="doc">McCall求职搜索模型</span></a>。</p>
-<p>换句话说，我们放宽了工资随机性在时间上相互独立的假设。</p>
+<p>在本讲座中，我们求解一个工资报价由持续性和暂时性成分组成的<a class="reference internal" href="mccall_model.html"><span class="doc">McCall求职搜索模型</span></a>。</p>
+<p>换句话说，我们放宽了工资随机性在时间上独立的假设。</p>
 <p>同时，我们将回到假设工作是永久性的，不会发生离职。</p>
 <p>这是为了在研究相关性影响时保持模型相对简单。</p>
 <p>我们将使用以下导入：</p>
@@ -305,7 +305,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </section>
 <section id="id3">
 <h2><a class="toc-backref" href="#id10"><span class="section-number">30.2. </span>模型</a><a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
-<p>每个时间点的工资由下式给出：</p>
+<p>每个时期的工资由下式给出：</p>
 <div class="math notranslate nohighlight">
 \[
 w_t = \exp(z_t) + y_t
@@ -317,11 +317,11 @@ y_t \sim \exp(\mu + s \zeta_t)
 \quad \text{且} \quad
 z_{t+1} = d + \rho z_t + \sigma \epsilon_{t+1}
 \]</div>
-<p>这里 <span class="math notranslate nohighlight">\(\{ \zeta_t \}\)</span> 和 <span class="math notranslate nohighlight">\(\{ \epsilon_t \}\)</span> 都是独立同分布的标准正态分布。</p>
-<p>这里 <span class="math notranslate nohighlight">\(\{y_t\}\)</span> 是暂时性成分，<span class="math notranslate nohighlight">\(\{z_t\}\)</span> 是持久性成分。</p>
+<p>这里 <span class="math notranslate nohighlight">\(\{ \zeta_t \}\)</span> 和 <span class="math notranslate nohighlight">\(\{ \epsilon_t \}\)</span> 都是独立同分布的标准正态随机变量。</p>
+<p>这里 <span class="math notranslate nohighlight">\(\{y_t\}\)</span> 是暂时性成分，<span class="math notranslate nohighlight">\(\{z_t\}\)</span> 是持续性成分。</p>
 <p>如前所述，劳动者可以：</p>
 <ol class="arabic simple">
-<li><p>接受报价并在该工资水平永久工作，或</p></li>
+<li><p>接受当前工作机会，并在该工资水平永久工作，或</p></li>
 <li><p>领取失业补偿金 <span class="math notranslate nohighlight">\(c\)</span> 并等待下一期。</p></li>
 </ol>
 <p>价值函数满足贝尔曼方程：</p>
@@ -333,65 +333,64 @@ v^*(w, z) =
         \frac{u(w)}{1-\beta}, u(c) + \beta \, \mathbb E_z v^*(w', z')
     \right\}
 \]</div>
-<p>在这个表达式中，<span class="math notranslate nohighlight">\(u\)</span> 是效用函数，<span class="math notranslate nohighlight">\(\mathbb E_z\)</span> 是给定当前 <span class="math notranslate nohighlight">\(z\)</span> 时下一期变量的期望。</p>
-<p>变量 <span class="math notranslate nohighlight">\(z\)</span> 作为状态进入贝尔曼方程，因为它的当前值有助于预测未来工资。</p>
+<p>在这个表达式中，<span class="math notranslate nohighlight">\(u\)</span> 是效用函数，<span class="math notranslate nohighlight">\(\mathbb E_z\)</span> 是给定当前 <span class="math notranslate nohighlight">\(z\)</span> 时下一期变量的条件期望。</p>
+<p>变量 <span class="math notranslate nohighlight">\(z\)</span> 作为状态变量进入贝尔曼方程，这是因为它的当前值有助于预测未来工资。</p>
 <section id="id4">
 <h3><span class="section-number">30.2.1. </span>简化<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
-<p>有一种方法可以减少这个问题的维度，这大大加快了计算速度。</p>
-<p>首先，让 <span class="math notranslate nohighlight">\(f^*\)</span> 为继续价值函数，定义为：</p>
+<p>我们可以通过以下方法降低问题维度，显著提升计算效率：</p>
+<p>首先，让 <span class="math notranslate nohighlight">\(f^*\)</span> 为延续价值函数，定义为：</p>
 <div class="math notranslate nohighlight">
 \[
 f^*(z) := u(c) + \beta \, \mathbb E_z v^*(w', z')
 \]</div>
-<p>贝尔曼方程现在可以写成：</p>
+<p>现在贝尔曼方程可以写成：</p>
 <div class="math notranslate nohighlight">
 \[
 v^*(w, z) = \max \left\{ \frac{u(w)}{1-\beta}, \, f^*(z) \right\}
 \]</div>
-<p>结合最后两个表达式，我们看到继续价值函数满足：</p>
+<p>结合上述两个表达式，我们看到延续价值函数满足：</p>
 <div class="math notranslate nohighlight">
 \[
 f^*(z) = u(c) + \beta \, \mathbb E_z \max \left\{ \frac{u(w')}{1-\beta}, f^*(z') \right\}
 \]</div>
-<p>我们将通过引入算子来求解这个函数方程：</p>
+<p>为求解该函数方程，我们引入算子<span class="math notranslate nohighlight">\(Q\)</span>：</p>
 <div class="math notranslate nohighlight">
 \[
 Qf(z) = u(c) + \beta \, \mathbb E_z \max \left\{ \frac{u(w')}{1-\beta}, f(z') \right\}
 \]</div>
 <p>根据构造，<span class="math notranslate nohighlight">\(f^*\)</span> 是 <span class="math notranslate nohighlight">\(Q\)</span> 的不动点，即 <span class="math notranslate nohighlight">\(Q f^* = f^*\)</span>。</p>
-<p>在温和的假设下，可以证明 <span class="math notranslate nohighlight">\(Q\)</span> 是 <span class="math notranslate nohighlight">\(\mathbb R\)</span> 上连续函数空间上的<a class="reference external" href="https://en.wikipedia.org/wiki/Contraction_mapping">压缩映射</a>。</p>
-<p>根据巴拿赫压缩映射定理，这意味着 <span class="math notranslate nohighlight">\(f^*\)</span> 是唯一的不动点，我们可以从任何合理的初始条件开始通过迭代 <span class="math notranslate nohighlight">\(Q\)</span> 来计算它。</p>
-<p>一旦我们有 <span class="math notranslate nohighlight">\(f^*\)</span>，我们就可以通过在接受报酬超过继续价值时停止来求解搜寻问题，即：</p>
+<p>在较弱的假设下，可以证明 <span class="math notranslate nohighlight">\(Q\)</span> 是 <span class="math notranslate nohighlight">\(\mathbb R\)</span> 上连续函数空间上的一个<a class="reference external" href="https://baike.baidu.com/item/%E5%8E%8B%E7%BC%A9%E6%98%A0%E5%B0%84/5114126">压缩映射</a>。</p>
+<p>根据巴拿赫压缩映射定理，<span class="math notranslate nohighlight">\(f^*\)</span> 是唯一的不动点，我们可以从任何合理的初始条件开始通过迭代 <span class="math notranslate nohighlight">\(Q\)</span> 来得到<span class="math notranslate nohighlight">\(f^*\)</span>。</p>
+<p>求得 <span class="math notranslate nohighlight">\(f^*\)</span>后，这一搜索问题的解就是当接受工作的收益超过延续价值时停止求职，即：</p>
 <div class="math notranslate nohighlight">
 \[
 \frac{u(w)}{1-\beta} \geq f^*(z)
 \]</div>
 <p>对于效用函数，我们取 <span class="math notranslate nohighlight">\(u(c) = \ln(c)\)</span>。</p>
-<p>保留工资是最后一个表达式中等式成立的工资。</p>
-<p>即：</p>
+<p>保留工资是最后一个表达式中等式成立的工资：</p>
 <div class="math notranslate nohighlight" id="equation-corr-mcm-barw">
 <span class="eqno">(30.1)<a class="headerlink" href="#equation-corr-mcm-barw" title="Permalink to this equation">#</a></span>\[\bar w (z) := \exp(f^*(z) (1-\beta))\]</div>
-<p>我们的主要目标是求解保留规则并研究其性质和含义。</p>
+<p>我们的主要目标是求解该保留工资规则，并分析其性质与含义。</p>
 </section>
 </section>
 <section id="id5">
 <h2><a class="toc-backref" href="#id11"><span class="section-number">30.3. </span>实现</a><a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
 <p>让 <span class="math notranslate nohighlight">\(f\)</span> 作为我们对 <span class="math notranslate nohighlight">\(f^*\)</span> 的初始猜测。</p>
 <p>在迭代时，我们使用<a class="reference internal" href="mccall_fitted_vfi.html"><span class="doc">拟合价值函数迭代</span></a>算法。</p>
-<p>特别地，<span class="math notranslate nohighlight">\(f\)</span> 和所有后续迭代都存储为网格上的值向量。</p>
-<p>这些点根据需要通过分段线性插值插值成函数。</p>
-<p><span class="math notranslate nohighlight">\(Qf\)</span> 定义中的积分通过蒙特卡洛计算。</p>
-<p>以下列表通过提供我们将使用的数据类型信息来帮助Numba：</p>
+<p>特别地，<span class="math notranslate nohighlight">\(f\)</span> 和所有后续迭代值都作为向量存储在一个网格。</p>
+<p>这些点通过分段线性插值转换为函数。</p>
+<p><span class="math notranslate nohighlight">\(Qf\)</span> 定义中的期望项通过蒙特卡洛计算。</p>
+<p>以下类型声明帮助 Numba 进行类型推断：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job_search_data</span> <span class="o">=</span> <span class="p">[</span>
      <span class="p">(</span><span class="s1">&#39;μ&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 暂时性冲击对数均值</span>
      <span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 暂时性冲击对数方差</span>
-     <span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 持久性状态位移系数</span>
-     <span class="p">(</span><span class="s1">&#39;ρ&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 持久性状态相关系数</span>
+     <span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 持续性状态位移系数</span>
+     <span class="p">(</span><span class="s1">&#39;ρ&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 持续性状态相关系数</span>
      <span class="p">(</span><span class="s1">&#39;σ&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 状态波动率</span>
-     <span class="p">(</span><span class="s1">&#39;β&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 贴现因子</span>
-     <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 失业补偿金</span>
+     <span class="p">(</span><span class="s1">&#39;β&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 折现因子</span>
+     <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">),</span>             <span class="c1"># 失业补助</span>
      <span class="p">(</span><span class="s1">&#39;z_grid&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span>     <span class="c1"># 状态空间网格</span>
      <span class="p">(</span><span class="s1">&#39;e_draws&#39;</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:,:])</span>   <span class="c1"># 积分用的蒙特卡洛抽取</span>
 <span class="p">]</span>
@@ -399,7 +398,7 @@ Qf(z) = u(c) + \beta \, \mathbb E_z \max \left\{ \frac{u(w')}{1-\beta}, f(z') \r
 </div>
 </div>
 </div>
-<p>这是一个存储数据和贝尔曼方程右侧的类。</p>
+<p>这是一个存储数据和贝尔曼方程右侧项的类。</p>
 <p>默认参数值嵌入在类中。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -409,11 +408,11 @@ Qf(z) = u(c) + \beta \, \mathbb E_z \max \left\{ \frac{u(w')}{1-\beta}, f(z') \r
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">μ</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>       <span class="c1"># 暂时性冲击对数均值</span>
                  <span class="n">s</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>       <span class="c1"># 暂时性冲击对数方差</span>
-                 <span class="n">d</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>       <span class="c1"># 持久性状态位移系数</span>
-                 <span class="n">ρ</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>       <span class="c1"># 持久性状态相关系数</span>
+                 <span class="n">d</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>       <span class="c1"># 持续性状态位移系数</span>
+                 <span class="n">ρ</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>       <span class="c1"># 持续性状态相关系数</span>
                  <span class="n">σ</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>       <span class="c1"># 状态波动率</span>
-                 <span class="n">β</span><span class="o">=</span><span class="mf">0.98</span><span class="p">,</span>      <span class="c1"># 贴现因子</span>
-                 <span class="n">c</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>         <span class="c1"># 失业补偿金</span>
+                 <span class="n">β</span><span class="o">=</span><span class="mf">0.98</span><span class="p">,</span>      <span class="c1"># 折现因子</span>
+                 <span class="n">c</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>         <span class="c1"># 失业补助</span>
                  <span class="n">mc_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
                  <span class="n">grid_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
 
@@ -427,7 +426,7 @@ Qf(z) = u(c) + \beta \, \mathbb E_z \max \left\{ \frac{u(w')}{1-\beta}, f(z') \r
         <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">z_mean</span> <span class="o">-</span> <span class="n">k</span> <span class="o">*</span> <span class="n">z_sd</span><span class="p">,</span> <span class="n">z_mean</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">z_sd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">grid_size</span><span class="p">)</span>
 
-        <span class="c1"># 抽取并存储冲击</span>
+        <span class="c1"># 生成并存储冲击</span>
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">e_draws</span> <span class="o">=</span> <span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">mc_size</span><span class="p">)</span>
 
@@ -464,8 +463,8 @@ Qf(z) = u(c) + \beta \, \mathbb E_z \max \left\{ \frac{u(w')}{1-\beta}, f(z') \r
             <span class="n">e1</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="n">js</span><span class="o">.</span><span class="n">e_draws</span><span class="p">[:,</span> <span class="n">m</span><span class="p">]</span>
             <span class="n">z_next</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="n">ρ</span> <span class="o">*</span> <span class="n">z</span> <span class="o">+</span> <span class="n">σ</span> <span class="o">*</span> <span class="n">e1</span>
             <span class="n">go_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">z_next</span><span class="p">,</span> <span class="n">js</span><span class="o">.</span><span class="n">z_grid</span><span class="p">,</span> <span class="n">f_in</span><span class="p">)</span>  <span class="c1"># f(z&#39;)</span>
-            <span class="n">y_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">μ</span> <span class="o">+</span> <span class="n">s</span> <span class="o">*</span> <span class="n">e2</span><span class="p">)</span>                  <span class="c1"># y&#39; 抽取</span>
-            <span class="n">w_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">z_next</span><span class="p">)</span> <span class="o">+</span> <span class="n">y_next</span>             <span class="c1"># w&#39; 抽取</span>
+            <span class="n">y_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">μ</span> <span class="o">+</span> <span class="n">s</span> <span class="o">*</span> <span class="n">e2</span><span class="p">)</span>                  <span class="c1"># 生成 y&#39; </span>
+            <span class="n">w_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">z_next</span><span class="p">)</span> <span class="o">+</span> <span class="n">y_next</span>             <span class="c1"># 生成 w&#39; </span>
             <span class="n">stop_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">w_next</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span><span class="p">)</span>
             <span class="n">expectation</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="n">stop_val</span><span class="p">,</span> <span class="n">go_val</span><span class="p">)</span>
         <span class="n">expectation</span> <span class="o">=</span> <span class="n">expectation</span> <span class="o">/</span> <span class="n">M</span>
@@ -543,10 +542,10 @@ Qf(z) = u(c) + \beta \, \mathbb E_z \max \left\{ \frac{u(w')}{1-\beta}, f(z') \r
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>第 175 次迭代的误差为 0.00011479050299101345。
 
 在第 178 次迭代时收敛。
-TOC: Elapsed: 0:00:4.25
+TOC: Elapsed: 0:00:4.23
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.251265525817871
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.2328362464904785
 </pre></div>
 </div>
 </div>
@@ -568,8 +567,8 @@ TOC: Elapsed: 0:00:4.25
 <img alt="_images/37e332c9010d649ee3cedf79885d99771798508709dc526c1a9c4c82190922e5.png" src="_images/37e332c9010d649ee3cedf79885d99771798508709dc526c1a9c4c82190922e5.png" />
 </div>
 </div>
-<p>注意保留工资随当前状态 <span class="math notranslate nohighlight">\(z\)</span> 增加。</p>
-<p>这是因为更高的状态导致代理人预测更高的未来工资，增加了等待的期权价值。</p>
+<p>注意保留工资随当前状态 <span class="math notranslate nohighlight">\(z\)</span> 单调递增。</p>
+<p>这是因为更高的状态导致代理人预测更高的未来工资，增加了等待的价值。</p>
 <p>让我们尝试改变失业补偿金并观察其对保留工资的影响：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -593,7 +592,7 @@ TOC: Elapsed: 0:00:4.25
 <img alt="_images/45dd2ff43c47e549d64caae480a3723f25d655ddb35acdd18e8f63381c9418bc.png" src="_images/45dd2ff43c47e549d64caae480a3723f25d655ddb35acdd18e8f63381c9418bc.png" />
 </div>
 </div>
-<p>正如预期的那样，更高的失业补偿金在所有状态值下都提高了保留工资。</p>
+<p>正如预期的那样，更高的失业补偿金在所有状态下都提高了保留工资。</p>
 </section>
 <section id="id6">
 <h2><a class="toc-backref" href="#id12"><span class="section-number">30.4. </span>失业持续时间</a><a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
@@ -619,7 +618,7 @@ TOC: Elapsed: 0:00:4.25
 
         <span class="n">unemployed</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">while</span> <span class="n">unemployed</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">t_max</span><span class="p">:</span>
-            <span class="c1"># 抽取当前工资</span>
+            <span class="c1"># 生成当前工资</span>
             <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">μ</span> <span class="o">+</span> <span class="n">s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">())</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span>
             <span class="n">res_wage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">f_star_function</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span><span class="p">))</span>
@@ -645,7 +644,7 @@ TOC: Elapsed: 0:00:4.25
 </div>
 </div>
 </div>
-<p>让我们用一些可能的失业补偿金值来测试这个：</p>
+<p>让我们用一些可能的失业补偿金值来计算失业持续时间：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
@@ -658,7 +657,7 @@ TOC: Elapsed: 0:00:4.25
 </div>
 </div>
 </div>
-<p>这是结果图：</p>
+<p>这是可视化结果：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
@@ -670,7 +669,7 @@ TOC: Elapsed: 0:00:4.25
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/4224a2b3770acdbb232a6c33225ce84df7818e50302deef80558ef0765ac83d5.png" src="_images/4224a2b3770acdbb232a6c33225ce84df7818e50302deef80558ef0765ac83d5.png" />
+<img alt="_images/6055484a9ee9b2469923a4c9bb7dab012954372bfa62378e4d1c138d5e3c7c87.png" src="_images/6055484a9ee9b2469923a4c9bb7dab012954372bfa62378e4d1c138d5e3c7c87.png" />
 </div>
 </div>
 <p>不出所料，当失业补偿金更高时，失业持续时间增加。</p>
@@ -682,10 +681,10 @@ TOC: Elapsed: 0:00:4.25
 
 <p class="admonition-title"><span class="caption-number">Exercise 30.1 </span></p>
 <section id="exercise-content">
-<p>研究平均失业持续时间如何随贴现因子 <span class="math notranslate nohighlight">\(\beta\)</span> 变化。</p>
+<p>研究平均失业持续时间如何随折现因子 <span class="math notranslate nohighlight">\(\beta\)</span> 变化。</p>
 <ul class="simple">
-<li><p>你的先验预期是什么？</p></li>
-<li><p>结果是否符合预期？</p></li>
+<li><p>你的预期是什么？</p></li>
+<li><p>结果是否符合你的预期？</p></li>
 </ul>
 </section>
 </div>
@@ -717,7 +716,7 @@ TOC: Elapsed: 0:00:4.25
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/42fda2b6cb4283da42bf0ecd51f5eabaf24a8ebbf25629d07ee6af1721c67864.png" src="_images/42fda2b6cb4283da42bf0ecd51f5eabaf24a8ebbf25629d07ee6af1721c67864.png" />
+<img alt="_images/23c99aeb428c04ddec2863329717b501532849dab0dc09dca48c897079466205.png" src="_images/23c99aeb428c04ddec2863329717b501532849dab0dc09dca48c897079466205.png" />
 </div>
 </div>
 <p>该图显示，更有耐心的个人倾向于等待更长时间才接受报价。</p>
@@ -926,12 +925,12 @@ TOC: Elapsed: 0:00:4.25
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman.html">
-   25. 卡尔曼滤波初探
+   25. 初见卡尔曼滤波器
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman_2.html">
-   26. 卡尔曼滤波器的另一个视角
+   26. 卡尔曼滤波器进阶
   </a>
  </li>
 </ul>
