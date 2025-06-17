@@ -18,9 +18,9 @@ kernelspec:
 </div>
 ```
 
-# 求职搜索 II：搜寻与离职
+# 工作搜寻 II：搜寻与离职
 
-```{index} single: 求职搜索导论
+```{index} single: 工作搜寻导论
 ```
 
 ```{contents} 目录
@@ -38,7 +38,7 @@ tags: [hide-output]
 
 ## 概述
 
-在{doc}`之前的讲座 <mccall_model>`中，我们研究了McCall求职搜索模型 {cite}`McCall1970`作为理解失业和劳动者决策的一种方式。
+在{doc}`之前的讲座 <mccall_model>`中，我们研究了McCall工作搜寻模型 {cite}`McCall1970`作为理解失业和劳动者决策的一种方式。
 
 该模型的一个不现实特征是每份工作都是永久性的。
 
@@ -69,7 +69,7 @@ from quantecon.distributions import BetaBinomial
 
 ## 模型
 
-该模型与{doc}`基础McCall求职搜索模型 <mccall_model>`类似。
+该模型与{doc}`基础McCall工作搜寻模型 <mccall_model>`类似。
 
 它关注一个无限期生存的劳动者的生活，以及：
 
@@ -124,7 +124,7 @@ from quantecon.distributions import BetaBinomial
 然后过程重复。
 
 ```{note}
-我们不允许在就业期间进行求职搜索---这个主题将在{doc}`后续讲座 <jv>`中讨论。
+我们不允许在就业期间进行工作搜寻---这个主题将在{doc}`后续讲座 <jv>`中讨论。
 ```
 
 ## 求解模型
@@ -253,7 +253,7 @@ $$
 
 ### 求解贝尔曼方程
 
-我们将使用与{doc}`第一个求职搜索讲座 <mccall_model>`中相同的迭代方法来求解贝尔曼方程。
+我们将使用与{doc}`第一个工作搜寻讲座 <mccall_model>`中相同的迭代方法来求解贝尔曼方程。
 
 这里这包括：
 
@@ -445,7 +445,7 @@ def compute_reservation_wage(mcm):
 
 正如预期的那样，更高的失业补偿导致劳动者等待更高的工资。
 
-实际上，继续求职搜索的成本降低了。
+实际上，继续工作搜寻的成本降低了。
 
 ### 保留工资和贴现
 

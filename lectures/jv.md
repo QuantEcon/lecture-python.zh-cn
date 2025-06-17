@@ -18,7 +18,7 @@ kernelspec:
 </div>
 ```
 
-# {index}`求职搜索 VI：在职搜索 <single: Job Search VI: On-the-Job Search>`
+# {index}`工作搜寻 VI：在职搜索 <single: Job Search VI: On-the-Job Search>`
 
 ```{index} single: Models; On-the-Job Search
 ```

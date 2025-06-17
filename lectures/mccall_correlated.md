@@ -17,7 +17,7 @@ kernelspec:
 </div>
 ```
 
-# 求职搜索 IV：相关工资报价
+# 工作搜寻 IV：相关工资报价
 
 ```{contents} 目录
 :depth: 2
@@ -34,7 +34,7 @@ tags: [hide-output]
 
 ## 概述
 
-在本讲座中，我们求解一个工资报价由持续性和暂时性成分组成的{doc}`McCall求职搜索模型 <mccall_model>`。
+在本讲座中，我们求解一个工资报价由持续性和暂时性成分组成的{doc}`McCall工作搜寻模型 <mccall_model>`。
 
 换句话说，我们放宽了工资随机性在时间上独立的假设。
 
