@@ -369,7 +369,7 @@ s_star, ϕ_star = get_greedy(v_star)
 
 ```{code-cell} ipython3
 plots = [s_star, ϕ_star, v_star]
-titles = ["s策略", "ϕ策略",  "价值函数"]
+titles = [r"$s$策略", r"$\phi$策略",  "价值函数"]
 
 fig, axes = plt.subplots(3, 1, figsize=(12, 12))
 
