@@ -159,8 +159,8 @@ def Af(x):
 
 fig, ax = plt.subplots()
 
-ax.plot(f_grid, f(f_grid), 'b-', label='true function')
-ax.plot(f_grid, Af(f_grid), 'g-', label='linear approximation')
+ax.plot(f_grid, f(f_grid), 'b-', label='真实函数')
+ax.plot(f_grid, Af(f_grid), 'g-', label='线性近似')
 ax.vlines(c_grid, c_grid * 0, f(c_grid), linestyle='dashed', alpha=0.5)
 
 ax.legend(loc="upper center")
