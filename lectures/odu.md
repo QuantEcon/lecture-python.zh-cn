@@ -18,7 +18,7 @@ kernelspec:
 </div>
 ```
 
-# 求职搜索 VII: 带学习的搜索
+# 工作搜寻 VII: 带学习的搜索
 
 ```{contents} 目录
 :depth: 2
