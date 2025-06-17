@@ -122,13 +122,13 @@ $$
 
 我们将使用JIT编译来加速Bellman算子。
 
-首先，这里有一个函数，根据Bellman方程{eq}`fpb30`返回特定消费选择`c`在给定状态`y`下的值。
+首先，这里有一个函数，根据贝尔曼方程{eq}`fpb30`返回特定消费选择`c`在给定状态`y`下的值。
 
 ```{code-cell} ipython3
 @jit
 def state_action_value(c, y, v_array, og):
     """
-    Bellman方程右侧。
+    贝尔曼方程右侧。
 
      * c是消费
      * y是收入

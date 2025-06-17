@@ -29,7 +29,7 @@ kernelspec:
 
 虽然我们在{doc}`第一个工作搜寻讲座 <mccall_model>`的练习中已经简要讨论过连续工资分布，但在那个案例中，这种改变相对来说是微不足道的。
 
-这是因为我们能够将问题简化为求解单个标量值，即持续价值。
+这是因为我们能够将问题简化为求解单个标量值，即延续价值。
 
 在这一讲座中，由于离职情形的存在，变化不再那么简单，因为连续工资分布会导致不可数的无限状态空间。
 
@@ -59,7 +59,7 @@ from numba.experimental import jitclass
 
 该模型与我们{doc}`之前学习的 <mccall_model_with_separation>`带有离职情形的McCall模型相同，除了工资分布是连续的。
 
-我们将从{ref}经`简化变换 <ast_mcm>`后得到的两个Bellman方程入手。
+我们将从{ref}经`简化变换 <ast_mcm>`后得到的两个贝尔曼方程入手。
 
 为了适应连续工资抽样，这两个方程呈现以下形式：
 
@@ -82,7 +82,7 @@ v(w) = u(w) + \beta
 
 这里的未知量是函数$v$和标量$d$。
 
-这些方程与我们之前处理的一对Bellman方程的区别在于：
+这些方程与我们之前处理的一对贝尔曼方程的区别在于：
 
 1. 在{eq}`bell1mcmc`中，原来对有限个工资值的求和变成了对无限集合的积分。
 1. {eq}`bell2mcmc`中的函数$v$定义在所有$w \in \mathbb R_+$上。
@@ -133,7 +133,7 @@ v(w) = u(w) + \beta
 
 这是一个函数近似问题，有很多种方法可以解决。
 
-这里重要的是函数近似方案不仅要实现对每个$v$的良好近似，而且还能很好地配合上述更广泛的迭代算法。
+对于函数近似方案，我们需要考虑两个关键点：一是要能够准确地近似每个$v$，二是要能够有效地融入到整个迭代算法中。
 
 从这两个方面来看，连续分段线性插值法是一个不错的选择。
 
@@ -171,7 +171,7 @@ plt.show()
 
 ## 实现
 
-第一步，是为具有离职情况和连续工资分布的McCall模型构建一个即时编译类。
+第一步，是为具有离职情况和连续工资分布的McCall模型构建一个jit类。
 
 在这个应用中，我们将效用函数设定为对数函数，即$u(c) = \ln c$。
 
@@ -186,7 +186,7 @@ def lognormal_draws(n=1000, μ=2.5, σ=0.5, seed=1234):
     return w_draws
 ```
 
-这是我们的类。
+以下是类的定义：
 
 ```{code-cell} ipython3
 mccall_data_continuous = [
@@ -239,7 +239,7 @@ class McCallModelContinuous:
 @jit
 def solve_model(mcm, tol=1e-5, max_iter=2000):
     """
-    对Bellman方程进行迭代直至收敛
+    对贝尔曼方程进行迭代直至收敛
 
     * mcm 是 McCallModel 的一个实例
     """
@@ -263,7 +263,7 @@ def solve_model(mcm, tol=1e-5, max_iter=2000):
 
 以下是一个函数`compute_reservation_wage`，它接收一个`McCallModelContinuous`实例并返回相应的保留工资。
 
-如果对所有的w都有$v(w) < h$，那么函数返回np.inf
+如果对所有的$w$都有$v(w) < h$，那么函数返回`np.inf`。
 
 ```{code-cell} ipython3
 @jit
@@ -288,7 +288,7 @@ def compute_reservation_wage(mcm):
     return w_bar
 ```
 
-下面的练习要求你探究其答案以及它如何随参数变化。
+下面的练习中我们探究保留工资随参数变化的情况。
 
 ## 练习
 
@@ -320,8 +320,8 @@ for i, m in enumerate(mu_vals):
     w_bar = compute_reservation_wage(mcm)
     w_bar_vals[i] = w_bar
 
-ax.set(xlabel='mean', ylabel='reservation wage')
-ax.plot(mu_vals, w_bar_vals, label=r'$\bar w$ as a function of $\mu$')
+ax.set(xlabel='均值', ylabel='保留工资')
+ax.plot(mu_vals, w_bar_vals, label=r'$\bar w$ 随 $\mu$ 的变化')
 ax.legend()
 
 plt.show()
@@ -345,7 +345,14 @@ plt.show()
 
 使用 `s_vals = np.linspace(1.0, 2.0, 15)` 和 `m = 2.0`。
 
-说明你预期保留工资如何随 $s$ 变化。
+在分析保留工资如何随 $s$ 变化之前，让我们先思考一下:
+
+当工资分布的波动性增加时，求职者面临两个相反的影响:
+
+1. 更高的不确定性可能会让求职者倾向于接受当前工作机会，因为这提供了确定性收入
+2. 但另一方面，更大的波动性也意味着出现高工资的机会增加了
+
+你认为哪个影响会占主导地位？保留工资会随着 $s$ 的增加而上升还是下降？
 
 现在，请计算它。结果是否符合你的预期？
 ```
@@ -354,7 +361,7 @@ plt.show()
 :class: dropdown
 ```
 
-这是一种答案
+这是其中一种解法
 
 ```{code-cell} ipython3
 mcm = McCallModelContinuous()
