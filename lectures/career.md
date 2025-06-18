@@ -52,7 +52,7 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5) 
 import numpy as np
 import quantecon as qe
 from numba import jit, prange
@@ -63,30 +63,30 @@ from matplotlib import cm
 ```
 ### 模型特点
 
-* 职业和职业内的工作都选择以最大化预期贴现工资流。
-* 具有两个状态变量的无限期动态规划。
+* 模型中的个体们通过选择职业和职业内的工作来最大化预期的贴现工资收入。
+* 这是一个包含两个状态变量的无限期动态规划问题。
 
 ## 模型
 
 在下文中，我们区分职业和工作，其中
 
-* *职业*被理解为包含许多可能工作的一般领域，而
+* *职业*被理解为包含许多工作的一个领域，而
 * *工作*被理解为在特定公司的一个职位
 
 对于劳动者来说，工资可以分解为工作和职业的贡献
 
 * $w_t = \theta_t + \epsilon_t$，其中
-  * $\theta_t$ 是在时间 t 职业的贡献
-  * $\epsilon_t$ 是在时间 t 工作的贡献
+  * $\theta_t$ 是在时间 $t$ 职业的贡献
+  * $\epsilon_t$ 是在时间 $t$ 工作的贡献
 
-在时间 t 开始时，劳动者有以下选择
+在时间 $t$ 开始时，劳动者有以下选择
 
 * 保持当前的（职业，工作）组合 $(\theta_t, \epsilon_t)$
   --- 以下简称为"原地不动"
 * 保持当前职业 $\theta_t$ 但重新选择工作 $\epsilon_t$
   --- 以下简称为"新工作"
 * 同时重新选择职业 $\theta_t$ 和工作 $\epsilon_t$
---- 以下简称"新生活"
+  --- 以下简称"新生活"
 
 $\theta$ 和 $\epsilon$ 的抽取彼此独立，且与过去的值无关，其中：
 
@@ -103,7 +103,7 @@ $\theta$ 和 $\epsilon$ 的抽取彼此独立，且与过去的值无关，其�
 \mathbb{E} \sum_{t=0}^{\infty} \beta^t w_t
 ```
 
-受限于上述选择限制。
+且受限于上述的选择限制。
 
 令 $v(\theta, \epsilon)$ 表示价值函数，即在给定初始状态 $(\theta, \epsilon)$ 的情况下，所有可行的（职业，工作）策略中 {eq}`exw` 的最大值。
 
@@ -146,15 +146,17 @@ p(k \,|\, n, a, b)
 \qquad k = 0, \ldots, n
 $$
 
-解释：
-* 从形状参数为$(a, b)$的Beta分布中抽取$q$
-* 进行$n$次独立的二项试验，每次试验的成功概率为$q$
-* $p(k \,|\, n, a, b)$是在这$n$次试验中获得$k$次成功的概率
+Beta-二项分布可以通过以下两步生成：
 
-优良特性：
+1. 首先从Beta分布中随机抽取一个概率值$q$，该Beta分布由形状参数$(a,b)$决定
+2. 然后进行$n$次独立的二项试验，每次试验以概率$q$成功
 
-* 非常灵活的分布类别，包括均匀分布、对称单峰分布等
-* 仅有三个参数
+因此，$p(k \,|\, n, a, b)$表示在这个过程中恰好获得$k$次成功的概率。
+
+这个分布族有以下优点：
+
+* 形式灵活，可以产生多种分布形状，从均匀分布到各种单峰分布
+* 参数少且直观，仅需要三个参数就能完全确定分布
 
 下图展示了当$n=50$时，不同形状参数对概率质量函数的影响。
 
@@ -205,6 +207,7 @@ class CareerWorkerProblem:
         self._F_a, self._F_b = F_a, F_b
         self._G_a, self._G_b = G_a, G_b
 ```
+
 以下函数接收一个`CareerWorkerProblem`实例，并返回相应的贝尔曼算子$T$和贪婪策略函数。
 
 在此模型中，$T$由$Tv(\theta, \epsilon) = \max\{I, II, III\}$定义，其中$I$、$II$和$III$如{eq}`eyes`所示。
@@ -260,6 +263,7 @@ def operator_factory(cw, parallel_flag=True):
 
     return T, get_greedy
 ```
+
 最后，`solve_model`将接收一个`CareerWorkerProblem`实例，并使用贝尔曼算子进行迭代，以找到贝尔曼方程的不动点。
 
 ```{code-cell} ipython3
@@ -310,7 +314,7 @@ ax.plot_surface(tg,
                 cmap=cm.jet,
                 alpha=0.5,
                 linewidth=0.25)
-ax.set(xlabel='θ', ylabel='ϵ', zlim=(150, 200))
+ax.set(xlabel=r'$\theta$', ylabel=r'$\epsilon$', zlim=(150, 200))
 ax.view_init(ax.elev, 225)
 plt.show()
 ```
@@ -322,22 +326,22 @@ tg, eg = np.meshgrid(cw.θ, cw.ϵ)
 lvls = (0.5, 1.5, 2.5, 3.5)
 ax.contourf(tg, eg, greedy_star.T, levels=lvls, cmap=cm.winter, alpha=0.5)
 ax.contour(tg, eg, greedy_star.T, colors='k', levels=lvls, linewidths=2)
-ax.set(xlabel='θ', ylabel='ϵ')
+ax.set(xlabel=r'$\theta$', ylabel=r'$\epsilon$')
 ax.text(1.8, 2.5, '新生活', fontsize=14)
 ax.text(4.5, 2.5, '新工作', fontsize=14, rotation='vertical')
 ax.text(4.0, 4.5, '维持现状', fontsize=14)
 plt.show()
 ```
+
 解释：
 
 * 如果工作和职业都很差或一般，劳动者会尝试新的工作和新的职业。
 * 如果职业足够好，劳动者会保持这个职业，并尝试新的工作直到找到一个足够好的工作。
 * 如果工作和职业都很好，劳动者会保持现状。
 
-注意，劳动者总是会保持一个足够好的职业，但不一定会保持即使是最高薪的工作。
+注意，劳动者会倾向于保持一个好的职业发展方向，但是高薪工作却不一定会一直做下去。
 
-原因是高终身工资需要这两个变量都很大，而且
-劳动者不能在不换工作的情况下换职业。
+原因是高终身工资需要职业方向和职业内的工作都很好，而且劳动者不能在不换工作的情况下换职业。
 
 * 有时必须牺牲一个好工作来转向一个更好的职业。
 
@@ -399,8 +403,8 @@ def gen_path(optimal_policy, F, G, t=20):
 fig, axes = plt.subplots(2, 1, figsize=(10, 8))
 for ax in axes:
     θ_path, ϵ_path = gen_path(greedy_star, F, G)
-    ax.plot(ϵ_path, label='ϵ')
-    ax.plot(θ_path, label='θ')
+    ax.plot(ϵ_path, label=r'$\epsilon$')
+    ax.plot(θ_path, label=r'$\theta$')
     ax.set_ylim(0, 6)
 
 plt.legend()
@@ -501,7 +505,7 @@ tg, eg = np.meshgrid(cw.θ, cw.ϵ)
 lvls = (0.5, 1.5, 2.5, 3.5)
 ax.contourf(tg, eg, greedy_star.T, levels=lvls, cmap=cm.winter, alpha=0.5)
 ax.contour(tg, eg, greedy_star.T, colors='k', levels=lvls, linewidths=2)
-ax.set(xlabel='θ', ylabel='ϵ')
+ax.set(xlabel=r'$\theta$', ylabel=r'$\epsilon$')
 ax.text(1.8, 2.5, '新生活', fontsize=14)
 ax.text(4.5, 1.5, '新工作', fontsize=14, rotation='vertical')
 ax.text(4.0, 4.5, '保持现状', fontsize=14)
