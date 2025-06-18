@@ -314,7 +314,7 @@ ax.plot_surface(tg,
                 cmap=cm.jet,
                 alpha=0.5,
                 linewidth=0.25)
-ax.set(xlabel='θ', ylabel='ϵ', zlim=(150, 200))
+ax.set(xlabel=r'$\theta$', ylabel=r'$\epsilon$', zlim=(150, 200))
 ax.view_init(ax.elev, 225)
 plt.show()
 ```
@@ -326,7 +326,7 @@ tg, eg = np.meshgrid(cw.θ, cw.ϵ)
 lvls = (0.5, 1.5, 2.5, 3.5)
 ax.contourf(tg, eg, greedy_star.T, levels=lvls, cmap=cm.winter, alpha=0.5)
 ax.contour(tg, eg, greedy_star.T, colors='k', levels=lvls, linewidths=2)
-ax.set(xlabel='θ', ylabel='ϵ')
+ax.set(xlabel=r'$\theta$', ylabel=r'$\epsilon$')
 ax.text(1.8, 2.5, '新生活', fontsize=14)
 ax.text(4.5, 2.5, '新工作', fontsize=14, rotation='vertical')
 ax.text(4.0, 4.5, '维持现状', fontsize=14)
@@ -403,8 +403,8 @@ def gen_path(optimal_policy, F, G, t=20):
 fig, axes = plt.subplots(2, 1, figsize=(10, 8))
 for ax in axes:
     θ_path, ϵ_path = gen_path(greedy_star, F, G)
-    ax.plot(ϵ_path, label='ϵ')
-    ax.plot(θ_path, label='θ')
+    ax.plot(ϵ_path, label=r'$\epsilon$')
+    ax.plot(θ_path, label=r'$\theta$')
     ax.set_ylim(0, 6)
 
 plt.legend()
@@ -505,7 +505,7 @@ tg, eg = np.meshgrid(cw.θ, cw.ϵ)
 lvls = (0.5, 1.5, 2.5, 3.5)
 ax.contourf(tg, eg, greedy_star.T, levels=lvls, cmap=cm.winter, alpha=0.5)
 ax.contour(tg, eg, greedy_star.T, colors='k', levels=lvls, linewidths=2)
-ax.set(xlabel='θ', ylabel='ϵ')
+ax.set(xlabel=r'$\theta$', ylabel=r'$\epsilon$')
 ax.text(1.8, 2.5, '新生活', fontsize=14)
 ax.text(4.5, 1.5, '新工作', fontsize=14, rotation='vertical')
 ax.text(4.0, 4.5, '保持现状', fontsize=14)
