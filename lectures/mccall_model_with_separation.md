@@ -3,10 +3,12 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.1
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 ---
 
 (mccall_with_sep)=
@@ -29,10 +31,9 @@ kernelspec:
 
 除了Anaconda中包含的内容外，本讲座还需要以下库：
 
-```{code-cell} ipython
----
-tags: [hide-output]
----
+```{code-cell} ipython3
+:tags: [hide-output]
+
 !pip install quantecon
 ```
 
@@ -40,20 +41,20 @@ tags: [hide-output]
 
 在{doc}`之前的讲座 <mccall_model>`中，我们研究了McCall工作搜寻模型 {cite}`McCall1970`作为理解失业和劳动者决策的一种方式。
 
-该模型的一个不现实特征是每份工作都是永久性的。
+在之前的模型中，我们假设工作是永久性的，这不太符合现实。
 
-在本讲座中，我们通过引入工作离职来扩展McCall模型。
+本讲座将通过引入离职的可能性来使McCall模型更加贴近现实。
 
-一旦引入离职，个体就会将：
+一旦引入离职，个体会有不同的考虑：
 
-* 失去工作视为资本损失，以及
-* 失业期视为寻找可接受工作的*投资*
+* 失业不仅仅是一个暂时状态，而是随时可能发生的资本损失
+* 失业期间的工作搜寻成为寻找下一份工作的*投资*
 
-另一个小的补充是引入效用函数以使劳动者偏好更加复杂。
+我们还将引入效用函数来更好地刻画劳动者的偏好。
 
-我们需要以下导入：
+让我们首先导入所需的包：
 
-```{code-cell} ipython
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -93,13 +94,13 @@ from quantecon.distributions import BetaBinomial
 
 ### 工资过程
 
-目前我们将放弃在{doc}`基础模型 <mccall_model>`中保持的状态过程和工资过程的分离。
+为了简化模型，我们不再像{doc}`基础模型 <mccall_model>`那样将状态过程和工资过程分开。
 
-特别是，我们简单地假设工资报价$\{ w_t \}$是独立同分布的，具有共同的分布$q$。
+我们直接假设工资报价$\{w_t\}$是从一个共同分布$q$中独立抽取的。
 
-可能的工资值集合用$\mathbb W$表示。
+我们用$\mathbb W$表示所有可能的工资值集合。
 
-（稍后我们将回到具有驱动随机结果的独立状态过程$\{s_t\}$，因为这种表述在更复杂的模型中通常更方便。）
+（在后面的章节中，我们会重新引入独立的状态过程$\{s_t\}$来驱动随机结果，因为这种方式在处理更复杂的模型时会更加方便。）
 
 ### 时间安排和决策
 
@@ -115,7 +116,7 @@ from quantecon.distributions import BetaBinomial
 1. 获得效用$u(w_e)$，并且
 1. 以某个（小的）概率$\alpha$被解雇。
 
-如果当前*失业*，劳动者要么接受要么拒绝当前报价$w_t$。
+如果当前*失业*，劳动者可以接受或拒绝当前报价$w_t$。
 
 如果他接受，则立即以工资$w_t$开始工作。
 
@@ -166,11 +167,11 @@ h(w) = \max \left\{ v(w), \,  u(c) + \beta \sum_{w' \in \mathbb W} h(w') q(w') \
 方程{eq}`bell1_mccall`表达了以工资$w_e$就业的价值，包括：
 
 * 当前报酬$u(w_e)$加上
-* 考虑到$\alpha$被解雇概率的贴现预期报酬
+* 考虑到$\alpha$被解雇概率的贴现预期价值
 
 方程{eq}`bell2_mccall`表达了失业且手中有报价$w$的价值，作为两个选项的最大值：接受或拒绝当前报价。
 
-接受使劳动者转为就业，因此获得报酬$v(w)$。
+接受使劳动者转为就业，因此获得价值$v(w)$。
 
 拒绝导致失业补偿和明天的失业。
 
@@ -238,12 +239,11 @@ v(w) = u(w) + \beta
 然后我们可以确定劳动者的最优行为。
 
 从{eq}`bell2_mccall`中，我们看到失业个体接受当前报价$w$如果$v(w) \geq  u(c) + \beta d$。
+这表明接受工作的价值超过了继续搜索的预期价值。
 
-这意味着接受的价值高于拒绝的预期价值。
+由于更高的工资报价不会让个体更差，$v$是关于$w$的（弱）递增函数。
 
-显然$v$（至少是弱）随$w$增加，因为个体永远不会因更高的工资报价而变得更差。
-
-因此，我们可以将最优选择表达为接受工资报价$w$当且仅当：
+这意味着个体的最优策略可以用一个保留工资来表示 - 当且仅当工资报价$w$超过某个临界值时接受工作：
 
 $$
 w \geq \bar w
@@ -253,13 +253,14 @@ $$
 
 ### 求解贝尔曼方程
 
-我们将使用与{doc}`第一个工作搜寻讲座 <mccall_model>`中相同的迭代方法来求解贝尔曼方程。
+我们将采用与{doc}`第一个工作搜寻讲座 <mccall_model>`相同的迭代方法来求解贝尔曼方程。
 
-这里这包括：
+具体步骤如下：
 
-1. 对$d$和$v$做出猜测
-1. 将这些猜测代入{eq}`bell02_mccall`和{eq}`bell01_mccall`的右侧
-1. 从这个规则更新左侧，然后重复
+1. 首先对$d$和$v$的值进行初始猜测
+1. 将这些猜测值代入{eq}`bell02_mccall`和{eq}`bell01_mccall`右侧的表达式
+1. 计算得到新的左侧值,并用这些新值更新猜测
+1. 重复以上步骤直到收敛
 
 换句话说，我们使用以下规则进行迭代：
 
@@ -283,7 +284,7 @@ v_{n+1}(w) = u(w) + \beta
 
 如前所述，系统总是收敛到真实解---在这种情况下，是满足{eq}`bell02_mccall`和{eq}`bell01_mccall`的$v$和$d$。
 
-（可以通过Banach压缩映射定理获得证明。）
+（可以通过巴拿赫压缩映射定理获得证明。）
 
 ## 实现
 
@@ -295,15 +296,15 @@ v_{n+1}(w) = u(w) + \beta
 
 默认效用函数是CRRA效用函数：
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def u(c, σ=2.0):
     return (c**(1 - σ) - 1) / (1 - σ)
 ```
 
-另外，这是一个基于BetaBinomial分布的默认工资分布：
+另外，这是一个基于Beta-二项分布的默认工资分布：
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 60                                  # w的n个可能结果
 w_default = np.linspace(10, 20, n)      # 10到20之间的工资
 a, b = 600, 400                         # 形状参数
@@ -311,9 +312,9 @@ dist = BetaBinomial(n-1, a, b)
 q_default = dist.pdf()
 ```
 
-这是我们的McCall模型与离职的jitted类：
+这是我们的McCall模型与离职的即时编译类：
 
-```{code-cell} python3
+```{code-cell} ipython3
 mccall_data = [
     ('α', float64),      # 工作离职率
     ('β', float64),      # 贴现因子
@@ -351,7 +352,7 @@ class McCallModel:
 
 然后我们将当前迭代作为近似解返回。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def solve_model(mcm, tol=1e-5, max_iter=2000):
     """
@@ -387,7 +388,7 @@ def solve_model(mcm, tol=1e-5, max_iter=2000):
 
 我们将使用代码中的默认参数化。
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcm = McCallModel()
 v, d = solve_model(mcm)
 h = u(mcm.c) + mcm.β * d
@@ -409,7 +410,7 @@ plt.show()
 
 这是一个函数`compute_reservation_wage`，它接受`McCallModel`的实例并返回相关的保留工资。
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def compute_reservation_wage(mcm):
     """
@@ -431,7 +432,9 @@ def compute_reservation_wage(mcm):
 
 ## 参数的影响
 
-在下面的每个实例中，我们将向你展示一个图形，然后要求你在练习中重现它。
+现在我们将研究保留工资如何随不同参数变化。
+
+对于每个参数，我们会展示一副图，并在练习中让你动手来重现这些图形。
 
 ### 保留工资和失业补偿
 
@@ -485,7 +488,7 @@ def compute_reservation_wage(mcm):
 
 关于水平轴上的值，使用：
 
-```{code-cell} python3
+```{code-cell} ipython3
 grid_size = 25
 c_vals = np.linspace(2, 12, grid_size)         # 失业补偿
 beta_vals = np.linspace(0.8, 0.99, grid_size)  # 贴现因子
@@ -499,9 +502,9 @@ alpha_vals = np.linspace(0.05, 0.5, grid_size) # 离职率
 :class: dropdown
 ```
 
-这是第一个图。
+这是第一幅图。
 
-```{code-cell} python3
+```{code-cell} ipython3
 mcm = McCallModel()
 
 w_bar_vals = np.empty_like(c_vals)
@@ -521,9 +524,9 @@ ax.legend()
 plt.show()
 ```
 
-这是第二个图。
+这是第二幅图。
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 for i, β in enumerate(beta_vals):
@@ -538,9 +541,9 @@ ax.legend()
 plt.show()
 ```
 
-这是第三个图。
+这是第三幅图。
 
-```{code-cell} python3
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 for i, α in enumerate(alpha_vals):
