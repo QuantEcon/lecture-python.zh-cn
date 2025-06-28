@@ -18,7 +18,7 @@ kernelspec:
 </div>
 ```
 
-# {index}`面板数据的Pandas使用 <single: Pandas for Panel Data>`
+# {index}`用于面板数据处理的Pandas <single: Pandas for Panel Data>`
 
 ```{index} single: Python; Pandas
 ```
@@ -33,22 +33,22 @@ kernelspec:
 
 计量经济学家经常需要处理更复杂的数据集，比如面板数据。
 
-常见任务包括：
+常见的任务包括：
 
 * 导入数据、清理数据以及在多个轴上重塑数据。
 
-* 从面板数据中选择时间序列或横截面数据。
+* 从面板数据中提取时间序列数据或横截面数据。
 * 对数据进行分组和汇总。
 
-`pandas`（源自'panel'和'data'）包含强大且易用的工具，专门用于解决这类问题。
+`pandas`（源自'panel'和'data'这两个词）包含强大且易用的工具，专门用于解决这类问题。
 
 在接下来的内容中，我们将使用来自OECD的实际最低工资面板数据集来创建：
 
-* 数据多个维度的汇总统计
+* 数据在多个维度上的汇总统计
 * 数据集中各国平均最低工资的时间序列
 * 按大洲划分的工资核密度估计
 
-我们将首先从CSV文件中读取长格式面板数据，并使用`pivot_table`重塑生成的`DataFrame`来构建`MultiIndex`。
+首先，我们将从CSV文件中读取长格式面板数据，并使用`pivot_table`重塑生成的`DataFrame`来构建`MultiIndex`。
 
 使用pandas的`merge`函数将为我们的`DataFrame`添加额外的详细信息，并使用`groupby`函数对数据进行汇总。
 
@@ -65,7 +65,7 @@ url1 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source
 ```{code-cell} ipython3
 import pandas as pd
 
-# 为了查看目的显示6列
+# 为便于查看，显示数据集前6列
 pd.set_option('display.max_columns', 6)
 
 # 将小数点位数减少到2位
@@ -80,11 +80,11 @@ realwage = pd.read_csv(url1)
 realwage.head()  # 显示前5行
 ```
 
-数据目前是长格式的，当数据有多个维度时这种格式难以分析。
+数据目前是长格式的，当数据有多个维度时，使用这种格式难以进行分析。
 
-我们将使用`pivot_table`创建宽格式面板，并使用`MultiIndex`来处理高维数据。
+我们将使用`pivot_table`来创建宽格式面板，并使用`MultiIndex`来处理高维数据。
 
-`pivot_table`的参数需要指定数据（values）、索引和我们想要在结果数据框中的列。
+`pivot_table`的参数需要指定数据值（values）、索引和在结果数据框中我们所需的列名。
 
 通过在columns参数中传入一个列表，我们可以在列轴上创建一个`MultiIndex`
 
@@ -95,16 +95,16 @@ realwage = realwage.pivot_table(values='value',
 realwage.head()
 ```
 
-为了更容易地过滤我们的时间序列数据，接下来我们将把索引转换为`DateTimeIndex`
+为了更容易地筛选我们的时间序列数据，接下来我们将把索引转换为`DateTimeIndex`
 
 ```{code-cell} ipython3
 realwage.index = pd.to_datetime(realwage.index)
 type(realwage.index)
 ```
 
-这些列包含多层级索引，称为`MultiIndex`，各层级按层次结构排序（国家 > 系列 > 支付周期）。
+该数据框的列包含多层级索引，被称为`MultiIndex`，各层级按层次结构排序（Country > Series > Pay period）。
 
-`MultiIndex`是在pandas中管理面板数据最简单和最灵活的方式。
+`MultiIndex`是在pandas中管理面板数据最简单且最灵活的方式。
 
 ```{code-cell} ipython3
 type(realwage.columns)
@@ -114,7 +114,7 @@ type(realwage.columns)
 realwage.columns.names
 ```
 
-和之前一样，我们可以选择国家（我们的`MultiIndex`的最高层级）
+和之前一样，我们可以选择国家（`MultiIndex`中的最高层级）
 
 ```{code-cell} ipython3
 realwage['United States'].head()
@@ -122,7 +122,7 @@ realwage['United States'].head()
 
 在本讲中，我们将经常使用`MultiIndex`的堆叠和取消堆叠来将数据框重塑成所需的格式。
 
-`.stack()`将列`MultiIndex`的最低层级旋转到行索引（`.unstack()`的作用方向相反 - 你可以试试看）
+`.stack()`将列`MultiIndex`的最低层级旋转到行索引（`.unstack()`执行反向操作 - 你可以试试看）
 
 ```{code-cell} ipython3
 realwage.stack().head()
@@ -136,15 +136,15 @@ realwage.stack(level='Country').head()
 
 使用`DatetimeIndex`可以轻松选择特定的时间段。
 
-选择一年并堆叠`MultiIndex`的两个较低层级，可以创建我们面板数据的横截面
+选择一年并堆叠`MultiIndex`的两个较低层级，可以创建我们面板数据的横截面。
 
 ```{code-cell} ipython3
 realwage.loc['2015'].stack(level=(1, 2)).transpose().head()
 ```
 
-在本讲座剩余部分，我们将使用一个数据框，其中包含不同国家和时间段的每小时实际最低工资数据，以2015年美元计价。
+在本讲后续内容中，我们将使用按国家和时间维度统计的每小时实际最低工资数据框（计量单位为2015年不变价美元）。
 
-要创建我们的筛选数据框（`realwage_f`），我们可以使用`xs`方法在保持更高层级（本例中为国家）的同时，选择多重索引中较低层级的值。
+为了创建筛选后的数据框（`realwage_f`），我们可以使用`xs`方法：在保持更高层级索引（本例中为国家）的同时，选择多级索引中较低层级的值。
 
 ```{code-cell} ipython3
 realwage_f = realwage.xs(('Hourly', 'In 2015 constant prices at 2015 USD exchange rates'),
@@ -152,7 +152,7 @@ realwage_f = realwage.xs(('Hourly', 'In 2015 constant prices at 2015 USD exchang
 realwage_f.head()
 ```
 
-## 合并数据框和填充空值
+## 合并数据框和填充空值（NaN 值）
 
 与SQL等关系型数据库类似，pandas内置了合并数据集的方法。
 
@@ -179,24 +179,24 @@ worlddata.head()
 
 我们想要将新的数据框`worlddata`与`realwage_f`合并。
 
-pandas的`merge`函数允许通过行将数据框连接在一起。
+pandas的`merge`函数可以通过行将数据框连接在一起。
 
-我们的数据框将使用国家名称进行合并，这需要我们使用`realwage_f`的转置，以便两个数据框中的行都对应于国家名称。
+我们的数据框将使用国家名称进行合并，这需要我们使用数据框`realwage_f`的转置，以便两个数据框中的行都对应于国家名称。
 
 ```{code-cell} ipython3
 realwage_f.transpose().head()
 ```
 
-我们可以使用左连接、右连接、内连接或外连接来合并我们的数据集：
+我们可以使用左连接（left）、右连接（right）、内连接（inner）或外连接（outer）来合并我们的数据集：
 
-* 左连接只包含左侧数据集中的国家
-* 右连接只包含右侧数据集中的国家
-* 外连接包含左侧和右侧数据集中的任一国家
-* 内连接只包含左右数据集共有的国家
+* 左连接（left）只包含左侧数据集中的国家
+* 右连接（right）只包含右侧数据集中的国家
+* 内连接（inner）只包含左右数据集共有的国家
+* 外连接（outer）包含左侧和右侧数据集中的任一国家
 
-默认情况下，`merge`将使用内连接。
+默认情况下，`merge`将使用内连接（inner）。
 
-在这里，我们将传入`how='left'`以保留`realwage_f`中的所有国家，但丢弃在`worlddata`中没有对应数据项`realwage_f`的国家。
+在这个案例中，我们将传入`how='left'`以保留`realwage_f`中的所有国家，但丢弃`worlddata`中不能和`realwage_f`相匹配的国家。
 
 这在下图中用红色阴影部分表示
 
@@ -204,7 +204,7 @@ realwage_f.transpose().head()
 
 ```
 
-我们还需要指定每个数据框中国家名称的位置，这将作为合并数据框的"键"。
+我们还需要指定每个数据框中国家名称的位置，这将作为合并数据框的"键（key）"。
 
 我们的"左"数据框（`realwage_f.transpose()`）在索引中包含国家，所以我们设置`left_index=True`。
 
@@ -226,7 +226,7 @@ merged[merged['Continent'].isnull()]
 
 我们有三个缺失值！
 
-处理 NaN 值的一个选项是创建一个包含这些国家及其各自大洲的字典。
+处理 NaN 值的一个方式是创建一个包含这些国家及其对应大洲的字典。
 
 `.map()` 将会把 `merged['Country']` 中的国家与字典中的大洲进行匹配。
 
@@ -240,21 +240,21 @@ missing_continents = {'Korea': 'Asia',
 merged['Country'].map(missing_continents)
 ```
 
-我们不想用这个映射覆盖整个系列。
+我们不想用这个映射覆盖整个序列。
 
-`.fillna()` 只会用映射填充 `merged['Continent']` 中的 `NaN` 值，而保持列中的其他值不变
+`.fillna()` 只会用映射值填充 `merged['Continent']` 中的 `NaN` 值，同时保持列中的其他值不变
 
 ```{code-cell} ipython3
 merged['Continent'] = merged['Continent'].fillna(merged['Country'].map(missing_continents))
 
-# 检查大洲是否正确映射
+# 检查大洲是否被正确映射
 
 merged[merged['Country'] == 'Korea']
 ```
 
 我们还要把美洲合并成一个大洲 - 这样可以让我们后面的可视化效果更好看。
 
-为此，我们将使用`.replace()`并遍历一个包含我们想要替换的大洲值的列表
+为此，我们将使用`.replace()`并遍历一个包含我们想要替换的大洲的值的列表
 
 ```{code-cell} ipython3
 replace = ['Central America', 'North America', 'South America']
@@ -309,7 +309,7 @@ merged.head()
 merged.mean().head(10)
 ```
 
-使用这个数据系列，我们可以绘制数据集中每个国家过去十年的平均实际最低工资
+使用这个数据序列，我们可以绘制数据集中每个国家过去十年的平均实际最低工资
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
@@ -366,7 +366,7 @@ plt.xlabel('年份')
 plt.show()
 ```
 
-为了绘图目的，我们将去掉澳大利亚这个大洲
+出于绘图目的，我们将去掉澳大利亚这个大洲
 
 ```{code-cell} ipython3
 merged = merged.drop('Australia', level='Continent', axis=1)
@@ -377,7 +377,7 @@ plt.xlabel('年份')
 plt.show()
 ```
 
-`.describe()` 可以快速获取一些常见的统计摘要数据
+`.describe()` 可以快速获取一些常见的描述性统计量的汇总结果
 
 ```{code-cell} ipython3
 merged.stack().describe()
@@ -393,14 +393,14 @@ merged.stack().describe()
 
 `groupby` 方法实现了这个过程的第一步，创建一个新的 `DataFrameGroupBy` 对象，将数据拆分成组。
 
-让我们再次按大洲拆分 `merged`，这次使用 `groupby` 函数，并将结果对象命名为 `grouped`
+让我们再次按大洲拆分 `merged`，这次使用 `groupby` 函数，并将生成的对象命名为 `grouped`
 
 ```{code-cell} ipython3
 grouped = merged.groupby(level='Continent', axis=1)
 grouped
 ```
 
-在对象上调用聚合方法会将函数应用于每个组，其结果会被合并到一个新的数据结构中。
+在对象上调用聚合方法时，该函数会被应用于每个组，运算结果会被合并到一个新的数据结构中。
 
 例如，我们可以使用`.size()`返回数据集中每个大洲的国家数量。
 
@@ -420,7 +420,7 @@ continents = grouped.groups.keys()
 for continent in continents:
     sns.kdeplot(grouped.get_group(continent).loc['2015'].unstack(), label=continent, fill=True)
 
-plt.title('Real minimum wages in 2015')
+plt.title('2015年实际最低工资')
 plt.xlabel('US dollars')
 plt.legend()
 plt.show()
@@ -428,9 +428,9 @@ plt.show()
 
 ## 总结
 
-本讲座介绍了pandas的一些高级特性，包括多重索引、合并、分组和绘图。
+本讲座介绍了pandas的一些高级特性，包括多级索引、合并、分组和绘图。
 
-在面板数据分析中可能有用的其他工具包括[xarray](https://docs.xarray.dev/en/stable/)，这是一个将pandas扩展到N维数据结构的Python包。
+在面板数据分析中，其他可能有用的工具包括[xarray](https://docs.xarray.dev/en/stable/)，这是一个将pandas扩展到N维数据结构的Python包。
 
 ## 练习
 
@@ -438,7 +438,7 @@ plt.show()
 :label: pp_ex1
 ```
 
-在这些练习中，你将使用来自[Eurostat](https://ec.europa.eu/eurostat/data/database)的欧洲按年龄和性别划分的就业率数据集。
+在这些练习中，你将使用来自[Eurostat](https://ec.europa.eu/eurostat/data/database)的按年龄和性别划分的欧洲就业率数据集。
 
 可以通过以下链接访问数据集：
 
@@ -448,7 +448,7 @@ url3 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source
 
 读取 CSV 文件会返回一个长格式的面板数据集。使用 `.pivot_table()` 构建一个带有 `MultiIndex` 列的宽格式数据框。
 
-首先探索数据框和 `MultiIndex` 层级中可用的变量。
+首先探究数据框和 `MultiIndex` 层级中可用的变量。
 
 编写一个程序，快速返回 `MultiIndex` 中的所有值。
 
@@ -488,9 +488,9 @@ for name in employ.columns.names:
 :label: pp_ex2
 ```
 
-筛选上述数据框，仅包含以'活动人口'百分比表示的就业数据。
+筛选上述数据框，仅保留以'活动人口'百分比表示的就业数据。
 
-使用`seaborn`创建一个按年龄组和性别分组的2015年就业率箱线图。
+使用`seaborn`绘制一个按年龄和性别分组的2015年就业率箱线图。
 
 ```{hint}
 :class: dropdown
@@ -505,14 +505,14 @@ for name in employ.columns.names:
 :class: dropdown
 ```
 
-为了方便按国家筛选，将`GEO`调整到最上层并对`MultiIndex`进行排序
+为了更方便地按国家筛选，将`GEO`调整到最上层并对`MultiIndex`进行排序
 
 ```{code-cell} ipython3
 employ.columns = employ.columns.swaplevel(0,-1)
 employ = employ.sort_index(axis=1)
 ```
 
-我们需要删除`GEO`中一些不是国家的项目。
+我们需要删除`GEO`中一些不是国家的项。
 
 一个快速去除欧盟地区的方法是使用列表推导式来查找`GEO`中以'Euro'开头的层级值。
 
@@ -523,7 +523,7 @@ employ = employ[countries]
 employ.columns.get_level_values('GEO').unique()
 ```
 
-从数据框中仅选择活动人口中的就业百分比
+仅选择数据框中活动人口的就业百分比
 
 ```{code-cell} ipython3
 employ_f = employ.xs(('Percentage of total population', 'Active population'),
@@ -532,7 +532,7 @@ employ_f = employ.xs(('Percentage of total population', 'Active population'),
 employ_f.head()
 ```
 
-在创建分组箱形图之前删除"总计"值
+在绘制分组箱形图之前删除"总计"值
 
 ```{code-cell} ipython3
 employ_f = employ_f.drop('Total', level='SEX', axis=1)
@@ -551,4 +551,3 @@ plt.show()
 
 ```{solution-end}
 ```
-
