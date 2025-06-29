@@ -34,9 +34,7 @@ kernelspec:
 
 ## 概述
 
-许多经济问题涉及寻找[不动点
-
-[不动点](https://en.wikipedia.org/wiki/Fixed_point_(mathematics))或[零点](https://en.wikipedia.org/wiki/Zero_of_a_function)（有时也称为"根"）。
+许多经济问题涉及寻找[不动点](https://baike.baidu.com/item/%E4%B8%8D%E5%8A%A8%E7%82%B9?fromModule=lemma_search-box)或[零点](https://baike.baidu.com/item/%E9%9B%B6%E7%82%B9/19736260?fromModule=lemma_search-box)（有时也称为"根"）。
 
 例如，在简单的供需模型中，均衡价格是使超额需求为零的价格。
 
@@ -44,15 +42,13 @@ kernelspec:
 
 有各种计算技术可用于求解不动点和零点。
 
-在本讲中，我们将学习一种重要的基于梯度的技术，称为[牛顿法](https://en.wikipedia.org/wiki/Newton%27s_method)。
+在本讲中，我们将学习一种重要的基于梯度的技术，称为[牛顿法](https://baike.baidu.com/item/%E7%89%9B%E9%A1%BF%E8%BF%AD%E4%BB%A3%E6%B3%95?fromModule=lemma_search-box)。
 
-牛顿法并不总是有效，但在适用的情况下，与其他方法相比，收敛速度通常较快。
+牛顿法并非总是有效，但在适用的情况下，其收敛速度通常比其他方法更快。
 
 本讲将在一维和多维环境中应用牛顿法来解决不动点和零点查找问题。
 
-* 在寻找函数$f$的不动点时，牛顿法通过求解一个
-
-函数 $f$ 的线性近似。
+* 在寻找函数$f$的不动点时，牛顿法通过求解一个函数 $f$ 的线性近似。
 
 * 在寻找函数 $f$ 的零点时，牛顿法通过求解函数 $f$ 的线性近似的零点来更新
   现有的猜测值。
@@ -90,7 +86,7 @@ plt.rcParams["figure.figsize"] = (10, 5.7)
 
 ## 用牛顿法计算不动点
 
-在本节中，我们将在[索洛增长模型](https://en.wikipedia.org/wiki/Solow%E2%80%93Swan_model)的框架下求解资本运动规律的不动点。
+在本节中，我们将在[索洛增长模型](https://baike.baidu.com/item/%E6%96%B0%E5%8F%A4%E5%85%B8%E5%A2%9E%E9%95%BF%E6%A8%A1%E5%9E%8B?fromtitle=%E7%B4%A2%E6%B4%9B%E5%A2%9E%E9%95%BF%E6%A8%A1%E5%9E%8B&fromid=7557049&fromModule=lemma_search-box)的框架下求解资本运动规律的不动点。
 
 我们将通过可视化方式检查不动点，用连续逼近法求解，然后应用牛顿法来实现更快的收敛。
 
@@ -116,7 +112,7 @@ plt.rcParams["figure.figsize"] = (10, 5.7)
 
 换句话说，我们要寻找一个 $k^* > 0$ 使得 $g(k^*)=k^*$。
 
-* 这样的 $k^*$ 被称为[稳态](https://en.wikipedia.org/wiki/Steady_state)，
+* 这样的 $k^*$ 被称为[稳态](https://zh.wikipedia.org/wiki/%E7%A9%A9%E6%85%8B_(%E7%B3%BB%E7%B5%B1))，
   因为当 $k_t = k^*$ 时意味着 $k_{t+1} = k^*$。
 
 用纸笔解方程 $g(k)=k$，你可以验证
@@ -245,7 +241,6 @@ k_star_approx
 
 这接近真实值。
 
-(solved_k)=
 
 ```{code-cell} ipython3
 k_star
@@ -345,13 +340,13 @@ plot_trajectories(params)
 我们可以看到牛顿法比连续逼近法收敛得更快。
 
 
-## 一维寻根
+##  一维求根
 
 在上一节中我们计算了不动点。
 
 事实上，牛顿法更常与寻找函数零点的问题相关联。
 
-让我们讨论这个"寻根"问题，然后说明它与寻找不动点的问题是如何联系的。
+让我们讨论这个"求根"问题，然后说明它与寻找不动点的问题是如何联系的。
 
 
 
@@ -385,8 +380,6 @@ x_{t+1} = x_t - \frac{ f(x_t) }{ f'(x_t) },
 ```
 
 以下代码实现了迭代公式 [](oneD-newton)
-
-(first_newton_attempt)=
 
 ```{code-cell} ipython3
 def newton(f, Df, x_0, tol=1e-7, max_iter=100_000):
@@ -447,7 +440,6 @@ k_star_approx_newton
 我们将看到使用牛顿法时能获得显著的性能提升。
 
 
-(two_goods_market)=
 ### 双商品市场均衡
 
 让我们从计算双商品问题的市场均衡开始。
@@ -650,7 +642,7 @@ np.max(np.abs(e(p, A, b, c)))
 
 #### 添加梯度信息
 
-在许多情况下，对于应用于光滑函数的零点查找算法，提供函数的[雅可比矩阵](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant)可以带来更好的收敛性质。
+在许多情况下，对于应用于光滑函数的零点查找算法，提供函数的[雅可比矩阵](https://baike.baidu.com/item/%E9%9B%85%E5%8F%AF%E6%AF%94%E7%9F%A9%E9%98%B5?fromModule=lemma_search-box)可以带来更好的收敛性质。
 
 这里我们手动计算雅可比矩阵的元素
 
