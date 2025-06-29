@@ -18,7 +18,7 @@ kernelspec:
 
 # `新冠病毒建模 <single: Modeling COVID 19>`
 
-```{contents}
+```{contents}目录
 :depth: 2
 ```
 
