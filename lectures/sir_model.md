@@ -45,7 +45,7 @@ kernelspec:
 
 我们将使用以下标准导入：
 
-```{code-cell}
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -59,7 +59,7 @@ from numpy import exp
 
 最后，我们使用SciPy的数值例程odeint来求解微分方程。
 
-```{code-cell}
+```{code-cell} ipython3
 from scipy.integrate import odeint
 ```
 
@@ -148,20 +148,20 @@ $\sigma$和$\gamma$都被视为固定的、由生物学决定的参数。
 
 首先我们将人口规模设置为与美国相匹配。
 
-```{code-cell}
+```{code-cell} ipython3
 pop_size = 3.3e8
 ```
 
 接下来我们按照上述方法固定参数。
 
-```{code-cell}
+```{code-cell} ipython3
 γ = 1 / 18
 σ = 1 / 5.2
 ```
 
 现在我们构建一个函数来表示{eq}`dfcv`中的$F$
 
-```{code-cell}
+```{code-cell} ipython3
 def F(x, t, R0=1.6):
     """
     状态向量的时间导数。
@@ -189,7 +189,7 @@ def F(x, t, R0=1.6):
 
 初始条件设置为
 
-```{code-cell}
+```{code-cell} ipython3
 # initial conditions of s, e, i
 i_0 = 1e-7
 e_0 = 4 * i_0
@@ -198,13 +198,13 @@ s_0 = 1 - i_0 - e_0
 
 用向量形式表示的初始条件是
 
-```{code-cell}
+```{code-cell} ipython3
 x_0 = s_0, e_0, i_0
 ```
 
 我们使用odeint在一系列时间点 `t_vec`上通过数值积分求解时间路径。
 
-```{code-cell}
+```{code-cell} ipython3
 def solve_path(R0, t_vec, x_init=x_0):
     """
     通过数值积分求解i(t)和c(t)，
@@ -224,7 +224,7 @@ def solve_path(R0, t_vec, x_init=x_0):
 
 我们要研究的时间段为550天，大约18个月：
 
-```{code-cell}
+```{code-cell} ipython3
 t_length = 550
 grid_size = 1000
 t_vec = np.linspace(0, t_length, grid_size)
@@ -236,7 +236,7 @@ t_vec = np.linspace(0, t_length, grid_size)
 
 我们在不同 `R0`值的假设下计算感染人数的时间路径：
 
-```{code-cell}
+```{code-cell} ipython3
 R0_vals = np.linspace(1.6, 3.0, 6)
 labels = [f'$R0 = {r:.2f}$' for r in R0_vals]
 i_paths, c_paths = [], []
@@ -249,7 +249,7 @@ for r in R0_vals:
 
 这是一些用于绘制时间路径的代码。
 
-```{code-cell}
+```{code-cell} ipython3
 def plot_paths(paths, labels, times=t_vec):
 
     fig, ax = plt.subplots()
@@ -264,7 +264,7 @@ def plot_paths(paths, labels, times=t_vec):
 
 让我们绘制当前病例数占人口的比例。
 
-```{code-cell}
+```{code-cell} ipython3
 plot_paths(i_paths, labels)
 ```
 
@@ -274,7 +274,7 @@ plot_paths(i_paths, labels)
 
 以下是累计病例数（占总人口的比例）：
 
-```{code-cell}
+```{code-cell} ipython3
 plot_paths(c_paths, labels)
 ```
 
@@ -284,7 +284,7 @@ plot_paths(c_paths, labels)
 
 以下是一个关于 `R0`随时间变化的函数规范。
 
-```{code-cell}
+```{code-cell} ipython3
 def R0_mitigating(t, r0=3, η=1, r_bar=1.6):
     R0 = r0 * exp(- η * t) + (1 - exp(- η * t)) * r_bar
     return R0
@@ -298,14 +298,14 @@ def R0_mitigating(t, r0=3, η=1, r_bar=1.6):
 
 我们考虑几个不同的速率：
 
-```{code-cell}
+```{code-cell} ipython3
 η_vals = 1/5, 1/10, 1/20, 1/50, 1/100
 labels = [fr'$\eta = {η:.2f}$' for η in η_vals]
 ```
 
 以下是在这些不同速率下 `R0` 的时间路径：
 
-```{code-cell}
+```{code-cell} ipython3
 fig, ax = plt.subplots()
 
 for η, label in zip(η_vals, labels):
@@ -317,7 +317,7 @@ plt.show()
 
 让我们计算感染者人数的时间路径：
 
-```{code-cell}
+```{code-cell} ipython3
 i_paths, c_paths = [], []
 
 for η in η_vals:
@@ -329,13 +329,13 @@ for η in η_vals:
 
 以下是不同场景下的当前案例：
 
-```{code-cell}
+```{code-cell} ipython3
 plot_paths(i_paths, labels)
 ```
 
 以下是累计病例数（占总人口的比例）：
 
-```{code-cell}
+```{code-cell} ipython3
 plot_paths(c_paths, labels)
 ```
 
@@ -350,7 +350,7 @@ plot_paths(c_paths, labels)
 
 这里考虑的参数设置模型的初始状态为25,000个活跃感染者，以及75,000个已经接触病毒因此即将具有传染性的个体。
 
-```{code-cell}
+```{code-cell} ipython3
 # 初始条件
 i_0 = 25_000 / pop_size
 e_0 = 75_000 / pop_size
@@ -360,7 +360,7 @@ x_0 = s_0, e_0, i_0
 
 让我们计算路径：
 
-```{code-cell}
+```{code-cell} ipython3
 R0_paths = (lambda t: 0.5 if t < 30 else 2,
             lambda t: 0.5 if t < 120 else 2)
 
@@ -376,7 +376,7 @@ for R0 in R0_paths:
 
 这是活跃感染病例数：
 
-```{code-cell}
+```{code-cell} ipython3
 plot_paths(i_paths, labels)
 ```
 
@@ -384,20 +384,20 @@ plot_paths(i_paths, labels)
 
 假设1%的病例会导致死亡
 
-```{code-cell}
+```{code-cell} ipython3
 ν = 0.01
 ```
 
 这是累计死亡人数：
 
-```{code-cell}
+```{code-cell} ipython3
 paths = [path * ν * pop_size for path in c_paths]
 plot_paths(paths, labels)
 ```
 
 这是每日死亡率：
 
-```{code-cell}
+```{code-cell} ipython3
 paths = [path * ν * γ * pop_size for path in i_paths]
 plot_paths(paths, labels)
 ```
