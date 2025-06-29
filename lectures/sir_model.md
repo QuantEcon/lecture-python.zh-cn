@@ -8,8 +8,7 @@ kernelspec:
   language: python
   name: python3
 ---
-
-```{raw} jupyter
+```{raw}
 <div id="qe-notebook-header" align="right" style="text-align:right;">
         <a href="https://quantecon.org/" title="quantecon.org">
                 <img style="width:250px;display:inline;" width="250px" src="https://assets.quantecon.org/img/qe-menubar-logo.svg" alt="QuantEcon">
@@ -17,22 +16,22 @@ kernelspec:
 </div>
 ```
 
-# {index}`新冠病毒建模 <single: Modeling COVID 19>`
+# `新冠病毒建模 <single: Modeling COVID 19>`
 
-```{contents} 目录
+```{contents}
 :depth: 2
 ```
 
 ## 概述
 
-这是由[Andrew Atkeson](https://sites.google.com/site/andyatkeson/)提供的用于分析新冠疫情的代码的Python版本。
+这是由[Andrew Atkeson](https://sites.google.com/site/andyatkeson/)提供的用于分析新冠疫情的Python代码。
 
 特别参见
 
 * [NBER工作论文第26867号](https://www.nber.org/papers/w26867)
 * [COVID-19工作论文和代码](https://sites.google.com/site/andyatkeson/home?authuser=0)
 
-他的这些笔记的目的是向经济学家介绍定量建模
+他的这些笔记主要是介绍了定量建模
 
 传染病动态研究。
 
@@ -40,13 +39,13 @@ kernelspec:
 
 模型动态用常微分方程组表示。
 
-主要目标是研究通过社交距离实施的抑制措施对感染传播的影响。
+其主要目的是研究通过社交距离实施的抑制措施对感染传播的影响。
 
-研究重点是美国的结果，但可以调整参数来研究其他国家。
+本课程主要模拟的是美国的结果，当然，也可以调整参数来研究其他国家。
 
 我们将使用以下标准导入：
 
-```{code-cell} ipython3
+```{code-cell}
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -58,9 +57,9 @@ import numpy as np
 from numpy import exp
 ```
 
-我们还将使用SciPy的数值例程odeint来求解微分方程。
+最后，我们使用SciPy的数值例程odeint来求解微分方程。
 
-```{code-cell} ipython3
+```{code-cell}
 from scipy.integrate import odeint
 ```
 
@@ -88,8 +87,8 @@ from scipy.integrate import odeint
 
 主要关注的是
 
-* 在给定时间的感染人数（这决定了医疗系统是否会被压垮）以及
-* 病例负荷可以推迟多长时间（希望能够推迟到疫苗出现）
+* 在给定时间的感染人数（这决定了医疗系统是否会被压垮）
+* 病例负荷可以推迟多长时间（我们希望能够推迟到疫苗出现）
 
 使用小写字母表示处于各状态的人口比例，其动态方程为
 
@@ -139,7 +138,7 @@ $\sigma$和$\gamma$都被视为固定的、由生物学决定的参数。
 * $\sigma = 1/5.2$，反映平均潜伏期为5.2天。
 * $\gamma = 1/18$，对应平均病程18天。
 
-传播率被建模为
+传播率被构造为
 
 * $\beta(t) := R(t) \gamma$，其中$R(t)$是时间$t$时的*有效再生数*。
 
@@ -149,20 +148,20 @@ $\sigma$和$\gamma$都被视为固定的、由生物学决定的参数。
 
 首先我们将人口规模设置为与美国相匹配。
 
-```{code-cell} ipython3
+```{code-cell}
 pop_size = 3.3e8
 ```
 
 接下来我们按照上述方法固定参数。
 
-```{code-cell} ipython3
+```{code-cell}
 γ = 1 / 18
 σ = 1 / 5.2
 ```
 
 现在我们构建一个函数来表示{eq}`dfcv`中的$F$
 
-```{code-cell} ipython3
+```{code-cell}
 def F(x, t, R0=1.6):
     """
     状态向量的时间导数。
@@ -190,7 +189,7 @@ def F(x, t, R0=1.6):
 
 初始条件设置为
 
-```{code-cell} ipython3
+```{code-cell}
 # initial conditions of s, e, i
 i_0 = 1e-7
 e_0 = 4 * i_0
@@ -199,13 +198,13 @@ s_0 = 1 - i_0 - e_0
 
 用向量形式表示的初始条件是
 
-```{code-cell} ipython3
+```{code-cell}
 x_0 = s_0, e_0, i_0
 ```
 
-我们使用odeint在一系列时间点`t_vec`上通过数值积分求解时间路径。
+我们使用odeint在一系列时间点 `t_vec`上通过数值积分求解时间路径。
 
-```{code-cell} ipython3
+```{code-cell}
 def solve_path(R0, t_vec, x_init=x_0):
     """
     通过数值积分求解i(t)和c(t)，
@@ -225,7 +224,7 @@ def solve_path(R0, t_vec, x_init=x_0):
 
 我们要研究的时间段为550天，大约18个月：
 
-```{code-cell} ipython3
+```{code-cell}
 t_length = 550
 grid_size = 1000
 t_vec = np.linspace(0, t_length, grid_size)
@@ -233,11 +232,11 @@ t_vec = np.linspace(0, t_length, grid_size)
 
 ### 实验1：固定R0的情况
 
-让我们从`R0`为常数的情况开始。
+让我们从 `R0`为常数的情况开始。
 
-我们在不同`R0`值的假设下计算感染人数的时间路径：
+我们在不同 `R0`值的假设下计算感染人数的时间路径：
 
-```{code-cell} ipython3
+```{code-cell}
 R0_vals = np.linspace(1.6, 3.0, 6)
 labels = [f'$R0 = {r:.2f}$' for r in R0_vals]
 i_paths, c_paths = [], []
@@ -250,7 +249,7 @@ for r in R0_vals:
 
 这是一些用于绘制时间路径的代码。
 
-```{code-cell} ipython3
+```{code-cell}
 def plot_paths(paths, labels, times=t_vec):
 
     fig, ax = plt.subplots()
@@ -265,17 +264,17 @@ def plot_paths(paths, labels, times=t_vec):
 
 让我们绘制当前病例数占人口的比例。
 
-```{code-cell} ipython3
+```{code-cell}
 plot_paths(i_paths, labels)
 ```
 
 正如预期的那样，较低的有效传播率会推迟感染高峰。
 
-它们也会导致当前病例的峰值降低。
+同时也会导致当前病例的峰值降低。
 
 以下是累计病例数（占总人口的比例）：
 
-```{code-cell} ipython3
+```{code-cell}
 plot_paths(c_paths, labels)
 ```
 
@@ -283,9 +282,9 @@ plot_paths(c_paths, labels)
 
 让我们来看一个逐步实施缓解措施（例如社交距离）的场景。
 
-以下是一个关于`R0`随时间变化的函数规范。
+以下是一个关于 `R0`随时间变化的函数规范。
 
-```{code-cell} ipython3
+```{code-cell}
 def R0_mitigating(t, r0=3, η=1, r_bar=1.6):
     R0 = r0 * exp(- η * t) + (1 - exp(- η * t)) * r_bar
     return R0
@@ -299,14 +298,14 @@ def R0_mitigating(t, r0=3, η=1, r_bar=1.6):
 
 我们考虑几个不同的速率：
 
-```{code-cell} ipython3
+```{code-cell}
 η_vals = 1/5, 1/10, 1/20, 1/50, 1/100
 labels = [fr'$\eta = {η:.2f}$' for η in η_vals]
 ```
 
 以下是在这些不同速率下 `R0` 的时间路径：
 
-```{code-cell} ipython3
+```{code-cell}
 fig, ax = plt.subplots()
 
 for η, label in zip(η_vals, labels):
@@ -318,7 +317,7 @@ plt.show()
 
 让我们计算感染者人数的时间路径：
 
-```{code-cell} ipython3
+```{code-cell}
 i_paths, c_paths = [], []
 
 for η in η_vals:
@@ -330,13 +329,13 @@ for η in η_vals:
 
 以下是不同场景下的当前案例：
 
-```{code-cell} ipython3
+```{code-cell}
 plot_paths(i_paths, labels)
 ```
 
 以下是累计病例数（占总人口的比例）：
 
-```{code-cell} ipython3
+```{code-cell}
 plot_paths(c_paths, labels)
 ```
 
@@ -347,11 +346,11 @@ plot_paths(c_paths, labels)
 考虑以下两种缓解情景：
 
 1. 前30天$R_t = 0.5$，之后17个月$R_t = 2$。这相当于30天后解除封锁。
-1. 前120天$R_t = 0.5$，之后14个月$R_t = 2$。这相当于4个月后解除封锁。
+2. 前120天$R_t = 0.5$，之后14个月$R_t = 2$。这相当于4个月后解除封锁。
 
 这里考虑的参数设置模型的初始状态为25,000个活跃感染者，以及75,000个已经接触病毒因此即将具有传染性的个体。
 
-```{code-cell} ipython3
+```{code-cell}
 # 初始条件
 i_0 = 25_000 / pop_size
 e_0 = 75_000 / pop_size
@@ -359,10 +358,9 @@ s_0 = 1 - i_0 - e_0
 x_0 = s_0, e_0, i_0
 ```
 
-
 让我们计算路径：
 
-```{code-cell} ipython3
+```{code-cell}
 R0_paths = (lambda t: 0.5 if t < 30 else 2,
             lambda t: 0.5 if t < 120 else 2)
 
@@ -378,31 +376,30 @@ for R0 in R0_paths:
 
 这是活跃感染病例数：
 
-```{code-cell} ipython3
+```{code-cell}
 plot_paths(i_paths, labels)
 ```
 
-在这些场景下我们可以预期什么样的死亡率？
+在这些场景下，死亡率会是怎样的呢？
 
 假设1%的病例会导致死亡
 
-```{code-cell} ipython3
+```{code-cell}
 ν = 0.01
 ```
 
 这是累计死亡人数：
 
-```{code-cell} ipython3
+```{code-cell}
 paths = [path * ν * pop_size for path in c_paths]
 plot_paths(paths, labels)
 ```
 
 这是每日死亡率：
 
-```{code-cell} ipython3
+```{code-cell}
 paths = [path * ν * γ * pop_size for path in i_paths]
 plot_paths(paths, labels)
 ```
 
 如果能找到疫苗，将曲线峰值推迟到更远的未来可能会减少累计死亡人数。
-
