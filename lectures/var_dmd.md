@@ -527,13 +527,13 @@ $\hat A \tilde \Phi_s \neq \tilde \Phi_s \Lambda$意味着，与表示法2中的
 
 **一种可行的方法**
 
-继续寻找我们**能够**通过简化SVD计算的$\hat A$的特征向量，我们不妨定义一个$m \times p$矩阵$\Phi$为
+我们继续寻找**能够**通过简化SVD计算的$\hat A$的特征向量，这里不妨定义一个$m \times p$的矩阵$\Phi$：
 
 $$
 \Phi \equiv \hat A \tilde \Phi_s = X' \tilde V \tilde \Sigma^{-1}  \tilde  W
 $$ (eq:Phiformula)
 
-事实证明，$\Phi$的列**确实是**$\hat A$的特征向量。
+不难发现，$\Phi$的列**确实是**$\hat A$的特征向量。
 
 这是Tu等人{cite}`tu_Rowley`证明的一个结果，我们下面来介绍。
 
@@ -571,12 +571,12 @@ $$
 
 证明至此完成。
 
-另见 {cite}`DDSE_book` (第238页)
+另见 {cite}`DDSE_book` (第238页)。
 
 
 ### $\check b$ 的解码器作为线性投影
 
-从特征分解 {eq}`eq:APhiLambda` 我们可以将 $\hat A$ 表示为：
+根据特征分解 {eq}`eq:APhiLambda` ，我们可以将 $\hat A$ 表示为：
 
 $$ 
 \hat A = \Phi \Lambda \Phi^+ .
@@ -594,7 +594,7 @@ $$
 \check b_t  = \Phi^+ X_t  
 $$ (eq:decoder102)
 
-由于 $m \times p$ 矩阵 $\Phi$ 有 $p$ 个线性独立的列，$\Phi$ 的广义逆为
+由于 $m \times p$ 矩阵 $\Phi$ 有 $p$ 个线性独立的列，$\Phi$ 的广义逆矩阵为
 
 $$
 \Phi^{+} = (\Phi^\top  \Phi)^{-1} \Phi^\top 
@@ -606,7 +606,7 @@ $$
 \check b = (\Phi^\top  \Phi)^{-1} \Phi^\top  X
 $$ (eq:checkbform)
 
-$p \times n$ 矩阵 $\check b$ 可以被识别为 $m \times n$ 矩阵 $X$ 在 $m \times p$ 矩阵 $\Phi$ 上的最小二乘回归系数矩阵，因此
+$p \times n$ 矩阵 $\check b$ 可以被视为是 $m \times n$ 的矩阵 $X$ 在 $m \times p$ 的矩阵 $\Phi$ 上的最小二乘回归系数矩阵，因此
 
 $$
 \check X = \Phi \check b
@@ -616,9 +616,9 @@ $$ (eq:Xcheck_)
 
 **$X$ 的方差分解**
 
-根据这个 quantecon 讲座 <https://python-advanced.quantecon.org/orth_proj.html> 中讨论的最小二乘投影理论，我们可以将 $X$ 表示为 $X$ 在 $\Phi$ 上的投影 $\check X$ 加上误差矩阵的和。
+根据这个 QuantEcon 讲座 <https://python-advanced.quantecon.org/orth_proj.html> 中讨论的最小二乘的投影理论，我们可以将 $X$ 表示为 $X$ 在 $\Phi$ 上的投影 $\check X$ 和误差矩阵的和。
 
-为了验证这一点，注意到最小二乘投影 $\check X$ 与 $X$ 的关系为
+要验证这一点，注意到最小二乘投影 $\check X$ 与 $X$ 的关系是
 
 $$ 
 X = \check X + \epsilon 
@@ -643,13 +643,13 @@ $$ (eq:orthls)
 
 
 
-### 一个近似方法
+### 一种近似方法
 
 
 
-我们现在描述一种近似计算 $p \times 1$ 向量 $\check b_t$ 的方法，而不是使用公式 {eq}`eq:decoder102`。
+我们现在描述一种不使用公式 {eq}`eq:decoder102`的近似计算 $p \times 1$ 的向量 $\check b_t$ 的方法。
 
-具体来说，以下论述改编自 {cite}`DDSE_book`（第240页）提供了一种计算效率高的方法来近似 $\check b_t$。
+具体来说，以下论述改编自 {cite}`DDSE_book`（第240页）提供的一种高效计算方法，从而近似 $\check b_t$。
 
 为方便起见，我们将在时间 $t=1$ 应用该方法。
 
@@ -661,9 +661,9 @@ $$
    \check X_1 = \Phi \check b_1
 $$ (eq:X1proj)
 
-其中 $\check b_1$ 是一个 $p \times 1$ 向量。
+其中 $\check b_1$ 是一个 $p \times 1$ 的向量。
 
-回想上面表示1中的 $X_1 = U \tilde b_1$,其中 $\tilde b_1$ 是表示1的时间1基向量,而 $U$ 来自完整SVD分解 $X = U \Sigma V^\top$。
+回顾上面表示1中的 $X_1 = U \tilde b_1$,其中 $\tilde b_1$ 是表示1的时间1基向量,而 $U$ 来自完整SVD分解 $X = U \Sigma V^\top$。
 
 从方程 {eq}`eq:Xbcheck` 可以得出:
 
@@ -685,7 +685,7 @@ $$
   \hat b_1 = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1} \tilde  W \check b_1
 $$
 
-回想方程 {eq}`eq:tildeAverify` 中的 $ \tilde A = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1}$。
+回顾方程 {eq}`eq:tildeAverify` 中的 $ \tilde A = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1}$。
 
 因此可得:
 
@@ -734,19 +734,19 @@ $$
   \hat X_{t+j} = \Phi \Lambda^j (\tilde W \Lambda)^{-1}  \tilde U^\top  X_t .
 $$ (eq:checkXevoln2)
 
-然后我们可以使用解码的 $\check X_{t+j}$ 或 $\hat X_{t+j}$ 来预测 $X_{t+j}$。
+然后我们可以使用解码后的 $\check X_{t+j}$ 或 $\hat X_{t+j}$ 来预测 $X_{t+j}$。
 
 
 
 ### 使用更少的模态
 
-在实际应用中，我们通常只使用少数几个模态，通常是三个或更少。
+在实际应用中，我们通常只使用少数几个模态，通常不多于三个。
 
-前面的一些公式假设我们保留了与 $X$ 的奇异值相关的所有 $p$ 个模态。
+前面的一些公式假设中，我们保留了与 $X$ 的奇异值相关的所有 $p$ 个模态。
 
-我们可以调整公式来描述只保留 $r < p$ 个最大奇异值的情况。
+我们可以调整公式，描述只保留 $r < p$ 个最大奇异值的情况。
 
-在这种情况下，我们只需将 $\tilde \Sigma$ 替换为相应的 $r\times r$ 奇异值矩阵，将 $\tilde U$ 替换为对应于 $r$ 个最大奇异值的 $m \times r$ 矩阵，将 $\tilde V$ 替换为对应于 $r$ 个最大奇异值的 $n \times r$ 矩阵。
+在这种情况下，我们只需将 $\tilde \Sigma$ 替换为相应的 $r\times r$ 奇异值矩阵，将 $\tilde U$ 替换为对应于 $r$ 个最大奇异值的 $m \times r$ 的矩阵，将 $\tilde V$ 替换为对应于 $r$ 个最大奇异值的 $n \times r$ 的矩阵。
 
 
 上述所有重要公式都有其对应的形式。
