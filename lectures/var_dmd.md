@@ -313,25 +313,25 @@ $$
 
 +++
 
-## 表示 2
+## 表示法 2
 
 这种表示方法与{cite}`schmid2010`最初提出的方法有关。
 
-它可以被视为获得后面将要介绍的相关表示3的一个中间步骤。
+它可以被视为推导表示3的一个中间步骤。
 
 与表示1一样，我们继续：
 
-* 使用**完全**SVD而**不是**简化SVD
+* 使用**完整**SVD而**不是**简化SVD
 
-正如我们在{doc}`奇异值分解<svd_intro>`的课程中观察和说明的那样：
+正如我们在{doc}`奇异值分解<svd_intro>`课程中观察和阐述的：
 
-  * (a) 对于完全SVD，$U U^\top = I_{m \times m}$和$U^\top U = I_{p \times p}$都是单位矩阵
+  * (a) 对于完整SVD，$U U^\top = I_{m \times m}$和$U^\top U = I_{p \times p}$都是单位矩阵
   
   * (b) 对于$X$的简化SVD，$U^\top U$不是单位矩阵。
 
-我们稍后会看到，完全SVD对于我们最终想要做的事情来说过于局限，也就是说，处理$U^\top U$**不是**单位矩阵的情况，因为我们使用$X$的简化SVD。
+我们稍后会看到，对于我们最终想要做的事情来说，完整SVD会过于局限，也就是说，我们将处理$U^\top U$**不是**单位矩阵的情况，因为我们使用$X$的简化SVD。
 
-但现在，让我们假设我们使用的是完全SVD，因此条件(a)和(b)都得到满足。
+但现在，让我们假设我们使用的是完整SVD，这样条件(a)和(b)都得到满足。
 
 对方程{eq}`eq:Atilde0`中定义的$m \times m$矩阵$\tilde A = U^\top  \hat A U$进行特征分解：
 
@@ -339,7 +339,7 @@ $$
 \tilde A = W \Lambda W^{-1} 
 $$ (eq:tildeAeigen)
 
-其中$\Lambda$是特征值的对角矩阵，$W$是一个$m \times m$矩阵，其列是对应于$\Lambda$中行(特征值)的特征向量。
+其中$\Lambda$是特征值的对角矩阵，$W$是一个$m \times m$的矩阵，其每一列都对应于$\Lambda$中行(特征值)的特征向量。
 
 当$U U^\top  = I_{m \times m}$时（这在$X$的完全SVD中是成立的），可得：
 
@@ -355,7 +355,7 @@ $$
 X_{t+1} = U W \Lambda W^{-1} U^\top   X_t 
 $$
 
-将上述方程两边同时乘以$W^{-1} U^\top $得到：
+将上述方程两边同时乘以$W^{-1} U^\top $，得到：
 
 $$
 
@@ -368,7 +368,7 @@ $$
 \hat b_{t+1} = \Lambda \hat b_t
 $$
 
-其中我们的**编码器**是
+其中，我们的**编码器**是
 
 $$ 
 \hat b_t = W^{-1} U^\top  X_t
@@ -387,13 +387,13 @@ $$
 $$ (eq:DSSEbookrepr)
 
 实际上，
-{cite}`schmid2010`定义了一个$m \times m$矩阵$\Phi_s$为
+{cite}`schmid2010`定义了一个$m \times m$的矩阵$\Phi_s$为
 
 $$ 
 \Phi_s = UW 
 $$ (eq:Phisfull)
 
-和一个广义逆
+和一个广义逆矩阵
 
 $$
 \Phi_s^+ = W^{-1}U^\top  
@@ -414,7 +414,7 @@ $$
 \Phi_s^+ = ( \Phi_s^\top  \Phi_s)^{-1} \Phi_s^\top 
 $$
 
-使得 $m \times p$ 矩阵
+所以 $m \times p$ 的矩阵
 
 $$
 \hat b =  \Phi_s^+ X
@@ -422,13 +422,13 @@ $$
 
 是 $m \times n$ 矩阵 $X$ 在 $m \times p$ 矩阵 $\Phi_s$ 上的回归系数矩阵。
 
-我们将在讨论由 Tu 等人 {cite}`tu_Rowley` 提出的表示3时，在相关背景下进一步讨论这种解释。
+我们将在讨论由 Tu 等人 {cite}`tu_Rowley` 提出的表示法3时，在相关背景下进一步讨论。
 
-当我们想要使用简化SVD时（这在实践中经常出现），使用表示3更为合适。
+当我们想要使用简化SVD时（这在实践中经常出现），使用表示法3更为合适。
 
-## 表示3
+## 表示法3
 
-与构建表示1和表示2的程序不同（它们都使用了**完全**SVD），我们现在使用**简化**SVD。
+与构建表示法1和表示法2的程序不同（它们都使用了**完整**SVD），我们现在使用**简化**SVD。
 
 同样，令 $p \leq \textrm{min}(m,n)$ 为 $X$ 的秩。
 
@@ -438,7 +438,7 @@ $$
 X = \tilde U \tilde \Sigma \tilde V^\top , 
 $$
 
-其中现在 $\tilde U$ 是 $m \times p$ 矩阵，$\tilde \Sigma$ 是 $p \times p$ 矩阵，而 $\tilde V^\top$ 是 $p \times n$ 矩阵。
+其中现在 $\tilde U$ 是 $m \times p$ 的矩阵，$\tilde \Sigma$ 是 $p \times p$ 的矩阵，而 $\tilde V^\top$ 是 $p \times n$ 的矩阵。
 
 我们的 $A$ 的最小范数最小二乘近似器现在的表示为
 
@@ -450,7 +450,7 @@ $$ (eq:Ahatwithtildes)
 
 **计算$\hat A$的主要特征向量**
 
-我们首先参照构建表示1时使用的步骤，通过以下方式为旋转的$p \times 1$状态$\tilde b_t$定义一个转移矩阵：
+我们首先参照构建表示法1时使用的步骤，通过以下方式为旋转的$p \times 1$状态$\tilde b_t$定义一个转移矩阵：
 
 $$ 
 \tilde A =\tilde  U^\top  \hat A \tilde U 
@@ -460,9 +460,9 @@ $$ (eq:Atildered)
 **作为投影系数的解释**
 
 
-{cite}`DDSE_book`指出$\tilde A$可以被解释为$\hat A$在$\tilde U$中$p$个模态上的投影。
+{cite}`DDSE_book`指出$\tilde A$可以被理解为$\hat A$在$\tilde U$中$p$个模态上的投影。
 
-为了验证这一点，首先注意到，由于$ \tilde U^\top  \tilde U = I$，因此：
+要验证这一点，首先注意到，由于$ \tilde U^\top  \tilde U = I$，因此：
 
 $$
 \tilde A = \tilde U^\top  \hat A \tilde U = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1} \tilde U^\top  \tilde U 
@@ -480,7 +480,7 @@ $$
 \tilde U^\top  X' \tilde V \tilde \Sigma^{-1} \tilde U^\top   = \tilde A .
 $$
 
-因此，我们已经验证了$\tilde A$是$\hat A$在$\tilde U$上的最小二乘投影。
+至此，我们验证了$\tilde A$是$\hat A$在$\tilde U$上的最小二乘投影。
 
 **一个逆运算的挑战**
 
@@ -492,11 +492,11 @@ $$
 \hat A \neq \tilde U \tilde A \tilde U^\top ,
 $$
 
-所以我们不能简单地从$\tilde A$和$\tilde U$恢复$\hat A$。
+所以我们不能简单地用$\tilde A$和$\tilde U$计算$\hat A$。
 
-**一个死胡同**
+**死胡同**
 
-我们可以抱着最好的希望开始，继续构造$p \times p$矩阵$\tilde A$的特征分解：
+我们可以先抱着最好的希望，继续构造$p \times p$矩阵$\tilde A$的特征分解：
 
 $$
  \tilde A =  \tilde  W  \Lambda \tilde  W^{-1} 
@@ -504,13 +504,13 @@ $$ (eq:tildeAeigenred)
 
 其中$\Lambda$是包含$p$个特征值的对角矩阵，$\tilde W$的列是对应的特征向量。
 
-仿照表示法2中的步骤，我们交叉手指计算一个$m \times p$矩阵
+仿照表示法2中的步骤，我们可以轻松计算出一个$m \times p$的矩阵
 
 $$
 \tilde \Phi_s = \tilde U \tilde W
 $$ (eq:Phisred)
 
-该矩阵对应于完整SVD中的{eq}`eq:Phisfull`。
+该矩阵对应到完整SVD中的{eq}`eq:Phisfull`。
 
 此时，当$\hat A$由公式{eq}`eq:Ahatwithtildes`给出时，计算$\hat A \tilde \Phi_s$很有意思：
 
@@ -525,9 +525,9 @@ $$
 
 $\hat A \tilde \Phi_s \neq \tilde \Phi_s \Lambda$意味着，与表示法2中的相应情况不同，$\tilde \Phi_s = \tilde U \tilde W$的列**不是**$\hat A$对应于矩阵$\Lambda$对角线上特征值的特征向量。
 
-**一个可行的方法**
+**一种可行的方法**
 
-继续寻找我们**能够**通过简化SVD计算的$\hat A$的特征向量，让我们定义一个$m \times p$矩阵$\Phi$为
+继续寻找我们**能够**通过简化SVD计算的$\hat A$的特征向量，我们不妨定义一个$m \times p$矩阵$\Phi$为
 
 $$
 \Phi \equiv \hat A \tilde \Phi_s = X' \tilde V \tilde \Sigma^{-1}  \tilde  W
@@ -535,7 +535,7 @@ $$ (eq:Phiformula)
 
 事实证明，$\Phi$的列**确实是**$\hat A$的特征向量。
 
-这是Tu等人{cite}`tu_Rowley`所证明的一个结果，我们现在来介绍。
+这是Tu等人{cite}`tu_Rowley`证明的一个结果，我们下面来介绍。
 
 
 
