@@ -321,10 +321,10 @@ def plot_trajectories(params,
     ax2.plot(ks2, "-o", label="连续近似")
 
     ks3 = compute_iterates(k0_a, q, params, n)
-    ax1.plot(ks3, "-o", label="牛顿步骤")
+    ax1.plot(ks3, "-o", label="牛顿法")
 
     ks4 = compute_iterates(k0_b, q, params, n)
-    ax2.plot(ks4, "-o", label="牛顿步骤")
+    ax2.plot(ks4, "-o", label="牛顿法")
 
     for ax in axes:
         ax.plot(k_star * np.ones(n), "k--")
