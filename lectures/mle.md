@@ -68,31 +68,29 @@ from statsmodels.iolib.summary2 import summary_col
 
 ### 思路流程
 
-最大似然估计的第一步是选择被认为产生数据的概率分布。
+最大似然估计的第一步是选择一个我们认为能够合理描述数据生成过程的概率分布。
 
 更准确地说，我们需要对产生数据的*参数分布族*做出假设。
 
-* 例如，所有正态分布的类别，或所有伽马分布的类别。
+* 比如正态分布族或伽马分布族。
 
-每个这样的类别都是由有限个参数索引的分布族。
+每个分布族都由一些参数来确定具体的分布形式。
 
-* 例如，正态分布类是由其均值 $\mu \in (-\infty, \infty)$ 和标准差 $\sigma \in (0, \infty)$ 索引的分布族。
+* 以正态分布为例，它由均值 $\mu \in (-\infty, \infty)$ 和标准差 $\sigma \in (0, \infty)$ 两个参数来确定。
 
-我们将让数据通过确定参数来选择类别中的特定元素。
+我们会利用数据来估计这些参数，从而找到最适合数据的具体分布。
 
-以这种方式产生的参数估计被称为**最大似然估计**。
+这种方法就是**最大似然估计**。
 
-### 统计亿万富豪
+### 研究亿万富豪
 
-Treisman {cite}`Treisman2016` 致力于估计不同国家的亿万富豪数量。
+在Treisman {cite}`Treisman2016` 的研究中，他想要分析各国亿万富豪的数量。
 
-亿万富豪的数量是整数值。
-
-因此我们考虑仅取非负整数值的分布。
+由于亿万富豪数量只能是整数，我们需要选择一个只取整数值的分布。
 
 （这是最小二乘回归不是当前问题最佳工具的原因之一，因为线性回归中的因变量不限于整数值）
 
-[泊松分布](https://en.wikipedia.org/wiki/Poisson_distribution)是一种整数分布，其概率质量函数（pmf）为
+对于这类计数数据，[泊松分布](https://en.wikipedia.org/wiki/Poisson_distribution)是一个很好的选择。它的概率质量函数(pmf)为
 
 $$
 f(y) = \frac{\mu^{y}}{y!} e^{-\mu},
@@ -144,7 +142,7 @@ df = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/sour
 df.head()
 ```
 
-通过直方图，我们可以查看2008年各国亿万富翁人数`numbil0`的分布情况（为了绘图目的，已排除美国数据）
+通过直方图，我们可以查看2008年各国亿万富翁人数`numbil0`的分布情况（为了方便绘图，我们排除了美国数据）
 
 ```{code-cell} ipython3
 numbil0_2008 = df[(df['year'] == 2008) & (
@@ -159,15 +157,15 @@ plt.ylabel('计数')
 plt.show()
 ```
 
-从直方图来看，泊松分布的假设似乎是合理的（尽管μ值很低且有一些异常值）。
+从直方图来看，泊松分布的假设似乎是合理的（尽管 $\mu$ 值很低且有一些异常值）。
 
 ## 条件分布
 
 在Treisman的论文中，因变量——国家$i$的亿万富翁数量$y_i$——被建模为人均GDP、人口规模以及加入关贸总协定和世贸组织年限的函数。
 
-因此，$y_i$的分布需要以解释变量向量$\mathbf{x}_i$为条件。
+这意味着$y_i$的分布取决于这些解释变量(记为向量$\mathbf{x}_i$)。
 
-标准公式——即所谓的*泊松回归*模型——如下：
+这种关系可以用*泊松回归*模型来描述:
 
 ```{math}
 :label: poissonreg
@@ -243,14 +241,12 @@ $$
 
 首先，我们需要构建似然函数 $\mathcal{L}(\boldsymbol{\beta})$，它类似于联合概率密度函数。
 
-假设我们有一些数据 $y_i = \{y_1, y_2\}$ 且
-$y_i \sim f(y_i)$。
+假设我们有一些数据 $y_i = \{y_1, y_2\}$ 且 $y_i \sim f(y_i)$。
 
 如果 $y_1$ 和 $y_2$ 是独立的，这些数据的联合概率质量函数是
 $f(y_1, y_2) = f(y_1) \cdot f(y_2)$。
 
-如果 $y_i$ 服从参数为 $\lambda = 7$ 的泊松分布，
-我们可以这样可视化联合概率质量函数
+如果 $y_i$ 服从参数为 $\lambda = 7$ 的泊松分布，我们可以这样可视化联合概率质量函数
 
 ```{code-cell} ipython3
 def plot_joint_poisson(μ=7, y_n=20):
@@ -295,7 +291,6 @@ $$
 现在我们有了似然函数，我们要找到能使似然值最大的 $\hat{\boldsymbol{\beta}}$
 
 $$
-
 \underset{\boldsymbol{\beta}}{\max} \mathcal{L}(\boldsymbol{\beta})
 $$
 
@@ -342,7 +337,7 @@ $$
 
 许多分布都没有很好的解析解，因此需要数值方法来求解参数估计。
 
-牛顿-拉夫森算法就是这样一种数值方法。
+牛顿-拉夫森（Newton-Raphson）算法就是这样一种数值方法。
 
 我们的目标是找到最大似然估计 $\hat{\boldsymbol{\beta}}$。
 
@@ -395,6 +390,7 @@ $\beta_0$（OLS参数估计可能是一个合理的猜测），然后
    $$
    \boldsymbol{\beta}_{(k+1)} = \boldsymbol{\beta}_{(k)} - H^{-1}(\boldsymbol{\beta}_{(k)})G(\boldsymbol{\beta}_{(k)})
    $$
+
    其中：
 
    $$
@@ -490,7 +486,7 @@ def newton_raphson(model, tol=1e-3, max_iter=1000, display=True):
     print(f'迭代次数：{i}')
     print(f'β_hat = {model.β.flatten()}')
 
-    # 返回β的扁平数组（而不是k_by_1列向量）
+    # 返回β的扁平数组（而不是k×1的列向量）
     return model.β.flatten()
 ```
 
@@ -519,7 +515,7 @@ poi = PoissonRegression(y, X, β=init_β)
 
 你可以看到，每次迭代后对数似然值都在增加。
 
-请记住，我们的目标是最大化对数似然函数，这正是算法一直在努力实现的。
+请记住，我们的目标是最大化对数似然函数，这正是算法所做的。
 
 同时，注意到$\log \mathcal{L}(\boldsymbol{\beta}_{(k)})$的增量在每次迭代后都变得更小。
 
@@ -569,7 +565,7 @@ ax.grid(alpha=0.3)
 plt.show()
 ```
 
-请注意，我们实现的牛顿-拉夫森算法相当基础 --- 如需更稳健的实现方案，请参考例如 [scipy.optimize](https://docs.scipy.org/doc/scipy/reference/optimize.html)。
+请注意，我们对牛顿-拉夫森算法的实现相当基础 --- 如需更稳健的实现方案，请参考例如 [scipy.optimize](https://docs.scipy.org/doc/scipy/reference/optimize.html)。
 
 ## 使用 `statsmodels` 进行最大似然估计
 
@@ -579,7 +575,7 @@ plt.show()
 
 `statsmodels` 使用与上述相同的算法来找到最大似然估计值。
 
-在开始之前，让我们用 `statsmodels` 重新估计我们的简单模型，以确认我们能得到相同的系数和对数似然值。
+在开始之前，让我们用 `statsmodels` 重新估计我们的简单模型，并确认我们能得到相同的系数和对数似然值。
 
 ```{code-cell} ipython3
 X = np.array([[1, 2, 5],
@@ -637,7 +633,7 @@ print(poisson_reg.summary())
 
 我们的输出表明，人均GDP、人口和关税贸易总协定(GATT)的成员年限与一个国家的亿万富翁数量呈正相关，这符合预期。
 
-让我们也来估算作者的更完整模型，并将它们显示在同一个表格中
+让我们继续估计作者提出的两个更复杂的模型,并将三个模型的结果并排展示以便比较
 
 ```{code-cell} ipython3
 regs = [reg1, reg2, reg3]
@@ -671,9 +667,9 @@ results_table.add_title('表1 - 解释2008年各国亿万富翁数量')
 print(results_table)
 ```
 
-输出结果表明，亿万富翁的频率与人均GDP、人口规模、股票市场市值呈正相关，与最高边际所得税率呈负相关。
+结果显示，一个国家的亿万富翁数量会随着人均GDP、人口规模和股票市场规模的增加而增加。相反，较高的最高边际所得税率会降低亿万富翁的数量。
 
-为了按国家分析我们的结果，我们可以绘制预测值与实际值之间的差异，然后从高到低排序并绘制前15个国家
+为了更好地理解各国的具体情况，我们来看看模型预测值与实际观测值之间的差异。我们将按差异大小排序，并展示差异最大的前15个国家。
 
 ```{code-cell} ipython3
 data = ['const', 'lngdppc', 'lnpop', 'gattwto08', 'lnmcap08', 'rintr',
@@ -712,7 +708,6 @@ Treisman利用这一实证结果讨论了俄罗斯亿万富豪过多的可能原
 [此处](https://www.statsmodels.org/dev/examples/notebooks/generated/generic_mle.html)。
 
 ## 练习
-
 
 ```{exercise}
 :label: mle_ex1
