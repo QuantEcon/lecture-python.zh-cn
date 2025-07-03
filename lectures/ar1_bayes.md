@@ -20,8 +20,8 @@ kernelspec:
 
 !pip install arviz pymc numpyro jax
 ```
-```{code-cell} ipython3
 
+```{code-cell} ipython3
 import arviz as az
 import pymc as pmc
 import numpyro
@@ -41,17 +41,19 @@ import logging
 logging.basicConfig()
 logger = logging.getLogger('pymc')
 logger.setLevel(logging.CRITICAL)
-
 ```
-本讲座使用[pymc](https://www.pymc.io/projects/docs/en/stable/)和[numpyro](https://num.pyro.ai/en/stable/)提供的贝叶斯方法对一元一阶自回归的两个参数进行统计推断。
 
-该模型是一个很好的实验室，用于说明对初始值$y_0$分布建模的不同方式所带来的影响：
+本讲座使用[pymc](https://www.pymc.io/projects/docs/en/stable/)和[numpyro](https://num.pyro.ai/en/stable/)提供的贝叶斯方法对一阶自回归模型的两个参数进行统计推断。
 
-- 作为一个固定数值
+该模型为我们提供了一个很好的机会来研究不同的初始值$y_0$的分布对结果的影响。
 
-- 作为从$\{y_t\}$随机过程的平稳分布中抽取的随机变量
+我们研究两种不同的初始值$y_0$的分布：
 
-统计模型的第一个组成部分是
+- $y_0$ 作为一个固定数值
+
+- $y_0$ 作为从$\{y_t\}$随机过程的平稳分布中抽取的随机变量
+
+这个模型的第一个组成部分是
 
 $$
 y_{t+1} = \rho y_t + \sigma_x \epsilon_{t+1}, \quad t \geq 0
@@ -66,8 +68,8 @@ $$
 y_0 \sim {\cal N}(\mu_0, \sigma_0^2)
 $$ (eq:themodel_2)
 
-考虑由该统计模型生成的样本$\{y_t\}_{t=0}^T$。
-该模型表明 $\{y_t\}_{t=0}^T$ 的似然函数可以被**分解**为：
+对于由该统计模型生成的样本序列$\{y_t\}_{t=0}^T$，
+我们可以将其似然函数**分解**成以下形式：
 
 $$
 f(y_T, y_{T-1}, \ldots, y_0) = f(y_T| y_{T-1}) f(y_{T-1}| y_{T-2}) \cdots f(y_1 | y_0 ) f(y_0)
@@ -84,37 +86,45 @@ f(y_t | y_{t-1})  & \sim {\mathcal N}(\rho y_{t-1}, \sigma_x^2) \\
 \end{aligned}
 $$
 
-我们想研究关于未知参数 $(\rho, \sigma_x)$ 的推断如何依赖于对 $y_0$ 分布的参数 $\mu_0, \sigma_0$ 的假设。
+我们想探究未知参数 $(\rho, \sigma_x)$ 的推断如何依赖于对 $y_0$ 分布的参数 $\mu_0, \sigma_0$。
 
 下面，我们研究两种广泛使用的替代假设：
 
-- $(\mu_0,\sigma_0) = (y_0, 0)$ 意味着 $y_0$ 是从分布 ${\mathcal N}(y_0, 0)$ 中抽取的；实际上，我们是在**基于观察到的初始值进行条件化**。
--  $\mu_0,\sigma_0$ 是 $\rho, \sigma_x$ 的函数，因为 $y_0$ 是从由 $\rho, \sigma_x$ 决定的平稳分布中抽取的。
+- 第一种情况，我们将 $y_0$ 视为已知的固定值，即 $(\mu_0,\sigma_0) = (y_0, 0)$。这相当于对观察到的初始值进行条件化。
 
-**注意：** 我们**不**考虑第三种可能的情况，即将 $\mu_0,\sigma_0$ 作为需要估计的自由参数。
+- 第二种情况，我们假设 $y_0$ 来自模型的平稳分布，此时 $\mu_0$ 和 $\sigma_0$ 由参数 $\rho$ 和 $\sigma_x$ 决定。
+
+**注意：** 我们**不**考虑将 $\mu_0$ 和 $\sigma_0$ 作为待估计参数的情况。
 
 未知参数是 $\rho, \sigma_x$。
 
 我们有 $\rho, \sigma_x$ 的独立**先验概率分布**，并希望在观察到样本 $\{y_{t}\}_{t=0}^T$ 后计算后验概率分布。
 
-这个笔记本使用 `pymc4` 和 `numpyro` 来计算 $\rho, \sigma_x$ 的后验分布。我们将使用 NUTS 采样器在链中生成后验分布的样本。这两个库都支持 NUTS 采样器。
-NUTS是一种蒙特卡洛马尔可夫链（MCMC）算法，它避免了随机游走行为，能更快地收敛到目标分布。这不仅具有速度上的优势，还允许在不需要掌握那些拟合方法背后专门理论知识的情况下，拟合复杂模型。
+本讲使用 `pymc4` 和 `numpyro` 来计算 $\rho, \sigma_x$ 的后验分布。
 
-因此，我们探讨对$y_0$分布做出这些替代假设的后果：
+我们将使用 NUTS 采样器在链中生成后验分布的样本。
 
-- 第一种方法是以观察到的$y_0$值为条件。这相当于假设随机变量$y_0$的概率分布是一个狄拉克德尔塔函数，它在观察到的$y_0$值上的概率为1。
+NUTS是一种蒙特卡洛马尔可夫链（MCMC）算法，它避免了随机游走行为，能更快地收敛到目标分布。
+
+这不仅具有速度上的优势，还允许在不掌握拟合方法的理论知识的情况下，拟合复杂模型。
+
+让我们来探讨对$y_0$分布做出不同假设的影响：
+
+- 第一种方法是直接使用观察到的$y_0$值作为条件。这相当于将$y_0$视为一个确定的值，而不是一个随机变量。
 
 - 第二种方法假设$y_0$是从{eq}`eq:themodel`所描述过程的平稳分布中抽取的，
-因此$y_0 \sim {\cal N} \left(0, {\sigma_x^2\over (1-\rho)^2} \right)$
+因此$y_0 \sim {\cal N} \left(0, {\sigma_x^2\over (1-\rho)^2} \right)$。
+
 当初始值$y_0$位于平稳分布尾部较远处时，对初始值进行条件化会得到一个**更准确的**后验分布，我们将对此进行解释。
 
-基本上，当$y_0$恰好位于平稳分布的尾部，而我们**不对$y_0$进行条件化**时，$\{y_t\}_{t=0}^T$的似然函数会调整参数对$\rho, \sigma_x$的后验分布，使得观测到的$y_0$值在平稳分布下比实际情况更可能出现，从而在短样本中对后验分布产生不利的扭曲。
+基本上，当$y_0$恰好位于平稳分布的尾部，而我们**不对$y_0$进行条件化**时，$\{y_t\}_{t=0}^T$的似然函数会调整后验分布的参数$\rho, \sigma_x$，使得观测到的$y_0$值在平稳分布下比实际情况更可能出现，从而在短样本中对后验分布产生扭曲。
 
-下面的例子展示了不对$y_0$进行条件化是如何不利地将$\rho$的后验概率分布向更大的值偏移的。
+下面的例子展示了不对$y_0$进行条件化是如何导致$\rho$的后验概率分布向更大的值偏移的。
 
-我们首先通过求解一个**直接问题**来模拟AR(1)过程。
+为了展示这一点，我们先通过模拟生成一个AR(1)过程的样本数据。
 
-我们如何选择初始值$y_0$是很重要的。
+选择初始值$y_0$的方式很重要。
+
 * 如果我们认为 $y_0$ 是从平稳分布 ${\mathcal N}(0, \frac{\sigma_x^{2}}{1-\rho^2})$ 中抽取的，那么使用这个分布作为 $f(y_0)$ 是个好主意。为什么？因为 $y_0$ 包含了关于 $\rho, \sigma_x$ 的信息。
 
 * 如果我们怀疑 $y_0$ 位于平稳分布的尾部很远的位置——以至于样本中早期观测值的变化具有显著的**瞬态成分**——最好通过设置 $f(y_0) = 1$ 来对 $y_0$ 进行条件化。
@@ -147,6 +157,7 @@ y = ar1_simulate(rho, sigma, 10, T)
 plt.plot(y)
 plt.tight_layout()
 ```
+
 现在我们将使用贝叶斯定理来构建后验分布，以初始值$y_0$为条件。
 
 (稍后我们会假设$y_0$是从平稳分布中抽取的，但现在不作此假设。)
@@ -174,6 +185,7 @@ with AR1_model:
     # 实际值的似然函数
     y_like = pmc.Normal('y_obs', mu=yhat, sigma=sigma, observed=y[1:])
 ```
+
 [pmc.sample](https://www.pymc.io/projects/docs/en/v5.10.0/api/generated/pymc.sample.html#pymc-sample) 默认使用NUTS采样器来生成样本，如下面的代码单元所示：
 
 ```{code-cell} ipython3
@@ -182,11 +194,13 @@ with AR1_model:
 with AR1_model:
     trace = pmc.sample(50000, tune=10000, return_inferencedata=True)
 ```
+
 ```{code-cell} ipython3
 with AR1_model:
     az.plot_trace(trace, figsize=(17,6))
 ```
-显然，后验分布并没有以我们用来生成数据的真实值 $.5, 1$ 为中心。
+
+显然，后验分布并没有以我们用来生成数据的真实值 $\rho = .5, \sigma_x = 1$ 为中心。
 
 这是一阶自回归过程中经典的**赫维奇偏差**（Hurwicz bias）的表现（参见 Leonid Hurwicz {cite}`hurwicz1950least`）。
 
@@ -200,7 +214,8 @@ with AR1_model:
 
 summary
 ```
-现在我们将计算在观察到相同数据但假设 $y_0$ 是从平稳分布中抽取的情况下的后验分布。
+
+现在让我们计算另一种情况下的后验分布：假设初始观测值 $y_0$ 是从平稳分布中抽取的，而不是将其视为固定值。
 
 这意味着
 
@@ -227,6 +242,7 @@ with AR1_model_y0:
     y_data = pmc.Normal('y_obs', mu=yhat, sigma=sigma, observed=y[1:])
     y0_data = pmc.Normal('y0_obs', mu=0., sigma=y_sd, observed=y[0])
 ```
+
 ```{code-cell} ipython3
 :tag: [hide-output]
 
@@ -245,12 +261,13 @@ with AR1_model:
 
 summary_y0
 ```
+
 请注意当我们基于$y_0$进行条件化而不是假设$y_0$来自平稳分布时，$\rho$的后验分布相对向右偏移。
 
 思考一下为什么会发生这种情况。
 
 ```{hint}
-这与贝叶斯定律(条件概率)如何通过对使观测值更可能出现的参数值赋予高概率来解决**逆问题**有关。
+这与贝叶斯定律如何解决**逆问题**有关 - 它通过给那些能更好地解释观测数据的参数值分配更高的概率来实现这一点。
 ```
 
 在我们使用`numpyro`来计算这两种关于$y_0$分布的假设下的后验分布之前,我们会回到这个问题。
@@ -287,6 +304,7 @@ def plot_posterior(sample):
     axs[1, 1].set_title("sigma")
     plt.show()
 ```
+
 ```{code-cell} ipython3
 def AR1_model(data):
     # 设置先验分布
@@ -298,8 +316,8 @@ def AR1_model(data):
 
     # 实际值的似然函数
     y_data = numpyro.sample('y_obs', dist.Normal(loc=yhat, scale=sigma), obs=data[1:])
-
 ```
+
 ```{code-cell} ipython3
 :tag: [hide-output]
 
@@ -313,12 +331,15 @@ NUTS_kernel = numpyro.infer.NUTS(AR1_model)
 mcmc = numpyro.infer.MCMC(NUTS_kernel, num_samples=50000, num_warmup=10000, progress_bar=False)
 mcmc.run(rng_key=random.PRNGKey(1), data=y)
 ```
+
 ```{code-cell} ipython3
 plot_posterior(mcmc.get_samples())
 ```
+
 ```{code-cell} ipython3
 mcmc.print_summary()
 ```
+
 接下来，我们再次计算后验分布，这次假设 $y_0$ 是从平稳分布中抽取的，因此
 
 $$
@@ -366,8 +387,8 @@ mcmc2.print_summary()
 
 看看后验分布发生了什么！
 
-由于贝叶斯定律（即条件概率）告诉`numpyro`要解释样本早期它认为是"爆炸性"的观测值，后验分布已经远离了用于生成数据的参数真实值。
+贝叶斯推断试图通过调整参数来解释这个"异常"的初始观测值。这导致后验分布偏离了生成数据时使用的真实参数值。
 
 贝叶斯定律通过驱使$\rho \rightarrow 1$和$\sigma \uparrow$来提高平稳分布的方差，从而能够为第一个观测值生成一个合理的似然。
 
-我们的例子说明了你对初始条件分布的假设有多么重要。
+这个例子很好地说明了在贝叶斯推断中，我们对初始条件分布的假设会对最终的推断结果产生重要影响。
