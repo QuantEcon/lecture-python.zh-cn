@@ -29,7 +29,7 @@ kernelspec:
 ```
 
 ```{seealso}
-**GPU:** 这个讲座的一个使用[jax](https://jax.readthedocs.io)在`GPU`上运行代码的版本[可在此处获得](https://jax.quantecon.org/newtons_method.html)
+**GPU加速:** 本讲座有一个使用[jax](https://jax.readthedocs.io)在GPU上运行的版本，[点击这里查看](https://jax.quantecon.org/newtons_method.html)
 ```
 
 ## 概述
@@ -40,25 +40,25 @@ kernelspec:
 
 换句话说，均衡是超额需求函数的零点。
 
-有各种计算技术可用于求解不动点和零点。
+有各种算法可用于求解不动点和零点。
 
 在本讲中，我们将学习一种重要的基于梯度的技术，称为[牛顿法](https://baike.baidu.com/item/%E7%89%9B%E9%A1%BF%E8%BF%AD%E4%BB%A3%E6%B3%95?fromModule=lemma_search-box)。
 
 牛顿法并非总是有效，但在适用的情况下，其收敛速度通常比其他方法更快。
 
-本讲将在一维和多维环境中应用牛顿法来解决不动点和零点查找问题。
+本讲将在一维和多维环境中应用牛顿法来解决不动点和零点计算问题。
 
-* 在寻找函数$f$的不动点时，牛顿法通过求解一个函数 $f$ 的线性近似。
+牛顿法的基本思路是:
 
-* 在寻找函数 $f$ 的零点时，牛顿法通过求解函数 $f$ 的线性近似的零点来更新
-  现有的猜测值。
+* 对于不动点问题，通过对函数 $f$ 进行线性近似来寻找不动点。
 
-为了建立直观认识，我们首先考虑一个简单的一维不动点问题，其中我们已知解，并使用连续
-近似和牛顿法来求解。
+* 对于零点问题，通过求解函数 $f$ 的线性近似的零点，不断更新当前的估计值，直到收敛到真实的零点。
 
-然后我们将牛顿法应用到多维环境中，求解多种商品的市场均衡。
+为了建立直观认识，我们首先考虑一个简单的一维不动点问题，其中我们已知解，并使用连续近似和牛顿法来求解。
 
-在讲座最后，我们利用 [`autograd`](https://github.com/HIPS/autograd) 中自动微分的强大功能来求解一个非常高维的均衡问题。
+然后我们将牛顿法应用到多维环境中，求解多种商品的市场均衡问题。
+
+最后，我们将使用 [`autograd`](https://github.com/HIPS/autograd) 包提供的自动微分功能来处理一个高维均衡问题。
 
 ```{code-cell} ipython3
 :tags: [hide-output]
@@ -113,7 +113,7 @@ plt.rcParams["figure.figsize"] = (10, 5.7)
 换句话说，我们要寻找一个 $k^* > 0$ 使得 $g(k^*)=k^*$。
 
 * 这样的 $k^*$ 被称为[稳态](https://zh.wikipedia.org/wiki/%E7%A9%A9%E6%85%8B_(%E7%B3%BB%E7%B5%B1))，
-  因为当 $k_t = k^*$ 时意味着 $k_{t+1} = k^*$。
+  因为当 $k_t = k^*$ 时，$k_{t+1} = k^*$。
 
 用纸笔解方程 $g(k)=k$，你可以验证
 
@@ -205,7 +205,7 @@ plt.show()
 
 在这种情况下，连续近似法意味着从某个初始状态 $k_0$ 开始，使用运动规律反复更新资本。
 
-这里是从特定选择的 $k_0$ 得到的时间序列。
+这里是以特定的 $k_0$ 为初始值得到的时间序列。
 
 ```{code-cell} ipython3
 def compute_iterates(k_0, f, params, n=25):
@@ -240,7 +240,6 @@ k_star_approx
 ```
 
 这接近真实值。
-
 
 ```{code-cell} ipython3
 k_star
@@ -282,7 +281,7 @@ g'(k) = \alpha s A k^{\alpha-1} + (1-\delta)
 
 ```
 
-让我们定义这个：
+让我们定义这个函数
 
 ```{code-cell} ipython3
 def Dg(k, params):
@@ -290,7 +289,7 @@ def Dg(k, params):
     return α * A * s * k**(α-1) + (1 - δ)
 ```
 
-这里有一个函数 $q$ 表示 [](newtons_method)。
+下面的函数 $q$ 表示 [](newtons_method)。
 
 ```{code-cell} ipython3
 def q(k, params):
@@ -347,7 +346,6 @@ plot_trajectories(params)
 事实上，牛顿法更常与寻找函数零点的问题相关联。
 
 让我们讨论这个"求根"问题，然后说明它与寻找不动点的问题是如何联系的。
-
 
 
 ### 牛顿法求零点
@@ -430,10 +428,9 @@ k_star_approx_newton
 结果证实了我们在上面图表中看到的收敛情况：仅需5次迭代就达到了非常精确的结果。
 
 
-
 ## 多元牛顿法
 
-在本节中，我们将介绍一个双商品问题，展示问题的可视化，并使用`SciPy`中的零点查找器和牛顿法来求解这个双商品市场的均衡。
+在本节中，我们将介绍一个双商品问题，可视化问题，并使用`SciPy`中的零点查找器和牛顿法来求解这个双商品市场的均衡。
 
 然后，我们将这个概念扩展到一个包含5,000种商品的更大市场，并再次比较这两种方法的性能。
 
@@ -550,14 +547,14 @@ print(f'商品0的超额需求为 {ex_demand[0]:.3f} \n'
       f'商品1的超额需求为 {ex_demand[1]:.3f}')
 ```
 
-接下来我们在$(p_0, p_1)$值的网格上绘制两个函数$e_0$和$e_1$的等高线图和曲面。
+接下来我们在$(p_0, p_1)$值的网格上绘制两个函数$e_0$和$e_1$的等高线图和曲面图。
 
 我们将使用以下函数来构建等高线图
 
 ```{code-cell} ipython3
 def plot_excess_demand(ax, good=0, grid_size=100, grid_max=4, surface=True):
 
-    # Create a 100x100 grid
+    # 创建一个100x100的网格
     p_grid = np.linspace(0, grid_max, grid_size)
     z = np.empty((100, 100))
 
@@ -572,11 +569,11 @@ def plot_excess_demand(ax, good=0, grid_size=100, grid_max=4, surface=True):
     ctr1 = ax.contour(p_grid, p_grid, z.T, levels=[0.0])
     ax.set_xlabel("$p_0$")
     ax.set_ylabel("$p_1$")
-    ax.set_title(f'Excess Demand for Good {good}')
+    ax.set_title(f'超额需求函数 {good}')
     plt.clabel(ctr1, inline=1, fontsize=13)
 ```
 
-这是我们对 $e_0$ 的绘图：
+这是 $e_0$ 的图
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
@@ -584,7 +581,7 @@ plot_excess_demand(ax, good=0)
 plt.show()
 ```
 
-这是我们对 $e_1$ 的绘图：
+这是 $e_1$ 的图
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
@@ -617,21 +614,21 @@ plt.show()
 init_p = np.ones(2)
 ```
 
-这使用[改进的Powell方法](https://docs.scipy.org/doc/scipy/reference/optimize.root-hybr.html#optimize-root-hybr)来寻找零点
+这个算法使用[改进的Powell方法](https://docs.scipy.org/doc/scipy/reference/optimize.root-hybr.html#optimize-root-hybr)来寻找零点
 
 ```{code-cell} ipython3
 %%time
 solution = root(lambda p: e(p, A, b, c), init_p, method='hybr')
 ```
 
-这是得到的值：
+这是得到的值
 
 ```{code-cell} ipython3
 p = solution.x
 p
 ```
 
-这个结果看起来和我们从图中观察到的猜测很接近。我们可以把它代回到 $e$ 中验证 $e(p) \approx 0$：
+这个结果看起来和我们从图中观察到的猜测很接近。我们可以把它代回到 $e$ 中验证 $e(p) \approx 0$
 
 ```{code-cell} ipython3
 np.max(np.abs(e(p, A, b, c)))
@@ -740,8 +737,6 @@ np.max(np.abs(e(p, A, b, c)))
 ```
 
 结果非常准确。
-
-由于较大的开销，速度并不比优化后的 `scipy` 函数更好。
 
 ### 高维问题
 
@@ -940,7 +935,7 @@ init = np.repeat(1.0, 3)
                  tol=1e-7)
 ```
 
-我们可以看到它正在朝着更精确的解决方案迈进。
+我们可以看到它正在朝着更精确的解迈进。
 
 ```{solution-end}
 ```
