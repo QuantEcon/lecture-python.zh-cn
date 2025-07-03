@@ -170,7 +170,7 @@ worlddata = pd.read_csv(url2, sep=';')
 worlddata.head()
 ```
 
-首先，我们将从`worlddata`中只选择国家和大洲变量，并将列名重命名为'Country'
+首先，我们将从`worlddata`中只选择国家和大洲变量，并将列名重命名为`Country`
 
 ```{code-cell} ipython3
 worlddata = worlddata[['Country (en)', 'Continent']]
@@ -261,8 +261,7 @@ replace = ['Central America', 'North America', 'South America']
 
 for country in replace:
     merged['Continent'] = merged['Continent'].replace(
-                                {country:'America'},
-                                inplace=True)
+                                {country:'America'})
 ```
 
 现在我们已经将所有想要的数据都放在一个`DataFrame`中，我们将把它重新整形成带有`MultiIndex`的面板形式。
@@ -331,13 +330,14 @@ merged.T.groupby(level='Continent').mean()
 ```
 
 ```{code-cell} ipython3
-merged.mean().sort_values(ascending=False).plot(kind='bar',
-                                                title="2006-2016年平均实际最低工资")
+merged.mean().sort_values(ascending=False).plot(
+          kind='bar',
+          title="2006-2016年平均实际最低工资")
 
 # 设置国家标签
 country_labels = merged.mean().sort_values(
     ascending=False).index.get_level_values('Country').tolist()
-print(country_labels)
+
 country_labels_cn = [country_map[label] for label 
                      in country_labels]
 plt.xticks(range(0, len(country_labels)), country_labels_cn)
@@ -392,7 +392,11 @@ plt.show()
 
 ```{code-cell} ipython3
 merged = merged.drop('Australia', level='Continent', axis=1)
-merged.T.groupby(level='Continent').mean().T.rename(columns=continent_map).plot()
+(merged.T
+      .groupby(level='Continent')
+      .mean().T
+      .rename(columns=continent_map)
+      ).plot()
 plt.title('平均实际最低工资')
 plt.legend(title='大洲')
 plt.ylabel('2015年美元')
@@ -447,7 +451,8 @@ for continent in continents:
                 label=continent_map[continent], fill=True)
 
 plt.title('2015年实际最低工资')
-plt.xlabel('US dollars')
+plt.xlabel('美元')
+plt.ylabel('密度')
 plt.legend()
 plt.show()
 ```
@@ -562,15 +567,6 @@ employ_f.head()
 
 ```{code-cell} ipython3
 employ_f = employ_f.drop('Total', level='SEX', axis=1)
-```
-
-```{code-cell} ipython3
-# Ensure SEX is treated as a category
-box['SEX'] = box['SEX'].map({'Males': '男性', 'Females': '女性'})  # Or use your actual coding
-```
-
-```{code-cell} ipython3
-box
 ```
 
 ```{code-cell} ipython3
