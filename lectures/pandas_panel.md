@@ -3,8 +3,10 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.2
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
@@ -36,7 +38,6 @@ kernelspec:
 常见的任务包括：
 
 * 导入数据、清理数据以及在多个轴上重塑数据。
-
 * 从面板数据中提取时间序列数据或横截面数据。
 * 对数据进行分组和汇总。
 
@@ -206,9 +207,9 @@ realwage_f.transpose().head()
 
 我们还需要指定每个数据框中国家名称的位置，这将作为合并数据框的"键（key）"。
 
-我们的"左"数据框（`realwage_f.transpose()`）在索引中包含国家，所以我们设置`left_index=True`。
+我们的"左"（left）数据框（`realwage_f.transpose()`）在索引中包含国家，所以我们设置`left_index=True`。
 
-我们的'right'数据框（`worlddata`）在'Country'列中包含国家名称，所以我们设置`right_on='Country'`
+我们的"右"（right）数据框（`worlddata`）在'Country'列中包含国家名称，所以我们设置`right_on='Country'`
 
 ```{code-cell} ipython3
 merged = pd.merge(realwage_f.transpose(), worlddata,
@@ -216,9 +217,9 @@ merged = pd.merge(realwage_f.transpose(), worlddata,
 merged.head()
 ```
 
-在 `realwage_f` 中出现但在 `worlddata` 中未出现的国家，其 Continent 列将显示 `NaN`。
+在 `realwage_f` 中出现但在 `worlddata` 中未出现的国家，其 `Continent` 列将显示 `NaN`。
 
-要检查是否发生这种情况，我们可以在 continent 列上使用 `.isnull()` 并过滤合并后的数据框
+要检查是否发生这种情况，我们可以在 `Continent` 列上使用 `.isnull()` 并过滤合并后的数据框
 
 ```{code-cell} ipython3
 merged[merged['Continent'].isnull()]
@@ -248,11 +249,10 @@ merged['Country'].map(missing_continents)
 merged['Continent'] = merged['Continent'].fillna(merged['Country'].map(missing_continents))
 
 # 检查大洲是否被正确映射
-
 merged[merged['Country'] == 'Korea']
 ```
 
-我们还要把美洲合并成一个大洲 - 这样可以让我们后面的可视化效果更好看。
+我们把美洲合并成一个大洲 -- 这样可以让我们后面的可视化效果更好。
 
 为此，我们将使用`.replace()`并遍历一个包含我们想要替换的大洲的值的列表
 
@@ -260,8 +260,8 @@ merged[merged['Country'] == 'Korea']
 replace = ['Central America', 'North America', 'South America']
 
 for country in replace:
-    merged['Continent'].replace(to_replace=country,
-                                value='America',
+    merged['Continent'] = merged['Continent'].replace(
+                                {country:'America'},
                                 inplace=True)
 ```
 
@@ -290,7 +290,7 @@ merged.columns = merged.columns.rename('Time')
 merged.columns
 ```
 
-`DatetimeIndex`在行轴上运行更加顺畅，所以我们将对`merged`进行转置
+一般来说`DatetimeIndex`在行轴上运作起来更加顺畅，所以我们将对`merged`进行转置
 
 ```{code-cell} ipython3
 merged = merged.transpose()
@@ -311,7 +311,7 @@ merged.mean().head(10)
 
 使用这个数据序列，我们可以绘制数据集中每个国家过去十年的平均实际最低工资
 
-```{code-cell} ipython
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -320,15 +320,27 @@ plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 import seaborn as sns
 sns.set_theme()
+sns.set(font='Source Han Serif SC')
+
+map_url='https://raw.githubusercontent.com/QuantEcon/lecture-python.zh-cn/refs/heads/main/lectures/_static/country_map.csv'
+country_map = pd.read_csv(map_url).set_index('English')['Chinese']
 ```
 
-```{code-cell} ipython
+```{code-cell} ipython3
+merged.T.groupby(level='Continent').mean()
+```
+
+```{code-cell} ipython3
 merged.mean().sort_values(ascending=False).plot(kind='bar',
                                                 title="2006-2016年平均实际最低工资")
 
 # 设置国家标签
-country_labels = merged.mean().sort_values(ascending=False).index.get_level_values('Country').tolist()
-plt.xticks(range(0, len(country_labels)), country_labels)
+country_labels = merged.mean().sort_values(
+    ascending=False).index.get_level_values('Country').tolist()
+print(country_labels)
+country_labels_cn = [country_map[label] for label 
+                     in country_labels]
+plt.xticks(range(0, len(country_labels)), country_labels_cn)
 plt.xlabel('国家')
 
 plt.show()
@@ -353,16 +365,26 @@ plt.show()
 我们也可以指定`MultiIndex`的一个层级（在列轴上）来进行聚合
 
 ```{code-cell} ipython3
-merged.groupby(level='Continent', axis=1).mean().head()
+merged.T.groupby(level='Continent').mean().head()
 ```
 
 我们可以将每个大洲的平均最低工资绘制成时间序列图
 
 ```{code-cell} ipython3
-merged.groupby(level='Continent', axis=1).mean().plot()
+continent_map = {'Asia':'亚洲', 
+                 'Europe':'欧洲', 
+                 'America':'美洲',
+                 'Australia':'大洋洲'}
+
+(merged.T
+       .groupby(level='Continent') 
+       .mean()
+       .T.rename(columns=continent_map)                           
+).plot()
 plt.title('平均实际最低工资')
 plt.ylabel('2015年美元')
 plt.xlabel('年份')
+plt.legend(title='大洲')
 plt.show()
 ```
 
@@ -370,8 +392,9 @@ plt.show()
 
 ```{code-cell} ipython3
 merged = merged.drop('Australia', level='Continent', axis=1)
-merged.groupby(level='Continent', axis=1).mean().plot()
+merged.T.groupby(level='Continent').mean().T.rename(columns=continent_map).plot()
 plt.title('平均实际最低工资')
+plt.legend(title='大洲')
 plt.ylabel('2015年美元')
 plt.xlabel('年份')
 plt.show()
@@ -383,13 +406,15 @@ plt.show()
 merged.stack().describe()
 ```
 
-这是使用 `groupby` 的简化方法。
+让我们更深入地了解 `groupby` 的工作原理。
 
-使用 `groupby` 通常遵循"拆分-应用-合并"的过程：
+`groupby` 操作遵循一个称为"拆分-应用-合并"的模式:
 
-* 拆分：数据根据一个或多个键进行分组
-* 应用：在每个组上独立调用函数
-* 合并：函数调用的结果被合并到新的数据结构中
+1. 首先，数据会按照指定的一个或多个键被拆分成多个组
+2. 然后，对每个组分别执行相同的操作或计算
+3. 最后，将所有组的结果合并成一个新的数据结构
+
+这种模式使我们能够对数据子集进行灵活的分组分析。
 
 `groupby` 方法实现了这个过程的第一步，创建一个新的 `DataFrameGroupBy` 对象，将数据拆分成组。
 
@@ -400,7 +425,7 @@ grouped = merged.groupby(level='Continent', axis=1)
 grouped
 ```
 
-在对象上调用聚合方法时，该函数会被应用于每个组，运算结果会被合并到一个新的数据结构中。
+在对象上调用`groupby`方法时，该函数会被应用于每个组，运算结果会被合并到一个新的数据结构中。
 
 例如，我们可以使用`.size()`返回数据集中每个大洲的国家数量。
 
@@ -418,7 +443,8 @@ grouped.size()
 continents = grouped.groups.keys()
 
 for continent in continents:
-    sns.kdeplot(grouped.get_group(continent).loc['2015'].unstack(), label=continent, fill=True)
+    sns.kdeplot(grouped.get_group(continent).loc['2015'].unstack(), 
+                label=continent_map[continent], fill=True)
 
 plt.title('2015年实际最低工资')
 plt.xlabel('US dollars')
@@ -539,13 +565,39 @@ employ_f = employ_f.drop('Total', level='SEX', axis=1)
 ```
 
 ```{code-cell} ipython3
+# Ensure SEX is treated as a category
+box['SEX'] = box['SEX'].map({'Males': '男性', 'Females': '女性'})  # Or use your actual coding
+```
+
+```{code-cell} ipython3
+box
+```
+
+```{code-cell} ipython3
 box = employ_f.loc['2015'].unstack().reset_index()
-sns.boxplot(x="AGE", y=0, hue="SEX", data=box, palette=("husl"), showfliers=False)
-plt.xlabel('')
+box['SEX'] = box['SEX'].map({'Males': '男性', 'Females': '女性'})
+sns.boxplot(x="AGE", y=0, hue="SEX", 
+            data=box, palette=("husl"), 
+            showfliers=False)
+plt.legend(title='性别', 
+           bbox_to_anchor=(1, 0.5))
+
+age_labels = {
+    'From 15 to 24 years': '15-24岁',
+    'From 25 to 54 years': '25-54岁',
+    'From 55 to 64 years': '55-64岁',
+    'From 65 to 74 years': '65-74岁'
+}
+
+xtick_labels = [age_labels.get(label.get_text(), 
+                label.get_text()) 
+                for label in plt.gca().get_xticklabels()]
+xticks = plt.gca().get_xticks()
+plt.xticks(ticks=xticks, labels=xtick_labels, rotation=35)
 plt.xticks(rotation=35)
+plt.xlabel('年龄')
 plt.ylabel('人口百分比 (%)')
 plt.title('欧洲就业情况 (2015)')
-plt.legend(bbox_to_anchor=(1,0.5))
 plt.show()
 ```
 
