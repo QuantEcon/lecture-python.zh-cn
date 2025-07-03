@@ -446,7 +446,7 @@ Lucas和Prescott {cite}`LucasPrescott1971` 使用这种方法构建了理性预�
 ```{index} single: Rational Expectations Equilibrium; Planning Problem Approach
 ```
 
-我们的解决思路是将市场问题的欧拉方程与单个代理人选择问题的欧拉方程相匹配。
+我们的解决思路是将市场问题的欧拉方程与单个个体选择问题的欧拉方程相匹配。
 
 正如我们将看到的，这个规划问题可以通过LQ控制（{doc}`linear regulator <lqcontrol>`）来解决。
 

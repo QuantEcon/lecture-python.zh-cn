@@ -18,7 +18,7 @@ kernelspec:
 </div>
 ```
 
-# 卡尔曼滤波器的初步介绍
+# 初见卡尔曼滤波器
 
 ```{index} single: 卡尔曼滤波
 ```
@@ -40,7 +40,7 @@ tags: [hide-output]
 
 本讲座为卡尔曼滤波器提供了一个简单直观的介绍，适合以下读者：
 
-* 听说过卡尔曼滤波器但不知道它如何工作的人，或者
+* 听说过卡尔曼滤波器但不知道它如何运作的人，或者
 * 知道卡尔曼滤波的方程但不知道这些方程从何而来的人
 
 关于卡尔曼滤波的更多（进阶）阅读材料，请参见：
@@ -83,9 +83,11 @@ from scipy.linalg import eigvals
 
 总结我们知识的一种方式是点预测 $\hat x$
 
-* 但如果总统想知道导弹目前在日本海上空的概率呢？
-* 那么用二元概率密度 $p$ 来总结我们的初始认知会更好
-  * $\int_E p(x)dx$ 表示我们认为导弹在区域 E 内的概率。
+然而，点预测可能不够用。例如，我们可能需要回答"导弹目前在日本海上空的概率是多少"这样的问题。
+
+为了回答这类问题，我们需要用二元概率密度函数 $p$ 来描述我们对导弹位置的认知。
+
+对于任意区域 $E$，积分 $\int_E p(x)dx$ 给出了我们认为导弹在该区域内的概率。
 
 密度 $p$ 被称为随机变量 $x$ 的*先验分布*。
 
@@ -186,7 +188,7 @@ def bivariate_normal(x, y, σ_x=1.0, σ_y=1.0, μ_x=0.0, μ_y=0.0, σ_xy=0.0):
 
 def gen_gaussian_plot_vals(μ, C):
     "用于绘制二元高斯 N(μ, C) 的 Z 值"
-    m_x, m_y = float(μ[0]), float(μ[1])
+    m_x, m_y = float(μ[0].item()), float(μ[1].item())
     s_x, s_y = np.sqrt(C[0, 0]), np.sqrt(C[1, 1])
     s_xy = C[0, 1]
     return bivariate_normal(X, Y, s_x, s_y, m_x, m_y, s_xy)
@@ -232,7 +234,7 @@ plt.show()
 ```{math}
 :label: kl_measurement_model
 
-y = G x + v, \quad \text{where} \quad v \sim N(0, R)
+y = G x + v, \quad \text{且} \quad v \sim N(0, R)
 ```
 
 这里 $G$ 和 $R$ 是 $2 \times 2$ 矩阵，其中 $R$ 是正定矩阵。两者都被假定为已知，且噪声项 $v$ 被假定与 $x$ 独立。
@@ -292,7 +294,7 @@ new_Z = gen_gaussian_plot_vals(x_hat_F, Σ_F)
 cs2 = ax.contour(X, Y, new_Z, 6, colors="black")
 ax.clabel(cs2, inline=1, fontsize=10)
 ax.contourf(X, Y, new_Z, 6, alpha=0.6, cmap=cm.jet)
-ax.text(float(y[0]), float(y[1]), "$y$", fontsize=20, color="black")
+ax.text(float(y[0].item()), float(y[1].item()), "$y$", fontsize=20, color="black")
 
 plt.show()
 ```
@@ -321,7 +323,7 @@ plt.show()
 ```{math}
 :label: kl_xdynam
 
-x_{t+1} = A x_t + w_{t+1}, \quad \text{where} \quad w_t \sim N(0, Q)
+x_{t+1} = A x_t + w_{t+1}, \quad \text{且} \quad w_t \sim N(0, Q)
 ```
 
 我们的目标是将这个运动定律和我们当前的分布 $p(x \,|\, y) = N(\hat x^F, \Sigma^F)$ 结合起来，得出一个新的一个时间单位后位置的*预测*分布。
@@ -405,7 +407,7 @@ new_Z = gen_gaussian_plot_vals(new_x_hat, new_Σ)
 cs3 = ax.contour(X, Y, new_Z, 6, colors="black")
 ax.clabel(cs3, inline=1, fontsize=10)
 ax.contourf(X, Y, new_Z, 6, alpha=0.6, cmap=cm.jet)
-ax.text(float(y[0]), float(y[1]), "$y$", fontsize=20, color="black")
+ax.text(float(y[0].item()), float(y[1].item()), "$y$", fontsize=20, color="black")
 
 plt.show()
 ```
@@ -482,7 +484,7 @@ plt.show()
 
 方程 {eq}`kalman_sdy` 被称为离散时间黎卡提差分方程。
 
-方程 {eq}`kalman_dare` 被称为[离散时间代数黎卡提方程](https://en.wikipedia.org/wiki/Algebraic_Riccati_equation)。
+方程 {eq}`kalman_dare` 被称为[离散时间代数黎卡提方程](https://zhuanlan.zhihu.com/p/692283143)。
 
 关于固定点存在的条件以及序列 $\{\Sigma_t\}$ 收敛到该固定点的条件在 {cite}`AHMS1996` 和 {cite}`AndersonMoore2005` 第4章中有详细讨论。
 
@@ -646,7 +648,7 @@ y = y.flatten()
 
 for t in range(T):
     # 记录当前预测的均值和方差并绘制其密度
-    m, v = [float(temp) for temp in (kalman.x_hat, kalman.Sigma)]
+    m, v = [float(temp.item()) for temp in (kalman.x_hat, kalman.Sigma)]
 
     f = lambda x: norm.pdf(x, loc=m, scale=np.sqrt(v))
     integral, error = quad(f, θ - ϵ, θ + ϵ)
@@ -795,5 +797,5 @@ plt.show()
 这说明 $x_t$ 运动规律中的随机性越大，会导致预测中的(永久性)不确定性越大。
 ```
 
-[^f1]: 例如，参见 {cite}`Bishop2006` 第93页。要从他的表达式得到上面使用的表达式，你还需要应用 [Woodbury矩阵恒等式](https://en.wikipedia.org/wiki/Woodbury_matrix_identity)。
+[^f1]: 例如，参见 {cite}`Bishop2006` 第93页。要从他的表达式得到上面使用的表达式，你还需要应用 [Woodbury矩阵恒等式](https://zhuanlan.zhihu.com/p/388027547)。
 
