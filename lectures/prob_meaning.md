@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.10.3
+    jupytext_version: 1.17.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -21,27 +21,18 @@ kernelspec:
 
 * 贝叶斯解释：在观察一系列数据后对参数或参数列表的**个人观点**
 
-我们建议观看这个关于频率主义方法中**假设检验**的视频
+我们建议读者预先了解频率主义方法中**假设检验**和贝叶斯方法中**覆盖区间**的知识。
 
-```{youtube} 8JIe_cz6qGA
-```
+在掌握了这些基础知识后，本讲座将通过问答的方式，帮助您更好地理解以下两种统计方法的区别：
 
-观看完该视频后，请观看以下关于贝叶斯方法构建**覆盖区间**的视频
-
-```{youtube} Pahyv9i_X2k
-```
-
-在您熟悉这些视频中的内容后，本讲座将使用苏格拉底方法来帮助巩固您对以下两种方法所回答的不同问题的理解：
-
-* 频率主义置信区间
-
+* 频率主义置信区间 
 * 贝叶斯覆盖区间
 
-我们通过邀请您编写一些Python代码来实现这一点。
+为了帮助理解这些概念，我们将通过编写Python代码来进行实践。
 
-在继续阅读讲座的其余部分之前，建议您在我们提出的每个问题后尝试编写代码。
+在每个问题之后，建议您先尝试自己编写代码解决问题，然后再查看我们提供的答案。
 
-随着讲座的展开，我们会提供我们自己的答案，但如果您在阅读和运行我们的代码之前尝试编写自己的代码，您会学到更多。
+通过动手实践编程，你将能更好地掌握这些统计学概念。
 
 **回答问题的代码：**
 
@@ -49,6 +40,7 @@ kernelspec:
 
 ```{code-cell} ipython3
 :tags: [hide-output]
+
 pip install prettytable
 ```
 
@@ -59,6 +51,11 @@ import numpy as np
 import pandas as pd
 import prettytable as pt
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 from scipy.stats import binom
 import scipy.stats as st
 ```
@@ -80,7 +77,7 @@ $$
 
 这被称为__二项分布__。
 
-这里
+此处
 
 * $\theta$ 是一次硬币投掷出现正面的概率，我们将这个结果编码为 $Y = 1$。
 
@@ -111,19 +108,18 @@ $$
 
 概率 $\textrm{Prob}(X = k | \theta)$ 回答了以下问题:
 
-* 当 $I$ 变大时,在 $I$ 次独立的 $n$ 次硬币投掷中,我们应该预期有多大比例会出现 $k$ 次正面?
+* 当 $I$ 变大时，在 $I$ 次独立的 $n$ 次硬币投掷中，我们应该预期有多大比例会出现 $k$ 次正面?
 
 像往常一样,大数定律证明了这个答案。
 
 ```{exercise}
 :label: pm_ex1
 
-1. 请编写一个Python类来计算 $f_k^I$
+1. 编写一个Python类来计算投掷硬币实验中正面朝上次数的频率 $f_k^I$
 
-2. 请使用你的代码计算 $f_k^I, k = 0, \ldots , n$ 并将其与不同 $\theta, n$ 和 $I$ 值下的
-  $\textrm{Prob}(X = k | \theta)$ 进行比较
+2. 对不同的参数组合（$\theta$表示正面概率，$n$表示投掷次数，$I$表示重复实验次数），计算实验频率 $f_k^I$ 并与理论概率 $\textrm{Prob}(X = k | \theta)$ 进行对比。
 
-3. 结合大数定律,用你的代码说明一些现象
+3. 通过增加实验次数 $I$，观察频率是如何收敛到理论概率的，验证大数定律。
 ```
 
 ```{solution-start} pm_ex1
@@ -136,7 +132,6 @@ $$
 class frequentist:
 
     def __init__(self, θ, n, I):
-
         '''
         初始化
         -----------------
@@ -150,7 +145,6 @@ class frequentist:
         self.θ, self.n, self.I = θ, n, I
 
     def binomial(self, k):
-
         '''计算特定输入k的理论概率'''
 
         θ, n = self.θ, self.n
@@ -158,7 +152,6 @@ class frequentist:
         self.P = binom.pmf(k, n, θ)
 
     def draw(self):
-
         '''为I个独立序列进行n次独立投掷'''
 
         θ, n, I = self.θ, self.n, self.I
@@ -167,7 +160,6 @@ class frequentist:
         self.Y = Y
 
     def compute_fk(self, kk):
-
         '''计算特定输入k的f_{k}^I'''
 
         Y, I = self.Y, self.I
@@ -177,7 +169,6 @@ class frequentist:
         self.kk = kk
 
     def compare(self):
-
         '''计算并打印比较结果'''
 
         n = self.n
@@ -214,7 +205,7 @@ $$
 n=20, k=10, I=1,000,000
 $$
 
-我们将$\theta$从$0.01$变化到$0.99$，并绘制结果与$\theta$的关系图。
+让我们将$\theta$的值从$0.01$到$0.99$进行变化，并绘制理论值和实际频率与$\theta$的关系。
 
 ```{code-cell} ipython3
 θ_low, θ_high, npt = 0.01, 0.99, 50
@@ -234,10 +225,10 @@ for i in range(npt):
 fig, ax = plt.subplots(figsize=(8, 6))
 ax.grid()
 ax.plot(thetas, P, 'k-.', label='理论值')
-ax.plot(thetas, f_kI, 'r--', label='分数')
+ax.plot(thetas, f_kI, 'r--', label='频率占比')
 plt.title(r'不同$\theta$值的比较', fontsize=16)
 plt.xlabel(r'$\theta$', fontsize=15)
-plt.ylabel('分数', fontsize=15)
+plt.ylabel('频率占比', fontsize=15)
 plt.tick_params(labelsize=13)
 plt.legend()
 plt.show()
@@ -267,10 +258,10 @@ for i in range(nn):
 fig, ax = plt.subplots(figsize=(8, 6))
 ax.grid()
 ax.plot(ns, P, 'k-.', label='理论值')
-ax.plot(ns, f_kI, 'r--', label='频率派')
+ax.plot(ns, f_kI, 'r--', label='频率占比')
 plt.title(r'不同$n$值的比较', fontsize=16)
 plt.xlabel(r'$n$', fontsize=15)
-plt.ylabel('比例', fontsize=15)
+plt.ylabel('频率占比', fontsize=15)
 plt.tick_params(labelsize=13)
 plt.legend()
 plt.show()
@@ -299,10 +290,10 @@ for i in range(nI):
 fig, ax = plt.subplots(figsize=(8, 6))
 ax.grid()
 ax.plot(Is, P, 'k-.', label='理论值')
-ax.plot(Is, f_kI, 'r--', label='分数')
+ax.plot(Is, f_kI, 'r--', label='频率占比')
 plt.title(r'不同 $I$ 值的比较', fontsize=16)
 plt.xlabel(r'$I$', fontsize=15)
-plt.ylabel('分数', fontsize=15)
+plt.ylabel('频率占比', fontsize=15)
 plt.tick_params(labelsize=13)
 plt.legend()
 plt.show()
@@ -312,7 +303,7 @@ plt.show()
 
 当$I$变大时，理论概率和频率估计之间的差异变小。
 
-而且，只要$I$足够大，改变$\theta$或$n$都不会实质性地改变观察到的分数作为$\theta$的近似值的准确性。
+事实上，只要样本量$I$足够大，无论我们选择什么样的$\theta$值或序列长度$n$，观察到的频率占比都会很好地近似真实的概率$\theta$。
 
 这里体现了大数定律。
 
@@ -347,7 +338,7 @@ $\theta$由一个概率分布来描述。
 * 在我们**完全没有看到**任何数据之前，或者
 * 在我们已经看到**一些**数据之后，但在看到**更多**数据之前
 
-因此，假设在看到任何数据之前，你有一个个人先验概率分布，表示为
+因此，假设在看到任何数据之前，你有一个先验概率分布，表示为
 
 $$
 P(\theta) = \frac{\theta^{\alpha-1}(1-\theta)^{\beta -1}}{B(\alpha, \beta)}
@@ -413,7 +404,9 @@ $$
 \textrm{Prob}(\theta | Y) \sim \textrm{Beta}(\alpha + Y, \beta + (1-Y))
 $$
 
-现在假设 $\theta$ 的真实值为 $.4$，并且有一个不知道这一点的人，他有一个 $\beta = \alpha = .5$ 的beta先验分布。
+接下来，让我们考虑一个具体的例子。
+
+假设硬币投掷的真实概率为 $\theta = 0.4$，但这个值对我们是未知的。我们从一个beta先验分布开始，其参数为 $\alpha = \beta = 0.5$。
 
 **c)** 现在假设 $\theta$ 的真实值为 $.4$，并且有一个不知道这一点的人，他有一个参数为 $\beta = \alpha = .5$ 的beta先验分布。请编写一个Python类来模拟这个人对于_单个_长度为 $n$ 的序列的 $\theta$ 的个人后验分布。
 
@@ -685,28 +678,24 @@ plt.show()
 
 ## 共轭先验的作用
 
-我们做出了一些假设，将似然函数和先验的函数形式联系起来，这大大简化了我们的计算。
+在前面的分析中，我们选择了一个特殊的先验分布形式 -- beta分布。这个选择不是随意的，而是经过精心设计的。
 
-特别是，我们假设似然函数是**二项分布**，而先验分布是**beta分布**，这导致贝叶斯定律推导出的后验分布也是**beta分布**。
+当我们使用二项分布作为似然函数时，选择beta分布作为先验会带来一个很好的性质：通过贝叶斯定理计算出的后验分布仍然是一个beta分布，只是参数发生了变化。
 
-所以后验和先验都是beta分布，只是它们的参数不同。
-
-当似然函数和先验像手和手套一样完美匹配时，我们可以说先验和后验是**共轭分布**。
+当似然函数和先验像手和手套一样完美匹配时，我们就说先验和后验是**共轭分布**。
 
 在这种情况下，我们有时也说我们有似然函数$\textrm{Prob}(X | \theta)$的**共轭先验**。
 
 通常，似然函数的函数形式决定了**共轭先验**的函数形式。
 
+共轭性让计算变得简单优雅。但这也引出了一个有趣的问题：我们真的应该让计算的便利性来决定我们如何表达对参数的先验信念吗？
 
-一个自然的问题是，为什么一个人对参数$\theta$的个人先验必须局限于共轭先验的形式？
+比如说，如果我对参数$\theta$的先验信念最好用其他分布来描述，我是否应该为了计算方便而改用beta分布呢？
 
-为什么不能是其他更真实地描述个人信念的函数形式？
+从更深层次来说，为什么似然函数的数学形式应该影响我们如何量化对参数的先验认知呢？这似乎有点本末倒置。
 
-从争辩的角度来说，人们可以问，为什么似然函数的形式应该对我关于$\theta$的个人信念有*任何*影响？
+这个问题的答案是:从理论上讲，似然函数的形式确实不应该限制我们对参数的先验信念。我们可以选择任何能准确反映我们先验知识的分布形式。
 
-对这个问题的一个得体回答是，确实不应该有影响，但如果你想要轻松地计算后验分布，使用与似然函数共轭的先验会让你更愉快。
+然而从实践角度来看，选择共轭先验会让计算变得简单很多。如果使用非共轭先验，后验分布通常没有简单的解析形式，这时就需要采用{doc}`这个讲座 <bayes_nonconj>`中介绍的马尔可夫链蒙特卡洛(MCMC)等数值方法来近似计算。
 
-否则，你的后验分布将不会有一个方便的解析形式，你就会需要使用{doc}`这个 quantecon 讲座 <bayes_nonconj>`中部署的马尔可夫链蒙特卡洛技术。
-
-我们也在{doc}`这个 quantecon 讲座 <ar1_bayes>`和{doc}`这个 quantecon 讲座 <ar1_turningpts>`中应用这些强大的方法来近似非共轭先验的贝叶斯后验分布。
-
+我们在{doc}`这个讲座 <ar1_bayes>`和{doc}`这个讲座 <ar1_turningpts>`中展示了如何使用这些强大的MCMC方法来处理非共轭先验的情况。所以选择共轭先验主要是为了计算方便，而不是理论上的必然要求。
