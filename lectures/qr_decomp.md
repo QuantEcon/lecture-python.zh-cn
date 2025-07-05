@@ -306,7 +306,7 @@ Q_scipy, R_scipy
 ```{todo}
 @mmcky to migrate this to use [sphinx-proof](https://sphinx-proof.readthedocs.io/en/latest/syntax.html#algorithms)
 ```
-**注意：** 这个算法实际上非常接近计算特征值最高效的方法之一！
+**注意：** 这个算法实际上非常接近计算特征值最高效的方法！
 
 让我们编写一些Python代码来尝试这个算法
 
