@@ -428,7 +428,7 @@ merged.stack().describe()
 
 ```{code-cell} ipython3
 grouped = merged.T.groupby(level='Continent')
-grouped
+grouped.keys
 ```
 
 在对象上调用`groupby`方法时，该函数会被应用于每个组，运算结果会被合并到一个新的数据结构中。
@@ -449,7 +449,7 @@ grouped.size()
 continents = grouped.groups.keys()
 
 for continent in continents:
-    sns.kdeplot(grouped.get_group(continent).loc['2015'].unstack(), 
+    sns.kdeplot(grouped.get_group(continent).T.loc['2015'].unstack(), 
                 label=continent_map[continent], fill=True)
 
 plt.title('2015年实际最低工资')
