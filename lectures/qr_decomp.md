@@ -303,9 +303,6 @@ Q_scipy, R_scipy
 
 6. 计算 $A$ 的特征值，并将其与从该过程得到的极限 $A_n$ 的对角线值进行比较。
 
-```{todo}
-@mmcky to migrate this to use [sphinx-proof](https://sphinx-proof.readthedocs.io/en/latest/syntax.html#algorithms)
-```
 **注意：** 这个算法实际上非常接近计算特征值最高效的方法！
 
 让我们编写一些Python代码来尝试这个算法
