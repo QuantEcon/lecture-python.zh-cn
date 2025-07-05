@@ -20,7 +20,7 @@ kernelspec:
 </div>
 ```
 
-# {index}`用于面板数据处理的Pandas <single: Pandas for Panel Data>`
+# {index}`用Pandas处理面板数据 <single: Pandas for Panel Data>`
 
 ```{index} single: Python; Pandas
 ```
@@ -321,6 +321,7 @@ import seaborn as sns
 sns.set_theme()
 sns.set(font='Source Han Serif SC')
 
+# 导入中文国家名称
 map_url='https://raw.githubusercontent.com/QuantEcon/lecture-python.zh-cn/refs/heads/main/lectures/_static/country_map.csv'
 country_map = pd.read_csv(map_url).set_index('English')['Chinese']
 ```
@@ -338,6 +339,7 @@ merged.mean().sort_values(ascending=False).plot(
 country_labels = merged.mean().sort_values(
     ascending=False).index.get_level_values('Country').tolist()
 
+# 将国家名称从英文转换为中文
 country_labels_cn = [country_map[label] for label 
                      in country_labels]
 plt.xticks(range(0, len(country_labels)), country_labels_cn)
@@ -425,7 +427,7 @@ merged.stack().describe()
 让我们再次按大洲拆分 `merged`，这次使用 `groupby` 函数，并将生成的对象命名为 `grouped`
 
 ```{code-cell} ipython3
-grouped = merged.groupby(level='Continent', axis=1)
+grouped = merged.T.groupby(level='Continent')
 grouped
 ```
 
