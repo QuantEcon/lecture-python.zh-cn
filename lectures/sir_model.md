@@ -16,7 +16,7 @@ kernelspec:
 </div>
 ```
 
-# `新冠病毒建模 <single: Modeling COVID 19>`
+# 新冠病毒建模
 
 ```{contents}
 :depth: 2
