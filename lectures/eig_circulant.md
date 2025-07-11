@@ -83,7 +83,7 @@ def construct_cirlulant(row):
 ```
 
 ```{code-cell} ipython3
-# 一个简单的例子，当 N = 3 时
+# 当 N = 3 时的一个简单例子
 construct_cirlulant(np.array([1., 2., 3.]))
 ```
 
@@ -317,7 +317,7 @@ Q8 = F8 / np.sqrt(8)
 ```
 
 ```{code-cell} ipython3
-# 验证正交性（酉性）
+# 验证正交性
 Q8 @ np.conjugate(Q8)
 ```
 
@@ -338,19 +338,15 @@ for j in range(8):
 diff_arr
 ```
 
-## 关联置换矩阵
+## 循环矩阵与置换矩阵的关系
 
-接下来，我们执行计算来验证方程 {eq}`eqn:circulant` 中定义的循环矩阵 $C$ 可以写成
+接下来，我们将验证方程 {eq}`eqn:circulant` 中定义的循环矩阵 $C$ 可以表示为置换矩阵的线性组合：
 
 $$
 C = c_{0} I + c_{1} P + \cdots + c_{n-1} P^{n-1}
 $$
 
 并且 $P$ 的每个特征向量也是 $C$ 的特征向量。
-
-```{code-cell} ipython3
-
-```
 
 我们用 $N=8$ 的情况来说明这一点。
 
@@ -366,7 +362,7 @@ c
 C8 = construct_cirlulant(c)
 ```
 
-计算 $c_{0} I + c_{1} P + \cdots + c_{n-1} P^{n-1}$。
+计算 $c_{0} I + c_{1} P + \cdots + c_{n-1} P^{n-1}$
 
 ```{code-cell} ipython3
 N = 8
