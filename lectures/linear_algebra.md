@@ -55,22 +55,22 @@ y_1 = a_{11} x_1 + a_{12} x_2 + \cdots + a_{1k} x_k \\
 
 这里的目标是在已知 $a_{11}, \ldots, a_{nk}$ 和 $y_1, \ldots, y_n$ 的情况下，求解"未知数" $x_1, \ldots, x_k$。
 
-在考虑这类问题时，我们首先必须考虑以下至少一些问题：
+在研究这类问题时，我们需要考虑以下几个基本问题:
 
-* 解是否真的存在？
-* 是否实际上存在多个解，如果是，我们应该如何解释它们？
-* 如果不存在解，是否存在最佳的"近似"解？
-* 如果解存在，我们应该如何计算它？
+* 这个方程组是否有解?
+* 如果有解,解是唯一的吗？如果有多个解,这意味着什么?
+* 如果没有精确解,是否可以找到一个最优的近似解?
+* 如果解存在,有什么有效的方法可以求出它?
 
 这些都是线性代数所要解决的问题。
 
-在本讲中，我们将介绍线性和矩阵代数的基础知识，包括理论和计算两个方面。
+本讲将介绍线性代数和矩阵运算的基础知识。
 
-我们承认这与[这篇讲座](https://python-programming.quantecon.org/numpy.html)有一些重叠，那里首次解释了NumPy数组的操作。
+我们将同时关注理论基础和实际计算。
 
-请注意，这节课比大多数课程更偏重理论，包含了我们在后续应用中将会用到的背景知识。
+虽然本讲与我们在[之前的讲座](https://python-programming.quantecon.org/numpy.html)中已经介绍过NumPy数组的基本操作有所重合，但这里我们将从更理论的角度来探讨线性代数。
 
-让我们先从一些导入语句开始：
+这些理论知识将为我们后续的应用打下重要基础。
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
@@ -95,19 +95,19 @@ from scipy.linalg import inv, solve, det, eig
 
 我们可以根据需要将这些序列横向或纵向书写。
 
-（稍后，当我们需要执行某些矩阵运算时，区分这两种写法将变得必要）
+（在后面讨论矩阵运算时，区分横向和纵向表示将变得很重要）
 
-所有$n$维向量的集合用$\mathbb R^n$表示。
+我们用$\mathbb R^n$表示所有$n$维向量的集合。
 
-例如，$\mathbb R^2$是平面，而$\mathbb R^2$中的向量就是平面上的一个点。
+以$\mathbb R^2$为例，它代表二维平面，其中的每个向量都对应平面上的一个点。
 
-传统上，向量在视觉上被表示为从原点指向某点的箭头。
+在几何上，我们通常将向量画成一个从原点出发的箭头。
 
-下图以这种方式表示了三个向量
+让我们看看下面这个例子，其中画出了三个不同的向量:
 
 ```{code-cell} ipython
 fig, ax = plt.subplots(figsize=(10, 8))
-# Set the axes through the origin
+# 设置通过原点的轴
 for spine in ['left', 'bottom']:
     ax.spines[spine].set_position('zero')
 for spine in ['right', 'top']:
@@ -306,18 +306,18 @@ ax.plot(z, x, y, 'k-', lw=2, alpha=0.5)
 ax.plot(y, z, x, 'k-', lw=2, alpha=0.5)
 
 
-# Fixed linear function, to generate a plane
+# 固定线性函数，生成平面
 def f(x, y):
     return α * x + β * y
 
-# Vector locations, by coordinate
+# 向量位置，按坐标
 x_coords = np.array((3, 3))
 y_coords = np.array((4, -4))
 z = f(x_coords, y_coords)
 for i in (0, 1):
     ax.text(x_coords[i], y_coords[i], z[i], f'$a_{i+1}$', fontsize=14)
 
-# Lines to vectors
+# 连接向量的线
 for i in (0, 1):
     x = (0, x_coords[i])
     y = (0, y_coords[i])
@@ -325,7 +325,7 @@ for i in (0, 1):
     ax.plot(x, y, z, 'b-', lw=1.5, alpha=0.6)
 
 
-# Draw the plane
+# 绘制平面
 grid_size = 20
 xr2 = np.linspace(x_min, x_max, grid_size)
 yr2 = np.linspace(y_min, y_max, grid_size)
@@ -338,7 +338,7 @@ plt.show()
 
 #### 示例
 
-如果 $A$ 只包含一个向量 $a_1 \in \mathbb R ^2$，那么它的张成只是 $a_1$ 的标量倍数，即通过 $a_1$ 和原点的唯一直线。
+如果 $A$ 只包含一个向量 $a_1 \in \mathbb R ^2$，那么它的张成空间只是 $a_1$ 的标量倍数，即通过 $a_1$ 和原点的唯一直线。
 
 如果 $A = \{e_1, e_2, e_3\}$ 由 $\mathbb R ^3$ 的*标准基向量*组成，即
 
@@ -365,7 +365,7 @@ e_3 :=
 \end{bmatrix}
 $$
 
-那么 $A$ 的张成就是整个 $\mathbb R ^3$，因为对于任意的 $x = (x_1, x_2, x_3) \in \mathbb R ^3$，我们可以写成
+那么 $A$ 的张成就是整个 $\mathbb R^3$，因为对于任意的 $x = (x_1, x_2, x_3) \in \mathbb R^3$，我们可以写成
 
 $$
 x = x_1 e_1 + x_2 e_2 + x_3 e_3
@@ -383,54 +383,61 @@ $$
 ```{index} single: Vectors; Linear Independence
 ```
 
-正如我们将看到的，找到具有相对较大张成空间的向量族通常是很有必要的，这样许多向量就可以通过对少数向量进行线性运算来描述。
+在实际应用中，我们经常需要找到一组能够张成较大空间的向量。这样做的好处是，我们可以用这少数几个向量的线性组合来表示更多的向量。
 
-对于一组向量要具有较大的张成空间，我们需要的条件就是所谓的线性无关。
+要使一组向量能张成较大的空间，这组向量需要满足一个重要条件 -- 线性无关。
 
 具体来说，在$\mathbb R ^n$中的一组向量$A := \{a_1, \ldots, a_k\}$被称为
 
-* *线性相关的*，如果$A$的某个真子集与$A$具有相同的张成空间。
-* *线性无关的*，如果它不是线性相关的。
+* *线性相关的*，如果集合中至少有一个向量可以表示为其他向量的线性组合。
+* *线性无关的*，如果集合中任何一个向量都不能表示为其他向量的线性组合。
 
-换句话说，如果没有向量对张成空间是多余的，那么这组向量就是线性无关的，否则就是线性相关的。
+这个概念可以通过一个简单的例子来理解。
 
-为了说明这个概念，回想{ref}`图示<la_3dvec>`展示了$\mathbb R ^3$中向量$\{a_1, a_2\}$的张成空间是一个经过原点的平面。
+让我们回到{ref}`图示<la_3dvec>`中的例子，其中$\mathbb R ^3$中的两个向量$\{a_1, a_2\}$张成了一个经过原点的平面。
 
-如果我们再取第三个向量$a_3$并形成集合$\{a_1, a_2, a_3\}$，这个集合将会是
+如果我们添加第三个向量$a_3$，那么新的集合$\{a_1, a_2, a_3\}$的性质将取决于$a_3$的位置：
 
-* 如果$a_3$位于该平面内，则线性相关
-* 否则线性无关
+* 如果$a_3$落在$a_1$和$a_2$张成的平面上，那么$a_3$可以表示为$a_1$和$a_2$的线性组合，因此这三个向量是线性相关的
+* 如果$a_3$不在该平面上，那么它不能表示为$a_1$和$a_2$的线性组合，因此这三个向量是线性无关的
 
-作为这个概念的另一个说明，由于$\mathbb R ^n$可以由$n$个向量张成（参见上文关于标准基向量的讨论），在$\mathbb R ^n$中任何包含$m > n$个向量的集合必定线性相关。
+一个重要的性质是：在$\mathbb R ^n$中，任何超过$n$个向量的集合必定是线性相关的。这是因为$\mathbb R ^n$最多需要$n$个向量就能完全张成（就像我们之前看到的标准基向量那样）。
 
-以下陈述等价于$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$的线性独立性：
+数学上，向量集合$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$的线性无关性可以用以下两种等价方式来表述：
 
-1. $A$中的任何向量都不能由其他元素的线性组合表示。
-1. 如果对于标量$\beta_1, \ldots, \beta_k$，有$\beta_1 a_1 + \cdots \beta_k a_k = 0$，那么$\beta_1 = \cdots = \beta_k = 0$。
+1. 集合中的任何向量都不能写成其他向量的线性组合。
+2. 当且仅当所有系数$\beta_1, \ldots, \beta_k$都为零时，线性组合$\beta_1 a_1 + \cdots + \beta_k a_k$等于零向量。
 
-（第一个表达式中的零是$\mathbb R ^n$的原点）
+（这里的零向量指的是$\mathbb R ^n$中所有分量都是0的向量）
 
 (la_unique_reps)=
 ### 唯一表示
 
-关于线性独立向量集合的另一个优点是，其张成空间中的每个元素都可以唯一地表示为这些向量的线性组合。
+线性独立向量集合的一个重要性质是唯一表示性：其张成空间中的每个向量都可以用唯一的一组系数来表示。
 
-换句话说，如果$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$是线性独立的，且
+具体来说，假设$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$是线性独立的，且向量$y$可以表示为:
 
 $$
-y = \beta_1 a_1 + \cdots \beta_k a_k
+y = \beta_1 a_1 + \cdots + \beta_k a_k
 $$
 
-那么其他任何系数序列 $\gamma_1, \ldots, \gamma_k$ 都不会产生相同的向量 $y$。
+那么这组系数$\beta_1, \ldots, \beta_k$是唯一的。
 
-事实上，如果我们也有 $y = \gamma_1 a_1 + \cdots \gamma_k a_k$，
-那么
+也就是说，不存在另一组不同的系数$\gamma_1, \ldots, \gamma_k$使得:
+
+$$
+y = \gamma_1 a_1 + \cdots + \gamma_k a_k
+$$
+
+这一点可以通过反证法证明。如果存在这样两组不同的系数，那么:
 
 $$
 (\beta_1 - \gamma_1) a_1 + \cdots + (\beta_k - \gamma_k) a_k = 0
 $$
 
-线性独立性现在意味着对所有 $i$ 都有 $\gamma_i = \beta_i$。
+由线性独立性可知，这种情况只可能在$\beta_i = \gamma_i$ $(i=1,\ldots,k)$时发生。
+
+这与我们假设两组系数不同相矛盾。
 
 ## 矩阵
 
@@ -525,8 +532,6 @@ $$
 
 如果$A$和$B$是两个矩阵，那么它们的乘积$A B$的第$i,j$个元素是由$A$的第$i$行与$B$的第$j$列的内积得到的。
 
-有许多教程可以帮助你理解这个运算，比如[这个](https://www.mathsisfun.com/algebra/matrix-multiplying.html)，或者[维基百科页面](https://en.wikipedia.org/wiki/Matrix_multiplication)上的讨论。
-
 如果$A$是$n \times k$矩阵，$B$是$j \times m$矩阵，那么要使$A$和$B$可以相乘，我们需要$k = j$，且得到的矩阵$A B$是$n \times m$的。
 
 作为可能最重要的特例，考虑将$n \times k$矩阵$A$与$k \times 1$列向量$x$相乘。
@@ -556,7 +561,7 @@ A x =
 ```
 
 ```{note}
-$A B$ 和 $B A$ 通常不是同一个东西。
+矩阵乘法不满足交换律，也就是说，$A B$ 和 $B A$ 的结果通常是不同的。
 ```
 
 另一个重要的特殊情况是单位矩阵。
@@ -597,7 +602,7 @@ A.shape
 
 有许多便捷的函数可用于创建常见矩阵（零矩阵、全1矩阵等）--- 参见[这里](https://python-programming.quantecon.org/numpy.html#creating-arrays)。
 
-由于运算默认按元素执行，标量乘法和加法具有非常自然的语法
+由于运算默认按元素执行，标量乘法和加法的语法具有非常自然
 
 ```{code-cell} ipython3
 A = np.identity(3)
@@ -635,7 +640,7 @@ $$
 
 你可以验证，当$b$为零向量时，函数$f(x) = A x + b$满足这个性质，而当$b$非零时则不满足。
 
-事实上，已[知](https://en.wikipedia.org/wiki/Linear_map#Matrices)$f$是线性的，当且*仅当*存在矩阵$A$使得对所有的$x$都有$f(x) = Ax$。
+事实上我们知道，$f$是线性的当且仅当存在矩阵$A$使得对所有的$x$都有$f(x) = Ax$。
 
 ## 求解方程组
 
@@ -689,7 +694,7 @@ for ax in axes:
 
     ax.plot(x, y, 'k-', lw=2, label='$f$')
     ax.fill_between(x, ya, yb, facecolor='blue', alpha=0.05)
-    ax.vlines([0], ya, yb, lw=3, color='blue', label='range of $f$')
+    ax.vlines([0], ya, yb, lw=3, color='blue', label='$f$的值域')
     ax.text(0.04, -0.3, '$0$', fontsize=16)
 
 ax = axes[0]
@@ -777,7 +782,7 @@ $$
 ```{index} single: Matrix; Determinants
 ```
 
-关于方阵的另一个简短说明是，每个这样的矩阵都有一个唯一的数，称为矩阵的*行列式*——你可以在[这里](https://en.wikipedia.org/wiki/Determinant)找到它的表达式。
+每个方阵都有一个与之唯一对应的数值，这个数值被称为矩阵的*行列式*。行列式的具体计算方法可以在[这里](https://baike.baidu.com/item/%E8%A1%8C%E5%88%97%E5%BC%8F/2010180)找到。
 
 如果矩阵$A$的行列式不为零，我们就说$A$是*非奇异的*。
 
@@ -875,11 +880,14 @@ A @ x          # 应该等于y
 solve(A, y)  # 产生相同的解
 ```
 
-观察我们如何通过`inv(A) @ y`或使用`solve(A, y)`来求解$x = A^{-1} y$。
+我们可以通过两种方式求解线性方程$x = A^{-1}y$：
 
-后一种方法使用不同的算法（LU分解），在数值上更稳定，因此几乎总是应该优先选择。
+1. 使用`inv(A) @ y`显式计算逆矩阵
+2. 使用`solve(A, y)`直接求解方程
 
-要获得最小二乘解$\hat x = (A'A)^{-1}A'y$，使用`scipy.linalg.lstsq(A, y)`。
+第二种方法基于LU分解，数值稳定性更好，是更推荐的方法。
+
+如果需要求解最小二乘问题$\hat x = (A'A)^{-1}A'y$，可以使用`scipy.linalg.lstsq(A, y)`。
 
 (la_eigen)=
 ## {index}`特征值 <single: Eigenvalues>`和{index}`特征向量 <single: Eigenvectors>`
@@ -900,11 +908,11 @@ $$
 
 则我们称$\lambda$是$A$的*特征值*，而$v$是*特征向量*。
 
-因此，$A$的特征向量是指当应用映射$f(x) = Ax$时，$v$仅仅被缩放的向量。
+换句话说，特征向量是那些经过线性变换$f(x) = Ax$后，方向保持不变、只是长度发生变化的向量。
 
-下图显示了两个特征向量（蓝色箭头）及其在$A$下的像（红色箭头）。
+下图中，蓝色箭头表示两个特征向量，红色箭头表示它们经过变换后的结果。
 
-正如预期的那样，每个向量 $v$ 的像 $Av$ 只是原向量的缩放版本
+可以看到，每个特征向量$v$经过变换后得到的$Av$都与原向量指向相同的方向，只是长度改变了
 
 ```{code-cell} ipython3
 ---
@@ -917,6 +925,7 @@ evals, evecs = eig(A)
 evecs = evecs[:, 0], evecs[:, 1]
 
 fig, ax = plt.subplots(figsize=(10, 8))
+
 # 设置通过原点的坐标轴
 for spine in ['left', 'bottom']:
     ax.spines[spine].set_position('zero')
@@ -969,7 +978,6 @@ plt.show()
 1. $A$ 的行列式等于所有特征值的乘积。
 1. $A$ 的迹（主对角线上元素的和）等于所有特征值的和。
 1. 如果 $A$ 是对称矩阵，那么它的所有特征值都是实数。
-
 1. 如果$A$是可逆的，且$\lambda_1, \ldots, \lambda_n$是它的特征值，那么$A^{-1}$的特征值是$1/\lambda_1, \ldots, 1/\lambda_n$。
 
 第一个陈述的一个推论是：矩阵可逆当且仅当它的所有特征值都不为零。
@@ -1310,10 +1318,7 @@ $$
 \begin{aligned}
  v(x) &= - x'A'PAx - 2u'B'PAx - u'(Q + B'PB) u\\
  &= - x'A'PAx + x'A'PB(Q + B'PB)^{-1}B'PAx \\
-
-$$
-\begin{aligned}
-&= -x'[A'PA - A'PB(Q + B'PB)^{-1}B'PA] x
+ &= -x'[A'PA - A'PB(Q + B'PB)^{-1}B'PA] x
 \end{aligned}
 $$
 
