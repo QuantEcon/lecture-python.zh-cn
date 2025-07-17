@@ -31,9 +31,7 @@ kernelspec:
 * [NBER工作论文第26867号](https://www.nber.org/papers/w26867)
 * [COVID-19工作论文和代码](https://sites.google.com/site/andyatkeson/home?authuser=0)
 
-他的这些笔记主要是介绍了定量建模
-
-传染病动态研究。
+他的这些笔记主要是介绍了定量建模传染病动态研究。
 
 疾病传播使用标准SIR（易感者-感染者-移出者）模型进行建模。
 
@@ -72,11 +70,11 @@ from scipy.integrate import odeint
 - 易感者(S)：尚未感染，可能被感染的人群
 - 潜伏者(E)：已感染但尚未具有传染性的人群 
 - 感染者(I)：已感染且具有传染性的人群
-- 移出者(R)：已经康复或死亡的人群
+- 移出者($R$)：已经康复或死亡的人群
 
 需要注意的是：
 - 一旦康复，就会获得免疫力，不会再次感染
-- 处于移出状态(R)的人包括康复者和死亡者
+- 处于移出状态($R$)的人包括康复者和死亡者
 - 潜伏期的人虽然已感染，但还不能传染给他人
 
 ### 时间路径
@@ -171,11 +169,11 @@ def F(x, t, R0=1.6):
     """
     s, e, i = x
 
-    # 易感人群的新暴露
+    # 计算新增感染人数
     β = R0(t) * γ if callable(R0) else R0 * γ
     ne = β * s * i
 
-    # 时间导数
+    # 导数
     ds = - ne
     de = ne - σ * e
     di = σ * e - γ * i
@@ -205,9 +203,7 @@ x_0 = s_0, e_0, i_0
 ```{code-cell} ipython3
 def solve_path(R0, t_vec, x_init=x_0):
     """
-    通过数值积分求解i(t)和c(t)，
-    给定R0的时间路径。
-
+    给定R0的时间路径，计算感染人数i(t)和累计病例c(t)的演变轨迹。
     """
     G = lambda x, t: F(x, t, R0)
     s_path, e_path, i_path = odeint(G, x_init, t_vec).transpose()
