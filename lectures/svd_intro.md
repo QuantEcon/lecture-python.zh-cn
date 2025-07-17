@@ -334,7 +334,7 @@ $$ (eq:Ekart)
 
 在介绍主成分分析时，我们会对此进行更详细的讨论。
 
-你可以在[这里](https://en.wikipedia.org/wiki/Low-rank_approximation)阅读关于Eckart-Young定理及其应用的内容。
+你可以在[这里](https://zhuanlan.zhihu.com/p/606447321)阅读关于Eckart-Young定理及其应用的内容。
 
 在讨论主成分分析(PCA)和动态模态分解(DMD)时，我们将会用到这个定理。
 
