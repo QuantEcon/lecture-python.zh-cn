@@ -46,8 +46,7 @@ $$
 :label: la_se
 
 \begin{aligned}
-
-y_1 = a_{11} x_1 + a_{12} x_2 + \cdots + a_{1k} x_k \\
+    y_1 = a_{11} x_1 + a_{12} x_2 + \cdots + a_{1k} x_k \\
     \vdots  \\
     y_n = a_{n1} x_1 + a_{n2} x_2 + \cdots + a_{nk} x_k
 \end{aligned}
@@ -489,7 +488,6 @@ $$
 \gamma A =
 \gamma
 \begin{bmatrix}
-
 a_{11} &  \cdots & a_{1k} \\
     \vdots & \vdots  & \vdots \\
     a_{n1} &  \cdots & a_{nk}
@@ -546,7 +544,6 @@ A x =
     a_{11} &  \cdots & a_{1k} \\
     \vdots & \vdots  & \vdots \\
     a_{n1} &  \cdots & a_{nk}
-
 \end{bmatrix}
 \begin{bmatrix}
     x_{1}  \\
@@ -1013,9 +1010,9 @@ $$
 
 当然，如果 $B$ 是方阵且可逆，我们可以将广义特征值问题转化为普通特征值问题 $B^{-1} A v = \lambda v$，但情况并非总是如此。
 
-## 进阶主题
+## 进阶概念
 
-我们通过简要介绍几个其他重要主题来结束讨论。
+我们通过简要介绍几个其他重要概念来结束讨论。
 
 ### 级数展开
 
