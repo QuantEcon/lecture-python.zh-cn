@@ -20,14 +20,14 @@ kernelspec:
 我们将学习的概念包括：
 
 - 联合概率分布
-- 给定联合分布的边际分布
+- 给定联合分布的边缘分布
 - 条件概率分布
 - 两个随机变量的统计独立性
-- 与指定边际分布相关的联合分布
+- 与指定边缘分布相关的联合分布
     - 耦合
-    - 联结函数
+    - Copula函数
 - 两个独立随机变量之和的概率分布
-    - 边际分布的卷积
+    - 边缘分布的卷积
 
 - 定义概率分布的参数
 - 作为数据摘要的充分统计量
@@ -61,9 +61,9 @@ set_matplotlib_formats('retina')
 
 ## 基本概念概述
 
-我们将简要定义**概率空间**、**概率测度**和**随机变量**的含义。
+我们将简要定义**概率空间**、**概率测度**和**随机变量**。
 
-在本讲座的大部分内容中，我们将这些对象放在背景中，但它们是我们将主要关注的其他对象的基础。
+在本讲座的大部分内容中，这些概念将不会被反复提及，但它们构成我们所讨论其他主题的基础。
 
 设 $\Omega$ 为可能的基本结果集，设 $\omega \in \Omega$ 为一个特定的基本结果。
 
@@ -71,13 +71,13 @@ set_matplotlib_formats('retina')
 
 设 $\mathcal{F}$ 为这些子集 $\mathcal{G} \subset \Omega$ 的集合。
 
-对 $\Omega,\mathcal{F}$ 这个我们想要赋予概率测度的配对构成了我们的**概率空间**。
+对 $\Omega,\mathcal{F}$ 这一配对就是我们想要赋予概率测度的**概率空间**。
 
-**概率测度** $\mu$ 将可能的基本结果集 $\mathcal{G} \in \mathcal{F}$ 映射到0和1之间的标量数
+**概率测度** $\mu$ 将可能的基本结果集 $\mathcal{G} \in \mathcal{F}$ 映射到0和1之间的实数
 
-- 这是 $X$ 属于 $A$ 的"概率"，记为 $ \textrm{Prob}\{X\in A\}$。
+- 即 $X$ 属于 $A$ 的"概率"，记为 $ \textrm{Prob}\{X\in A\}$。
 
-**随机变量** $X(\omega)$ 是基础结果 $\omega \in \Omega$ 的一个函数。
+**随机变量** $X(\omega)$ 是基本结果 $\omega \in \Omega$ 的一个函数。
 
 随机变量 $X(\omega)$ 具有由基础概率测度 $\mu$ 和函数 $X(\omega)$ 诱导的**概率分布**：
 
@@ -89,23 +89,29 @@ $$ (eq:CDFfromdensity)
 
 我们称这为随机变量 $X$ 的诱导概率分布。
 
+在实际工作中，应用统计学家往往不从底层的概率空间 $\Omega,\mathcal{F}$ 和概率测度 $\mu$ 
+出发进行显式推导，而是直接为某个随机变量给定其诱导分布的函数形式。
+
+本讲以及此后的多篇讲座都将采用这种做法。
+
 ## 概率是什么意思？
 
-在深入之前，我们先简单谈谈概率论的含义以及它与统计学的联系。
+在深入讨论之前，我们先简单谈谈概率的含义，以及概率论与统计学的关系。
 
 我们在 quantecon 讲座 <https://python.quantecon.org/prob_meaning.html> 和 <https://python.quantecon.org/navy_captain.html> 中也涉及了这些主题。
 
-在本讲座的大部分内容中，我们将讨论固定的"总体"概率。
+在本讲座的大部分内容中，我们讨论的都是固定的“总体”概率分布。
 
-这些是纯数学对象。
+这些概率分布是纯粹的数学对象。
 
 要理解统计学家如何将概率与数据联系起来，关键是理解以下概念：
 
 * 从概率分布中进行单次抽样
-* 从同一概率分布中进行重复的独立同分布(i.i.d.)抽样，获得"样本"或"实现值"
+* 从同一概率分布中重复地进行独立同分布（i.i.d.）抽样，得到“样本”或“观测值”
 * **统计量**，定义为样本序列的函数
-* **经验分布**或**直方图**（分箱的经验分布），用于记录观察到的**相对频率**
-* 总体概率分布是我们对长序列i.i.d.抽样中**相对频率**的预期。以下数学工具精确定义了什么是**预期相对频率**
+* **经验分布**或**直方图**（将观测数据分箱后的经验分布），用于记录观察到的**相对频率**
+* 总体概率分布可以看作是一长串 i.i.d. 抽样试验中**相对频率**的期望值。以下数学工具格定义
+了何为**期望的相对频率**：
      - **大数定律(LLN)**
      - **中心极限定理(CLT)**
 
@@ -135,10 +141,10 @@ $$
 
 考虑从$X$中抽取$N$个独立同分布的样本$x_0, x_1, \dots , x_{N-1}$。
 
-IID或iid（"独立同分布"）中的"同分布"和"独立"是什么意思？
+“独立同分布”（i.i.d.）这个术语中，“同分布”和“独立”各自意味着什么？
 
 - "同分布"意味着每次抽样都来自相同的分布。
-- "独立"意味着联合分布等于边际分布的乘积，即：
+- "独立"意味着联合分布等于边缘分布的乘积，即：
 
 $$
 \begin{aligned}
@@ -154,8 +160,8 @@ $$
 $$
 \begin{aligned}
 N_i & = X = i \ \text{出现的次数},\\
-N & = \sum^{I-1}_{i=0} N_i \quad \text{总抽取次数},\\
-\tilde {f_i} &  = \frac{N_i}{N} \sim \ X=i \ \text{时抽取的频率}
+N & = \sum^{I-1}_{i=0} N_i \quad \text{抽样总次数},\\
+\tilde {f_i} &  = \frac{N_i}{N} \sim \ \text{事件} \ X=i \ \text{出现的频率}
 \end{aligned}
 $$
 
@@ -173,7 +179,8 @@ $$
 
 - 对于"频率学派"统计学家来说，**预期相对频率**就是概率分布的**全部**含义。
 
-- 但对贝叶斯学派来说，它意味着更多或不同的东西。
+- 但对贝叶斯学派来说，概率的含义有所不同——在一定程度上是主观且带有个人色彩的。
+  - 之所以说“在一定程度上”，是因为贝叶斯学派同样会关注相对频率。
 
 ## 表示概率分布
 
@@ -183,7 +190,7 @@ $$
 F_{X}(x) = \textrm{Prob}\{X\leq x\}.
 $$
 
-有时候（但不总是如此），随机变量也可以用与其累积分布函数相关的**密度函数** $f(x)$ 来描述：
+有时候（但不总是如此），随机变量也可以用与其累积分布函数相对应的**密度函数** $f(x)$ 来描述：
 
 $$
 \textrm{Prob} \{X\in B\} = \int_{t\in B}f(t)dt
@@ -193,11 +200,11 @@ $$
 F(x) = \int_{-\infty}^{x}f(t)dt
 $$
 
-这里的 $B$ 是我们想要计算概率的可能 $X$ 值的集合。
+这里 $B$ 表示我们要求 $X$ 落在其中的值的集合。
 
-当概率密度存在时，概率分布可以通过其累积分布函数或密度函数来表征。
+在概率密度存在的情况下，一个概率分布可以通过其累积分布函数或概率密度函数来表征。
 
-对于**离散值**随机变量：
+对于**离散型**随机变量：
 
 * $X$ 的可能值的数量是有限的或可数无限的
 * 我们用**概率质量函数**（一个非负且和为1的序列）代替**密度**
@@ -205,24 +212,23 @@ $$
 
 在本讲中，我们主要讨论离散随机变量。
 
-这样做使我们能够基本上将我们的工具集限制在线性代数范围内。
+这样做使我们能够基本上把所用工具限定在线性代数范围内。
 
-稍后我们将简要讨论如何用离散随机变量来近似连续随机变量。
+稍后我们将简要讨论如何用离散型随机变量来近似连续型随机变量。
 
 
 ## 单变量概率分布
 
-在本讲中，我们将主要讨论离散值随机变量，但也会简单介绍一下连续值随机变量。
+在本讲中，我们将主要讨论离散型随机变量，但也会简单介绍一下连续型随机变量。
 
 
 ### 离散随机变量
 
 设 $X$ 是一个离散随机变量，其可能取值为：$i=0,1,\ldots,I-1 = \bar{X}$。
 
-这里，我们选择最大索引 $I-1$ 是因为这与Python的索引约定很好地对应。
+这里，我们将最大索引设定为 $I-1$， 是因为这与Python的索引约定（从0开始）很好地对应。
 
-定义 $f_i \equiv \textrm{Prob}\{X=i\}$
-并构造非负向量
+定义 $f_i \equiv \textrm{Prob}\{X=i\}$ 并构造非负向量
 
 $$
 f=\left[\begin{array}{c}
@@ -237,7 +243,7 @@ $$ (eq:discretedist)
 
 这个向量定义了一个**概率质量函数**。
 
-分布 {eq}`eq:discretedist`
+概率分布 {eq}`eq:discretedist`
 的**参数**为 $\{f_{i}\}_{i=0,1, \cdots ,I-2}$，因为 $f_{I-1} = 1-\sum_{i=0}^{I-2}f_{i}$。
 
 这些参数确定了分布的形状。
@@ -258,11 +264,13 @@ $$
 
 **注意：**
 
+- **统计模型**是由一组**参数**刻画的联合概率分布。
 - **参数**的概念与**充分统计量**的概念密切相关。
-- 充分统计量是数据集的非线性函数。
+- 统计量是数据集的非线性函数。
 - 充分统计量旨在总结数据集中包含的关于参数的所有**信息**。
-- 它们是人工智能用来总结**大数据**集的重要工具。
-- R. A. Fisher 提供了**信息**的严格定义 -- 参见 <https://en.wikipedia.org/wiki/Fisher_information>
+  - 充分统计量始终是相对于某一特定的统计模型而言的。
+  - 充分统计量是人工智能用来概括或压缩**大数据集**的关键工具
+- R. A. Fisher 提供了**信息**的严格定义 -- 参见 <https://baike.baidu.com/item/%E8%B4%B9%E5%B8%8C%E5%B0%94%E4%BF%A1%E6%81%AF/22742376>
 
 **几何分布**是参数概率分布的一个例子。
 
@@ -298,7 +306,7 @@ $$
 
 现在我们将讨论二元**联合分布**。
 
-首先，我们将讨论限制在两个离散随机变量的情况。
+首先，我们将关注两个离散随机变量的情况。
 
 设$X,Y$是两个离散随机变量，它们的取值为：
 
@@ -311,13 +319,13 @@ $$
 Y\in\{0,\ldots,J-1\}
 $$
 
-它们的**联合分布**由矩阵表示
+它们的**联合分布**可以用一个矩阵表示
 
 $$
 F_{I\times J}=[f_{ij}]_{i\in\{0,\ldots,I-1\}, j\in\{0,\ldots,J-1\}}
 $$
 
-其中矩阵元素为
+其中矩阵的元素为
 
 $$
 f_{ij}=\textrm{Prob}\{X=i,Y=j\} \geq 0
@@ -331,7 +339,7 @@ $$
 
 ## 边缘概率分布
 
-联合分布可以导出边缘分布
+由联合分布可以推出边缘分布：
 
 $$
 \textrm{Prob}\{X=i\}= \sum_{j=0}^{J-1}f_{ij} = \mu_i, \quad i=0,\ldots,I-1
@@ -374,7 +382,7 @@ $$
 
 ## 条件概率分布
 
-条件概率的定义为：
+条件概率的定义如下：
 
 $$
 \textrm{Prob}\{A \mid B\}=\frac{\textrm{Prob}\{A \cap B\}}{\textrm{Prob}\{B\}}
@@ -382,7 +390,7 @@ $$
 
 其中 $A, B$ 是两个事件。
 
-对于一对离散随机变量，我们有**条件分布**：
+对于一对离散随机变量，它们的**条件分布**可以表示为：
 
 $$
 \textrm{Prob}\{X=i|Y=j\}=\frac{f_{ij}}{\sum_{i}f_{ij}}
@@ -398,18 +406,92 @@ $$
 =\frac{ \sum_{i}f_{ij} }{ \sum_{i}f_{ij}}=1
 $$
 
-**注：** 条件概率的数学原理暗含着**贝叶斯定律**：
+**注：**  条件概率的定义实际上蕴含了**贝叶斯定律**：
 
 $$
 
 \textrm{Prob}\{X=i|Y=j\}	=\frac{\textrm{Prob}\{X=i,Y=j\}}{\textrm{Prob}\{Y=j\}}=\frac{\textrm{Prob}\{Y=j|X=i\}\textrm{Prob}\{X=i\}}{\textrm{Prob}\{Y=j\}}
 $$
 
-对于联合分布 {eq}`eq:example101discrete`
+对于上述联合分布 {eq}`eq:example101discrete`
 
 $$
 \textrm{Prob}\{X=0|Y=1\} =\frac{ .1}{.1+.5}=\frac{.1}{.6}
 $$
+
+## 转移概率矩阵
+
+8.8 转移概率矩阵
+
+考虑两个随机变量的如下联合概率分布。
+
+设 $X, Y$ 为离散随机变量，其联合分布为
+
+$$
+\textrm{Prob}\{X=i, Y=j\}=\rho_{ij},
+$$
+
+其中 $i=0,\ldots,I-1;\; j=0,\ldots,J-1$，并且
+
+$$
+\sum_i \sum_j \rho_{ij}=1,\qquad \rho_{ij}\geqslant 0.
+$$
+
+相应的条件分布为
+
+$$
+\textrm{Prob}\{Y=i \mid X=j\}=\frac{\rho_{ij}}{\sum_j \rho_{ij}}
+=\frac{\textrm{Prob}\{Y=j, X=i\}}{\textrm{Prob}\{X=i\}}.
+$$
+
+我们可以定义一个转移概率矩阵 $P$，其第 $i,j$ 个元素为
+
+$$
+p_{ij}=\textrm{Prob}\{Y=j \mid X=i\}=\frac{\rho_{ij}}{\sum_j \rho_{ij}},
+$$
+
+其中
+
+$$
+\begin{bmatrix}
+p_{11} & p_{12}\\
+p_{21} & p_{22}
+\end{bmatrix}.
+$$
+
+第一行给出在 $X=0$ 条件下 $Y=j$（$j=0,1$）的概率；第二行给出在 $X=1$ 条件下 $Y=j$（$j=0,1$）的概率。
+
+注意：
+
+- $\sum_j \rho_{ij}=\dfrac{\sum_j \rho_{ij}}{\sum_j \rho_{ij}}=1$，因此转移矩阵 $P$ 的每一行都是一个概率分布（列一般不是）。
+
+## 应用：时间序列的预测
+
+假设只有两个时期：
+
+* $t=0$ 表示“今天”
+* $t=1$ 表示“明天”
+
+令 $X(0)$ 为在 $t=0$ 时实现的随机变量，$X(1)$ 为在 $t=1$ 时实现的随机变量。
+
+假设
+
+$$
+\begin{gathered}
+\textrm{Prob}\{X(0)=i, X(1)=j\}=f_{ij}\ge 0,\quad i=0,\ldots,I-1,\\
+\sum_i\sum_j f_{ij}=1.
+\end{gathered}
+$$
+
+则 $f_{ij}$ 是 $[X(0), X(1)]$ 的联合分布。其对应的条件分布为
+
+$$
+\textrm{Prob}\{X(1)=j \mid X(0)=i\}=\frac{f_{ij}}{\sum_j f_{ij}}\,.
+$$
+
+备注：
+
+* 该公式是应用经济学中进行时间序列预测的**常用工具**。
 
 ## 统计独立性
 
@@ -458,434 +540,6 @@ $$
 \sigma_{X}^{2}\equiv\mathbb{D}\left[X\right] & =\mathrm{E}\left[\left(X-\mu_{X}\right)^{2}\right]=\int_{-\infty}^{\infty}\left(x-\mu_{X}\right)^{2}f_{X}(x)dx
 \end{aligned}
 $$
-
-## 生成随机数
-
-假设我们有一个可以生成均匀随机变量的伪随机数生成器，即具有如下概率分布的随机变量：
-
-$$
-\textrm{Prob}\{\tilde{X}=i\}=\frac{1}{I},\quad i=0,\ldots,I-1
-$$
-
-如何将$\tilde{X}$转换为随机变量$X$，使得$\textrm{Prob}\{X=i\}=f_i,\quad i=0,\ldots,I-1$，其中$f_i$是在$i=0,1,\dots,I-1$上的任意离散概率分布？
-
-关键工具是累积分布函数(CDF)的逆函数。
-
-注意，分布的CDF是单调且非递减的，取值在$0$和$1$之间。
-
-我们可以通过以下方式从已知CDF的随机变量$X$中抽取样本：
-
-- 从区间$[0,1]$上的均匀分布中抽取随机变量$u$
-- 将$u$的样本值代入目标CDF的**"逆函数"**得到$X$
-- $X$具有目标CDF
-
-因此，知道分布的**"逆"**CDF就足以从这个分布中进行模拟。
-
-```{note}
-这个方法要求"逆"CDF必须存在。
-```
-
-逆CDF定义为
-
-$$
-F^{-1}(u)\equiv\inf \{x\in \mathbb{R}: F(x) \geq u\} \quad(0<u<1)
-$$
-
-这里我们使用下确界是因为CDF是非递减且右连续的函数。
-
-因此，假设：
-
-- $U$是一个均匀随机变量$U\in[0,1]$
-- 我们想要对CDF为$F$的随机变量$X$进行抽样
-
-事实证明，如果我们使用均匀随机数 $U$ 然后通过以下方式计算 $X$：
-
-$$
-X=F^{-1}(U),
-$$
-
-那么 $X$ 就是一个具有累积分布函数 $F_X(x)=F(x)=\textrm{Prob}\{X\le x\}$ 的随机变量。
-
-我们将在 $F$ 是连续且双射的特殊情况下验证这一点，因此其反函数存在且可以表示为 $F^{-1}$。
-
-注意到
-
-$$
-\begin{aligned}
-F_{X}\left(x\right)	& =\textrm{Prob}\left\{ X\leq x\right\} \\
-	& =\textrm{Prob}\left\{ F^{-1}\left(U\right)\leq x\right\} \\
-	& =\textrm{Prob}\left\{ U\leq F\left(x\right)\right\} \\
-	& =F\left(x\right)
-\end{aligned}
-$$
-
-最后一个等式成立是因为 $U$ 在 $[0,1]$ 上均匀分布，而给定 $x$ 时，$F(x)$ 是一个也位于 $[0,1]$ 上的常数。
-
-让我们使用 `numpy` 来计算一些例子。
-
-**示例：连续几何（指数）分布**
-
-设 $X$ 服从几何分布，参数为 $\lambda>0$。
-
-其密度函数为
-
-$$
-\quad f(x)=\lambda e^{-\lambda x}
-$$
-
-其累积分布函数为
-
-F(x)=\int_{0}^{\infty}\lambda e^{-\lambda x}=1-e^{-\lambda x}
-$$
-
-设 $U$ 在 $[0,1]$ 上服从均匀分布。
-
-$X$ 是一个随机变量，满足 $U=F(X)$。
-
-$X$ 的分布可以通过以下推导得出：
-
-$$
-\begin{aligned}
-U& =F(X)=1-e^{-\lambda X}\qquad\\
-\implies & \quad -U=e^{-\lambda X}\\
-\implies&  \quad \log(1-U)=-\lambda X\\
-\implies & \quad X=\frac{(1-U)}{-\lambda}
-\end{aligned}
-$$
-
-让我们从 $U[0,1]$ 中抽取 $u$ 并计算 $x=\frac{log(1-U)}{-\lambda}$。
-
-我们将检验 $X$ 是否似乎服从**连续几何**（指数）分布。
-
-让我们用 `numpy` 来验证。
-
-```{code-cell} ipython3
-n, λ = 1_000_000, 0.3
-
-# 生成均匀分布随机数
-u = np.random.rand(n)
-
-# 转换
-x = -np.log(1-u)/λ
-
-# 生成几何分布
-x_g = np.random.exponential(1 / λ, n)
-
-# 绘图并比较
-plt.hist(x, bins=100, density=True)
-plt.show()
-```
-
-```{code-cell} ipython3
-plt.hist(x_g, bins=100, density=True, alpha=0.6)
-plt.show()
-```
-
-**几何分布**
-
-设 $X$ 服从几何分布，即
-
-$$
-\begin{aligned}
-\textrm{Prob}(X=i) & =(1-\lambda)\lambda^i,\quad\lambda\in(0,1), \quad  i=0,1,\dots \\
- & \sum_{i=0}^{\infty}\textrm{Prob}(X=i)=1\longleftrightarrow(1- \lambda)\sum_{i=0}^{\infty}\lambda^i=\frac{1-\lambda}{1-\lambda}=1
-\end{aligned}
-$$
-
-其累积分布函数(CDF)为
-
-$$
-\begin{aligned}
-\textrm{Prob}(X\le i)& =(1-\lambda)\sum_{j=0}^{i}\lambda^i\\
-& =(1-\lambda)[\frac{1-\lambda^{i+1}}{1-\lambda}]\\
-& =1-\lambda^{i+1}\\
-& =F(X)=F_i \quad
-\end{aligned}
-$$
-
-再次，设 $\tilde{U}$ 服从均匀分布，我们要找到满足 $F(X)=\tilde{U}$ 的 $X$。
-
-让我们从以下推导 $X$ 的分布：
-
-$$
-\begin{aligned}
-\tilde{U} & =F(X)=1-\lambda^{x+1}\\
-1-\tilde{U} & =\lambda^{x+1}\\
-\log(1-\tilde{U})& =(x+1)\log\lambda\\
-\frac{\log(1-\tilde{U})}{\log\lambda}& =x+1\\
-\frac{\log(1-\tilde{U})}{\log\lambda}-1 &=x
-\end{aligned}
-$$
-
-然而，对于任何 $x\geq0$，$\tilde{U}=F^{-1}(X)$ 可能不是整数。
-
-所以令
-
-$$
-x=\lceil\frac{\log(1-\tilde{U})}{\log\lambda}-1\rceil
-$$
-
-其中 $\lceil . \rceil$ 是向上取整函数。
-
-因此，$x$ 是使离散几何累积分布函数大于或等于 $\tilde{U}$ 的最小整数。
-
-我们可以通过以下 `numpy` 程序验证 $x$ 确实服从几何分布。
-
-```{note}
-指数分布是几何分布的连续类比。
-```
-
-```{code-cell} ipython3
-n, λ = 1_000_000, 0.8
-
-# 生成均匀分布随机数
-u = np.random.rand(n)
-
-# 变换
-x = np.ceil(np.log(1-u)/np.log(λ) - 1)
-
-# 生成几何分布
-x_g = np.random.geometric(1-λ, n)
-
-# 绘图并比较
-plt.hist(x, bins=150, density=True)
-plt.show()
-```
-
-```{code-cell} ipython3
-np.random.geometric(1-λ, n).max()
-```
-
-```{code-cell} ipython3
-np.log(0.4)/np.log(0.3)
-```
-
-```{code-cell} ipython3
-plt.hist(x_g, bins=150, density=True, alpha=0.6)
-plt.show()
-```
-
-## 一些离散概率分布
-
-让我们编写一些Python代码来计算单变量随机变量的均值和方差。
-
-我们将使用代码来
-
-- 从概率分布计算总体均值和方差
-- 生成N个独立同分布的样本并计算样本均值和方差
-- 比较总体和样本的均值和方差
-
-## 几何分布
-
-$$
-\textrm{Prob}(X=k)=(1-p)^{k-1}p,k=1,2, \ldots
-$$
-
-$\implies$
-
-$$
-\begin{aligned}
-\mathbb{E}(X) & =\frac{1}{p}\\\mathbb{D}(X) & =\frac{1-p}{p^2}
-\end{aligned}
-$$
-
-我们从该分布中抽取观测值，并将样本均值和方差与理论结果进行比较。
-
-```{code-cell} ipython3
-# 指定参数
-p, n = 0.3, 1_000_000
-
-# 从分布中抽取观测值
-x = np.random.geometric(p, n)
-
-# 计算样本均值和方差
-μ_hat = np.mean(x)
-σ2_hat = np.var(x)
-
-print("样本均值为：", μ_hat, "\n样本方差为：", σ2_hat)
-
-# 与理论结果比较
-print("\n总体均值为：", 1/p)
-print("总体方差为：", (1-p)/(p**2))
-```
-
-### 纽科姆-本福特分布
-
-**纽科姆-本福特定律**适用于许多数据集，例如向税务机关报告的收入，其中首位数字更可能是小数而不是大数。
-
-参见 <https://en.wikipedia.org/wiki/Benford%27s_law>
-
-本福特概率分布为
-
-$$
-\textrm{Prob}\{X=d\}=\log _{10}(d+1)-\log _{10}(d)=\log _{10}\left(1+\frac{1}{d}\right)
-$$
-
-其中 $d\in\{1,2,\cdots,9\}$ 可以被视为数字序列中的**首位数字**。
-
-这是一个明确定义的离散分布，因为我们可以验证概率是非负的且和为 $1$。
-
-$$
-\log_{10}\left(1+\frac{1}{d}\right)\geq0,\quad\sum_{d=1}^{9}\log_{10}\left(1+\frac{1}{d}\right)=1
-$$
-
-本福特分布的均值和方差为
-
-$$
-\begin{aligned}
-\mathbb{E}\left[X\right]	 &=\sum_{d=1}^{9}d\log_{10}\left(1+\frac{1}{d}\right)\simeq3.4402 \\
-\mathbb{V}\left[X\right]	 & =\sum_{d=1}^{9}\left(d-\mathbb{E}\left[X\right]\right)^{2}\log_{10}\left(1+\frac{1}{d}\right)\simeq6.0565
-
-\end{aligned}
-$$
-
-我们使用`numpy`来验证上述结果并计算均值和方差。
-
-```{code-cell} ipython3
-Benford_pmf = np.array([np.log10(1+1/d) for d in range(1,10)])
-k = np.array(range(1,10))
-
-# 均值
-mean = np.sum(Benford_pmf * k)
-
-# 方差
-var = np.sum([(k-mean)**2 * Benford_pmf])
-
-# 验证概率和为1
-print(np.sum(Benford_pmf))
-print(mean)
-print(var)
-```
-
-```{code-cell} ipython3
-# 绘制分布图
-plt.plot(range(1,10), Benford_pmf, 'o')
-plt.title('本福特分布')
-plt.show()
-```
-
-### 帕斯卡（负二项）分布
-
-考虑一个独立伯努利试验序列。
-
-设 $p$ 为成功的概率。
-
-设 $X$ 为在获得 $r$ 次成功之前失败的次数的随机变量。
-
-其分布为
-
-$$
-\begin{aligned}
-X  & \sim NB(r,p) \\
-\textrm{Prob}(X=k;r,p) & = \begin{pmatrix}k+r-1 \\ r-1 \end{pmatrix}p^r(1-p)^{k}
-\end{aligned}
-$$
-
-这里，我们从 $k+r-1$ 个可能的结果中选择，因为最后一次抽取根据定义必须是成功的。
-
-我们计算得到均值和方差为
-
-$$
-\begin{aligned}
-\mathbb{E}(X) & = \frac{k(1-p)}{p} \\
-\mathbb{V}(X) & = \frac{k(1-p)}{p^2}
-\end{aligned}
-$$
-
-```{code-cell} ipython3
-# 指定参数
-r, p, n = 10, 0.3, 1_000_000
-
-# 从分布中抽取观测值
-x = np.random.negative_binomial(r, p, n)
-
-# 计算样本均值和方差
-μ_hat = np.mean(x)
-σ2_hat = np.var(x)
-
-print("样本均值为：", μ_hat, "\n样本方差为：", σ2_hat)
-print("\n总体均值为：", r*(1-p)/p)
-print("总体方差为：", r*(1-p)/p**2)
-```
-
-## 连续型随机变量
-
-### 单变量高斯分布
-
-我们写作
-
-$$
-X \sim N(\mu,\sigma^2)
-$$
-
-来表示概率分布
-
-$$f(x|u,\sigma^2)=\frac{1}{\sqrt{2\pi \sigma^2}}e^{[-\frac{1}{2\sigma^2}(x-u)^2]} $$
-
-在下面的例子中，我们设定 $\mu = 0, \sigma = 0.1$。
-
-```{code-cell} ipython3
-# 指定参数
-μ, σ = 0, 0.1
-
-# 指定抽样次数
-n = 1_000_000
-
-# 从分布中抽取观测值
-x = np.random.normal(μ, σ, n)
-
-# 计算样本均值和方差
-μ_hat = np.mean(x)
-σ_hat = np.std(x)
-
-print("样本均值为：", μ_hat)
-print("样本标准差为：", σ_hat)
-```
-
-```{code-cell} ipython3
-# 比较
-print(μ-μ_hat < 1e-3)
-print(σ-σ_hat < 1e-3)
-```
-
-### 均匀分布
-
-$$
-\begin{aligned}
-X & \sim U[a,b] \\
-f(x)& = \begin{cases} \frac{1}{b-a}, & a \leq x \leq b \\ \quad0, & \text{其他}  \end{cases}
-\end{aligned}
-$$
-
-总体均值和方差为
-
-$$
-\begin{aligned}
-\mathbb{E}(X) & = \frac{a+b}{2} \\
-\mathbb{V}(X) & = \frac{(b-a)^2}{12}
-\end{aligned}
-$$
-
-```{code-cell} ipython3
-# 指定参数
-a, b = 10, 20
-
-# 指定抽样次数
-n = 1_000_000
-
-# 从分布中抽取观测值
-x = a + (b-a)*np.random.rand(n)
-
-# 计算样本均值和方差
-μ_hat = np.mean(x)
-σ2_hat = np.var(x)
-
-print("样本均值为：", μ_hat, "\n样本方差为：", σ2_hat)
-print("\n总体均值为：", (a+b)/2)
-print("总体方差为：", (b-a)**2/12)
-```
-
-##  混合离散-连续分布
 
 让我们用一个小故事来说明这个例子。
 
@@ -964,9 +618,12 @@ $$
 $$ \textrm{Prob}(X=i)=\sum_j{f_{ij}}=u_i  $$
 $$ \textrm{Prob}(Y=j)=\sum_i{f_{ij}}=v_j $$
 
-下面我们抽取一些样本来确认"抽样"分布与"总体"分布的一致性。
+**抽样：**
 
-**样本结果：**
+让我们写一段 Python 代码，用来生成大样本并计算相对频率。
+
+这段代码将帮助我们检验“抽样”分布是否与“总体”分布一致——从而确认总体分布确实给出了在大样本中应当期望
+的相对频率。
 
 ```{code-cell} ipython3
 # 指定参数
@@ -994,19 +651,19 @@ print(x)
 在这里，我们使用逆CDF技术来从联合分布$F$中生成样本。
 
 ```{code-cell} ipython3
-# 边际分布
+# 边缘分布
 xp = np.sum(x[0, :] == xs[0])/1_000_000
 yp = np.sum(x[1, :] == ys[0])/1_000_000
 
 # 打印输出
-print("x的边际分布")
+print("x的边缘分布")
 xmtb = pt.PrettyTable()
 xmtb.field_names = ['x值', 'x概率']
 xmtb.add_row([xs[0], xp])
 xmtb.add_row([xs[1], 1-xp])
 print(xmtb)
 
-print("\ny的边际分布")
+print("\ny的边缘分布")
 ymtb = pt.PrettyTable()
 ymtb.field_names = ['y值', 'y概率']
 ymtb.add_row([ys[0], yp])
@@ -1057,7 +714,7 @@ $$
 
 $\implies$
 
-(1) 边际分布：
+(1) 边缘分布：
 
 $$
 \left[\begin{array}{cccccc}
@@ -1092,9 +749,10 @@ x=x_2 & \vdots & \frac{0.1}{0.5}=0.2 & \frac{0.4}{0.5}=0.8 \\
 \end{array}\right]
 $$
 
-这些总体对象与上面计算的样本对应物非常相似。
+可以看出，总体的计算结果与我们上面得到的样本结果非常接近。
 
-让我们将我们使用过的一些函数封装到一个Python类中，用于一般的离散双变量联合分布。
+接下来，我们将把之前用到的一些功能封装到一个 Python 类中，以便对任意给定的离散二元联合分布进行
+类似的分析。
 
 ```{code-cell} ipython3
 class discrete_bijoint:
@@ -1103,7 +761,7 @@ class discrete_bijoint:
         '''初始化
         -----------------
         参数：
-        f: 双变量联合概率矩阵
+        f: 二元联合概率矩阵
         xs: x向量的值
         ys: y向量的值
         '''
@@ -1148,7 +806,7 @@ class discrete_bijoint:
         self.n = n
 
     def marg_dist(self):
-        '''边际分布'''
+        '''边缘分布'''
         x = self.x
         xs = self.xs
         ys = self.ys
@@ -1168,8 +826,8 @@ class discrete_bijoint:
                 ymtb.add_row([ys[i], ymp[i]])
         xmtb.add_row(['总和', np.sum(xmp)])
         ymtb.add_row(['总和', np.sum(ymp)])
-        print("\nx的边际分布\n", xmtb)
-        print("\ny的边际分布\n", ymtb)
+        print("\nx的边缘分布\n", xmtb)
+        print("\ny的边缘分布\n", ymtb)
 
         self.xmp = xmp
         self.ymp = ymp
@@ -1220,7 +878,7 @@ d.joint_tb()
 ```
 
 ```{code-cell} ipython3
-# 样本边际分布
+# 样本边缘分布
 d.draw(1_000_000)
 d.marg_dist()
 ```
@@ -1325,7 +983,7 @@ ax.set_xticks([])
 plt.show()
 ```
 
-接下来我们可以使用内置的`numpy`函数进行模拟，并从样本均值和方差计算**样本**边际分布。
+接下来我们可以使用内置的`numpy`函数进行模拟，并从样本均值和方差计算**样本**边缘分布。
 
 ```{code-cell} ipython3
 μ= np.array([0, 5])
@@ -1358,7 +1016,7 @@ plt.show()
 
 **条件分布**
 
-总体条件分布为
+对于二维正态（高斯）总体分布，其条件分布也服从正态分布：
 
 $$
 \begin{aligned} \\
@@ -1480,8 +1138,6 @@ $$
 
 其中 $ f_{X}*g_{Y} $ 表示函数 $f_X$ 和 $g_Y$ 的**卷积**。
 
-## 转移概率矩阵
-
 考虑以下两个随机变量的联合概率分布。
 
 设 $X,Y$ 为离散随机变量，其联合分布为
@@ -1553,15 +1209,15 @@ $$
 \right]
 $$
 
-从联合分布出发，我们已经证明可以得到**唯一的**边际分布。
+从联合分布出发，我们已经证明可以得到**唯一的**边缘分布。
 
 现在我们尝试反向推导。
 
-我们会发现，从两个边际分布出发，通常可以构造出多个满足这些边际分布的联合分布。
+我们会发现，从两个边缘分布出发，通常可以构造出多个满足这些边缘分布的联合分布。
 
-这些联合分布中的每一个都被称为两个边际分布的**耦合**。
+这些联合分布中的每一个都被称为两个边缘分布的**耦合**。
 
-让我们从边际分布开始
+让我们从边缘分布开始
 
 $$
 \begin{aligned}
@@ -1570,7 +1226,7 @@ $$
 \end{aligned}
 $$
 
-给定两个边际分布，$X$的分布$\mu$和$Y$的分布$\nu$，联合分布$f_{ij}$被称为$\mu$和$\nu$的一个**耦合**。
+给定两个边缘分布，$X$的分布$\mu$和$Y$的分布$\nu$，联合分布$f_{ij}$被称为$\mu$和$\nu$的一个**耦合**。
 
 **例子：**
 
@@ -1588,7 +1244,7 @@ $$
 
 我们构造两个耦合。
 
-第一个耦合是我们两个边际分布的联合分布
+这两个边缘分布的第一个耦合是以下联合分布：
 
 $$f_{ij}=
 \left[
@@ -1612,7 +1268,7 @@ $$
 \end{aligned}
 $$
 
-我们两个边缘分布的第二个耦合是联合分布
+这两个边缘分布的第二个耦合是以下联合分布：
 
 $$
 f_{ij}=
@@ -1638,7 +1294,7 @@ $$
 
 因此，我们提出的两个联合分布具有相同的边缘分布。
 
-但是联合分布不同。
+但是联合分布本身不同。
 
 因此，多个联合分布 $[f_{ij}]$ 可以具有相同的边缘分布。
 
@@ -1665,11 +1321,11 @@ $$
 C(u_1,u_2,\dots,u_n) = H[F^{-1}_1(u_1),F^{-1}_2(u_2),\dots,F^{-1}_N(u_N)]
 $$
 
-从逻辑的反方向来看，给定单变量**边缘分布**$F_1(x_1), F_2(x_2),\dots,F_N(x_N)$和一个Copula函数$C(\cdot)$，函数$H(x_1,x_2,\dots,x_N) = C(F_1(x_1), F_2(x_2),\dots,F_N(x_N))$是$F_1(x_1), F_2(x_2),\dots,F_N(x_N)$的一个**耦合**。
+反过来，给定单变量**边缘分布**$F_1(x_1), F_2(x_2),\dots,F_N(x_N)$和一个Copula函数$C(\cdot)$，函数$H(x_1,x_2,\dots,x_N) = C(F_1(x_1), F_2(x_2),\dots,F_N(x_N))$是$F_1(x_1), F_2(x_2),\dots,F_N(x_N)$的一个**耦合**。
 
 因此，对于给定的边缘分布，当相关的单变量随机变量不独立时，我们可以使用Copula函数来确定联合分布。
 
-Copula函数经常用于表征随机变量之间的**相依性**。
+Copula 函数常被用来描述随机变量之间的**相依性**。
 
 **离散边缘分布**
 
@@ -1731,7 +1387,7 @@ ymtb.add_row([1, r_hat])
 print(ymtb)
 ```
 
-现在让我们用两个边际分布，一个是$X$的，另一个是$Y$的，来构造两个不同的耦合。
+现在让我们用两个边缘分布，一个是$X$的，另一个是$Y$的，来构造两个不同的耦合。
 
 对于第一个联合分布：
 
@@ -1748,7 +1404,7 @@ $$
 \end{array}\right]
 $$
 
-让我们使用Python来构造这个联合分布，然后验证其边际分布是否符合我们的要求。
+让我们使用Python来构造这个联合分布，然后验证其边缘分布是否符合要求。
 
 ```{code-cell} ipython3
 # 定义参数
@@ -1801,14 +1457,14 @@ c1_q_hat = sum(c1[0, :] == 1)/draws1
 c1_r_hat = sum(c1[1, :] == 1)/draws1
 
 # 打印输出
-print("x的边际分布")
+print("x的边缘分布")
 c1_x_mtb = pt.PrettyTable()
 c1_x_mtb.field_names = ['c1_x_值', 'c1_x_概率']
 c1_x_mtb.add_row([0, 1-c1_q_hat])
 c1_x_mtb.add_row([1, c1_q_hat])
 print(c1_x_mtb)
 
-print("y的边际分布")
+print("y的边缘分布")
 c1_ymtb = pt.PrettyTable()
 c1_ymtb.field_names = ['c1_y_值', 'c1_y_概率']
 c1_ymtb.add_row([0, 1-c1_r_hat])
@@ -1876,14 +1532,14 @@ c2_q_hat = sum(c2[0, :] == 1)/draws2
 c2_r_hat = sum(c2[1, :] == 1)/draws2
 
 # 打印输出
-print("x的边际分布")
+print("x的边缘分布")
 c2_x_mtb = pt.PrettyTable()
 c2_x_mtb.field_names = ['c2_x_取值', 'c2_x_概率']
 c2_x_mtb.add_row([0, 1-c2_q_hat])
 c2_x_mtb.add_row([1, c2_q_hat])
 print(c2_x_mtb)
 
-print("y的边际分布")
+print("y的边缘分布")
 c2_ymtb = pt.PrettyTable()
 c2_ymtb.field_names = ['c2_y_取值', 'c2_y_概率']
 c2_ymtb.add_row([0, 1-c2_r_hat])
@@ -1892,34 +1548,6 @@ print(c2_ymtb)
 ```
 
 
-我们已经验证了联合分布 $c_1$ 和 $c_2$ 具有相同的 $X$ 和 $Y$ 的边际分布。
+经过验证，联合分布 $c_1$ 和 $c_2$ 具有相同的 $X$ 和 $Y$ 的边缘分布。
 
 因此它们都是 $X$ 和 $Y$ 的耦合。
-
-## 时间序列
-
-假设有两个时间段。
-
-- $t=0$ "今天"
-- $t=1$ "明天"
-
-令 $X(0)$ 为在 $t=0$ 时刻实现的随机变量，$X(1)$ 为在 $t=1$ 时刻实现的随机变量。
-
-假设
-
-$$
-\begin{aligned}
-\text{Prob} \{X(0)=i,X(1)=j\} &=f_{ij}≥0，i=0,\cdots,I-1\\
-\sum_{i}\sum_{j}f_{ij}&=1
-\end{aligned}
-$$
-
-$f_{ij}$ 是 $[X(0), X(1)]$ 的联合分布。
-
-条件分布为
-
-$$\text{Prob} \{X(1)=j|X(0)=i\}= \frac{f_{ij}}{ \sum_{j}f_{ij}}$$
-
-**注意：**
-- 这是时间序列最优预测理论的一个关键公式。
-
