@@ -30,8 +30,8 @@ kernelspec:
 
 在本讲座中，你将学习以下公式：
 
-* 长度为N的随机向量$x$的联合分布
-* $x$的所有子向量的边际分布
+* 长度为N的随机向量 $x$ 的联合分布
+* $x$的所有子向量的边缘分布
 * $x$的子向量在其他子向量条件下的条件分布
 
 我们将使用多元正态分布来构建一些有用的模型：
@@ -274,9 +274,9 @@ multi_normal.partition(k)
 multi_normal.βs[0],multi_normal.βs[1]
 ```
 
-让我们说明一下你可以_把任何东西都可以回归到其他任何东西上_这个事实。
+让我们说明一下你可以*把任何东西都可以回归到其他任何东西上*这个事实。
 
-我们已经计算了所需的一切，可以计算两条回归线，一条是$z_2$对$z_1$的回归，另一条是$z_1$对$z_2$的回归。
+我们已经计算了所需的一切，可以计算两条回归线，一条是 $z_2$ 对 $z_1$ 的回归，另一条是 $z_1$ 对 $z_2$ 的回归。
 
 我们将这些回归表示为
 
@@ -389,7 +389,7 @@ print("1/b2 = ", 1/b2)
 
 我们可以使用这些回归线或我们的代码来计算条件期望。
 
-让我们计算在给定$z_1=5$条件下$z_2$分布的均值和方差。
+让我们计算在给定 $z_1=5$ 条件下 $z_2$ 分布的均值和方差。
 
 之后我们将对调回归中左右两边的变量。
 
@@ -420,7 +420,7 @@ z2 = np.array([5.]) # 给定 z2
 print('μ1_hat, Σ1_hat = ', μ1_hat, Σ1_hat)
 ```
 
-让我们比较前面的总体均值和方差与从大样本抽取并对$z_1 - \mu_1$和$z_2 - \mu_2$进行回归的结果。
+让我们比较（1）前面的总体均值和方差，与（2）从大样本抽取并对 $z_1 - \mu_1$ 和 $z_2 - \mu_2$ 进行回归的结果。
 
 我们知道
 
@@ -434,7 +434,7 @@ $$
 z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 $$
 
-我们预计，随着样本量越来越大，估计的OLS系数将收敛到$\beta$，$\epsilon$的估计方差将收敛到$\hat{\Sigma}_1$。
+我们预计，随着样本量越来越大，估计的OLS系数将收敛到 $\beta$，$\epsilon$ 的估计方差将收敛到 $\hat{\Sigma}_1$。
 
 ```{code-cell} ipython3
 n = 1_000_000 # 样本量
@@ -461,7 +461,7 @@ multi_normal.βs[0], results.params
 Σ1_hat, results.resid @ results.resid.T / (n - 1)
 ```
 
-最后，让我们计算$\hat{E z_1 | z_2}$的估计值并将其与$\hat{\mu}_1$进行比较
+最后，让我们计算 $\hat{E z_1 | z_2}$ 的估计值并将其与 $\hat{\mu}_1$ 进行比较
 
 ```{code-cell} ipython3
 μ1_hat, results.predict(z2 - μ2) + μ1
@@ -535,7 +535,7 @@ multi_normal.βs[0], results.params
 
 让我们来看一个更接近现实生活的例子，即从一系列测试分数中推断出一个称为IQ的一维智力测量值。
 
-第$i$个测试分数$y_i$等于未知标量IQ $\theta$和随机变量$w_{i}$的和。
+第 $i$ 个测试分数 $y_i$ 等于未知标量IQ $\theta$ 和随机变量 $w_{i}$ 的和。
 
 $$
 y_{i} = \theta + \sigma_y w_i, \quad i=1,\dots, n
@@ -547,9 +547,9 @@ $$
 \theta = \mu_{\theta} + \sigma_{\theta} w_{n+1}.
 $$
 
-我们假设测试分数中的噪声$\{w_i\}_{i=1}^N$是独立同分布的，且与IQ不相关。
+我们假设测试分数中的噪声 $\{w_i\}_{i=1}^N$ 是独立同分布的，且与IQ不相关。
 
-我们还假设$\{w_i\}_{i=1}^{n+1}$是独立同分布的标准正态分布：
+我们还假设 $\{w_i\}_{i=1}^{n+1}$ 是独立同分布的标准正态分布：
 
 $$
 \boldsymbol{w}=
@@ -562,7 +562,7 @@ w_{n+1}
 \end{array}\right]\sim N\left(0,I_{n+1}\right)
 $$
 
-以下系统描述了我们感兴趣的$(n+1) \times 1$随机向量$X$：
+以下系统描述了我们感兴趣的 $(n+1) \times 1$ 随机向量 $X$：
 
 $$
 
@@ -600,12 +600,12 @@ X=\mu_{\theta}\boldsymbol{1}_{n+1}+D\boldsymbol{w}
 $$
 
 其中 $X = \begin{bmatrix} y \cr \theta \end{bmatrix}$，
-$\boldsymbol{1}_{n+1}$ 是一个大小为 $n+1$ 的全1向量，
-而 $D$ 是一个 $n+1$ 乘 $n+1$ 的矩阵。
+$\boldsymbol{1}_{n+1}$ 是一个大小为 $n+1$ 的全$1$向量，
+而 $D$ 是一个 $(n+1) \times (n+1)$ 的矩阵。
 
 让我们定义一个Python函数来构造我们已知遵循多元正态分布的随机向量 $X$ 的均值 $\mu$ 和协方差矩阵 $\Sigma$。
 
-作为参数，该函数接收测试次数 $n$、IQ分布的均值 $\mu_{\theta}$ 和标准差 $\sigma_\theta$，以及测试分数中随机性的标准差 $\sigma_{y}$。
+该函数的参数是测试次数 $n$、IQ分布的均值 $\mu_{\theta}$ 和标准差 $\sigma_\theta$，以及测试分数中随机性的标准差 $\sigma_{y}$。
 
 ```{code-cell} ipython3
 def construct_moments_IQ(n, μθ, σθ, σy):
@@ -623,7 +623,7 @@ def construct_moments_IQ(n, μθ, σθ, σy):
 
 现在让我们考虑这个模型的一个具体实例。
 
-假设我们记录了$50$个测试分数，并且我们知道
+假设我们记录了 $50$ 个测试分数，并且我们知道
 $\mu_{\theta}=100$，$\sigma_{\theta}=10$，以及
 $\sigma_{y}=10$。
 
@@ -639,9 +639,9 @@ n = 50
 
 我们现在可以使用我们的`MultivariateNormal`类来构建一个实例，然后按照我们的需要对均值向量和协方差矩阵进行分割。
 
-我们想要对IQ（即随机变量$\theta$，_我们不知道的_）基于测试分数向量$y$（_我们知道的_）进行回归。
+我们想要对IQ，即随机变量 $\theta$（*我们不知道的*），测试分数的向量 $y$（_我们知道的_）进行回归。
 
-我们选择`k=n`，这样$z_{1} = y$且$z_{2} = \theta$。
+我们选择`k=n`，这样 $z_{1} = y$ 且 $z_{2} = \theta$。
 
 ```{code-cell} ipython3
 multi_normal_IQ = MultivariateNormal(μ_IQ, Σ_IQ)
@@ -726,27 +726,27 @@ plt.legend()
 plt.show()
 ```
 
-上图中的蓝色实线显示了$\hat{\mu}_{\theta}$作为我们已记录和条件化的测试分数数量的函数。
+上图中的蓝色实线显示了 $\hat{\mu}_{\theta}$ 作为我们已记录和条件化的测试分数数量的函数。
 
-蓝色区域显示了从$\hat{\mu}_{\theta}$加上或减去$1.96 \hat{\sigma}_{\theta}$所得到的范围。
+蓝色区域显示了从 $\hat{\mu}_{\theta}$ 加上或减去 $1.96 \hat{\sigma}_{\theta}$ 所得到的范围。
 
 因此，条件分布的95%概率质量落在这个范围内。
 
-黑色虚线显示了我们抽取的随机$\theta$的值。
+黑色虚线显示了我们抽取的随机 $\theta$ 的值。
 
-随着越来越多的测试分数出现，我们对这个人的$\theta$的估计变得越来越可靠。
+随着越来越多的测试分数出现，我们对这个人的 $\theta$ 的估计变得越来越可靠。
 
-通过观察条件分布的变化，我们可以看到添加更多的测试分数使$\hat{\theta}$逐渐稳定并接近$\theta$。
+通过观察条件分布的变化，我们可以看到添加更多的测试分数使 $\hat{\theta}$ 逐渐稳定并接近 $\theta$。
 
-因此，每个$y_{i}$都提供了关于$\theta$的信息。
+因此，每个 $y_{i}$ 都提供了关于 $\theta$ 的信息。
 
-如果我们让测试次数$n \rightarrow + \infty$，条件标准差$\hat{\sigma}_{\theta}$将以$\frac{1}{n^{.5}}$的速率收敛到$0$。
+如果我们让测试次数 $n \rightarrow + \infty$，条件标准差 $\hat{\sigma}_{\theta}$ 将以 $\frac{1}{n^{.5}}$ 的速率收敛到 $0$。
 
 ## 信息即惊奇
 
 让我们通过使用不同的表示方法，从另一个角度来看这个问题。
 
-我们可以将上述随机向量$X$表示为
+我们可以将上述随机向量 $X$ 表示为
 
 $$
 X = \mu_{\theta} \boldsymbol{1}_{n+1} + C \epsilon, \quad \epsilon \sim N\left(0, I\right)
@@ -770,21 +770,21 @@ $$
 \epsilon \sim N(0, I) .
 $$
 
-令$G=C^{-1}$
+令 $G=C^{-1}$
 
-$G$也是下三角矩阵。
+$G$ 也是下三角矩阵。
 
-我们可以通过以下公式计算$\epsilon$
+我们可以通过以下公式计算 $\epsilon$
 
 $$
 \epsilon = G \left( X - \mu_{\theta} \boldsymbol{1}_{n+1} \right)
 $$
 
-这个公式证实了正交向量$\epsilon$包含了与非正交向量$\left( X - \mu_{\theta} \boldsymbol{1}_{n+1} \right)$相同的信息。
+这个公式证实了正交向量 $\epsilon$ 包含了与非正交向量 $\left( X - \mu_{\theta} \boldsymbol{1}_{n+1} \right)$ 相同的信息。
 
-我们可以说$\epsilon$是$\left( X - \mu_{\theta} \boldsymbol{1}_{n+1} \right)$的一个正交基。
+我们可以说 $\epsilon$ 是 $\left( X - \mu_{\theta} \boldsymbol{1}_{n+1} \right)$ 的一个正交基。
 
-令$c_{i}$为$C$最后一行的第$i$个元素。
+令 $c_{i}$ 为 $C$ 最后一行的第 $i$ 个元素。
 
 那么我们可以写作
 
@@ -829,7 +829,7 @@ cε = C[n, :] * ε
 Σθ_hat_arr_C = np.array([np.sum(C[n, i+1:n+1] ** 2) for i in range(n)])
 ```
 
-为了确认这些公式给出的答案与我们之前计算的结果相同，我们可以将基于$\{y_i\}_{i=1}^k$条件下的$\theta$的均值和方差，与我们之前使用`MultivariateNormal`类（基于我们对多元正态分布条件分布的原始表示）实现的公式所得到的结果进行比较。
+为了确认这些公式给出的答案与我们之前计算的结果相同，我们可以将基于 $\{y_i\}_{i=1}^k$ 条件下的 $\theta$ 的均值和方差，与我们之前使用`MultivariateNormal`类（基于我们对多元正态分布条件分布的原始表示）实现的公式所得到的结果进行比较。
 
 ```{code-cell} ipython3
 # 条件均值
@@ -849,8 +849,8 @@ Cholesky分解**递归地**计算这些内容。
 
 实际上，在公式{eq}`mnv_1`中，
 
-- 随机变量$c_i \epsilon_i$包含了关于$\theta$的信息，这些信息不包含在$\epsilon_1, \epsilon_2, \ldots, \epsilon_{i-1}$的信息中
-- 系数$c_i$是$\theta - \mu_\theta$对$\epsilon_i$的简单总体回归系数
+- 随机变量 $c_i \epsilon_i$ 包含了关于 $\theta$ 的信息，这些信息不包含在 $\epsilon_1, \epsilon_2, \ldots, \epsilon_{i-1}$ 的信息中
+- 系数 $c_i$ 是 $\theta - \mu_\theta$ 对 $\epsilon_i$ 的简单总体回归系数
 
 ## 数学和语言智力
 
@@ -862,7 +862,7 @@ Cholesky分解**递归地**计算这些内容。
 
 其他人语言能力强但数学能力差。
 
-因此现在我们假设智商有两个维度，$\theta$和$\eta$。
+因此现在我们假设智商有两个维度，$\theta$ 和 $\eta$。
 
 这些分别决定了数学和语言测试的平均表现。
 
@@ -931,7 +931,7 @@ def construct_moments_IQ2d(n, μθ, σθ, μη, ση, σy):
     return μ_IQ2d, Σ_IQ2d, D_IQ2d
 ```
 
-让我们让函数开始工作。
+我们让函数开始工作。
 
 ```{code-cell} ipython3
 n = 2
@@ -954,7 +954,7 @@ y2 = x[n:2*n]
 θ, η
 ```
 
-我们首先计算$\left(\theta, \eta\right)$的联合正态分布。
+我们首先计算 $\left(\theta, \eta\right)$ 的联合正态分布。
 
 ```{code-cell} ipython3
 multi_normal_IQ2d = MultivariateNormal(μ_IQ2d, Σ_IQ2d)
@@ -1156,12 +1156,12 @@ y = z[T+1:]
 
 ### 平滑示例
 
-这是一个经典的`平滑`计算示例，其目的是计算$E X \mid Y$。
+这是一个经典的`平滑`计算示例，其目的是计算 $E X \mid Y$。
 
 这个示例的解释是：
 
-- $X$是一个隐马尔可夫状态变量$x_t$的随机序列
-- $Y$是一个包含隐藏状态信息的观测信号$y_t$序列
+- $X$ 是一个隐马尔可夫状态变量 $x_t$ 的随机序列
+- $Y$ 是一个包含隐藏状态信息的观测信号 $y_t$ 序列
 
 ```{code-cell} ipython3
 # 构建一个多元正态分布实例
@@ -1263,9 +1263,9 @@ sub_y = y[:t-j+1]
 multi_normal_ex3.cond_dist(0, sub_y)
 ```
 
-### 构建沃尔德表示
+### 构建Wold表示
 
-现在我们将应用科列斯基分解来分解
+现在我们将应用Cholesky分解来分解
 $\Sigma_{y}=H H^{\prime}$ 并形成
 
 $$
@@ -1610,13 +1610,13 @@ $$
   \end{aligned}
 $$
 
-我们可以通过将$x_0$表示为以下形式来表达$x_0$在$y_0$条件下的概率分布为${\mathcal N}(\tilde x_0, \tilde \Sigma_0)$：
+我们可以通过将 $x_0$ 表示为以下形式来表达 $x_0$ 在 $y_0$ 条件下的概率分布为 ${\mathcal N}(\tilde x_0, \tilde \Sigma_0)$：
 
 $$
  x_0 = \tilde x_0 + \zeta_0
 $$ (eq:x0rep2)
 
-其中$\zeta_0$是一个高斯随机向量，它与$\tilde x_0$和$y_0$正交，并且具有均值向量$0$和条件协方差矩阵$E [\zeta_0 \zeta_0' | y_0] = \tilde \Sigma_0$。
+其中$\zeta_0$是一个高斯随机向量，它与 $\tilde x_0$ 和 $y_0$ 正交，并且具有均值向量 $0$ 和条件协方差矩阵 $E [\zeta_0 \zeta_0' | y_0] = \tilde \Sigma_0$。
 
 ### 迈向动态分析
 
@@ -1626,18 +1626,18 @@ $$
 x_1 = A x_0 + C w_1 ,  \quad w_1 \sim {\mathcal N}(0, I )
 $$
 
-其中$A$是一个$n \times n$矩阵，$C$是一个$n \times m$矩阵。
+其中 $A$ 是一个 $n \times n$ 矩阵，$C$ 是一个 $n \times m$ 矩阵。
 
-使用方程{eq}`eq:x0rep2`，我们也可以将$x_1$表示为
+使用方程{eq}`eq:x0rep2`，我们也可以将 $x_1$ 表示为
 
-$$
-
+$$ 
 x_1 = A (\tilde x_0 + \zeta_0) + C w_1
 $$
 
 由此可得
 
-$$ E x_1 | y_0 = A \tilde x_0
+$$ 
+E x_1 | y_0 = A \tilde x_0
 $$
 
 相应的条件协方差矩阵 $E (x_1 - E x_1| y_0)  (x_1 - E x_1| y_0)' \equiv \Sigma_1$ 为
@@ -1718,7 +1718,7 @@ $$
 \Sigma_{t+1}= C C' + A \Sigma_t A' - A \Sigma_t G' (G \Sigma_t G' +R)^{-1} G \Sigma_t A' .
 $$
 
-这是一个矩阵黎卡提差分方程，它与另一个出现在线性二次控制理论基础的quantecon讲座中的矩阵黎卡提差分方程密切相关。
+这是一个矩阵黎卡提差分方程，它与出现在线性二次控制理论基础的quantecon讲座中的另一个矩阵黎卡提差分方程密切相关。
 
 那个方程的形式为
 
@@ -1743,7 +1743,7 @@ P_{t-1} =R + A' P_t A  - A' P_t B
 
 我们可以使用Python类 *MultivariateNormal* 来构建示例。
 
-这是一个时间为$0$的单期问题示例
+这是一个时间为 $0$ 的单期问题示例
 
 ```{code-cell} ipython3
 G = np.array([[1., 3.]])
@@ -1855,11 +1855,9 @@ E f Y^{\prime} = \Lambda^{\prime}
 \end{aligned}
 $$
 
-因此，协方差矩阵 $\Sigma_Y$ 是一个对角
+因此，协方差矩阵 $\Sigma_Y$ 是一个对角矩阵 $D$ 和一个秩为 $k$ 的半正定矩阵 $\Lambda \Lambda^{\prime}$ 的和。
 
-矩阵 $D$ 和一个秩为 $k$ 的半正定矩阵 $\Lambda \Lambda^{\prime}$。
-
-这意味着 $Y$ 向量的 $n$ 个分量之间的所有协方差都是通过它们与 $k<$ 个因子的共同依赖关系来中介的。
+这意味着 $Y$ 向量的 $n$ 个分量之间的所有协方差都是通过它们与 $k<n$ 个因子的共同依赖关系来中介的。
 
 构造
 
@@ -1886,7 +1884,7 @@ N = 10
 k = 2
 ```
 
-我们设定系数矩阵$\Lambda$和$U$的协方差矩阵为
+我们设定系数矩阵 $\Lambda$ 和 $U$ 的协方差矩阵为
 
 $$
 \Lambda=\left(\begin{array}{cc}
@@ -1904,9 +1902,9 @@ $$
 \end{array}\right)
 $$
 
-其中$\Lambda$的第一列前半部分填充为$1$，后半部分为$0$，第二列则相反。
+其中 $\Lambda$ 的第一列前半部分填充为 $1$，后半部分为 $0$，第二列则相反。
 
-$D$是一个对角矩阵，对角线上的元素为参数$\sigma_{u}^{2}$。
+$D$ 是一个对角矩阵，对角线上的元素为参数 $\sigma_{u}^{2}$。
 
 ```{code-cell} ipython3
 Λ = np.zeros((N, k))
@@ -1922,7 +1920,7 @@ D = np.eye(N) * σu ** 2
 Σy = Λ @ Λ.T + D
 ```
 
-我们现在可以构建$Z$的均值向量和协方差矩阵。
+我们现在可以构建 $Z$ 的均值向量和协方差矩阵。
 
 ```{code-cell} ipython3
 μz = np.zeros(k+N)
@@ -1947,14 +1945,14 @@ multi_normal_factor = MultivariateNormal(μz, Σz)
 multi_normal_factor.partition(k)
 ```
 
-让我们计算隐藏因子$f$在观测值$Y$上的条件分布，即$f \mid Y=y$。
+让我们计算隐藏因子 $f$ 在观测值 $Y$ 上的条件分布，即 $f \mid Y=y$。
 
 ```{code-cell} ipython3
 multi_normal_factor.cond_dist(0, y)
 ```
 
 我们可以验证条件期望
-$E \left[f \mid Y=y\right] = B Y$ 其中
+$E \left[f \mid Y=y\right] = B Y$， 其中
 $B = \Lambda^{\prime} \Sigma_{y}^{-1}$。
 
 ```{code-cell} ipython3
@@ -1980,9 +1978,9 @@ $\Lambda I^{-1} f = \Lambda f$。
 
 要了解主成分分析(PCA),请参阅本讲座{doc}`奇异值分解 <svd_intro>`。
 
-让我们来做个有趣的练习,对实际上由我们的因子分析模型支配的协方差矩阵 $\Sigma_y$ 进行PCA分解。
+让我们来做个有趣的练习，对实际上由我们的因子分析模型支配的协方差矩阵 $\Sigma_y$ 进行PCA分解。
 
-从技术上讲,这意味着PCA模型是错误设定的。(你能解释为什么吗?)
+从技术上讲，这意味着PCA模型是错误设定的。（你能解释为什么吗?）
 
 尽管如此,这个练习将让我们研究PCA的前两个主成分如何近似我们假设真实支配Y数据的因子分析模型中两个因子 $f_i$ ($i=1,2$)的条件期望 $E f_i | Y$。
 
@@ -2006,7 +2004,7 @@ $$
 \epsilon = P^\prime Y
 $$
 
-注意,我们将按特征值*降序*排列 $P$ 中的特征向量。
+注意，我们将按特征值*降序*排列 $P$ 中的特征向量。
 
 ```{code-cell} ipython3
 𝜆_tilde, P = np.linalg.eigh(Σy)
@@ -2091,9 +2089,9 @@ $$
 y_hat = P[:, :2] @ ε[:2]
 ```
 
-在这个例子中，Y在前两个主成分上的投影$\hat{Y}$很好地近似了$Ef \mid y$。
+在这个例子中，$Y$ 在前两个主成分上的投影 $\hat{Y}$ 很好地近似了 $Ef \mid y$。
 
-我们通过下面的图来确认这一点，图中展示了$f$、$E y \mid f$、$E f \mid y$和$\hat{y}$（在坐标轴上）与$y$（在纵轴上）的关系。
+我们通过下面的图来确认这一点，图中展示了 $f$、$E y \mid f$、$E f \mid y$ 和 $\hat{y}$（在坐标轴上）与 $y$（在纵轴上）的关系。
 
 ```{code-cell} ipython3
 plt.scatter(range(N), Λ @ f, label='$Ey|f$')
