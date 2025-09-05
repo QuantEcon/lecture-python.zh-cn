@@ -25,12 +25,9 @@ kernelspec:
 
 下面，我们将展示如何使用几种线性规划的实现方法来解决最优传输问题，包括：
 
-1. 这个
-
-[linprog](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html)
-   来自SciPy的求解器，
-2. [linprog_simplex](https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html) 来自QuantEcon的求解器，以及
-3. [Python Optimal Transport](https://pythonot.github.io/) 包中包含的基于单纯形法的求解器。
+1. 来自SciPy的求解器[linprog](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html)，
+2. 来自QuantEcon的求解器[linprog_simplex](https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html)，以及
+3. [Python Optimal Transport](https://pythonot.github.io/) 包中的基于单纯形法的求解器。
 
 ```{code-cell} ipython3
 :tags: [hide-output]
@@ -58,15 +55,15 @@ import networkx as nx
 
 ## 最优运输问题
 
-假设有$m$个工厂生产的商品必须运送到$n$个地点。
+假设有 $m$ 个工厂生产的商品必须运送到$n$个地点。
 
 令
 
-* $x_{ij}$ 表示从工厂$i$运往地点$j$的数量
+* $x_{ij}$ 表示从工厂 $i$ 运往地点 $j$ 的数量
 
-* $c_{ij}$ 表示从工厂$i$运往地点$j$每单位的运输成本
+* $c_{ij}$ 表示从工厂 $i$ 运往地点 $j$ 每单位的运输成本
 
-* $p_i$ 表示工厂$i$的产能，$q_j$表示地点$j$所需的数量
+* $p_i$ 表示工厂 $i$的产能，$q_j$ 表示地点 $j$ 所需的数量
 
 * $i = 1, 2, \dots, m$ 且 $j = 1, 2, \dots, n$
 
@@ -84,7 +81,7 @@ import networkx as nx
 
 图中顶点的大小与以下内容成正比：
 
-- 对于工厂来说，是产能
+- 对于工厂来说，是产能，以及
 
 - 目标地点的需求量。
 
@@ -95,7 +92,7 @@ import networkx as nx
 $$
 \begin{aligned}
     \min_{x_{ij}} \ & \sum_{i=1}^m \sum_{j=1}^n c_{ij} x_{ij} \\
-    \mbox{subject to } \ & \sum_{j=1}^n x_{ij} = p_i, & i = 1, 2, \dots, m \\
+    \text{subject to } \ & \sum_{j=1}^n x_{ij} = p_i, & i = 1, 2, \dots, m \\
     & \sum_{i=1}^m x_{ij} = q_j, & j = 1, 2, \dots, n \\
     & x_{ij} \ge 0 \\
 \end{aligned}
@@ -103,7 +100,7 @@ $$ (plannerproblem)
 
 这是一个**最优运输问题**，包含：
 
-* $mn$ 个决策变量，即 $x_{ij}$ 的条目，以及
+* $mn$ 个决策变量，即元素 $x_{ij}$，以及
 
 * $m+n$ 个约束条件。
 
@@ -116,7 +113,7 @@ $$
     = \sum_{i=1}^m p_i
 $$ (sumconstraints)
 
-{eq}`sumconstraints` 中的约束条件将导致我们下面描述的完整约束集中出现一个冗余。
+{eq}`sumconstraints` 中这些约束的存在，将导致我们在下文要描述的完整约束集合中出现一个冗余。
 
 稍后会详细讨论这一点。
 
@@ -125,7 +122,7 @@ $$ (sumconstraints)
 
 ## 线性规划方法
 
-本节我们讨论如何使用标准线性规划求解器来解决最优运输问题。
+在本节中，我们讨论使用标准线性规划求解器来求解最优传输问题。
 
 
 ### 决策变量矩阵的向量化
@@ -150,29 +147,29 @@ $$
 \begin{aligned}
 
 \min_{X} \ & \operatorname{tr} (C' X) \\
-    \mbox{subject to } \ & X \ \mathbf{1}_n = p \\
+    \text{subject to } \ & X \ \mathbf{1}_n = p \\
     & X' \ \mathbf{1}_m = q \\
     & X \ge 0 \\
 \end{aligned}
 $$
 
-我们可以通过将矩阵$X$的所有列堆叠成一个列向量来将其转换为向量。
+我们可以通过将矩阵 $X$ 的所有列堆叠成一个列向量来将其转换为向量。
 
 这种操作称为**向量化**，我们用$\operatorname{vec}(X)$表示。
 
-同样，我们将矩阵$C$转换为$mn$维向量$\operatorname{vec}(C)$。
+同样，我们将矩阵 $C$ 转换为 $mn$ 维向量 $\operatorname{vec}(C)$。
 
-目标函数可以表示为$\operatorname{vec}(C)$和$\operatorname{vec}(X)$之间的内积：
+目标函数可以表示为 $\operatorname{vec}(C)$ 和 $\operatorname{vec}(X)$ 的内积：
 
 $$
     \operatorname{vec}(C)' \cdot \operatorname{vec}(X).
 $$
 
-为了用$\operatorname{vec}(X)$表示约束条件，我们使用**克罗内克积**，用$\otimes$表示，定义如下。
+为了用 $\operatorname{vec}(X)$ 表示约束条件，我们使用**克罗内克积**，用 $\otimes$ 表示，定义如下。
 
-假设$A$是一个$m \times s$矩阵，其元素为$(a_{ij})$，而$B$是一个$n \times t$矩阵。
+假设$A$是一个 $m \times s$ 矩阵，其元素为 $(a_{ij})$，而 $B$ 是一个 $n \times t$ 矩阵。
 
-**克罗内克积**的定义，以分块矩阵形式表示为：
+以分块矩阵形式表示的**克罗内克积**是：
 
 $$
     A \otimes B =
@@ -225,7 +222,7 @@ $$
 $$
     \begin{aligned}
         \min_{z} \ & \operatorname{vec}(C)' z \\
-        \mbox{subject to } \ & A z = b \\
+        \text{subject to } \ & A z = b \\
         & z \ge 0 \\
     \end{aligned}
 $$ (decisionvars)
@@ -249,7 +246,7 @@ $$
 ### 应用实例
 
 
-我们现在提供一个采用 {eq}`decisionvars` 形式的例子，我们将通过使用 `linprog` 函数来求解。
+我们现在提供一个采用 {eq}`decisionvars` 形式的例子，我们将使用 `linprog` 函数来求解。
 
 下表提供了需求向量 $q$、产能向量 $p$ 以及运输成本矩阵 $C$ 中各项 $c_{ij}$ 的数值。
 
@@ -347,7 +344,7 @@ print("z:", res.x)
 print("X:", res.x.reshape((m,n), order='F'))
 ```
 
-注意在 `C_vec = C.reshape((m*n, 1), order='F')` 这一行中，我们谨慎地使用了标志 `order='F'` 来进行向量化。
+注意，在 `C_vec = C.reshape((m*n, 1), order='F')` 这一行中，我们谨慎地使用了选项 `order='F'` 来进行向量化。
 
 这与将矩阵 $C$ 转换为向量的方式一致，即将其所有列堆叠成一个列向量。
 
@@ -355,11 +352,15 @@ print("X:", res.x.reshape((m,n), order='F'))
 
 （关于使用Python默认的行优先顺序的另一种方法，请参见[Alfred Galichon的这个讲座](https://www.math-econ-code.org/dynamic-programming)。）
 
-**解读警告信息：**
+**解释求解器的行为：**
 
-上面来自SciPy的警告信息指出A不是满秩的。
+观察矩阵 $A$，我们可以看出它是不满秩的。
 
-这表明线性规划中包含了一个或多个冗余约束。
+```{code-cell} ipython3
+np.linalg.matrix_rank(A) < min(A.shape)
+```
+
+这表明该线性规划的设定中包含了一个或多个冗余约束。
 
 这里，冗余的来源是限制条件 {eq}`sumconstraints` 的结构。
 
@@ -369,7 +370,7 @@ print("X:", res.x.reshape((m,n), order='F'))
 A
 ```
 
-$A$ 的奇异性反映了前三个约束和后五个约束都要求"总需求等于总容量"，这在{eq}`sumconstraints`中表达。
+$A$ 的奇异性反映了前三个约束和后五个约束都要求{eq}`sumconstraints`中表达的"总需求等于总容量"。
 
 这里有一个冗余的等式约束。
 
@@ -395,13 +396,13 @@ linprog(C_vec, A_eq=A[:-1], b_eq=b[:-1])
 
 显然，处理去掉冗余约束的系统会稍微快一些。
 
-让我们深入进行更多计算，以帮助我们理解发现**两个**不同的最优运输方案是否反映了我们删除了一个冗余的等式约束。
+让我们再深入做些计算，以判断：我们出现**两个**不同的最优传输方案，是否是因为删去了一条冗余的等式约束所致。
 
 ```{admonition} 提示
 事实将证明，删除冗余等式约束并不是真正重要的。
 ```
 
-为了验证我们的提示，我们将简单地使用**所有**原始的等式约束（包括一个冗余约束），但我们只是打乱约束的顺序。
+为了验证我们的提示，我们将简单地使用**所有**原始的等式约束（包括一个冗余约束），只是重新排列这些约束的顺序。
 
 ```{code-cell} ipython3
 arr = np.arange(m+n)
@@ -430,9 +431,9 @@ for i in range(len(sol_found)):
     print(f"     最小成本 {i}: ", cost[i])
 ```
 
-**啊哈！**如你所见，在这种情况下以不同顺序放置约束条件揭示了两个实现相同最小成本的最优运输方案。
+**啊哈！**如你所见，在这种情况下，仅仅改变约束的顺序，就会显现出两个实现相同最小成本的最优传输方案。
 
-这就是我们之前计算出的相同两个方案。
+这就是我们之前计算出的两个方案。
 
 接下来，我们展示"意外地"省略第一个约束条件会得到我们最初计算的方案。
 
@@ -440,13 +441,13 @@ for i in range(len(sol_found)):
 linprog(C_vec, A_eq=A[1:], b_eq=b[1:])
 ```
 
-让我们将这个运输方案与
+把这个运输方案与下列结果对比：
 
 ```{code-cell} ipython3
 res.x
 ```
 
-这里矩阵 $X$ 包含的元素 $x_{ij}$ 表示从工厂 $i = 1, 2, 3$ **运往**地点 $j=1,2, \ldots, 5$ 的运输量。
+这里，矩阵 $X$ 中的各元素 $x_{ij}$ 表示从工厂 $i = 1, 2, 3$ **运往**地点 $j=1,2, \ldots, 5$ 的运输量。
 
 向量 $z$ 显然等于 $\operatorname{vec}(X)$。
 
@@ -462,10 +463,10 @@ res.x
 如你很快就会看到，使用 `scipy.optimize.linprog` 可以显著减少求解最优运输问题所需的时间。
 
 ```{code-cell} ipython3
-# construct matrices/vectors for linprog_simplex
+# 为 linprog_simplex 构造矩阵/向量
 c = C.flatten()
 
-# Equality constraints
+# 等式约束
 A_eq = np.zeros((m+n, m*n))
 for i in range(m):
     for j in range(n):
@@ -481,7 +482,13 @@ b_eq = np.hstack([p, q])
 res_qe = linprog_simplex(-c, A_eq=A_eq, b_eq=b_eq)
 ```
 
-由于这两个线性规划求解器使用相同的单纯形算法，我们预期会得到完全相同的解
+尽管这两个线性规划（LP）求解器采用的算法不同（HiGHS 与单纯形法），它们都应当能找到最优解。
+
+两个求得的解之所以不同，是因为最优解不唯一，但目标函数值相同。
+
+```{code-cell} ipython3
+np.allclose(-res_qe.fun, res.fun)
+```
 
 ```{code-cell} ipython3
 res_qe.x.reshape((m, n), order='C')
@@ -512,12 +519,12 @@ res.x.reshape((m, n), order='F')
 
 设 $u, v$ 表示对偶决策变量的向量，其分量为 $(u_i), (v_j)$。
 
-{eq}`plannerproblem` **最小化**问题的**对偶**是以下**最大化**问题：
+**最小化**问题{eq}`plannerproblem`的**对偶**是以下**最大化**问题：
 
 $$
 \begin{aligned}
 \max_{u_i, v_j} \ & \sum_{i=1}^m p_i u_i + \sum_{j=1}^n q_j v_j \\
-\mbox{subject to } \ & u_i + v_j \le c_{ij}, \ i = 1, 2, \dots, m;\ j = 1, 2, \dots, n \\
+\text{subject to } \ & u_i + v_j \le c_{ij}, \ i = 1, 2, \dots, m;\ j = 1, 2, \dots, n \\
 \end{aligned}
 $$ (dualproblem)
 
@@ -535,74 +542,49 @@ $$ (dualproblem)
 
 * $(\mathbf{I}_n \otimes \mathbf{1}_m') \operatorname{vec}(X) = q.$
 
-向量 $u$ 和 $v$ 的各个分量的单位**价值**是这些约束右侧数量的**影子价格**。
+向量 $u$ 和 $v$ 的各个分量（每单位**价值**）即为这些约束右侧所出现数量的**影子价格**。
 
 我们可以将对偶问题写作
 
 $$
 \begin{aligned}
 \max_{u_i, v_j} \ & p u + q v \\
-\mbox{subject to } \ & A' \begin{pmatrix} u \\ v \\ \end{pmatrix} = \operatorname{vec}(C) \\
+\text{subject to } \ & A' \begin{pmatrix} u \\ v \\ \end{pmatrix} = \operatorname{vec}(C) \\
 \end{aligned}
 $$ (dualproblem2)
 
-对于上述相同的数值示例，让我们求解对偶问题。
+针对上面描述的同一个数值例子，我们来解它的对偶问题
 
 ```{code-cell} ipython3
-# Solve the dual problem
+# 求解对偶问题
 res_dual = linprog(-b, A_ub=A.T, b_ub=C_vec,
                    bounds=[(None, None)]*(m+n))
 
-#Print results
-print("message:", res_dual.message)
-print("nit:", res_dual.nit)
-print("fun:", res_dual.fun)
+# 输出结果
+print("消息：", res_dual.message)
+print("迭代次数：", res_dual.nit)
+print("目标函数值", res_dual.fun)
 print("u:", res_dual.x[:m])
 print("v:", res_dual.x[-n:])
 ```
 
-我们也可以使用[quantecon.optimize.linprog_simplex](https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html)来求解对偶问题。
+`quantecon.optimize.linprog_simplex`会在给出原问题解的同时计算并返回对偶变量。
+
+这些对偶变量（影子价格）可以直接从原问题的解中提取：
 
 ```{code-cell} ipython3
-res_dual_qe = linprog_simplex(b_eq, A_ub=A_eq.T, b_ub=c)
+# linprog_simplex 会返回对偶变量
+print("来自linprog_simplex的对偶变量:")
+print("u:", -res_qe.lambd[:m])
+print("v:", -res_qe.lambd[m:])
 ```
 
-两个程序计算出的影子价格是相同的。
+我们可以核对它们与SciPy得到的对偶解一致：
 
 ```{code-cell} ipython3
-res_dual_qe.x
-```
-
-```{code-cell} ipython3
-res_dual.x
-```
-
-我们可以比较使用这两种工具的计算时间。
-
-```{code-cell} ipython3
-%time linprog(-b, A_ub=A.T, b_ub=C_vec, bounds=[(None, None)]*(m+n))
-```
-
-```{code-cell} ipython3
-%time linprog_simplex(b_eq, A_ub=A_eq.T, b_ub=c)
-```
-
-`quantecon.optimize.linprog_simplex`求解对偶问题的速度快10倍。
-
-为了完整性，让我们通过删除一个冗余的等式约束来求解具有非奇异$A$矩阵的对偶问题。
-
-首先尝试去掉第一个约束：
-
-```{code-cell} ipython3
-linprog(-b[1:], A_ub=A[1:].T, b_ub=C_vec,
-        bounds=[(None, None)]*(m+n-1))
-```
-
-现在让我们去掉最后一个约束条件：
-
-```{code-cell} ipython3
-linprog(-b[:-1], A_ub=A[:-1].T, b_ub=C_vec,
-        bounds=[(None, None)]*(m+n-1))
+print("来自SciPy linprog的对偶变量:")
+print("u:", res_dual.x[:m])
+print("v:", res_dual.x[-n:])
 ```
 
 ### 对偶问题的解释
@@ -614,19 +596,19 @@ $$
 \sum_{i=1}^m \sum_{j=1}^n c_{ij} x_{ij}  = \sum_{i=1}^m p_i u_i + \sum_{j=1}^n q_j v_j
 $$
 
-工厂$i$增加一个单位的产能，即$p_i$，将导致运输成本增加$u_i$。
+工厂 $i$ 增加一个单位的产能，即 $p_i$，将导致运输成本增加 $u_i$。
 
-因此，$u_i$描述了**从**工厂$i$运出一个单位的成本。
+因此，$u_i$ 描述了**从**工厂 $i$ 运出一个单位的成本。
 
-我们称之为从工厂$i$运出一个单位的出货成本。
+我们称之为从工厂 $i$ 运出一个单位的出货成本。
 
-类似地，$v_j$是运送一个单位**到**地点$j$的成本。
+类似地，$v_j$ 是运送一个单位**到**地点 $j$ 的成本。
 
-我们称之为运送一个单位到地点$j$的进货成本。
+我们称之为运送一个单位到地点 $j$ 的进货成本。
 
 强对偶性表明总运输成本等于总出货成本**加上**总进货成本。
 
-对于一个单位的产品，出货成本$u_i$**加上**进货成本$v_j$应该等于运输成本$c_{ij}$，这是合理的。
+对于一个单位的产品，出货成本 $u_i$ **加上**进货成本 $v_j$ 应该等于运输成本$c_{ij}$，这是合理的。
 
 这种相等性由**互补松弛**条件保证，该条件规定当 $x_{ij} > 0$ 时，即当从工厂 $i$ 到地点 $j$ 有正向运输量时，必须满足 $u_i + v_j = c_{ij}$。
 
@@ -637,7 +619,7 @@ $$
 
 有一个优秀的[Python包](https://pythonot.github.io/)专门用于最优传输，它简化了我们上面采取的一些步骤。
 
-特别是，该软件包在将数据传递给线性规划程序之前会处理向量化步骤。
+特别是，这个包会在把数据交给线性规划求解器之前，先处理好向量化步骤。
 
 （话虽如此，上面关于向量化的讨论仍然很重要，因为我们想要了解其内部运作原理。）
 
@@ -658,19 +640,19 @@ total_cost = np.sum(X * C)
 total_cost
 ```
 
-### 更大的应用程序
+### 更大的应用
 
-现在让我们尝试在一个稍大的应用程序上使用相同的包。
+现在让我们尝试在一个稍大一点的应用上使用相同的包。
 
-该应用程序具有与上述相同的解释，但我们还将为每个节点（即顶点）在平面上赋予一个位置。
+该应用与上面的解读相同，但我们还会为每个结点（即顶点）指定一个平面中的位置。
 
-这将使我们能够将得到的运输方案绘制为图中的边。
+这样就可以把得到的运输方案作为图中的边来绘制。
 
-以下类通过以下方式定义节点：
+下面这个类用以下信息来定义一个结点：
 
-* 其位置 $(x, y) \in \mathbb R^2$，
-* 其组别（工厂或位置，用`p`或`q`表示）以及
-* 其质量（例如，$p_i$或$q_j$）。
+* 它的位置 $(x, y) \in \mathbb R^2$，
+* 它的组别（工厂或地点，用`p`或`q`表示）以及
+* 它的质量（例如，$p_i$或$q_j$）。
 
 ```{code-cell} ipython3
 class Node:
@@ -711,7 +693,7 @@ def build_nodes_of_one_type(group='p', n=100, seed=123):
     return nodes
 ```
 
-现在我们构建两个节点列表，每个列表包含一种类型（工厂或位置）
+现在我们构建两个节点列表，每个列表包含一种类型（工厂或地点）
 
 ```{code-cell} ipython3
 n_p = 32
@@ -723,7 +705,7 @@ p_probs = [p.mass for p in p_list]
 q_probs = [q.mass for q in q_list]
 ```
 
-对于成本矩阵$C$，我们使用每个工厂和位置之间的欧几里得距离。
+对于成本矩阵 $C$，我们使用每个工厂和地点之间的欧几里得距离。
 
 ```{code-cell} ipython3
 c = np.empty((n_p, n_q))
@@ -744,8 +726,8 @@ for i in range(n_p):
 
 在下面的图中，
 
-* 节点大小与概率质量成正比
-* 当在最优运输方案下从$i$到$j$有正向转移时，会画出一个从$i$到$j$的边（箭头）。
+* 节点大小与质量成正比
+* 当在最优运输方案下从 $i$ 到 $j$ 有正向转移时，会画出一个从 $i$ 到 $j$ 的边（箭头）。
 
 ```{code-cell} ipython3
 g = nx.DiGraph()
