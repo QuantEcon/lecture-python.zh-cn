@@ -51,9 +51,8 @@ kernelspec:
 本讲使用的重要概念包括
 
 - 用于解决规划问题的极小极大问题
-- 用于求解差分方程的**射击算法**
-对初始和终端条件。
-- 对于长期但有限期限经济的最优路径的**收费公路**性质。
+- 用于在给定初始和终端条件下求解差分方程的**射击算法**
+- 对于长期但有限期经济的最优路径的**收费公路**性质
 - **稳定流形**和**相位平面**
 
 让我们从一些标准导入开始：
@@ -104,6 +103,7 @@ C = \int_0^1 c(\omega) d \omega
 $$
 
 考虑一个福利问题，选择消费者之间的分配 $\{c(\omega)\}$ 以最大化
+
 $$
  \int_0^1 u(c(\omega)) d \omega
 $$
@@ -134,15 +134,15 @@ $$
 
 这在宏观经济学中经常出现。
 
-我们将在这里以及在这篇讲座 {doc}`Cass-Koopmans 竞争均衡 <cass_koopmans_2>` 中使用这个聚合理论。
+我们将在这里以及讲座{doc}`Cass-Koopmans 竞争均衡 <cass_koopmans_2>`中使用这个聚合理论。
 
 #### 一个经济体
-代表性家庭在每个时期$t$都拥有一单位的劳动力，并且喜欢在每个时期消费商品。
 
-代表性家庭在每个时期$t$非弹性地供应一单位劳动力$N_t$，因此
-$N_t =1 \text{ 对所有 } t \in \{0, 1, \ldots,  T\}$。
+代表性家庭在每个时期 $t$ 都拥有一单位的劳动力，并且喜欢在每个时期消费商品。
 
-代表性家庭对消费组合的偏好由以下效用函数排序：
+代表性家庭在每个时期 $t$ 非弹性地供应一单位劳动力 $N_t$，因此对所有 $t \in \{0, 1, \ldots,  T\}$, $N_t =1$。
+
+代表性家庭对消费组合的偏好由以下效用函数给出：
 
 ```{math}
 :label: utility-functional
@@ -150,10 +150,10 @@ $N_t =1 \text{ 对所有 } t \in \{0, 1, \ldots,  T\}$。
 U(\vec{C}) = \sum_{t=0}^{T} \beta^t \frac{C_t^{1-\gamma}}{1-\gamma}
 ```
 
-其中$\beta \in (0,1)$是贴现因子，$\gamma >0$
+其中 $\beta \in (0,1)$ 是贴现因子，$\gamma >0$
 决定单期效用函数的曲率。
 
-较大的$\gamma$意味着更大的曲率。
+较大的 $\gamma$ 意味着更大的曲率。
 
 注意
 
@@ -163,13 +163,13 @@ U(\vec{C}) = \sum_{t=0}^{T} \beta^t \frac{C_t^{1-\gamma}}{1-\gamma}
 u(C_t) = \frac{C_t^{1-\gamma}}{1-\gamma}
 ```
 
-满足$u'>0,u''<0$。
+满足 $u'>0,u''<0$。
 
-$u' > 0$表明消费者偏好更多而不是更少。
+$u' > 0$ 表明消费者偏好更多而不是更少。
 
-$u''< 0$表明随着$C_t$的增加，边际效用递减。
+$u''< 0$ 表明随着 $C_t$ 的增加，边际效用递减。
 
-我们假设$K_0 > 0$是一个外生的初始资本存量。
+我们假设 $K_0 > 0$ 是一个外生的初始资本存量。
 存在一个全经济范围的生产函数
 
 ```{math}
@@ -185,7 +185,7 @@ F(K_t,N_t) = A K_t^{\alpha}N_t^{1-\alpha}
 ```{math}
 :label: allocation
 
-C_t + K_{t+1} \leq F(K_t,N_t) + (1-\delta) K_t \quad \text{for all } t \in \{0, 1, \ldots,  T\}
+C_t + K_{t+1} \leq F(K_t,N_t) + (1-\delta) K_t \quad \text{对所有 } t \in \{0, 1, \ldots,  T\}
 ```
 
 其中 $\delta \in (0,1)$ 是资本的折旧率。
@@ -193,7 +193,7 @@ C_t + K_{t+1} \leq F(K_t,N_t) + (1-\delta) K_t \quad \text{for all } t \in \{0, 
 ## 规划问题
 
 规划者选择配置 $\{\vec{C},\vec{K}\}$ 以
-最大化 {eq}`utility-functional`，同时受制于 {eq}`allocation`。
+最大化 {eq}`utility-functional`，且受约束于 {eq}`allocation`。
 
 令 $\vec{\mu}=\{\mu_0,\dots,\mu_T\}$ 为一个
 非负的**拉格朗日乘数**序列。
@@ -214,12 +214,9 @@ $$ (eq:Lagrangian201)
 ```
 
 - **极值化**意味着
-  对$\vec{C}, \vec{K}$求最大值，
-  对$\vec{\mu}$求最小值。
-- 我们的问题满足
-  确保在满足我们即将计算的
-  一阶必要条件的配置下，
-  二阶条件得到满足的条件。
+  对 $\vec{C}, \vec{K}$ 求最大值，
+  对 $\vec{\mu}$ 求最小值。
+- 我们的问题满足一些条件，这些条件能够保证：在满足我们即将计算的一阶必要条件的配置下，二阶条件也得到满足。
 
 在计算一阶条件之前，我们先介绍一些实用的公式。
 
@@ -239,9 +236,9 @@ $$
 \frac{F(K_t,N_t)}{N_t} \equiv f\left(\frac{K_t}{N_t}\right) = A\left(\frac{K_t}{N_t}\right)^\alpha
 $$
 
-其参数是**人均资本**。
+其自变量是**人均资本**。
 
-回顾以下关于资本边际产出的计算是很有用的
+回顾以下计算是很有用的: 资本的边际产出
 
 ```{math}
 :label: useful-calc1
@@ -282,31 +279,31 @@ $$
 ```{math}
 :label: constraint1
 
-C_t: \qquad u'(C_t)-\mu_t=0 \qquad \text{for all} \quad t= 0,1,\dots,T
+C_t: \qquad u'(C_t)-\mu_t=0 \qquad \text{对所有} \qquad t= 0,1,\dots,T
 ```
 
 ```{math}
 :label: constraint2
 
-K_t: \qquad \beta \mu_t\left[(1-\delta)+f'(K_t)\right] - \mu_{t-1}=0 \qquad \text{for all } \quad t=1,2,\dots,T
+K_t: \qquad \beta \mu_t\left[(1-\delta)+f'(K_t)\right] - \mu_{t-1}=0 \qquad \text{对所有} \qquad t=1,2,\dots,T
 ```
 
 ```{math}
 :label: constraint3
 
-\mu_t:\qquad F(K_t,1)+ (1-\delta) K_t  - C_t - K_{t+1}=0 \qquad \text{for all } \quad t=0,1,\dots,T
+\mu_t:\qquad F(K_t,1)+ (1-\delta) K_t  - C_t - K_{t+1}=0 \qquad \text{对所有} \qquad t=0,1,\dots,T
 ```
 
 ```{math}
 :label: constraint4
 
-K_{T+1}: \qquad -\mu_T \leq 0, \ \leq 0 \text{ if } K_{T+1}=0; \ =0 \text{ if } K_{T+1}>0
+K_{T+1}: \qquad -\mu_T \leq 0, \ \leq 0 \text{ 如果 } K_{T+1}=0; \ =0 \text{ 如果 } K_{T+1}>0
 ```
 
 在计算{eq}`constraint2`时，我们注意到$K_t$同时出现在时间$t$和时间$t-1$的可行性约束{eq}`allocation`中。
 
 限制条件{eq}`constraint4`来自对$K_{T+1}$求导，并应用以下**卡鲁什-库恩-塔克条件**（KKT）
-(参见[Karush-Kuhn-Tucker条件](https://en.wikipedia.org/wiki/Karush-Kuhn-Tucker_conditions)):
+(参见[库恩塔克条件](https://baike.baidu.com/item/%E5%BA%93%E6%81%A9%E5%A1%94%E5%85%8B%E6%9D%A1%E4%BB%B6/3828439)):
 
 ```{math}
 :label: kkt
@@ -318,7 +315,7 @@ K_{T+1}: \qquad -\mu_T \leq 0, \ \leq 0 \text{ if } K_{T+1}=0; \ =0 \text{ if } 
 
 $$
 \beta u'\left(C_t\right)\left[(1-\delta)+f'\left(K_t\right)\right]-u'\left(C_{t-1}\right)=0
-\quad \text{ for all } t=1,2,\dots, T+1
+\quad \text{ 对所有 } t=1,2,\dots, T+1
 $$
 
 可以重新整理为
@@ -327,7 +324,7 @@ $$
 :label: l12
 
 \beta u'\left(C_{t+1}\right)\left[(1-\delta)+f'\left(K_{t+1}\right)\right]=
-u'\left(C_{t}\right) \quad \text{ for all } t=0,1,\dots, T
+u'\left(C_{t}\right) \quad \text{ 对所有 } t=0,1,\dots, T
 ```
 
 对上述等式两边应用消费的边际效用的反函数得到
@@ -336,7 +333,7 @@ $$
 C_{t+1} =u'^{-1}\left(\left(\frac{\beta}{u'(C_t)}[f'(K_{t+1}) +(1-\delta)]\right)^{-1}\right)
 $$
 
-对于我们的效用函数{eq}`utility-oneperiod`，这就变成了消费的**欧拉方程**
+代入效用函数{eq}`utility-oneperiod`，这就变成了消费的**欧拉方程**
 
 $$
 \begin{aligned} C_{t+1} =\left(\beta C_t^{\gamma}[f'(K_{t+1}) +
@@ -356,9 +353,9 @@ K_{t+1}  & = F(K_t,1)+ (1-\delta) K_t  - C_t .
 \end{aligned}
 $$ (eq:systemdynamics)
 
-这是一对非线性一阶差分方程，将$C_t, K_t$映射到$C_{t+1}, K_{t+1}$，最优序列$\vec C , \vec K$必须满足这些方程。
+这是一对非线性一阶差分方程，将 $C_t, K_t$ 映射到 $C_{t+1}, K_{t+1}$。最优序列$\vec C , \vec K$ 必须满足这些方程。
 
-它还必须满足初始条件:给定$K_0$且$K_{T+1} = 0$。
+它还必须满足初始条件:给定 $K_0$ 且 $K_{T+1} = 0$。
 
 下面我们定义一个`jitclass`来存储定义我们经济的参数和函数。
 
@@ -457,14 +454,15 @@ $\vec{\mu}$。
 
 我们没有拉格朗日乘数 $\mu_0$ 的初始条件。
 
-如果我们有初始条件，我们的工作就会很简单：
+如果有的话，我们的工作就会很简单：
 
 - 给定 $\mu_0$ 和 $k_0$，我们可以从方程 {eq}`constraint1` 计算出 $c_0$，
   然后从方程 {eq}`constraint3` 计算出 $k_1$，从方程
   {eq}`constraint2` 计算出 $\mu_1$。
 - 我们可以用这种方式继续计算
   $\vec{C}, \vec{K}, \vec{\mu}$ 的其余元素。
-然而，我们无法确保 Kuhn-Tucker 条件 {eq}`kkt` 会得到满足。
+
+然而，我们无法确保卡鲁什-库恩-塔克条件 {eq}`kkt` 会得到满足。
 
 此外，我们没有 $\mu_0$ 的初始条件。
 
@@ -487,8 +485,7 @@ $\vec{\mu}$。
 
 以下 Python 代码为规划问题实现了射击算法。
 
-（实际上，我们稍微修改了前面的算法，从一个猜测开始
-在以下代码中使用 $c_0$ 而不是 $\mu_0$。
+（实际上，在下面的代码中，我们对前面的算法稍作修改：从对 $c_0$ 的猜测开始，而不是从对 $\mu_0$ 的猜测开始。）
 
 ```{code-cell} ipython3
 @jit
@@ -538,35 +535,35 @@ axs[1].axvline(T+1, color='k', ls='--', lw=1)
 
 plt.show()
 ```
-显然，我们对$\mu_0$的初始猜测值太高了，所以初始消费太低。
+显然，我们对 $\mu_0$ 的初始猜测值太高了，所以初始消费太低。
 
-我们知道这一点是因为我们超过了目标$K_{T+1}=0$。
+我们知道这一点是因为我们超过了目标 $K_{T+1}=0$。
 
-现在我们用一个搜索合适$\mu_0$的算法来自动化这个过程，当我们达到目标$K_{t+1} = 0$时停止。
+现在我们用一个搜索合适 $\mu_0$ 的算法来自动化这个过程，当我们达到目标 $K_{t+1} = 0$ 时停止。
 
 我们使用**二分法**。
 
-我们对$C_0$做一个初始猜测（我们可以消除$\mu_0$，因为$C_0$是$\mu_0$的精确函数）。
+我们对 $C_0$ 做一个初始猜测（我们可以消除 $\mu_0$，因为 $C_0$ 是 $\mu_0$ 的精确函数）。
 
-我们知道$C_0$的最小值只能是$0$，最大值是初始产出$f(K_0)$。
+我们知道 $C_0$ 的最小值只能是 $0$，最大值是初始产出 $f(K_0)$。
 
-猜测$C_0$并向前推算到$T+1$。
+猜测 $C_0$ 并向前推算到 $T+1$。
 
-如果$K_{T+1}>0$，我们将其作为$C_0$的新**下**界。
+如果 $K_{T+1}>0$，我们将其作为 $C_0$ 的新**下界**。
 
-如果$K_{T+1}<0$，我们将其作为新的**上**界。
+如果 $K_{T+1}<0$，我们将其作为新的**上界**。
 
-对$C_0$做一个新的猜测，取新的上下界的中间值。
+对 $C_0$ 做一个新的猜测，取新的上下界的中间值。
 
 再次向前推算，重复这些步骤直到收敛。
 
-当$K_{T+1}$足够接近$0$（即在误差容限范围内）时，我们停止。
+当 $K_{T+1}$ 足够接近 $0$（即在误差容限范围内）时，我们停止。
 
 ```{code-cell} ipython3
 @jit
 def bisection(pp, c0, k0, T=10, tol=1e-4, max_iter=500, k_ter=0, verbose=True):
 
-    # initial boundaries for guess c0
+    # 设置初始边界
     c0_upper = pp.f(k0)
     c0_lower = 0
 
@@ -575,19 +572,19 @@ def bisection(pp, c0, k0, T=10, tol=1e-4, max_iter=500, k_ter=0, verbose=True):
         c_vec, k_vec = shooting(pp, c0, k0, T)
         error = k_vec[-1] - k_ter
 
-        # check if the terminal condition is satisfied
+        # 检查终端条件是否得到满足
         if np.abs(error) < tol:
             if verbose:
-                print('Converged successfully on iteration ', i+1)
+                print('在第', i+1, '迭代步时成功收敛')
             return c_vec, k_vec
 
         i += 1
         if i == max_iter:
             if verbose:
-                print('Convergence failed.')
+                print('收敛失败')
             return c_vec, k_vec
 
-        # if iteration continues, updates boundaries and guess of c0
+        # 如果迭代继续，更新c0的猜测和边界
         if error > 0:
             c0_lower = c0
         else:
@@ -655,7 +652,7 @@ $$
 1=\beta \frac{u'(\bar{C})}{u'(\bar{C})}[f'(\bar{K})+(1-\delta)]
 $$
 
-定义 $\beta = \frac{1}{1+\rho}$，并消去得到
+定义 $\beta = \frac{1}{1+\rho}$，得到
 
 $$
 1+\rho = 1[f'(\bar{K}) + (1-\delta)]
@@ -673,7 +670,7 @@ $$
 \bar{K} = f'^{-1}(\rho+\delta)
 $$
 
-对于生产函数 {eq}`production-function`，这变为
+代入生产函数 {eq}`production-function`，这变为
 
 $$
 \alpha \bar{K}^{\alpha-1} = \rho + \delta
@@ -693,7 +690,7 @@ $\bar K$ 作为我们的初始资本存量 $K_0$。
 ρ = 1 / pp.β - 1
 k_ss = pp.f_prime_inv(ρ+pp.δ)
 
-print(f'steady state for capital is: {k_ss}')
+print(f'资本的稳态值为: {k_ss}')
 ```
 现在我们绘制图形
 
@@ -707,7 +704,7 @@ plot_paths(pp, 0.3, k_ss, [150], k_ss=k_ss);
 ```{code-cell} ipython3
 plot_paths(pp, 0.3, k_ss/3, [150], k_ss=k_ss);
 ```
-注意观察规划者如何将资本推向稳态，在那里停留一段时间，然后当 $t$ 接近 $T$ 时，将 $K_t$ 推向终值 $K_{T+1} =0$。
+注意观察规划者如何将资本推向稳态：在那里停留一段时间，然后当 $t$ 接近 $T$ 时，将 $K_t$ 推向终值 $K_{T+1} =0$。
 
 下面的图表比较了在不同的 $T$ 值下的最优结果。
 
@@ -725,7 +722,7 @@ plot_paths(pp, 0.3, k_ss/3, [250, 150, 50, 25], k_ss=k_ss);
 
 注意，随着规划期限的增加，规划者会让 $K_t$ 在更长时间内保持接近稳态值 $\bar K$。
 
-这种模式反映了稳态的**转pike**特性。
+这种模式反映了稳态的**收费公路**性质。
 
 对规划者来说，一个经验法则是：
 
@@ -770,12 +767,12 @@ plot_saving_rate(pp, 0.3, k_ss/3, [250, 150, 75, 50], k_ss=k_ss)
 合适的做法是将终端条件{eq}`constraint4`替换为
 
 $$
-\lim_{T \rightarrow +\infty} \beta^T u'(C_T) K_{T+1} = 0 ,
+\lim_{T \rightarrow +\infty} \beta^T u'(C_T) K_{T+1} = 0
 $$
 
-这个条件将被收敛到最优稳态的路径所满足。
+收敛到最优稳态的路径将满足以上条件。
 
-我们可以通过从任意初始值$K_0$开始，向一个较大但有限的$T+1$时期的最优稳态$K$推进来近似最优路径。
+我们可以通过从任意初始值 $K_0$ 开始，向一个较大但有限的$T+1$时期的最优稳态$K$推进来近似最优路径。
 
 在下面的代码中，我们对一个较大的$T$进行这样的计算，并绘制消费、资本和储蓄率。
 
@@ -806,11 +803,11 @@ plot_saving_rate(pp, 0.3, k_ss/3, [130], k_ter=k_ss, k_ss=k_ss, s_ss=s_ss)
 
 ## 稳定流形和相图
 
-现在我们描述一个经典图表，用来描述最优的$(K_{t+1}, C_t)$路径。
+现在我们描述一个经典图表，用来描述最优的 $(K_{t+1}, C_t)$ 路径。
 
-图表的纵轴是$K$，横轴是$C$。
+图表的纵轴是 $K$，横轴是 $C$。
 
-对于任意固定的$K$，消费欧拉方程{eq}`eq:consn_euler`的固定点$C$满足
+对于任意固定的 $K$，消费欧拉方程{eq}`eq:consn_euler`的不动点 $C$ 满足
 
 $$
 C=C\left(\beta\left[f^{\prime}\left(f\left(K\right)+\left(1-\delta\right)K-C\right)+\left(1-\delta\right)\right]\right)^{1/\gamma}
@@ -824,7 +821,8 @@ C &=f\left(K\right)+\left(1-\delta\right)K-f^{\prime-1}\left(\frac{1}{\beta}-\le
  &\equiv \tilde{C} \left(K\right)
 \end{aligned}
 $$ (eq:tildeC)
-正固定点 $C = \tilde C(K)$ 仅在 $f\left(K\right)+\left(1-\delta\right)K-f^{\prime-1}\left(\frac{1}{\beta}-\left(1-\delta\right)\right)>0$ 时存在
+
+正不动点 $C = \tilde C(K)$ 仅在 $f\left(K\right)+\left(1-\delta\right)K-f^{\prime-1}\left(\frac{1}{\beta}-\left(1-\delta\right)\right)>0$ 时存在
 
 ```{code-cell} ipython3
 @jit
@@ -832,7 +830,7 @@ def C_tilde(K, pp):
 
     return pp.f(K) + (1 - pp.δ) * K - pp.f_prime_inv(1 / pp.β - 1 + pp.δ)
 ```
-接下来注意,给定一个时不变的任意 $C$,可行性条件 {eq}`allocation` 的不动点 $K$ 满足以下方程
+接下来，注意，给定任意一个时不变的 $C$,可行性条件 {eq}`allocation` 的不动点 $K$ 满足以下方程
 
 $$
     K = f(K) + (1 - \delta K) - C .
@@ -858,7 +856,7 @@ def K_tilde(C, pp):
 ```
 稳态 $\left(K_s, C_s\right)$ 是满足方程 {eq}`eq:tildeC` 和 {eq}`eq:tildeK` 的一对 $(K,C)$ 值。
 
-它是我们将在下面图 {numref}`stable_manifold` 中绘制的两条曲线 $\tilde{C}$ 和 $\tilde{K}$ 的交点。
+它是我们将在下图 {numref}`stable_manifold` 中绘制的两条曲线 $\tilde{C}$ 和 $\tilde{K}$ 的交点。
 
 我们可以通过求解方程 $K_s = \tilde{K}\left(\tilde{C}\left(K_s\right)\right)$ 来计算 $K_s$
 
@@ -896,13 +894,13 @@ c_vec2, k_vec2 = bisection(pp, 1e-3, 1e-3, T=200, k_ter=Ks)
 
 图 {numref}`stable_manifold` 绘制了三条曲线：
 
-  * 蓝线表示方程 {eq}`eq:tildeC` 所描述的固定点 $C = \tilde C (K)$ 的图像。
-  * 红线表示方程 {eq}`eq:tildeK` 所描述的固定点 $K = \tilde K(C)$ 的图像。
+  * 蓝线表示方程 {eq}`eq:tildeC` 所描述的不动点 $C = \tilde C (K)$ 的图像。
+  * 红线表示方程 {eq}`eq:tildeK` 所描述的不动点 $K = \tilde K(C)$ 的图像。
   * 绿线表示从时间0时任意 $K_0$ 开始收敛到稳态的稳定流形。
      * 对于给定的 $K_0$，射击算法将 $C_0$ 设置为绿线上的坐标，以启动一条收敛到最优稳态的路径。
-* 绿线上的箭头显示了动态方程{eq}`eq:systemdynamics`推动连续$(K_{t+1}, C_t)$对的方向。
+    * 绿线上的箭头显示了动态方程{eq}`eq:systemdynamics`推动连续对 $(K_{t+1}, C_t)$ 的方向。
 
-图{numref}`stable_manifold`除了显示三条曲线外，还绘制了箭头来指示当给定$K_0$时，$C_0$不在绿线所示稳定流形上时，动态方程{eq}`eq:systemdynamics`驱动系统的方向。
+除了显示三条曲线外，图{numref}`stable_manifold`还绘制了箭头来指示当给定 $K_0$ 时，$C_0$不在绿线所示稳定流形上时，动态方程{eq}`eq:systemdynamics`驱动系统的方向。
 
   * 如果对给定的$K_0$，$C_0$设置在绿线以下，则积累了过多的资本
   
@@ -971,7 +969,7 @@ plt.show()
 
 取代规划者做出的数量选择的是市场价格，这些价格由模型外部的一个"机械神"(即所谓的看不见的手)设定。
 
-均衡市场价格必须协调由代表性家庭和代表性企业独立做出的不同决策。
+均衡市场价格必须协调由代表性家庭和代表性企业各自独立做出的不同决策。
 
 像本讲所研究的计划经济与{doc}`Cass-Koopmans 竞争均衡 <cass_koopmans_2>`中研究的市场经济之间的关系是一般均衡理论和福利经济学的基础性主题。
 
@@ -980,10 +978,8 @@ plt.show()
 ```{exercise}
 :label: ck1_ex1
 
-- 当以下条件时，绘制最优消费、资本和储蓄路径
-初始资本水平从稳态水平的1.5倍开始，
-当我们向着$T=130$的稳态推进时。
-- 储蓄率为什么会这样响应？
+- 当初始资本水平设为稳态值的1.5倍时，在以 $T = 130$ 为终点向稳态打靶的过程中，绘制最优消费、资本和储蓄的路径。
+- 储蓄率为什么会出现这样的反应？
 ```
 
 ```{solution-start} ck1_ex1
