@@ -92,7 +92,7 @@ import networkx as nx
 $$
 \begin{aligned}
     \min_{x_{ij}} \ & \sum_{i=1}^m \sum_{j=1}^n c_{ij} x_{ij} \\
-    \text{subject to } \ & \sum_{j=1}^n x_{ij} = p_i, & i = 1, 2, \dots, m \\
+    \text{使得 } \ & \sum_{j=1}^n x_{ij} = p_i, & i = 1, 2, \dots, m \\
     & \sum_{i=1}^m x_{ij} = q_j, & j = 1, 2, \dots, n \\
     & x_{ij} \ge 0 \\
 \end{aligned}
@@ -145,7 +145,6 @@ SciPy 函数 `linprog` 需要接收决策变量的*向量*。
 
 $$
 \begin{aligned}
-
 \min_{X} \ & \operatorname{tr} (C' X) \\
     \text{subject to } \ & X \ \mathbf{1}_n = p \\
     & X' \ \mathbf{1}_m = q \\
@@ -173,7 +172,6 @@ $$
 
 $$
     A \otimes B =
-
 \begin{pmatrix}
     a_{11}B & a_{12}B & \dots & a_{1s}B \\
     a_{21}B & a_{22}B & \dots & a_{2s}B \\
@@ -222,7 +220,7 @@ $$
 $$
     \begin{aligned}
         \min_{z} \ & \operatorname{vec}(C)' z \\
-        \text{subject to } \ & A z = b \\
+        \text{使得 } \ & A z = b \\
         & z \ge 0 \\
     \end{aligned}
 $$ (decisionvars)
@@ -295,7 +293,6 @@ p = \begin{pmatrix}
         25 \\
         115 \\
         60 \\
-
 30 \\
         70
     \end{pmatrix}
@@ -431,7 +428,7 @@ for i in range(len(sol_found)):
     print(f"     最小成本 {i}: ", cost[i])
 ```
 
-**啊哈！**如你所见，在这种情况下，仅仅改变约束的顺序，就会显现出两个实现相同最小成本的最优传输方案。
+**啊哈！** 如你所见，在这种情况下，仅仅改变约束的顺序，就会显现出两个实现相同最小成本的最优传输方案。
 
 这就是我们之前计算出的两个方案。
 
@@ -524,7 +521,7 @@ res.x.reshape((m, n), order='F')
 $$
 \begin{aligned}
 \max_{u_i, v_j} \ & \sum_{i=1}^m p_i u_i + \sum_{j=1}^n q_j v_j \\
-\text{subject to } \ & u_i + v_j \le c_{ij}, \ i = 1, 2, \dots, m;\ j = 1, 2, \dots, n \\
+\text{使得 } \ & u_i + v_j \le c_{ij}, \ i = 1, 2, \dots, m;\ j = 1, 2, \dots, n \\
 \end{aligned}
 $$ (dualproblem)
 
