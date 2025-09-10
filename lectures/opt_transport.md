@@ -425,7 +425,7 @@ for i in range(1000):
 ```{code-cell} ipython3
 for i in range(len(sol_found)):
     print(f"运输方案 {i}: ", sol_found[i])
-    print(f"     最小成本 {i}: ", cost[i])
+    print(f"最小成本 {i}: ", cost[i])
 ```
 
 **啊哈！** 如你所见，在这种情况下，仅仅改变约束的顺序，就会显现出两个实现相同最小成本的最优传输方案。
