@@ -1318,3 +1318,324 @@ experiment_model(shocks, S, model, run_min, plot_results, 'g')
 
 ```{solution-end}
 ```
+
+(growth_model)=
+## 外生增长
+
+在前面的部分中，我们考虑的是没有外生增长的模型。
+
+我们通过设置$A_t = 1$对所有$t$，将生产函数中的$A_t$项设为常数。
+
+现在我们准备考虑增长。
+
+为了纳入增长，我们将生产函数修改为
+
+$$
+Y_t = F(K_t, A_tn_t)
+$$
+
+其中$Y_t$是总产出，$N_t$是总就业，$A_t$是劳动增进型技术变化，$F(K, AN)$是与之前相同的线性齐次生产函数。
+
+我们假设$A_t$遵循以下过程
+
+$$
+A_{t+1} = \mu_{t+1}A_t
+$$ (eq:growth)
+
+并且$\mu_{t+1}=\bar{\mu}>1$。
+
+```{code-cell} ipython3
+# 将常数A参数设置为None
+model = create_model(A=None)
+```
+
+```{code-cell} ipython3
+def compute_A_path(A0, shocks, S=100):
+    """
+    计算A随时间的路径。
+    """
+    A_path = np.full(S + 1, A0)
+    for t in range(1, S + 1):
+        A_path[t] = A_path[t-1] * shocks['μ'][t-1]
+    return A_path
+```
+
+### 非弹性劳动供给
+
+根据线性齐次性，生产函数可以表示为
+
+$$
+y_t=f(k_t)
+$$
+
+其中$f(k)=F(k,1) = k^\alpha$和$k_t=\frac{K_t}{n_tA_t}$，$y_t=\frac{Y_t}{n_tA_t}$。
+
+$k_t$和$y_t$是按"有效劳动"$A_tn_t$单位测量的。
+
+我们还设$c_t=\frac{C_t}{A_tn_t}$和$g_t=\frac{G_t}{A_tn_t}$，其中$C_t$和$G_t$分别是总消费和总政府支出。
+
+我们继续考虑非弹性劳动供给的情况。
+
+基于此，可行性可由方程{eq}`eq:feasi_capital`的以下修改版本来总结：
+
+$$
+k_{t+1}=\mu_{t+1}^{-1}[f(k_t)+(1-\delta)k_t-g_t-c_t]
+$$ (eq:feasi_mod)
+
+
+同样，根据线性齐次生产函数的性质，我们有
+
+$$ 
+\eta_t = F_k(k_t, 1) = f'(k_t), w_t = F_n(k_t, 1) = f(k_t) - f'(k_t)k_t 
+$$
+
+由于现在人均消费是$c_tA_t$，欧拉方程{eq}`eq:diff_second`的对应形式是
+
+$$
+\begin{aligned}
+u'(c_tA_t) = \beta u'(c_{t+1}A_{t+1}) \frac{(1 + \tau_{ct})}{(1 + \tau_{ct+1})} [(1 - \tau_{kt+1})(f'(k_{t+1}) - \delta) + 1].
+\end{aligned} 
+$$ (eq:diff_mod)
+
+$\bar{R}_{t+1}$继续由{eq}`eq:gross_rate`定义，除了现在$k_t$是每有效劳动单位的资本。
+
+因此，将{eq}`eq:gross_rate`代入，{eq}`eq:diff_mod`变为
+
+$$
+u'(c_tA_t) = \beta u'(c_{t+1}A_{t+1})\bar{R}_{t+1}
+$$
+
+假设家庭的效用函数与之前相同，我们有
+
+$$
+(c_tA_t)^{-\gamma} = \beta (c_{t+1}A_{t+1})^{-\gamma} \bar{R}_{t+1}
+$$
+
+因此，{eq}`eq:consume_R`的对应形式是
+
+$$
+c_{t+1} = c_t \left[ \beta \bar{R}_{t+1} \right]^{\frac{1}{\gamma}}\mu_{t+1}^{-1}
+$$ (eq:consume_r_mod)
+
+### 稳态
+
+在稳态中，$c_{t+1} = c_t$。那么{eq}`eq:diff_mod`变为
+
+$$
+1=\mu^{-\gamma}\beta[(1-\tau_k)(f'(k)-\delta)+1] 
+$$ (eq:diff_mod_st)
+
+从中我们可以计算出每有效劳动单位的稳态资本水平满足
+
+$$
+f'(k)=\delta + (\frac{\frac{1}{\beta}\mu^{\gamma}-1}{1-\tau_k})
+$$ (eq:cap_mod_st)  
+
+并且
+
+$$
+\bar{R}=\frac{\mu^{\gamma}}{\beta}
+$$ (eq:Rbar_mod_st)
+
+每有效劳动单位的稳态消费水平可以使用{eq}`eq:feasi_mod`求得：
+
+$$
+c = f(k)+(1-\delta-\mu)k-g
+$$
+
+由于算法和绘图例程与之前相同，我们在{ref}`cass_fiscal_shooting`部分包含稳态计算和射击例程。
+
+### 射击算法
+
+现在我们可以应用射击算法来计算均衡。我们通过包含$\mu_t$来扩充冲击变量向量，然后按之前的方法进行。
+
+### 实验
+
+让我们运行一些实验：
+
+1. 在第10期$\mu$从1.02到1.025的可预见的一次性永久增长
+2. 在第0期$\mu$到1.025的不可预见的一次性永久增长
+
++++
+
+#### 实验1：在t=10时$\mu$从1.02到1.025的可预见增长
+
+下图显示了在t=10时生产率增长$\mu$从1.02永久增长到1.025的影响。
+
+它们现在以有效劳动单位测量$c$和$k$。
+
+```{code-cell} ipython3
+shocks = {
+    'g': np.repeat(0.2, S + 1),
+    'τ_c': np.repeat(0.0, S + 1),
+    'τ_k': np.repeat(0.0, S + 1),
+    'μ': np.concatenate((np.repeat(1.02, 10), np.repeat(1.025, S - 9)))
+}
+
+A_path = compute_A_path(1.0, shocks, S)
+
+k_ss_initial, c_ss_initial = steady_states(model, 
+                                         shocks['g'][0],
+                                         shocks['τ_k'][0],
+                                         shocks['μ'][0]
+                                        )
+
+print(f"稳态资本: {k_ss_initial:.4f}")
+print(f"稳态消费: {c_ss_initial:.4f}")
+
+# 使用A_path参数运行射击算法
+solution = run_shooting(shocks, S, model, A_path)
+
+fig, axes = plt.subplots(2, 3, figsize=(10, 8))
+axes = axes.flatten()
+
+plot_results(solution, k_ss_initial, 
+             c_ss_initial, shocks, 'μ', axes, model, 
+             A_path, T=40)
+
+for ax in axes[5:]:
+    fig.delaxes(ax)
+
+plt.tight_layout()
+plt.show()
+```
+
+图中的结果主要由{eq}`eq:diff_mod_st`驱动，表明$\mu$的永久增长将导致每有效劳动单位的稳态资本值减少。
+
+图表明以下几点：
+
+- 随着资本变得更有效率，即使资本较少，人均消费也可以提高。
+- 消费平滑驱动了对$\mu$增长的预期*消费立即跳跃*。
+- 资本生产率的增加导致总收益率$\bar R$增加。
+- 完全预见使得资本增长率增加的影响先于其发生，在$t=0$时就可见其影响。
+
+#### 实验2：在t=0时$\mu$从1.02到1.025的不可预见增长
+
+下图显示了在t=0时$\mu$立即跳跃到1.025的影响。
+
+```{code-cell} ipython3
+shocks = {
+    'g': np.repeat(0.2, S + 1),
+    'τ_c': np.repeat(0.0, S + 1),
+    'τ_k': np.repeat(0.0, S + 1),
+    'μ': np.concatenate((np.repeat(1.02, 1), np.repeat(1.025, S)))
+}
+
+A_path = compute_A_path(1.0, shocks, S)
+
+k_ss_initial, c_ss_initial = steady_states(model, 
+                                           shocks['g'][0],
+                                           shocks['τ_k'][0],
+                                           shocks['μ'][0]
+                                          )
+
+print(f"稳态资本: {k_ss_initial:.4f}")
+print(f"稳态消费: {c_ss_initial:.4f}")
+
+# 使用A_path参数运行射击算法
+solution = run_shooting(shocks, S, model, A_path)
+
+fig, axes = plt.subplots(2, 3, figsize=(10, 8))
+axes = axes.flatten()
+
+plot_results(solution, k_ss_initial, 
+             c_ss_initial, shocks, 'μ', axes, model, A_path, T=40)
+
+for ax in axes[5:]:
+    fig.delaxes(ax)
+
+plt.tight_layout()
+plt.show()
+```
+
+同样，我们可以将上面使用的程序收集到一个函数中，该函数运行求解器并为给定实验绘制图表。
+
+```{code-cell} ipython3
+def experiment_model(shocks, S, model, A_path, solver, plot_func, policy_shock, T=40):
+    """
+    给定模型运行射击算法并绘制结果。
+    """
+    k0, c0 = steady_states(model, shocks['g'][0], shocks['τ_k'][0], shocks['μ'][0])
+    
+    print(f"稳态资本: {k0:.4f}")
+    print(f"稳态消费: {c0:.4f}")
+    print('-'*64)
+    
+    fig, axes = plt.subplots(2, 3, figsize=(10, 8))
+    axes = axes.flatten()
+
+    solution = solver(shocks, S, model, A_path)
+    plot_func(solution, k0, c0, 
+              shocks, policy_shock, axes, model, A_path, T=T)
+
+    for ax in axes[5:]:
+        fig.delaxes(ax)
+
+    plt.tight_layout()
+    plt.show()
+```
+
+```{code-cell} ipython3
+shocks = {
+    'g': np.repeat(0.2, S + 1),
+    'τ_c': np.repeat(0.0, S + 1),
+    'τ_k': np.repeat(0.0, S + 1),
+    'μ': np.concatenate((np.repeat(1.02, 1), np.repeat(1.025, S)))
+}
+
+experiment_model(shocks, S, model, A_path, run_shooting, plot_results, 'μ')
+```
+
+图表显示：
+
+- 由于没有前馈效应，所有变量的路径现在都是平滑的。
+- 每有效劳动单位的资本逐渐下降到较低的稳态水平。
+- 每有效劳动单位的消费立即跳跃，然后平滑下降到较低的稳态值。
+- 税后总收益率$\bar{R}$再次与消费增长率同向变动，验证了欧拉方程{eq}`eq:diff_mod_st`。
+
+```{exercise}
+:label: cass_fiscal_ex3
+
+使用残差最小化的第二种方法重现我们两个实验的图：
+1. 在t=10时$\mu$从1.02到1.025的可预见增长
+2. 在t=0时$\mu$从1.02到1.025的不可预见增长
+```
+
+```{solution-start} cass_fiscal_ex3
+:class: dropdown
+```
+
+这是一个解决方案：
+
+**实验1：在$t=10$时$\mu$从1.02到1.025的可预见增长**
+
+```{code-cell} ipython3
+shocks = {
+    'g': np.repeat(0.2, S + 1),
+    'τ_c': np.repeat(0.0, S + 1),
+    'τ_k': np.repeat(0.0, S + 1),
+    'μ': np.concatenate((np.repeat(1.02, 10), np.repeat(1.025, S - 9)))
+}
+
+A_path = compute_A_path(1.0, shocks, S)
+
+experiment_model(shocks, S, model, A_path, run_min, plot_results, 'μ')
+```
+
+**实验2：在$t=0$时$\mu$从1.02到1.025的不可预见增长**
+
+```{code-cell} ipython3
+shocks = {
+    'g': np.repeat(0.2, S + 1),
+    'τ_c': np.repeat(0.0, S + 1),
+    'τ_k': np.repeat(0.0, S + 1),
+    'μ': np.concatenate((np.repeat(1.02, 1), np.repeat(1.025, S)))
+}
+
+experiment_model(shocks, S, model, A_path, run_min, plot_results, 'μ')
+```
+
+```{solution-end}
+```
+
+在续篇{doc}`cass_fiscal_2`中，我们研究与{cite:t}`mendoza1998international`密切相关的我们单国模型的两国版本。
