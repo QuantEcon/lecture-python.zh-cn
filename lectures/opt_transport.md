@@ -146,7 +146,7 @@ SciPy 函数 `linprog` 需要接收决策变量的*向量*。
 $$
 \begin{aligned}
 \min_{X} \ & \operatorname{tr} (C' X) \\
-    \text{subject to } \ & X \ \mathbf{1}_n = p \\
+    \text{使得 } \ & X \ \mathbf{1}_n = p \\
     & X' \ \mathbf{1}_m = q \\
     & X \ge 0 \\
 \end{aligned}
@@ -546,7 +546,7 @@ $$ (dualproblem)
 $$
 \begin{aligned}
 \max_{u_i, v_j} \ & p u + q v \\
-\text{subject to } \ & A' \begin{pmatrix} u \\ v \\ \end{pmatrix} = \operatorname{vec}(C) \\
+\text{使得 } \ & A' \begin{pmatrix} u \\ v \\ \end{pmatrix} = \operatorname{vec}(C) \\
 \end{aligned}
 $$ (dualproblem2)
 
