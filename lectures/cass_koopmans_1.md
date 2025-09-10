@@ -582,7 +582,7 @@ def bisection(pp, c0, k0, T=10, tol=1e-4, max_iter=500, k_ter=0, verbose=True):
         # 检查终端条件是否得到满足
         if np.abs(error) < tol:
             if verbose:
-                print('在第', i+1, '迭代步时成功收敛')
+                print(f'第 {i+1} 次迭代收敛成功')
             return c_vec, k_vec
 
         i += 1
@@ -604,7 +604,7 @@ def plot_paths(pp, c0, k0, T_arr, k_ter=0, k_ss=None, axs=None):
 
     if axs is None:
         fix, axs = plt.subplots(1, 3, figsize=(16, 4))
-    ylabels = ['$c_t$', '$k_t$', '$\mu_t$']
+    ylabels = ['$c_t$', '$k_t$', r'$\mu_t$']
     titles = ['消费', '资本', '拉格朗日乘数']
 
     c_paths = []
