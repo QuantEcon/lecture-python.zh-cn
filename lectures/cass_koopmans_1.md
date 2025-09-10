@@ -1051,13 +1051,13 @@ plt.show()
 ### 练习
 
 ```{exercise}
-:label: ck1_ex1
+:label: ck1_ex2
 
 - 当初始资本水平设为稳态值的1.5倍时，在以 $T = 130$ 为终点向稳态打靶的过程中，绘制最优消费、资本和储蓄的路径。
 - 储蓄率为什么会出现这样的反应？
 ```
 
-```{solution-start} ck1_ex1
+```{solution-start} ck1_ex2
 :class: dropdown
 ```
 
