@@ -55,6 +55,13 @@ kernelspec:
 - 对于长期但有限期经济的最优路径的**收费公路**性质
 - **稳定流形**和**相位平面**
 
+除了 Anaconda 中已有的库之外，本讲座还需要以下库：
+
+```{code-cell} ipython
+:tags: [hide-output]
+!pip install quantecon
+```
+
 让我们从一些标准导入开始：
 
 ```{code-cell} ipython3
@@ -711,7 +718,7 @@ plot_paths(pp, 0.3, k_ss/3, [150], k_ss=k_ss);
 ```{code-cell} ipython3
 plot_paths(pp, 0.3, k_ss/3, [150, 75, 50, 25], k_ss=k_ss);
 ```
-## 收费公路性质
+## 收费公路性质（Turnpike property）
 
 以下计算表明，当 $T$ 非常大时，最优资本存量在大部分时间里都会保持在接近其稳态值的水平。
 
@@ -726,10 +733,78 @@ plot_paths(pp, 0.3, k_ss/3, [250, 150, 50, 25], k_ss=k_ss);
 
 对规划者来说，一个经验法则是：
 
-- 从 $K_0$ 开始，将 $K_t$ 推向
-  稳态，并在接近时间 $T$ 之前保持在稳态附近。
+- 从 $K_0$ 开始，将 $K_t$ 推向稳态，并在接近时间 $T$ 之前保持在稳态附近。
 
 规划者通过调整储蓄率 $\frac{f(K_t) - C_t}{f(K_t)}$ 来实现这一目标。
+
+```{exercise}
+:label: ck1_ex1
+
+收费公路性质在 $T$ 足够大的情况下，与初始条件 $K_0$ 无关。
+
+请扩展 `plot_paths` 函数，使其能够绘制多个初始点的轨迹，初始点取 `k0s = [k_ss*2, k_ss*3, k_ss/3]`。
+```
+
+```{solution-start} ck1_ex1
+:class: dropdown
+```
+
+参考答案
+
+```{code-cell} ipython3
+def plot_multiple_paths(pp, c0, k0s, T_arr, k_ter=0, k_ss=None, axs=None):
+    if axs is None:
+        fig, axs = plt.subplots(1, 3, figsize=(16, 4))
+        
+    ylabels = ['$c_t$', '$k_t$', r'$\mu_t$']
+    titles = ['消费', '资本', '拉格朗日乘数']
+
+    colors = plt.cm.viridis(np.linspace(0, 1, len(k0s)))
+    
+    all_c_paths = []
+    all_k_paths = []
+    
+    for i, k0 in enumerate(k0s):
+        k0_c_paths = []
+        k0_k_paths = []
+        
+        for T in T_arr:
+            c_vec, k_vec = bisection(pp, c0, k0, T, k_ter=k_ter, verbose=False)
+            k0_c_paths.append(c_vec)
+            k0_k_paths.append(k_vec)
+
+            μ_vec = pp.u_prime(c_vec)
+            paths = [c_vec, k_vec, μ_vec]
+
+            for j in range(3):
+                axs[j].plot(paths[j], color=colors[i], 
+                           label=f'$k_0 = {k0:.2f}$' if j == 0 and T == T_arr[0] else "", alpha=0.7)
+                axs[j].set(xlabel='t', ylabel=ylabels[j], title=titles[j])
+
+            if k_ss is not None and i == 0 and T == T_arr[0]:
+                axs[1].axhline(k_ss, c='k', ls='--', lw=1)
+
+            axs[1].axvline(T+1, c='k', ls='--', lw=1)
+            axs[1].scatter(T+1, paths[1][-1], s=80, color=colors[i])
+        
+        all_c_paths.append(k0_c_paths)
+        all_k_paths.append(k0_k_paths)
+    
+    # 如果有多个初始点，添加图例
+    if len(k0s) > 1:
+        axs[0].legend()
+
+    return all_c_paths, all_k_paths
+```
+
+```{code-cell} ipython3
+_ = plot_multiple_paths(pp, 0.3, [k_ss*2, k_ss*3, k_ss/3], [250, 150, 75, 50], k_ss=k_ss)
+```
+
+我们看到，对于不同的初始值 $K_0$，收费公路性质都成立。
+
+```{solution-end}
+```
 
 让我们计算并绘制储蓄率。
 
