@@ -32,8 +32,7 @@ kernelspec:
 ```{code-cell} ipython3
 :tags: [hide-output]
 
-!pip install --upgrade quantecon
-!pip install --upgrade POT
+!pip install --upgrade quantecon POT torch
 ```
 
 让我们从一些导入语句开始。
