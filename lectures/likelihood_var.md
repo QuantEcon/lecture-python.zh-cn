@@ -47,6 +47,10 @@ kernelspec:
 ```{code-cell} ipython3
 import numpy as np
 import matplotlib.pyplot as plt
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 from scipy import linalg
 from scipy.stats import multivariate_normal as mvn
 from quantecon import LinearStateSpace

@@ -20,38 +20,37 @@ kernelspec:
 </div>
 ```
 
-# Likelihood Ratio Processes and Bayesian Learning
+# 似然比过程和贝叶斯学习
 
+## 概述
 
+本讲解描述了**似然比过程**在**贝叶斯学习**中所扮演的角色。
 
-## Overview
+如同{doc}`本讲 <likelihood_ratio_process>`中所述，我们将使用{doc}`本讲 <exchangeable>`中的一个简单统计设置。
 
-This lecture describes the role that **likelihood ratio processes** play in  **Bayesian learning**.
+我们将重点关注似然比过程和**先验**概率如何决定**后验**概率。
 
-As in {doc}`this lecture <likelihood_ratio_process>`, we'll use a simple statistical setting from {doc}`this lecture <exchangeable>`.
+我们将推导出一个便利的递归公式，表示今天的后验概率是昨天后验概率和今天似然过程乘法增量的函数。
 
-We'll focus on how a likelihood ratio process and a **prior** probability determine a **posterior** probability.
+我们还将介绍该公式的一个有用推广，该推广将今天的后验概率表示为初始先验和今天似然比过程实现值的函数。
 
-We'll derive a convenient recursion for today's posterior as a function of yesterday's posterior and
-today's multiplicative increment to a likelihood process.
+我们将研究在我们的设置中，贝叶斯学习者如何最终学习到生成数据的概率分布，这个结果
 
-We'll also present a useful generalization of that formula that represents today's posterior in terms of an initial prior and
-today's realization of the likelihood ratio process.
+这建立在{doc}`本讲座 <likelihood_ratio_process>`中研究的似然比过程的渐近行为之上。
 
-We'll study how, at least  in our setting, a Bayesian eventually learns the probability distribution that generates the data, an outcome that
-rests on the asymptotic behavior of likelihood ratio processes studied in {doc}`this lecture <likelihood_ratio_process>`.
+我们还将深入探讨贝叶斯学习者的心理，研究其主观信念下的动态变化。
 
-We'll also drill down into the psychology of our Bayesian learner and study dynamics  under his subjective beliefs.
+本讲座提供了技术性结果，这些结果是{doc}`本讲座 <odu>`、{doc}`本讲座 <wald_friedman>`和{doc}`本讲座 <navy_captain>`中将要研究的结果的基础。
 
-This lecture provides technical results that underly outcomes to be studied in {doc}`this lecture <odu>`
-and {doc}`this lecture <wald_friedman>` and {doc}`this lecture <navy_captain>`.
-
-We'll begin by loading some Python modules.
+我们先加载一些Python模块。
 
 ```{code-cell} ipython3
 :hide-output: false
 
-import matplotlib.pyplot as plt
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from numba import vectorize, jit, prange
 from math import gamma
@@ -68,83 +67,68 @@ def set_seed():
 set_seed()
 ```
 
-## The Setting
+## 背景设置
 
-We begin by reviewing the setting in {doc}`this lecture <likelihood_ratio_process>`, which we adopt here too.
+我们首先回顾{doc}`本讲座 <likelihood_ratio_process>`中的设置，这也是我们在这里采用的设置。
 
-A nonnegative random variable $W$ has one of two probability density functions, either
-$f$ or $g$.
+一个非负随机变量 $W$ 具有两个概率密度函数之一，要么是 $f$，要么是 $g$。
 
-Before the beginning of time, nature once and for all decides whether she will draw a sequence of IID draws from $f$ or from $g$.
+在时间开始之前，自然界一劳永逸地决定是从 $f$ 还是从 $g$ 中进行一系列独立同分布的抽样。
 
-We will sometimes let $q$ be the density that nature chose once and for all, so
-that $q$ is either $f$ or $g$, permanently.
+我们有时会用 $q$ 表示自然界一劳永逸选择的密度，所以 $q$ 要么是 $f$ 要么是 $g$，且是永久性的。
 
-Nature knows which density it permanently draws from, but we the observers do not.
+自然界知道它永久从哪个密度中抽样，但我们这些观察者并不知道。
 
-We do know both $f$ and $g$, but we don’t know which density nature
-chose.
+我们知道 $f$ 和 $g$ 这两个密度，但不知道自然界选择了哪一个。
 
-But we want to know.
+但我们想要知道。
 
-To do that, we use observations.
+为此，我们使用观测数据。
 
-We observe a sequence $\{w_t\}_{t=1}^T$ of $T$ IID draws
-from either $f$ or $g$.
+我们观察到一个序列 $\{w_t\}_{t=1}^T$，它包含 $T$ 个从 $f$ 或 $g$ 中独立同分布抽取的样本。
 
-We want to use these observations to infer whether nature chose $f$ or
-$g$.
+我们想要利用这些观测来推断自然界选择了 $f$ 还是 $g$。
 
-A **likelihood ratio process** is a useful tool for this task.
+**似然比过程**是完成这项任务的有用工具。
 
-To begin, we define the key component of a likelihood ratio process, namely, the time $t$ likelihood ratio  as the random variable
+首先，我们定义似然比过程的关键组成部分，即时间 $t$ 的似然比，它是一个随机变量：
 
 $$
 \ell (w_t)=\frac{f\left(w_t\right)}{g\left(w_t\right)},\quad t\geq1.
 $$
 
-We assume that $f$ and $g$ both put positive probabilities on the
-same intervals of possible realizations of the random variable $W$.
+我们假设 $f$ 和 $g$ 在随机变量 $W$ 可能实现值的相同区间上都赋予正概率。
 
-That means that under the $g$ density,  $\ell (w_t)=
-\frac{f\left(w_{t}\right)}{g\left(w_{t}\right)}$
-is evidently a nonnegative  random variable with mean $1$.
+这意味着在 $g$ 密度下，$\ell (w_t)= \frac{f\left(w_{t}\right)}{g\left(w_{t}\right)}$ 显然是一个均值为1的非负随机变量。
 
-A **likelihood ratio process** for sequence
-$\left\{ w_{t}\right\} _{t=1}^{\infty}$ is defined as
+序列的**似然比过程**
+
+$\left\{ w_{t}\right\} _{t=1}^{\infty}$ 定义如下：
 
 $$
 L\left(w^{t}\right)=\prod_{i=1}^{t} \ell (w_i),
 $$
 
-where $w^t=\{ w_1,\dots,w_t\}$ is a history of
-observations up to and including time $t$.
+其中 $w^t=\{ w_1,\dots,w_t\}$ 是直到时间 $t$ （包括 $t$）的观测历史。
 
-Sometimes for shorthand we'll write 
+有时为简便起见，我们会写作
 
 $$
 L_t =  L(w^t) = \frac{f(w^t)}{g(w^t)}
 $$ 
 
-where we use the conventions 
-that $f(w^t) = f(w_1) f(w_2) \ldots f(w_t)$ and $g(w^t) = g(w_1) g(w_2) \ldots g(w_t)$.
+这里我们使用如下约定：
+$f(w^t) = f(w_1) f(w_2) \ldots f(w_t)$ 且 $g(w^t) = g(w_1) g(w_2) \ldots g(w_t)$。
 
-Notice that the likelihood process satisfies the *recursion* or
-*multiplicative decomposition*
+注意，似然过程满足以下*递归*或*乘法分解*：
 
 $$
 L(w^t) = \ell (w_t) L (w^{t-1}) .
 $$
 
-The likelihood ratio and its logarithm are key tools for making
-inferences using a classic frequentist approach due to Neyman and
-Pearson {cite}`Neyman_Pearson`.
+似然比及其对数是使用 Neyman 和 Pearson 经典频率派方法进行推断的关键工具 {cite}`Neyman_Pearson`。
 
-We'll again deploy the following Python code from {doc}`this lecture <likelihood_ratio_process>` that
-evaluates $f$ and $g$ as two different
-beta distributions, then computes and simulates an associated likelihood
-ratio process by generating a sequence $w^t$ from *some*
-probability distribution, for example, a sequence of  IID draws from $g$.
+我们将再次使用来自{doc}`本讲座 <likelihood_ratio_process>`的以下 Python 代码，该代码将 $f$ 和 $g$ 评估为两个不同的贝塔分布，然后通过从*某个*概率分布（例如，从 $g$ 生成的 IID 序列）生成序列 $w^t$ 来计算和模拟相关的似然比过程。
 
 ```{code-cell} ipython3
 # Parameters in the two beta distributions.
@@ -165,8 +149,8 @@ g = jit(lambda x: p(x, G_a, G_b))
 @jit
 def simulate(a, b, T=50, N=500):
     '''
-    Generate N sets of T observations of the likelihood ratio,
-    return as N x T matrix.
+    生成N组T个似然比观测值，
+    以N x T矩阵形式返回。
 
     '''
 
@@ -181,7 +165,7 @@ def simulate(a, b, T=50, N=500):
     return l_arr
 ```
 
-We'll also use the following Python code to prepare some informative simulations
+我们还将使用以下Python代码来准备一些信息丰富的模拟
 
 ```{code-cell} ipython3
 l_arr_g = simulate(G_a, G_b, N=50000)
@@ -193,78 +177,72 @@ l_arr_f = simulate(F_a, F_b, N=50000)
 l_seq_f = np.cumprod(l_arr_f, axis=1)
 ```
 
-## Likelihood Ratio Processes and Bayes’ Law
+## 似然比过程和贝叶斯定律
 
-Let $\pi_0 \in [0,1]$ be a Bayesian statistician's prior probability that nature generates $w^t$ as a sequence of i.i.d. draws from
-distribution $f$.
+设 $\pi_0 \in [0,1]$ 是贝叶斯统计学家对自然生成的 $w^t$ 序列是来自分布 $f$ 的独立同分布抽样的先验概率。
 
-* here "probability" is to be interpreted as a way to summarize or express a  subjective opinion
-* it does **not** mean an anticipated relative frequency as sample size grows without limit 
+* 这里的"概率"应被理解为总结或表达主观观点的一种方式
+* 它**不**意味着样本量无限增长时的预期相对频率
 
-Let $\pi_{t+1}$ be a Bayesian posterior probability defined as
+设 $\pi_{t+1}$ 是定义如下的贝叶斯后验概率：
 
 $$
 \pi_{t+1} = {\rm Prob}(q=f|w^{t+1})
 $$ (eq:defbayesposterior)
 
-The likelihood ratio process is a principal actor in the formula that governs the evolution
-of the posterior probability $\pi_t$, an instance of **Bayes' Law**.
+似然比过程是后验概率 $\pi_t$ 演化公式中的主要角色，这是**贝叶斯定律**的一个实例。
 
-Let's derive a couple of formulas for $\pi_{t+1}$, one in terms of likelihood ratio $l(w_t)$, the other in terms of
-$L(w^t)$.
+让我们推导 $\pi_{t+1}$ 的两个公式，一个用似然比 $l(w_t)$ 表示，另一个用 $L(w^t)$ 表示。
 
-To begin, we use the notational conventions  
-
-
+首先，我们使用以下符号约定：
 
 * $f(w^{t+1}) \equiv f(w_1) f(w_2) \cdots f(w_{t+1})$
 * $g(w^{t+1}) \equiv g(w_1) g(w_2) \cdots g(w_{t+1})$
 * $\pi_0 ={\rm Prob}(q=f |\emptyset)$
 * $\pi_t = {\rm Prob}(q=f |w^t)$
 
-Here the symbol $\emptyset$ means "empty set" or "no data".  
+这里符号 $\emptyset$ 表示"空集"或"无数据"。
 
-With no data in hand, our Bayesian statistician thinks that the probability density of the sequence $w^{t+1}$ is
-
+在没有数据的情况下，我们的贝叶斯统计学家认为序列 $w^{t+1}$ 的概率密度是：
 
 $$
 {\rm Prob}(w^{t+1} |\emptyset) = \pi_0 f(w^{t+1})+ (1 -  \pi_0) g(w^{t+1}) 
 $$
 
-Laws of probability say that the  joint distribution ${\rm Prob}(AB)$ of  events $A$ and $B$ are connected to the conditional distributions
-${\rm Prob}(A |B)$  and ${\rm Prob}(B |A)$  by
+概率定律表明，事件 $A$ 和 $B$ 的联合分布 ${\rm Prob}(AB)$ 与条件分布 ${\rm Prob}(A |B)$ 和 ${\rm Prob}(B |A)$ 之间的关系是：
 
 $$
+
 {\rm Prob}(AB) = {\rm Prob}(A |B) {\rm Prob}(B) = {\rm Prob}(B |A) {\rm Prob}(A) . 
 $$ (eq:problawAB)
 
-We are interested in events 
+我们关注的事件是
 
 $$
 A = \{q=f\},  \quad B = \{w^{t+1}\}, \quad
 $$
 
-where  braces $\{\cdot\}$ are our shorthand for "event". 
+其中大括号$\{\cdot\}$是我们用来表示"事件"的简写。
 
-So in our setting, probability laws {eq}`eq:problawAB` imply that
- 
+因此在我们的设定中，概率法则{eq}`eq:problawAB`意味着
+
 $$
 {\rm Prob}(q=f |w^{t+1})  {\rm Prob}(w^{t+1}  |\emptyset) = {\rm Prob}(w^{t+1} |q=f) {\rm Prob}(q=f  | \emptyset)
 $$
 
-or 
+或者
 
 $$
 \pi_{t+1} \left[\pi_0 f(w^{t+1}) + (1- \pi_0) g(w^{t+1})\right] = f(w^{t+1}) \pi_0 
 $$
 
-or
+或者
 
 $$
 \pi_{t+1}  = \frac{ f(w^{t+1}) \pi_0 }{\pi_0 f(w^{t+1}) + (1- \pi_0) g(w^{t+1})}
 $$
 
-Dividing both  the numerator and the denominator on the right side of the above  equation  by $g(w^{t+1})$ implies 
+将上述等式右边的分子和分母都除以$g(w^{t+1})$得到
 
 ```{math}
 :label: eq_Bayeslaw1033
@@ -272,41 +250,35 @@ Dividing both  the numerator and the denominator on the right side of the above 
 \pi_{t+1}=\frac{\pi_{0}L\left(w^{t+1}\right)}{\pi_{0}L\left(w^{t+1}\right)+1-\pi_{0}} .
 ```
 
+公式{eq}`eq_Bayeslaw1033`可以被视为在看到数据批次$\left\{ w_{i}\right\} _{i=1}^{t+1}$后对先验概率$\pi_0$的一步修正。
 
-Formula {eq}`eq_Bayeslaw1033`  can be regarded as a one step  revision of prior probability $\pi_0$ after seeing
-the batch of data $\left\{ w_{i}\right\} _{i=1}^{t+1}$.
+公式{eq}`eq_Bayeslaw1033`显示了似然比过程$L\left(w^{t+1}\right)$在确定后验概率$\pi_{t+1}$中起到的关键作用。
 
-Formula {eq}`eq_Bayeslaw1033` shows the key role that the likelihood ratio process  $L\left(w^{t+1}\right)$ plays in determining
-the posterior probability $\pi_{t+1}$.
+公式{eq}`eq_Bayeslaw1033`是理解以下观点的基础：由于似然比过程在$t \rightarrow + \infty$时的行为特征，似然比过程在决定$\pi_t$的极限行为时会主导初始先验$\pi_0$的影响。
 
-Formula {eq}`eq_Bayeslaw1033` is the foundation for the insight that, because of how the likelihood ratio process behaves
-as $t \rightarrow + \infty$, the likelihood ratio process dominates the initial prior $\pi_0$ in determining the
-limiting behavior of $\pi_t$.
+### 递归公式
 
-### A recursive formula
+我们可以使用类似的推理方法得到公式{eq}`eq_Bayeslaw1033`的递归版本。
 
-We can use a similar  line of argument to get a recursive version of formula {eq}`eq_Bayeslaw1033`.
-
-The laws of probability imply 
+概率法则表明
 
 $$
 {\rm Prob}(q=f|w^{t+1}) = \frac { {\rm Prob}(q=f|w^{t} ) f(w_{t+1})}{ {\rm Prob}(q=f|w^{t} ) f(w_{t+1}) + (1 - {\rm Prob}(q=f|w^{t} )) g(w_{t+1})}
 $$
 
-or
+或
 
 $$
 \pi_{t+1} = \frac { \pi_t f(w_{t+1})}{ \pi_t f(w_{t+1}) + (1 - \pi_t) g(w_{t+1})}
 $$ (eq:bayes150)
 
-Evidently,  the above equation asserts that
+显然，上述方程表明
 
 $$
 {\rm Prob}(q=f|w^{t+1}) = \frac{{\rm Prob}(q=f|w^{t}) f(w_{t+1} )} {{\rm Prob}(w_{t+1})}
 $$
 
-
-Dividing both  the numerator and the denominator on the right side of the  equation {eq}`eq:bayes150` by $g(w_{t+1})$ implies the recursion
+将方程{eq}`eq:bayes150`右侧的分子和分母都除以$g(w_{t+1})$得到递归式
 
 ```{math}
 :label: eq_recur1
@@ -314,13 +286,11 @@ Dividing both  the numerator and the denominator on the right side of the  equat
 \pi_{t+1}=\frac{\pi_{t} l_t(w_{t+1})}{\pi_{t} l_t(w_{t+1})+1-\pi_{t}}
 ```
 
-with $\pi_{0}$ being a Bayesian prior probability that $q = f$,
-i.e., a personal or subjective belief about $q$ based on our having seen no data.
+其中$\pi_{0}$是$q = f$的贝叶斯先验概率，即在我们尚未看到任何数据时基于个人或主观判断的关于$q$的信念。
 
-Formula {eq}`eq_Bayeslaw1033`  can be deduced by iterating on equation {eq}`eq_recur1`. 
+通过迭代方程{eq}`eq_recur1`可以推导出公式{eq}`eq_Bayeslaw1033`。
 
-Below we define a Python function that updates belief $\pi$ using
-likelihood ratio $\ell$ according to  recursion {eq}`eq_recur1`
+下面我们定义一个Python函数，该函数根据递归式{eq}`eq_recur1`使用似然比$\ell$更新信念$\pi$
 
 ```{code-cell} ipython3
 @jit
@@ -333,24 +303,19 @@ def update(π, l):
     return π
 ```
 
-As mentioned above, formula {eq}`eq_Bayeslaw1033` shows the key role that the likelihood ratio process  $L\left(w^{t+1}\right)$ plays in determining the posterior probability $\pi_{t+1}$.
+如上所述，公式 {eq}`eq_Bayeslaw1033` 显示了似然比过程 $L\left(w^{t+1}\right)$ 在确定后验概率 $\pi_{t+1}$ 中发挥的关键作用。
 
-As $t \rightarrow + \infty$, the likelihood ratio process dominates the initial prior $\pi_0$ in determining the
-limiting behavior of $\pi_t$.
+当 $t \rightarrow + \infty$ 时，似然比过程在决定 $\pi_t$ 的极限行为中占主导地位，超过了初始先验 $\pi_0$ 的影响。
 
+为了说明这一见解，我们将绘制图表，展示似然比过程 $L_t$ 的**一条**模拟路径，以及与*相同*似然比过程实现但*不同*初始先验概率 $\pi_{0}$ 相关联的两条 $\pi_t$ 路径。
 
-To illustrate this insight, below we will plot  graphs showing **one** simulated
-path of the  likelihood ratio process $L_t$ along with two paths of
-$\pi_t$ that are associated with the *same* realization of the likelihood ratio process but *different* initial prior probabilities $\pi_{0}$.
-
-First, we tell Python two values of $\pi_0$.
+首先，我们在Python中设定两个 $\pi_0$ 的值。
 
 ```{code-cell} ipython3
 π1, π2 = 0.2, 0.8
 ```
 
-Next we generate paths of the likelihood ratio process $L_t$ and the posterior $\pi_t$ for a
-history of IID draws from density $f$.
+接下来我们为从密度函数$f$中独立同分布抽取的历史数据生成似然比过程$L_t$和后验概率$\pi_t$的路径。
 
 ```{code-cell} ipython3
 T = l_arr_f.shape[1]
@@ -371,7 +336,7 @@ for i in range(2):
 ax1.set_ylabel(r"$\pi_t$")
 ax1.set_xlabel("t")
 ax1.legend()
-ax1.set_title("when f governs data")
+ax1.set_title("当f支配数据时")
 
 ax2 = ax1.twinx()
 ax2.plot(range(1, T+1), np.log(l_seq_f[0, :]), '--', color='b')
@@ -380,11 +345,11 @@ ax2.set_ylabel("$log(L(w^{t}))$")
 plt.show()
 ```
 
-The dotted line in the graph above records the logarithm of the  likelihood ratio process $\log L(w^t)$.
+图中的虚线记录了似然比过程的对数 $\log L(w^t)$。
 
-Please note that there are two different scales on the $y$ axis.
+请注意 $y$ 轴上有两个不同的刻度。
 
-Now let's study what happens when the history consists of IID draws from density $g$
+现在让我们研究当历史由密度 $g$ 产生的独立同分布抽样构成时会发生什么
 
 ```{code-cell} ipython3
 T = l_arr_g.shape[1]
@@ -405,7 +370,7 @@ for i in range(2):
 ax1.set_ylabel(r"$\pi_t$")
 ax1.set_xlabel("t")
 ax1.legend()
-ax1.set_title("when g governs data")
+ax1.set_title("当g支配数据时")
 
 ax2 = ax1.twinx()
 ax2.plot(range(1, T+1), np.log(l_seq_g[0, :]), '--', color='b')
@@ -414,7 +379,7 @@ ax2.set_ylabel("$log(L(w^{t}))$")
 plt.show()
 ```
 
-Below we offer Python code that verifies that nature chose permanently to draw from density $f$.
+以下我们提供Python代码，验证自然界永久选择从密度$f$中抽取。
 
 ```{code-cell} ipython3
 π_seq = np.empty((2, T+1))
@@ -429,62 +394,49 @@ for i in range(2):
 np.abs(π_seq - π_seq_f).max() < 1e-10
 ```
 
-We thus conclude that  the likelihood ratio process is a key ingredient of the formula {eq}`eq_Bayeslaw1033` for
-a Bayesian's posterior probability that nature has drawn history $w^t$ as repeated draws from density
-$f$.
+因此，我们得出结论，似然比过程是公式{eq}`eq_Bayeslaw1033`中贝叶斯后验概率的关键组成部分，该后验概率表示自然界从密度$f$中重复抽样得到历史$w^t$的概率。
 
+## 另一种时序协议
 
-## Another timing protocol
+让我们研究当自然界在不同的时序协议下生成历史$w^t = \{w_1, w_2, \dots, w_t\}$时，后验概率$\pi_t = {\rm Prob}(q=f|w^{t})$的表现。
 
-Let's study how the posterior probability $\pi_t = {\rm Prob}(q=f|w^{t}) $ behaves when nature generates the
-history $w^t = \{w_1, w_2, \dots, w_t\}$ under a different timing protocol.
+到目前为止，我们假设在时间1之前，自然界以某种方式选择从**要么**$f$**要么**$g$中进行iid序列抽样来得到$w^t$。
 
-Until now we assumed that before time $1$ nature somehow chose to draw $w^t$ as an iid sequence from **either** $f$ **or** $g$.  
+自然界关于是从$f$还是从$g$中抽样的决定因此是**永久性的**。
 
-Nature's decision about whether to draw from $f$ or $g$ was thus **permanent**. 
+现在我们假设一个不同的时序协议，在**每个**时期$t =1, 2, \ldots$之前，自然界：
 
-We now assume a different timing protocol in which before **each period** $t =1, 2, \ldots$ nature
+* 抛一个权重为$x$的硬币，然后
+* 如果抛出"正面"就从$f$中抽样
+* 如果抛出"反面"就从$g$中抽样
 
-*  flips an $x$-weighted coin,  then   
-*  draws from $f$ if it has drawn a "head"
-*  draws from $g$ if it has drawn a "tail".
+在这个时序协议下，自然界**既不**永久地从$f$抽样**也不**永久地从$g$抽样，所以认为自然界在**永久地**从其中之一进行i.i.d.抽样的统计学家是错误的。
 
-Under this timing protocol, nature  draws permanently from **neither** $f$ **nor** $g$, so a statistician who thinks that nature is drawing
-i.i.d. draws **permanently** from one of them is mistaken. 
+* 事实上，自然界实际上是**永久地**从$f$和$g$的$x$-混合分布中抽样——当$x \in (0,1)$时，这个分布既不是$f$也不是$g$
 
-* in truth, nature actually draws **permanently** from an $x$-mixture of $f$ and $g$ -- a distribution that is neither $f$ nor $g$ when
-$x \in (0,1)$
+因此，贝叶斯先验 $\pi_0$ 和方程 {eq}`eq_Bayeslaw1033` 描述的后验概率序列**不应该**被解释为统计学家对于另一种时序协议（即自然从 $f$ 和 $g$ 的 $x$ 混合分布中抽样）下混合参数 $x$ 的观点。
 
-
-
-Thus, the  Bayesian prior $\pi_0$ and the sequence of posterior probabilities described by equation {eq}`eq_Bayeslaw1033` should **not** be interpreted as the statistician's opinion about the mixing parameter  $x$ under the alternative timing protocol in which nature draws from an $x$-mixture of $f$ and $g$.  
-
-This is clear when we remember  the definition of $\pi_t$ in equation {eq}`eq:defbayesposterior`, which for convenience we repeat here:
+当我们回顾方程 {eq}`eq:defbayesposterior` 中 $\pi_t$ 的定义时，这一点就很清楚了。为方便起见，我们在这里重复该方程：
 
 $$
 \pi_{t+1} = {\rm Prob}(q=f|w^{t+1})
-$$ 
+$$
 
-
-
-Let's write some Python code to study how $\pi_t$ behaves when nature actually generates data as i.i.d. draws from  neither $f$ nor from $g$
-but instead as i.i.d. draws from an $x$-mixture of two beta distributions.  
+让我们编写一些 Python 代码来研究当自然实际上既不是从 $f$ 也不是从 $g$ 生成数据，而是从两个 beta 分布的 $x$ 混合分布中进行 i.i.d. 抽样时，$\pi_t$ 的行为。
 
 ```{note}
-This is a situation in which the statistician's model is misspecified, so we should anticipate that a Kullback-Liebler divergence with respect to an $x$-mixture distribution will shape outcomes.
-``` 
+这是一个统计学家的模型被错误指定的情况，因此我们应该预期相对于 $x$ 混合分布的 Kullback-Liebler 散度将影响结果。
+```
 
-We can study how $\pi_t$ would behave for various values of nature's mixing probability $x$.
+我们可以研究对于自然混合概率 $x$ 的不同值，$\pi_t$ 会如何表现。
 
-
-
-First, let's create a function to simulate data under the mixture timing protocol:
+首先，让我们创建一个函数来模拟混合时序协议下的数据：
 
 ```{code-cell} ipython3
 @jit
 def simulate_mixture_path(x_true, T):
     """
-    Simulate T observations under mixture timing protocol.
+    模拟混合时序协议下的 T 个观测值。
     """
     w = np.empty(T)
     for t in range(T):
@@ -495,31 +447,30 @@ def simulate_mixture_path(x_true, T):
     return w
 ```
 
-Let's generate a sequence of observations from this mixture model with a true mixing probability of $x=0.5$.
+让我们从这个混合模型生成一系列观测值，其真实混合概率为$x=0.5$。
 
-We will first use this sequence to study how $\pi_t$ behaves.
+我们首先用这个序列来研究$\pi_t$的行为。
 
 ```{note}
-Later, we can use it to study how a statistician who knows that nature generates data from an $x$-mixture of $f$ and $g$ could construct  maximum likelihood or Bayesian estimators of $x$ along with the free parameters of $f$ and $g$.
+之后，我们可以用它来研究一个统计学家如何在知道数据是由$f$和$g$的$x$混合生成的情况下，构建$x$的最大似然估计或贝叶斯估计，以及$f$和$g$的自由参数。
 ```
 
 ```{code-cell} ipython3
 x_true = 0.5
 T_mix = 200
 
-# Three different priors with means 0.25, 0.5, 0.75
+# 三个不同的先验，均值分别为0.25, 0.5, 0.75
 prior_params = [(1, 3), (1, 1), (3, 1)]
 prior_means = [a/(a+b) for a, b in prior_params]
 
-# Generate one path of observations from the mixture
+# 从混合模型生成一条观测路径
 set_seed()
 w_mix = simulate_mixture_path(x_true, T_mix)
 ```
 
-### Behavior of $\pi_t$ under wrong model
+### 在错误模型下 $\pi_t$ 的行为
 
-Let's study how the posterior probability  $\pi_t$ that nature permanently draws from $f$  behaves when data are actually generated by
-an $x$-mixture of $f$ and $g$.
+让我们研究当数据实际上是由 $f$ 和 $g$ 的 $x$-混合生成时，从 $f$ 永久抽取的后验概率 $\pi_t$ 的表现。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -529,7 +480,7 @@ for i, mean0 in enumerate(prior_means):
     π_wrong = np.empty(T_plot + 1)
     π_wrong[0] = mean0
     
-    # Compute likelihood ratios for the mixture data
+    # 计算混合数据的似然比
     for t in range(T_plot):
         l_t = f(w_mix[t]) / g(w_mix[t])
         π_wrong[t + 1] = update(π_wrong[t], l_t)
@@ -546,20 +497,20 @@ ax.legend()
 plt.show()
 ```
 
-Evidently,  $\pi_t$ converges  to 1. 
+显然，$\pi_t$ 收敛到1。
 
-This indicates that the model concludes that the data is generated by $f$.
+这表明模型得出结论认为数据是由 $f$ 生成的。
 
-Why does this happen? 
+为什么会这样呢？
 
-Given $x = 0.5$, the data generating process is a mixture of $f$ and $g$: $m(w) = \frac{1}{2}f(w) + \frac{1}{2}g(w)$.
+给定 $x = 0.5$，数据生成过程是 $f$ 和 $g$ 的混合：$m(w) = \frac{1}{2}f(w) + \frac{1}{2}g(w)$。
 
-Let's check the [KL divergence](rel_entropy) of the mixture distribution $m$ from both $f$ and $g$.
+让我们检查一下混合分布 $m$ 与 $f$ 和 $g$ 之间的 [KL散度](rel_entropy)。
 
 ```{code-cell} ipython3
 def compute_KL(f, g):
     """
-    Compute KL divergence KL(f, g)
+    计算KL散度 KL(f, g)
     """
     integrand = lambda w: f(w) * np.log(f(w) / g(w))
     val, _ = quad(integrand, 1e-5, 1-1e-5)
@@ -568,7 +519,7 @@ def compute_KL(f, g):
 
 def compute_div_m(f, g):
     """
-    Compute Jensen-Shannon divergence
+    计算Jensen-Shannon散度
     """
     def m(w):
         return 0.5 * (f(w) + g(w))
@@ -581,109 +532,95 @@ KL_f, KL_g = compute_div_m(f, g)
 print(f'KL(m, f) = {KL_f:.3f}\nKL(m, g) = {KL_g:.3f}')
 ```
 
-Since $KL(m, f) < KL(m, g)$, $f$ is "closer" to the mixture distribution $m$.
+由于 $KL(m, f) < KL(m, g)$，$f$ 相对于混合分布 $m$ 来说"更接近"。
 
-Hence by our discussion on KL divergence and likelihood ratio process in 
-{doc}`likelihood_ratio_process`, $\log(L_t) \to \infty$ as $t \to \infty$.
+因此根据我们在{doc}`likelihood_ratio_process`中关于 KL 散度和似然比过程的讨论，当 $t \to \infty$ 时，$\log(L_t) \to \infty$。
 
-Now looking back to the key equation {eq}`eq_Bayeslaw1033`. 
+现在回看关键方程{eq}`eq_Bayeslaw1033`。
 
-Consider the function 
+考虑函数
 
 $$
 h(z) = \frac{\pi_0 z}{\pi_0 z + 1 - \pi_0}.
 $$
 
-The limit $\lim_{z \to \infty} h(z)$ is 1.
+极限 $\lim_{z \to \infty} h(z)$ 等于1。
 
-Hence $\pi_t \to 1$ as $t \to \infty$ for any $\pi_0 \in (0,1)$.
+因此对任意 $\pi_0 \in (0,1)$，当 $t \to \infty$ 时，$\pi_t \to 1$。
 
-This explains what we observed in the plot above.
+这解释了我们在上图中观察到的现象。
 
-But how can we learn the true mixing parameter $x$? 
+但我们如何学习真实的混合参数 $x$？
 
-This topic is taken up in {doc}`mix_model`.
+这个主题将在{doc}`mix_model`中讨论。
 
-We explore how to learn the true mixing parameter $x$ in the exercise 
-of {doc}`mix_model`.
+我们将在{doc}`mix_model`的练习中探讨如何学习真实的混合参数 $x$。
 
-## Behavior of  Posterior Probability $\{\pi_t\}$  Under  Subjective Probability Distribution
+## 后验概率 $\{\pi_t\}$ 在主观概率分布下的行为
 
-We'll end this lecture by briefly studying what our Bayesian learner expects to learn under the
-subjective beliefs $\pi_t$ cranked out by Bayes' law.
+我们将通过简要研究贝叶斯学习者在贝叶斯法则产生的主观信念 $\pi_t$ 下期望学到什么来结束本讲。
 
-This will provide us with some perspective  on our application of  Bayes's law as a theory of learning.
+这将为我们应用贝叶斯法则作为学习理论提供一些视角。
 
-As we shall see, at each time $t$, the Bayesian learner knows that he will be surprised.
+我们将看到，在每个时刻 $t$，贝叶斯学习者知道他将会感到惊讶。
 
-But he expects that new information will not lead him  to change his beliefs.
+但他预期新信息不会导致他改变信念。
 
-And it won't on average under his subjective beliefs.
+而且在他的主观信念下，平均来说确实不会改变。
 
-We'll continue with our setting in which a McCall worker  knows that successive
-draws of his wage are drawn from either $F$ or $G$, but  does not know which of these two  distributions
-nature has drawn once-and-for-all before time $0$.
+我们将继续在这样的设定下讨论：McCall工人知道他的工资连续抽样要么来自 $F$ 要么来自 $G$，但不知道是这两个分布中的哪一个。
 
-We'll review and reiterate and rearrange some formulas that we have encountered above and in associated lectures.
+自然在时间 $0$ 之前已经一次性地做出了选择。
 
-The worker's initial beliefs induce a joint probability distribution
- over a potentially infinite sequence of draws $w_0, w_1, \ldots $.
+让我们回顾、重申并重新整理我们在上文和相关讲座中遇到的一些公式。
 
-Bayes' law is simply an application of  laws of
- probability to compute the conditional distribution of the $t$th draw $w_t$ conditional on $[w_0, \ldots, w_{t-1}]$.
+工人的初始信念导致了一个关于潜在无限序列抽样 $w_0, w_1, \ldots $ 的联合概率分布。
 
-After our worker puts a subjective probability $\pi_{-1}$ on nature having selected distribution $F$, we have in effect assumed from the start that the   decision maker **knows** the joint distribution  for the process $\{w_t\}_{t=0}$.
+贝叶斯定律仅仅是概率法则的应用，用于计算第 $t$ 次抽样 $w_t$ 在已知 $[w_0, \ldots, w_{t-1}]$ 条件下的条件分布。
 
-We assume that the worker also knows the laws of probability theory.
+在我们的工人对自然选择分布 $F$ 赋予主观概率 $\pi_{-1}$ 后，我们实际上从一开始就假设决策者**知道**过程 $\{w_t\}_{t=0}$ 的联合分布。
 
-A respectable view is that Bayes' law is less a theory of learning than a statement  about the consequences of information inflows for a decision maker who thinks he knows the truth (i.e., a joint probability distribution) from the beginning.
+我们假设工人也知道概率论的法则。
 
+一个值得尊重的观点是，贝叶斯定律与其说是一个学习理论，不如说是一个关于信息流入对决策者（他认为从一开始就知道真相，即联合概率分布）的影响的陈述。
 
-### Mechanical details again
+### 再谈机械细节
 
-At time $0$ **before** drawing a wage offer, the worker attaches probability $\pi_{-1} \in (0,1)$ to the distribution being $F$.
+在时间 $0$ **之前**抽取工资报价时，工人将概率 $\pi_{-1} \in (0,1)$ 赋予分布 $F$。
 
-Before drawing a wage at time $0$, the  worker thus believes that the density of $w_0$
-is
+在时间 $0$ 抽取工资之前，工人因此认为 $w_0$ 的密度是
 
 $$
 h(w_0;\pi_{-1}) = \pi_{-1} f(w_0) + (1-\pi_{-1}) g(w_0).
 $$
 
-Let $a \in \{ f, g\} $ be an index that indicates whether  nature chose permanently to draw from distribution $f$ or from distribution $g$.
+令 $a \in \{ f, g\} $ 为一个指标，表示自然是永久地从分布 $f$ 还是从分布 $g$ 中抽样。
 
-After drawing $w_0$, the worker uses Bayes' law to deduce that
-the posterior  probability $\pi_0 = {\rm Prob}({a = f | w_0}) $
-that the density is $f(w)$ is
+在绘制$w_0$后，工人使用贝叶斯定理推导出后验概率$\pi_0 = {\rm Prob}({a = f | w_0})$（即密度为$f(w)$的概率）为：
 
 $$
 \pi_0 = { \pi_{-1} f(w_0) \over \pi_{-1} f(w_0) + (1-\pi_{-1}) g(w_0)} .
 $$
 
-
-More generally,  after making the $t$th draw and having   observed   $w_t, w_{t-1}, \ldots, w_0$, the worker believes that
-the probability that $w_{t+1}$ is  being drawn from  distribution  $F$ is
+更一般地，在进行第$t$次抽取并观察到$w_t, w_{t-1}, \ldots, w_0$后，工人认为$w_{t+1}$是从分布$F$中抽取的概率为：
 
 $$
 \pi_t = \pi_t(w_t | \pi_{t-1}) \equiv { \pi_{t-1} f(w_t)/g(w_t) \over \pi_{t-1} f(w_t)/g(w_t) + (1-\pi_{t-1})}
 $$ (eq:like44)
 
-
-or
-
+或
 
 $$
 \pi_t=\frac{\pi_{t-1} l_t(w_t)}{\pi_{t-1} l_t(w_t)+1-\pi_{t-1}}
 $$
 
-
-and that the density of $w_{t+1}$ conditional on $w_t, w_{t-1}, \ldots, w_0$ is
+而在给定$w_t, w_{t-1}, \ldots, w_0$条件下$w_{t+1}$的密度为：
 
 $$
 h(w_{t+1};\pi_{t}) = \pi_{t} f(w_{t+1}) + (1-\pi_{t}) g(w_{t+1}) .
 $$
 
-Notice that
+注意到：
 
 $$
 \begin{aligned}
@@ -694,123 +631,99 @@ E(\pi_t | \pi_{t-1}) & = \int \Bigl[  { \pi_{t-1} f(w) \over \pi_{t-1} f(w) + (1
 \end{aligned}
 $$
 
-so that the process $\pi_t$ is a **martingale**.
+因此过程$\pi_t$是一个**鞅**。
 
-Indeed, it is a **bounded martingale** because each $\pi_t$, being a probability,
-is between $0$ and $1$.
+事实上，它是一个**有界鞅**，因为每个$\pi_t$作为概率都在0和1之间。
 
+在上述等式串的第一行中，第一个方括号中的项就是作为$w_{t}$函数的$\pi_t$，而第二个方括号中的项是在给定条件下$w_{t}$的密度。
 
-In the first line in the above string of equalities, the term in the first set of brackets
-is just $\pi_t$ as a function of $w_{t}$, while the term in the second set of brackets is the density of $w_{t}$ conditional
-on $w_{t-1}, \ldots , w_0$ or equivalently conditional on the *sufficient statistic* $\pi_{t-1}$ for $w_{t-1}, \ldots , w_0$.
+在 $w_{t-1}, \ldots , w_0$ 上，或等价地在 $w_{t-1}, \ldots , w_0$ 的*充分统计量* $\pi_{t-1}$ 上的条件。
 
-Notice that here we are computing $E(\pi_t | \pi_{t-1})$ under the **subjective** density described in the second
-term in brackets.
+注意这里我们是在括号中第二项所描述的**主观**密度下计算 $E(\pi_t | \pi_{t-1})$。
 
-Because $\{\pi_t\}$ is a bounded martingale sequence, it follows from the **martingale convergence theorem** that $\pi_t$ converges almost surely to a random variable in $[0,1]$.
+因为 $\{\pi_t\}$ 是一个有界鞅序列，根据**鞅收敛定理**，$\pi_t$ 几乎必然收敛到 $[0,1]$ 中的一个随机变量。
 
-Practically, this means that  probability one is  attached to   sample paths
- $\{\pi_t\}_{t=0}^\infty$ that  converge.
+实际上，这意味着概率为1的样本路径 $\{\pi_t\}_{t=0}^\infty$ 是收敛的。
 
-According to the theorem,  different sample  paths  can converge to different limiting values.
+根据定理，不同的样本路径可以收敛到不同的极限值。
 
-Thus, let $\{\pi_t(\omega)\}_{t=0}^\infty$ denote a particular sample path indexed by a particular $\omega
-\in \Omega$.
+因此，让 $\{\pi_t(\omega)\}_{t=0}^\infty$ 表示由特定 $\omega \in \Omega$ 索引的特定样本路径。
 
-We can think of nature as drawing an $\omega \in \Omega$ from a probability distribution
-${\textrm{Prob}} \Omega$ and then generating a single realization (or _simulation_) $\{\pi_t(\omega)\}_{t=0}^\infty$ of the process.
+我们可以认为自然从概率分布 ${\textrm{Prob}} \Omega$ 中抽取一个 $\omega \in \Omega$，然后生成该过程的单个实现（或_模拟_）$\{\pi_t(\omega)\}_{t=0}^\infty$。
 
-The limit points of  $\{\pi_t(\omega)\}_{t=0}^\infty$ as $t \rightarrow +\infty$ are realizations of a random variable that  is swept out as we sample $\omega$ from $\Omega$ and construct repeated draws of $\{\pi_t(\omega)\}_{t=0}^\infty$.
+当 $t \rightarrow +\infty$ 时，$\{\pi_t(\omega)\}_{t=0}^\infty$ 的极限点是一个随机变量的实现，这个随机变量是当我们从 $\Omega$ 中采样 $\omega$ 并构造 $\{\pi_t(\omega)\}_{t=0}^\infty$ 的重复抽样时产生的。
 
-
-By staring at law of motion {eq}`eq_recur1` or {eq}`eq:like44` , we can figure out some things about the probability distribution of the limit points
-
-
+通过观察运动方程 {eq}`eq_recur1` 或 {eq}`eq:like44`，我们可以推断出一些关于极限点概率分布的信息
 
 $$
 \pi_\infty(\omega) = \lim_{t \rightarrow + \infty} \pi_t(\omega).
 $$
 
-
-
-
-Evidently, since the likelihood ratio $\ell(w_t) $ differs from $1$ when $f \neq g$,
-as we have assumed, the only possible fixed points of {eq}`eq:like44` are
+显然，由于我们假设 $f \neq g$ 时似然比 $\ell(w_t)$ 与 1 不同，{eq}`eq:like44` 的唯一可能的固定点是
 
 $$
 \pi_\infty(\omega) =1
 $$
 
-
-and
+和
 
 $$
 \pi_\infty(\omega) =0
 $$
 
+因此，对某些实现来说，$\lim_{\rightarrow + \infty} \pi_t(\omega) =1$，而对其他实现来说，$\lim_{\rightarrow + \infty} \pi_t(\omega) =0$。
 
-Thus, for some realizations, $\lim_{\rightarrow + \infty} \pi_t(\omega) =1$
-while for other realizations,  $\lim_{\rightarrow + \infty} \pi_t(\omega) =0$.
+现在让我们记住 $\{\pi_t\}_{t=0}^\infty$ 是一个鞅，并应用迭代期望法则。
 
-Now let's remember that $\{\pi_t\}_{t=0}^\infty$ is a martingale and apply the law of iterated expectations.
-
-
-The law of iterated expectations implies
+迭代期望法则意味着
 
 $$
 E_t \pi_{t+j}  = \pi_t
 $$
 
-and in particular
+特别是
 
 $$
-E_{-1} \pi_{t+j} = \pi_{-1}.
+E_{-1} \pi_{t+j} = \pi_{-1}
 $$
 
-Applying the above formula to $\pi_\infty$, we obtain
+将上述公式应用于 $\pi_\infty$，我们得到
 
 $$
 E_{-1} \pi_\infty(\omega) = \pi_{-1}
 $$
 
-where the mathematical expectation $E_{-1}$ here is taken with respect to the probability
-measure ${\textrm{Prob}(\Omega)}$.
+这里的数学期望 $E_{-1}$ 是相对于概率测度 ${\textrm{Prob}(\Omega)}$ 计算的。
 
-Since the only two values that $\pi_\infty(\omega)$ can take are $1$ and $0$, we know that for some $\lambda \in [0,1]$
+由于 $\pi_\infty(\omega)$ 只能取 1 和 0 两个值，我们知道对某个 $\lambda \in [0,1]$
 
 $$
 {\textrm{Prob}}\Bigl(\pi_\infty(\omega) = 1\Bigr) = \lambda, \quad {\textrm{Prob}}\Bigl(\pi_\infty(\omega) = 0\Bigr) = 1- \lambda
 $$
 
-and consequently that
+因此
 
 $$
 E_{-1} \pi_\infty(\omega) = \lambda \cdot 1 + (1-\lambda) \cdot 0 = \lambda
 $$
 
+将此方程与方程(20)结合，我们推断出 ${\textrm{Prob}(\Omega)}$ 赋予 $\pi_\infty(\omega)$ 为 1 的概率必须是 $\pi_{-1}$。
 
-Combining this equation with equation (20), we deduce that
-the probability that ${\textrm{Prob}(\Omega)}$ attaches to
-$\pi_\infty(\omega)$ being $1$ must be $\pi_{-1}$.
+因此，在工人的主观分布下，$\pi_{-1}$ 的样本路径
 
+$\{\pi_t\}$将有$\pi_{-1}$的样本路径逐点收敛到$1$，有$1 - \pi_{-1}$的样本路径逐点收敛到$0$。
 
-Thus, under the worker's subjective distribution, $\pi_{-1}$ of the sample paths
-of $\{\pi_t\}$ will converge pointwise to $1$ and $1 - \pi_{-1}$ of the sample paths will
-converge pointwise to $0$.
+### 一些模拟
 
+让我们通过一些模拟来观察鞅收敛定理在工人主观分布下的学习模型中的表现。
 
-
-### Some simulations
-
-Let's watch the martingale convergence theorem at work in some simulations of our learning model under the worker's subjective distribution.
-
-Let us simulate $\left\{ \pi_{t}\right\} _{t=0}^{T}$, $\left\{ w_{t}\right\} _{t=0}^{T}$ paths where for each $t\geq0$, $w_t$ is drawn from the subjective distribution
+让我们模拟$\left\{ \pi_{t}\right\} _{t=0}^{T}$和$\left\{ w_{t}\right\} _{t=0}^{T}$的路径，其中对于每个$t\geq0$，$w_t$从主观分布中抽取：
 
 $$
 \pi_{t-1}f\left(w_{t}\right)+\left(1-\pi_{t-1}\right)g\left(w_{t}\right)
 $$
 
-We'll plot a large sample of paths.
+我们将绘制大量样本路径。
 
 ```{code-cell} ipython3
 @jit
@@ -868,17 +781,17 @@ ax.set_ylabel(r'$\pi_t$')
 plt.show()
 ```
 
-The above graph indicates that
+上图表明
 
-* each of paths converges
+* 每条路径都收敛
 
-* some of the paths converge to $1$
+* 一些路径收敛到 $1$
 
-* some of the paths converge to $0$
+* 一些路径收敛到 $0$
 
-* none of the paths converge to a limit point not equal to $0$ or $1$
+* 没有路径收敛到不等于 $0$ 或 $1$ 的极限点
 
-Convergence actually occurs pretty fast, as the following graph of the cross-ensemble distribution of $\pi_t$ for various small $t$'s indicates.
+如下图所示，通过观察不同小 $t$ 值时 $\pi_t$ 的跨集合分布，可以看出收敛实际上发生得相当快。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
@@ -891,22 +804,20 @@ ax.legend(loc='lower right')
 plt.show()
 ```
 
-Evidently, by $t = 199$, $\pi_t$ has converged to either $0$ or $1$.
+显然，到 $t = 199$ 时，$\pi_t$ 已收敛到 $0$ 或 $1$。
 
-The fraction of paths that have converged to $1$ is $.5$
+收敛到 $1$ 的路径比例是 $.5$
 
-The fractions of paths that have converged to $0$ is also $.5$.
+收敛到 $0$ 的路径比例也是 $.5$。
 
-Does the fraction $.5$ ring a bell?
+这个比例 $.5$ 是否让你想起什么？
 
-Yes, it does: it equals the value of $\pi_0 = .5 $ that we used to generate each sequence
-in the ensemble.
+是的：它等于我们用来生成整个集合中每个序列的初始值 $\pi_0 = .5$。
 
-So let's change $\pi_0$ to $.3$ and watch what happens to the distribution of the ensemble of
-$\pi_t$'s for various $t$'s.
+那么让我们把 $\pi_0$ 改为 $.3$，看看对于不同的 $t$ 值，$\pi_t$ 集合的分布会发生什么变化。
 
 ```{code-cell} ipython3
-# simulate
+# 模拟
 T = 200
 π0 = .3
 
@@ -918,19 +829,17 @@ fig, ax = plt.subplots()
 for t in [1, 10, T-1]:
     ax.hist(π_path3[:,t], bins=20, alpha=0.4, label=f'T={t}')
 
-ax.set_ylabel('count')
+ax.set_ylabel('计数')
 ax.set_xlabel(r'$\pi_T$')
 ax.legend(loc='upper right')
 plt.show()
 ```
 
-For the preceding ensemble that assumed $\pi_0 = .5$, the following graph shows two  paths of
-$w_t$'s and the $\pi_t$ sequences that gave rise to them.
+对于前面假设 $\pi_0 = .5$ 的集成模型，下图展示了两条 $w_t$ 路径和产生它们的 $\pi_t$ 序列。
 
-Notice that one of the paths involves systematically higher $w_t$'s, outcomes that push $\pi_t$ upward.
+注意其中一条路径涉及系统性更高的 $w_t$ 值，这些结果将 $\pi_t$ 向上推动。
 
-The luck of the draw early in a simulation pushes the subjective distribution to draw from
-$F$ more frequently along a sample path, and this pushes $\pi_t$ toward $0$.
+在模拟早期的随机抽样会将主观分布推向更频繁地从 $F$ 中抽样的方向，这会将 $\pi_t$ 推向 $0$。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
@@ -946,20 +855,17 @@ ax2.set_ylabel("$w_t$")
 plt.show()
 ```
 
-##  Initial Prior is Verified by Paths Drawn from Subjective Conditional Densities
+## 通过从主观条件密度中抽取的路径验证初始先验
 
+现在让我们使用Python代码生成一个表格，来验证我们之前关于点态极限$\pi_{\infty}(\omega)$的概率分布的说法。
 
+我们将使用模拟来生成这个分布的直方图。
 
-Now let's use our Python code to generate a table that checks out our earlier claims about the
-probability distribution of the pointwise limits $\pi_{\infty}(\omega)$.
+在下表中，粗体显示的左列报告了$\pi_{-1}$的假设值。
 
-We'll use our simulations to generate a histogram of this distribution.
+第二列报告了在$N = 10000$次模拟中，对于每次模拟在终止日期$T=500$时$\pi_{t}$收敛到$0$的比例。
 
-In the following table, the left column in bold face reports an assumed value of $\pi_{-1}$.
-
-The second column reports the fraction of $N = 10000$ simulations for which $\pi_{t}$  had converged to $0$  at the terminal date $T=500$ for each simulation.
-
-The third column reports the fraction of $N = 10000$ simulations for which $\pi_{t}$  had converged to $1$ at the terminal date $T=500$ for each simulation.
+第三列报告了在$N = 10000$次模拟中，对于每次模拟在终止日期$T=500$时$\pi_{t}$收敛到$1$的比例。
 
 ```{code-cell} ipython3
 # create table
@@ -967,25 +873,24 @@ table = create_table(list(np.linspace(0,1,11)), N=10000, T=500)
 table
 ```
 
-The fraction of simulations for which $\pi_{t}$  had converged to $1$ is indeed always  close  to $\pi_{-1}$, as anticipated.
+对于$\pi_{t}$收敛到1的模拟比例确实总是接近$\pi_{-1}$，这与预期一致。
 
+## 深入分析
 
-## Drilling Down a Little Bit
+为了理解$\pi_t$的局部动态行为，研究$\pi_t$在给定$\pi_{t-1}$条件下的方差是很有启发性的。
 
-To understand how the local dynamics of $\pi_t$ behaves, it is enlightening to consult the  variance of $\pi_{t}$ conditional on $\pi_{t-1}$.
-
-Under the subjective distribution this conditional variance is defined as
+在主观分布下，这个条件方差定义为
 
 $$
 \sigma^2(\pi_t | \pi_{t-1})  = \int \Bigl[  { \pi_{t-1} f(w) \over \pi_{t-1} f(w) + (1-\pi_{t-1})g(w)  } - \pi_{t-1} \Bigr]^2
  \Bigl[ \pi_{t-1} f(w) + (1-\pi_{t-1})g(w) \Bigr]  d w
 $$
 
-We can use  a Monte Carlo simulation to approximate this conditional variance.
+我们可以使用蒙特卡洛模拟来近似这个条件方差。
 
-We approximate it for  a grid of points $\pi_{t-1} \in [0,1]$.
+我们对$\pi_{t-1} \in [0,1]$的网格点进行近似计算。
 
-Then we'll plot it.
+然后绘制图表。
 
 ```{code-cell} ipython3
 @jit
@@ -1015,13 +920,13 @@ ax.set_ylabel(r'$\sigma^{2}(\pi_{t}\vert \pi_{t-1})$')
 plt.show()
 ```
 
-The shape of the conditional variance as a function of $\pi_{t-1}$ is informative about the behavior of sample paths of $\{\pi_t\}$.
+条件方差作为 $\pi_{t-1}$ 的函数的形状，能够告诉我们 $\{\pi_t\}$ 样本路径的行为特征。
 
-Notice how the conditional variance approaches $0$ for $\pi_{t-1}$ near  either $0$ or $1$.
+注意当 $\pi_{t-1}$ 接近 0 或 1 时，条件方差趋近于 0。
 
-The conditional variance is nearly zero only when the agent  is almost sure that $w_t$ is drawn from $F$,  or is almost sure it is drawn from $G$.
+只有当代理几乎确定 $w_t$ 是从 $F$ 分布中抽取的，或者几乎确定是从 $G$ 分布中抽取的时候，条件方差才接近于零。
 
-## Related Lectures
+## 相关讲座
 
-This lecture has been devoted to building some useful infrastructure that will help us understand inferences that are the foundations of
-results described  in {doc}`this lecture <odu>` and {doc}`this lecture <wald_friedman>` and {doc}`this lecture <navy_captain>`.
+本讲座致力于建立一些有用的基础设施，这将有助于我们理解在{doc}`这个讲座 <odu>`、{doc}`这个讲座 <wald_friedman>` 和{doc}`这个讲座 <navy_captain>` 中描述的结果的推理基础。
+
