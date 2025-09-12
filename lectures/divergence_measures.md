@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.1
+    jupytext_version: 1.16.6
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -28,7 +28,7 @@ kernelspec:
 
 ## 概述
 
-统计散度用于量化两个不同概率分布之间的差异，这些差异可能难以区分，原因如下：
+统计散度用于量化两个不同概率分布之间的差异，这些分布可能难以区分，原因如下：
 
   * 在一个分布下具有正概率的每个事件在另一个分布下也具有正概率
 
@@ -42,7 +42,7 @@ kernelspec:
 
 * **库尔贝克-莱布勒(KL)散度**
 
-* **Jensen–Shannon (JS) 散度**
+* **Jensen-Shannon (JS) 散度**
 * **切尔诺夫熵**
 
 这些概念将在多个 quantecon 课程中出现。
@@ -62,7 +62,7 @@ from IPython.display import display, Math
 
 ## 熵、交叉熵、KL散度入门
 
-在深入之前,我们先介绍一些有用的概念。
+在深入之前,我们先介绍一些有用的基本概念。
 
 我们暂时假设 $f$ 和 $g$ 是离散随机变量在状态空间 $I = \{1, 2, \ldots, n\}$ 上的两个概率质量函数,满足 $f_i \geq 0, \sum_{i} f_i =1, g_i \geq 0, \sum_{i} g_i =1$。
 
@@ -72,7 +72,7 @@ $$
 \log\left(\frac{1}{f_i}\right)
 $$
 
-他们然后将你预期从单次实现中获得的**信息量**定义为期望惊奇度
+他们进一步将从单次实现中预期获得的**信息量**定义为期望惊奇度
 
 $$
 H(f) = \sum_i f_i \log\left(\frac{1}{f_i}\right).  
@@ -88,7 +88,7 @@ $
 均匀分布的熵 $H(f)$ 显然等于 $- \log(n)$。
 ```
 
-Kullback 和 Leibler {cite}`kullback1951information` 将单次抽样 $x$ 提供的用于区分 $f$ 和 $g$ 的信息量定义为对数似然比
+Kullback 和 Leibler {cite}`kullback1951information` 将单次抽样 $x$ 用于区分 $f$ 和 $g$ 所提供的信息量定义为对数似然比
 
 $$
 \log \frac{f(x)}{g(x)}
@@ -102,7 +102,9 @@ $$
 H(f,g) = -\sum_{i} f_i \log g_i
 \end{equation}
 
-**KL散度(Kullback-Leibler散度):**
+
+
+**Kullback-Leibler (KL) 散度：** 
 \begin{equation}
 D_{KL}(f \parallel g) = \sum_{i} f_i \log\left[\frac{f_i}{g_i}\right]
 \end{equation}
@@ -115,6 +117,7 @@ $$ (eq:KLcross)
 
 要证明{eq}`eq:KLcross`，注意到
 
+
 \begin{align}
 D_{KL}(f \parallel g) &= \sum_{i} f_i \log\left[\frac{f_i}{g_i}\right] \\
 &= \sum_{i} f_i \left[\log f_i - \log g_i\right] \\
@@ -125,15 +128,16 @@ D_{KL}(f \parallel g) &= \sum_{i} f_i \log\left[\frac{f_i}{g_i}\right] \\
 
 记住$H(f)$是从$f$中抽取$x$时的预期惊异度。
 
-那么上述等式告诉我们，KL散度是当预期$x$从$f$中抽取而实际从$g$中抽取时产生的"额外惊异度"的期望值。
+那么上述等式告诉我们，KL散度是当预期$x$是从$f$中抽取而实际上是从$g$中抽取时产生的预期"额外惊异度"。
+
 
 ## 两个Beta分布：运行示例
 
 我们将广泛使用Beta分布来说明概念。
 
-Beta分布特别方便，因为它定义在$[0,1]$区间上，通过适当选择其两个参数可以呈现多样的形状。
+Beta分布特别方便，因为它定义在$[0,1]$上，并且通过适当选择其两个参数可以呈现多样的形状。
 
-具有参数$a$和$b$的Beta分布的密度函数由下式给出：
+具有参数$a$和$b$的Beta分布的密度函数为
 
 $$
 f(z; a, b) = \frac{\Gamma(a+b) z^{a-1} (1-z)^{b-1}}{\Gamma(a) \Gamma(b)}
@@ -141,10 +145,12 @@ f(z; a, b) = \frac{\Gamma(a+b) z^{a-1} (1-z)^{b-1}}{\Gamma(a) \Gamma(b)}
 \Gamma(p) := \int_{0}^{\infty} x^{p-1} e^{-x} dx
 $$
 
+我们引入两个Beta分布$f(x)$和$g(x)$，我们将用它们来说明不同的散度度量。
+
 让我们在Python中定义参数和密度函数
 
 ```{code-cell} ipython3
-# 两个Beta分布的参数
+# 两个Beta分布中的参数
 F_a, F_b = 1, 1
 G_a, G_b = 3, 1.2
 
@@ -191,17 +197,17 @@ $$
 
 它有几个重要的性质：
 
-- 非负性（吉布斯不等式）：$D_{KL}(f\|g) \ge 0$，当且仅当$f$几乎处处等于$g$时取等号
+- 非负性（Gibbs不等式）：$D_{KL}(f\|g) \ge 0$，当且仅当$f$几乎处处等于$g$时取等号
 - 不对称性：$D_{KL}(f\|g) \neq D_{KL}(g\|f)$（因此它不是度量）
 - 信息分解：
-  $D_{KL}(f\|g) = H(f,g) - H(f)$，其中$H(f,g)$是交叉熵，$H(f)$是$f$的香农熵
+  $D_{KL}(f\|g) = H(f,g) - H(f)$，其中$H(f,g)$是交叉熵，$H(f)$是$f$的Shannon熵
 - 链式法则：对于联合分布$f(x, y)$和$g(x, y)$，
   $D_{KL}(f(x,y)\|g(x,y)) = D_{KL}(f(x)\|g(x)) + E_{f}\left[D_{KL}(f(y|x)\|g(y|x))\right]$
 
 KL散度在统计推断中扮演着核心角色，包括模型选择和假设检验。
 
 {doc}`likelihood_ratio_process`描述了KL散度与预期对数似然比之间的联系，
-而讲座{doc}`wald_friedman`将其与序贯概率比检验的检验性能联系起来。
+而讲座{doc}`wald_friedman`将其与序贯概率比检验的测试性能联系起来。
 
 让我们计算示例分布$f$和$g$之间的KL散度。
 
@@ -296,11 +302,11 @@ $$
 - $\alpha_i \geq 0$ 且 $\sum_{i=1}^n \alpha_i = 1$，以及
 - $H(f) = -\int f(x) \log f(x) dx$ 是分布 $f$ 的**香农熵**
 
-## Chernoff熵
+## Chernoff 熵
 
-Chernoff熵源自[大偏差理论](https://en.wikipedia.org/wiki/Large_deviations_theory)的早期应用，该理论通过提供罕见事件的指数衰减率来改进中心极限近似。
+Chernoff 熵源自[大偏差理论](https://en.wikipedia.org/wiki/Large_deviations_theory)的早期应用，该理论通过提供罕见事件的指数衰减率来改进中心极限近似。
 
-对于密度函数 $f$ 和 $g$，Chernoff熵为
+对于密度函数 $f$ 和 $g$，Chernoff 熵为
 
 $$
 C(f,g) = - \log \min_{\phi \in (0,1)} \int f^{\phi}(x) g^{1-\phi}(x) \, dx.
@@ -308,24 +314,25 @@ $$
 
 注释：
 
-- 内部积分是**Chernoff系数**。
-- 当 $\phi=1/2$ 时，它变成**Bhattacharyya系数** $\int \sqrt{f g}$。
+- 内部积分是 **Chernoff 系数**。
+- 当 $\phi=1/2$ 时，它变成 **Bhattacharyya 系数** $\int \sqrt{f g}$。
 - 在具有 $T$ 个独立同分布观测的二元假设检验中，最优错误概率以 $e^{-C(f,g) T}$ 的速率衰减。
 
-在{doc}`likelihood_ratio_process`讲座中，我们将在模型选择的背景下研究Chernoff熵时看到第三点的一个例子。
+我们将在 {doc}`likelihood_ratio_process` 讲座中看到第三点的一个例子，
+我们将在模型选择的背景下研究 Chernoff 熵。
 
-让我们计算示例分布 $f$ 和 $g$ 之间的Chernoff熵。
+让我们计算示例分布 $f$ 和 $g$ 之间的 Chernoff 熵。
 
 ```{code-cell} ipython3
 def chernoff_integrand(ϕ, f, g):
-    """计算给定ϕ的Chernoff熵中的积分。"""
+    """计算给定 ϕ 的 Chernoff 熵中的积分。"""
     def integrand(w):
         return f(w)**ϕ * g(w)**(1-ϕ)
     result, _ = quad(integrand, 1e-5, 1-1e-5)
     return result
 
 def compute_chernoff_entropy(f, g):
-    """计算Chernoff熵 C(f,g)。"""
+    """计算 Chernoff 熵 C(f,g)。"""
     def objective(ϕ):
         return chernoff_integrand(ϕ, f, g)
     result = minimize_scalar(objective, bounds=(1e-5, 1-1e-5), method='bounded')
@@ -335,7 +342,7 @@ def compute_chernoff_entropy(f, g):
     return chernoff_entropy, ϕ_optimal
 
 C_fg, ϕ_optimal = compute_chernoff_entropy(f, g)
-print(f"Chernoff熵 C(f,g) = {C_fg:.4f}")
+print(f"Chernoff 熵 C(f,g) = {C_fg:.4f}")
 print(f"最优 ϕ = {ϕ_optimal:.4f}")
 ```
 
@@ -427,8 +434,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-现在我们生成图表来直观展示重叠如何随着差异度量的增加而减少。
-
+现在我们生成图表来直观展示随着差异度量的增加，重叠程度如何减少。
 
 ```{code-cell} ipython3
 param_grid = [
@@ -436,8 +442,8 @@ param_grid = [
     ((1, 1), (1.5, 1.2)),
     ((1, 1), (2, 1.5)),  
     ((1, 1), (3, 1.2)),  
-    ((1, 1), (5, 1)),
-    ((1, 1), (0.3, 0.3))
+    ((1, 1), (0.3, 0.3)),
+    ((1, 1), (5, 1))
 ]
 ```
 
@@ -521,7 +527,7 @@ $$
 \ell(\theta; X) = \sum_{i=1}^n \log p_\theta(x_i) ,
 $$
 
-因此最大似然估计选择参数以最小化
+因此最大似然选择参数以最小化
 
 $$ D_{KL}(p_e \parallel p_\theta) $$
 

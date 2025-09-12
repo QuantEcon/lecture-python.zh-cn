@@ -26,6 +26,13 @@ kernelspec:
 :depth: 2
 ```
 
+除了Anaconda中已有的库外，本讲座还需要以下库：
+
+```{code-cell} ipython3
+:tags: [hide-output]
+!pip install --upgrade quantecon
+```
+
 ## 概述
 
 本讲座介绍似然比过程及其一些用途。
@@ -35,14 +42,11 @@ kernelspec:
 我们将学习的内容包括：
 
 * 似然比过程如何成为频率派假设检验的关键要素
-* 接收者操作特征曲线如何总结频率派假设检验中关于虚警概率和检验效能的信息
+* **接收者操作特征曲线**如何总结频率派假设检验中的虚警概率和检验效能的信息
 * 统计学家如何将第一类和第二类错误的频率派概率结合起来，形成模型选择或个体分类问题中的错误后验概率
-* 如何使用Kullback-Leibler散度来量化具有相同支撑集的两个概率分布之间的差异
-
-* 二战期间美国海军如何制定了一个用于弹药批次质量控制的决策规则，这为{doc}`本讲座 <wald_friedman>`奠定了基础
+* 如何使用Kullback-Leibler散度来量化具有相同支撑的两个概率分布之间的差异
+* 二战期间美国海军如何设计一个决策规则来对弹药批次进行质量控制，这个话题为{doc}`这个讲座 <wald_friedman>`做铺垫
 * 似然比过程的一个特殊性质
-
-
 
 让我们先导入一些Python工具。
 
@@ -81,13 +85,13 @@ import quantecon as qe
 
 **似然比过程**是完成这项任务的有用工具。
 
-首先，我们定义似然比过程的一个关键组成部分，即时间 $t$ 的似然比，它是一个随机变量：
+首先，我们定义似然比过程的一个关键组成部分，即时间 $t$ 的似然比，作为随机变量：
 
 $$
 \ell (w_t)=\frac{f\left(w_t\right)}{g\left(w_t\right)},\quad t\geq1.
 $$
 
-我们假设 $f$ 和 $g$ 在随机变量 $W$ 的相同可能取值区间上都赋予正概率。
+我们假设 $f$ 和 $g$ 在随机变量 $W$ 的相同可能实现区间上都具有正概率。
 
 这意味着在 $g$ 密度下，$\ell (w_t)=\frac{f\left(w_{t}\right)}{g\left(w_{t}\right)}$ 是一个均值为1的非负随机变量。
 
@@ -185,7 +189,7 @@ def plot_likelihood_paths(l_seq, title="Likelihood ratio paths",
 我们首先模拟当自然永久从$g$中抽取时的似然比过程。
 
 ```{code-cell} ipython3
-# 模拟当自然从g中抽取时
+# 模拟当自然从g中抽取时的情况
 l_arr_g, l_seq_g = simulate_sequences('g', f, g, (F_a, F_b), (G_a, G_b))
 plot_likelihood_paths(l_seq_g, 
                      title="当自然从g中抽取时的$L(w^{t})$路径",
@@ -262,7 +266,7 @@ l_arr_g, l_seq_g = simulate_sequences('g',
 
 因为右尾部的概率密度接近于0,从右尾部采样足够多的点需要太多计算时间。
 
-我们在{doc}`这篇讲座 <imp_sample>`中更详细地解释了这个问题。
+我们在{doc}`这篇讲座 <imp_sample>`中详细解释了这个问题。
 
 在那里我们描述了一种通过从不同的概率分布中采样来计算不同随机变量的均值,从而计算似然比均值的替代方法。
 
@@ -270,7 +274,7 @@ l_arr_g, l_seq_g = simulate_sequences('g',
 
 现在假设在时间0之前,自然界永久决定反复从密度f中抽样。
 
-虽然似然比$\ell \left(w_{t}\right)$在密度$g$下的均值为1,但在密度$f$下的均值超过1。
+虽然似然比$\ell \left(w_{t}\right)$在密度$g$下的均值是1,但在密度$f$下的均值超过1。
 
 为了说明这一点,我们计算:
 
@@ -293,7 +297,7 @@ $$
 请注意$y$轴的刻度。
 
 ```{code-cell} ipython3
-# 模拟当自然从f中抽取时的情况
+# 模拟当自然从f中抽取时
 l_arr_f, l_seq_f = simulate_sequences('f', f, g, 
                         (F_a, F_b), (G_a, G_b), N=50000)
 ```
@@ -313,52 +317,47 @@ plt.show()
 
 ## 似然比检验
 
-我们现在描述如何使用
-Neyman和Pearson {cite}`Neyman_Pearson` 的方法来检验历史数据 $w^t$ 是否由密度函数 $f$ 的重复独立同分布抽样生成。
+我们现在描述如何运用 Neyman 和 Pearson {cite}`Neyman_Pearson` 的方法来检验历史数据 $w^t$ 是否由密度函数 $f$ 的独立同分布重复抽样生成。
 
-令 $q$ 为数据生成过程，因此
-$q=f \text{ 或 } g$。
+令 $q$ 表示数据生成过程，因此 $q=f \text{ 或 } g$。
 
-在观察到样本 $\{W_i\}_{i=1}^t$ 后，我们想通过执行(频率派)
-假设检验来判断自然是从 $g$ 还是从 $f$ 中抽样。
+在观察到样本 $\{W_i\}_{i=1}^t$ 后，我们想通过执行（频率学派的）假设检验来判断自然是从 $g$ 还是从 $f$ 中抽样。
 
-我们指定
+我们指定：
 
-- 零假设 $H_0$: $q=f$,
-- 备择假设 $H_1$: $q=g$。
+- 零假设 $H_0$：$q=f$
+- 备择假设 $H_1$：$q=g$
 
-Neyman和Pearson证明了检验这个假设的最佳方法是使用**似然比检验**，
-形式为:
+Neyman 和 Pearson 证明了检验这个假设的最佳方法是使用**似然比检验**，形式如下：
 
-- 当 $L(W^t) > c$ 时接受 $H_0$,
-- 当 $L(W^t) < c$ 时拒绝 $H_0$,
+- 当 $L(W^t) > c$ 时接受 $H_0$
+- 当 $L(W^t) < c$ 时拒绝 $H_0$
 
 其中 $c$ 是给定的判别阈值。
 
-设置 $c =1$ 是一个常见的选择。
+设置 $c=1$ 是一个常见的选择。
 
-我们将在下面讨论其他 $c$ 值选择的后果。
+我们将在下面讨论其他 $c$ 值选择的影响。
 
-这个检验是*最佳的*，因为它是**一致最优势的**。
+这个检验是*最佳的*，因为它是**一致最优检验**。
 
-为了理解这意味着什么，我们需要定义两个重要事件的概率，这些概率
-可以帮助我们描述与给定阈值 $c$ 相关的检验。
+为了理解这一点，我们需要定义两个重要事件的概率，这些概率可以帮助我们描述与给定阈值 $c$ 相关的检验。
 
-这两个概率是:
+这两个概率是：
 
-- 第一类错误概率，即在 $H_0$ 为真时拒绝它:
-  
+- 第一类错误的概率（当 $H_0$ 为真时拒绝它）：
+
   $$
   \alpha \equiv  \Pr\left\{ L\left(w^{t}\right)<c\mid q=f\right\}
   $$
 
-- 第二类错误概率，即在 $H_0$ 为假时接受它:
+- 第二类错误的概率（当 $H_0$ 为假时接受它）：
 
   $$
   \beta \equiv \Pr\left\{ L\left(w^{t}\right)>c\mid q=g\right\}
   $$
 
-这两个概率构成了以下两个概念的基础:
+这两个概率是以下两个概念的基础：
 
 - 虚警概率（=显著性水平=第一类错误概率）：
 
@@ -380,7 +379,7 @@ Neyman和Pearson证明了检验这个假设的最佳方法是使用**似然比�
 
 当样本量$t$固定时，我们可以通过调整$c$来改变这两个概率。
 
-一个令人困扰的"现实"事实是，当我们改变临界值$c$时，这两个概率会朝同一方向变化。
+一个令人困扰的"现实"是，当我们改变临界值$c$时，这两个概率会朝同一方向变化。
 
 如果不指定第一类和第二类错误的具体损失，我们很难说应该如何权衡这两种错误的概率。
 
@@ -440,9 +439,9 @@ plot_log_histograms(l_seq_f, l_seq_g, c=c)
 
 在上述图表中，
   * 蓝色区域与第一类错误的概率 $\alpha$ 相关但不相等，因为
-它们是在拒绝域 $L_t < 1$ 上对 $\log L_t$ 的积分，而不是对 $L_t$ 的积分
+它们是在拒绝域 $L_t < 1$ 上 $\log L_t$ 的积分，而不是 $L_t$ 的积分
 * 橙色区域与第二类错误的概率 $\beta$ 相关但不相等，因为
-它们是在接受域 $L_t > 1$ 上对 $\log L_t$ 的积分，而不是对 $L_t$ 的积分
+它们是在接受域 $L_t > 1$ 上 $\log L_t$ 的积分，而不是 $L_t$ 的积分
 
 当我们将 $c$ 固定在 $c=1$ 时，下图显示：
   * 检测概率随着 $t$ 的增加单调增加
@@ -462,7 +461,7 @@ def compute_error_probabilities(l_seq_f, l_seq_g, c=1):
     # 第二类错误 - 在H0为假时接受H0
     beta = np.array([np.sum(l_seq_g[:, t] >= c) / N for t in range(T)])
     
-    # 检测概率（功效）
+    # 检测概率（检验效能）
     PD = np.array([np.sum(l_seq_g[:, t] < c) / N for t in range(T)])
     
     return {
@@ -525,18 +524,18 @@ def plot_roc_curves(l_seq_f, l_seq_g, t_values=[1, 5, 9, 13], N=None):
 plot_roc_curves(l_seq_f, l_seq_g, t_values=range(1, 15, 4), N=N)
 ```
 
-注意到随着$t$的增加，对于给定的判别阈值$c$，我们可以获得更高的检测概率和更低的虚警概率。
+注意到随着 $t$ 的增加，对于给定的判别阈值 $c$，我们可以确保更高的检测概率和更低的虚警概率。
 
-对于给定的样本量$t$，当我们改变$c$时，$\alpha$和$\beta$都会发生变化。
+对于给定的样本量 $t$，当我们改变 $c$ 时，$\alpha$ 和 $\beta$ 都会发生变化。
 
-当我们增加$c$时
+当我们增加 $c$ 时
 
 * $\alpha \equiv  \Pr\left\{ L\left(w^{t}\right)<c\mid q=f\right\}$ 增加
 * $\beta \equiv \Pr\left\{ L\left(w^{t}\right)>c\mid q=g\right\}$ 减少
 
-当$t \rightarrow + \infty$时，我们接近完美检测曲线，该曲线在蓝点处呈直角。
+当 $t \rightarrow + \infty$ 时，我们接近完美检测曲线，该曲线在蓝点处呈直角。
 
-对于给定的样本量$t$，判别阈值$c$决定了接收者操作特征曲线上的一个点。
+对于给定的样本量 $t$，判别阈值 $c$ 决定了接收者操作特征曲线上的一个点。
 
 测试设计者需要权衡这两种类型错误的概率。
 
@@ -544,9 +543,9 @@ plot_roc_curves(l_seq_f, l_seq_g, t_values=range(1, 15, 4), N=N)
 
 通常，频率学派的目标是在虚警概率有上限的情况下实现高检测概率。
 
-下面我们展示一个例子，其中我们将虚警概率固定在$0.05$。
+下面我们展示一个例子，其中我们将虚警概率固定在 $0.05$。
 
-做出决策所需的样本量则由目标检测概率决定，例如$0.9$，如下图所示。
+做出决定所需的样本量则由目标检测概率决定，例如 $0.9$，如下图所示。
 
 ```{code-cell} ipython3
 PFA = 0.05
@@ -624,7 +623,7 @@ def compute_KL_h(h, f, g):
 (KL_link)=
 ### 一个有用的公式
 
-似然比和KL散度之间存在数学关系。
+似然比和KL散度之间存在一个数学关系。
 
 当数据由分布$h$生成时，期望对数似然比为：
 
@@ -769,9 +768,9 @@ $$
 * 时序协议1用于模型选择问题
 * 时序协议2用于个体分类问题
 
-**时序协议1：** 自然只在时间 $t=-1$ **一次性**抛硬币，以概率 $\pi_{-1}$ 从 $f$ 生成一个 IID 序列 $\{w_t\}_{t=1}^T$，以概率 $1-\pi_{-1}$ 从 $g$ 生成一个 IID 序列 $\{w_t\}_{t=1}^T$。
+**时序协议1：** 自然只在 $t=-1$ 时刻**一次性**掷硬币，以概率 $\pi_{-1}$ 从 $f$ 生成一个 IID 序列 $\{w_t\}_{t=1}^T$，以概率 $1-\pi_{-1}$ 从 $g$ 生成一个 IID 序列 $\{w_t\}_{t=1}^T$。
 
-**时序协议2：** 自然**频繁**抛硬币。在每个时间 $t \geq 0$，自然抛一次硬币，以概率 $\pi_{-1}$ 从 $f$ 中抽取 $w_t$，以概率 $1-\pi_{-1}$ 从 $g$ 中抽取 $w_t$。
+**时序协议2：** 自然**频繁**掷硬币。在每个时刻 $t \geq 0$，自然掷一次硬币，以概率 $\pi_{-1}$ 从 $f$ 中抽取 $w_t$，以概率 $1-\pi_{-1}$ 从 $g$ 中抽取 $w_t$。
 
 以下是我们用来实现时序协议1和2的Python代码
 
@@ -819,7 +818,7 @@ def protocol_2(π_minus_1, T, N=1000, F_params=(1, 1), G_params=(3, 1.2)):
     return sequences, true_models_F
 ```
 
-**注释：** 在时序协议2下，$\{w_t\}_{t=1}^T$ 是从 $h(w)$ 中独立同分布(IID)抽取的序列。在时序协议1下，$\{w_t\}_{t=1}^T$ 不是独立同分布的。它是**条件独立同分布**的 -- 意味着以概率 $\pi_{-1}$ 它是从 $f(w)$ 中抽取的IID序列，以概率 $1-\pi_{-1}$ 它是从 $g(w)$ 中抽取的IID序列。更多相关内容，请参见{doc}`这篇关于可交换性的讲座 <exchangeable>`。
+**注释：** 在时序协议2下，$\{w_t\}_{t=1}^T$ 是从 $h(w)$ 中独立同分布(IID)抽取的序列。在时序协议1下，$\{w_t\}_{t=1}^T$ 不是独立同分布的。它是**条件独立同分布**的 -- 意味着以概率 $\pi_{-1}$ 它是从 $f(w)$ 中独立同分布抽取的序列，以概率 $1-\pi_{-1}$ 它是从 $g(w)$ 中独立同分布抽取的序列。关于这一点的更多信息，请参见{doc}`这篇关于可交换性的讲座 <exchangeable>`。
 
 我们再次部署一个**似然比过程**，其时间 $t$ 分量是似然比
 
@@ -851,7 +850,7 @@ $$
 p_f = {\rm Prob}\left(L_T < 1\Big| f\right) = \alpha_T .
 $$
 
-当模型 $g$ 生成数据时，似然比检验选择错误模型的概率为
+当模型 $g$ 生成数据时，似然比检验选择错误模型的概率是
 
 $$ 
 p_g = {\rm Prob}\left(L_T \geq 1 \Big|g \right) = \beta_T.
@@ -863,7 +862,7 @@ $$
 p(\textrm{wrong decision}) = {1 \over 2} (\alpha_T + \beta_T) .
 $$ (eq:detectionerrorprob)
 
-现在让我们模拟时序协议1和2并计算错误概率
+现在让我们模拟时序协议1并计算错误概率
 
 ```{code-cell} ipython3
 
@@ -897,33 +896,9 @@ def compute_protocol_1_errors(π_minus_1, T_max, N_simulations, f_func, g_func,
         'L_cumulative': L_cumulative,
         'true_models': true_models
     }
-
-def compute_protocol_2_errors(π_minus_1, T_max, N_simulations, f_func, g_func,
-                              F_params=(1, 1), G_params=(3, 1.2)):
-    """
-    计算协议2的错误概率。
-    """
-    sequences, true_models = protocol_2(π_minus_1, 
-                        T_max, N_simulations, F_params, G_params)
-    l_ratios, _ = compute_likelihood_ratios(sequences, f_func, g_func)
-    
-    T_range = np.arange(1, T_max + 1)
-    
-    accuracy = np.empty(T_max)
-    for t in range(T_max):
-        predictions = (l_ratios[:, t] >= 1)
-        actual = true_models[:, t]
-        accuracy[t] = np.mean(predictions == actual)
-    
-    return {
-        'T_range': T_range,
-        'accuracy': accuracy,
-        'l_ratios': l_ratios,
-        'true_models': true_models
-    }
 ```
 
-以下代码可视化了时序协议1和2的错误概率
+以下代码可视化了时序协议1的错误概率
 
 ```{code-cell} ipython3
 :tags: [hide-input]
@@ -955,50 +930,12 @@ def analyze_protocol_1(π_minus_1, T_max, N_simulations, f_func, g_func,
     plt.show()
     
     # 打印总结
-    print(f"在 T={T_max} 时:")
+    print(f"在T={T_max}时:")
     print(f"α_{T_max} = {result['alpha'][-1]:.4f}")
     print(f"β_{T_max} = {result['beta'][-1]:.4f}")
     print(f"模型选择错误概率 = {result['error_prob'][-1]:.4f}")
     
     return result
-
-def analyze_protocol_2(π_minus_1, T_max, N_simulations, f_func, g_func, 
-                      theory_error=None, F_params=(1, 1), G_params=(3, 1.2)):
-    """分析协议2"""
-    result = compute_protocol_2_errors(π_minus_1, T_max, N_simulations, 
-                                      f_func, g_func, F_params, G_params)
-    
-    # 绘制结果
-    plt.figure(figsize=(10, 6))
-    plt.plot(result['T_range'], result['accuracy'], 
-            'b-', linewidth=2, label='经验准确率')
-    
-    if theory_error is not None:
-        plt.axhline(1 - theory_error, color='r', linestyle='--', 
-                   label=f'理论准确率 = {1 - theory_error:.4f}')
-    
-    plt.xlabel('$t$')
-    plt.ylabel('准确率')
-    plt.legend()
-    plt.ylim(0.5, 1.0)
-    plt.show()
-    
-    return result
-
-def compare_protocols(result1, result2):
-    """比较两个协议的结果"""
-    plt.figure(figsize=(10, 6))
-    
-    plt.plot(result1['T_range'], result1['error_prob'], linewidth=2, 
-            label='协议1(模型选择)')
-    plt.plot(result2['T_range'], 1 - result2['accuracy'], 
-            linestyle='--', linewidth=2, 
-            label='协议2(分类)')
-    
-    plt.xlabel('$T$')
-    plt.ylabel('错误概率')
-    plt.legend()
-    plt.show()
 
 # 分析协议1
 π_minus_1 = 0.5
@@ -1034,7 +971,36 @@ $$ (eq:classerrorprob)
 
 其中$\tilde \alpha_t = {\rm Prob}(l_t < 1 \mid f)$且$\tilde \beta_t = {\rm Prob}(l_t \geq 1 \mid g)$。
 
-由于每个$t$的决策边界都相同，决策边界可以通过以下方式计算：
+现在让我们编写一些代码来模拟它
+
+```{code-cell} ipython3
+def compute_protocol_2_errors(π_minus_1, T_max, N_simulations, f_func, g_func,
+                              F_params=(1, 1), G_params=(3, 1.2)):
+    """
+    计算协议2的错误概率。
+    """
+    sequences, true_models = protocol_2(π_minus_1, 
+                        T_max, N_simulations, F_params, G_params)
+    l_ratios, _ = compute_likelihood_ratios(sequences, f_func, g_func)
+    
+    T_range = np.arange(1, T_max + 1)
+    
+    accuracy = np.empty(T_max)
+    for t in range(T_max):
+        predictions = (l_ratios[:, t] >= 1)
+        actual = true_models[:, t]
+        accuracy[t] = np.mean(predictions == actual)
+    
+    return {
+        'T_range': T_range,
+        'accuracy': accuracy,
+        'l_ratios': l_ratios,
+        'true_models': true_models
+    }
+
+```
+
+由于对于每个 $t$，决策边界都是相同的，因此可以通过以下方式计算决策边界
 
 ```{code-cell} ipython3
 root = brentq(lambda w: f(w) / g(w) - 1, 0.001, 0.999)
@@ -1071,7 +1037,7 @@ ax.fill_between(w_type2, 0, g_type2, alpha=0.3, color='red',
                 label=fr'$\tilde \beta_t = {type2_prob:.2f}$')
 
 ax.axvline(root, color='green', linestyle='--', alpha=0.7, 
-            label=f'decision boundary: $w=${root:.3f}')
+            label=f'决策边界: $w=${root:.3f}')
 
 ax.set_xlabel('w')
 ax.set_ylabel('概率密度')
@@ -1081,13 +1047,13 @@ plt.tight_layout()
 plt.show()
 ```
 
-在绿色垂直线的左侧，$g < f$，所以 $l_t < 1$；因此，落在绿线左侧的 $w_t$ 被归类为 $g$ 类个体。
+在绿色垂直线的左侧，$g < f$，所以 $l_t > 1$；因此，落在绿线左侧的 $w_t$ 被归类为 $f$ 类型个体。
 
-* 橙色阴影区域等于 $\beta$ -- 将实际为 $f$ 类的个体错误分类为 $g$ 类的概率。
+ * 红色阴影区域等于 $\beta$ -- 将实际为 $f$ 类型的个体错误分类为 $g$ 类型的概率。
 
-在绿色垂直线的右侧，$g > f$，所以 $l_t > 1$；因此，落在绿线右侧的 $w_t$ 被归类为 $f$ 类个体。
+在绿色垂直线的右侧，$g > f$，所以 $l_t < 1$；因此，落在绿线右侧的 $w_t$ 被归类为 $g$ 类型个体。
 
-* 蓝色阴影区域等于 $\alpha$ -- 将实际为 $g$ 类的个体错误分类为 $f$ 类的概率。
+ * 蓝色阴影区域等于 $\alpha$ -- 将实际为 $g$ 类型的个体错误分类为 $f$ 类型的概率。
 
 这给了我们计算理论分类错误概率的线索
 
@@ -1117,15 +1083,52 @@ print(f"理论分类错误概率 = {theory_error:.4f}")
 在下一个单元格中，我们还将理论分类准确率与实验分类准确率进行比较
 
 ```{code-cell} ipython3
+def analyze_protocol_2(π_minus_1, T_max, N_simulations, f_func, g_func, 
+                      theory_error=None, F_params=(1, 1), G_params=(3, 1.2)):
+    """分析协议2。"""
+    result = compute_protocol_2_errors(π_minus_1, T_max, N_simulations, 
+                                      f_func, g_func, F_params, G_params)
+    
+    # 绘制结果
+    plt.figure(figsize=(10, 6))
+    plt.plot(result['T_range'], result['accuracy'], 
+            'b-', linewidth=2, label='实验准确率')
+    
+    if theory_error is not None:
+        plt.axhline(1 - theory_error, color='r', linestyle='--', 
+                   label=f'理论准确率 = {1 - theory_error:.4f}')
+    
+    plt.xlabel('$t$')
+    plt.ylabel('准确率')
+    plt.legend()
+    plt.ylim(0.5, 1.0)
+    plt.show()
+    
+    return result
+
 # 分析协议2
 result_p2 = analyze_protocol_2(π_minus_1, T_max, N_simulations, f, g, 
                               theory_error, (F_a, F_b), (G_a, G_b))
 ```
 
-让我们观察随着观测数据的不断累积，这两种时序协议所做出的决策。
+让我们观察随着观测数据的不断累积，两种时序协议所做出的决策变化。
 
 ```{code-cell} ipython3
-# 比较两种协议
+def compare_protocols(result1, result2):
+    """比较两种协议的结果。"""
+    plt.figure(figsize=(10, 6))
+    
+    plt.plot(result1['T_range'], result1['error_prob'], linewidth=2, 
+            label='协议1（模型选择）')
+    plt.plot(result2['T_range'], 1 - result2['accuracy'], 
+            linestyle='--', linewidth=2, 
+            label='协议2（分类）')
+    
+    plt.xlabel('$T$')
+    plt.ylabel('错误概率')
+    plt.legend()
+    plt.show()
+    
 compare_protocols(result_p1, result_p2)
 ```
 
@@ -1234,14 +1237,14 @@ def compute_JS(f, g):
     return js_div
 ```
 
-现在让我们回到我们之前的猜想，即在大样本量情况下的错误概率与两个分布之间的Chernoff熵有关。
+现在让我们回到我们的猜想，即在大样本量情况下的错误概率与两个分布之间的Chernoff熵有关。
 
 我们通过计算时序协议1下$T=50$时错误概率的对数与散度度量之间的相关性来验证这一点。
 
 在下面的模拟中，自然界从$g$中抽取$N/2$个序列，从$f$中抽取$N/2$个序列。
 
 ```{note}
-自然界采用这种方式，而不是在每次长度为$T$的模拟之前通过抛掷一枚公平硬币来决定是从$g$还是$f$中抽取。
+自然界采用这种方式，而不是在每次长度为$T$的模拟之前抛一次公平硬币来决定是从$g$还是$f$中抽取。
 ```
 
 我们使用以下Beta分布对作为$f$和$g$的测试用例
@@ -1425,7 +1428,7 @@ $$
 h_{KL}(f, g) = \sum_{i=1}^n \pi_i^{(f)} \underbrace{\sum_{j=1}^n P_{ij}^{(f)} \log \frac{P_{ij}^{(f)}}{P_{ij}^{(g)}}}_{=: KL(P_{i\cdot}^{(f)}, P_{i\cdot}^{(g)})}
 $$
 
-其中 $KL(P_{i\cdot}^{(f)}, P_{i\cdot}^{(g)})$ 是逐行的KL散度。
+其中 $KL(P_{i\cdot}^{(f)}, P_{i\cdot}^{(g)})$ 是按行计算的KL散度。
 
 根据遍历定理，我们有
 
@@ -1548,7 +1551,7 @@ def analyze_markov_chains(P_f, P_g,
         plt.plot(theory_line, 'k--', linewidth=2.5, 
                 label=r'$T \times h_{KL}(f,g)$')
         
-        # 绘制经验均值
+        # 绘制经验平均值
         avg_log_L = np.mean(np.log(L_ratios_f), axis=0)
         plt.plot(avg_log_L, 'r-', linewidth=2.5, 
                 label='经验平均值', alpha=0.7)
@@ -1626,7 +1629,7 @@ markov_results = analyze_markov_chains(P_f, P_g)
 
 考虑自然从第三个密度函数$h$生成数据的情况。
 
-设$\{w_t\}_{t=1}^T$是从$h$中得到的独立同分布样本，且$L_t = L(w^t)$是如讲座中定义的似然比过程。
+设$\{w_t\}_{t=1}^T$是从$h$中独立同分布抽取的样本，且$L_t = L(w^t)$是如讲座中定义的似然比过程。
 
 证明：
 
@@ -1643,7 +1646,7 @@ $$
 :class: dropdown
 ```
 
-由于$w_1, \ldots, w_t$是从$h$中得到的独立同分布样本，我们可以写成
+由于$w_1, \ldots, w_t$是从$h$中独立同分布抽取的样本，我们可以写成
 
 $$
 \log L_t = \log \prod_{i=1}^t \ell(w_i) = \sum_{i=1}^t \log \ell(w_i) = \sum_{i=1}^t \log \frac{f(w_i)}{g(w_i)}
@@ -1711,7 +1714,7 @@ $$
 1. 当 $K_g > K_f$ 时(即 $f$ 比 $g$ 更"接近" $h$)
 2. 当 $K_g < K_f$ 时(即 $g$ 比 $f$ 更"接近" $h$)
 
-将你的答案与{ref}`本节<llr_h>`中的模拟结果联系起来。
+将你的答案与{ref}`本节<llr_h>`中显示的模拟结果联系起来。
 ```
 
 ```{solution-start} lr_ex2

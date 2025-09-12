@@ -142,7 +142,7 @@ def create_var_model(A, C, μ_0=None, Σ_0=None, stationary=True):
 
 ### 联合分布
 
-联合概率分布 $f(x_T, x_{T-1}, \ldots, x_0)$ 可以分解为:
+联合概率分布 $f(x_T, x_{T-1}, \ldots, x_0)$ 可以分解为：
 
 $$
 f(x_T, \ldots, x_0) = f(x_T | x_{T-1}) f(x_{T-1} | x_{T-2}) \cdots f(x_1 | x_0) f(x_0)
@@ -156,11 +156,11 @@ $$
 - 均值：$A x_t$
 - 协方差：$CC'$
 
-对数条件密度为：
+对数条件密度为
 
 $$
 \log f(x_{t+1} | x_t) = -\frac{n}{2} \log(2\pi) - \frac{1}{2} \log \det(CC') - \frac{1}{2} (x_{t+1} - A x_t)' (CC')^{-1} (x_{t+1} - A x_t)
-$$
+$$ (eq:cond_den)
 
 ```{code-cell} ipython3
 def log_likelihood_transition(x_next, x_curr, model):
@@ -234,7 +234,25 @@ def simulate_var(model, T, N_paths=1):
 
 ## 似然比过程
 
-现在让我们计算两个VAR模型的似然比过程
+现在让我们计算两个VAR模型的似然比过程。
+
+对于具有状态向量$x_t$的VAR模型，在时间$t$的对数似然比为
+
+$$
+\ell_t = \log \frac{p_f(x_t | x_{t-1})}{p_g(x_t | x_{t-1})}
+$$
+
+其中$p_f$和$p_g$分别是模型$f$和$g$下的条件密度。
+
+累积对数似然比过程为
+
+$$
+L_t = \sum_{s=1}^{t} \ell_s = \sum_{s=1}^{t} \log \frac{p_f(x_s | x_{s-1})}{p_g(x_s | x_{s-1})}
+$$
+
+其中$p_f(x_t | x_{t-1})$和$p_g(x_t | x_{t-1})$由{eq}`eq:cond_den`中定义的各自条件密度给出。
+
+让我们用Python编写这些方程
 
 ```{code-cell} ipython3
 def compute_likelihood_ratio_var(paths, model_f, model_g):
@@ -276,11 +294,11 @@ def compute_likelihood_ratio_var(paths, model_f, model_g):
 让我们从一个简单的例子开始，比较两个单变量AR(1)过程，其中$A_f = 0.8$，$A_g = 0.5$，以及$C_f = 0.3$，$C_g = 0.4$
 
 ```{code-cell} ipython3
-# 模型f：AR(1)，持续性系数ρ = 0.8
+# 模型f：AR(1)，持续性系数 ρ = 0.8
 A_f = np.array([[0.8]])
 C_f = np.array([[0.3]])
 
-# 模型g：AR(1)，持续性系数ρ = 0.5
+# 模型g：AR(1)，持续性系数 ρ = 0.5
 A_g = np.array([[0.5]])
 C_g = np.array([[0.4]])
 
@@ -306,7 +324,7 @@ for i in range(min(20, N_paths)):
 
 ax.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
 ax.set_ylabel(r'$\log L_t$')
-ax.set_title('对数似然比过程(自然模型 = f)')
+ax.set_title('对数似然比过程(本质 = f)')
 
 plt.tight_layout()
 plt.show()
@@ -365,7 +383,7 @@ L_ratios_ff = compute_likelihood_ratio_var(paths_from_f, model2_f, model2_g)
 L_ratios_gf = compute_likelihood_ratio_var(paths_from_g, model2_f, model2_g)
 ```
 
-我们可以看到，对于从模型 $f$ 生成的路径，似然比过程趋向于 $+\infty$，而对于来自模型 $g$ 的路径，则趋向于 $-\infty$。
+我们可以看到，对于从模型 $f$ 生成的路径，似然比过程趋向于 $+\infty$，而对于从模型 $g$ 生成的路径，则趋向于 $-\infty$。
 
 ```{code-cell} ipython3
 # 可视化结果
