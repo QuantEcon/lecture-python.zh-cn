@@ -947,6 +947,7 @@ $$ (eq:prob_model)
  * 当自然遵循$f$时，哪个代理学习得更快？
  * 当自然遵循$g$时，哪个代理学习得更快？
  * 初始先验$\pi_0^1$和$\pi_0^2$的差异如何影响收敛速度？
+```
 
 ```{solution-start} lr_ex4
 :class: dropdown
