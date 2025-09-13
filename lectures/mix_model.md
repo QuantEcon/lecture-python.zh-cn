@@ -12,7 +12,7 @@ kernelspec:
 ---
 
 (likelihood-ratio-process)=
-# Incorrect Models
+# 错误模型
 
 ```{include} _admonition/gpu.md
 ```
@@ -23,107 +23,103 @@ kernelspec:
 !pip install numpyro jax
 ```
 
-## Overview
+## 概述
 
-This is a sequel to {doc}`this quantecon lecture <likelihood_bayes>`.
+这是{doc}`这个 quantecon 讲座 <likelihood_bayes>`的续篇。
 
-We discuss two ways to create a compound lottery and their consequences.
+我们将讨论创建复合彩票的两种方式及其后果。
 
-A compound lottery can be said to create a _mixture distribution_.
+复合彩票可以说是创建了一个_混合分布_。
 
-Our two ways of constructing a compound lottery will differ in their **timing**.
+我们构建复合彩票的两种方式在**时间安排**上有所不同。
 
-* in one, mixing between two possible probability distributions  will occur once and all at the beginning of time
+* 其中一种方式是在时间开始时一次性在两个可能的概率分布之间进行混合
 
-* in the other, mixing between the same two possible probability distributions will occur each period
+* 另一种方式是在每个时期都在相同的两个可能的概率分布之间进行混合
 
-The statistical setting is close but not identical to the problem studied in that quantecon lecture.
+这个统计设定与那个 quantecon 讲座中研究的问题相近但不完全相同。
 
-In that lecture, there were two  i.i.d. processes that could possibly govern successive draws of a non-negative random variable $W$.
+在那个讲座中,有两个可能支配非负随机变量 $W$ 连续抽取的独立同分布过程。
 
-Nature decided  once and for all whether to make  a sequence of IID draws from either $ f $ or from $ g $.
+自然界一劳永逸地决定是从分布 $f$ 还是从分布 $g$ 中进行一系列独立同分布抽取。
 
-That lecture studied an agent who knew both $f$ and $g$ but  did not know which distribution nature chose at time $-1$.
+那个讲座研究了一个同时知道 $f$ 和 $g$ 但不知道自然界在时间 $-1$ 选择了哪个分布的代理人。
 
-The agent represented that ignorance  by assuming that nature had chosen  $f$ or $g$ by  flipping an unfair coin that put probability  $\pi_{-1}$ on probability distribution $f$.
+该代理人通过假设自然界抛一个不公平的硬币来选择 $f$ 或 $g$,其中选择概率分布 $f$ 的概率为 $\pi_{-1}$,来表示这种无知状态。
 
-That assumption allowed the agent to construct a subjective joint probability distribution over the
-random sequence $\{W_t\}_{t=0}^\infty$.
+这个假设使得代理人能够构建一个关于随机序列 $\{W_t\}_{t=0}^\infty$ 的主观联合概率分布。
 
-We studied how the agent would then use the laws of conditional probability and an observed history $w^t =\{w_s\}_{s=0}^t$ to form
+我们研究了代理人如何使用条件概率法则和观察到的历史 $w^t =\{w_s\}_{s=0}^t$ 来形成
 
 $$
-\pi_t = E [ \textrm{nature chose distribution}  f | w^t] , \quad  t = 0, 1, 2, \ldots
+
+\pi_t = E [ \textrm{自然选择分布} f | w^t] , \quad  t = 0, 1, 2, \ldots
 $$
 
-However, in the  setting of this lecture, that rule imputes to the agent an incorrect model.
+然而，在本讲座的设定中，该规则为智能体赋予了一个错误的模型。
 
-The reason is that  now the wage sequence is actually described by a different statistical model.
+原因是现在工资序列实际上是由一个不同的统计模型描述的。
 
-Thus, we change the {doc}`quantecon lecture <likelihood_bayes>` specification in the following way.
+因此，我们需要以下列方式改变{doc}`quantecon讲座<likelihood_bayes>`的规范。
 
-Now, **each period** $t \geq 0$, nature flips a possibly unfair coin that comes up $f$ with probability $\alpha$
-and $g$ with probability $1 -\alpha$.
+现在，在**每个时期**$t \geq 0$，自然投掷一个可能不公平的硬币，以概率$\alpha$出现$f$，以概率$1-\alpha$出现$g$。
 
-Thus, nature perpetually draws from the **mixture distribution** with c.d.f.
+因此，自然持续地从具有以下累积分布函数的**混合分布**中抽取：
 
 $$
 H(w) = \alpha F(w) + (1-\alpha) G(w), \quad \alpha \in (0,1)
 $$
 
-We'll study two agents  who try to learn about the wage process, but who use different  statistical models.
+我们将研究两种试图学习工资过程的智能体，他们使用不同的统计模型。
 
-Both types of agent know $f$ and $g$ but neither knows $\alpha$.
+两种类型的智能体都知道$f$和$g$，但都不知道$\alpha$。
 
-Our first type of agent erroneously thinks that at time $-1$ nature once and for all chose $f$ or $g$ and thereafter
-permanently draws from that distribution.
+我们的第一类智能体错误地认为在时间$-1$时，自然一次性选择了$f$或$g$，此后永久地从该分布中抽取。
 
-Our second type of agent knows, correctly, that nature mixes $f$ and $g$ with mixing probability $\alpha \in (0,1)$
-each period, though the agent doesn't know the mixing parameter.
+我们的第二类智能体正确地知道，自然在每个时期以混合概率$\alpha \in (0,1)$混合$f$和$g$，尽管智能体不知道混合参数。
 
-Our first type of agent applies the learning algorithm described in {doc}`this  quantecon lecture <likelihood_bayes>`.
+我们的第一类智能体应用{doc}`这个quantecon讲座<likelihood_bayes>`中描述的学习算法。
 
-In the context of the statistical model that prevailed in that lecture, that was a good learning algorithm and it enabled the Bayesian learner
-eventually to learn the distribution that nature had drawn at time $-1$.
+在该讲座中所涉及的统计模型的背景下，这是一个好的学习算法，它使贝叶斯学习者能够
 
-This is because the agent's statistical model was *correct* in the sense of being aligned with the data
-generating process.
+最终学习自然在时间 $-1$ 时所选择的分布。
 
-But in the present context, our type 1 decision maker's model is incorrect because the model $h$ that actually
-generates the data is neither $f$ nor $g$ and so is beyond the support of the models that the agent thinks are
-possible.
+这是因为该智能体的统计模型在与数据生成过程一致的意义上是*正确的*。
 
-Nevertheless, we'll see that our first type of agent muddles through and eventually learns something  interesting and useful, even though it is not *true*.
+但在当前情况下，我们的第一类决策者的模型是错误的，因为实际生成数据的模型 $h$ 既不是 $f$ 也不是 $g$，因此超出了该智能体认为可能的模型支持范围。
 
-Instead, it turns out that our type 1 agent who is armed with a wrong statistical model ends up learning whichever probability distribution, $f$ or $g$,
-is in a special sense *closest* to the $h$ that actually generates the data.
+尽管如此，我们将看到我们的第一类智能体仍然能够摸索前进，并最终学到一些有趣且有用的东西，即使这些并不是*真实的*。
 
-We'll tell the sense in which it is closest.
+相反，事实证明我们这个配备了错误统计模型的第一类智能体，最终会学习到 $f$ 或 $g$ 中在特定意义上与实际生成数据的 $h$ *最接近*的那个概率分布。
 
-Our second type of agent understands that nature mixes between $f$ and $g$ each period with a fixed mixing
-probability $\alpha$.
+我们将说明它在什么意义上是最接近的。
 
-But  the agent doesn't know $\alpha$.
+我们的第二类智能体理解自然在每个时期以固定的混合概率 $\alpha$ 在 $f$ 和 $g$ 之间进行混合。
 
-The agent sets out to learn $\alpha$ using Bayes' law applied to his model.
+但该智能体不知道 $\alpha$ 的值。
 
-His model is correct in the sense that
-it includes the actual data generating process $h$ as a possible distribution.
+该智能体着手使用贝叶斯法则应用于其模型来学习 $\alpha$。
 
-In this lecture, we'll learn about
+他的模型是正确的，因为它包含了实际的数据生成过程 $h$ 作为一个可能的分布。
 
-* how nature can *mix* between two distributions $f$ and $g$ to create a new distribution $h$.
+在本讲中，我们将学习
 
-* The Kullback-Leibler statistical divergence <https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence> that governs statistical learning under an incorrect statistical model
+* 自然如何在两个分布 $f$ 和 $g$ 之间进行*混合*以创建一个新的分布 $h$。
 
-* A useful Python function `numpy.searchsorted` that,  in conjunction with a uniform random number generator, can be used to sample from an arbitrary distribution
+* Kullback-Leibler统计散度 <https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence> 用于控制在不正确统计模型下的统计学习
 
-As usual, we'll start by importing some Python tools.
+* 一个有用的Python函数`numpy.searchsorted`，它与均匀随机数生成器结合使用时，可以用来从任意分布中进行采样
+
+像往常一样，我们先导入一些Python工具。
 
 ```{code-cell} ipython3
 :hide-output: false
 
 import matplotlib.pyplot as plt
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from numba import vectorize, jit
 from math import gamma
@@ -141,20 +137,20 @@ from numpyro.infer import MCMC, NUTS
 import jax.numpy as jnp
 from jax import random
 
-np.random.seed(142857)
+np.random.seed(0)
 
 @jit
 def set_seed():
-    np.random.seed(142857)
+    np.random.seed(0)
 set_seed()
 ```
 
-Let's use Python to generate two beta distributions
+让我们用Python生成两个贝塔分布
 
 ```{code-cell} ipython3
 :hide-output: false
 
-# Parameters in the two beta distributions.
+# 两个贝塔分布的参数
 F_a, F_b = 1, 1
 G_a, G_b = 3, 1.2
 
@@ -163,7 +159,7 @@ def p(x, a, b):
     r = gamma(a + b) / (gamma(a) * gamma(b))
     return r * x** (a-1) * (1 - x) ** (b-1)
 
-# The two density functions.
+# 两个密度函数
 f = jit(lambda x: p(x, F_a, F_b))
 g = jit(lambda x: p(x, G_a, G_b))
 ```
@@ -174,8 +170,8 @@ g = jit(lambda x: p(x, G_a, G_b))
 @jit
 def simulate(a, b, T=50, N=500):
     '''
-    Generate N sets of T observations of the likelihood ratio,
-    return as N x T matrix.
+    生成N组T个似然比观测值，
+    以N x T矩阵形式返回。
 
     '''
 
@@ -190,7 +186,7 @@ def simulate(a, b, T=50, N=500):
     return l_arr
 ```
 
-We’ll also use the following Python code to prepare some informative simulations
+我们还将使用以下Python代码来准备一些信息丰富的模拟
 
 ```{code-cell} ipython3
 :hide-output: false
@@ -206,53 +202,45 @@ l_arr_f = simulate(F_a, F_b, N=50000)
 l_seq_f = np.cumprod(l_arr_f, axis=1)
 ```
 
-## Sampling from  Compound Lottery $H$
+## 从复合彩票 $H$ 中抽样
 
-We implement two methods  to draw samples from
-our mixture model $\alpha F + (1-\alpha) G$.
+我们实现两种方法从混合模型 $\alpha F + (1-\alpha) G$ 中抽取样本。
 
-We'll generate samples using each of them and verify that they match well.
+我们将使用这两种方法生成样本，并验证它们是否匹配良好。
 
-Here is pseudo code for a direct "method 1" for drawing from our compound lottery:
+以下是从复合彩票中抽样的"方法1"的伪代码：
 
-* Step one:
+* 第一步：
 
-  * use the numpy.random.choice function to flip an unfair coin that selects distribution $F$ with prob $\alpha$
-  and $G$ with prob $1 -\alpha$
+  * 使用 numpy.random.choice 函数抛一个不公平的硬币，以概率 $\alpha$ 选择分布 $F$，以概率 $1-\alpha$ 选择 $G$
 
-* Step two:
+* 第二步：
 
-  * draw from either $F$ or $G$, as determined by the coin flip.
+  * 根据硬币抛掷的结果，从 $F$ 或 $G$ 中抽样
 
-* Step three:
+* 第三步：
 
-  * put the first two steps in a big loop and do them for each realization of $w$
+  * 将前两步放在一个大循环中，对 $w$ 的每个实现都执行这些步骤
 
 
-Our second method uses a uniform distribution and the following fact that we also described and used in the quantecon lecture <https://python.quantecon.org/prob_matrix.html>:
+我们的第二种方法使用均匀分布和以下在 quantecon 讲座 <https://python.quantecon.org/prob_matrix.html> 中描述和使用的事实：
 
- * If a random variable $X$ has c.d.f. $F$, then a random variable $F^{-1}(U)$ also has c.d.f. $F$, where $U$ is a uniform random variable on $[0,1]$.
+ * 如果随机变量 $X$ 的累积分布函数为 $F$，那么随机变量 $F^{-1}(U)$ 也具有累积分布函数 $F$，其中 $U$ 是 $[0,1]$ 上的均匀随机变量。
 
-In other words, if $X \sim F(x)$ we can generate a random sample from $F$ by drawing a random sample from
-a uniform distribution on $[0,1]$ and computing $F^{-1}(U)$.
+换句话说，如果 $X \sim F(x)$，我们可以通过从 $[0,1]$ 上的均匀分布中抽取随机样本并计算 $F^{-1}(U)$ 来生成来自 $F$ 的随机样本。
 
+我们将结合 `numpy.searchsorted` 命令使用这个事实来直接从 $H$ 中抽样。
 
-We'll  use this  fact
-in conjunction with the `numpy.searchsorted` command to sample from $H$ directly.
+关于 `searchsorted` 函数的说明，请参见 <https://numpy.org/doc/stable/reference/generated/numpy.searchsorted.html>。
 
-See <https://numpy.org/doc/stable/reference/generated/numpy.searchsorted.html> for the
-`searchsorted` function.
+观看[Mr. P Solver关于蒙特卡洛模拟的视频](https://www.google.com/search?q=Mr.+P+Solver+video+on+Monte+Carlo+simulation&oq=Mr.+P+Solver+video+on+Monte+Carlo+simulation)，了解这个强大技巧的其他应用。
 
-See the [Mr. P Solver video on Monte Carlo simulation](https://www.google.com/search?q=Mr.+P+Solver+video+on+Monte+Carlo+simulation&oq=Mr.+P+Solver+video+on+Monte+Carlo+simulation) to see other applications of this powerful trick.
-
-In the Python code below, we'll use both of our methods and confirm that each of them does a good job of sampling
-from our target mixture distribution.
-
+在下面的Python代码中，我们将使用两种方法，并确认它们都能很好地从我们的目标混合分布中进行采样。
 
 ```{code-cell} ipython3
 @jit
 def draw_lottery(p, N):
-    "Draw from the compound lottery directly."
+    "直接从复合彩票中抽取。"
 
     draws = []
     for i in range(0, N):
@@ -263,7 +251,7 @@ def draw_lottery(p, N):
     return np.array(draws)
 
 def draw_lottery_MC(p, N):
-    "Draw from the compound lottery using the Monte Carlo trick."
+    "使用蒙特卡洛技巧从复合彩票中抽取。"
 
     xs = np.linspace(1e-8,1-(1e-8),10000)
     CDF = p*sp.beta.cdf(xs, F_a, F_b) + (1-p)*sp.beta.cdf(xs, G_a, G_b)
@@ -274,54 +262,51 @@ def draw_lottery_MC(p, N):
 ```
 
 ```{code-cell} ipython3
-# verify
+# 验证
 N = 100000
 α = 0.0
 
 sample1 = draw_lottery(α, N)
 sample2 = draw_lottery_MC(α, N)
 
-# plot draws and density function
-plt.hist(sample1, 50, density=True, alpha=0.5, label='direct draws')
-plt.hist(sample2, 50, density=True, alpha=0.5, label='MC draws')
+# 绘制抽样和密度函数
+plt.hist(sample1, 50, density=True, alpha=0.5, label='直接抽样')
+plt.hist(sample2, 50, density=True, alpha=0.5, label='MC抽样')
 
 xs = np.linspace(0,1,1000)
-plt.plot(xs, α*f(xs)+(1-α)*g(xs), color='red', label='density')
+plt.plot(xs, α*f(xs)+(1-α)*g(xs), color='red', label='密度')
 
 plt.legend()
 plt.show()
 ```
 
-## Type 1 Agent
+## 类型1智能体
 
-We'll now study what our type 1 agent learns
+现在我们来研究类型1智能体学到了什么
 
-Remember that our type 1 agent uses the wrong statistical model, thinking that nature mixed between $f$ and $g$ once and for all at time $-1$.
+请记住，我们的类型1智能体使用了错误的统计模型，认为自然在时间-1时就一次性地在$f$和$g$之间做出了选择。
 
-The type 1 agent thus uses the learning algorithm studied in {doc}`this  quantecon lecture <likelihood_bayes>`.
+因此，类型1智能体使用了在{doc}`这个quantecon讲座<likelihood_bayes>`中研究的学习算法。
 
-We'll briefly review that learning algorithm now.
+我们现在简要回顾一下该学习算法。
 
-Let $ \pi_t $ be a Bayesian posterior defined as
+让$\pi_t$表示贝叶斯后验概率，定义为
 
 $$
 \pi_t = {\rm Prob}(q=f|w^t)
 $$
 
-The likelihood ratio process plays a principal role  in the formula that governs the evolution
-of the posterior probability $ \pi_t $, an instance of **Bayes’ Law**.
+似然比过程在控制后验概率$\pi_t$演化的公式中起着主要作用，这是**贝叶斯法则**的一个实例。
 
-Bayes’ law implies that $ \{\pi_t\} $ obeys the recursion
+贝叶斯法则意味着$\{\pi_t\}$遵循以下递归
 
 $$
 \pi_t=\frac{\pi_{t-1} l_t(w_t)}{\pi_{t-1} l_t(w_t)+1-\pi_{t-1}}
 $$ (eq:recur1)
 
-with $ \pi_{0} $ being a Bayesian prior probability that $ q = f $,
-i.e., a personal or subjective belief about $ q $ based on our having seen no data.
+其中$\pi_{0}$是关于$q = f$的贝叶斯先验概率，即在我们尚未看到任何数据时基于主观判断的个人信念。
 
-Below we define a Python function that updates belief $ \pi $ using
-likelihood ratio $ \ell $ according to recursion {eq}`eq:recur1`
+下面我们定义一个Python函数，该函数根据递归式{eq}`eq:recur1`使用似然比$\ell$来更新信念$\pi$
 
 ```{code-cell} ipython3
 :hide-output: false
@@ -336,12 +321,9 @@ def update(π, l):
     return π
 ```
 
-Formula {eq}`eq:recur1` can be generalized  by iterating on it and thereby deriving an
-expression for  the time $ t $ posterior $ \pi_{t+1} $ as a function
-of the time $ 0 $ prior $ \pi_0 $ and the likelihood ratio process
-$ L(w^{t+1}) $ at time $ t $.
+通过对公式 {eq}`eq:recur1` 进行迭代，我们可以推导出时间 $ t $ 的后验概率 $ \pi_{t+1} $ 与时间 $ 0 $ 的先验概率 $ \pi_0 $ 和似然比过程 $ L(w^{t+1}) $ 之间的关系。
 
-To begin, notice that the updating rule
+首先，注意更新规则
 
 $$
 \pi_{t+1}
@@ -349,7 +331,7 @@ $$
 {\pi_{t}\ell \left(w_{t+1}\right)+\left(1-\pi_{t}\right)}
 $$
 
-implies
+可推导出
 
 $$
 \begin{aligned}
@@ -367,7 +349,7 @@ $$
 =\frac{1}{\ell \left(w_{t+1}\right)}\left(\frac{1}{\pi_{t}}-1\right).
 $$
 
-Therefore
+因此
 
 $$
 \begin{aligned}
@@ -378,41 +360,35 @@ $$
 \end{aligned}
 $$
 
-Since $ \pi_{0}\in\left(0,1\right) $ and
-$ L\left(w^{t+1}\right)>0 $, we can verify that
-$ \pi_{t+1}\in\left(0,1\right) $.
+由于 $ \pi_{0}\in\left(0,1\right) $ 且 $ L\left(w^{t+1}\right)>0 $，我们可以验证 $ \pi_{t+1}\in\left(0,1\right) $。
 
-After rearranging the preceding equation, we can express $ \pi_{t+1} $ as a
-function of  $ L\left(w^{t+1}\right) $, the  likelihood ratio process at $ t+1 $,
-and the initial prior $ \pi_{0} $
+通过重新整理上述方程，我们可以将 $ \pi_{t+1} $ 表示为 $ t+1 $ 时刻的似然比过程 $ L\left(w^{t+1}\right) $ 和初始先验概率 $ \pi_{0} $ 的函数
 
 $$
 \pi_{t+1}=\frac{\pi_{0}L\left(w^{t+1}\right)}{\pi_{0}L\left(w^{t+1}\right)+1-\pi_{0}}.
 $$ (eq:bayeslaw103)
 
-Formula {eq}`eq:bayeslaw103` generalizes formula {eq}`eq:recur1`.
+公式{eq}`eq:bayeslaw103`是公式{eq}`eq:recur1`的推广。
 
-Formula {eq}`eq:bayeslaw103` can be regarded as a one step revision of prior probability $ \pi_0 $ after seeing
-the batch of data $ \left\{ w_{i}\right\} _{i=1}^{t+1} $.
+公式{eq}`eq:bayeslaw103`可以被视为在观察到一批数据$ \left\{ w_{i}\right\} _{i=1}^{t+1} $后对先验概率$ \pi_0 $的一步修正。
 
-## What a type 1 Agent Learns when Mixture $H$ Generates Data
+## 当混合分布$H$生成数据时，类型1代理学到什么
 
-We now study what happens when the mixture distribution $h;\alpha$ truly generated the data each period.
+我们现在研究当混合分布$h;\alpha$在每个时期真实生成数据时会发生什么。
 
-The sequence $\pi_t$ continues to converge, despite the agent's misspecified model, and the limit is either $0$ or $1$.
+尽管代理的模型有误设定，序列$\pi_t$仍然会收敛，且极限要么是$0$要么是$1$。
 
-This is true even though in truth nature always mixes between $f$ and $g$.
+即使在实际上自然总是在$f$和$g$之间混合，这一点依然成立。
 
-After verifying that claim about possible limit points of $\pi_t$ sequences, we'll drill down and study
-what fundamental force determines the limiting value of $\pi_t$.
+在验证了关于$\pi_t$序列可能极限点的这一说法之后，我们将深入研究决定$\pi_t$极限值的根本力量。
 
-Let's set a value of $\alpha$ and then watch how $\pi_t$ evolves.
+让我们设定一个$\alpha$值，然后观察$\pi_t$如何演变。
 
 ```{code-cell} ipython3
 def simulate_mixed(α, T=50, N=500):
     """
-    Generate N sets of T observations of the likelihood ratio,
-    return as N x T matrix, when the true density is mixed h;α
+    当真实密度为混合h;α时，生成N组T个似然比观测值，
+    返回N x T矩阵
     """
 
     w_s = draw_lottery(α, N*T).reshape(N, T)
@@ -422,8 +398,7 @@ def simulate_mixed(α, T=50, N=500):
 
 def plot_π_seq(α, π1=0.2, π2=0.8, T=200):
     """
-    Compute and plot π_seq and the log likelihood ratio process
-    when the mixed distribution governs the data.
+    当混合分布支配数据时，计算并绘制π_seq和对数似然比过程
     """
 
     l_arr_mixed = simulate_mixed(α, T=T, N=50)
@@ -437,16 +412,16 @@ def plot_π_seq(α, π1=0.2, π2=0.8, T=200):
         for i in range(2):
             π_seq_mixed[i, t+1] = update(π_seq_mixed[i, t], l_arr_mixed[0, t])
 
-    # plot
+    # 绘图
     fig, ax1 = plt.subplots()
     for i in range(2):
         ax1.plot(range(T+1), π_seq_mixed[i, :], label=rf"$\pi_0$={π_seq_mixed[i, 0]}")
 
-    ax1.plot(np.nan, np.nan,  '--', color='b', label='Log likelihood ratio process')
+    ax1.plot(np.nan, np.nan,  '--', color='b', label='对数似然比过程')
     ax1.set_ylabel(r"$\pi_t$")
     ax1.set_xlabel("t")
     ax1.legend()
-    ax1.set_title("when $\\alpha F + (1-\\alpha)G$ governs data")
+    ax1.set_title("当$\\alpha F + (1-\\alpha)G$支配数据时")
 
     ax2 = ax1.twinx()
     ax2.plot(range(1, T+1), np.log(l_seq_mixed[0, :]), '--', color='b')
@@ -459,46 +434,43 @@ def plot_π_seq(α, π1=0.2, π2=0.8, T=200):
 plot_π_seq(α = 0.6)
 ```
 
-The above graph shows a sample path of the log likelihood ratio process as the blue dotted line, together with
-sample paths of $\pi_t$ that start from two distinct initial conditions.
+上图显示了对数似然比过程的一个样本路径（蓝色虚线），以及从两个不同初始条件开始的 $\pi_t$ 的样本路径。
 
-
-Let's see what happens when we change $\alpha$
+让我们看看当我们改变 $\alpha$ 时会发生什么
 
 ```{code-cell} ipython3
 plot_π_seq(α = 0.2)
 ```
 
-Evidently, $\alpha$ is having a big effect on the destination of $\pi_t$ as $t \rightarrow + \infty$
+显然，$\alpha$ 对 $\pi_t$ 在 $t \rightarrow + \infty$ 时的终点有很大影响
 
-## Kullback-Leibler Divergence Governs Limit of $\pi_t$
+## Kullback-Leibler 散度决定 $\pi_t$ 的极限
 
-To understand what determines whether the limit point of  $\pi_t$ is  $0$ or $1$  and how the answer depends on the true value of the mixing probability  $\alpha \in (0,1) $ that generates
+为了理解是什么决定了 $\pi_t$ 的极限点是 $0$ 还是 $1$，以及答案如何依赖于生成以下混合分布的真实混合概率 $\alpha \in (0,1)$：
 
 $$ h(w) \equiv h(w | \alpha) = \alpha f(w) + (1-\alpha) g(w) $$
 
-we shall compute the following two Kullback-Leibler divergences
+我们将计算以下两个 Kullback-Leibler 散度：
 
 $$
 KL_g (\alpha) = \int \log\left(\frac{h(w)}{g(w)}\right) h(w) d w
 $$
 
-and
+和
 
 $$
 KL_f (\alpha) = \int \log\left(\frac{h(w)}{f(w)}\right) h(w) d w
 $$
 
-We shall plot both of these functions against $\alpha$ as we use $\alpha$ to vary
-$h(w) = h(w|\alpha)$.
+我们将在使用 $\alpha$ 改变 $h(w) = h(w|\alpha)$ 时，绘制这两个函数关于 $\alpha$ 的图像。
 
-The limit of $\pi_t$ is  determined by
+$\pi_t$ 的极限由下式决定：
 
 $$ \min_{f,g} \{KL_g, KL_f\} $$
 
-The only possible limits are $0$ and $1$.
+唯一可能的极限是 $0$ 和 $1$。
 
-As $t \rightarrow +\infty$, $\pi_t$ goes to one if and only if  $KL_f < KL_g$
+当且仅当 $KL_f < KL_g$ 时，$\pi_t$ 在 $t \rightarrow +\infty$ 时趋向于 1。
 
 ```{code-cell} ipython3
 @vectorize
@@ -550,7 +522,7 @@ def π_lim(α, T=5000, π_0=0.4):
 π_lim_v = np.vectorize(π_lim)
 ```
 
-Let us first plot the KL divergences $KL_g\left(\alpha\right), KL_f\left(\alpha\right)$ for each $\alpha$.
+让我们首先绘制每个$\alpha$对应的KL散度$KL_g\left(\alpha\right), KL_f\left(\alpha\right)$。
 
 ```{code-cell} ipython3
 α_arr = np.linspace(0, 1, 100)
@@ -561,27 +533,25 @@ fig, ax = plt.subplots(1, figsize=[10, 6])
 
 ax.plot(α_arr, KL_g_arr, label='KL(h, g)')
 ax.plot(α_arr, KL_f_arr, label='KL(h, f)')
-ax.set_ylabel('KL divergence')
+ax.set_ylabel('KL散度')
 ax.set_xlabel(r'$\alpha$')
 
 ax.legend(loc='upper right')
 plt.show()
 ```
 
-Let's compute an $\alpha$ for which  the KL divergence  between $h$ and $g$ is the same as that between $h$ and $f$.
+让我们计算一个 $\alpha$ 值，使得 $h$ 和 $g$ 之间的 KL 散度等于 $h$ 和 $f$ 之间的 KL 散度。
 
 ```{code-cell} ipython3
-# where KL_f = KL_g
+# 当 KL_f = KL_g 时
 discretion = α_arr[np.argmin(np.abs(KL_g_arr-KL_f_arr))]
 ```
 
-We can compute and plot the convergence point $\pi_{\infty}$ for each $\alpha$ to verify that the convergence is indeed governed by the KL divergence.
+我们可以计算并绘制每个$\alpha$的收敛点$\pi_{\infty}$，以验证收敛确实是由KL散度决定的。
 
-The blue circles show the limiting values of $\pi_t$ that simulations discover for different values of $\alpha$
-recorded on the $x$ axis.
+蓝色圆圈显示了模拟发现的不同$\alpha$值（记录在$x$轴上）对应的$\pi_t$的极限值。
 
-Thus, the graph below confirms how a minimum  KL divergence governs what our type 1 agent eventually learns.
-
+因此，下图证实了KL散度的最小值如何决定了我们的类型1代理最终学到的内容。
 
 ```{code-cell} ipython3
 α_arr_x = α_arr[(α_arr<discretion)|(α_arr>discretion)]
@@ -592,7 +562,7 @@ fig, ax = plt.subplots(1, figsize=[10, 6])
 
 ax.plot(α_arr, KL_g_arr, label='KL(h, g)')
 ax.plot(α_arr, KL_f_arr, label='KL(h, f)')
-ax.set_ylabel('KL divergence')
+ax.set_ylabel('KL散度')
 ax.set_xlabel(r'$\alpha$')
 
 # plot KL
@@ -609,58 +579,53 @@ ax2.legend(loc=[0.85, 0.73])
 plt.show()
 ```
 
-Evidently, our type 1 learner who applies Bayes' law to his misspecified set of statistical models eventually learns an approximating model that is as close as possible to the true model, as measured by its
-Kullback-Leibler divergence:
+显然，我们的类型1学习者将贝叶斯定律应用于其错误设定的统计模型集合，最终学习到一个尽可能接近真实模型的近似模型，这种接近程度是通过Kullback-Leibler散度来衡量的：
 
-- When $\alpha$ is small, $KL_g < KL_f$ meaning the divergence of $g$ from $h$ is smaller than that of $f$ and so the limit point of $\pi_t$ is close to $0$.
+- 当$\alpha$较小时，$KL_g < KL_f$意味着$g$与$h$的散度小于$f$的散度，因此$\pi_t$的极限点接近0。
 
-- When $\alpha$ is large, $KL_f < KL_g$ meaning the divergence of $f$ from $h$ is smaller than that of $g$ and so the limit point of $\pi_t$ is close to $1$.
+- 当$\alpha$较大时，$KL_f < KL_g$意味着$f$与$h$的散度小于$g$的散度，因此$\pi_t$的极限点接近1。
 
-## Type 2 Agent
+## 类型2代理
 
-We now describe how our type 2 agent formulates his learning problem and what he eventually learns.
+现在我们来描述类型2代理如何构建他的学习问题以及他最终学到什么。
 
-Our type 2 agent understands the correct statistical model but does not know $\alpha$.
+我们的类型2代理理解正确的统计模型但不知道$\alpha$。
 
-We apply Bayes law to deduce an algorithm for  learning $\alpha$ under the assumption
-that the agent knows that
+我们应用贝叶斯定律来推导学习$\alpha$的算法，假设代理知道
 
 $$
 h(w) = h(w| \alpha)
 $$
 
-but does not know $\alpha$.
+但不知道$\alpha$。
 
-We'll assume that the person starts out with a prior probability $\pi_0(\alpha)$ on
-$\alpha \in (0,1)$ where the prior has one of the forms that we deployed in {doc}`this quantecon lecture <bayes_nonconj>`.
+我们假设此人从$\alpha \in (0,1)$上的先验概率$\pi_0(\alpha)$开始，这个先验具有我们在{doc}`这个quantecon讲座<bayes_nonconj>`中使用的形式之一。
 
+我们将启动`numpyro`并将其应用于当前情况。
 
-We'll fire up `numpyro` and  apply it  to the present situation.
-
-Bayes' law now takes the form
-
+贝叶斯定律现在采取以下形式：
 
 $$
 \pi_{t+1}(\alpha) = \frac {h(w_{t+1} | \alpha) \pi_t(\alpha)}
        { \int h(w_{t+1} | \hat \alpha) \pi_t(\hat \alpha) d \hat \alpha }
 $$
 
-We'll use numpyro  to approximate this equation.
+我们将使用numpyro来近似这个方程。
 
-We'll create  graphs of the posterior $\pi_t(\alpha)$ as
-$t \rightarrow +\infty$ corresponding to ones presented in the quantecon lecture <https://python.quantecon.org/bayes_nonconj.html>.
+我们将创建后验$\pi_t(\alpha)$的图形，随着
 
-We anticipate that a posterior  distribution will collapse around  the true $\alpha$ as
-$t \rightarrow + \infty$.
+当 $t \rightarrow +\infty$ 时,对应于 quantecon 讲座中展示的内容 <https://python.quantecon.org/bayes_nonconj.html>。
 
-Let us try a uniform prior first.
+我们预计后验分布将在 $t \rightarrow + \infty$ 时收敛于真实的 $\alpha$ 值周围。
 
-We use the `Mixture` class in numpyro to construct the likelihood function.
+让我们先尝试一个均匀先验分布。
+
+我们使用 numpyro 中的 `Mixture` 类来构建似然函数。
 
 ```{code-cell} ipython3
 α = 0.8
 
-# simulate data with true α
+# 用真实的 α 模拟数据
 data = draw_lottery(α, 1000)
 sizes = [5, 20, 50, 200, 1000, 25000]
 
@@ -671,17 +636,17 @@ def model(w):
         dist.Mixture(dist.Categorical(jnp.array([α, 1-α])), [dist.Beta(F_a, F_b), dist.Beta(G_a, G_b)]), obs=w)
 
 def MCMC_run(ws):
-    "Compute posterior using MCMC with observed ws"
+    "使用 MCMC 计算观测到的 ws 的后验分布"
 
     kernel = NUTS(model)
     mcmc = MCMC(kernel, num_samples=5000, num_warmup=1000, progress_bar=False)
 
-    mcmc.run(rng_key=random.PRNGKey(142857), w=jnp.array(ws))
+    mcmc.run(rng_key=random.PRNGKey(0), w=jnp.array(ws))
     sample = mcmc.get_samples()
     return sample['α']
 ```
 
-The following code generates the graph below that displays Bayesian posteriors for $\alpha$ at various history lengths.
+以下代码生成了下面的图表，显示了不同历史长度下$\alpha$的贝叶斯后验分布。
 
 ```{code-cell} ipython3
 
@@ -699,89 +664,85 @@ ax.set_xlabel(r'$\alpha$')
 plt.show()
 ```
 
-Evidently,  the Bayesian posterior  narrows in on the true value  $\alpha = .8$ of the mixing parameter as the length of a history of observations grows.
+显然，随着观测历史长度的增长，贝叶斯后验分布逐渐收敛于混合参数的真实值 $\alpha = .8$。
 
-## Concluding Remarks
+## 总结性评论
 
-Our type 1 person  deploys an incorrect statistical  model.
+我们的第1类人使用了一个错误的统计模型。
 
-He believes
-that either $f$ or $g$ generated the $w$ process, but just doesn't know which one.
+他认为要么是 $f$ 要么是 $g$ 生成了 $w$ 过程，只是不知道具体是哪一个。
 
-That is wrong because nature is actually mixing each period with mixing probability $\alpha$.
+这是错误的，因为实际上自然在每个时期都以混合概率 $\alpha$ 进行混合。
 
-Our type 1 agent  eventually believes that either $f$ or $g$ generated the $w$ sequence, the outcome being determined by the model, either $f$ or $g$, whose  KL divergence relative to $h$ is smaller.
+我们的第1类主体最终会相信要么是 $f$ 要么是 $g$ 生成了 $w$ 序列，结果取决于相对于 $h$ 具有较小 KL 散度的模型（$f$ 或 $g$）。
 
-Our type 2 agent has a different statistical model, one that is correctly specified.
+我们的第2类主体有一个不同的统计模型，这个模型是正确设定的。
 
-He knows the parametric form of the statistical model but not the mixing parameter $\alpha$.
+他知道统计模型的参数形式，但不知道混合参数 $\alpha$。
 
-He knows that he does not know it.
+他知道自己不知道这个参数。
 
-But by using Bayes' law in conjunction with his statistical model and a history of data,  he eventually acquires a more and more accurate inference about $\alpha$.
+但是通过结合其统计模型和数据历史使用贝叶斯法则，他最终能够对 $\alpha$ 做出越来越准确的推断。
 
-This little laboratory  exhibits some important general principles that govern outcomes of Bayesian learning of misspecified models.
+这个小实验展示了一些重要的一般原则，这些原则支配着贝叶斯学习错误设定模型的结果。
 
-Thus, the  following situation prevails quite generally in empirical work.
+因此，在实证研究中普遍存在以下情况。
 
-A scientist approaches the data with a manifold $S$ of statistical models $ s (X | \theta)$ , where $s$ is a probability distribution over a random vector $X$, $\theta \in \Theta$
-is a vector of parameters, and $\Theta$ indexes the manifold of models.
+一个科学家用统计模型流形 $S$ 来处理数据，其中 $ s (X | \theta)$ 是随机向量 $X$ 上的概率分布，$\theta \in \Theta$ 是参数向量，而 $\Theta$ 标记了模型流形。
 
-The scientist with observations that he interprets as realizations $x$ of the random vector $X$ wants to solve an **inverse problem** of somehow _inverting_
-$s(x | \theta)$ to infer $\theta$ from $x$.
+科学家通过观察得到随机向量$X$的实现值$x$，想要解决一个**逆问题**，即通过某种方式_求逆_
+$s(x | \theta)$来从$x$推断$\theta$。
 
-But the scientist's model is misspecified, being only an approximation to an unknown  model $h$ that nature uses to generate $X$.
+但科学家的模型是错误设定的，只是自然界用来生成$X$的未知模型$h$的一个近似。
 
-If the scientist uses Bayes' law or a related  likelihood-based  method to infer $\theta$, it occurs quite generally that for large sample sizes the inverse problem infers a  $\theta$ that minimizes  the KL divergence of the scientist's model $s$ relative to nature's   model $h$.
+如果科学家使用贝叶斯定律或相关的基于似然的方法来推断$\theta$，通常在大样本情况下，逆问题会推断出一个使科学家模型$s$相对于自然模型$h$的KL散度最小化的$\theta$。
 
-
-## Exercises
+## 练习
 
 ```{exercise}
 :label: mix_model_ex1
 
-In {doc}`likelihood_bayes`, we studied the consequence of applying likelihood ratio 
-and Bayes' law to a misspecified statistical model.
+在{doc}`likelihood_bayes`中，我们研究了将似然比和贝叶斯定律应用于错误设定统计模型的后果。
 
-In that lecture, we used a model selection algorithm to study the case where the true data generating process is a mixture.
+在那节课中，我们使用模型选择算法来研究真实数据生成过程是混合分布的情况。
 
-In this lecture, we studied how to correctly "learn" a model generated by a mixing process using a Bayesian approach.
+在本节课中，我们研究了如何使用贝叶斯方法正确地"学习"由混合过程生成的模型。
 
-To fix the algorithm we used in {doc}`likelihood_bayes`, a correct Bayesian approach should directly model the uncertainty about $x$ and update beliefs about it as new data arrives. 
+为了修正我们在{doc}`likelihood_bayes`中使用的算法，正确的贝叶斯方法应该直接对$x$的不确定性建模，并随着新数据的到来更新对它的信念。
 
-Here is the algorithm:
+这是算法：
 
-First we specify a prior distribution for $x$ given by $x \sim \text{Beta}(\alpha_0, \beta_0)$ with expectation $\mathbb{E}[x] = \frac{\alpha_0}{\alpha_0 + \beta_0}$.
+首先我们指定$x$的先验分布为$x \sim \text{Beta}(\alpha_0, \beta_0)$，其期望值为$\mathbb{E}[x] = \frac{\alpha_0}{\alpha_0 + \beta_0}$。
 
-The likelihood for a single observation $w_t$ is $p(w_t|x) = x f(w_t) + (1-x) g(w_t)$. 
+单个观测值 $w_t$ 的似然函数为 $p(w_t|x) = x f(w_t) + (1-x) g(w_t)$。
 
-For a sequence $w^t = (w_1, \dots, w_t)$, the likelihood is $p(w^t|x) = \prod_{i=1}^t p(w_i|x)$. 
+对于序列 $w^t = (w_1, \dots, w_t)$，似然函数为 $p(w^t|x) = \prod_{i=1}^t p(w_i|x)$。
 
-The posterior distribution is updated using $p(x|w^t) \propto p(w^t|x) p(x)$. 
+后验分布使用 $p(x|w^t) \propto p(w^t|x) p(x)$ 进行更新。
 
-Recursively, the posterior after $w_t$ is $p(x|w^t) \propto p(w_t|x) p(x|w^{t-1})$. 
+递归地，$w_t$ 之后的后验分布为 $p(x|w^t) \propto p(w_t|x) p(x|w^{t-1})$。
 
-Without a conjugate prior, we can approximate the posterior by discretizing $x$ into a grid. 
+如果没有共轭先验，我们可以通过将 $x$ 离散化为网格来近似后验分布。
 
-Your task is to implement this algorithm in Python. 
+你的任务是用Python实现这个算法。
 
-You can verify your implementation by checking that the posterior mean converges to the true value of $x$ as $t$ increases in {doc}`likelihood_bayes`.
+你可以通过检查后验均值是否随着 $t$ 的增加而收敛到 $x$ 的真实值来验证你的实现，详见 {doc}`likelihood_bayes`。
 ```
 
 ```{solution-start} mix_model_ex1
 :class: dropdown
 ```
 
-Here is one solution:
+这是一个解决方案：
 
-First we define the mixture probability 
-and parameters of prior distributions
+首先我们定义混合概率
+和先验分布的参数
 
 ```{code-cell} ipython3
 x_true = 0.5
 T_mix = 200
 
-# Three different priors with means 0.25, 0.5, 0.75
+# 三个不同的先验，均值分别为0.25、0.5、0.75
 prior_params = [(1, 3), (1, 1), (3, 1)]
 prior_means = [a/(a+b) for a, b in prior_params]
 
@@ -792,15 +753,14 @@ w_mix = draw_lottery(x_true, T_mix)
 @jit
 def learn_x_bayesian(observations, α0, β0, grid_size=2000):
     """
-    Sequential Bayesian learning of the mixing probability x
-    using a grid approximation.
+    使用网格近似对混合概率x进行顺序贝叶斯学习。
     """
     w = np.asarray(observations)
     T = w.size
 
     x_grid = np.linspace(1e-3, 1 - 1e-3, grid_size)
 
-    # Log prior
+    # 对数先验
     log_prior = (α0 - 1) * np.log(x_grid) + (β0 - 1) * np.log1p(-x_grid)
 
     μ_path = np.empty(T + 1)
@@ -814,7 +774,7 @@ def learn_x_bayesian(observations, α0, β0, grid_size=2000):
         like = x_grid * f(wt) + (1 - x_grid) * g(wt)
         log_post += np.log(like)
 
-        # normalize
+        # 归一化
         log_post -= log_post.max()
         post = np.exp(log_post)
         post /= post.sum()
@@ -826,7 +786,7 @@ def learn_x_bayesian(observations, α0, β0, grid_size=2000):
 x_posterior_means = [learn_x_bayesian(w_mix, α0, β0) for α0, β0 in prior_params]
 ```
 
-Let's visualize how the posterior mean of $x$ evolves over time, starting from three different prior beliefs.
+让我们可视化 $x$ 的后验均值如何随时间演变，从三个不同的先验信念开始。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -844,9 +804,9 @@ ax.legend()
 plt.show()
 ```
 
-The plot shows that regardless of the initial prior belief, all three posterior means eventually converge towards the true value of $x=0.5$.
+图表显示，无论初始先验信念如何，所有三个后验均值最终都会收敛到 $x=0.5$ 的真实值。
 
-Next, let's look at multiple simulations with a longer time horizon, all starting from a uniform prior.
+接下来，让我们看看更长时间范围内的多次模拟，所有模拟都从均匀先验开始。
 
 ```{code-cell} ipython3
 set_seed()
@@ -857,7 +817,7 @@ fig, ax = plt.subplots(figsize=(10, 5))
 
 for j in range(n_paths):
     w_path = draw_lottery(x_true, T_long) 
-    x_means = learn_x_bayesian(w_path, 1, 1)  # Uniform prior
+    x_means = learn_x_bayesian(w_path, 1, 1)  # 均匀先验
     ax.plot(range(T_long + 1), x_means, alpha=0.5, linewidth=1)
 
 ax.axhline(y=x_true, color='red', linestyle='--', 
@@ -869,7 +829,8 @@ plt.tight_layout()
 plt.show()
 ```
 
-We can see that the posterior mean of $x$ converges to the true value $x=0.5$.
+我们可以看到 $x$ 的后验均值收敛到真实值 $x=0.5$。
 
 ```{solution-end}
 ```
+
