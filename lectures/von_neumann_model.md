@@ -375,7 +375,7 @@ $a_{\cdot j}$ 和 $a_{i\cdot}$ 分别表示矩阵 $A$ 的第 $j$ 列和第 $i$ �
 - 向量 $Ap$ 表示各项活动的*成本*
 - 向量 $Bp$ 表示各项活动的*收入*
 
-投入-产出对 $(A,B)$ 的一个性质被称为**不可约性**（或不可分解性，irreducibility），它决定了一个经济系统能否被分解为多个“子经济体”。
+投入-产出对 $(A,B)$ 的一个性质被称为**不可约性**（或不可分解性），它决定了一个经济系统能否被分解为多个“子经济体”。
 
 ```{prf:definition}
 对于经济体 $(A,B)$，如果存在商品的一个子集 $S \subset \{1,2,\dots,n\}$，在不消耗集合 $S$ 以外商品的情况下就可以生产 $S$ 中的每种商品，那么称 $S$ 是一个*独立子集*。
@@ -411,7 +411,7 @@ B2 = np.array([[1, 0, 0, 1, 0, 0],
                [0, 0, 0, 1, 0, 1]])
 ```
 
-下面的代码设置了我们的第一个诺伊曼经济或`Neumann`实例
+下面的代码设置了我们的第一个诺伊曼经济的实例
 
 ```{code-cell} ipython3
 n1 = Neumann(A1, B1)
@@ -495,7 +495,7 @@ $$
 $$
 \begin{aligned}
     &\max_{\alpha} \hspace{2mm} \alpha\\
-    &\text{s.t. }\hspace{2mm}x^\top B \geq \alpha x^\top A
+    \text{使得 }\hspace{2mm} & x^\top B \geq \alpha x^\top A
     \end{aligned}
 $$
 ```
@@ -510,7 +510,7 @@ $(A,B)$ 的经济扩张问题（economic expansion problem, EEP）是要找到�
 $$
 \begin{aligned}
     &\min_{\beta} \hspace{2mm} \beta\\
-    &\text{s.t. }\hspace{2mm}Bp \leq \beta Ap
+    \text{使得 }\hspace{2mm} & Bp \leq \beta Ap
 \end{aligned}
 $$
 ```
@@ -544,7 +544,6 @@ $$
 ```
 
 ```{prf:proof}（概要）
-
 {prf:ref}`assumption1` 和 {prf:ref}`assumption2`意味着存在 $(\alpha_0, x_0)$ 和 $(\beta_0, p_0)$ 分别解决TEP和EEP。
 
 如果 $\gamma^*>\alpha_0$，根据 $\alpha_0$ 的定义，不可能存在半正向量 $x$ 满足$x^T B \geq \gamma^{* } x^T A$。
@@ -628,7 +627,7 @@ $$
 $$
 \begin{aligned}
 V(C) = & \max \hspace{2mm} v \\
-\text{s.t. } \hspace{2mm} v \iota_n^T &\leq x^T C  \\
+\text{使得 } \hspace{2mm} v \iota_n^T &\leq x^T C  \\
 x &\geq \mathbf{0} \\
 \iota_n^T x & = 1
 \end{aligned}
@@ -639,7 +638,7 @@ $$
 $$
 \begin{aligned}
 V(C) = &\min \hspace{2mm} u \\
-\text{s.t. } \hspace{2mm}u \iota_m &\geq Cp  \\
+\text{使得 } \hspace{2mm}u \iota_m &\geq Cp  \\
 p &\geq \mathbf{0} \\
 \iota_m^T p & = 1
 \end{aligned}
@@ -659,7 +658,7 @@ $$
 使得 $x^TBp>0$，因此必然有$V(B)>0$。
 ```
 
-为了用特定的双人零和博弈重述定理I，我们定义一个矩阵，对于 $\gamma\in\mathbb{R}$
+为了用特定的双人零和博弈重述{prf:ref}`theorem1`，我们定义一个矩阵，对于 $\gamma\in\mathbb{R}$
 
 $$
 M(\gamma) \equiv B - \gamma A
@@ -669,34 +668,21 @@ $$
 
 计算博弈的解意味着
 
-- 如果 $\gamma > \alpha_0$，那么对于所有 $x>0$，存在
-  $j\in\{1, \dots, n\}$，使得
-  $[x^T M(\gamma)]_j < 0$，这意味着
-  $V(M(\gamma)) < 0$。
-- 如果 $\gamma < \beta_0$，那么对于所有 $p>0$，存在
-  $i\in\{1, \dots, m\}$，使得
-  $[M(\gamma)p]_i > 0$，这意味着 $V(M(\gamma)) > 0$。
-- 如果 $\gamma \in \{\beta_0, \alpha_0\}$，那么（根据{prf:ref}`theorem1`）最优强度和价格向量 $x_0$ 和 $p_0$
-  满足
+- 如果 $\gamma > \alpha_0$，那么对于所有 $x>0$，存在 $j\in\{1, \dots, n\}$，使得 $[x^T M(\gamma)]_j < 0$，这意味着 $V(M(\gamma)) < 0$。
+- 如果 $\gamma < \beta_0$，那么对于所有 $p>0$，存在 $i\in\{1, \dots, m\}$，使得 $[M(\gamma)p]_i > 0$，这意味着 $V(M(\gamma)) > 0$。
+- 如果 $\gamma \in \{\beta_0, \alpha_0\}$，那么（根据{prf:ref}`theorem1`）最优强度和价格向量 $x_0$ 和 $p_0$ 满足
 $$
-\begin{aligned}
 x_0^T M(\gamma) \geq \mathbf{0}^T \quad \quad \text{和}\quad\quad M(\gamma) p_0 \leq \mathbf{0}
-\end{aligned}
 $$
 
-也就是说，$(x_0, p_0, 0)$ 是博弈
-$M(\gamma)$ 的解，因此
-$V\left(M(\beta_0)\right) = V\left(M(\alpha_0)\right) = 0$。
+也就是说，$(x_0, p_0, 0)$ 是博弈 $M(\gamma)$ 的解，因此 $V\left(M(\beta_0)\right) = V\left(M(\alpha_0)\right) = 0$。
 
-* 如果 $\beta_0 < \alpha_0$ 且
-$\gamma \in (\beta_0, \alpha_0)$，那么 $V(M(\gamma)) = 0$。
+* 如果 $\beta_0 < \alpha_0$ 且 $\gamma \in (\beta_0, \alpha_0)$，那么 $V(M(\gamma)) = 0$。
 
-此外，如果 $x'$ 是在
-$\gamma'\in(\beta_0, \alpha_0)$ 时博弈
-$M(\gamma')$ 中最大化玩家的最优策略且
-$p''$ 对于 $M(\gamma'')$ 中的最小化玩家来说是最优的，其中 $\gamma''\in(\beta_0, \gamma')$，那么 $(x', p'', 0)$ 对于所有 $\gamma\in (\gamma'', \gamma')$ 都是 $M(\gamma)$ 的解。
+此外，如果 $x'$ 是在 $\gamma'\in(\beta_0, \alpha_0)$ 时博弈 $M(\gamma')$ 中最大化玩家的最优策略且 $p''$ 对于 $M(\gamma'')$ 中的最小化玩家来说是最优的，其中 $\gamma''\in(\beta_0, \gamma')$，那么 $(x', p'', 0)$ 对于所有 $\gamma\in (\gamma'', \gamma')$ 都是 $M(\gamma)$ 的解。
 
-```{prf:proof}（概要）：如果 $x'$ 对于游戏 $M(\gamma')$ 中的最大化玩家是最优的，那么 $(x')^T M(\gamma')\geq \mathbf{0}^T$，因此对于所有 $\gamma<\gamma'$，
+```{prf:proof}（概要）
+如果 $x'$ 对于游戏 $M(\gamma')$ 中的最大化玩家是最优的，那么 $(x')^T M(\gamma')\geq \mathbf{0}^T$，因此对于所有 $\gamma<\gamma'$，
 
 $$
 (x')^T M(\gamma) = (x')^T M(\gamma') + (x')^T(\gamma' - \gamma)A \geq \mathbf{0}^T
@@ -737,7 +723,7 @@ Hamburger、Thompson和Weil {cite}`hamburger1967computation`提出了一个简�
 n1.bounds()
 ```
 
-#### 步骤 2
+#### 第2步
 
 计算 $\alpha_0$ 和 $\beta_0$
 
@@ -786,7 +772,7 @@ fig.suptitle(r'函数 $V(M(\gamma))$', fontsize=16)
 for ax, grid, N, i in zip(axes, (value_ex1_grid, value_ex2_grid),
                           (n1, n2), (1, 2)):
     ax.plot(γ_grid, grid)
-    ax.set(title=f'示例 {i}', xlabel='$\gamma$')
+    ax.set(title=f'示例 {i}', xlabel=r'$\gamma$')
     ax.axhline(0, c='k', lw=1)
     ax.axvline(N.bounds()[0], c='r', ls='--', label='下界')
     ax.axvline(N.bounds()[1], c='g', ls='--', label='上界')
