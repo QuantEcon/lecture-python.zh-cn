@@ -189,17 +189,17 @@ $$
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
-mpl.font_manager.fontManager.addfont(FONTPATH)
-plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 import seaborn as sns
 import scipy.stats as stats
 import scipy.interpolate as interp
 
 # 用于绘图
-plt.rcParams.update({"text.usetex": True, 'font.size': 14})
-colors = plt. rcParams['axes.prop_cycle'].by_key()['color']
+colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 # 确保笔记本生成相同的随机数
 np.random.seed(1337)
