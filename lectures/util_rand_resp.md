@@ -54,7 +54,7 @@ $$ (eq:util-rand-one)
 
 在这里我们描述一些研究者提出的概念
 
-### {cite}`leysieffer1976respondent`
+### {cite:t}`leysieffer1976respondent`
 
 如果回答 $r$ 相对于 $A$ 或 $A^{'}$ 满足以下条件，则被视为具有危害性：
 
@@ -112,9 +112,9 @@ $$
 
 ### {cite:t}`lanke1976degree`
 
-{cite}`lanke1975choice` 认为"人们可能想要隐藏的是属于A组的身份，而不是属于补集A'组的身份。"
+{cite:t}`lanke1975choice` 认为"人们可能想要隐藏的是属于A组的身份，而不是属于补集A'组的身份。"
 
-因此，{cite}`lanke1976degree` 认为一个合适的保护度量是最小化
+因此，{cite:t}`lanke1976degree` 认为一个合适的保护度量是最小化
 
 $$
 \max \left\{ \text{Pr}(A|\text{yes}), \text{Pr}(A|\text{no}) \right\}
@@ -124,7 +124,7 @@ $$ (eq:util-rand-five-a)
 
 ### {cite:t}`fligner1977comparison`
 
-{cite}`fligner1977comparison`得出了与{cite}`lanke1976degree`类似的结论。
+{cite:t}`fligner1977comparison`得出了与{cite:t}`lanke1976degree`类似的结论。
 
 他们将"隐私保护"度量为
 
@@ -134,7 +134,7 @@ $$ (eq:util-rand-six)
 
 ### {cite:t}`greenberg1977respondent`
 
-{cite}`greenberg1977respondent` 强调，不仅要考虑 $A$ 组成员的风险，还要考虑 $A'$ 组成员的风险。他们定义在 $A$ 组个体身上的风险为这一个体被认为属于A组的概率：
+{cite:t}`greenberg1977respondent` 强调，不仅要考虑 $A$ 组成员的风险，还要考虑 $A'$ 组成员的风险。他们定义在 $A$ 组个体身上的风险为这一个体被认为属于A组的概率：
 
 $$
 
@@ -147,7 +147,7 @@ $$
 \text{Pr}(\text{yes}|A^{'})\times \text{Pr}(A|\text{yes})+\text{Pr}(\text{no}|A^{'}) \times \text{Pr}(A|\text{no})
 $$ (eq:util-rand-seven-b)
 
-{cite}`greenberg1977respondent`还考虑了另一个相关的风险度量，"这可能更接近受访者实际感受到的担忧。"
+{cite:t}`greenberg1977respondent`还考虑了另一个相关的风险度量，"这可能更接近受访者实际感受到的担忧。"
 
 对于在 $A$ 和 $A^{'}$ 中的个体，其"有限风险"分别为
 
@@ -269,7 +269,7 @@ y2 = (pow(x2, 0.5) - 0.4)**2
 x3 = np.arange(0.4**0.5, 1, 0.001)
 y3 = pow(x3**2 - 0.4, 0.5)
 plt.figure(figsize=(12, 10))
-plt.plot(x1, y1, 'r-', label=r'真真话边界: $U_i(Pr(A|r_i),\phi_i)=-Pr(A|r_i)+f(\phi_i)$')
+plt.plot(x1, y1, 'r-', label=r'真话边界: $U_i(Pr(A|r_i),\phi_i)=-Pr(A|r_i)+f(\phi_i)$')
 plt.fill_between(x1, 0, y1, facecolor='red', alpha=0.05)
 plt.plot(x2, y2, 'b-', label=r'真话边界: $U_i(Pr(A|r_i),\phi_i)=-Pr(A|r_i)^{2}+f(\phi_i)$')
 plt.fill_between(x2, 0, y2, facecolor='blue', alpha=0.05)
@@ -305,7 +305,7 @@ y1 = x1 - 0.4
 z1 = x1
 z2 = 0
 plt.figure(figsize=(12, 10))
-plt.plot(x1, y1,'r-',label='真实边界：$U_i(Pr(A|r_i),\phi_i)=-Pr(A|r_i)+f(\phi_i)$')
+plt.plot(x1, y1,'r-',label='真话边界：$U_i(Pr(A|r_i),\phi_i)=-Pr(A|r_i)+f(\phi_i)$')
 plt.plot(x1, x1, ':', linewidth=2)
 plt.fill_between(x1, y1, z1, facecolor='blue', alpha=0.05, label='说真话')
 plt.fill_between(x1, z2, y1, facecolor='green', alpha=0.05, label='说谎')
@@ -363,13 +363,13 @@ $$ (eq:util-rand-fourteen-b)
 
 我们使用Python代码来绘制等方差曲线。
 
-这些条件概率对可以使用{cite}`warner1965randomized`的模型获得。
+这些条件概率对可以使用{cite:t}`warner1965randomized`的模型获得。
 
 注意：
 
 - 只要统计学家能完全控制模型设计，等方差曲线上的任何点都可以通过无关问题模型达到。
 
-- {cite}`warner1965randomized`的原始随机化回应模型比无关问题模型灵活性较低。
+- {cite:t}`warner1965randomized`的原始随机化回应模型比无关问题模型灵活性较低。
 
 ```{code-cell} ipython3
 class Iso_Variance:
@@ -465,7 +465,7 @@ var.plotting_iso_variance_curve()
 
 ### 对{cite:t}`lanke1976degree`方法的分析
 
-{cite}`lanke1976degree`建议一个隐私保护标准，即最小化：
+{cite:t}`lanke1976degree`建议一个隐私保护标准，即最小化：
 
 $$
 \max \left\{ \text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}) \right\}
@@ -491,7 +491,7 @@ plt.figure(figsize=(12, 10))
 plt.plot(x, x, 'c:', linewidth=2)
 plt.plot(x0, y1, 'c:', linewidth=2)
 plt.plot(y2, x2, 'c:', linewidth=2)
-plt.plot(x, y, 'r-', label='真实边界')
+plt.plot(x, y, 'r-', label='真话边界')
 plt.fill_between(x, y, z, facecolor='blue', alpha=0.05, label='诚实回答')
 plt.fill_between(x, 0, y, facecolor='green', alpha=0.05, label='说谎')
 for i in range(len(nv)):
@@ -515,7 +515,7 @@ plt.show()
 
 ### {cite:t}`leysieffer1976respondent`的方法
 
-当"否"答案不存在风险时，{cite}`leysieffer1976respondent`建议使用的二维风险度量可简化为一维，这意味着
+当"否"答案不存在风险时，{cite:t}`leysieffer1976respondent`建议使用的二维风险度量可简化为一维，这意味着
 
 $$
 \text{Pr}(\text{yes}|A)=1
@@ -531,7 +531,7 @@ $$
 
 ### 对{cite:t}`Chadhuri_Mukerjee_88`方法的分析
 
-{cite}`Chadhuri_Mukerjee_88`认为，由于"是"有时可能与敏感群体 $A$ 相关，聪明的受访者可能会倾向于总是安全但虚假地回答"否"。在这种情况下，真实边界使得个体在真实答案为"是"时选择说谎，且
+{cite:t}`Chadhuri_Mukerjee_88`认为，由于"是"有时可能与敏感群体 $A$ 相关，聪明的受访者可能会倾向于总是安全但虚假地回答"否"。在这种情况下，真实边界使得个体在真实答案为"是"时选择说谎，且
 
 $$
 \text{Pr}(A|\text{no})=0
@@ -589,7 +589,7 @@ plt.figure(figsize=(12, 10))
 plt.plot(x, x, 'c:', linewidth=2)
 plt.plot(x0, y1,'c:', linewidth=2)
 plt.plot(y2, x2,'c:', linewidth=2)
-plt.plot(x3, y3,'b-', label='真实边界')
+plt.plot(x3, y3,'b-', label='真话边界')
 plt.fill_between(x, y, z, facecolor='blue', alpha=0.05, label='说实话')
 plt.fill_between(x3, 0, y3,facecolor='green', alpha=0.05, label='说谎')
 for i in range(len(nv)):
@@ -612,7 +612,7 @@ plt.show()
 
 ### {cite:t}`greenberg1977respondent`的方法
 
-{cite}`greenberg1977respondent`将属于群体$A$的个体的风险定义为他/她被认为属于$A$的概率:
+{cite:t}`greenberg1977respondent`将属于群体$A$的个体的风险定义为他/她被认为属于$A$的概率:
 
 $$
 \text{Pr}(\text{yes}|A)\times \text{Pr}(A|\text{yes})+\text{Pr}(\text{no}|A)\times \text{Pr}(A|\text{no})
@@ -682,4 +682,4 @@ $$
 
 - 最优模型设计是在真实边界接触到最低可能的等方差曲线的点上获得的。
 
-{cite}`ljungqvist1993unified`分析的一个实际含义是，可以通过**选择足够接近的 $\text{Pr}(A|\text{yes})$ 和 $\text{Pr}(A|\text{no})$**来承认对受访者隐私需求的不确定性。
+{cite:t}`ljungqvist1993unified`分析的一个实际含义是，可以通过**选择足够接近的 $\text{Pr}(A|\text{yes})$ 和 $\text{Pr}(A|\text{no})$**来承认对受访者隐私需求的不确定性。
