@@ -543,7 +543,7 @@ x_0^\top \left(B-\gamma^{* } A\right)p_0 &= 0
 $$
 ```
 
-```{prf:proof}（概要）
+```{prf:proof} （概要）
 {prf:ref}`assumption1` 和 {prf:ref}`assumption2`意味着存在 $(\alpha_0, x_0)$ 和 $(\beta_0, p_0)$ 分别解决TEP和EEP。
 
 如果 $\gamma^*>\alpha_0$，根据 $\alpha_0$ 的定义，不可能存在半正向量 $x$ 满足$x^T B \geq \gamma^{* } x^T A$。
@@ -681,7 +681,7 @@ $$
 
 此外，如果 $x'$ 是在 $\gamma'\in(\beta_0, \alpha_0)$ 时博弈 $M(\gamma')$ 中最大化玩家的最优策略且 $p''$ 对于 $M(\gamma'')$ 中的最小化玩家来说是最优的，其中 $\gamma''\in(\beta_0, \gamma')$，那么 $(x', p'', 0)$ 对于所有 $\gamma\in (\gamma'', \gamma')$ 都是 $M(\gamma)$ 的解。
 
-```{prf:proof}（概要）
+```{prf:proof} （概要）
 如果 $x'$ 对于游戏 $M(\gamma')$ 中的最大化玩家是最优的，那么 $(x')^T M(\gamma')\geq \mathbf{0}^T$，因此对于所有 $\gamma<\gamma'$，
 
 $$
@@ -859,7 +859,7 @@ $$
 
 此外，如果 $A$ 是不可约的，则最优强度向量 $x_0$ 是正的，并且除了一个正的比例因子之外是唯一的。
 
-假设 $A$ 是可约的，具有 $k$ 个不可约子集 $S_1,\dots,S_k$。令 $A_i$ 为对应于 $S_i$ 的子矩阵，令 $\alpha_i$ 和 $\beta_i$ 分别为相关的扩张因子和利息因子。那么我们有
+假设 $A$ 是可约的，具有 $k$ 个不可约子集 $S_1,\dots,S_k$。令 $A_i$ 为对应于 $S_i$ 的子矩阵，令 $\alpha_i$ 和 $\beta_i$ 分别为相关的扩张因子和利息因子，那么我们有
 
 $$
 \alpha_0 = \max_i \{\alpha_i\}\hspace{1cm}\text{和}\hspace{1cm}\beta_0 = \min_i \{\beta_i\}
