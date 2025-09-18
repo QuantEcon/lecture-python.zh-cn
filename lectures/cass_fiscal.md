@@ -15,20 +15,23 @@ kernelspec:
 
 ## 概述
 
-本讲座研究在Cass-Koopmans增长模型的非随机版本中，可预见的财政和技术冲击对竞争均衡价格和数量的影响。该模型的特征在QuantEcon讲座{doc}`cass_koopmans_2`中有所描述。
+本讲座研究了在非随机版本的 Cass-Koopmans 增长模型下，预期的财政与技术冲击对竞争均衡价格和数量的影响。该模型的特征在QuantEcon讲座{doc}`cass_koopmans_2`中有所介绍。
 
-我们将该模型作为一个实验室，用来试验近似均衡的数值技术，并展示决策者对未来政府决策具有完全预见性的动态模型的结构。
-遵循Robert E. Hall的一篇经典论文{cite}`hall1971dynamic`,我们在Cass-Koopmans最优增长模型的非随机版本基础上,增加了一个政府部门,该政府购买商品流并通过多个扭曲性统一税率的序列为其支出提供资金。
+<!-- 该模型在{cite}`Sargent2018`的第11章中有更详细的讨论。 -->
+
+我们将此模型作为一个实验室，用来尝试近似均衡的数值方法，并展示动态模型的结构，在这些模型中，决策者对未来政府的决策拥有完美预期。
+
+遵循Robert E. Hall的经典论文{cite}`hall1971dynamic`,我们在Cass-Koopmans最优增长模型的非随机版本基础上,增加了一个政府部门。该政府购买一系列商品，并通过一系列扭曲的比例税来为其支出融资。
 
 扭曲性税收使竞争均衡配置无法解决规划问题。
 
-因此,为了计算均衡配置和价格体系,我们需要求解由决策者的一阶条件和其他均衡条件组成的非线性差分方程组。
+因此,为了计算均衡配置和价格体系,我们需要解一个非线性差分方程组。该方程组由决策者的一阶条件和其他均衡条件组成。
 
 我们提出两种近似均衡的方法:
 
-- 第一种是类似于我们在{doc}`cass_koopmans_2`中使用的射击算法。
+- 第一种是射击算法，类似于我们在{doc}`cass_koopmans_2`中使用的。
 
-- 第二种方法是一个寻根算法,用于最小化消费者和代表性企业一阶条件的残差。
+- 第二种方法是求根算法，该算法最小化消费者与代表性企业一阶条件残差。
 
 
 ## 经济模型
@@ -44,19 +47,19 @@ $$ (eq:tech_capital)
 
 其中
 
-- $g_t$ 是t时期的政府购买
-- $x_t$ 是总投资，且
+- $g_t$ 是t时期的政府购买，
+- $x_t$ 是总投资，
 - $F(k_t, n_t)$ 是一个线性齐次的生产函数，其中资本$k_t$和劳动$n_t$具有正的且递减的边际产出。
 
-物质资本按照以下方式演变：
+物质资本的演化规律为
 
 $$
 k_{t+1} = (1 - \delta)k_t + x_t,
 $$
 
-其中$\delta \in (0, 1)$是折旧率。
+其中 $\delta \in (0, 1)$ 是折旧率。
 
-有时将$x_t$从{eq}`eq:tech_capital`中消除会比较方便，可以表示为：
+有时，将 $x_t$ 从{eq}`eq:tech_capital`中消除会更方便，可将其表示为
 
 $$
 g_t + c_t + k_{t+1} \leq F(k_t, n_t) + (1 - \delta)k_t.
@@ -64,34 +67,34 @@ $$
 
 ### 竞争均衡的组成部分
 
-所有交易在0时期发生。
+所有交易都发生在0时期。
 
 代表性家庭拥有资本，做出投资决策，并将资本和劳动出租给代表性生产企业。
 
-代表性企业使用资本和劳动，通过生产函数$F(k_t, n_t)$生产商品。
-**价格体系**是一个由序列 $\{q_t, \eta_t, w_t\}_{t=0}^\infty$ 组成的三元组，其中：
+代表性企业使用资本和劳动生产商品，生产函数为 $F(k_t, n_t)$。
 
-- $q_t$ 是在时间 $0$ 时购买时间 $t$ 的一单位投资或消费（$x_t$ 或 $c_t$）的税前价格，
-- $\eta_t$ 是家庭在时间 $t$ 从企业租赁资本所获得的税前价格，
-- $w_t$ 是家庭在时间 $t$ 向企业出租劳动力所获得的税前价格。
+**价格体系**是一个三元序列 $\{q_t, \eta_t, w_t\}_{t=0}^\infty$，其中
 
-价格 $w_t$ 和 $\eta_t$ 是以时间 $t$ 的商品为单位表示的，而 $q_t$ 是以时间 $0$ 的计价单位表示的，这与{doc}`cass_koopmans_2`中的情况相同。
+- $q_t$ 是在 $0$ 时期下一单位$t$ 时期的投资或消费（$x_t$ 或 $c_t$）的税前价格，
+- $\eta_t$ 是家庭在 $t$ 时期从企业租赁资本所获得的税前价格，
+- $w_t$ 是家庭在 $t$ 时期向企业出租劳动力所获得的税前价格。
 
-政府的存在使得本讲座与{doc}`cass_koopmans_2`有所不同。
+价格 $w_t$ 和 $\eta_t$ 是以 $t$ 时期的商品为单位表示的，而 $q_t$ 则以 $0$ 时期的计价物计价，这与{doc}`cass_koopmans_2`中一致。
 
-政府在时间 $t$ 的商品购买量为 $g_t \geq 0$。
+政府的存在使得本讲座区别于{doc}`cass_koopmans_2`。
+
+$t$ 时期的政府购买为 $g_t \geq 0$。
 
 政府支出计划是一个序列 $g = \{g_t\}_{t=0}^\infty$。
 
-政府税收计划是一个由4个序列组成的四元组 $\{\tau_{ct}, \tau_{kt}, \tau_{nt}, \tau_{ht}\}_{t=0}^\infty$，
-其中：
+政府税收计划是一个四元序列 $\{\tau_{ct}, \tau_{kt}, \tau_{nt}, \tau_{ht}\}_{t=0}^\infty$，其中：
 
-- $\tau_{ct}$ 是时间 $t$ 的消费税率，
-- $\tau_{kt}$ 是在时间 $t$ 对资本租赁的税率，
-- $\tau_{nt}$ 是在时间 $t$ 对工资收入的税率，
-- $\tau_{ht}$ 是在时间 $t$ 对消费者的一次性总付税。
+- $\tau_{ct}$ 是 $t$ 时期的消费税率，
+- $\tau_{kt}$ 是 $t$ 时期的资本租赁税率，
+- $\tau_{nt}$ 是 $t$ 时期的工资税率，
+- $\tau_{ht}$ 是 $t$ 时期对消费者的一次性总额税。
 
-由于可以使用一次性总付税 $\tau_{ht}$，政府实际上不应该使用任何扭曲性税收。
+由于可以征收一次性总额税 $\tau_{ht}$，政府实际上不应使用任何扭曲性税收。
 
 尽管如此，我们仍然包含所有这些税收，因为像 {cite}`hall1971dynamic` 一样，它们让我们能够分析各种税收如何扭曲生产和消费决策。
 
@@ -99,16 +102,16 @@ $$
 
 ### 代表性家庭
 
-代表性家庭对单一消费品 $c_t$ 和闲暇 $1-n_t$ 的非负序列具有偏好，这些偏好由以下方式排序：
+代表性家庭对单一消费品 $c_t$ 和闲暇 $1-n_t$ 的非负序列具有偏好，其偏好由下式给出：
 
 $$
 \sum_{t=0}^{\infty} \beta^t U(c_t, 1-n_t), \quad \beta \in (0, 1),
 $$ (eq:utility)
 
 其中
-- $U$ 对 $c_t$ 严格递增，二次连续可微，且严格凹，其中 $c_t \geq 0$ 且 $n_t \in [0, 1]$。
+- $U$ 对 $c_t$ 严格递增，二次连续可微，并在 $c_t \geq 0$ 且 $n_t \in [0, 1]$ 时严格凹。
 
-代表性家庭在单一预算约束下最大化{eq}`eq:utility`：
+代表性家庭在以下单一预算约束下最大化{eq}`eq:utility`：
 
 $$
 \begin{aligned}
@@ -117,19 +120,19 @@ $$
 \end{aligned}
 $$ (eq:house_budget)
 
-这里我们假设政府从资本总租金 $\eta_t k_t$ 中给予折旧补贴 $\delta k_t$，因此对资本租金征收 $\tau_{kt} (\eta_t - \delta) k_t$ 的税收。
+这里我们假设政府从资本租赁收入 $\eta_t k_t$ 扣除折旧补贴 $\delta k_t$，因此只对 $\tau_{kt} (\eta_t - \delta) k_t$ 征收资本租赁税。
 
 ### 政府
-政府计划 $\{ g_t \}_{t=0}^\infty$ 对于政府购买和税收 $\{\tau_{ct}, \tau_{kt}, \tau_{nt}, \tau_{ht}\}_{t=0}^\infty$ 必须遵守预算约束
+政府支出计划 $\{ g_t \}_{t=0}^\infty$ 和税收 $\{\tau_{ct}, \tau_{kt}, \tau_{nt}, \tau_{ht}\}_{t=0}^\infty$ 必须满足以下预算约束
 
 $$
 \sum_{t=0}^\infty q_t g_t \leq \sum_{t=0}^\infty q_t \left\{ \tau_{ct}c_t + \tau_{kt}(\eta_t - \delta)k_t + \tau_{nt}w_t n_t + \tau_{ht} \right\}.
 $$ (eq:gov_budget)
 
-给定一个满足预算可行的政府政策 $\{g_t\}_{t=0}^\infty$ 和 $\{\tau_{ct}, \tau_{kt}, \tau_{nt}, \tau_{ht}\}_{t=0}^\infty$，需要遵守{eq}`eq:gov_budget`，
+在给定一个预算可行的政府政策 $\{g_t\}_{t=0}^\infty$ 和 $\{\tau_{ct}, \tau_{kt}, \tau_{nt}, \tau_{ht}\}_{t=0}^\infty$ （满足式{eq}`eq:gov_budget`）的条件下：
 
-- *家庭*选择 $\{c_t\}_{t=0}^\infty$、$\{n_t\}_{t=0}^\infty$ 和 $\{k_{t+1}\}_{t=0}^\infty$ 以最大化效用{eq}`eq:utility`，同时受到预算约束{eq}`eq:house_budget`，以及
-- *企业*选择资本序列 $\{k_t\}_{t=0}^\infty$ 和 $\{n_t\}_{t=0}^\infty$ 以最大化利润
+- *家庭*选择 $\{c_t\}_{t=0}^\infty$、$\{n_t\}_{t=0}^\infty$ 和 $\{k_{t+1}\}_{t=0}^\infty$，在预算约束{eq}`eq:house_budget`下最大化效用函数{eq}`eq:utility`，
+- *企业*选择 $\{k_t\}_{t=0}^\infty$ 和 $\{n_t\}_{t=0}^\infty$ 以最大化利润
 
     $$
          \sum_{t=0}^\infty q_t [F(k_t, n_t) - \eta_t k_t - w_t n_t]
@@ -141,14 +144,14 @@ $$ (eq:gov_budget)
 ```{prf:definition}
 :label: com_eq_tax
 
-**带扭曲性税收的竞争均衡**是指**预算可行的政府政策**、**可行配置**和**价格体系**，在给定价格体系和政府政策的情况下，该配置能够解决家庭问题和企业问题。
+**带扭曲性税收的竞争均衡**是一个**预算可行的政府政策**、一个**可行配置**和一个**价格体系**的组合。在给定价格体系和政府政策的情况下，该配置同时解决家庭问题和企业问题。
 ```
 
 ## 无套利条件
 
-无套利论证意味着对不同时期的价格和税率有所限制。
+无套利论证意味着对跨期的价格和税率有一个限制条件。
 
-通过重新排列{eq}`eq:house_budget`并将同一时期$t$的$k_t$项组合在一起，我们可以得到
+通过重新排列{eq}`eq:house_budget`，并将同一时期的$k_t$项组合在一起，我们可以得到
 
 $$
     \begin{aligned}
@@ -158,20 +161,20 @@ $$
     \end{aligned}
 $$ (eq:constrant_house)
 
-家庭继承了一个给定的$k_0$作为初始条件，并可以自由选择$\{ c_t, n_t, k_{t+1} \}_{t=0}^\infty$。
+家庭继承了一个给定的$k_0$，并将其作为初始条件，同时可以自由选择 $\{ c_t, n_t, k_{t+1} \}_{t=0}^\infty$。
 
-由于资源有限，家庭预算约束{eq}`eq:house_budget`在均衡状态下必须是有界的。
+由于资源有限，家庭的预算约束{eq}`eq:house_budget`在均衡状态下必须是有界的。
 
 这对价格和税收序列施加了限制。
 
-具体来说，对于$t \geq 1$，乘以$k_t$的项必须等于零。
+具体来说，对于 $t \geq 1$，与 $k_t$ 相乘的项必须等于零。
 
-如果这些项严格为正（负），家庭可以通过选择任意大的正（负）$k_t$来任意增加（减少）{eq}`eq:house_budget`的右侧，从而导致无界利润或套利机会：
+如果这些项严格为正（负），家庭就可以通过选择一个任意大的正（负）$k_t$ 来任意增加（减少）{eq}`eq:house_budget`的右侧，从而导致无限利润或套利机会：
 
-- 对于严格为正的项，家庭可以购买大量资本存量$k_t$并从其租赁服务和未折旧价值中获利。
-- 对于严格负项，家庭可以对合成资本单位进行"卖空"。这两种情况都会使{eq}`eq:house_budget`无界。
+- 如果这些项严格为正，家庭可以购买大量资本存量 $k_t$，并从资本的租赁服务和未折旧价值中获利。
+- 如果这些项严格为负，家庭可以通过“卖空”合成单位资本来获利。两种情况都会导致{eq}`eq:house_budget`无界。
 
-因此，通过将$k_t$的系数项设为$0$，我们得到无套利条件：
+因此，通过令与 $k_t$ 相乘的项设为 $0$，我们得到无套利条件：
 
 $$
 \frac{q_t}{q_{t+1}} = \left[(1 - \tau_{kt+1})(\eta_{t+1} - \delta) + 1\right].
@@ -191,7 +194,7 @@ $$
 \sum_{t=0}^\infty q_t \left[ F(k_t, n_t) - w_t n_t - \eta_t k_t \right].
 $$
 
-将线性齐次函数的欧拉定理应用于$F(k, n)$，企业的现值为：
+将线性齐次函数的欧拉定理应用于 $F(k, n)$，企业利润的现值为：
 
 $$
 \sum_{t=0}^\infty q_t \left[ (F_{kt} - \eta_t)k_t + (F_{nt} - w_t)n_t \right].
@@ -202,17 +205,18 @@ $$
 $$
 \eta_t = F_{kt}, \quad w_t = F_{nt}.
 $$(eq:no_arb_firms)
+
 ## 家庭的一阶条件
 
 家庭在{eq}`eq:house_budget`约束下最大化{eq}`eq:utility`。
 
-令$U_1 = \frac{\partial U}{\partial c}, U_2 = \frac{\partial U}{\partial (1-n)} = -\frac{\partial U}{\partial n}$，我们可以从拉格朗日函数推导出一阶条件
+令 $U_1 = \frac{\partial U}{\partial c}, U_2 = \frac{\partial U}{\partial (1-n)} = -\frac{\partial U}{\partial n}$，我们可以从拉格朗日函数
 
 $$
-\mathcal{L} = \sum_{t=0}^\infty \beta^t U(c_t, 1 - n_t) + \mu \left( \sum_{t=0}^\infty q_t \left[(1 + \tau_{ct})c_t - (1 - \tau_{nt})w_t n_t + \ldots \right] \right),
+\mathcal{L} = \sum_{t=0}^\infty \beta^t U(c_t, 1 - n_t) + \mu \left( \sum_{t=0}^\infty q_t \left[(1 + \tau_{ct})c_t - (1 - \tau_{nt})w_t n_t + \ldots \right] \right)
 $$
 
-代表性家庭问题的一阶必要条件是
+推导出一阶条件
 
 $$
 \frac{\partial \mathcal{L}}{\partial c_t} = \beta^t U_{1}(c_t, 1 - n_t) - \mu q_t (1 + \tau_{ct}) = 0
@@ -221,10 +225,10 @@ $$ (eq:foc_c_1)
 和
 
 $$
-\frac{\partial \mathcal{L}}{\partial n_t} = \beta^t \left(-U_{2t}(c_t, 1 - n_t)\right) - \mu q_t (1 - \tau_{nt}) w_t = 0
+\frac{\partial \mathcal{L}}{\partial n_t} = \beta^t \left(-U_{2t}(c_t, 1 - n_t)\right) - \mu q_t (1 - \tau_{nt}) w_t = 0.
 $$ (eq:foc_n_1)
 
-重新整理{eq}`eq:foc_c_1`和{eq}`eq:foc_n_1`，我们得到
+对{eq}`eq:foc_c_1`和{eq}`eq:foc_n_1`进行整理，我们得到
 
 $$
 \begin{aligned}
@@ -239,7 +243,7 @@ $$
 $$ (eq:foc_n)
 
 
-将{eq}`eq:foc_c`代入{eq}`eq:terminal`并替换$q_t$,我们得到终端条件
+将{eq}`eq:foc_c`代入{eq}`eq:terminal`并替换 $q_t$,我们得到终端条件
 
 $$
 -\lim_{T \to \infty} \beta^T \frac{U_{1T}}{(1 + \tau_{cT})} k_{T+1} = 0.
@@ -247,10 +251,10 @@ $$ (eq:terminal_final)
 
 ## 计算均衡
 
-为了计算均衡,我们需要寻找一个价格系统$\{q_t, \eta_t, w_t\}$、一个预算可行的政府政策$\{g_t, \tau_t\} \equiv \{g_t, \tau_{ct}, \tau_{nt}, \tau_{kt}, \tau_{ht}\}$以及一个配置$\{c_t, n_t, k_{t+1}\}$,它们能够解决由以下组成的非线性差分方程系统:
+为了计算均衡,我们需要寻找一个价格体系 $\{q_t, \eta_t, w_t\}$、一个预算可行的政府政策 $\{g_t, \tau_t\} \equiv \{g_t, \tau_{ct}, \tau_{nt}, \tau_{kt}, \tau_{ht}\}$ 以及一个配置 $\{c_t, n_t, k_{t+1}\}$,它们能够解决由以下组成的非线性差分方程系统:
 
-- 可行性条件{eq}`eq:tech_capital`、家庭无套利条件{eq}`eq:no_arb`和企业无套利条件{eq}`eq:no_arb_firms`、家庭的一阶条件{eq}`eq:foc_c`和{eq}`eq:foc_n`。
-- 初始条件$k_0$和终端条件{eq}`eq:terminal_final`。
+- 可行性条件{eq}`eq:tech_capital`、家庭无套利条件{eq}`eq:no_arb`、企业无套利条件{eq}`eq:no_arb_firms`、家庭的一阶条件{eq}`eq:foc_c`和{eq}`eq:foc_n`，
+- 初始条件 $k_0$ 和终端条件{eq}`eq:terminal_final`。
 
 
 ## Python代码
@@ -274,7 +278,13 @@ from warnings import warn
 mp.dps = 40
 mp.pretty = True
 ```
-在解决方案由于数值不稳定而发散的情况下，我们使用`mpmath`库来执行高精度运算。
+
+我们使用`mpmath`库在射击算法中执行高精度运算，以防止由于数值不稳定而导致解发散。
+
+<!-- {note} 
+在下面的函数中，我们包含了一些处理增长成分的例程（将在{doc}`Exogenous growth` 一节中进一步讨论）。
+
+我们在这里提前加入这些代码是为了避免代码重复。-->
 
 我们设置以下参数
 
@@ -299,22 +309,24 @@ S = 100
 ```
 ### 非弹性劳动供给
 
-在本讲中，我们考虑特殊情况，其中$U(c, 1-n) = u(c)$且$f(k) := F(k, 1)$。
+在本讲中，我们考虑一个特殊情形，即 $U(c, 1-n) = u(c)$，$f(k) := F(k, 1)$。
 
-我们用$f(k) := F(k, 1)$重写{eq}`eq:tech_capital`，
+我们用 $f(k) := F(k, 1)$ 将{eq}`eq:tech_capital`重写为
 
 $$
 k_{t+1} = f(k_t) + (1 - \delta) k_t - g_t - c_t.
 $$ (eq:feasi_capital)
 
 ```{code-cell} ipython3
-def next_k(k_t, g_t, c_t, model):
+def next_k(k_t, g_t, c_t, model, μ_t=1):
     """
     下一期资本：k_{t+1} = f(k_t) + (1 - δ) * k_t - c_t - g_t
+    带有可选的调整: k_{t+1} = (f(k_t) + (1 - δ) * k_t - c_t - g_t) / μ_{t+1}
     """
-    return f(k_t, model) + (1 - model.δ) * k_t - g_t - c_t
+    return (f(k_t, model) + (1 - model.δ) * k_t - g_t - c_t) / μ_t
 ```
-根据线性齐次生产函数的性质,我们有 $F_k(k, n) = f'(k)$ 和 $F_n(k, 1) = f(k, 1) - f'(k)k$。
+
+根据线性齐次生产函数的性质，我们有 $F_k(k, n) = f'(k)$ 和 $F_n(k, 1) = f(k, 1) - f'(k)k$。
 
 将{eq}`eq:foc_c`、{eq}`eq:no_arb_firms`和{eq}`eq:feasi_capital`代入{eq}`eq:no_arb`,我们得到欧拉方程
 
@@ -337,9 +349,10 @@ $$ (eq:diff_second)
 方程{eq}`eq:diff_second`将在我们的均衡计算算法中发挥重要作用。
 
 ### 稳态
-税率和政府支出作为**强制函数**作用于差分方程{eq}`eq:feasi_capital`和{eq}`eq:diff_second`。
 
-定义$z_t = [g_t, \tau_{kt}, \tau_{ct}]'$。
+税率和政府支出在差分方程{eq}`eq:feasi_capital`和{eq}`eq:diff_second`中起到**强制函数**的作用。
+
+定义 $z_t = [g_t, \tau_{kt}, \tau_{ct}]'$。
 
 将二阶差分方程表示为：
 
@@ -347,15 +360,15 @@ $$
 H(k_t, k_{t+1}, k_{t+2}; z_t, z_{t+1}) = 0.
 $$ (eq:second_ord_diff)
 
-我们假设政府政策达到稳态，使得$\lim_{t \to \infty} z_t = \bar z$，且该稳态在$t > T$时保持。
+我们假设政府政策达到稳态，使得 $\lim_{t \to \infty} z_t = \bar z$，且该稳态在 $t > T$ 时保持。
 
-终端稳态资本存量$\bar{k}$满足：
+终端稳态资本存量 $\bar{k}$ 满足：
 
 $$
 H(\bar{k}, \bar{k}, \bar{k}, \bar{z}, \bar{z}) = 0.
 $$
 
-从差分方程{eq}`eq:diff_second`，我们可以推导出稳态的约束条件：
+由差分方程{eq}`eq:diff_second`，我们可以推导出稳态的约束条件：
 
 $$
 \begin{aligned}
@@ -365,6 +378,7 @@ u'(\bar{c}) &= \beta u'(\bar{c}) \frac{(1 + \bar{\tau}_{c})}{(1 + \bar{\tau}_{c}
 $$ (eq:diff_second_steady)
 
 ### 其他均衡数量和价格
+
 *价格：*
 
 $$
@@ -372,14 +386,16 @@ q_t = \frac{\beta^t u'(c_t)}{u'(c_0)}
 $$ (eq:equil_q)
 
 ```{code-cell} ipython3
-def compute_q_path(c_path, model, S=100):
+def compute_q_path(c_path, model, S=100, A_path=None):
     """
     计算q路径：q_t = (β^t * u'(c_t)) / u'(c_0)
+    在增长模型中可以选择性地传入 A_path。
     """
+    A = np.ones_like(c_path) if A_path is None else np.asarray(A_path)
     q_path = np.zeros_like(c_path)
     for t in range(S):
         q_path[t] = (model.β ** t * 
-                     u_prime(c_path[t], model)) / u_prime(c_path[0], model)
+                     u_prime(c_path[t], model, A[t])) / u_prime(c_path[0], model, A[0])
     return q_path
 ```
 *资本租赁率*
@@ -389,13 +405,15 @@ $$
 $$
 
 ```{code-cell} ipython3
-def compute_η_path(k_path, model, S=100):
+def compute_η_path(k_path, model, S=100, A_path=None):
     """
     计算η路径：η_t = f'(k_t)
+    在增长模型中可以选择性地传入 A_path。
     """
+    A = np.ones_like(k_path) if A_path is None else np.asarray(A_path)
     η_path = np.zeros_like(k_path)
     for t in range(S):
-        η_path[t] = f_prime(k_path[t], model)
+        η_path[t] = f_prime(k_path[t], model, A[t])
     return η_path
 ```
 *劳动力租赁率：*
@@ -405,17 +423,18 @@ w_t = f(k_t) - k_t f'(k_t)
 $$
 
 ```{code-cell} ipython3
-def compute_w_path(k_path, η_path, model, S=100):
+def compute_w_path(k_path, η_path, model, S=100, A_path=None):
     """
     计算w路径：w_t = f(k_t) - k_t * f'(k_t)
+    在增长模型中可以选择性地传入 A_path。
     """
-    A, α = model.A, model.α, model.δ
+    A = np.ones_like(k_path) if A_path is None else np.asarray(A_path)
     w_path = np.zeros_like(k_path)
     for t in range(S):
-        w_path[t] = f(k_path[t], model) - k_path[t] * η_path[t]
+        w_path[t] = f(k_path[t], model, A[t]) - k_path[t] * η_path[t]
     return w_path
 ```
-*资本的单期总回报率：*
+*资本的单期回报率：*
 
 $$
 \bar{R}_{t+1} = \frac{(1 + \tau_{ct})}{(1 + \tau_{ct+1})} \left[(1 - \tau_{kt+1})(f'(k_{t+1}) - \delta) + 1\right] =  \frac{(1 + \tau_{ct})}{(1 + \tau_{ct+1})} R_{t, t+1}
@@ -425,12 +444,11 @@ $$ (eq:gross_rate)
 def compute_R_bar(τ_ct, τ_ctp1, τ_ktp1, k_tp1, model):
     """
     资本的单期总回报率：
-    R̄ = [(1 + τ_c_t) / (1 + τ_c_{t+1})] 
+    R_bar = [(1 + τ_c_t) / (1 + τ_c_{t+1})] 
         * { [1 - τ_k_{t+1}] * [f'(k_{t+1}) - δ] + 1 }
     """
-    A, α, δ = model.A, model.α, model.δ
-    return  ((1 + τ_ct) / (1 + τ_ctp1)) * (
-        (1 - τ_ktp1) * (f_prime(k_tp1, model) - δ) + 1) 
+    return ((1 + τ_ct) / (1 + τ_ctp1)) * (
+        (1 - τ_ktp1) * (f_prime(k_tp1, model) - model.δ) + 1) 
 
 def compute_R_bar_path(shocks, k_path, model, S=100):
     """
@@ -445,6 +463,7 @@ def compute_R_bar_path(shocks, k_path, model, S=100):
     R_bar_path[S] = R_bar_path[S - 1]
     return R_bar_path
 ```
+
 *一期贴现因子：*
 
 $$
@@ -458,7 +477,7 @@ $$
 r_{t, t+1} \equiv R_{t, t+1} - 1 = (1 - \tau_{k, t+1})(f'(k_{t+1}) - \delta)
 $$ (eq:equil_r)
 
-根据{eq}`eq:equil_bigR`和$r_{t, t+1} = - \ln(\frac{q_{t+1}}{q_t})$，我们有
+根据{eq}`eq:equil_bigR`和 $r_{t, t+1} = - \ln(\frac{q_{t+1}}{q_t})$，我们有
 
 $$
 R_{t, t+s} = e^{s \cdot r_{t, t+s}}.
@@ -498,12 +517,14 @@ u(c) = \frac{c^{1 - \gamma}}{1 - \gamma}
 $$
 
 ```{code-cell} ipython3
-def u_prime(c, model):
+def u_prime(c, model, A_t=1):
     """
     边际效用：u'(c) = c^{-γ}
+    带可选的技术调整： u'(cA) = (cA)^{-γ}
     """
-    return c ** (-model.γ)
+    return (c * A_t) ** (-model.γ)
 ```
+
 将{eq}`eq:gross_rate`代入{eq}`eq:diff_second`，我们得到
 
 $$
@@ -511,13 +532,14 @@ c_{t+1} = c_t \left[ \beta \frac{(1 + \tau_{ct})}{(1 + \tau_{ct+1})} \left[(1 - 
 $$ (eq:consume_R)
 
 ```{code-cell} ipython3
-def next_c(c_t, R_bar, model):
+def next_c(c_t, R_bar, model, μ_t=1):
     """
     下一期消费：c_{t+1} = c_t * (β * R̄)^{1/γ}
+    带可选的增长调整：c_{t+1} = c_t * (β * R_bar)^{1/γ} * μ_{t+1}^{-1}
     """
-    β, γ = model.β, model.γ
-    return c_t * (β * R_bar) ** (1 / γ)
+    return c_t * (model.β * R_bar) ** (1 / model.γ) / μ_t
 ```
+
 对于生产函数，我们假设其为柯布-道格拉斯形式：
 
 $$
@@ -529,15 +551,13 @@ def f(k, model):
     """
     生产函数：f(k) = A * k^{α}
     """
-    A, α = model.A, model.α
-    return A * k ** α
+    return A * k ** model.α
 
 def f_prime(k, model):
     """
     资本的边际产出：f'(k) = α * A * k^{α - 1}
     """
-    A, α = model.A, model.α
-    return α * A * k ** (α - 1)
+    return model.α * A * k ** (model.α - 1)
 ```
 ## 计算
 
@@ -550,131 +570,135 @@ def f_prime(k, model):
 
 该算法包含以下步骤：
 
-1. 求解方程{eq}`eq:diff_second_steady`以获得与永久政策向量$\bar{z}$相对应的终端稳态资本$\bar{k}$。
+1. 求解方程{eq}`eq:diff_second_steady`，得到与永久政策向量 $\bar{z}$ 相对应的终端稳态资本存量 $\bar{k}$。
 
-2. 选择一个远大于T的时间索引S（$S \gg T$），猜测一个初始消费率$c_0$，并使用方程{eq}`eq:feasi_capital`求解$k_1$。
+2. 选择一个远大于 $T$ 的时间指标 $S \gg T$，猜测一个初始消费率 $c_0$，并利用方程{eq}`eq:feasi_capital`求解 $k_1$。
 
-3. 使用方程{eq}`eq:consume_R`确定$c_{t+1}$。然后，应用方程{eq}`eq:feasi_capital`计算$k_{t+2}$。
+3. 使用方程{eq}`eq:consume_R`确定 $c_{t+1}$。然后，应用方程{eq}`eq:feasi_capital`计算 $k_{t+2}$。
 
-4. 重复步骤3以计算$t = 1, \dots, S$的候选值$\hat{k}_t$。
+4. 重复步骤3，计算 $t = 1, \dots, S$ 时的候选值 $\hat{k}_t$。
 
-5. 计算差值$\hat{k}_S - \bar{k}$。如果对于某个小$\epsilon$，$\left| \hat{k}_S - \bar{k} \right| > \epsilon$，则调整$c_0$并重复步骤2-5。
-6. 迭代调整 $c_0$ 使用二分法找到一个值，确保 $\left| \hat{k}_S - \bar{k} \right| < \epsilon$。
+5. 计算差值 $\hat{k}_S - \bar{k}$。如果对于某个小 $\epsilon$，$\left| \hat{k}_S - \bar{k} \right| > \epsilon$，则调整 $c_0$ 并重复步骤2-5。
+6. 通过二分法迭代调整 $c_0$，直到找到一个值使得 $\left| \hat{k}_S - \bar{k} \right| < \epsilon$。
 
 以下代码实现了这些步骤。
 
 ```{code-cell} ipython3
 # 稳态计算
-def steady_states(model, g_ss, τ_k_ss=0.0):
+def steady_states(model, g_ss, τ_k_ss=0.0, μ_ss=None):
     """
-    稳态值：
-    - 资本：(1 - τ_k_ss) * [α * A * k_ss^{α - 1} - δ] = (1 / β) - 1
-    - 消费：c_ss = A * k_ss^{α} - δ * k_ss - g_ss
+    计算资本与消费的稳态值，
+    在增长模型中可以选择性地传入 A_path。
     """
-    β, δ, α, A = model.β, model.δ, model.α, model.A
-    numerator = δ + (1 / β - 1) / (1 - τ_k_ss)
-    denominator = α * A
-    k_ss = (numerator / denominator) ** (1 / (α - 1))
-    c_ss = A * k_ss ** α - δ * k_ss - g_ss
-    return k_ss, c_ss
 
-def shooting_algorithm(c0, k0, shocks, S, model):
-    """
-    给定初始 c0 和 k0 的射击算法。
-    """
-    # 将冲击转换为高精度
-    g_path, τ_c_path, τ_k_path = (
-        list(map(mpf, shocks[key])) for key in ['g', 'τ_c', 'τ_k']
+    β, δ, α, γ = model.β, model.δ, model.α, model.γ
+
+    A = model.A or 1.0
+
+    # 分子中的增长调整：μ^γ 或 1
+    μ_eff = μ_ss**γ if μ_ss is not None else 1.0
+
+    num = δ + (μ_eff/β - 1) / (1 - τ_k_ss)
+    k_ss = (num / (α * A)) ** (1 / (α - 1))
+
+    c_ss = (
+        A * k_ss**α - δ * k_ss - g_ss
+        if μ_ss is None
+        else k_ss**α + (1 - δ - μ_ss) * k_ss - g_ss
     )
 
-    # 用初始值初始化路径
-    c_path = [mpf(c0)] + [mpf(0)] * S
-    k_path = [mpf(k0)] + [mpf(0)] * S
+    return k_ss, c_ss
 
-    # 生成 k_t 和 c_t 的路径
+def shooting_algorithm(
+    c0, k0, shocks, S, model, A_path=None):
+    """
+    给定初始 c0 和 k0 的射击算法，
+    在增长模型中可以选择性地传入 A_path。
+    """
+    # 解包并将 shocks 转为 mpf 格式，如果缺少 μ 就填充为全 1
+    g = np.array(list(map(mpf, shocks['g'])), dtype=object)
+    τ_c = np.array(list(map(mpf, shocks['τ_c'])), dtype=object)
+    τ_k = np.array(list(map(mpf, shocks['τ_k'])), dtype=object)
+    μ = (np.array(list(map(mpf, shocks['μ'])), dtype=object)
+              if 'μ' in shocks else np.ones_like(g))
+    A = np.ones_like(g) if A_path is None else A_path
+
+    k_path = np.empty(S+1, dtype=object)
+    c_path = np.empty(S+1, dtype=object)
+    k_path[0], c_path[0] = mpf(k0), mpf(c0)
+
     for t in range(S):
-        k_t, c_t, g_t = k_path[t], c_path[t], g_path[t]
-
-        # 计算下一期的资本
-        k_tp1 = next_k(k_t, g_t, c_t, model)
-        
-        # 资本为负时失败
-        if k_tp1 < mpf(0):
-            return None, None 
-        k_path[t + 1] = k_tp1
-
-        # 计算下一期的消费
-        R_bar = compute_R_bar(τ_c_path[t], τ_c_path[t + 1], 
-                              τ_k_path[t + 1], k_tp1, model)
-        c_tp1 = next_c(c_t, R_bar, model)
-
-        # 消费为负时失败
-        if c_tp1 < mpf(0):
+        k_t, c_t = k_path[t], c_path[t]
+        k_tp1 = next_k(k_t, g[t], c_t, model, μ[t+1])
+        if k_tp1 < 0:
             return None, None
-        c_path[t + 1] = c_tp1
+        k_path[t+1] = k_tp1
+
+        R_bar = compute_R_bar(
+            τ_c[t], τ_c[t+1], τ_k[t+1], k_tp1, model
+        )
+        c_tp1 = next_c(c_t, R_bar, model, μ[t+1])
+        if c_tp1 < 0:
+            return None, None
+        c_path[t+1] = c_tp1
 
     return k_path, c_path
 
 
-def bisection_c0(c0_guess, k0, shocks, S, model, 
-                 tol=mpf('1e-6'), max_iter=1000, verbose=False):
+def bisection_c0(
+    c0_guess, k0, shocks, S, model, tol=mpf('1e-6'), 
+    max_iter=1000, verbose=False, A_path=None):
     """
-    使用二分法找到最优初始消费 c0。
+    二分法寻找初始消费值 c0
     """
-    k_ss_final, _ = steady_states(model, 
-                                  mpf(shocks['g'][-1]), 
-                                  mpf(shocks['τ_k'][-1]))
-    c0_lower, c0_upper = mpf(0), f(k_ss_final, model)
+    # 稳态使用最后一期的 shocks（如果缺少 μ，则设为 1）
+    g_last    = mpf(shocks['g'][-1])
+    τ_k_last  = mpf(shocks['τ_k'][-1])
+    μ_last    = mpf(shocks['μ'][-1]) if 'μ' in shocks else mpf('1')
+    k_ss_fin, _ = steady_states(model, g_last, τ_k_last, μ_last)
 
-    c0 = c0_guess
-    for iter_count in range(max_iter):
-        k_path, _ = shooting_algorithm(c0, k0, shocks, S, model)
-        
-        # 射击失败时调整上界
+    c0_lo, c0_hi = mpf('0'), f(k_ss_fin, model)
+    c0 = mpf(c0_guess)
+
+    for i in range(1, max_iter+1):
+        k_path, _ = shooting_algorithm(c0, k0, shocks, S, model, A_path)
         if k_path is None:
             if verbose:
-                print(f"迭代 {iter_count + 1}：c0 = {c0} 时射击失败")
-            c0_upper = c0
+                print(f"[{i}] 射击失败，c0={c0}")
+            c0_hi = c0
         else:
-            error = k_path[-1] - k_ss_final
-            if verbose and iter_count % 100 == 0:
-                print(f"迭代 {iter_count + 1}：c0 = {c0}, 误差 = {error}")
+            err = k_path[-1] - k_ss_fin
+            if verbose and i % 100 == 0:
+                print(f"[{i}] c0={c0}, 误差={err}")
+            if abs(err) < tol:
+                if verbose:
+                    print(f"在 {i} 次迭代后收敛")
+                return c0
+            # 单行更新区间
+            c0_lo, c0_hi = (c0, c0_hi) if err > 0 else (c0_lo, c0)
+        c0 = (c0_lo + c0_hi) / mpf('2')
 
-            # 检查收敛
-            if abs(error) < tol:
-                print(f"在第 {iter_count + 1} 次迭代成功收敛")
-                return c0 
-
-            # 根据误差更新边界
-            if error > mpf(0):
-                c0_lower = c0
-            else:
-                c0_upper = c0
-
-        # 计算二分法的新中点
-        c0 = (c0_lower + c0_upper) / mpf('2')
-
-    # 如果未达到收敛则返回最后计算的 c0
-    # 此时发出警告信息
-    warn(f"收敛失败。返回最后的 c0 = {c0}", stacklevel=2)
+    warn(f"二分法在 {max_iter} 次迭代后未收敛；返回 c0={c0}")
     return c0
 
-def run_shooting(shocks, S, model, c0_func=bisection_c0, shooting_func=shooting_algorithm):
+
+def run_shooting(
+    shocks, S, model, A_path=None, 
+    c0_finder=bisection_c0, shooter=shooting_algorithm):
     """
-    运行射击算法。
+    计算初始稳态，寻找 c0，并返回 [k,c] 路径
+    在增长模型中可以选择性地传入 A_path。
     """
-    # 计算初始稳态
-    k0, c0 = steady_states(model, mpf(shocks['g'][0]), mpf(shocks['τ_k'][0]))
-    
-    # 找到最优初始消费
-    optimal_c0 = c0_func(c0, k0, shocks, S, model)
-    print(f"参数：{model}")
-    print(f"最优初始消费 c0：{mp.nstr(optimal_c0, 7)} \n")
-    
-    # 模拟模型
-    k_path, c_path = shooting_func(optimal_c0, k0, shocks, S, model)
-    
-    # 合并并返回结果
+    # t=0 时的初始稳态（如果缺少 μ，则设为 1）
+    g0    = mpf(shocks['g'][0])
+    τ_k0  = mpf(shocks['τ_k'][0])
+    μ0    = mpf(shocks['μ'][0]) if 'μ' in shocks else mpf('1')
+    k0, c0 = steady_states(model, g0, τ_k0, μ0)
+
+    optimal_c0 = c0_finder(c0, k0, shocks, S, model, A_path=A_path)
+    print(f"模型: {model}\n最优初始消费 c0 = {mpf(optimal_c0)}")
+
+    k_path, c_path = shooter(optimal_c0, k0, shocks, S, model, A_path)
     return np.column_stack([k_path, c_path])
 ```
 (cf:experiments)=
@@ -682,56 +706,71 @@ def run_shooting(shocks, S, model, c0_func=bisection_c0, shooting_func=shooting_
 
 让我们进行一些实验。
 
-1. 在第10期发生的一次性永久性$g$增长,从0.2增至0.4,
-2. 在第10期发生的一次性永久性$\tau_c$增长,从0.0增至0.2,
-3. 在第10期发生的一次性永久性$\tau_k$增长,从0.0增至0.2,以及
-4. 在第10期发生的一次性$g$增长,从0.2增至0.4,之后$g$永久性恢复到0.2。
-
-+++
+1. 可预期的一次性永久冲击：在第 10 期，$g$ 从 0.2 上升到 0.4；
+2. 可预期的一次性永久冲击：在第 10 期，$\tau_c$ 从 0.0 上升到 0.2；
+3. 可预期的一次性永久冲击：在第 10 期，$\tau_k$ 从 0.0 上升到 0.2;
+4. 可预期的一次性暂时冲击：在第 10 期，$g$ 从 0.2 上升到 0.4，之后 $g$ 永久恢复为 0.2。
 
 首先,我们准备用于初始化迭代算法的序列。
 
-我们将从初始稳态开始,并在指定时间施加冲击。
+我们将从一个初始稳态开始,并在指定时间施加冲击。
 
 ```{code-cell} ipython3
-def plot_results(solution, k_ss, c_ss, shocks, shock_param, 
-                 axes, model, label='', linestyle='-', T=40):
+def plot_results(
+    solution, k_ss, c_ss, shocks, shock_param, axes, model,
+    A_path=None, label='', linestyle='-', T=40):
     """
-    绘制模拟结果,复制RMT中的图表。
+    绘制模拟结果 (k, c, R, η 以及政策冲击)，
+    在增长模型中可以选择性地传入 A_path。
     """
     k_path = solution[:, 0]
     c_path = solution[:, 1]
+    T = min(T, k_path.size)
 
+    # 处理增长参数
+    μ0 = shocks['μ'][0] if 'μ' in shocks else 1.0
+    A0 = A_path[0] if A_path is not None else (model.A or 1.0)
+
+    # 稳态参考线
+    R_bar_ss = (1 / model.β) * (μ0**model.γ)
+    η_ss     = model.α * A0 * k_ss**(model.α - 1)
+
+    # 绘制资本路径 k
     axes[0].plot(k_path[:T], linestyle=linestyle, label=label)
     axes[0].axhline(k_ss, linestyle='--', color='black')
     axes[0].set_title('k')
 
-    # 绘制c
+    # 绘制消费路径 c
     axes[1].plot(c_path[:T], linestyle=linestyle, label=label)
     axes[1].axhline(c_ss, linestyle='--', color='black')
     axes[1].set_title('c')
 
-    # 绘制g
-    R_bar_path = compute_R_bar_path(shocks, k_path, model, S)
-
+    # 绘制 R̄ 路径
+    S_full    = k_path.size - 1
+    R_bar_path = compute_R_bar_path(shocks, k_path, model, S_full)
     axes[2].plot(R_bar_path[:T], linestyle=linestyle, label=label)
-    axes[2].set_title('$\overline{R}$')
-    axes[2].axhline(1 / model.β, linestyle='--', color='black')
-    
-    η_path = compute_η_path(k_path, model, S=T)
-    η_ss = model.α * model.A * k_ss ** (model.α - 1)
-    
+    axes[2].axhline(R_bar_ss, linestyle='--', color='black')
+    axes[2].set_title(r'$\bar{R}$')
+
+    # 绘制 η 路径
+    η_path = compute_η_path(k_path, model, S_full)
     axes[3].plot(η_path[:T], linestyle=linestyle, label=label)
     axes[3].axhline(η_ss, linestyle='--', color='black')
     axes[3].set_title(r'$\eta$')
-    
-    axes[4].plot(shocks[shock_param][:T], linestyle=linestyle, label=label)
-    axes[4].axhline(shocks[shock_param][0], linestyle='--', color='black')
-    axes[4].set_title(rf'${shock_param}$')
-```
-**实验1：在第10期预见到$g$从0.2一次性永久性增加到0.4**
 
-下图显示了在$t = T = 10$时预见到$g$永久性增加（通过增加一次性税收来融资）的后果
+    # 绘制冲击变量
+    shock_series = np.array(shocks[shock_param], dtype=object)
+    axes[4].plot(shock_series[:T], linestyle=linestyle, label=label)
+    axes[4].axhline(shock_series[0], linestyle='--', color='black')
+    axes[4].set_title(rf'${shock_param}$')
+
+    if label:
+        for ax in axes[:5]:
+            ax.legend()
+```
+**实验1：可预期的一次性永久冲击：在第 10 期，$g$ 从 0.2 上升到 0.4**
+
+下图显示了在 $t = T = 10$ 时，一个可预期的政府支出 $g$ 的永久增加所带来的结果。该增加通过提高一次性总额税来融资。
 
 ```{code-cell} ipython3
 # 将冲击定义为字典
@@ -762,13 +801,12 @@ for ax in axes[5:]:
 plt.tight_layout()
 plt.show()
 ```
-上述数据表明存在一个均衡的**消费平滑**机制，这是由代表性消费者偏好平滑消费路径所驱动的，这种偏好源自其单期效用函数的曲率。
+上述图形表明，均衡中的**消费平滑**机制正在发挥作用，这一机制源自代表性消费者对平滑消费路径的偏好，而这种偏好来自其单期效用函数的曲率。
 
 - 资本存量的稳态值保持不变：
   - 这是因为在欧拉方程的稳态版本中({eq}`eq:diff_second_steady`)，$g$项消失了。
-
-- 在时间$T$之前，由于政府消费增加，消费开始逐渐下降：
-  - 家庭减少消费以抵消政府支出，这些支出通过增加一次性税收来融资。
+- 在时间 $T$ 之前，由于政府消费增加，消费开始逐渐下降：
+  - 家庭减少消费以抵消政府支出，而这些政府支出通过增加一次性税收来融资。
   - 竞争性经济通过增加一次性税收流向家庭发出减少消费的信号。
   - 家庭关注的是税收的现值而非征收时间，因此消费受到不利的财富效应影响，导致立即做出反应。
 - 资本在时间 $0$ 到 $T$ 之间由于储蓄增加而逐渐积累,在时间 $T$ 之后逐渐减少:
@@ -779,23 +817,32 @@ plt.show()
 ```{code-cell} ipython3
 :tags: [hide-input]
 
-def experiment_model(shocks, S, model, solver, plot_func, policy_shock, T=40):
+def experiment_model(
+    shocks, S, model, A_path=None, solver=run_shooting, 
+    plot_func=plot_results, policy_shock='g', T=40):
     """
-    运行射击算法给定模型并绘制结果。
+    运行射击算法并绘制结果。
     """
-    k0, c0 = steady_states(model, shocks['g'][0], shocks['τ_k'][0])
-    
-    print(f"稳态资本: {k0:.4f}")
-    print(f"稳态消费: {c0:.4f}")
+    # 初始稳态 (如果没有增长，则 μ0=None)
+    g0   = mpf(shocks['g'][0])
+    τk0  = mpf(shocks['τ_k'][0])
+    μ0   = mpf(shocks['μ'][0]) if 'μ' in shocks else None
+    k_ss, c_ss = steady_states(model, g0, τk0, μ0)
+
+    print(f"稳态资本: {float(k_ss):.4f}")
+    print(f"稳态消费: {float(c_ss):.4f}")
     print('-'*64)
-    
+
     fig, axes = plt.subplots(2, 3, figsize=(10, 8))
     axes = axes.flatten()
 
-    solution = solver(shocks, S, model)
-    plot_func(solution, k0, c0, 
-              shocks, policy_shock, axes, model, T=T)
+    sol = solver(shocks, S, model, A_path)
+    plot_func(
+        sol, k_ss, c_ss, shocks, policy_shock, axes, model,
+        A_path=A_path, T=T
+    )
 
+    # 删除未使用的子图
     for ax in axes[5:]:
         fig.delaxes(ax)
 
@@ -804,21 +851,21 @@ def experiment_model(shocks, S, model, solver, plot_func, policy_shock, T=40):
 ```
 下图比较了两个经济体在 $t = 10$ 时对预期的 $g$ 增长的响应:
 
-* 实线表示我们原始的 $\gamma = 2$ 的经济体，以及
+* 实线表示我们原始的 $\gamma = 2$ 的经济体，
 * 虚线表示一个除了 $\gamma = 0.2$ 外其他条件完全相同的经济体。
 
-这个比较对我们很有意义，因为效用曲率参数 $\gamma$ 决定了家庭跨期替代消费的意愿，从而决定了其对消费路径随时间平滑程度的偏好。
+这个比较之所以有趣，是因为效用曲率参数 $\gamma$ 决定了家庭跨期替代消费的意愿，从而决定了其对消费路径随时间平滑程度的偏好。
 
 ```{code-cell} ipython3
-# Solve the model using shooting
+# 使用射击算法求解模型
 solution = run_shooting(shocks, S, model)
 
-# Compute the initial steady states
+# 计算初始稳态
 k_ss_initial, c_ss_initial = steady_states(model, 
                                            shocks['g'][0], 
                                            shocks['τ_k'][0])
 
-# Plot the solution for γ=2
+# 绘制 γ=2 时的解
 fig, axes = plt.subplots(2, 3, figsize=(10, 8))
 axes = axes.flatten()
 
@@ -827,7 +874,7 @@ plot_results(solution, k_ss_initial, c_ss_initial,
              shocks, 'g', axes, model, label=label, 
              T=40)
 
-# Solve and plot the result for γ=0.2
+# 求解并绘制 γ=0.2 的结果
 model_γ2 = create_model(γ=0.2)
 solution = run_shooting(shocks, S, model_γ2)
 
@@ -861,43 +908,55 @@ plt.show()
 ```{code-cell} ipython3
 :tags: [hide-input]
 
-def experiment_two_models(shocks, S, model_1, model_2, solver, plot_func, 
-                          policy_shock, legend_label_fun=None, T=40):
+def experiment_two_models(
+    shocks, S, model_1, model_2, solver=run_shooting, plot_func=plot_results, 
+    policy_shock='g', legend_label_fun=None, T=40, A_path=None):
     """
-    比较并绘制两个模型的射击算法结果。
+    比较并绘制两个模型的射击算法路径。
     """
-    k0, c0 = steady_states(model, shocks['g'][0], shocks['τ_k'][0])
-    print(f"稳态资本：{k0:.4f}")
-    print(f"稳态消费：{c0:.4f}")
-    print('-'*64)
-    
-    # 如果没有提供图例标签函数，则使用默认的
-    if legend_label_fun is None:
-        legend_label_fun = lambda model: fr"$\gamma = {model.γ}$"
+    is_growth = 'μ' in shocks
+    μ0 = mpf(shocks['μ'][0]) if is_growth else None
 
-    # 设置图形和坐标轴
+    # 两个模型的初始稳态
+    g0   = mpf(shocks['g'][0])
+    τk0  = mpf(shocks['τ_k'][0])
+    k_ss1, c_ss1 = steady_states(model_1, g0, τk0, μ0)
+    k_ss2, c_ss2 = steady_states(model_2, g0, τk0, μ0)
+
+    # 打印两个模型的结果   
+    print(f"Model 1 (γ={model_1.γ}): 稳态 k={float(k_ss1):.4f}, c={float(c_ss1):.4f}")
+    print(f"Model 2 (γ={model_2.γ}): 稳态 k={float(k_ss2):.4f}, c={float(c_ss2):.4f}")
+    print('-'*64)
+
+    # 默认图例标签
+    if legend_label_fun is None:
+        legend_label_fun = lambda m: fr"$\gamma = {m.γ}$"
+
+    # 创建图形
     fig, axes = plt.subplots(2, 3, figsize=(10, 8))
     axes = axes.flatten()
 
-    # 为每个模型运行和绘图的函数
-    def run_and_plot(model, linestyle='-'):
-        solution = solver(shocks, S, model)
-        plot_func(solution, k0, c0, shocks, policy_shock, axes, model, 
-                  label=legend_label_fun(model), linestyle=linestyle, T=T)
+    # 遍历 (模型, 稳态, 线型)
+    for model, (k_ss, c_ss), ls in [
+        (model_1, (k_ss1, c_ss1), '-'),
+        (model_2, (k_ss2, c_ss2), '-.')
+    ]:
+        sol = solver(shocks, S, model, A_path)
+        plot_func(sol, k_ss, c_ss, shocks, policy_shock, axes, 
+                  model, A_path=A_path, 
+                  label=legend_label_fun(model), 
+                  linestyle=ls, T=T)
 
-    # 为两个模型绘图
-    run_and_plot(model_1)
-    run_and_plot(model_2, linestyle='-.')
-
-    # 使用第一个坐标轴的标签设置图例
+    # 在右下角绘制共享图例
     handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc='lower right', ncol=3, 
-               fontsize=14, bbox_to_anchor=(1, 0.1))
+    fig.legend(
+        handles, labels, loc='lower right', ncol=2, 
+        fontsize=12, bbox_to_anchor=(1, 0.1))
 
-    # 移除多余的坐标轴并整理布局
+    # 删除未使用的子图
     for ax in axes[5:]:
         fig.delaxes(ax)
-    
+
     plt.tight_layout()
     plt.show()
 ```
@@ -907,19 +966,19 @@ def experiment_two_models(shocks, S, model_1, model_2, solver, plot_func,
 def plot_prices(solution, c_ss, shock_param, axes,
                 model, label='', linestyle='-', T=40):
     """
-    比较并绘制价格
+    比较并绘制价格路径
     """
     α, β, δ, γ, A = model.α, model.β, model.δ, model.γ, model.A
     
     k_path = solution[:, 0]
     c_path = solution[:, 1]
 
-    # 绘制 c
+    # 绘制消费路径 c
     axes[0].plot(c_path[:T], linestyle=linestyle, label=label)
     axes[0].axhline(c_ss, linestyle='--', color='black')
     axes[0].set_title('c')
     
-    # 绘制 q
+    # 绘制 q 路径
     q_path = compute_q_path(c_path, model, S=S)
     axes[1].plot(q_path[:T], linestyle=linestyle, label=label)
     axes[1].plot(β**np.arange(T), linestyle='--', color='black')
@@ -940,12 +999,12 @@ def plot_prices(solution, c_ss, shock_param, axes,
         axes[3].set_xlabel('s')
         axes[3].set_title('$r_{t,t+s}$')
 
-    # 绘制 g
+    # 绘制 g（冲击变量）
     axes[4].plot(shocks[shock_param][:T], linestyle=linestyle, label=label)
     axes[4].axhline(shocks[shock_param][0], linestyle='--', color='black')
     axes[4].set_title(shock_param)
 ```
-对于$\gamma = 2$,下图描述了$q_t$以及利率期限结构对于在$t = 10$时可预见的$g_t$增长的响应
+对于$\gamma = 2$,下图描述了 $q_t$ 以及利率期限结构对于在 $t = 10$ 时可预见的 $g_t$ 增长的响应
 
 ```{code-cell} ipython3
 solution = run_shooting(shocks, S, model)
@@ -963,35 +1022,34 @@ fig.legend(handles, labels, title=r"$r_{t,t+s}$ with ", loc='lower right', ncol=
 plt.tight_layout()
 plt.show()
 ```
-顶部的第二个面板比较了初始稳态的$q_t$与在$t = 0$时预见到$g$增加后的$q_t$，而第三个面板则比较了隐含的短期利率$r_t$。
+上方的第二幅图比较了初始稳态下的 $q_t$ 与在 $t = 0$ 时预见到 $g$ 增加后的 $q_t$，而第三幅图比较了隐含的短期利率 $r_t$。
 
-第四个面板显示了在$t=0$、$t=10$和$t=60$时的利率期限结构。
+第四幅图展示了在 $t=0$、$t=10$ 和 $t=60$ 时的利率期限结构。
 
-注意，到$t = 60$时，系统已经收敛到新的稳态，利率期限结构变得平坦。
+注意，到 $t = 60$ 时，系统已经收敛到新的稳态，利率期限结构变得平坦。
 
-在$t = 10$时，利率期限结构呈上升趋势。
+在 $t = 10$ 时，利率期限结构呈上升趋势。
 
-这种上升趋势反映了消费增长率随时间的预期增长，如消费面板所示。
+这种上升趋势反映了消费增长率随时间的预期增长，如消费图所示。
 
-在$t = 0$时，利率期限结构呈现"U形"模式：
+在 $t = 0$ 时，利率期限结构呈现"U形"模式：
 
-- 在到期日$s = 10$之前呈下降趋势。
-- 在$s = 10$之后，对更长期限呈上升趋势。
+- 在 $s = 10$ 之前呈下降趋势。
+- 在 $s = 10$ 之后，随到期期限的增加而上升。
     
-这种模式与前两张图中的消费增长模式相一致，
-即在$t = 10$之前以递增的速率下降，之后以递减的速率下降。
+这种模式与前两张图中的消费增长模式相一致：即在 $t = 10$ 之前以递增的速率下降，之后以递减的速率下降。
 
 +++
-**实验2：在第10期将消费税率$\tau_c$从0.0一次性提高到0.2（可预见）**
+
+**实验2：可预期的一次性永久冲击：在第 10 期，$\tau_c$ 从 0.0 上升到 0.2**
 
 在劳动供给缺乏弹性的情况下，欧拉方程{eq}`eq:euler_house`和其他均衡条件表明：
 - 固定的消费税不会扭曲决策，但是
-- 可预见的消费税变化会造成扭曲。
+- 可预期的消费税变化会造成扭曲。
 
-事实上，{eq}`eq:euler_house`或{eq}`eq:diff_second`表明，可预见的$\tau_{ct}$增加（即$(1+\tau_{ct})$
-$(1+\tau_{ct+1})$的减少）的作用类似于$\tau_{kt}$的增加。
+事实上，{eq}`eq:euler_house`或{eq}`eq:diff_second`表明，可预期的 $\tau_{ct}$ 增加（即 $(1+\tau_{ct})(1+\tau_{ct+1})$ 减少）与 $\tau_{kt}$ 增加的作用相同。
 
-下图展示了对可预见的消费税$\tau_c$增加的响应。
+下图展示了对可预期的消费税 $\tau_c$ 增加的响应。
 
 ```{code-cell} ipython3
 shocks = {
@@ -1000,30 +1058,33 @@ shocks = {
     'τ_k': np.repeat(0.0, S + 1)
 }
 
-experiment_model(shocks, S, model, run_shooting, plot_results, 'τ_c')
+experiment_model(shocks, S, model, 
+                 solver=run_shooting, 
+                 plot_func=plot_results,  
+                 policy_shock='τ_c')
 ```
-显然上图中的所有变量最终都会回到其初始稳态值。
+显然，上图中的所有变量最终都会回到其初始稳态值。
 
-预期的$\tau_{ct}$增加导致消费和资本存量随时间发生变化：
+预期的 $\tau_{ct}$ 增加导致消费和资本存量随时间发生变化：
 
-- 在$t = 0$时：
-    - 预期$\tau_c$的增加导致*消费立即跳升*。
-    - 随后出现*消费狂潮*，使资本存量在$t = T = 10$之前持续下降。
-- 在$t = 0$和$t = T = 10$之间：
-    - 资本存量的下降导致$\bar{R}$随时间上升。
-    - 均衡条件要求消费增长率在$t = T$之前上升。
-- 在$t = T = 10$时：
-    - $\tau_c$的跳升使$\bar{R}$降至1以下，导致*消费急剧下降*。
-- 在$T = 10$之后：
-    - 预期扭曲的影响结束，经济逐渐调整到较低的资本存量水平。
-- 资本现在必须增长，这需要*紧缩*——在 $t = T$ 之后消费大幅下降，表现为较低的消费水平。
+- 在 $t = 0$ 时：
+    - 可预期的 $\tau_c$ 增加导致*消费的立即跳升*。
+    - 随后出现*消费狂潮*，使资本存量在 $t = T = 10$ 之前持续下降。
+- 在 $t = 0$ 和 $t = T = 10$ 之间：
+    - 资本存量的下降导致 $\bar{R}$ 随时间上升。
+    - 均衡条件要求消费增长率持续上升，直到 $t = T$。
+- 在 $t = T = 10$ 时：
+    - $\tau_c$ 的跳升使 $\bar{R}$ 降至 1 以下，导致*消费急剧下降*。
+- 在 $T = 10$ 之后：
+    - 预期扭曲的影响结束，经济逐渐调整到更低的资本存量水平。
+    - 资本现在必须增长，这需要*紧缩* —— 在 $t = T$ 之后消费大幅下降，表现为更低的消费水平。
     - 利率逐渐下降，消费以递减的速率增长，直至达到最终稳态。
 
 +++
 
-**实验3：在第10期预见到 $\tau_k$ 从0.0一次性永久性增加到0.2**
+**实验3：可预期的一次性永久冲击：在第 10 期，$\tau_k$ 从 0.0 上升到 0.2**
 
-对于两个 $\gamma$ 值2和0.2，下图显示了在 $t = T = 10$ 时对 $\tau_{kt}$ 的可预见永久性跳跃的响应。
+对于 $\gamma$ 取值为 2 和 0.2 的两种情况，下图显示了在 $t = T = 10$ 时，可预期的一次性永久性 的$\tau_{kt}$ 跳升所带来的反应。
 
 ```{code-cell} ipython3
 shocks = {
@@ -1033,26 +1094,27 @@ shocks = {
 }
 
 experiment_two_models(shocks, S, model, model_γ2, 
-                run_shooting, plot_results, 'τ_k')
+                solver=run_shooting, 
+                 plot_func=plot_results,  
+                 policy_shock='τ_k')
 ```
 政府支出路径保持不变
 - $\tau_{kt}$ 的增加通过减少一次性税收的现值来抵消，以保持预算平衡。
 
 图表显示：
 
-- 对 $\tau_{kt}$ 增加的预期导致资本存量立即下降，这是由于当前消费增加和消费流量增长。
-- $\bar{R}$ 从 $t = 0$ 开始上升并在 $t = 9$ 达到峰值，在 $t = 10$ 时，$\bar{R}$ 因税收变化而急剧下降。
+- 对 $\tau_{kt}$ 增加的预期导致资本存量立即下降，这是由于当前和后续消费的增加。
+- $\bar{R}$ 从 $t = 0$ 开始上升，在 $t = 9$ 达到峰值，在 $t = 10$ 时因税收变化而急剧下降。
     - $\bar{R}$ 的变化与 $t = 10$ 时税收增加对跨期消费的影响相一致。
-- 转型动态推动 $k_t$（资本存量）向新的、更低的稳态水平移动。在新的稳态下：
+- 转型动态推动 $k_t$（资本存量）向一个新的、更低的稳态水平移动。在新的稳态下：
     - 由于资本存量减少导致产出降低，消费水平更低。
-    - 当 $\gamma = 2$ 时的消费路径比 $\gamma = 0.2$ 时更平滑。
+    - $\gamma = 2$ 时的消费路径比 $\gamma = 0.2$ 时的更平滑。
 
 +++
 
-到目前为止，我们已经探讨了可预见的一次性变化的后果
-在政府政策中。接下来我们描述一些实验，其中存在可预见的一次性政策变量变化（一个"脉冲"）。
+到目前为止，我们已经探讨了可预期的一次性永久性政府政策变动的后果。接下来，我们进行一些实验，其中政策变量仅发生可预期的存在可预期的一次性暂时变化（称为"脉冲"）。
 
-**实验4：在第10期可预见的一次性将$g$从0.2增加到0.4，之后$g$永远回到0.2**
+**实验4： 可预期的一次性暂时冲击：在第 10 期，$g$ 从 0.2 上升到 0.4，之后 $g$ 永久恢复为 0.2**
 
 ```{code-cell} ipython3
 g_path = np.repeat(0.2, S + 1)
@@ -1064,18 +1126,21 @@ shocks = {
     'τ_k': np.repeat(0.0, S + 1)
 }
 
-experiment_model(shocks, S, model, run_shooting, plot_results, 'g')
+experiment_model(shocks, S, model,
+                 solver=run_shooting, 
+                 plot_func=plot_results,  
+                 policy_shock='g')
 ```
-该图表明了以下内容：
+该图表明：
 
 - 消费：
-    - 在政策宣布后立即下降，并在预期一次性的$g$激增过程中持续下降。
-    - 在$t = 10$的冲击之后，消费开始恢复，以递减的速率上升至其稳态值。
+    - 在政策宣布后立即下降，并随着时间推移持续下降。
+    - 在 $t = 10$ 的冲击之后，消费开始恢复，但以递减的速度上升，逐步趋近其稳态值。
 
-- 资本和$\bar{R}$：
-    - 在$t = 10$之前，由于利率变化导致家庭为预期中的政府支出增加做准备，资本开始积累。
-    - 在$t = 10$时，由于政府消耗了部分资本，资本存量急剧下降。
-    - 由于资本减少，$\bar{R}$跃升至高于其稳态值的水平，然后逐渐下降至其稳态水平。
+- 资本和 $\bar{R}$：
+    - 在 $t = 10$ 之前，由于利率变化导致家庭为预期中的政府支出增加做准备，资本开始积累。
+    - 在 $t = 10$ 时，由于政府消耗了部分资本，资本存量急剧下降。
+    - 由于资本减少，$\bar{R}$ 跃升至其稳态值以上，然后逐渐下降回稳态水平。
 +++
 
 ### 方法2：残差最小化
@@ -1095,30 +1160,33 @@ experiment_model(shocks, S, model, run_shooting, plot_results, 'g')
   $$
 
 ```{code-cell} ipython3
-# 欧拉方程和可行性条件
-def euler_residual(c_t, c_tp1, τ_c_t, τ_c_tp1, τ_k_tp1, k_tp1, model):
+# 欧拉方程与可行性条件 
+def euler_residual(c_t, c_tp1, τ_c_t, τ_c_tp1, τ_k_tp1, k_tp1, model, μ_tp1=1):
     """
-    计算欧拉方程的残差。
+    计算欧拉方程的残差，
+    可选增长模型的参数μ_tp1
     """
-    β, γ, δ, α, A = model.β, model.γ, model.δ, model.α, model.A
-    η_tp1 = α * A * k_tp1 ** (α - 1)
-    return β * (c_tp1 / c_t) ** (-γ) * (1 + τ_c_t) / (1 + τ_c_tp1) * (
-        (1 - τ_k_tp1) * (η_tp1 - δ) + 1) - 1
+    R_bar = compute_R_bar(τ_c_t, τ_c_tp1, τ_k_tp1, k_tp1, model)
+    
+    c_expected = next_c(c_t, R_bar, model, μ_tp1)
 
-def feasi_residual(k_t, k_tm1, c_tm1, g_t, model):
+    return c_expected / c_tp1 - 1.0
+
+def feasi_residual(k_t, k_tm1, c_tm1, g_t, model, μ_t=1):
     """
-    计算可行性条件的残差。
+    计算可行性条件的残差，
+    可选增长模型的参数μ_t。
     """
-    α, A, δ = model.α, model.A, model.δ
-    return k_t - (A * k_tm1 ** α + (1 - δ) * k_tm1 - c_tm1 - g_t)
+    k_t_expected = next_k(k_tm1, g_t, c_tm1, model, μ_t)
+    return k_t_expected - k_t
 ```
-算法按以下步骤进行：
+算法步骤如下：
 
-1. 根据 $t=0$ 时的政府计划找到初始稳态 $k_0$。
+1. 根据 $t=0$ 时的政府计划，找到初始稳态 $k_0$。
 
-2. 初始化一个初始猜测序列 $\{\hat{c}_t, \hat{k}_t\}_{t=0}^{S}$。
+2. 初始化一个初始猜测 $\{\hat{c}_t, \hat{k}_t\}_{t=0}^{S}$。
 
-3. 计算残差 $l_a$ 和 $l_k$ （对于 $t = 0, \dots, S$），以及 $t = 0$ 时的 $l_{k_0}$ 和 $t = S$ 时的 $l_{k_S}$：
+3. 计算残差 $l_{ta}$ 和 $l_{tk}$ （对于 $t = 0, \dots, S$），以及 $t = 0$ 时的 $l_{k_0}$ 和 $t = S$ 时的 $l_{k_S}$：
    - 使用{eq}`eq:diff_second`计算 $t = 0, \dots, S$ 的欧拉方程残差：
 
      $$
@@ -1136,7 +1204,7 @@ def feasi_residual(k_t, k_tm1, c_tm1, g_t, model):
      $$
      l_{k_0} = 1 - \beta \left[ (1 - \tau_{k0}) \left(f'(k_0) - \delta \right) + 1 \right]
      $$
-- 在假设 $c_t = c_{t+1} = c_S$、$k_t = k_{t+1} = k_S$、$\tau_{ct} = \tau_{ct+1} = \tau_{cS}$ 和 $\tau_{kt} = \tau_{kt+1} = \tau_{kS}$ 的条件下，使用{eq}`eq:diff_second`计算终端条件 $t = S$ 的残差：
+    - 在假设 $c_t = c_{t+1} = c_S$、$k_t = k_{t+1} = k_S$、$\tau_{ct} = \tau_{ct+1} = \tau_{cS}$ 和 $\tau_{kt} = \tau_{kt+1} = \tau_{kS}$ 的条件下，使用{eq}`eq:diff_second`计算终端条件 $t = S$ 的残差：
      
      $$
      l_{k_S} = \beta u'(c_S) \frac{(1 + \tau_{cS})}{(1 + \tau_{cS})} \left[(1 - \tau_{kS})(f'(k_S) - \delta) + 1 \right] - 1
@@ -1145,57 +1213,70 @@ def feasi_residual(k_t, k_tm1, c_tm1, g_t, model):
 4. 迭代调整 $\{\hat{c}_t, \hat{k}_t\}_{t=0}^{S}$ 的猜测值，以最小化残差 $l_{k_0}$、$l_{ta}$、$l_{tk}$ 和 $l_{k_S}$（对于 $t = 0, \dots, S$）。
 
 ```{code-cell} ipython3
-# 计算残差作为需要最小化的目标函数
-def compute_residuals(vars_flat, k_init, S, shocks, model):
+def compute_residuals(vars_flat, k_init, S, shock_paths, model):
     """
-    计算欧拉方程、可行性条件和边界条件下的残差向量。
+    计算欧拉方程与可行性条件的残差。
     """
-    k, c = vars_flat.reshape((S + 1, 2)).T
-    residuals = np.zeros(2 * S + 2)
+    g, τ_c, τ_k, μ = (shock_paths[key] for key in ('g','τ_c','τ_k','μ'))
+    k, c = vars_flat.reshape((S+1, 2)).T
+    res = np.empty(2*S+2, dtype=float)
 
-    # 资本的初始条件
-    residuals[0] = k[0] - k_init
+    # 初始资本的边界条件
+    res[0] = k[0] - k_init
 
-    # 计算每个时间步的残差
+    # 内部的欧拉方程与可行性条件
     for t in range(S):
-        residuals[2 * t + 1] = euler_residual(
-            c[t], c[t + 1],
-            shocks['τ_c'][t], shocks['τ_c'][t + 1], shocks['τ_k'][t + 1],
-            k[t + 1], model
-        )
-        residuals[2 * t + 2] = feasi_residual(
-            k[t + 1], k[t], c[t],
-            shocks['g'][t], model
-        )
+        res[2*t + 1] = euler_residual(
+            c[t],    c[t+1],
+            τ_c[t],  τ_c[t+1],
+            τ_k[t+1],k[t+1],
+            model, μ[t+1])
+        res[2*t + 2] = feasi_residual(
+            k[t+1], k[t], c[t],
+            g[t],  model,
+            μ[t+1])
 
-    # 终端条件
-    residuals[-1] = euler_residual(
-        c[S], c[S],
-        shocks['τ_c'][S], shocks['τ_c'][S], shocks['τ_k'][S],
-        k[S], model
+    # 终端时点 t = S 的欧拉条件
+    res[-1] = euler_residual(
+        c[S],   c[S],
+        τ_c[S], τ_c[S],
+        τ_k[S], k[S],
+        model,
+        μ[S])
+
+    return res
+
+
+def run_min(shocks, S, model, A_path=None):
+    """
+    通过对残差求根来求解完整的 (k, c) 路径。
+    """
+    shocks['μ'] = shocks['μ'] if 'μ' in shocks else np.ones_like(shocks['g'])
+
+    # 计算稳态：既用作初始资本，也用作初始猜测
+    k_ss, c_ss = steady_states(
+        model,
+        shocks['g'][0],
+        shocks['τ_k'][0],
+        shocks['μ'][0]  # 若无增长，则 = 1
     )
-    
-    return residuals
 
-# 用于最小化残差的根查找算法
-def run_min(shocks, S, model):
-    """
-    用于最小化残差向量的根查找算法。
-    """
-    k_ss, c_ss = steady_states(model, shocks['g'][0], shocks['τ_k'][0])
-    
-    # 解路径的初始猜测
-    initial_guess = np.column_stack(
-        (np.full(S + 1, k_ss), np.full(S + 1, c_ss))).flatten()
+    # 初始猜测：在稳态处保持常数
+    guess = np.column_stack([
+        np.full(S+1, k_ss),
+        np.full(S+1, c_ss)
+    ]).flatten()
 
-    # 使用根查找求解系统
-    sol = root(compute_residuals, initial_guess, 
-               args=(k_ss, S, shocks, model), tol=1e-8)
+    sol = root(
+        compute_residuals,
+        guess,
+        args=(k_ss, S, shocks, model),
+        tol=1e-8
+    )
 
-    # 重塑解以获得k和c的时间路径
-    return sol.x.reshape((S + 1, 2))
+    return sol.x.reshape((S+1, 2))
 ```
-我们发现方法2没有遇到数值稳定性问题，所以使用 `mp.mpf` 并不必要。
+我们发现方法2没有遇到数值稳定性问题，所以无需使用 `mp.mpf`。
 
 我们把用第二种方法复现我们的实验作为练习。
 
@@ -1205,29 +1286,30 @@ def run_min(shocks, S, model):
 :label: cass_fiscal_ex1
 
 使用第二种残差最小化方法复现我们四个实验的图表：
-1. 在第10期发生的可预见的一次性永久性政府支出g从0.2增加到0.4，
-2. 在第10期发生的可预见的一次性永久性消费税τ_c从0.0增加到0.2，
-3. 在第10期发生的可预见的一次性永久性资本税τ_k从0.0增加到0.2，以及
-4. 在第10期发生的可预见的一次性政府支出g从0.2增加到0.4，之后g永久性恢复到0.2。
+1. 可预期的一次性永久冲击：在第 10 期，$g$ 从 0.2 上升到 0.4；
+2. 可预期的一次性永久冲击：在第 10 期，$\tau_c$ 从 0.0 上升到 0.2；
+3. 可预期的一次性永久冲击：在第 10 期，$\tau_k$ 从 0.0 上升到 0.2;
+4. 可预期的一次性暂时冲击：在第 10 期，$g$ 从 0.2 上升到 0.4，之后 $g$ 永久恢复为 0.2。
 ```
 
 ```{solution-start} cass_fiscal_ex1
 :class: dropdown
 ```
 
-这是一个解决方案：
+参考答案：
 
-**实验1：在第10期可预见的一次性永久性政府支出g从0.2增加到0.4**
+**实验1：可预期的一次性永久冲击：在第 10 期，$g$ 从 0.2 上升到 0.4**
 
 ```{code-cell} ipython3
-S = 100
 shocks = {
     'g': np.concatenate((np.repeat(0.2, 10), np.repeat(0.4, S - 9))),
     'τ_c': np.repeat(0.0, S + 1),
     'τ_k': np.repeat(0.0, S + 1)
 }
 
-experiment_model(shocks, S, model, run_min, plot_results, 'g')
+experiment_model(shocks, S, model, solver=run_min, 
+                 plot_func=plot_results,  
+                 policy_shock='g')
 ```
 ```{code-cell} ipython3
 experiment_two_models(shocks, S, model, model_γ2, 
@@ -1245,11 +1327,11 @@ for ax in axes[5:]:
     fig.delaxes(ax)
 
 handles, labels = axes[3].get_legend_handles_labels()  
-fig.legend(handles, labels, title=r"$r_{t,t+s}$ 带有 ", loc='lower right', ncol=3, fontsize=10, bbox_to_anchor=(1, 0.1))  
+fig.legend(handles, labels, title=r"$r_{t,t+s}$ with ", loc='lower right', ncol=3, fontsize=10, bbox_to_anchor=(1, 0.1))  
 plt.tight_layout()
 plt.show()
 ```
-**实验2：在第10期将消费税率$\tau_c$从0.0一次性提高到0.2（事先已知）。**
+**实验2：可预期的一次性永久冲击：在第 10 期，$\tau_c$ 从 0.0 上升到 0.2**
 
 ```{code-cell} ipython3
 shocks = {
@@ -1258,9 +1340,11 @@ shocks = {
     'τ_k': np.repeat(0.0, S + 1)
 }
 
-experiment_model(shocks, S, model, run_min, plot_results, 'τ_c')
+experiment_model(shocks, S, model, solver=run_min, 
+                 plot_func=plot_results,  
+                 policy_shock='τ_c')
 ```
-**实验3：在第10期将资本税率$\tau_k$从0.0一次性提高到0.2（事先已知）。**
+**实验3：可预期的一次性永久冲击：在第 10 期，$\tau_k$ 从 0.0 上升到 0.2**
 
 ```{code-cell} ipython3
 shocks = {
@@ -1270,9 +1354,11 @@ shocks = {
 }
 
 experiment_two_models(shocks, S, model, model_γ2, 
-                run_min, plot_results, 'τ_k')
+                solver=run_min, 
+                 plot_func=plot_results,  
+                 policy_shock='τ_k')
 ```
-**实验4：在第10期预见到g从0.2一次性增加到0.4，之后g永久回到0.2**
+**实验4：可预期的一次性暂时冲击：在第 10 期，$g$ 从 0.2 上升到 0.4，之后 $g$ 永久恢复为 0.2**
 
 ```{code-cell} ipython3
 g_path = np.repeat(0.2, S + 1)
@@ -1284,7 +1370,9 @@ shocks = {
     'τ_k': np.repeat(0.0, S + 1)
 }
 
-experiment_model(shocks, S, model, run_min, plot_results, 'g')
+experiment_model(shocks, S, model, solver=run_min, 
+                 plot_func=plot_results,  
+                 policy_shock='g')
 ```
 
 ```{solution-end}
@@ -1293,14 +1381,14 @@ experiment_model(shocks, S, model, run_min, plot_results, 'g')
 ```{exercise}
 :label: cass_fiscal_ex2
 
-设计一个新实验，其中政府支出g在第10期从0.2增加到0.4，然后在第20期永久降至0.1。
+设计一个新实验，其中政府支出 $g$ 在第 10 期从 0.2 增加到 0.4，然后在第 20 期永久降至 0.1。
 ```
 
 ```{solution-start} cass_fiscal_ex2
 :class: dropdown
 ```
 
-这是一个解决方案：
+参考答案：
 
 ```{code-cell} ipython3
 g_path = np.repeat(0.2, S + 1)
@@ -1313,7 +1401,9 @@ shocks = {
     'τ_k': np.repeat(0.0, S + 1)
 }
 
-experiment_model(shocks, S, model, run_min, plot_results, 'g')
+experiment_model(shocks, S, model, solver=run_min, 
+                 plot_func=plot_results,  
+                 policy_shock='g')
 ```
 
 ```{solution-end}
