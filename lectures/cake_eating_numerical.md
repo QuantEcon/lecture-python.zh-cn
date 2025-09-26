@@ -51,7 +51,7 @@ from scipy.optimize import minimize_scalar, bisect
 :label: bellman-cen
 
 v(x) = \max_{0\leq c \leq x} \{u(c) + \beta v(x-c)\}
-\quad \text{for all } x \geq 0.
+\quad \text{对所有 } x \geq 0.
 ```
 
 其中 $u$ 是CRRA效用函数。
@@ -391,7 +391,7 @@ plt.show()
 :label: euler-cen
 
 u' (\sigma(x)) = \beta u' ( \sigma(x - \sigma(x)))
-\quad \text{for all } x > 0
+\quad \text{对所有 } x > 0
 ```
 
 在计算上，我们可以从任意初始猜测 $\sigma_0$ 开始，然后选择 $c$ 来求解
