@@ -30,7 +30,7 @@ kernelspec:
 在阅读本讲之前，读者可能会发现复习以下讲座会有帮助：
 
 * {doc}`最短路径讲座 <intro:short_path>`
-* {doc}`基础麦考尔模型 <mccall_model>`
+* {doc}`基础McCall模型 <mccall_model>`
 * {doc}`带分离的McCall模型 <mccall_model_with_separation>`
 * {doc}`带分离和连续工资分布的McCall模型 <mccall_fitted_vfi>`
 
@@ -38,10 +38,6 @@ kernelspec:
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
-mpl.font_manager.fontManager.addfont(FONTPATH)
-plt.rcParams['font.family'] = ['Source Han Serif SC']
-
 import numpy as np
 ```
 ## 模型
