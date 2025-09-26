@@ -1098,8 +1098,8 @@ fig, axs = plt.subplots(3, 3, figsize=(14, 10))
 # 数量
 for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
     ax = axs[i//3, i%3]
-    ax.plot(range(T+1), quant_seq3[:T+1, i], label=name+', $\delta$s=0')
-    ax.plot(range(T+1), quant_seq4[:T+1, i], label=name+', $\delta$s=0.005')
+    ax.plot(range(T+1), quant_seq3[:T+1, i], label=rf"{name}, $\delta$s=0")
+    ax.plot(range(T+1), quant_seq4[:T+1, i], label=rf"{name}, $\delta$s=0.005")
     ax.hlines(init_ss[i], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -1107,8 +1107,8 @@ for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
 # 价格
 for i, name in enumerate(['W', 'r']):
     ax = axs[(i+4)//3, (i+4)%3]
-    ax.plot(range(T+1), price_seq3[:T+1, i], label=name+', $\delta$s=0')
-    ax.plot(range(T+1), price_seq4[:T+1, i], label=name+', $\delta$s=0.005')
+    ax.plot(range(T+1), price_seq3[:T+1, i], label=rf"{name}, $\delta$s=0")
+    ax.plot(range(T+1), price_seq4[:T+1, i], label=rf"{name}, $\delta$s=0.005")
     ax.hlines(init_ss[i+4], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -1116,8 +1116,8 @@ for i, name in enumerate(['W', 'r']):
 # 政策
 for i, name in enumerate(['τ', 'D', 'G']):
     ax = axs[(i+6)//3, (i+6)%3]
-    ax.plot(range(T+1), policy_seq3[:T+1, i], label=name+', $\delta$s=0')
-    ax.plot(range(T+1), policy_seq4[:T+1, i], label=name+', $\delta$s=0.005')
+    ax.plot(range(T+1), policy_seq3[:T+1, i], label=rf"{name}, $\delta$s=0")
+    ax.plot(range(T+1), policy_seq4[:T+1, i], label=rf"{name}, $\delta$s=0.005")
     ax.hlines(init_ss[i+6], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
