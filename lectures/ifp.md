@@ -200,6 +200,7 @@ u' (c_t)
 的唯一可行路径。
 
 此外，存在一个*最优消费函数* $\sigma^* \colon \mathsf S \to \mathbb R_+$，使得从 $(a,z)$ 出发的路径
+
 $$
 (a_0, z_0) = (a, z),
 \quad
@@ -207,6 +208,7 @@ c_t = \sigma^*(a_t, Z_t)
 \quad \text{和} \quad
 a_{t+1} = R (a_t - c_t) + Y_{t+1}
 $$
+
 同时满足{eq}`eqeul0`和{eq}`eqtv`，因此是从 $(a,z)$ 出发的唯一最优路径。
 
 因此，为了解决这个优化问题，我们需要计算策略 $\sigma^*$。
