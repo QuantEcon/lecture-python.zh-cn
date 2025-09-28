@@ -27,16 +27,16 @@ kernelspec:
 
 在之前，我们使用以下方法求解了随机最优增长模型：
 
-1. {doc}`值函数迭代 <optgrowth_fast>`
+1. {doc}`价值函数迭代 <optgrowth_fast>`
 1. {doc}`基于欧拉方程的时间迭代 <coleman_policy_iter>`
 
 我们发现时间迭代在准确性和效率方面都明显更好。
 
-在本讲中，我们将学习一种对时间迭代的巧妙变形，称为**内生网格方法**（EGM）。
+在本讲义中，我们将介绍时间迭代的一种巧妙变体，称为**内生网格法**（EGM）。
 
-EGM是由[Chris Carroll](http://www.econ2.jhu.edu/people/ccarroll/)发明的一种实现政策迭代的数值方法。
+EGM是由[Chris Carroll](http://www.econ2.jhu.edu/people/ccarroll/)发明的一种用于实现政策迭代的数值方法。
 
-原始参考文献是{cite}`Carroll2006`。
+该方法的原始参考文献是{cite}`Carroll2006`。
 
 让我们从一些标准导入开始：
 
@@ -53,13 +53,13 @@ from numba import jit
 
 ## 核心思想
 
-让我们先回顾一下理论，然后看看数值计算如何配合。
+我们首先回顾理论背景，然后说明数值方法如何融入其中。
 
 ### 理论
 
-采用{doc}`时间迭代讲座 <coleman_policy_iter>`中设定的模型，遵循相同的术语和符号。
+我们沿用{doc}`时间迭代 <coleman_policy_iter>`中的模型设定，遵循相同的术语和符号。
 
-欧拉方程为
+欧拉方程为：
 
 ```{math}
 :label: egm_euler
@@ -68,11 +68,11 @@ from numba import jit
 = \beta \int (u'\circ \sigma^*)(f(y - \sigma^*(y)) z) f'(y - \sigma^*(y)) z \phi(dz)
 ```
 
-如我们所见，Coleman-Reffett算子是一个非线性算子$K$，其设计使得$\sigma^*$是$K$的不动点。
+如前所示，Coleman-Reffett算子是一个非线性算子 $K$，其设计使得 $\sigma^*$ 是 $K$ 的不动点。
 
-它以一个连续严格递增的消费策略$\sigma \in \Sigma$作为参数。
+该算子以一个连续且严格递增的消费策略 $\sigma \in \Sigma$ 作为自变量。
 
-它返回一个新函数$K \sigma$，其中$(K \sigma)(y)$是满足以下方程的$c \in (0, \infty)$：
+它返回一个新函数 $K \sigma$，其中 $(K \sigma)(y)$ 是满足以下方程的 $c \in (0, \infty)$：
 
 ```{math}
 :label: egm_coledef
@@ -83,39 +83,39 @@ u'(c)
 
 ### 外生网格
 
-如{doc}`时间迭代讲座 <coleman_policy_iter>`中所讨论的，要在计算机上实现该方法，我们需要一个数值近似。
+如{doc}`时间迭代 <coleman_policy_iter>`中所述，为了在计算机上实现该方法，我们需要数值近似。
 
-具体来说，我们用有限网格上的一组值来表示策略函数。
+具体来说，我们通过在有限网格上取值的方式表示策略函数。
 
-在需要时，使用插值或其他方法从这种表示中重建函数本身。
+在需要时，使用插值或其他方法从该有限表示中重建原函数。
 
-{doc}`之前 <coleman_policy_iter>`，为了获得更新后消费策略的有限表示，我们
+在{doc}`时间迭代 <coleman_policy_iter>`中，为了获得更新后的消费策略的有限表示，我们：
 
-* 固定了一个收入点网格 $\{y_i\}$
-* 使用{eq}`egm_coledef`和一个寻根程序计算对应每个$y_i$的消费值$c_i$
+* 固定一组收入点 $\{y_i\}$；
+* 使用{eq}`egm_coledef`与求根算法，计算与每个 $y_i$ 对应的消费值 $c_i$。
 
-每个$c_i$被解释为函数$K \sigma$在$y_i$处的值。
+每个 $c_i$ 被解释为函数 $K \sigma$ 在 $y_i$ 处的值。
 
-因此，有了点$\{y_i, c_i\}$后，我们可以通过近似重建$K \sigma$。
+因此，有了点集 $\{y_i, c_i\}$，我们可以通过近似重建 $K \sigma$。
 
 然后继续迭代...
 
 ### 内生网格
 
-上述方法需要一个寻根程序来找到对应给定收入值$y_i$的$c_i$。
+上述方法需要通过求根算法来确定与给定收入值 $y_i$ 对应的消费水平 $c_i$。
 
-求根计算成本很高，因为它通常需要大量的函数求值。
+然而，求根运算的代价较高，因为其通常涉及大量函数求值。
 
-正如Carroll {cite}`Carroll2006`指出的那样，如果$y_i$是内生选择的，我们可以避免这种情况。
+正如Carroll {cite}`Carroll2006`所指出的，如果 $y_i$ 是内生选择的，则可避免这一过程。
 
-唯一需要的假设是$u'$在$(0, \infty)$上是可逆的。
+唯一需要的假设是：$u'$ 在 $(0, \infty)$ 上是可逆的。
 
-令$(u')^{-1}$为$u'$的反函数。
+令 $(u')^{-1}$ 为 $u'$ 的反函数。
 
-基本思路是：
+其核心思想如下：
 
-* 首先，我们为资本($k = y - c$)固定一个*外生*网格$\{k_i\}$。
-* 然后我们通过以下方式获得$c_i$
+* 首先，固定一个关于资本($k = y - c$)的*外生*网格 $\{k_i\}$；
+* 接着，根据以下公式求得 $c_i$:
 
 ```{math}
 :label: egm_getc
@@ -127,23 +127,23 @@ c_i =
 \right\}
 ```
 
-* 最后，对于每个$c_i$我们设定$y_i = c_i + k_i$。
+* 最后，对每个 $c_i$，设定 $y_i = c_i + k_i$。
 
-显然，以这种方式构造的每个$(y_i, c_i)$对都满足{eq}`egm_coledef`。
+显然，每个通过上述方式构建的 $(y_i, c_i)$ 都满足{eq}`egm_coledef`。
 
-有了这些点$\{y_i, c_i\}$，我们可以像之前一样通过近似重构$K \sigma$。
+有了点集 $\{y_i, c_i\}$，我们即可通过近似方法重建 $K \sigma$。
 
-EGM这个名称来源于网格$\{y_i\}$是**内生**决定的这一事实。
+新的EGM算法的关键在于：网格 $\{y_i\}$ 是**内生**决定的。
 
 ## 实现
 
-如{doc}`之前 <coleman_policy_iter>`，我们将从一个简单的设定开始，其中
+与{doc}`时间迭代 <coleman_policy_iter>`相同，我们从一个简单设定开始：
 
-* $u(c) = \ln c$，
-* 生产函数是柯布-道格拉斯形式，且
-* 冲击是对数正态分布。
+* $u(c) = \ln c$；
+* 生产函数是柯布-道格拉斯形式；
+* 冲击项服从对数正态分布。
 
-这将使我们能够与解析解进行比较
+这一设定使我们能够将数值解与解析解进行对比。
 
 ```{code-cell} ipython3
 :load: _static/lecture_specific/optgrowth/cd_analytical.py
@@ -157,7 +157,7 @@ EGM这个名称来源于网格$\{y_i\}$是**内生**决定的这一事实。
 
 ### 算子
 
-以下是使用EGM实现$K$的代码，如上所述。
+以下给出使用EGM方法实现算子 $K$ 的代码：
 
 ```{code-cell} ipython3
 @jit
@@ -190,18 +190,18 @@ def K(σ_array, og):
     return c
 ```
 
-注意这里没有任何求根算法。
+值得注意的是，该算法不需要求根算法。
 
 ### 测试
 
-首先我们创建一个实例。
+首先，我们创建一个实例。
 
 ```{code-cell} ipython3
 og = OptimalGrowthModel()
 grid = og.grid
 ```
 
-这是我们的求解程序：
+下面是求解程序：
 
 ```{code-cell} ipython3
 :load: _static/lecture_specific/coleman_policy_iter/solve_time_iter.py
@@ -214,7 +214,7 @@ grid = og.grid
 σ = solve_model_time_iter(og, σ_init)
 ```
 
-以下是结果策略与真实策略的比较：
+以下是得到的策略与真实策略的比较：
 
 ```{code-cell} ipython3
 y = grid + σ  # y_i = k_i + c_i
@@ -222,10 +222,10 @@ y = grid + σ  # y_i = k_i + c_i
 fig, ax = plt.subplots()
 
 ax.plot(y, σ, lw=2,
-        alpha=0.8, label='approximate policy function')
+        alpha=0.8, label='近似策略函数')
 
 ax.plot(y, σ_star(y, og.α, og.β), 'k--',
-        lw=2, alpha=0.8, label='true policy function')
+        lw=2, alpha=0.8, label='真实策略函数')
 
 ax.legend()
 plt.show()
@@ -237,15 +237,15 @@ plt.show()
 np.max(np.abs(σ - σ_star(y, og.α, og.β)))
 ```
 
-收敛需要多长时间？
+收敛所需的时间为：
 
 ```{code-cell} ipython3
 %%timeit -n 3 -r 1
 σ = solve_model_time_iter(og, σ_init, verbose=False)
 ```
 
-相对于时间迭代，EGM在没有任何数值求根步骤的情况下，仍然能够显著减少计算时间，同时保持高精度。
+相较于已被证明高度高效的时间迭代法，内生网格法（EGM）在保持精度不变的前提下，进一步显著减少了运行时间。
 
-这是因为没有数值求根步骤。
+其主要原因在于该方法不需要进行数值求根步骤。
 
-我们现在可以非常快速地求解给定参数的随机最优增长模型。
+因此，我们能够在给定参数下以极高的速度求解最优增长模型。
