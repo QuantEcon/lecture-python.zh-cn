@@ -9,15 +9,7 @@ kernelspec:
   name: python3
 ---
 
-```{raw} jupyter
-<div id="qe-notebook-header" align="right" style="text-align:right;">
-        <a href="https://quantecon.org/" title="quantecon.org">
-                <img style="width:250px;display:inline;" width="250px" src="https://assets.quantecon.org/img/qe-menubar-logo.svg" alt="QuantEcon">
-        </a>
-</div>
-```
-
-# {index}`收入波动问题 II：资产随机收益 <single: The Income Fluctuation Problem II: Stochastic Returns on Assets>`
+# 收入波动问题 II：资产随机收益
 
 ```{contents} 目录
 :depth: 2
@@ -36,13 +28,13 @@ tags: [hide-output]
 
 在本讲座中，我们继续研究 {doc}`收入波动问题 <ifp>`。
 
-虽然之前利率是固定的，但现在我们允许资产收益随状态变化。
+之前假设利率是固定的，但现在我们允许资产收益随状态变化。
 
-这符合大多数拥有正资产的家庭面临某种资本收入风险的事实。
+这符合大多数拥有正资产的家庭面临资本收入风险这一事实。
 
 有人认为，建模资本收入风险对于理解收入和财富的联合分布至关重要（参见，例如，{cite}`benhabib2015` 或 {cite}`stachurski2019impossibility`）。
 
-本文提出的家庭储蓄模型的理论特性在 {cite}`ma2020income` 中有详细分析。
+本文提出的家庭储蓄模型的理论性质在 {cite}`ma2020income` 中有详细分析。
 
 在计算方面，我们结合时间迭代和内生网格方法来快速准确地求解模型。
 
@@ -50,11 +42,6 @@ tags: [hide-output]
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
-import matplotlib as mpl
-FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
-mpl.font_manager.fontManager.addfont(FONTPATH)
-plt.rcParams['font.family'] = ['Source Han Serif SC']
-
 import numpy as np
 from numba import jit, float64
 from numba.experimental import jitclass
@@ -63,7 +50,7 @@ from quantecon import MarkovChain
 
 ## 储蓄问题
 
-在本节中，我们回顾家庭问题和最优性结果。
+在本节中，我们回顾家庭问题及其最优性结果。
 
 ### 设定
 
@@ -87,7 +74,7 @@ a_{t+1} = R_{t+1} (a_t - c_t) + Y_{t+1}
 
 初始条件 $(a_0, Z_0)=(a,z)$ 视为给定。
 
-注意 $\{R_t\}_{t \geq 1}$，即财富的总收益率，允许是随机的。
+注意，财富的总收益率序列 ${R_t}_{t \geq 1}$ 允许是随机的。
 
 序列 $\{Y_t \}_{t \geq 1}$ 是非金融收入。
 
@@ -104,8 +91,8 @@ Y_t = Y(Z_t, \eta_t),
 其中
 
 * 映射 $R$ 和 $Y$ 是时不变的非负函数，
-* 创新过程 $\{\zeta_t\}$ 和 $\{\eta_t\}$ 是独立同分布的且相互独立，
-* $\{Z_t\}_{t \geq 0}$ 是有限集 $\mathsf Z$ 上的不可约时齐马尔可夫链
+* 创新过程 $\{\zeta_t\}$ 和 $\{\eta_t\}$ 独立同分布且相互独立，
+* $\{Z_t\}_{t \geq 0}$ 是有限集 $\mathsf Z$ 上的不可约齐次马尔可夫链
 
 令 $P$ 表示链 $\{Z_t\}_{t \geq 0}$ 的马尔可夫矩阵。
 
@@ -115,9 +102,9 @@ Y_t = Y(Z_t, \eta_t),
 
 ### 假设
 
-我们需要一些限制来确保目标 {eq}`trans_at` 是有限的，并且下面描述的解方法收敛。
+我们需要一些限制条件来确保目标 {eq}`trans_at` 是有限的，并且下面描述的解法能够收敛。
 
-我们还需要确保财富的现值不会增长得太快。
+我们还需要确保财富的现值值不会增长得太快。
 
 当 $\{R_t\}$ 是常数时，我们要求 $\beta R < 1$。
 
@@ -132,19 +119,18 @@ G_R := \lim_{n \to \infty}
 \left(\mathbb E \prod_{t=1}^n R_t \right)^{1/n}
 ```
 
-注意，当 $\{R_t\}$ 取某个常数值 $R$ 时，这简化为之前的限制 $\beta R < 1$
+注意，当 $\{R_t\}$ 取某个常数值 $R$ 时，这一条件简化为之前的限制 $\beta R < 1$
 
 值 $G_R$ 可以理解为长期（几何）平均总收益率。
 
-{eq}`fpbc2` 背后的更多直觉在 {cite}`ma2020income` 中提供。
+{cite}`ma2020income`提供了{eq}`fpbc2` 背后的更多直觉。
 
-下面讨论了如何检查它。
+我们在下面讨论如何检验该条件。
 
-最后，我们对非金融收入施加一些常规技术限制。
+最后，我们对非金融收入施加一些常规的技术性限制：
 
 $$
 \mathbb E \, Y_t < \infty \text{ 且 } \mathbb E \, u'(Y_t) < \infty
-\label{a:y0}
 $$
 
 一个相对简单且满足所有这些限制的环境是 {cite}`benhabib2015` 的独立同分布和 CRRA 环境。
@@ -155,8 +141,8 @@ $$
 
 在 {cite}`ma2020income` 中证明，在所述假设下，
 
-* 满足欧拉方程的任意 $\sigma \in \mathscr C$ 是最优政策，且
-* $\mathscr C$ 中恰好存在一个这样的政策。
+* 任何满足欧拉方程的 $\sigma \in \mathscr C$ 都是最优政策，且
+* 在 $\mathscr C$ 中恰好存在一个这样的政策。
 
 在当前设定中，欧拉方程的形式为
 
@@ -177,12 +163,9 @@ $$
 
 ## 求解算法
 
-```{index} single: Optimal Savings; Computation
-```
-
 ### 时间迭代算子
 
-我们对候选类 $\sigma \in \mathscr C$ 消费政策的定义与我们在 {doc}`早期讲座 <ifp>` 中关于收入波动问题的定义相同。
+我们对候选类 $\sigma \in \mathscr C$ 消费政策的定义与{doc}`之前关于收入波动问题的讲座 <ifp>`中的定义相同。
 
 对于固定的 $\sigma \in \mathscr C$ 和 $(a,z) \in \mathbf S$，函数 $K\sigma$ 在 $(a,z)$ 处的值 $K\sigma(a,z)$ 定义为满足以下方程的 $\xi \in (0,a]$
 
@@ -197,13 +180,13 @@ u'(\xi) =
        \right\}
 ```
 
-$K$ 背后的思想是，从定义可以看出，$\sigma \in \mathscr C$ 满足欧拉方程当且仅当对于所有 $(a, z) \in \mathbf S$ 有 $K\sigma(a, z) = \sigma(a, z)$。
+$K$ 背后的思想是，从定义可以看出，$\sigma \in \mathscr C$ 满足欧拉方程当且仅当对于所有 $(a, z) \in \mathbf S$ 都有 $K\sigma(a, z) = \sigma(a, z)$。
 
-这意味着 $K$ 在 $\mathscr C$ 中的不动点和最优消费政策完全重合（参见 {cite}`ma2020income` 了解更多细节）。
+这意味着 $K$ 在 $\mathscr C$ 中的不动点和最优消费政策完全重合（更多细节参见 {cite}`ma2020income`）。
 
 ### 收敛性质
 
-如前所述，我们将 $\mathscr C$ 与距离配对
+如前所述，我们在 $\mathscr C$ 上定义如下度量
 
 $$
 \rho(c,d)
@@ -216,11 +199,11 @@ $$
 
 可以证明
 
-1. $(\mathscr C, \rho)$ 是一个完全度量空间，
+1. $(\mathscr C, \rho)$ 是一个完备度量空间，
 1. 存在一个整数 $n$ 使得 $K^n$ 是 $(\mathscr C, \rho)$ 上的压缩映射，且
 1. $K$ 在 $\mathscr C$ 中的唯一不动点是 $\mathscr C$ 中的唯一最优政策。
 
-我们现在有了一个清晰的路径来成功逼近最优政策：选择某个 $\sigma \in \mathscr C$ 然后用 $K$ 迭代直到收敛（用距离 $\rho$ 衡量）。
+现在，我们有了一个清晰的路径来成功地逼近最优政策：选择某个 $\sigma \in \mathscr C$ 然后用 $K$ 迭代直到收敛（用距离 $\rho$ 衡量）。
 
 ### 使用内生网格
 
@@ -240,13 +223,13 @@ $$
 
 对于相应的 $a_0, c_0$ 对，我们有 $a_0 = c_0$。
 
-这发生在接近原点的地方，那里资产较低，家庭消费其所能消费的一切。
+这发生在接近原点的地方，资产较低，家庭消费其所能消费的一切。
 
 虽然有许多解，但我们取 $a_0 = c_0 = 0$，这固定了原点处的政策，有助于插值。
 
 对于 $s > 0$，根据定义，我们有 $c < a$，因此消费是内部的。
 
-因此 {eq}`ifpa_euler` 的最大值部分消失，我们求解
+因此 {eq}`ifpa_euler` 的最大值部分消失，我们在每个 $s_i$ 处求解
 
 ```{math}
 :label: eqsifc2
@@ -260,15 +243,13 @@ c_i =
 \right\}
 ```
 
-在每个 $s_i$ 处。
-
 #### 迭代
 
-一旦我们有对 $\{s_i, c_i\}$，内生资产网格通过 $a_i = c_i + s_i$ 获得。
+一旦我们得到 ${s_i, c_i}$ 对，内生资产网格通过 $a_i = c_i + s_i$ 获得。
 
-另外，我们在上面的讨论中固定了 $z \in \mathsf Z$，所以我们可以将其与 $a_i$ 配对。
+另外，在上面的讨论中我们固定了 $z \in \mathsf Z$，所以可以将其与 $a_i$ 配对。
 
-通过在每个 $z$ 处插值 $\{a_i, c_i\}$ 可以获得政策 $(a, z) \mapsto \sigma(a, z)$ 的近似。
+通过在每个 $z$ 上对 ${a_i, c_i}$ 插值，就可以得到政策 $(a,z) \mapsto \sigma(a,z)$ 的近似。
 
 在下面的内容中，我们使用线性插值。
 
@@ -276,25 +257,25 @@ c_i =
 
 时间迭代的收敛性依赖于条件 $\beta G_R < 1$ 的满足。
 
-可以使用以下事实来检查这一点：$G_R$ 等于矩阵 $L$ 的谱半径，其中 $L$ 定义为
+我们可以利用 $G_R$ 等于矩阵 $L$ 的谱半径这一事实来检验。矩阵 $L$ 定义为
 
 $$
 L(z, \hat z) := P(z, \hat z) \int R(\hat z, x) \phi(x) dx
 $$
 
-这个等式在 {cite}`ma2020income` 中证明，其中 $\phi$ 是资产收益创新 $\zeta_t$ 的密度。
+这个恒等式在 {cite}`ma2020income` 中得到证明，其中 $\phi$ 是资产收益创新 $\zeta_t$ 的密度函数。
 
-（记住 $\mathsf Z$ 是一个有限集，所以这个表达式定义了一个矩阵。）
+（注意，$\mathsf Z$ 是一个有限集，所以这个表达式定义了一个矩阵。）
 
-当 $\{R_t\}$ 是独立同分布时，检查条件甚至更容易。
+当 $\{R_t\}$ 是独立同分布时，检查这一条件甚更容易。
 
 在这种情况下，从 $G_R$ 的定义可以清楚地看出 $G_R$ 就是 $\mathbb E R_t$。
 
-我们在下面的代码中测试条件 $\beta \mathbb E R_t < 1$。
+我们在下面的代码中检验条件 $\beta \mathbb E R_t < 1$。
 
 ## 实现
 
-我们将假设 $R_t = \exp(a_r \zeta_t + b_r)$，其中 $a_r, b_r$ 是常数，$\{ \zeta_t\}$ 是独立同分布的标准正态。
+我们将假设 $R_t = \exp(a_r \zeta_t + b_r)$，其中 $a_r, b_r$ 是常数，$\{\zeta_t\}$ 是独立同分布的标准正态。
 
 我们允许劳动收入相关，即
 
@@ -302,16 +283,16 @@ $$
 Y_t = \exp(a_y \eta_t + Z_t b_y)
 $$
 
-其中 $\{ \eta_t\}$ 也是独立同分布的标准正态，$\{ Z_t\}$ 是取值于 $\{0, 1\}$ 的马尔可夫链。
+其中 $\{\eta_t\}$ 也是独立同分布的标准正态，$\{ Z_t\}$ 是取值于 $\{0, 1\}$ 的马尔可夫链。
 
 ```{code-cell} ipython
 ifp_data = [
     ('γ', float64),              # 效用参数
-    ('β', float64),              # 贴现因子
+    ('β', float64),              # 折现因子
     ('P', float64[:, :]),        # z_t 的转移概率
-    ('a_r', float64),            # R_t 的比例参数
+    ('a_r', float64),            # R_t 的尺度参数
     ('b_r', float64),            # R_t 的加性参数
-    ('a_y', float64),            # Y_t 的比例参数
+    ('a_y', float64),            # Y_t 的尺度参数
     ('b_y', float64),            # Y_t 的加性参数
     ('s_grid', float64[:]),      # 储蓄网格
     ('η_draws', float64[:]),     # 用于 MC 的创新 η 的抽取
@@ -323,7 +304,7 @@ ifp_data = [
 @jitclass(ifp_data)
 class IFP:
     """
-    存储收入波动问题原语的类。
+    用于收入波动问题的基本类
     """
 
     def __init__(self,
@@ -340,7 +321,7 @@ class IFP:
                  grid_size=100,
                  seed=1234):
 
-        np.random.seed(seed)  # 任意种子
+        np.random.seed(seed)  # 任意随机种子
 
         self.P, self.γ, self.β = P, γ, β
         self.a_r, self.b_r, self.a_y, self.b_y = a_r, b_r, a_y, b_y
@@ -348,16 +329,16 @@ class IFP:
         self.ζ_draws = np.random.randn(shock_draw_size)
         self.s_grid = np.linspace(0, grid_max, grid_size)
 
-        # 假设 {R_t} 是独立同分布且采用下面给定的对数正态
-        # 规格来测试稳定性。测试是 β E R_t < 1。
+        # 假设 ${R_t}$ 独立同分布并服从下面给定的对数正态分布设定，进行稳定性检验。
+        # 检验 β E R_t < 1。
         ER = np.exp(b_r + a_r**2 / 2)
-        assert β * ER < 1, "稳定性条件失败。"
+        assert β * ER < 1, "稳定性条件不成立。"
 
     # 边际效用
     def u_prime(self, c):
         return c**(-self.γ)
 
-    # 边际效用的逆
+    # 边际效用的逆函数
     def u_prime_inv(self, c):
         return c**(-1/self.γ)
 
@@ -422,7 +403,7 @@ def K(a_in, σ_in, ifp):
     return a_out, σ_out
 ```
 
-下一个函数通过时间迭代求解最优消费政策的近似：
+下一个函数通过时间迭代求解最优消费政策的近似。
 
 ```{code-cell} ipython
 def solve_model_time_iter(model,        # 包含模型信息的类
@@ -442,27 +423,27 @@ def solve_model_time_iter(model,        # 包含模型信息的类
         error = np.max(np.abs(σ_vec - σ_new))
         i += 1
         if verbose and i % print_skip == 0:
-            print(f"迭代 {i} 处的误差是 {error}。")
+            print(f"第{i}迭代的误差是 {error}。")
         a_vec, σ_vec = np.copy(a_new), np.copy(σ_new)
 
     if error > tol:
         print("未能收敛！")
     elif verbose:
-        print(f"\n在 {i} 次迭代后收敛。")
+        print(f"\n在第{i}次迭代中收敛。")
 
     return a_new, σ_new
 ```
 
-现在我们已经准备好用默认参数创建一个实例。
+现在我们可以用默认参数创建一个实例。
 
 ```{code-cell} ipython
 ifp = IFP()
 ```
 
-接下来我们设置一个初始条件，对应于消费所有资产。
+接下来我们设置一个初始条件，对应“消费掉所有资产”。
 
 ```{code-cell} ipython
-# σ = 消费所有资产的初始猜测
+# 初始猜测 σ = 消费所有资产
 k = len(ifp.s_grid)
 n = len(ifp.P)
 σ_init = np.empty((k, n))
@@ -488,17 +469,17 @@ plt.legend()
 plt.show()
 ```
 
-注意，我们在资产空间的较低范围内消费所有资产。
+注意，在资产空间的较低区间，我们会消费掉所有资产。
 
-这是因为我们预期明天会有收入 $Y_{t+1}$，这使得储蓄的需求不那么迫切。
+这是因为我们预期下一期会有收入 $Y_{t+1}$，因此储蓄的紧迫性较低。
 
-你能解释为什么当 $z=0$ 时，消费所有资产结束得更早（对于较低的资产值）吗？
+你能解释为什么在 $z=0$ 时，消费掉所有资产会更早结束（即在较低的资产水平就停止）吗？
 
-### 运动定律
+### 运动规律
 
-让我们尝试了解在这种消费政策下资产长期会发生什么。
+让我们试着了解，在这种消费政策下，从长期来看资产会如何变化。
 
-与我们在 {doc}`早期讲座 <ifp>` 中关于收入波动问题的内容一样，我们首先制作一个 45 度图，显示资产的运动定律：
+与我们在 {doc}`之前关于收入波动问题的讲座<ifp>` 中一样，我们首先制作一个 45 度图，展示资产的运动规律：
 
 ```{code-cell} python3
 # 好状态和坏状态的平均劳动收入
@@ -518,7 +499,7 @@ ax.legend()
 plt.show()
 ```
 
-实线代表，对于每个 $z$，资产的平均更新函数，由下式给出：
+图中实线表示对于每个 $z$，资产的平均更新函数，由下式给出：
 
 $$
 a \mapsto \bar R (a - \sigma^*(a, z)) + \bar Y(z)
@@ -526,27 +507,27 @@ $$
 
 其中
 
-* $\bar R = \mathbb E R_t$，即平均收益，且
-* $\bar Y(z) = \mathbb E_z Y(z, \eta_t)$，即状态 $z$ 中的平均劳动收入。
+* $\bar R = \mathbb E R_t$，即平均收益率，且
+* $\bar Y(z) = \mathbb E_z Y(z, \eta_t)$，即状态 $z$ 下的平均劳动收入。
 
 虚线是 45 度线。
 
-从图中我们可以看到，即使在最高状态下，动态也是稳定的 --- 资产不会发散。
+从图中可以看出，动态是稳定的——即使在最高的状态下，资产也不会发散。
 
 ## 练习
 
 ```{exercise}
 :label: ifpa_ex1
 
-让我们重复 {ref}`早期练习 <ifp_ex2>` 关于资产的长期横截面分布。
+让我们重复 {ref}`之前的练习 <ifp_ex2>`，研究资产的长期横截面分布。
 
 在那个练习中，我们使用了一个相对简单的收入波动模型。
 
-在解决方案中，我们发现资产分布的形状不切实际。
+在解答中，我们发现资产分布的形状不切实际。
 
-特别是，我们未能匹配财富分布的长期右尾。
+特别是，我们未能匹配财富分布的长右尾。
 
-你的任务是再次尝试，重复练习，但现在使用我们更复杂的模型。
+你的任务是再次尝试这个练习，但这一次使用我们更复杂的模型。
 
 使用默认参数。
 ```
@@ -555,11 +536,11 @@ $$
 :class: dropdown
 ```
 
-首先我们写一个函数来计算长期资产序列。
+首先我们编写一个函数来生成一个较长的资产序列。
 
-因为我们想要 JIT 编译这个函数，所以我们以一种打破了一些良好编程风格规则的方式编写解决方案。
+因为我们希望用 JIT 来编译函数，所以在写代码时不得不打破一些良好的编程风格。
 
-例如，我们将传入解 `a_star, σ_star` 以及 `ifp`，即使更自然的方式是只传入 `ifp` 然后在函数内求解。
+例如，我们会把解  `a_star, σ_star` 以及 `ifp` 一起传入，尽管更自然的方式是只传入 `ifp` 然后在函数内求解。
 
 我们这样做的原因是 `solve_model_time_iter` 不是 JIT 编译的。
 
@@ -567,8 +548,7 @@ $$
 @jit
 def compute_asset_series(ifp, a_star, σ_star, z_seq, T=500_000):
     """
-    模拟长度为 T 的资产时间序列，给定最优
-    储蓄行为。
+    在最优储蓄行为下，模拟长度为 T 的资产时间序列
 
         * ifp 是 IFP 的实例
         * a_star 是内生网格解
@@ -591,7 +571,7 @@ def compute_asset_series(ifp, a_star, σ_star, z_seq, T=500_000):
     return a
 ```
 
-现在让我们调用这个函数，生成序列并绘制直方图，使用上面计算的解：
+接下来，我们调用该函数，生成资产序列，并利用上面的解来绘制直方图。
 
 ```{code-cell} python3
 T = 1_000_000
@@ -606,9 +586,9 @@ ax.set(xlabel='资产')
 plt.show()
 ```
 
-现在我们已经成功地复制了财富分布的长期右尾。
+我们现在已经成功再现了财富分布的长右尾。
 
-这是使用水平小提琴图的另一个视图：
+下面用一张水平小提琴图来展示这一结果的另一种视角。
 
 ```{code-cell} python3
 fig, ax = plt.subplots()
