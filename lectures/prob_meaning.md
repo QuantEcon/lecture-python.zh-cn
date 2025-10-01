@@ -580,9 +580,9 @@ fig, ax = plt.subplots(figsize=(10, 6))
 for ii, num in enumerate(num_list[14:]):
     ii += 14
     ax.plot(θ_values, Bay_stat.posterior_list[ii].pdf(θ_values),
-            label='Posterior with n=%d thousand' % (num/1000))
+            label='后验分布（样本量 = %d 千）' % (num / 1000))
 
-ax.set_title('P.D.F of Posterior Distributions', fontsize=15)
+ax.set_title('后验分布的概率密度函数', fontsize=15)
 ax.set_xlabel(r"$\theta$", fontsize=15)
 ax.set_xlim(0.3, 0.5)
 
