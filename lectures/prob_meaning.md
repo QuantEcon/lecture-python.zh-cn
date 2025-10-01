@@ -54,6 +54,10 @@ import prettytable as pt
 import matplotlib.pyplot as plt
 from scipy.stats import binom
 import scipy.stats as st
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
 ```
 
 有了这些Python工具，我们现在来探索上述两种含义。
