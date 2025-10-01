@@ -38,6 +38,11 @@ kernelspec:
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 ```
 ## 模型
@@ -213,7 +218,7 @@ x_grid = np.linspace(0.1, 5, 100)
 
 fig, ax = plt.subplots()
 
-ax.plot(x_grid, v_star(x_grid, β, γ), label='value function')
+ax.plot(x_grid, v_star(x_grid, β, γ), label='价值函数')
 
 ax.set_xlabel('$x$', fontsize=12)
 ax.legend(fontsize=12)
