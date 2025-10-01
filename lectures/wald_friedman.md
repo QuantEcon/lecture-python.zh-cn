@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.11.5
+    jupytext_version: 1.17.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -33,26 +33,30 @@ kernelspec:
 
 ## 概述
 
-本讲座描述了二战期间提交给弥尔顿·弗里德曼和W·艾伦·沃利斯的一个统计决策问题，当时他们是分析师在
+这是关于一个统计决策问题的两个讲座中的第一个。这个问题是二战期间，当弥尔顿·弗里德曼和W·艾伦·沃利斯在哥伦比亚大学的美国政府统计研究组担任分析师时，一位美国海军上尉向他们提出的。
 
-美国哥伦比亚大学政府统计研究组。
+这个问题促使亚伯拉罕·瓦尔德{cite}`Wald47`提出了**序贯分析**，这是一种与动态规划密切相关的统计决策问题处理方法。
 
-这个问题促使Abraham Wald {cite}`Wald47` 提出了**序贯分析**，
-这是一种与动态规划密切相关的统计决策问题方法。
+本讲座及其{doc}`续篇 <wald_friedman_2>`延续了{doc}`之前讲座 <prob_meaning>`的精神，从频率主义和贝叶斯两个不同的角度来处理这个问题。
 
-在本讲中，我们将动态规划算法应用于Friedman、Wallis和Wald的问题。
+在本讲中，我们从一位统计学家的角度描述Wald的问题表述，这位统计学家遵循Neyman-Pearson的频率派统计学传统，关注假设检验，并因此使用大数定律来研究在给定**假设**下特定统计量的极限性质，即，一个**参数**向量确定了统计学家感兴趣的统计模型簇中的某个特定成员。
 
-主要涉及的概念包括：
+  * 从{doc}`这节关于频率派和贝叶斯统计的讲座<prob_meaning>`中，请记住频率派统计学家经常计算随机变量序列的函数，以参数向量为条件。
 
-- 贝叶斯定理
-- 动态规划
+在{doc}`这个相关讲座<wald_friedman_2>`中，我们将讨论另一种表述方法，它采用**贝叶斯统计学家**的视角，将参数视为与他所关心的可观测变量共同分布的随机变量。
+
+因为我们采用的是关注在不同参数值（即不同**假设**）条件下相对频率的频率派视角，本讲的关键概念包括：
+
 - 第一类和第二类统计错误
     - 第一类错误是指在原假设为真时拒绝原假设
     - 第二类错误是指在原假设为假时接受原假设
-- Abraham Wald的**序贯概率比检验**
-- 统计检验的**功效**
+- 频率派统计检验的**检验效能**
+- 频率派统计检验的**显著性水平**
+
 - 统计检验的**临界区域**
 - **一致最优检验**
+- 大数定律(LLN)在解释频率统计检验的**功效**和**规模**中的作用
+- 亚伯拉罕·瓦尔德的**序贯概率比检验**
 
 我们先导入一些包：
 
@@ -64,786 +68,1196 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
-from numba import jit, prange, float64, int64
+from numba import njit, prange, vectorize, jit
 from numba.experimental import jitclass
 from math import gamma
+from scipy.integrate import quad
+from scipy.stats import beta
+from collections import namedtuple
+import pandas as pd
+import scipy as sp
 ```
 
-本讲座使用了{doc}`本讲座 <likelihood_ratio_process>`、{doc}`本讲座 <likelihood_bayes>`和{doc}`本讲座 <exchangeable>`中研究的概念。
+本讲座运用了{doc}`似然比过程讲座<likelihood_ratio_process>`和{doc}`贝叶斯学习讲座<likelihood_bayes>`中研究的概念。
 
-## 问题的起源
+## 问题的来源
 
-在米尔顿·弗里德曼与罗斯·弗里德曼1998年合著的《两个幸运儿》一书第137-139页{cite}`Friedman98`中，米尔顿·弗里德曼描述了二战期间他和艾伦·沃利斯在哥伦比亚大学美国政府统计研究组工作时遇到的一个问题。
+在米尔顿·弗里德曼与罗斯·弗里德曼1998年合著的《两个幸运儿》一书的137-139页{cite}`Friedman98`中，米尔顿·弗里德曼描述了二战期间他和艾伦·沃利斯在哥伦比亚大学美国政府统计研究组工作时遇到的一个问题。
 
 ```{note}
-参见艾伦·沃利斯1980年发表的文章{cite}`wallis1980statistical`第25和26页，其中讲述了二战期间在哥伦比亚大学统计研究组的这段经历，以及哈罗德·霍特林对问题形成所做的重要贡献。另见珍妮弗·伯恩斯关于米尔顿·弗里德曼的著作{cite}`Burns_2023`第5章。
+参见艾伦·沃利斯1980年发表的文章{cite}`wallis1980statistical`第25和26页，其中讲述了二战期间在哥伦比亚大学统计研究组的这段经历，以及哈罗德·霍特林对问题形成所作出的重要贡献。另见珍妮弗·伯恩斯关于米尔顿·弗里德曼的著作{cite}`Burns_2023`第5章。
 ```
 
-让我们听听米尔顿·弗里德曼是如何讲述这件事的
+让我们听听米尔顿·弗里德曼是如何讲述这件事的：
 
-> 为了理解这个故事，有必要先了解一个
+> 要理解这个故事，需要先了解一个简单的统计问题及其标准处理程序。序贯分析由此产生的实际问题就很合适。海军有两种备选的炮弹设计（比如说A和B），想要确定哪一个更好。为此，海军进行了一系列成对的试射。每一轮中，如果A的表现优于B，则给A记1分，B记0分；反之，如果A的表现不如B，则给A记0分，B记1分。海军请统计学家
 
-> 这是一个简单的统计问题，以及处理它的标准程序。让我们以顺序分析发展的实际问题为例。海军有两种备选的炮弹设计（比如说A和B）。他们想要确定哪一种更好。为此，他们进行了一系列成对的发射试验。在每一轮中，如果A的性能优于B，则给A赋值1，B赋值0；反之，如果A的性能劣于B，则给A赋值0，B赋值1。海军请统计学家告诉他们如何进行测试并分析结果。
+> 如何进行测试以及如何分析结果。
 
-> 标准的统计学答案是指定发射次数（比如1,000次）和一对百分比（例如，53%和47%），并告诉客户：如果A在超过53%的发射中获得1，则可以认为A更优；如果A在少于47%的发射中获得1，则可以认为B更优；如果百分比在47%和53%之间，则无法得出任何一方更优的结论。
+> 标准的统计答案是指定发射次数(比如1,000次)和一对百分比(例如53%和47%),并告诉客户如果A在超过53%的发射中获得1分,就可以认为A更优;如果在少于47%的发射中获得1分,则可以认为B更优;如果百分比在47%到53%之间,则两者都不能被认为更优。
 
-> 当艾伦·沃利斯与（海军）加勒特·L·施莱尔上尉讨论这样一个问题时，
-> 上尉提出反对意见，引用艾伦的说法，这样的测试可能会造成浪费。如果
-> 像施莱尔这样明智且经验丰富的军需官在现场，他在看到前几千发甚至
-> 前几百发[弹药]后就会发现实验不需要完成，要么是因为新方法明显
-> 较差，要么是因为它明显优于预期$\ldots$。
+> 当Allen Wallis与(海军)Garret L. Schuyler上尉讨论这个问题时,上尉反对这样的测试,引用Allen的说法,这可能会造成浪费。如果像Schuyler这样明智且经验丰富的军需官在现场,他在前几千发甚至前几百发[弹药]后就会发现实验不需要完成,要么是因为新方法明显较差,要么是因为它明显优于预期$\ldots$。
 
-弗里德曼和沃利斯为这个问题苦苦挣扎，但在意识到他们无法解决后，
-向亚伯拉罕·瓦尔德描述了这个问题。
+Friedman和Wallis研究了这个问题一段时间但没有完全解决它。
 
-这让瓦尔德开始了通往*序贯分析*{cite}`Wald47`的道路。
+意识到这一点后,他们把这个问题告诉了Abraham Wald。
 
-我们将使用动态规划来阐述这个问题。
+这让Wald走上了一条创造*序贯分析*{cite}`Wald47`的道路。
 
-## 动态规划方法
+## Neyman-Pearson公式
 
-以下对问题的介绍紧密遵循德米特里·伯斯克卡斯在**动态规划与随机控制**{cite}`Bertekas75`中的处理方式。
+从描述美国海军告诉G. S. Schuyler上尉使用的测试背后的理论开始会很有帮助。
 
-决策者可以观察一个随机变量$z$的一系列抽样。
+Schuyler上尉的疑虑促使他向Milton Friedman和Allen Wallis表达了他的推测,即存在更好的实践程序。
 
-他（或她）想要知道是概率分布$f_0$还是$f_1$支配着$z$。
+显然，海军当时要求Schuyler上校使用当时最先进的Neyman-Pearson假设检验。
 
-在已知连续观测值是从分布$f_0$中抽取的条件下，这个随机变量序列是独立同分布的（IID）。
+我们将依据Abraham Wald的{cite}`Wald47`对Neyman-Pearson理论的优雅总结。
 
-在已知连续观测值是从分布$f_1$中抽取的条件下，这个随机变量序列也是独立同分布的（IID）。
+请注意以下设置特点：
 
-但观察者并不知道是哪一个分布生成了这个序列。
+- 假定*固定*样本量$n$
+- 应用大数定律（在不同概率模型条件下）来解释Neyman-Pearson理论中定义的第一类错误和第二类错误的概率$\alpha$和$\beta$
 
-由[可交换性和贝叶斯更新](https://python.quantecon.org/exchangeable.html)中解释的原因，这意味着该序列不是独立同分布的。
+在**序贯分析**{cite}`Wald47`第一章中，Abraham Wald总结了Neyman-Pearson的假设检验方法。
 
-观察者有需要学习的东西，即观测值是从$f_0$还是从$f_1$中抽取的。
+Wald将问题框定为对部分已知的概率分布做出决策。
 
-决策者想要决定是哪一个分布在生成这些结果。
+（你必须假设*某些*内容是已知的，才能提出一个明确的问题 -- 通常，*某些*意味着*很多*）
 
-我们采用贝叶斯公式。
+通过限制未知部分，Wald使用以下简单结构来说明主要思想：
 
-决策者从先验概率开始
+- 决策者想要决定两个分布$f_0$、$f_1$中哪一个支配独立同分布随机变量$z$。
+- 原假设$H_0$是指$f_0$支配数据的陈述。
+- 备择假设$H_1$是指$f_1$支配数据的陈述。
+- 问题是基于固定数量$n$个独立观测值$z_1, z_2, \ldots, z_n$设计并分析一个检验原假设$H_0$对备择假设$H_1$的检验。
 
-$$
-\pi_{-1} =
-\mathbb P \{ f = f_0 \mid \textrm{ no observations} \} \in (0, 1)
-$$
+引用Abraham Wald的话：
 
-在观察到$k+1$个观测值$z_k, z_{k-1}, \ldots, z_0$后，他更新其个人对观测值由分布$f_0$描述的概率为
+> 导致接受或拒绝[零]假设的检验程序，简单来说就是一个规则，它为每个可能的样本量
+> $n$规定是否应该基于该样本接受或拒绝[零]假设。这也可以表述如下：检验程序
+> 就是将所有可能的样本量$n$的总体划分为两个互斥的部分，比如说第1部分和第2部分，
+> 同时应用这样的规则：如果观察到的样本包含在第2部分中，则接受[零]假设。第1部分
+> 也被称为临界区域。由于第2部分是所有不包含在第1部分中的样本量$n$的总体，
+> 第2部分由第1部分唯一确定。因此，选择检验程序等同于确定临界区域。
 
-$$
-\pi_k = \mathbb P \{ f = f_0 \mid z_k, z_{k-1}, \ldots, z_0 \}
-$$
+让我们继续听Wald的话：
 
-这是通过递归应用贝叶斯法则计算得出：
+> Neyman和Pearson提出了以下选择临界区域的考虑因素：在接受或拒绝$H_0$时，
+> 我们可能犯两种错误。当$H_0$为真而我们拒绝它时，我们犯第一类错误；当
+> $H_1$为真而我们接受$H_0$时，我们犯第二类错误。在选定特定的临界区域
+> $W$之后，犯第一类错误的概率以及犯第二类错误的概率
 
-$$
-\pi_{k+1} = \frac{ \pi_k f_0(z_{k+1})}{ \pi_k f_0(z_{k+1}) + (1-\pi_k) f_1 (z_{k+1}) },
-\quad k = -1, 0, 1, \ldots
-$$
+> 第一类错误是唯一确定的。第一类错误的概率等于在假设$H_0$为真的条件下，观察到的样本落入临界区域$W$的概率。第二类错误的概率等于在假设$H_1$为真的条件下，概率落在临界区域$W$之外的概率。对于任何给定的临界区域$W$，我们用$\alpha$表示第一类错误的概率，用$\beta$表示第二类错误的概率。
 
-在观察到$z_k, z_{k-1}, \ldots, z_0$后，决策者认为$z_{k+1}$具有概率分布
+让我们仔细听听Wald如何运用大数定律来解释$\alpha$和$\beta$：
 
-$$
-f_{{\pi}_k} (v) = \pi_k f_0(v) + (1-\pi_k) f_1 (v) ,
-$$
+> 概率$\alpha$和$\beta$有以下重要的实际解释：假设我们抽取大量规模为$n$的样本。设$M$为抽取的样本数。假设对于这$M$个样本中的每一个，如果样本落入$W$则拒绝$H_0$，如果样本落在$W$之外则接受$H_0$。通过这种方式，我们做出$M$个拒绝或接受的判断。这些判断中的一些通常会是错误的。如果$H_0$为真且$M$很大，则错误判断的比例（即错误判断数除以$M$）约为$\alpha$的概率接近于$1$（即几乎可以确定）。如果$H_1$为真，则错误判断的比例约为
 
-这是分布$f_0$和$f_1$的混合，其中$f_0$的权重是$f = f_0$的后验概率[^f1]。
+> 错误陈述的比例将大约为$\beta$。
+> 因此，我们可以说从长远来看[这里Wald应用大数定律，让$M \rightarrow \infty$（这是我们的注释，不是Wald的）]，如果$H_0$为真，错误陈述的比例将是$\alpha$，如果$H_1$为真，则为$\beta$。
 
-为了说明这样的分布，让我们检查一些beta分布的混合。
+量$\alpha$被称为临界区域的*大小*，而量$1-\beta$被称为临界区域的*检验力*。
 
-具有参数 $a$ 和 $b$ 的贝塔概率分布的密度函数为
+Wald指出
 
-$$
-f(z; a, b) = \frac{\Gamma(a+b) z^{a-1} (1-z)^{b-1}}{\Gamma(a) \Gamma(b)}
-\quad \text{其中} \quad
-\Gamma(t) := \int_{0}^{\infty} x^{t-1} e^{-x} dx
-$$
+> 如果一个临界区域$W$具有较小的$\alpha$和$\beta$值，那么它比另一个更可取。虽然通过适当选择临界区域$W$，可以使$\alpha$或$\beta$任意小，但对于固定的$n$值（即固定的样本量），不可能同时使$\alpha$和$\beta$都任意小。
 
-上图的上半部分显示了两个贝塔分布。
+Wald总结了Neyman和Pearson的设置如下：
 
-下半部分展示了这些分布的混合，其中使用了不同的混合概率 $\pi_k$
+> Neyman和Pearson表明，由满足以下不等式的所有样本$(z_1, z_2, \ldots, z_n)$组成的区域
+>
+> $$
+  \frac{ f_1(z_1) \cdots f_1(z_n)}{f_0(z_1) \cdots f_0(z_n)} \geq k
+ $$
+>
+> 是检验假设$H_0$对抗备择假设$H_1$的最优势检验区域。右边的项$k$是一个常数，选择它使得该区域具有所需的大小$\alpha$。
+
+Wald继续讨论了Neyman和Pearson的*一致最优势*检验的概念。
+
+以下是Wald如何引入序贯检验的概念
+
+> 在实验的任何阶段（对于每个整数值$m$的第$m$次试验），都给出一个规则来做出以下三个决定之一：
+> (1)接受假设$H$，(2)拒绝假设$H$，(3)通过进行额外的观察来继续实验。因此，
+> 这样的检验程序是按顺序进行的。基于第一次观察，做出上述决定之一。如果做出
+> 第一个或第二个决定，过程就终止。如果做出第三个决定，就进行第二次试验。
+> 同样，基于前两次观察，做出三个决定之一。如果做出第三个决定，就进行第三次
+> 试验，依此类推。这个过程持续进行，直到做出第一个或第二个决定为止。这种
+> 检验程序所需的观察次数$n$是一个随机变量，因为$n$的值取决于观察的结果。
+
+## 瓦尔德的序贯表述
+
+与奈曼-皮尔逊问题表述的对比，在瓦尔德的表述中：
+
+- 样本量$n$不是固定的，而是一个随机变量。
+- 两个参数$A$和$B$与奈曼-皮尔逊的$\alpha$和$\beta$相关但不同；
+$A$和$B$表征了瓦尔德用来确定随机变量$n$作为随机结果函数的截止规则。
+
+以下是瓦尔德如何设置这个问题。
+
+决策者可以观察一个随机变量 $z$ 的一系列抽样。
+
+他（或她）想要知道是哪一个概率分布 $f_0$ 或 $f_1$ 支配着 $z$。
+
+我们使用贝塔分布作为例子。
+
+我们还将使用在 {doc}`divergence_measures` 中介绍的 Jensen-Shannon 散度。
 
 ```{code-cell} ipython3
-@jit
+@vectorize
 def p(x, a, b):
+    """贝塔分布密度函数。"""
     r = gamma(a + b) / (gamma(a) * gamma(b))
-    return r * x**(a-1) * (1 - x)**(b-1)
+    return r * x** (a-1) * (1 - x) ** (b-1)
 
-f0 = lambda x: p(x, 1, 1)
-f1 = lambda x: p(x, 9, 9)
+def create_beta_density(a, b):
+    """创建具有指定参数的贝塔密度函数。"""
+    return jit(lambda x: p(x, a, b))
+
+def compute_KL(f, g):
+    """计算KL散度 KL(f, g)"""
+    integrand = lambda w: f(w) * np.log(f(w) / g(w))
+    val, _ = quad(integrand, 1e-5, 1-1e-5)
+    return val
+
+def compute_JS(f, g):
+    """计算Jensen-Shannon散度"""
+    def m(w):
+        return 0.5 * (f(w) + g(w))
+    
+    js_div = 0.5 * compute_KL(f, m) + 0.5 * compute_KL(g, m)
+    return js_div
+```
+
+下图显示了两个贝塔分布
+
+```{code-cell} ipython3
+f0 = create_beta_density(1, 1)
+f1 = create_beta_density(9, 9)
 grid = np.linspace(0, 1, 50)
 
-fig, axes = plt.subplots(2, figsize=(10, 8))
-
-axes[0].set_title("原始分布")
-axes[0].plot(grid, f0(grid), lw=2, label="$f_0$")
-axes[0].plot(grid, f1(grid), lw=2, label="$f_1$")
-
-axes[1].set_title("混合分布")
-for π in 0.25, 0.5, 0.75:
-    y = π * f0(grid) + (1 - π) * f1(grid)
-    axes[1].plot(y, lw=2, label=rf"$\pi_k$ = {π}")
-
-for ax in axes:
-    ax.legend()
-    ax.set(xlabel="$z$ 值", ylabel="$z_k$ 的概率")
-
+fig, ax = plt.subplots()
+ax.plot(grid, f0(grid), lw=2, label="$f_0$")
+ax.plot(grid, f1(grid), lw=2, label="$f_1$")
+ax.legend()
+ax.set(xlabel="$z$ 值", ylabel="$z_k$ 的概率")
 plt.tight_layout()
 plt.show()
 ```
 
-### 损失和成本
+在已知连续观测值来自分布$f_0$的条件下，这个随机变量序列是独立同分布的(IID)。
 
-在观察到 $z_k, z_{k-1}, \ldots, z_0$ 后，决策者可以在三种不同的行动中选择：
+在已知连续观测值来自分布$f_1$的条件下，这个随机变量序列也是独立同分布的(IID)。
 
-- 他确定 $f = f_0$ 并停止获取更多 $z$ 值
-- 他确定 $f = f_1$ 并停止获取更多 $z$ 值
-- 他推迟现在做决定，转而选择获取一个新的 $z_{k+1}$
+但是观察者并不知道序列是由这两个分布中的哪一个生成的。
 
-与这三种行动相关联，决策者可能遭受三种损失：
+由[可交换性和贝叶斯更新](https://python.quantecon.org/exchangeable.html)中解释的原因，这意味着观察者认为该序列不是IID的。
 
-- 当实际上 $f=f_1$ 时，他决定 $f = f_0$ 会遭受损失 $L_0$
-- 当实际上 $f=f_0$ 时，他决定 $f = f_1$ 会遭受损失 $L_1$
-- 如果他推迟决定并选择获取另一个 $z$ 值，会产生成本 $c$
+因此，观察者有需要学习的内容，即观测值是来自$f_0$还是来自$f_1$。
 
-### 关于第一类和第二类错误的补充说明
+决策者想要确定是哪一个分布在生成结果。
 
-如果我们将 $f=f_0$ 视为原假设，将 $f=f_1$ 视为备择假设，那么 $L_1$ 和 $L_0$ 是与两类统计错误相关的损失
+### 第一类错误和第二类错误
 
-- 第一类错误是错误地拒绝了真实的原假设（"假阳性"）
-- 第二类错误是未能拒绝错误的原假设（"假阴性"）
+如果我们将$f=f_0$视为零假设，将$f=f_1$视为备择假设，那么：
 
-当我们将 $f=f_0$ 作为零假设时
+- 第一类错误是错误地拒绝了真的零假设（"假阳性"）
+- 第二类错误是未能拒绝假的零假设（"假阴性"）
 
-- 我们可以将 $L_1$ 视为第一类错误相关的损失。
-- 我们可以将 $L_0$ 视为第二类错误相关的损失。
+重申一下：
 
-### 直观理解
+- $\alpha$是第一类错误的概率
+- $\beta$是第二类错误的概率
 
-在继续之前，让我们试着猜测一个最优决策规则可能是什么样的。
+### 选择
 
-假设在某个特定时间点，$\pi$ 接近1。
+在观察到$z_k, z_{k-1}, \ldots, z_1$后，决策者可以在三个不同的行动中选择：
 
-那么我们的先验信念和目前的证据都强烈指向 $f = f_0$。
+- 他决定$f = f_0$并停止获取更多的$z$值
+- 他决定$f = f_1$并停止获取更多的$z$值
 
-另一方面，如果 $\pi$ 接近0，那么 $f = f_1$ 就更有可能。
+- 他推迟做决定，转而选择抽取
+  $z_{k+1}$
 
-最后，如果 $\pi$ 在区间 $[0, 1]$ 的中间位置，那么我们就面临更多的不确定性。
+Wald定义
 
-这种推理表明决策规则可能如图所示
+- $p_{0m} = f_0(z_1) \cdots f_0(z_m)$
+- $p_{1m} = f_1(z_1) \cdots f_1(z_m)$
+- $L_{m} = \frac{p_{1m}}{p_{0m}}$
+
+这里$\{L_m\}_{m=0}^\infty$是一个**似然比过程**。
+
+Wald的序贯决策规则由实数$B < A$参数化。
+
+对于给定的一对$A, B$，决策规则是
+
+$$
+\begin{aligned}
+\textrm { 接受 } f=f_1 \textrm{ 如果 } L_m \geq A \\
+\textrm { 接受 } f=f_0 \textrm{ 如果 } L_m \leq B \\
+\textrm { 再抽取一个 }  z \textrm{ 如果 }  B < L_m < A
+\end{aligned}
+$$
+
+下图说明了Wald程序的各个方面。
 
 ```{figure} /_static/lecture_specific/wald_friedman/wald_dec_rule.png
 
 ```
 
-正如我们将看到的，这确实是决策规则的正确形式。
+## $A,B$与$\alpha, \beta$之间的联系
 
-我们的问题是确定阈值 $\alpha, \beta$，这些阈值以某种方式依赖于上述参数。
+在**序贯分析**{cite}`Wald47`第3章中，Wald建立了以下不等式
 
-在这一点上，你可能想要暂停并尝试预测参数如$c$或$L_0$对$\alpha$或$\beta$的影响。
-
-### 贝尔曼方程
-
-设$J(\pi)$为当前信念为$\pi$且做出最优选择的决策者的总损失。
-
-经过思考，你会同意$J$应该满足贝尔曼方程
-
-```{math}
-:label: new1
-
-J(\pi) =
-    \min
-    \left\{
-        (1-\pi) L_0, \; \pi L_1, \;
-        c + \mathbb E [ J (\pi') ]
-    \right\}
-```
-
-其中$\pi'$是由贝叶斯法则定义的随机变量
-
-$$
-\pi' = \kappa(z', \pi) = \frac{ \pi f_0(z')}{ \pi f_0(z') + (1-\pi) f_1 (z') }
-$$
-
-当$\pi$固定且$z'$从当前最佳猜测分布中抽取时，该分布$f$定义为
-
-$$
-f_{\pi}(v) = \pi f_0(v) + (1-\pi) f_1 (v)
-$$
-
-在贝尔曼方程中，最小化是针对三个行动：
-
-1. 接受假设$f = f_0$
-1. 接受假设$f = f_1$
-1. 推迟决定并再次抽样
-
-我们可以将贝尔曼方程表示为
-
-```{math}
-:label: optdec
-
-J(\pi) =
-\min \left\{ (1-\pi) L_0, \; \pi L_1, \; h(\pi) \right\}
-```
-
-其中 $\pi \in [0,1]$ 且
-
-- $(1-\pi) L_0$ 是接受 $f_0$ 相关的预期损失（即犯II类错误的成本）。
-- $\pi L_1$ 是接受 $f_1$ 相关的预期损失（即犯I类错误的成本）。
-- $h(\pi) :=  c + \mathbb E [J(\pi')]$；这是继续值；即与再抽取一个 $z$ 相关的预期成本。
-
-最优决策规则由两个数 $\alpha, \beta \in (0,1) \times (0,1)$ 来表征，这两个数满足
-
-$$
-(1- \pi) L_0 < \min \{ \pi L_1, c + \mathbb E [J(\pi')] \}  \textrm { if } \pi \geq \alpha
-$$
-
-且
-
-$$
-\pi L_1 < \min \{ (1-\pi) L_0,  c + \mathbb E [J(\pi')] \} \textrm { if } \pi \leq \beta
-$$
-
-最优决策规则则为
-
-$$
-\begin{aligned}
-\textrm { 接受 } f=f_0 \textrm{ 如果 } \pi \geq \alpha \\
-
-\textrm { 接受 } f=f_1 \textrm{ 如果 } \pi \leq \beta \\
-\textrm { 再抽取一个 }  z \textrm{ 如果 }  \beta \leq \pi \leq \alpha
+$$ 
+\begin{aligned} 
+ \frac{\alpha}{1 -\beta} & \leq \frac{1}{A} \\
+ \frac{\beta}{1 - \alpha} & \leq B 
 \end{aligned}
 $$
 
-我们的目标是计算成本函数 $J$，并由此得出相关的临界值 $\alpha$ 和 $\beta$。
+他对这些不等式的分析导致Wald推荐以下近似作为设置$A$和$B$的规则，这些规则接近于达到决策者对第I类错误概率$\alpha$和第II类错误概率$\beta$的目标值：
 
-为了使计算更易于管理，使用{eq}`optdec`，我们可以将延续成本 $h(\pi)$ 写作
-
-```{math}
-:label: optdec2
-
+$$
 \begin{aligned}
-h(\pi) &= c + \mathbb E [J(\pi')] \\
-&= c + \mathbb E_{\pi'} \min \{ (1 - \pi') L_0, \pi' L_1, h(\pi') \} \\
-&= c + \int \min \{ (1 - \kappa(z', \pi) ) L_0, \kappa(z', \pi)  L_1, h(\kappa(z', \pi) ) \} f_\pi (z') dz'
-\end{aligned}
+A \approx a(\alpha,\beta) & \equiv \frac{1-\beta}{\alpha} \\
+B \approx b(\alpha,\beta)  & \equiv \frac{\beta}{1-\alpha} 
+\end{aligned} 
+$$ (eq:Waldrule)
+
+对于较小的 $\alpha$ 和 $\beta$ 值，Wald表明近似式 {eq}`eq:Waldrule` 提供了一个设定 $A$ 和 $B$ 的良好方法。
+
+特别地，Wald构建了一个数学论证，使他得出结论：使用近似式 {eq}`eq:Waldrule` 而不是真实函数 $A (\alpha, \beta), B(\alpha,\beta)$ 来设定 $A$ 和 $B$
+
+> $\ldots$ 不会导致 $\alpha$ 或 $\beta$ 的值有任何显著增加。换句话说，
+> 就实际目的而言，对应于 $A = a(\alpha, \beta), B = b(\alpha,\beta)$ 的检验
+> 至少提供了与对应于 $A = A(\alpha, \beta)$ 和 
+> $B = b(\alpha, \beta)$ 的检验相同的防错决策保护。
+
+> 因此，使用 $ a(\alpha, \beta),  b(\alpha,\beta)$ 而不是
+> $ A(\alpha, \beta),  B(\alpha,\beta)$ 可能产生的唯一缺点是，
+> 这可能会导致检验所需的观测数量显著增加。
+
+我们将编写一些Python代码来帮助我们说明Wald关于 $\alpha$ 和 $\beta$ 如何与表征其序贯概率比检验的参数 $A$ 和 $B$ 相关的论断。
+
+## 模拟
+
+我们尝试不同的分布 $f_0$ 和 $f_1$ 来研究Wald检验在各种条件下的表现。
+
+进行这些模拟的目的是为了理解Wald的**序贯概率比检验**在决策速度和准确性之间的权衡。
+
+具体来说，我们将观察：
+
+- 决策阈值 $A$ 和 $B$ (或等效的目标错误率 $\alpha$ 和 $\beta$) 如何影响平均停止时间
+- 分布 $f_0$ 和 $f_1$ 之间的差异如何影响平均停止时间
+
+我们将重点关注 $f_0$ 和 $f_1$ 为贝塔分布的情况，因为通过调整其形状参数可以轻松控制两个密度的重叠区域。
+
+首先，我们定义一个命名元组来存储我们进行模拟研究所需的所有参数。
+
+我们还根据目标第一类和第二类错误 $\alpha$ 和 $\beta$ 计算Wald推荐的阈值 $A$ 和 $B$
+
+```{code-cell} ipython3
+SPRTParams = namedtuple('SPRTParams', 
+                ['α', 'β',  # 目标第一类和第二类错误
+                'a0', 'b0', # f_0的形状参数
+                'a1', 'b1', # f_1的形状参数
+                'N',        # 模拟次数
+                'seed'])
+
+@njit
+def compute_wald_thresholds(α, β):
+    """计算Wald推荐的阈值。"""
+    A = (1 - β) / α
+    B = β / (1 - α)
+    return A, B, np.log(A), np.log(B)
 ```
 
-等式
+现在我们可以按照Wald的建议运行模拟。
 
-```{math}
-:label: funceq
+我们将对数似然比与阈值的对数 $\log(A)$ 和 $\log(B)$ 进行比较。
 
-h(\pi) =
-c + \int \min \{ (1 - \kappa(z', \pi) ) L_0, \kappa(z', \pi)  L_1, h(\kappa(z', \pi) ) \} f_\pi (z') dz'
-```
+以下算法是我们模拟的基础。
 
-是一个未知函数 $h$ 的**泛函方程**。
+1. 计算阈值 $A = \frac{1-\beta}{\alpha}$, $B = \frac{\beta}{1-\alpha}$ 并使用 $\log A$, $\log B$。
 
-使用延续成本的泛函方程{eq}`funceq`，我们可以通过{eq}`optdec`的右侧推导出最优选择。
+2. 给定真实分布(要么是 $f_0$ 或 $f_1$):
+   - 初始化对数似然比 $\log L_0 = 0$
+   - 重复:
+     - 从真实分布中抽取观测值 $z$
+     - 更新: $\log L_{n+1} \leftarrow \log L_n + (\log f_1(z) - \log f_0(z))$
+     - 如果 $\log L_{n+1} \geq \log A$: 停止，拒绝 $H_0$
+     - 如果 $\log L_{n+1} \leq \log B$: 停止，接受 $H_0$
 
-这个函数方程可以通过取一个初始猜测值并迭代来找到不动点来求解。
-
-因此，我们用算子$Q$进行迭代，其中
+3. 对每个分布重复步骤2进行 $N/2$ 次重复，总共 $N$ 次重复，计算经验第一类错误 $\hat{\alpha}$ 和第二类错误 $\hat{\beta}$:
 
 $$
-Q h(\pi) =
-c + \int \min \{ (1 - \kappa(z', \pi) ) L_0, \kappa(z', \pi)  L_1, h(\kappa(z', \pi) ) \} f_\pi (z') dz'
+\hat{\alpha} = \frac{\text{当 } f_0 \text{ 为真时拒绝 } H_0 \text{ 的次数}}{\text{以 } f_0 \text{ 为真的重复次数}}
 $$
 
-## 实现
-
-首先，我们将构造一个`jitclass`来存储模型的参数
+$$
+\hat{\beta} = \frac{\text{当 } f_1 \text{ 为真时接受 } H_0 \text{ 的次数}}{\text{以 } f_1 \text{ 为真的重复次数}}
+$$
 
 ```{code-cell} ipython3
-wf_data = [('a0', float64),          # beta分布的参数
-           ('b0', float64),
-           ('a1', float64),
-           ('b1', float64),
-           ('c', float64),           # 再次抽样的成本
-           ('π_grid_size', int64),
-           ('L0', float64),          # 当f1为真时选择f0的成本
-           ('L1', float64),          # 当f0为真时选择f1的成本
-           ('π_grid', float64[:]),
-           ('mc_size', int64),
-           ('z0', float64[:]),
-           ('z1', float64[:])]
+@njit
+def sprt_single_run(a0, b0, a1, b1, logA, logB, true_f0, seed):
+    """运行单次SPRT直到达到决策。"""
+    log_L = 0.0
+    n = 0
+    np.random.seed(seed)
+    
+    while True:
+        z = np.random.beta(a0, b0) if true_f0 else np.random.beta(a1, b1)
+        n += 1
+        
+        # 更新对数似然比
+        log_L += np.log(p(z, a1, b1)) - np.log(p(z, a0, b0))
+        
+        # 检查停止条件
+        if log_L >= logA:
+            return n, False  # 拒绝H0
+        elif log_L <= logB:
+            return n, True   # 接受H0
+
+@njit(parallel=True)
+def run_sprt_simulation(a0, b0, a1, b1, α, β, N, seed):
+    """SPRT模拟。"""
+    A, B, logA, logB = compute_wald_thresholds(α, β)
+    
+    stopping_times = np.zeros(N, dtype=np.int64)
+    decisions_h0 = np.zeros(N, dtype=np.bool_)
+    truth_h0 = np.zeros(N, dtype=np.bool_)
+    
+    for i in prange(N):
+        true_f0 = (i % 2 == 0)
+        truth_h0[i] = true_f0
+        
+        n, accept_f0 = sprt_single_run(
+                        a0, b0, a1, b1, 
+                        logA, logB, 
+                        true_f0, seed + i)
+        stopping_times[i] = n
+        decisions_h0[i] = accept_f0
+    
+    return stopping_times, decisions_h0, truth_h0
+
+def run_sprt(params):
+    """使用给定参数运行SPRT模拟。"""
+    stopping_times, decisions_h0, truth_h0 = run_sprt_simulation(
+        params.a0, params.b0, params.a1, params.b1, 
+        params.α, params.β, params.N, params.seed
+    )
+    
+    # 计算错误率
+    truth_h0_bool = truth_h0.astype(bool)
+    decisions_h0_bool = decisions_h0.astype(bool)
+    
+    type_I = np.sum(truth_h0_bool & ~decisions_h0_bool) \
+            / np.sum(truth_h0_bool)
+    type_II = np.sum(~truth_h0_bool & decisions_h0_bool) \
+            / np.sum(~truth_h0_bool)
+    
+    return {
+        'stopping_times': stopping_times,
+        'decisions_h0': decisions_h0_bool,
+        'truth_h0': truth_h0_bool,
+        'type_I': type_I,
+        'type_II': type_II
+    }
+
+# 运行模拟
+params = SPRTParams(α=0.05, β=0.10, a0=2, b0=5, a1=5, b1=2, N=20000, seed=1)
+results = run_sprt(params)
+
+print(f"平均停止时间: {results['stopping_times'].mean():.2f}")
+print(f"经验第一类错误: {results['type_I']:.3f} (目标 = {params.α})")
+print(f"经验第二类错误: {results['type_II']:.3f} (目标 = {params.β})")
 ```
 
-```{code-cell} ipython3
-@jitclass(wf_data)
-class WaldFriedman:
+正如在上文中 Wald 讨论近似式 {eq}`eq:Waldrule` 中给出的 $a(\alpha, \beta), b(\alpha, \beta)$ 的质量时所预期的那样，我们发现该算法实际上给出了比目标值**更低**的第一类和第二类错误率。
 
-    def __init__(self,
-                 c=1.25,
-                 a0=1,
-                 b0=1,
-                 a1=3,
-                 b1=1.2,
-                 L0=25,
-                 L1=25,
-                 π_grid_size=200,
-                 mc_size=1000):
-
-        self.a0, self.b0 = a0, b0
-        self.a1, self.b1 = a1, b1
-        self.c, self.π_grid_size = c, π_grid_size
-        self.L0, self.L1 = L0, L1
-        self.π_grid = np.linspace(0, 1, π_grid_size)
-        self.mc_size = mc_size
-
-        self.z0 = np.random.beta(a0, b0, mc_size)
-        self.z1 = np.random.beta(a1, b1, mc_size)
-
-    def f0(self, x):
-
-        return p(x, self.a0, self.b0)
-
-    def f1(self, x):
-
-        return p(x, self.a1, self.b1)
-
-    def f0_rvs(self):
-        return np.random.beta(self.a0, self.b0)
-
-    def f1_rvs(self):
-        return np.random.beta(self.a1, self.b1)
-
-    def κ(self, z, π):
-        """
-        使用贝叶斯法则和当前观测值z更新π
-        """
-
-        f0, f1 = self.f0, self.f1
-
-        π_f0, π_f1 = π * f0(z), (1 - π) * f1(z)
-        π_new = π_f0 / (π_f0 + π_f1)
-
-        return π_new
+```{note}
+关于近似式 {eq}`eq:Waldrule` 质量的最新研究，请参见 {cite}`fischer2024improving`。
 ```
 
-如同{doc}`最优增长讲座 <optgrowth>`中所述，为了近似连续的值函数
-
-* 我们在有限的 $\pi$ 值网格上进行迭代。
-* 当我们在网格点之间评估 $\mathbb E[J(\pi')]$ 时，我们使用线性插值。
-
-我们在下面定义算子函数 `Q`。
+以下代码创建了几个图表来展示我们的模拟结果。
 
 ```{code-cell} ipython3
-@jit(nopython=True, parallel=True)
-def Q(h, wf):
-
-    c, π_grid = wf.c, wf.π_grid
-    L0, L1 = wf.L0, wf.L1
-    z0, z1 = wf.z0, wf.z1
-    mc_size = wf.mc_size
-
-    κ = wf.κ
-
-    h_new = np.empty_like(π_grid)
-    h_func = lambda p: np.interp(p, π_grid, h)
-
-    for i in prange(len(π_grid)):
-        π = π_grid[i]
-
-        # Find the expected value of J by integrating over z
-        integral_f0, integral_f1 = 0, 0
-        for m in range(mc_size):
-            π_0 = κ(z0[m], π)  # Draw z from f0 and update π
-            integral_f0 += min((1 - π_0) * L0, π_0 * L1, h_func(π_0))
-
-            π_1 = κ(z1[m], π)  # Draw z from f1 and update π
-            integral_f1 += min((1 - π_1) * L0, π_1 * L1, h_func(π_1))
-
-        integral = (π * integral_f0 + (1 - π) * integral_f1) / mc_size
-
-        h_new[i] = c + integral
-
-    return h_new
-```
-
-为了求解关键的函数方程，我们将使用`Q`进行迭代以找到不动点
-
-```{code-cell} ipython3
-@jit
-def solve_model(wf, tol=1e-4, max_iter=1000):
-    """
-    计算延续成本函数
-
-    * wf 是 WaldFriedman 的一个实例
-    """
-
-    # 设置循环
-    h = np.zeros(len(wf.π_grid))
-    i = 0
-    error = tol + 1
-
-    while i < max_iter and error > tol:
-        h_new = Q(h, wf)
-        error = np.max(np.abs(h - h_new))
-        i += 1
-        h = h_new
-
-    if error > tol:
-        print("未能收敛！")
-
-    return h_new
-```
-
-## 分析
-
-让我们检查结果。
-
-我们将使用默认参数化的分布，如下所示
-
-```{code-cell} ipython3
-wf = WaldFriedman()
-
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.plot(wf.f0(wf.π_grid), label="$f_0$")
-ax.plot(wf.f1(wf.π_grid), label="$f_1$")
-ax.set(ylabel="$z_k$ 的概率", xlabel="$z_k$", title="分布")
-ax.legend()
-
-plt.show()
-```
-
-### 值函数
-
-为了求解模型，我们将调用`solve_model`函数
-
-```{code-cell} ipython3
-h_star = solve_model(wf)    # 求解模型
-```
-
-我们还将设置一个函数来计算截断值 $\alpha$ 和 $\beta$，并在成本函数图上绘制这些值
-
-```{code-cell} ipython3
-@jit
-def find_cutoff_rule(wf, h):
-
-    """
-    该函数接收一个延续成本函数，并返回在继续采样和选择特定模型之间
-    转换的对应截断点
-    """
-
-    π_grid = wf.π_grid
-    L0, L1 = wf.L0, wf.L1
-
-    # 在网格上计算选择模型的所有点的成本
-    payoff_f0 = (1 - π_grid) * L0
-    payoff_f1 = π_grid * L1
-
-    # 通过将这些成本与贝尔曼方程的差值可以找到截断点
-    # (J 总是小于或等于 p_c_i)
-    β = π_grid[np.searchsorted(
-                              payoff_f1 - np.minimum(h, payoff_f0),
-                              1e-10)
-               - 1]
-    α = π_grid[np.searchsorted(
-                              np.minimum(h, payoff_f1) - payoff_f0,
-                              1e-10)
-               - 1]
-
-    return (β, α)
-
-β, α = find_cutoff_rule(wf, h_star)
-cost_L0 = (1 - wf.π_grid) * wf.L0
-cost_L1 = wf.π_grid * wf.L1
-
-fig, ax = plt.subplots(figsize=(10, 6))
-
-ax.plot(wf.π_grid, h_star, label='再次采样')
-ax.plot(wf.π_grid, cost_L1, label='选择 f1')
-ax.plot(wf.π_grid, cost_L0, label='选择 f0')
-ax.plot(wf.π_grid,
-        np.amin(np.column_stack([h_star, cost_L0, cost_L1]),axis=1),
-        lw=15, alpha=0.1, color='b', label=r'$J(\pi)$')
-
-ax.annotate(r"$\beta$", xy=(β + 0.01, 0.5), fontsize=14)
-ax.annotate(r"$\alpha$", xy=(α + 0.01, 0.5), fontsize=14)
-
-plt.vlines(β, 0, β * wf.L0, linestyle="--")
-plt.vlines(α, 0, (1 - α) * wf.L1, linestyle="--")
-
-ax.set(xlim=(0, 1), ylim=(0, 0.5 * max(wf.L0, wf.L1)), ylabel="成本",
-       xlabel=r"$\pi$", title="成本函数 $J(\pi)$")
-
-plt.legend(borderpad=1.1)
-plt.show()
-```
-
-成本函数$J$在$\pi \leq \beta$时等于$\pi L_1$，在$\pi \geq \alpha$时等于$(1-\pi )L_0$。
-
-成本函数$J(\pi)$两个线性部分的斜率由$L_1$和$-L_0$决定。
-
-在内部区域，当后验概率分配给$f_0$处于不确定区域$\pi \in (\beta, \alpha)$时，成本函数$J$是平滑的。
-
-决策者继续采样，直到他对模型$f_0$的概率低于$\beta$或高于$\alpha$。
-
-### 模拟
-
-下图显示了决策过程的500次模拟结果。
-
-左图是**停止时间**的直方图，即做出决策所需的$z_k$抽样次数。
-
-平均抽样次数约为6.6。
-
-右图是在停止时间点做出正确决策的比例。
-
-在这种情况下，决策者80%的时间做出了正确的决策。
-
-```{code-cell} ipython3
-def simulate(wf, true_dist, h_star, π_0=0.5):
-
-    """
-    This function takes an initial condition and simulates until it
-    stops (when a decision is made)
-    """
-
-    f0, f1 = wf.f0, wf.f1
-    f0_rvs, f1_rvs = wf.f0_rvs, wf.f1_rvs
-    π_grid = wf.π_grid
-    κ = wf.κ
-
-    if true_dist == "f0":
-        f, f_rvs = wf.f0, wf.f0_rvs
-    elif true_dist == "f1":
-        f, f_rvs = wf.f1, wf.f1_rvs
-
-    # Find cutoffs
-    β, α = find_cutoff_rule(wf, h_star)
-
-    # Initialize a couple of useful variables
-    decision_made = False
-    π = π_0
-    t = 0
-
-    while decision_made is False:
-        # Maybe should specify which distribution is correct one so that
-        # the draws come from the "right" distribution
-        z = f_rvs()
-        t = t + 1
-        π = κ(z, π)
-        if π < β:
-            decision_made = True
-            decision = 1
-        elif π > α:
-            decision_made = True
-            decision = 0
-
-    if true_dist == "f0":
-        if decision == 0:
-            correct = True
-        else:
-            correct = False
-
-    elif true_dist == "f1":
-        if decision == 1:
-            correct = True
-        else:
-            correct = False
-
-    return correct, π, t
-
-def stopping_dist(wf, h_star, ndraws=250, true_dist="f0"):
-
-    """
-    Simulates repeatedly to get distributions of time needed to make a
-    decision and how often they are correct
-    """
-
-    tdist = np.empty(ndraws, int)
-    cdist = np.empty(ndraws, bool)
-
-    for i in range(ndraws):
-        correct, π, t = simulate(wf, true_dist, h_star)
-        tdist[i] = t
-        cdist[i] = correct
-
-    return cdist, tdist
-
-def simulation_plot(wf):
-    h_star = solve_model(wf)
-    ndraws = 500
-    cdist, tdist = stopping_dist(wf, h_star, ndraws)
-
-    fig, ax = plt.subplots(1, 2, figsize=(16, 5))
-
-    ax[0].hist(tdist, bins=np.max(tdist))
-    ax[0].set_title(f"Stopping times over {ndraws} replications")
-    ax[0].set(xlabel="time", ylabel="number of stops")
-    ax[0].annotate(f"mean = {np.mean(tdist)}", xy=(max(tdist) / 2,
-                   max(np.histogram(tdist, bins=max(tdist))[0]) / 2))
-
-    ax[1].hist(cdist.astype(int), bins=2)
-    ax[1].set_title(f"Correct decisions over {ndraws} replications")
-    ax[1].annotate(f"% correct = {np.mean(cdist)}",
-                   xy=(0.05, ndraws / 2))
-
+:tags: [hide-input]
+
+@njit
+def compute_wald_thresholds(α, β):
+    """计算 Wald 推荐的阈值。"""
+    A = (1 - β) / α
+    B = β / (1 - α)
+    return A, B, np.log(A), np.log(B)
+
+def plot_sprt_results(results, params, title=""):
+    """绘制 SPRT 结果。"""
+    fig, axes = plt.subplots(1, 3, figsize=(20, 6))
+    
+    # 分布图
+    z_grid = np.linspace(0, 1, 200)
+    f0 = create_beta_density(params.a0, params.b0)
+    f1 = create_beta_density(params.a1, params.b1)
+    
+    axes[0].plot(z_grid, f0(z_grid), 'b-', lw=2, 
+                 label=f'$f_0 = \\text{{Beta}}({params.a0},{params.b0})$')
+    axes[0].plot(z_grid, f1(z_grid), 'r-', lw=2, 
+                 label=f'$f_1 = \\text{{Beta}}({params.a1},{params.b1})$')
+    axes[0].fill_between(z_grid, 0, 
+                        np.minimum(f0(z_grid), f1(z_grid)), 
+                        alpha=0.3, color='purple', label='overlap')
+    if title:
+        axes[0].set_title(title, fontsize=20)
+    axes[0].set_xlabel('z', fontsize=16)
+    axes[0].set_ylabel('density', fontsize=16)
+    axes[0].legend(fontsize=14)
+    
+    # 停止时间
+    max_n = min(results['stopping_times'].max(), 101)
+    bins = np.arange(1, max_n) - 0.5
+    axes[1].hist(results['stopping_times'], bins=bins, 
+                 color="steelblue", alpha=0.8, edgecolor="black")
+    axes[1].set_title(f'stopping times (μ={results["stopping_times"].mean():.1f})', 
+                      fontsize=16)
+    axes[1].set_xlabel('n', fontsize=16)
+    axes[1].set_ylabel('frequency', fontsize=16)
+    axes[1].set_xlim(0, 100)
+    
+    # 混淆矩阵
+    plot_confusion_matrix(results, axes[2])
+    
+    plt.tight_layout()
     plt.show()
 
-simulation_plot(wf)
+def plot_confusion_matrix(results, ax):
+    """绘制 SPRT 结果的混淆矩阵。"""
+    f0_correct = np.sum(results['truth_h0'] & results['decisions_h0'])
+    f0_incorrect = np.sum(results['truth_h0'] & (~results['decisions_h0']))
+    f1_correct = np.sum((~results['truth_h0']) & (~results['decisions_h0']))
+    f1_incorrect = np.sum((~results['truth_h0']) & results['decisions_h0'])
+    
+    confusion_data = np.array([[f0_correct, f0_incorrect], 
+                              [f1_incorrect, f1_correct]])
+    row_totals = confusion_data.sum(axis=1, keepdims=True)
+    
+    im = ax.imshow(confusion_data, cmap='Blues', aspect='equal')
+    ax.set_title(f'errors: I={results["type_I"]:.3f} II={results["type_II"]:.3f}', 
+                 fontsize=16)
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(['accept $H_0$', 'reject $H_0$'], fontsize=14)
+    ax.set_yticks([0, 1])
+    ax.set_yticklabels(['true $f_0$', 'true $f_1$'], fontsize=14)
+    
+    for i in range(2):
+        for j in range(2):
+            percent = confusion_data[i, j] / row_totals[i, 0] \
+                        if row_totals[i, 0] > 0 else 0
+            color = 'white' if confusion_data[i, j] > confusion_data.max() * 0.5 \
+                    else 'black'
+            ax.text(j, i, f'{confusion_data[i, j]}\n({percent:.1%})',
+                   ha="center", va="center", color=color, fontweight='bold', 
+                   fontsize=14)
 ```
 
-### 比较静态分析
-
-现在让我们来看下面的练习。
-
-我们将获取额外观测值的成本提高一倍。
-
-在查看结果之前，请思考会发生什么：
-
-- 决策者的判断正确率会提高还是降低？
-- 他会更早还是更晚做出决定？
+让我们绘制模拟的结果
 
 ```{code-cell} ipython3
-wf = WaldFriedman(c=2.5)
-simulation_plot(wf)
+plot_sprt_results(results, params)
 ```
 
-每次抽样成本的增加导致决策者在做出决定前减少抽样次数。
+在这个例子中，停止时间保持在10以下。
 
-由于他用更少的抽样做决定，正确判断的比例下降。
+我们可以构建一个$2 \times 2$的"混淆矩阵"，其对角线元素统计了Wald决策规则正确接受和正确拒绝原假设的次数。
 
-这导致他在对两个模型赋予相同权重时产生更高的预期损失。
+```{code-cell} ipython3
+print("混淆矩阵数据：")
+print(f"第一类错误：{results['type_I']:.3f}")
+print(f"第二类错误：{results['type_II']:.3f}")
+```
 
-### 笔记本实现
+接下来我们使用代码研究三对不同的 $f_0, f_1$ 分布，它们之间有不同程度的差异。
 
-为了便于比较静态分析，我们提供了一个[Jupyter笔记本](https://nbviewer.org/github/QuantEcon/lecture-python.notebooks/blob/main/wald_friedman.ipynb)，它可以生成相同的图表，但带有滑块控件。
+我们为每对分布绘制与上面相同的三种图表
 
-使用这些滑块，你可以调整参数并立即观察
+```{code-cell} ipython3
+params_1 = SPRTParams(α=0.05, β=0.10, a0=2, b0=8, a1=8, b1=2, N=5000, seed=42)
+results_1 = run_sprt(params_1)
 
-* 当我们增加分段线性近似中的网格点数时，对犹豫不决的中间范围内价值函数平滑度的影响。
-* 不同成本参数$L_0, L_1, c$、两个beta分布$f_0$和$f_1$的参数，以及在价值函数分段连续近似中使用的点数和线性函数$m$的设置对结果的影响。
+params_2 = SPRTParams(α=0.05, β=0.10, a0=4, b0=5, a1=5, b1=4, N=5000, seed=42)
+results_2 = run_sprt(params_2)
 
-* 从 $f_0$ 进行的各种模拟以及相关的决策等待时间分布。
-* 正确和错误决策的相关直方图。
+params_3 = SPRTParams(α=0.05, β=0.10, a0=0.5, b0=0.4, a1=0.4, 
+                      b1=0.5, N=5000, seed=42)
+results_3 = run_sprt(params_3)
+```
 
-## 与奈曼-皮尔逊公式的比较
+```{code-cell} ipython3
+plot_sprt_results(results_1, params_1)
+```
 
-出于几个原因，有必要描述海军上尉G. S. Schuyler被要求使用的测试背后的理论，这也是他向Milton Friedman和Allan Wallis提出他的推测，认为存在更好的实用程序的原因。
+```{code-cell} ipython3
+plot_sprt_results(results_2, params_2)
+```
 
-显然，海军告诉Schuyler上尉使用他们所知的最先进的奈曼-皮尔逊检验。
+```{code-cell} ipython3
+plot_sprt_results(results_3, params_3)
+```
 
-我们将依据Abraham Wald的{cite}`Wald47`对奈曼-皮尔逊理论的优雅总结。
+请注意，当两个分布相距较远时，停止时间会更短。
 
-就我们的目的而言，需要注意设置中的以下特征：
+这是很合理的。
 
-- 假设*固定*样本量 $n$
-- 应用大数定律，在备择概率模型的条件下，解释奈曼-皮尔逊理论中定义的概率 $\alpha$ 和 $\beta$
+当两个分布"相距较远"时，判断哪个分布在产生数据不应该需要太长时间。
 
-回顾上述顺序分析公式中，
+当两个分布"相近"时，判断哪个分布在产生数据应该需要更长时间。
 
-- 样本量 $n$ 不是固定的，而是一个待选择的对象；从技术上讲，$n$ 是一个随机变量。
-- 参数 $\beta$ 和 $\alpha$ 表征用于确定随机变量 $n$ 的截止规则。
-- 大数定律在顺序构造中并未出现。
+我们很容易想到将这种模式与我们在{doc}`likelihood_ratio_process`中讨论的[Kullback–Leibler散度](rel_entropy)联系起来。
 
-在**顺序分析**{cite}`Wald47`第一章中，Abraham Wald总结了Neyman-Pearson的假设检验方法。
+虽然当两个分布差异更大时KL散度更大，但KL散度并不是对称的，这意味着分布$f$相对于分布$g$的KL散度不一定等于$g$相对于$f$的KL散度。
 
-Wald将问题描述为对部分已知的概率分布做出决策。
+如果我们想要一个真正具有度量性质的对称散度，我们可以使用[Jensen-Shannon距离](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.jensenshannon.html)。
 
-（为了提出一个明确的问题，你必须假设*某些东西*是已知的 -- 通常，*某些东西*意味着*很多东西*）
+这就是我们现在要做的。
 
-通过限制未知的内容，Wald使用以下简单结构来说明主要思想：
+我们将计算Jensen-Shannon距离，并绘制它与平均停止时间的关系图。
 
-- 决策者想要决定两个分布 $f_0$、$f_1$ 中的哪一个支配着独立同分布随机变量 $z$。
+```{code-cell} ipython3
+def js_dist(a0, b0, a1, b1):
+    """Jensen–Shannon距离"""
+    f0 = create_beta_density(a0, b0)
+    f1 = create_beta_density(a1, b1)
 
-- 零假设 $H_0$ 是指 $f_0$ 支配数据的陈述。
-- 备择假设 $H_1$ 是指 $f_1$ 支配数据的陈述。
-- 问题在于基于固定数量 $n$ 个独立观测值 $z_1, z_2, \ldots, z_n$（来自随机变量 $z$）的样本，设计并分析一个针对零假设 $H_0$ 和备择假设 $H_1$ 的假设检验。
+    # 混合
+    m = lambda w: 0.5*(f0(w) + f1(w))
+    return np.sqrt(0.5*compute_KL(m, f0) + 0.5*compute_KL(m, f1))
+    
+def generate_β_pairs(N=100, T=10.0, d_min=0.5, d_max=9.5):
+    ds = np.linspace(d_min, d_max, N)
+    a0 = (T - ds) / 2
+    b0 = (T + ds) / 2
+    return list(zip(a0, b0, b0, a0))
 
-引用 Abraham Wald 的话：
+param_comb = generate_β_pairs()
 
-> 导致接受或拒绝[零]假设的检验程序，简单来说就是一个规则，它为每个可能的大小为 $n$ 的样本指定是否应该基于该样本接受或拒绝[零]假设。这也可以表述如下：检验程序就是将所有可能的大小为 $n$ 的样本总体划分为两个互斥的部分，比如说第1部分和第2部分，同时应用规则，如果观察到的样本属于
+# 为每个参数组合运行模拟
+js_dists = []
+mean_stopping_times = []
+param_list = []
 
-> 包含在第2部分中。第1部分也被称为临界区域。由于
-> 第2部分是所有大小为$n$的样本中不包含在第1部分的
-> 总体，第2部分由第1部分唯一确定。因此，
-> 选择检验程序等同于确定临界区域。
+for a0, b0, a1, b1 in param_comb:
+    # 计算KL散度
+    js_div = js_dist(a1, b1, a0, b0)
+    
+    # 用固定参数集运行SPRT模拟
+    params = SPRTParams(α=0.05, β=0.10, a0=a0, b0=b0, 
+                        a1=a1, b1=b1, N=5000, seed=42)
+    results = run_sprt(params)
+    
+    js_dists.append(js_div)
+    mean_stopping_times.append(results['stopping_times'].mean())
+    param_list.append((a0, b0, a1, b1))
 
-让我们继续听瓦尔德的说法：
+# 创建图表
+fig, ax = plt.subplots()
 
-> 关于选择临界区域的依据，奈曼和皮尔逊提出了以下
-> 考虑：在接受或拒绝$H_0$时，我们可能会犯两种
-> 错误。当$H_0$为真而我们拒绝它时，我们犯第一类
-> 错误；当$H_1$为真而我们接受$H_0$时，我们犯
-> 第二类错误。在选定特定的临界区域$W$后，
-> 犯第一类错误的概率和犯第二类错误的概率就
-> 被唯一确定了。犯第一类错误的概率等于由
+scatter = ax.scatter(js_dists, mean_stopping_times, 
+                    s=80, alpha=0.7, linewidth=0.5)
 
-> 假设 $H_0$ 为真，观察到的样本将落在临界区域 $W$ 内。
-> 犯第二类错误的概率等于在假设 $H_1$ 为真的情况下，
-> 概率落在临界区域 $W$ 之外的概率。对于任何给定的
-> 临界区域 $W$，我们用 $\alpha$ 表示第一类错误的概率，
-> 用 $\beta$ 表示第二类错误的概率。
+ax.set_xlabel('Jensen–Shannon距离', fontsize=14)
+ax.set_ylabel('平均停止时间', fontsize=14)
 
-让我们仔细听听Wald如何运用大数定律来解释 $\alpha$ 和 $\beta$：
+plt.tight_layout()
+plt.show()
+```
 
-> 概率 $\alpha$ 和 $\beta$ 有以下重要的实际解释：
-> 假设我们抽取大量规模为 $n$ 的样本。设 $M$ 为
-> 抽取的样本总数。假设对于这 $M$ 个样本中的每一个，
-> 如果样本落在 $W$ 内则拒绝 $H_0$，如果样本落在
-> $W$ 外则接受 $H_0$。通过这种方式，我们做出了 $M$ 个
-> 拒绝或
+该图显示了相对熵与平均停止时间之间存在明显的负相关关系。
 
-> 接受。这些陈述中的一些通常是错误的。如果
-> $H_0$为真且$M$很大，那么错误陈述的比例（即错误陈述的数量
-> 除以$M$）约为$\alpha$的概率接近于$1$（即几乎是确定的）。如果
-> $H_1$为真，错误陈述的比例约为$\beta$的概率接近于$1$。
-> 因此，我们可以说从长远来看[这里Wald通过令$M \rightarrow \infty$应用了大数定律（这是我们的注释，
-> 不是Wald的）]，如果$H_0$为真，错误陈述的比例将是
-> $\alpha$，如果$H_1$为真，则为$\beta$。
+随着Jensen-Shannon散度的增加（分布之间的差异增大），平均停止时间呈指数下降。
 
-量$\alpha$被称为临界区域的*大小*，
-而量$1-\beta$被称为临界区域的*检验力*。
+以下是我们上述实验的采样示例
 
-Wald指出
+```{code-cell} ipython3
+def plot_beta_distributions_grid(param_list, js_dists, mean_stopping_times, 
+                                selected_indices=None):
+    """绘制贝塔分布网格，包含JS距离和停止时间。"""
+    if selected_indices is None:
+        selected_indices = [0, len(param_list)//6, len(param_list)//3, 
+                          len(param_list)//2, 2*len(param_list)//3, -1]
+    
+    fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+    z_grid = np.linspace(0, 1, 200)
+    
+    for i, idx in enumerate(selected_indices):
+        row, col = i // 3, i % 3
+        a0, b0, a1, b1 = param_list[idx]
+        
+        f0 = create_beta_density(a0, b0)
+        f1 = create_beta_density(a1, b1)
+        
+        axes[row, col].plot(z_grid, f0(z_grid), 'b-', lw=2, label='$f_0$')
+        axes[row, col].plot(z_grid, f1(z_grid), 'r-', lw=2, label='$f_1$')
+        axes[row, col].fill_between(z_grid, 0, 
+                                  np.minimum(f0(z_grid), f1(z_grid)), 
+                                  alpha=0.3, color='purple')
+        
+        axes[row, col].set_title(f'JS距离: {js_dists[idx]:.3f}'
+                               f'\n平均时间: {mean_stopping_times[idx]:.1f}', 
+                               fontsize=12)
+        axes[row, col].set_xlabel('z', fontsize=10)
+        if i == 0:
+            axes[row, col].set_ylabel('密度', fontsize=10)
+            axes[row, col].legend(fontsize=10)
 
-> 如果一个临界区域$W$具有更小的$\alpha$和$\beta$值，
-> 那么它比另一个更可取。虽然
+    plt.tight_layout()
+    plt.show()
 
-> 通过适当选择临界区域 $W$，$\alpha$ 或 $\beta$ 中的任一个都可以被任意缩小，
-> 但在固定样本量 $n$ 的情况下，不可能同时使 $\alpha$ 和 $\beta$ 都任意小。
+plot_beta_distributions_grid(param_list, js_dists, mean_stopping_times)
+```
 
-Wald 总结了 Neyman 和 Pearson 的设置如下：
+再次发现，当分布之间的差异越大（用Jensen-Shannon距离衡量），停止时间就越短。
 
-> Neyman 和 Pearson 证明，由满足以下不等式的所有样本
-> $(z_1, z_2, \ldots, z_n)$ 构成的区域
->
-> $$
-  \frac{ f_1(z_1) \cdots f_1(z_n)}{f_0(z_1) \cdots f_0(z_n)} \geq k
-  $$
->
-> 是检验假设 $H_0$ 对立假设 $H_1$ 的最优势临界区域。
-> 右侧的常数项 $k$ 的选择使得该区域具有所需的显著性水平 $\alpha$。
+让我们可视化单个似然比过程，看看它们是如何向决策边界演变的。
 
-Wald 接着讨论了 Neyman 和 Pearson 的*一致最优势*检验的概念。
+```{code-cell} ipython3
+def plot_likelihood_paths(params, n_highlight=10, n_background=200):
+    """可视化似然比路径。"""
+    A, B, logA, logB = compute_wald_thresholds(params.α, params.β)
+    f0, f1 = map(lambda ab: create_beta_density(*ab),
+             [(params.a0, params.b0), 
+              (params.a1, params.b1)])
+    
+    fig, axes = plt.subplots(1, 2, figsize=(14, 7))
+    
+    for dist_idx, (true_f0, ax, title) in enumerate([
+        (True, axes[0], '真实分布: $f_0$'),
+        (False, axes[1], '真实分布: $f_1$')
+    ]):
+        rng = np.random.default_rng(seed=42 + dist_idx)
+        paths_data = []
+        
+        # 生成路径
+        for path in range(n_background + n_highlight):
+            log_L_path, log_L, n = [0.0], 0.0, 0
+            
+            while True:
+                z = rng.beta(params.a0, params.b0) if true_f0 \
+                    else rng.beta(params.a1, params.b1)
+                n += 1
+                log_L += np.log(f1(z)) - np.log(f0(z))
+                log_L_path.append(log_L)
+                
+                if log_L >= logA or log_L <= logB:
+                    paths_data.append((log_L_path, n, log_L >= logA))
+                    break
+        
+        # 绘制背景路径
+        for path, _, decision in paths_data[:n_background]:
+            ax.plot(range(len(path)), path, color='C1' if decision else 'C0', 
+                   alpha=0.2, linewidth=0.5)
+        
+        # 绘制高亮路径及标签
+        for i, (path, _, decision) in enumerate(paths_data[n_background:]):
+            ax.plot(range(len(path)), path, color='C1' if decision else 'C0', 
+                   alpha=0.8, linewidth=1.5,
+                   label='拒绝 $H_0$' if decision and i == 0 else (
+                         '接受 $H_0$' if not decision and i == 0 else ''))
+        
+        # 添加阈值线和格式化
+        ax.axhline(y=logA, color='C1', linestyle='--', linewidth=2, 
+                  label=f'$\\log A = {logA:.2f}$')
+        ax.axhline(y=logB, color='C0', linestyle='--', linewidth=2, 
+                  label=f'$\\log B = {logB:.2f}$')
+        ax.axhline(y=0, color='black', linestyle='-', alpha=0.5, linewidth=1)
+        
+        ax.set_xlabel(r'$n$') 
+        ax.set_ylabel(r'$\log(L_n)$')
+        ax.set_title(title, fontsize=20)
+        ax.legend(fontsize=18, loc='center right')
+        
+        y_margin = max(abs(logA), abs(logB)) * 0.2
+        ax.set_ylim(logB - y_margin, logA + y_margin)
+    
+    plt.tight_layout()
+    plt.show()
 
-以下是 Wald 引入序贯检验概念的方式：
+plot_likelihood_paths(params_3, n_highlight=10, n_background=100)
+```
 
-> 在任何阶段都给出一个规则来做出以下三个决定中的一个：
+接下来，让我们调整决策阈值 $A$ 和 $B$，并观察平均停止时间以及第一类和第二类错误率的变化。
 
-> 实验（在第m次试验中，m为整数值）：(1)接受假设H，(2)拒绝假设H，(3)
-> 通过进行额外观察来继续实验。因此，这样的检验程序是按顺序进行的。基于第一次
-> 观察，做出上述决策之一。如果做出第一个或第二个决策，过程就终止。如果做出第
-> 三个决策，则进行第二次试验。同样，基于前两次观察，做出三个决策中的一个。如
-> 果做出第三个决策，则进行第三次试验，依此类推。这个过程持续进行，直到做出第
-> 一个或第二个决策为止。这种检验程序所需的观察次数n是一个随机变量，因为n的值
-> 取决于观察的结果。
+在下面的代码中，我们通过调整因子 $A_f$ 和 $B_f$ 来调整 Wald 规则的阈值。
 
-[^f1]: 决策者的行为就像他相信随机变量序列
+```{code-cell} ipython3
+@njit(parallel=True)  
+def run_adjusted_thresholds(a0, b0, a1, b1, α, β, N, seed, A_f, B_f):
+    """带有调整阈值的 SPRT 模拟。"""
+    
+    # 计算原始阈值  
+    A_original = (1 - β) / α
+    B_original = β / (1 - α)
+    
+    # 应用调整因子
+    A_adj = A_original * A_f
+    B_adj = B_original * B_f
+    logA = np.log(A_adj)
+    logB = np.log(B_adj)
+    
+    # 预分配数组
+    stopping_times = np.zeros(N, dtype=np.int64)
+    decisions_h0 = np.zeros(N, dtype=np.bool_)
+    truth_h0 = np.zeros(N, dtype=np.bool_)
+    
+    # 并行运行模拟
+    for i in prange(N):
+        true_f0 = (i % 2 == 0)
+        truth_h0[i] = true_f0
+        
+        n, accept_f0 = sprt_single_run(a0, b0, a1, b1, 
+                        logA, logB, true_f0, seed + i)
+        stopping_times[i] = n
+        decisions_h0[i] = accept_f0
+    
+    return stopping_times, decisions_h0, truth_h0, A_adj, B_adj
 
-$[z_{0}, z_{1}, \ldots]$ 是*可交换的*。参见[可交换性和贝叶斯更新](https://python.quantecon.org/exchangeable.html)和
-{cite}`Kreps88`第11章对可交换性的讨论。
+def run_adjusted(params, A_f=1.0, B_f=1.0):
+    """运行带有调整 A 和 B 阈值的 SPRT 的包装函数。"""
+    
+    stopping_times, decisions_h0, truth_h0, A_adj, B_adj = run_adjusted_thresholds(
+        params.a0, params.b0, params.a1, params.b1, 
+        params.α, params.β, params.N, params.seed, A_f, B_f
+    )
+    truth_h0_bool = truth_h0.astype(bool)
+    decisions_h0_bool = decisions_h0.astype(bool)
+    
+    # 计算错误率
+    type_I = np.sum(truth_h0_bool 
+                    & ~decisions_h0_bool) / np.sum(truth_h0_bool)
+    type_II = np.sum(~truth_h0_bool 
+                    & decisions_h0_bool) / np.sum(~truth_h0_bool)
+    
+    return {
+        'stopping_times': stopping_times,
+        'type_I': type_I,
+        'type_II': type_II,
+        'A_used': A_adj,
+        'B_used': B_adj
+    }
 
-## 后续内容
+adjustments = [
+    (5.0, 0.5), 
+    (1.0, 1.0),    
+    (0.3, 3.0),    
+    (0.2, 5.0),    
+    (0.15, 7.0),   
+]
 
-我们将在以下讲座中深入探讨这里使用的一些概念：
+results_table = []
+for A_f, B_f in adjustments:
+    result = run_adjusted(params_2, A_f, B_f)
+    results_table.append([
+        A_f, B_f, 
+        f"{result['stopping_times'].mean():.1f}",
+        f"{result['type_I']:.3f}",
+        f"{result['type_II']:.3f}"
+    ])
 
-* {doc}`本讲座 <exchangeable>` 讨论了合理化统计学习的关键概念**可交换性**
-* {doc}`本讲座 <likelihood_ratio_process>` 描述了**似然比过程**及其在频率派和贝叶斯统计理论中的作用
-* {doc}`本讲座 <likelihood_bayes>` 讨论了似然比过程在**贝叶斯学习**中的作用
-* {doc}`本讲座 <navy_captain>` 回到本讲座的主题，研究海军命令舰长使用的（频率派）决策规则是否可以预期会比Abraham Wald设计的序贯规则更好或更差
+df = pd.DataFrame(results_table, 
+                 columns=["A_f", "B_f", "平均停止时间", 
+                          "第一类错误", "第二类错误"])
+df = df.set_index(["A_f", "B_f"])
+df
+```
+
+让我们通过回顾{eq}`eq:Waldrule`来更仔细地思考这个表格。
+
+回想一下$A = \frac{1-\beta}{\alpha}$和$B = \frac{\beta}{1-\alpha}$。
+
+当我们用小于1的因子乘以$A$（使$A$变小）时，我们实际上是在使拒绝原假设$H_0$变得更容易。
+
+这增加了第一类错误的概率。
+
+当我们用大于1的因子乘以$B$（使$B$变大）时，我们是在使接受原假设$H_0$变得更容易。
+
+这增加了第二类错误的概率。
+
+表格证实了这种直觉：当$A$减小且$B$增加超出其最优Wald值时，第一类和第二类错误率都会增加，而平均停止时间会减少。
+
+## 相关讲座
+
+我们将在以下早期和后续讲座中深入探讨这里使用的一些概念：
+
+* 在{doc}`这个续篇<wald_friedman_2>`中，我们从**贝叶斯统计学家**的角度重新阐述了这个问题，他们将参数视为与他们关心的可观察量共同分布的随机变量向量。
+* **可交换性**的概念是统计学习的基础，在我们的{doc}`可交换随机变量讲座<exchangeable>`中有深入探讨。
+* 要深入理解似然比过程及其在频率派和贝叶斯统计理论中的作用，请参见{doc}`likelihood_ratio_process`。
+
+* 在此基础上，{doc}`likelihood_bayes`探讨了似然比过程在**贝叶斯学习**中的作用。
+* 最后，{doc}`这个后续讲座 <navy_captain>`重新审视了这里讨论的主题，并探讨了海军命令船长使用的频率主义决策规则是否会比Abraham Wald的序贯决策规则表现得更好或更差。
+
+## 练习
+
+在下面的两个练习中，请尝试重写本讲座中的整个SPRT套件。
+
+```{exercise}
+:label: wald_friedman_ex1
+
+在第一个练习中，我们将序贯概率比检验应用于区分由3状态马尔可夫链生成的两个模型
+
+（关于马尔可夫链似然比过程的回顾，请参见[本节](lrp_markov)。）
+
+考虑使用Wald的序贯概率比检验来区分两个3状态马尔可夫链模型。
+
+你有关于转移概率的竞争假设：
+
+- $H_0$：链遵循转移矩阵 $P^{(0)}$
+- $H_1$：链遵循转移矩阵 $P^{(1)}$
+
+给定转移矩阵：
+
+$$
+P^{(0)} = \begin{bmatrix}
+0.7 & 0.2 & 0.1 \\
+0.3 & 0.5 & 0.2 \\
+0.1 & 0.3 & 0.6
+\end{bmatrix}, \quad
+P^{(1)} = \begin{bmatrix}
+0.5 & 0.3 & 0.2 \\
+0.2 & 0.6 & 0.2 \\
+0.2 & 0.2 & 0.6
+\end{bmatrix}
+$$
+
+对于观测序列$(x_0, x_1, \ldots, x_t)$，似然比为：
+
+$$
+\Lambda_t = \frac{\pi_{x_0}^{(1)}}{\pi_{x_0}^{(0)}} \prod_{s=1}^t \frac{P_{x_{s-1},x_s}^{(1)}}{P_{x_{s-1},x_s}^{(0)}}
+$$
+
+其中$\pi^{(i)}$是假设$i$下的平稳分布。
+
+任务:
+1. 实现马尔可夫链的似然比计算
+2. 实现Wald序贯检验,I类错误$\alpha = 0.05$和II类错误$\beta = 0.10$ 
+3. 在每个假设下运行1000次模拟并计算经验错误率
+4. 分析停止时间的分布
+
+检验在以下情况停止:
+- $\Lambda_t \geq A = \frac{1-\beta}{\alpha} = 18$: 拒绝$H_0$
+- $\Lambda_t \leq B = \frac{\beta}{1-\alpha} = 0.105$: 接受$H_0$
+```
+
+
+```{solution-start} wald_friedman_ex1
+:class: dropdown
+```
+
+以下是该练习的一个解决方案。
+
+在讲座中,我们更详细地编写代码以清晰地说明概念。
+
+在下面的代码中,我们简化了一些代码结构以便更简短地呈现。
+
+首先我们定义马尔可夫链SPRT的参数
+
+```{code-cell} ipython3
+MarkovSPRTParams = namedtuple('MarkovSPRTParams', 
+            ['α', 'β', 'P_0', 'P_1', 'N', 'seed'])
+
+def compute_stationary_distribution(P):
+    """计算转移矩阵P的平稳分布。"""
+    eigenvalues, eigenvectors = np.linalg.eig(P.T)
+    idx = np.argmin(np.abs(eigenvalues - 1))
+    pi = np.real(eigenvectors[:, idx])
+    return pi / pi.sum()
+
+@njit
+def simulate_markov_chain(P, pi_0, T, seed):
+    """模拟马尔可夫链路径。"""
+    np.random.seed(seed)
+    path = np.zeros(T, dtype=np.int32)
+    
+    cumsum_pi = np.cumsum(pi_0)
+    path[0] = np.searchsorted(cumsum_pi, np.random.uniform())
+    
+    for t in range(1, T):
+        cumsum_row = np.cumsum(P[path[t-1]])
+        path[t] = np.searchsorted(cumsum_row, np.random.uniform())
+    
+    return path
+```
+
+这里我们定义了用于马尔可夫链的 SPRT 运行函数
+
+```{code-cell} ipython3
+@njit
+def markov_sprt_single_run(P_0, P_1, π_0, π_1, 
+                logA, logB, true_P, true_π, seed):
+    """运行单次马尔可夫链 SPRT。"""
+    max_n = 10000
+    path = simulate_markov_chain(true_P, true_π, max_n, seed)
+    
+    log_L = np.log(π_1[path[0]] / π_0[path[0]])
+    if log_L >= logA: return 1, False
+    if log_L <= logB: return 1, True
+    
+    for t in range(1, max_n):
+        prev_state, curr_state = path[t-1], path[t]
+        p_1, p_0 = P_1[prev_state, curr_state], P_0[prev_state, curr_state]
+        
+        if p_0 > 0:
+            log_L += np.log(p_1 / p_0)
+        elif p_1 > 0:
+            log_L = np.inf
+            
+        if log_L >= logA: return t+1, False
+        if log_L <= logB: return t+1, True
+    
+    return max_n, log_L < 0
+
+def run_markov_sprt(params):
+    """运行马尔可夫链 SPRT。"""
+    π_0 = compute_stationary_distribution(params.P_0)
+    π_1 = compute_stationary_distribution(params.P_1)
+    A, B, logA, logB = compute_wald_thresholds(params.α, params.β)
+    
+    stopping_times = np.zeros(params.N, dtype=np.int64)
+    decisions_h0 = np.zeros(params.N, dtype=bool)
+    truth_h0 = np.zeros(params.N, dtype=bool)
+    
+    for i in range(params.N):
+        true_P, true_π = (params.P_0, π_0) if i % 2 == 0 else (params.P_1, π_1)
+        truth_h0[i] = i % 2 == 0
+        
+        n, accept_h0 = markov_sprt_single_run(
+            params.P_0, params.P_1, π_0, π_1, logA, logB, 
+            true_P, true_π, params.seed + i)
+        
+        stopping_times[i] = n
+        decisions_h0[i] = accept_h0
+    
+    type_I = np.sum(truth_h0 & ~decisions_h0) / np.sum(truth_h0)
+    type_II = np.sum(~truth_h0 & decisions_h0) / np.sum(~truth_h0)
+    
+    return {
+        'stopping_times': stopping_times, 'decisions_h0': decisions_h0,
+        'truth_h0': truth_h0, 'type_I': type_I, 'type_II': type_II
+    }
+```
+
+现在我们可以运行马尔可夫链的SPRT并可视化结果
+
+```{code-cell} ipython3
+# 运行马尔可夫链SPRT
+P_0 = np.array([[0.7, 0.2, 0.1], 
+                [0.3, 0.5, 0.2], 
+                [0.1, 0.3, 0.6]])
+
+P_1 = np.array([[0.5, 0.3, 0.2], 
+                [0.2, 0.6, 0.2], 
+                [0.2, 0.2, 0.6]])
+
+params_markov = MarkovSPRTParams(α=0.05, β=0.10, 
+                        P_0=P_0, P_1=P_1, N=1000, seed=42)
+results_markov = run_markov_sprt(params_markov)
+
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
+
+ax1.hist(results_markov['stopping_times'], 
+            bins=50, color="steelblue", alpha=0.8)
+ax1.set_title("停止时间")
+ax1.set_xlabel("n")
+ax1.set_ylabel("频率")
+
+plot_confusion_matrix(results_markov, ax2)
+
+plt.tight_layout()
+plt.show()
+```
+
+```{solution-end}
+```
+
+
+```{exercise}
+:label: wald_friedman_ex2
+
+在本练习中，将Wald的序贯检验应用于区分具有不同动态和噪声结构的两个VAR(1)模型。
+
+关于VAR模型的似然比过程的回顾，请参见{doc}`likelihood_var`。
+
+给定每个假设下的VAR模型:
+- $H_0$: $x_{t+1} = A^{(0)} x_t + C^{(0)} w_{t+1}$
+- $H_1$: $x_{t+1} = A^{(1)} x_t + C^{(1)} w_{t+1}$
+
+其中 $w_t \sim \mathcal{N}(0, I)$ 且:
+
+$$
+A^{(0)} = \begin{bmatrix} 0.8 & 0.1 \\ 0.2 & 0.7 \end{bmatrix}, \quad
+C^{(0)} = \begin{bmatrix} 0.3 & 0.1 \\ 0.1 & 0.3 \end{bmatrix}
+$$
+
+$$
+A^{(1)} = \begin{bmatrix} 0.6 & 0.2 \\ 0.3 & 0.5 \end{bmatrix}, \quad
+C^{(1)} = \begin{bmatrix} 0.4 & 0 \\ 0 & 0.4 \end{bmatrix}
+$$
+
+任务:
+1. 使用VAR讲座中的函数实现VAR似然比
+2. 实现Wald的序贯检验，其中 $\alpha = 0.05$ 且 $\beta = 0.10$
+3. 分析在两个假设下以及模型错误设定情况下的表现
+4. 在停止时间和准确性方面与马尔可夫链情况进行比较
+
+```
+
+```{solution-start} wald_friedman_ex2
+:class: dropdown
+```
+
+以下是该练习的一个解决方案。
+
+首先我们定义VAR模型和模拟器的参数
+
+```{code-cell} ipython3
+VARSPRTParams = namedtuple('VARSPRTParams', 
+            ['α', 'β', 'A_0', 'C_0', 'A_1', 'C_1', 'N', 'seed'])
+
+def create_var_model(A, C):
+    """创建VAR模型。"""
+    μ_0 = np.zeros(A.shape[0])
+    CC = C @ C.T
+    Σ_0 = sp.linalg.solve_discrete_lyapunov(A, CC)
+    
+    CC_inv = np.linalg.inv(CC + 1e-10 * np.eye(CC.shape[0]))
+    Σ_0_inv = np.linalg.inv(Σ_0 + 1e-10 * np.eye(Σ_0.shape[0]))
+    
+    return {
+        'A': A, 'C': C, 'μ_0': μ_0, 'Σ_0': Σ_0,
+        'CC_inv': CC_inv, 'Σ_0_inv': Σ_0_inv,
+        'log_det_CC': np.log(
+            np.linalg.det(CC + 1e-10 * np.eye(CC.shape[0]))),
+        'log_det_Σ_0': np.log(
+            np.linalg.det(Σ_0 + 1e-10 * np.eye(Σ_0.shape[0])))
+    }
+```
+
+现在我们为VAR模型定义似然比和SPRT函数，类似于马尔可夫链的情况
+
+```{code-cell} ipython3
+def var_log_likelihood(x_curr, x_prev, model, initial=False):
+    """计算VAR对数似然。"""
+    n = len(x_curr)
+    if initial:
+        diff = x_curr - model['μ_0']
+        return -0.5 * (n * np.log(2 * np.pi) + model['log_det_Σ_0'] + 
+                      diff @ model['Σ_0_inv'] @ diff)
+    else:
+        diff = x_curr - model['A'] @ x_prev
+        return -0.5 * (n * np.log(2 * np.pi) + model['log_det_CC'] + 
+                      diff @ model['CC_inv'] @ diff)
+
+def var_sprt_single_run(model_0, model_1, model_true, 
+                        logA, logB, seed):
+    """单次VAR SPRT运行。"""
+    np.random.seed(seed)
+    max_T = 500
+    
+    # 生成VAR路径
+    Σ_chol = np.linalg.cholesky(model_true['Σ_0'])
+    x = model_true['μ_0'] + Σ_chol @ np.random.randn(
+                len(model_true['μ_0']))
+    
+    # 初始似然比
+    log_L = (var_log_likelihood(x, None, model_1, True) - 
+             var_log_likelihood(x, None, model_0, True))
+    
+    if log_L >= logA: return 1, False
+    if log_L <= logB: return 1, True
+    
+    # 序贯更新
+    for t in range(1, max_T):
+        x_prev = x.copy()
+        w = np.random.randn(model_true['C'].shape[1])
+        x = model_true['A'] @ x + model_true['C'] @ w
+        
+        log_L += (var_log_likelihood(x, x_prev, model_1) - 
+                 var_log_likelihood(x, x_prev, model_0))
+        
+        if log_L >= logA: return t+1, False
+        if log_L <= logB: return t+1, True
+    
+    return max_T, log_L < 0
+
+def run_var_sprt(params):
+    """运行VAR SPRT。"""
+
+    model_0 = create_var_model(params.A_0, params.C_0)
+    model_1 = create_var_model(params.A_1, params.C_1)
+    A, B, logA, logB = compute_wald_thresholds(params.α, params.β)
+    
+    stopping_times = np.zeros(params.N)
+    decisions_h0 = np.zeros(params.N, dtype=bool)
+    truth_h0 = np.zeros(params.N, dtype=bool)
+    
+    for i in range(params.N):
+        model_true = model_0 if i % 2 == 0 else model_1
+        truth_h0[i] = i % 2 == 0
+        
+        n, accept_h0 = var_sprt_single_run(model_0, model_1, model_true, 
+                                          logA, logB, params.seed + i)
+        stopping_times[i] = n
+        decisions_h0[i] = accept_h0
+    
+    type_I = np.sum(truth_h0 & ~decisions_h0) / np.sum(truth_h0)
+    type_II = np.sum(~truth_h0 & decisions_h0) / np.sum(~truth_h0)
+    
+    return {'stopping_times': stopping_times, 
+            'decisions_h0': decisions_h0,
+            'truth_h0': truth_h0, 
+            'type_I': type_I, 'type_II': type_II}
+```
+
+
+让我们运行SPRT并可视化结果
+
+```{code-cell} ipython3
+# 运行 VAR SPRT
+A_0 = np.array([[0.8, 0.1], 
+                [0.2, 0.7]])
+C_0 = np.array([[0.3, 0.1], 
+                [0.1, 0.3]])
+A_1 = np.array([[0.6, 0.2], 
+                [0.3, 0.5]])
+C_1 = np.array([[0.4, 0.0], 
+                [0.0, 0.4]])
+
+params_var = VARSPRTParams(α=0.05, β=0.10, 
+                A_0=A_0, C_0=C_0, A_1=A_1, C_1=C_1, 
+                N=1000, seed=42)
+results_var = run_var_sprt(params_var)
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+ax1.boxplot([results_markov['stopping_times'], 
+             results_var['stopping_times']], 
+           tick_labels=['马尔可夫链', 'VAR(1)'])
+ax1.set_ylabel('停止时间')
+
+x = np.arange(2)
+ax2.bar(x - 0.2, [results_markov['type_I'], results_var['type_I']], 
+        0.4, label='第一类错误', alpha=0.7)
+ax2.bar(x + 0.2, [results_markov['type_II'], results_var['type_II']], 
+        0.4, label='第二类错误', alpha=0.7)
+ax2.axhline(y=0.05, linestyle='--', alpha=0.5, color='C0')
+ax2.axhline(y=0.10, linestyle='--', alpha=0.5, color='C1')
+ax2.set_xticks(x), ax2.set_xticklabels(['马尔可夫', 'VAR'])
+ax2.legend() 
+plt.tight_layout() 
+plt.show()
+```
+
+```{solution-end}
+```
 

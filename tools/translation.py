@@ -185,7 +185,7 @@ def translate_cn(input_file):
     logging.info(f"All chunks translated and saved to {output_file}")
 
 if __name__ == "__main__":
-    directory = "lectures"
+    directory = "../lectures"
     max_workers = 2  # Adjust this based on your API rate limits and system capabilities
     
     # Load translation history
