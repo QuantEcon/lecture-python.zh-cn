@@ -546,7 +546,7 @@ plt.show()
 :class: dropdown
 ```
 
-这是一个解决方案：
+参考答案：
 
 ```{code-cell} ipython3
 r_vals = np.linspace(0, 0.04, 4)
@@ -697,7 +697,7 @@ plt.show()
 :class: dropdown
 ```
 
-这是一个解决方案
+参考答案
 
 ```{code-cell} ipython3
 M = 25
@@ -706,13 +706,13 @@ fig, ax = plt.subplots()
 
 asset_mean = []
 for r in r_vals:
-    print(f'Solving model at r = {r}')
+    print(f'在r = {r}处求解')
     ifp = IFP(r=r)
     mean = np.mean(compute_asset_series(ifp, T=250_000))
     asset_mean.append(mean)
 ax.plot(asset_mean, r_vals)
 
-ax.set(xlabel='capital', ylabel='interest rate')
+ax.set(xlabel='资本', ylabel='利率')
 
 plt.show()
 ```
