@@ -362,8 +362,8 @@ c_analytical = c_star(ce.x_grid, ce.β, ce.γ)
 
 fig, ax = plt.subplots()
 
-ax.plot(ce.x_grid, c_analytical, label='analytical')
-ax.plot(ce.x_grid, c, label='numerical')
+ax.plot(ce.x_grid, c_analytical, label='解析解')
+ax.plot(ce.x_grid, c, label='数值解')
 ax.set_ylabel(r'$\sigma(x)$')
 ax.set_xlabel('$x$')
 ax.legend()
