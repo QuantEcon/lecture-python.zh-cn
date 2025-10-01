@@ -34,18 +34,18 @@ kernelspec:
 
 - 规划问题的拉格朗日公式，它导出了一个差分方程组。
 - 用于求解受初始和终端条件约束的差分方程的**射击算法**。
-- 描述长期但有限期限经济最优路径的**收费公路**性质。
+- 描述长期但有限期经济最优路径的**收费公路**性质。
 
 本讲座使用了额外的思想，包括：
 
-- Hicks-Arrow价格，以John R. Hicks和Kenneth Arrow命名。
+- 以John R. Hicks和Kenneth Arrow命名的Hicks-Arrow价格。
 - 规划问题中的一些拉格朗日乘数与Hicks-Arrow价格之间的联系。
-- 在宏观经济学动态中广泛使用的**大**$K$**，小**$k$**技巧**。
-    * 我们将在[这篇讲座](https://python.quantecon.org/rational_expectations.html)和[这篇讲座](https://python-advanced.quantecon.org/dyn_stack.html)中遇到这个技巧。
+- 在宏观经济学动态中广泛使用的**大** $K$ **，小** $k$ **技巧**。
+    * 我们将在[第70讲](https://python.quantecon.org/rational_expectations.html)和[第41讲](https://python-advanced.quantecon.org/dyn_stack.html)中遇到这个技巧。
 - 利率期限结构的非随机版本。
 - 两种组织经济方式之间的密切联系，即：
-    * **社会主义**，其中中央计划者指挥资源分配，和
-    * **竞争市场**，其中竞争均衡**价格**诱导个人消费者和生产者选择社会最优分配，作为他们自私决策的无意后果
+    * **社会主义**：中央计划者指挥资源分配，和
+    * **竞争市场**：竞争均衡**价格**诱导个人消费者和生产者选择社会最优分配，作为他们自私决策的无意后果
 
 让我们从一些标准导入开始：
 
@@ -56,7 +56,7 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图片尺寸
 from numba import jit, float64
 from numba.experimental import jitclass
 import numpy as np
@@ -72,19 +72,18 @@ import numpy as np
 
 资本品是耐用的，但每期以恒定比率折旧。
 
-我们用 $C_t$ 表示时间 t 的非耐用消费品。
+我们用 $C_t$ 表示第 $t$ 期的非耐用消费品。
 
-用 $K_t$ 表示时间 t 的实物资本存量。
+用 $K_t$ 表示第 $t$ 期的实物资本存量。
 
 令 $\vec{C}$ = $\{C_0,\dots, C_T\}$ 且
 $\vec{K}$ = $\{K_0,\dots,K_{T+1}\}$。
 
-代表性家庭在每个时期$t$都拥有一单位的劳动力，并且喜欢在每个时期消费商品。
+代表性家庭在每个时期 $t$ 都拥有一单位的劳动力，并且喜欢在每个时期消费商品。
 
-代表性家庭在每个时期$t$非弹性地供应一单位劳动力$N_t$，因此
-$N_t =1 \text{ 对所有 } t \in \{0, 1, \ldots, T\}$。
+代表性家庭在每个时期 $t$ 非弹性地供应一单位劳动力 $N_t$，因此，对所有 $ t \in \{0, 1, \ldots, T\}$，$N_t =1$。
 
-代表性家庭对消费组合的偏好由以下效用函数排序：
+代表性家庭对消费组合的偏好由以下效用函数给出：
 
 $$
 U(\vec{C}) = \sum_{t=0}^{T} \beta^t \frac{C_t^{1-\gamma}}{1-\gamma}
@@ -106,7 +105,7 @@ $$
 一个可行的配置 $\vec{C}, \vec{K}$ 满足
 
 $$
-C_t + K_{t+1} \leq F(K_t,N_t) + (1-\delta) K_t \quad \text{for all } t \in \{0, 1, \ldots, T\}
+C_t + K_{t+1} \leq F(K_t,N_t) + (1-\delta) K_t \quad \text{对所有 } t \in \{0, 1, \ldots, T\}
 $$
 
 其中 $\delta \in (0,1)$ 是资本的折旧率。
@@ -114,7 +113,7 @@ $$
 ### 规划问题
 
 在{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`中，我们研究了规划者选择配置 $\{\vec{C},\vec{K}\}$ 以
-最大化 {eq}`utility-functional`，同时受制于 {eq}`allocation`。
+最大化 {eq}`utility-functional`，同时受约束于 {eq}`allocation`。
 
 规划问题求解的配置将在竞争均衡中重现，我们将在下面看到。
 
@@ -128,32 +127,26 @@ $$
 
 有（单位质量的）价格接受型消费者和企业。
 
-市场价格被设定为协调代表性消费者和代表性企业独立做出的不同决策。
+市场价格被设定为协调代表性消费者和代表性企业各自独立做出的不同决策。
 
 有一个代表性消费者，其对消费计划的偏好与计划经济中的消费者相同。
 
 消费者（也称为*家庭*）不再由计划者告诉消费和储蓄什么，而是自己选择，但受预算约束。
 
-- 在每个时期$t$，消费者从企业获得工资和资本租金
-  -- 这些构成其在时间$t$的**收入**。
-- 消费者决定将多少收入用于消费或
-  储蓄。
-- 家庭可以通过获得额外的实物资本（它与时间$t$的消费一比一交换）
-  或通过在非$t$时期获得消费权来储蓄。
-- 家庭拥有实物资本和劳动力
-  并将它们出租给企业。
-- 家庭消费、供应劳动力并投资于实物
-  资本。
-- 一个利润最大化的代表性企业运营生产
-  技术。
-- 企业每个时期从代表性家庭租用劳动力和资本，每个时期将其产出出售给
-  家庭。
+- 在每个时期 $t$，消费者从企业获得工资和资本租金
+  -- 这些构成其在第 $t$ 期的**收入**。
+- 消费者决定将多少收入用于消费或储蓄。
+- 家庭可以通过获得额外的实物资本（它与第 $t$ 期的消费一比一交换）
+  或通过在非 $t$ 时期获得消费权来储蓄。
+- 家庭拥有实物资本和劳动力，并将它们出租给企业。
+- 家庭消费、供应劳动力并投资于实物资本。
+- 一个利润最大化的代表性企业运营生产技术。
+- 企业每个时期从代表性家庭租用劳动力和资本，每个时期将其产出出售给家庭。
 - 代表性家庭和代表性企业都是
   **价格接受者**，他们认为价格不会受到他们选择的影响
 
 ```{note}
-同样，我们可以认为有单位质量的相同代表性消费者和
-相同代表性企业。
+同样，我们可以认为有单位质量的相同代表性消费者和相同代表性企业。
 ```
 
 ## 市场结构
@@ -164,49 +157,47 @@ $$
 
 每个时期，企业从家庭租用这两种要素。
 
-有一个**单一**的大型竞争市场，其中家庭
-用时间$0$的商品交换所有其他时间$t=1, 2, \ldots, T$的商品。
+有一个**单一**的大型竞争市场，其中家庭用第 $0$ 期的商品交换所有其他期 $t=1, 2, \ldots, T$ 的商品。
 
 ### 价格
 
-有价格序列
-$\{w_t,\eta_t\}_{t=0}^T= \{\vec{w}, \vec{\eta} \}$
+有一个价格序列
+$\{w_t,\eta_t\}_{t=0}^T= \{\vec{w}, \vec{\eta} \}$，
 其中
 
-- $w_t$ 是时间$t$的工资，即劳动力的租赁率
+- $w_t$ 是第 $t$ 期的工资，即劳动力的租赁率
 
-- $\eta_t$ 是时间$t$资本的租赁率
+- $\eta_t$ 是第 $t$ 期的资本租赁率
 
 此外，还有一个跨期价格向量 $\{q_t^0\}$，其中
 
-- $q^0_t$ 是时间$0$时一单位时间$t$商品的价格。
+- $q^0_t$ 是一单位第 $t$ 期商品在第 $0$ 期的价格。
 
-我们称 $\{q^0_t\}_{t=0}^T$ 为**Hicks-Arrow价格**向量，
-以1972年经济学诺贝尔奖获得者命名。
+我们称 $\{q^0_t\}_{t=0}^T$ 为**Hicks-Arrow价格**向量。
+这是以1972年经济学诺贝尔奖获得者命名的。
 
 因为 $q_t^0$ 是一个**相对价格**，$q_t^0$ 的计价单位是；我们可以通过将它们全部乘以一个正标量，比如 $\lambda > 0$，来重新标准化它们。
 
 $q_t^0$ 的单位可以设置为
 
 $$
-\frac{\text{时间0商品数量}}{\text{时间t商品数量}}
+\frac{\text{第 $0$ 期商品数量}}{\text{第 $t$ 期商品数量}}
 $$
 
-在这种情况下，我们将时间$0$的消费品作为**计价单位**。
+在这种情况下，我们将第 $t$ 期的消费品作为**计价单位**。
 
 ## 企业问题
 
-在时间$t$，代表性企业雇佣劳动力
+在第 $t$ 期，代表性企业雇佣劳动力
 $\tilde n_t$ 和资本 $\tilde k_t$。
 
-企业在时间$t$的利润为
+企业在第 $t$ 期的利润为
 
 $$
 F(\tilde k_t, \tilde n_t)-w_t \tilde n_t -\eta_t \tilde k_t
 $$
 
-其中$w_t$是时间$t$的工资率
-而$\eta_t$是时间$t$资本的租赁率。
+其中 $w_t$ 是第 $t$ 期的工资率，而 $\eta_t$ 是第 $t$ 期的资本租赁率。
 
 与计划经济模型一样
 
@@ -234,8 +225,7 @@ F_n(\tilde k_t, \tilde n_t) =w_t
 
 为了描述这个无套利利润推理，我们首先应用关于线性齐次函数的欧拉定理。
 
-该定理适用于Cobb-Douglas生产函数，因为
-它显示规模报酬不变：
+该定理适用于Cobb-Douglas生产函数，因为它表现出规模报酬不变：
 
 $$
 \alpha F(\tilde k_t, \tilde n_t) =  F(\alpha  \tilde k_t, \alpha \tilde n_t)
@@ -251,7 +241,7 @@ F(\tilde k_t,\tilde n_t) =  \frac{\partial F}{\partial \tilde k_t}
 \tilde k_t + \frac{\partial F}{\partial \tilde  n_t} \tilde n_t
 $$
 
-重写企业的利润为
+将企业的利润重写为
 
 $$
 \frac{\partial F}{\partial \tilde k_t} \tilde k_t +
@@ -265,66 +255,56 @@ $$
 \left(\frac{\partial F}{\partial \tilde  n_t}-w_t\right) \tilde n_t
 $$
 
-因为$F$是1次齐次的，所以
+因为 $F$ 是1次齐次的，所以
 $\frac{\partial F}{\partial \tilde k_t}$和
-$\frac{\partial F}{\partial \tilde n_t}$是0次齐次的，因此相对于
-$\tilde k_t$和$\tilde n_t$是固定的。
+$\frac{\partial F}{\partial \tilde n_t}$是 0 次齐次的，因此相对于
+$\tilde k_t$ 和 $\tilde n_t$ 是固定的。
 
-如果$\frac{\partial F}{\partial \tilde k_t}> \eta_t$，那么企业
-在每个额外的$\tilde k_t$单位上获得正利润，所以它想要使$\tilde k_t$
-任意大。
+如果$\frac{\partial F}{\partial \tilde k_t}> \eta_t$，那么企业在每个额外单位的 $\tilde k_t$ 上获得正利润，所以它想要使 $\tilde k_t$ 任意大。
 
-但设置$\tilde k_t = + \infty$在物理上是不可行的，
-所以**均衡**价格必须取使企业没有这种套利机会的值。
+但设置 $\tilde k_t = + \infty$ 在物理上是不可行的，所以**均衡**价格必须取使企业没有这种套利机会的值。
 
 类似的论证适用于
-$\frac{\partial F}{\partial \tilde n_t}> w_t$的情况。
+$\frac{\partial F}{\partial \tilde n_t}> w_t$ 的情况。
 
-如果$\frac{\partial \tilde k_t}{\partial \tilde k_t}< \eta_t$，
-企业会想要将$\tilde k_t$设为零，这是不可行的。
+如果 $\frac{\partial \tilde k_t}{\partial \tilde k_t}< \eta_t$，
+企业会想要将 $\tilde k_t$ 设为零，这是不可行的。
 
-定义
-$\vec{w} =\{w_0, \dots,w_T\}$和$\vec{\eta}= \{\eta_0, \dots, \eta_T\}$会很方便。
+方便起见，定义
+$\vec{w} =\{w_0, \dots,w_T\}$ 和 $\vec{\eta}= \{\eta_0, \dots, \eta_T\}$。
 
 ## 家庭问题
 
-代表性家庭生活在$t=0,1,\dots, T$。
+代表性家庭生活在 $t=0,1,\dots, T$。
 
-在$t$时，家庭出租$1$单位劳动力
-和$k_t$单位资本给企业并获得收入
+在第 $t$ 期时，家庭出租1单位劳动力和 $k_t$ 单位资本给企业并获得收入
 
 $$
 w_t 1+ \eta_t k_t
 $$
 
-在$t$时，家庭将其收入分配于以下
-两个类别的购买：
+在第 $t$ 期时，家庭将其收入分配于以下两个类别的购买：
 
 * 消费 $c_t$
 
 * 净投资 $k_{t+1} -(1-\delta)k_t$
 
 
-这里$\left(k_{t+1} -(1-\delta)k_t\right)$是家庭的
-实物资本净投资，$\delta \in (0,1)$是
-资本的折旧率。
+这里 $\left(k_{t+1} -(1-\delta)k_t\right)$ 是家庭的实物资本净投资，$\delta \in (0,1)$ 是资本的折旧率。
 
-在时期$t$，消费者可以自由购买比其从向企业供应资本
-和劳动力获得的收入更多的商品用于消费和
-投资于实物资本，只要在其他时期其收入超过其购买。
+在第 $t$ 期时，消费者可以自由地购买比其通过向企业提供资本和劳动所获得的收入更多的商品，用于消费和实物资本投资，只要在其他时期其收入超过其购买即可。
 
-消费者在时间$t$消费品的净超额需求是缺口
+消费者在第 $t$ 期的消费品的净超额需求是
 
 $$
 e_t \equiv \left(c_t + (k_{t+1} -(1-\delta)k_t)\right)-(w_t 1 + \eta_t k_t)
 $$
 
-令$\vec{c} = \{c_0,\dots,c_T\}$且令$\vec{k} = \{k_1,\dots,k_{T+1}\}$。
+令$\vec{c} = \{c_0,\dots,c_T\}$ 且 $\vec{k} = \{k_1,\dots,k_{T+1}\}$。
 
-$k_0$是给家庭的。
+对家庭来说，$k_0$ 是给定的。
 
-家庭面临一个**单一**预算约束
-，要求家庭净超额需求的现值必须为零：
+家庭面临一个**单一**预算约束，要求家庭净超额需求的现值必须为零：
 
 $$
 \sum_{t=0}^T q^0_t e_t  \leq 0
@@ -336,19 +316,19 @@ $$
 \sum_{t=0}^T q^0_t  \left(c_t + (k_{t+1} -(1-\delta)k_t)\right) \leq \sum_{t=0}^T q^0_t(w_t 1 + \eta_t k_t)  \
 $$
 
-家庭面临价格体系$\{q^0_t, w_t, \eta_t\}$作为价格接受者，并选择一个配置来解决受约束的优化问题：
+家庭，作为价格接受者，面临价格体系 $\{q^0_t, w_t, \eta_t\}$，并选择一个配置来解决受约束的优化问题：
 
 $$
-\begin{aligned}& \max_{\vec{c}, \vec{k} }  \sum_{t=0}^T \beta^t u(c_t) \\ \text{subject to} \ \   & \sum_{t=0}^T q_t^0\left(c_t +\left(k_{t+1}-(1-\delta) k_t \right) - (w_t -\eta_t k_t) \right)\leq 0  \notag \end{aligned}
+\begin{aligned}& \max_{\vec{c}, \vec{k} }  \sum_{t=0}^T \beta^t u(c_t) \\ \text{使得} \ \   & \sum_{t=0}^T q_t^0\left(c_t +\left(k_{t+1}-(1-\delta) k_t \right) - (w_t -\eta_t k_t) \right)\leq 0  \notag \end{aligned}
 $$
 
-**价格体系**的组成部分有以下单位：
+**价格体系**有以下组成部分：
 
-* $w_t$ 以时间$t$商品每单位时间$t$雇佣劳动力计量
+* $w_t$ 表示在第 $t$ 期，每雇佣一单位劳动所支付的工资，以第 $t$ 期商品为计价单位。
 
-* $\eta_t$ 以时间$t$商品每单位时间$t$雇佣资本计量
+* $\eta_t$ 表示在第 $t$ 期，每雇佣一单位资本所支付的回报，以第 $t$ 期商品为计价单位。
 
-* $q_t^0$ 以计价单位每单位时间$t$商品计量
+* $q_t^0$ 表示在第 $t$ 期，每一单位商品的价格，以计价物为单位进行度量。
 
 
 ### 定义
@@ -357,15 +337,14 @@ $$
   $\{q_t^0,\eta_t,w_t\}_{t=0}^T= \{\vec{q}, \vec{\eta}, \vec{w}\}$。
 - **配置**是一个序列
   $\{c_t,k_{t+1},n_t=1\}_{t=0}^T = \{\vec{c}, \vec{k}, \vec{n}\}$。
-- **竞争均衡**是一个价格体系和一个配置
-  ，具有以下性质：
+- **竞争均衡**是一个价格体系和一个配置，并具有以下性质：
     - 给定价格体系，该配置解决家庭的问题。
     - 给定价格体系，该配置解决企业的问题。
 
 
-这里的愿景是均衡价格体系和配置一次性确定。
+这里的设想是，均衡价格体系和配置一旦确定，就固定下来。
 
-实际上，我们想象所有交易都在时间$0$之前发生。
+实际上，我们可以想象所有交易都在时刻 $0$ 之前一次性完成。
 
 ## 计算竞争均衡
 
@@ -373,8 +352,7 @@ $$
 
 - 我们**猜测**均衡价格序列
   $\{\vec{q}, \vec{\eta}, \vec{w}\}$。
-- 然后我们**验证**在这些价格下，家庭和
-  企业选择相同的配置。
+- 然后我们**验证**在这些价格下，家庭和企业选择相同的配置。
 
 ### 价格体系的猜测
 
@@ -386,17 +364,17 @@ $$
 
 
 ```{note}
-这个配置将构成**大**$K$，在我们将应用于竞争均衡的**大**$K$**，小**$k$**技巧**的当前实例中，类似于[这篇讲座](https://python.quantecon.org/rational_expectations.html)和[这篇讲座](https://python-advanced.quantecon.org/dyn_stack.html)中的情况。
+这个配置将构成**大** $K$，即我们将在[第70讲](https://python.quantecon.org/rational_expectations.html)和[第41讲](https://python-advanced.quantecon.org/dyn_stack.html)中应用于竞争均衡的**大** $K$ **，小** $k$ **技巧**中的大 $K$.
 ```
 
 特别是，我们将使用以下程序：
 
 * 获得代表性企业和代表性消费者的一阶条件。
-* 从这些方程中，通过用解决规划问题的数量$\vec C, \vec K$替换企业的选择变量$\tilde k, \tilde n$和消费者的选择变量，获得一组新方程。
-* 求解所得方程，得到$\{\vec{q}, \vec{\eta}, \vec{w}\}$作为$\vec C, \vec K$的函数。
-* 验证在这些价格下，$c_t = C_t, k_t = \tilde k_t = K_t, \tilde n_t = 1$对于$t = 0, 1, \ldots, T$。
+* 从这些方程中，通过用解决规划问题的数量 $\vec C, \vec K$ 替换企业的选择变量 $\tilde k, \tilde n$ 和消费者的选择变量，获得一组新方程。
+* 求解所得方程，得到 $\{\vec{q}, \vec{\eta}, \vec{w}\}$ 作为 $\vec C, \vec K$ 的函数。
+* 验证在这些价格下，$c_t = C_t, k_t = \tilde k_t = K_t, \tilde n_t = 1$， 对于 $t = 0, 1, \ldots, T$。
 
-因此，我们猜测对于$t=0,\dots,T$：
+因此，我们猜测，对于 $t=0,\dots,T$：
 
 ```{math}
 :label: eq-price
@@ -432,7 +410,7 @@ $$
 
 等等。
 
-如果我们对均衡价格体系的猜测是正确的，那么必须
+如果我们对均衡价格体系的猜测是正确的，那么必须有
 
 ```{math}
 :label: ge1
@@ -450,7 +428,7 @@ $$
 c_t^* + k_{t+1}^* - (1-\delta) k_t^*  = F(\tilde k_t^*, \tilde n_t^*)
 $$
 
-我们将验证对于$t=0,\dots,T$，家庭和企业选择的配置都等于解决规划问题的配置：
+我们将验证对于 $t=0,\dots,T$，家庭和企业选择的配置都等于解决规划问题的配置：
 
 ```{math}
 :label: eq-pl
@@ -515,8 +493,7 @@ $$
 
 这是{eq}`constraint1`。
 
-将{eq}`cond2`、{eq}`eq-price`和
-{eq}`eq-price3`结合，我们得到：
+将{eq}`cond2`、{eq}`eq-price`和{eq}`eq-price3`结合，我们得到：
 
 ```{math}
 :label: co-re
@@ -524,7 +501,7 @@ $$
 -\lambda \beta^t \mu_t\left[(1-\delta) +f'(K_t)\right] +\lambda \beta^{t-1}\mu_{t-1}=0
 ```
 
-通过将{eq}`co-re`两边除以$\lambda$（因为$u'>0$所以不为零）重写，我们得到：
+通过将{eq}`co-re`两边除以 $\lambda$（因为 $u'>0$， 所以不为零），我们得到：
 
 $$
 \beta^t \mu_t [(1-\delta+f'(K_t)] = \beta^{t-1} \mu_{t-1}
@@ -539,22 +516,22 @@ $$
 这是{eq}`constraint2`。
 
 将{eq}`cond3`、{eq}`eq-price`、{eq}`eq-price2`
-和{eq}`eq-price3`结合，在将{eq}`cond3`两边乘以$\lambda$后，我们得到
+和{eq}`eq-price3`结合，在将{eq}`cond3`两边乘以 $\lambda$ 后，我们得到
 
 $$
 \sum_{t=0}^T \beta^t \mu_{t} \left(C_t+ (K_{t+1} -(1-\delta)K_t)-f(K_t)+K_t f'(K_t)-f'(K_t)K_t\right) \leq 0
 $$
 
-这简化为
+简化为
 
 $$
 \sum_{t=0}^T  \beta^t \mu_{t} \left(C_t +K_{t+1} -(1-\delta)K_t - F(K_t,1)\right) \leq 0
 $$
 
-因为$\beta^t \mu_t >0$对于$t =0, \ldots, T$，所以
+因为 $\beta^t \mu_t >0$ 对于 $t =0, \ldots, T$，所以
 
 $$
-C_t+K_{t+1}-(1-\delta)K_t -F(K_t,1)=0 \quad  \text{ for all }t \text{ in } \{0, 1, \ldots, T\}
+C_t+K_{t+1}-(1-\delta)K_t -F(K_t,1)=0 \quad  \text{对所有 }t \in \{0, 1, \ldots, T\}
 $$
 
 这是{eq}`constraint3`。
@@ -565,7 +542,7 @@ $$
 -\beta^{T+1} \mu_{T+1} \leq 0
 $$
 
-两边除以$\beta^{T+1}$得到
+两边除以 $\beta^{T+1}$ 得到
 
 $$
 -\mu_{T+1} \leq 0
@@ -579,7 +556,7 @@ $$
 
 我们现在转向竞争均衡中企业面临的问题：
 
-如果我们将{eq}`eq-pl`代入{eq}`Zero-profits`对于所有t，我们得到
+如果对于所有t，我们将{eq}`eq-pl`代入{eq}`Zero-profits`，我们得到
 
 $$
 \frac{\partial F(K_t, 1)}{\partial K_t} = f'(K_t) = \eta_t
@@ -587,7 +564,7 @@ $$
 
 这是{eq}`eq-price3`。
 
-如果我们现在将{eq}`eq-pl`代入{eq}`Zero-profits`对于所有t，我们得到：
+如果对于所有t，我们现在将{eq}`eq-pl`代入{eq}`Zero-profits`，我们得到：
 
 $$
 \frac{\partial F(\tilde K_t, 1)}{\partial \tilde L_t} = f(K_t)-f'(K_t)K_t=w_t
@@ -600,18 +577,16 @@ $$
 由{eq}`ge1`和{eq}`ge2`，这个配置与解决消费者问题的配置相同。
 
 ```{note}
-因为预算集只受相对价格影响，
-$\{q^0_t\}$只确定到乘以一个正常数。
+因为预算集只受相对价格影响，$\{q^0_t\}$ 仅在乘以一个正的常数的意义下被确定。
 ```
 
-**标准化：**我们可以选择$\{q_t^0\}$使$\lambda=1$，这样我们就在时间$0$商品的边际效用单位中测量$q_t^0$。
+**标准化：** 我们可以选择 $\{q_t^0\}$ 使 $\lambda=1$，这样 $q_t^0$ 是以第 $0$ 期商品的边际效用为计量单位来表示的。
 
-我们将在下面绘制$q, w, \eta$以显示这些均衡价格
-诱导出与我们在规划问题中看到的相同的总体运动。
+我们将在下面绘制 $q, w, \eta$ 以显示这些均衡价格诱导出与我们在规划问题中看到的相同的总体运动。
 
-为了继续，我们引入{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`中用来解决规划问题的Python代码
+接下来，我们引入{doc}`Cass-Koopmans规划模型 <cass_koopmans_1>`中用来解决规划问题的Python代码
 
-首先让我们定义一个`jitclass`来存储定义我们经济的参数和函数。
+首先，让我们定义一个`jitclass`来存储定义我们经济的参数和函数。
 
 ```{code-cell} python3
 planning_data = [
@@ -720,7 +695,7 @@ def shooting(pp, c0, k0, T=10):
 @jit
 def bisection(pp, c0, k0, T=10, tol=1e-4, max_iter=500, k_ter=0, verbose=True):
 
-    # initial boundaries for guess c0
+    # 设置c0的初始边界
     c0_upper = pp.f(k0)
     c0_lower = 0
 
@@ -732,16 +707,16 @@ def bisection(pp, c0, k0, T=10, tol=1e-4, max_iter=500, k_ter=0, verbose=True):
         # check if the terminal condition is satisfied
         if np.abs(error) < tol:
             if verbose:
-                print('Converged successfully on iteration ', i+1)
+                print('在第', i+1, '迭代步收敛成功')
             return c_vec, k_vec
 
         i += 1
         if i == max_iter:
             if verbose:
-                print('Convergence failed.')
+                print('收敛失败')
             return c_vec, k_vec
 
-        # if iteration continues, updates boundaries and guess of c0
+        # 如果迭代继续, 更新c0的猜测值和边界
         if error > 0:
             c0_lower = c0
         else:
@@ -787,7 +762,7 @@ def η(pp, k_path):
     return η_path
 ```
 
-现在我们对每个$T$计算并绘制
+现在我们对每个 $T$ 计算并绘制
 
 ```{code-cell} python3
 T_arr = [250, 150, 75, 50]
@@ -820,10 +795,9 @@ plt.show()
 
 #### 改变曲率
 
-现在我们看到如果我们保持$T$不变，但允许
-曲率参数$\gamma$变化，从$K_0$低于稳态开始，结果会如何变化。
+现在让我们来看看，如果我们保持 $T$ 不变，但允许曲率参数 $\gamma$ 变化，从 $K_0$ 低于稳态开始，结果会如何变化。
 
-我们绘制$T=150$的结果
+我们绘制 $T=150$ 的结果
 
 ```{code-cell} python3
 T = 150
@@ -854,39 +828,36 @@ plt.tight_layout()
 plt.show()
 ```
 
-调整$\gamma$意味着调整个人偏好
-平滑消费的程度。
+调整 $\gamma$ 意味着调整个人偏好平滑消费的程度。
 
-较高的$\gamma$意味着个人偏好更多平滑
-导致较慢收敛到稳态配置。
+较高的 $\gamma$ 意味着个体更偏好平滑消费，从而导致向稳态配置的收敛速度较慢。
 
-较低的$\gamma$意味着个人偏好较少平滑，
-导致较快收敛到稳态配置。
+较低的 $\gamma$ 意味着个体较少偏好平滑消费，从而导致向稳态配置的收敛速度较快。
 
 ## 收益率曲线和Hicks-Arrow价格
 
-我们回到Hicks-Arrow价格并计算它们如何与不同期限贷款的**收益率**相关。
+我们回到Hicks-Arrow价格，并计算它们如何与不同期限贷款的**收益率**相关。
 
-这将让我们绘制一个**收益率曲线**，将期限$j=1, 2, \ldots$的债券收益率与$j=1,2, \ldots$对应。
+这将让我们绘制一个**收益率曲线**，将期限 $j=1, 2, \ldots$ 的债券收益率与 $j=1,2, \ldots$ 对应。
 
 我们使用以下公式。
 
-在时间$t_0$发放并在时间$t > t_0$到期的贷款的**到期收益率**
+在第 $t_0$ 期发放并在第 $t > t_0$ 期到期的贷款的**到期收益率**
 
 $$
 r_{t_0,t}= -\frac{\log q^{t_0}_t}{t - t_0}
 $$
 
-基准年$t_0\leq t$的Hicks-Arrow价格体系满足
+基准年 $t_0\leq t$ 的Hicks-Arrow价格体系满足
 
 $$
 q^{t_0}_t = \beta^{t-t_0} \frac{u'(c_t)}{u'(c_{t_0})}= \beta^{t-t_0}
 \frac{c_t^{-\gamma}}{c_{t_0}^{-\gamma}}
 $$
 
-我们重新定义我们的$q$函数以允许任意基准年，并定义一个新的$r$函数，然后绘制两者。
+我们重新定义了 $q$ 函数，使其允许任意基准年，并定义了一个新的 $r$ 函数，然后将两者绘制出来。
 
-我们继续假设$t_0=0$并为不同的期限$t=T$绘制，其中$K_0$低于稳态
+我们继续假设 $t_0=0$，并在 $K_0$ 低于稳态的情况下，对不同到期期限 $t=T$ 进行绘图。
 
 ```{code-cell} python3
 @jit
@@ -929,7 +900,7 @@ T_arr = [150, 75, 50]
 plot_yield_curves(pp, 0, 0.3, k_ss/3, T_arr)
 ```
 
-现在我们在$t_0=20$时绘制
+现在我们绘制 $t_0=20$ 时的图
 
 ```{code-cell} python3
 plot_yield_curves(pp, 20, 0.3, k_ss/3, T_arr)
