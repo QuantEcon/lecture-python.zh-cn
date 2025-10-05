@@ -554,13 +554,13 @@ F(k, 1) = A k^\alpha
 $$
 
 ```{code-cell} ipython3
-def f(k, model): 
+def f(k, model, A=1): 
     """
     生产函数：f(k) = A * k^{α}
     """
     return A * k ** model.α
 
-def f_prime(k, model):
+def f_prime(k, model, A=1):
     """
     资本的边际产出：f'(k) = α * A * k^{α - 1}
     """
