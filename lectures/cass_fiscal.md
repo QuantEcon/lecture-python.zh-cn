@@ -279,7 +279,7 @@ from collections import namedtuple
 from mpmath import mp, mpf
 from warnings import warn
 
-# Set the precision
+# 设置计算精度
 mp.dps = 40
 mp.pretty = True
 ```
@@ -462,7 +462,6 @@ def compute_R_bar_path(shocks, k_path, model, S=100):
     """
     计算随时间变化的R̄路径。
     """
-    A, α, δ = model.A, model.α, model.δ
     R_bar_path = np.zeros(S + 1)
     for t in range(S):
         R_bar_path[t] = compute_R_bar(
