@@ -72,6 +72,11 @@ tags: [hide-output]
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import numpy as np
 from quantecon import LQ
 ```
@@ -195,6 +200,7 @@ u_t +
 \right)
 w_{t+1}
 ```
+
 那么上式第一行等价于{eq}`lq_lomwc`。
 
 此外，该模型现在是线性的，可以通过设定以下参数写成{eq}`lq_lom`的形式
