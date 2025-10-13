@@ -171,7 +171,6 @@ a_{t+1} = (1 + r) a_t - u_t - \bar c + \sigma w_{t+1} + \mu
 a_{t+1} \\
 1
 \end{array}
-
 \right) =
 \left(
 \begin{array}{cc}
