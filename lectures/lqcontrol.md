@@ -533,7 +533,7 @@ F_t := (Q + \beta B' P_{t+1} B)^{-1} \beta B' P_{t+1} A
 :label: lq_xud
 
 u_t = - F_t x_t
-\quad \text{with} \quad
+\quad \text{且} \quad
 x_{t+1} = (A - BF_t) x_t + C w_{t+1}
 ```
 
@@ -1038,8 +1038,8 @@ q & 0 & 0 & 0 \\
 
 y_t =
 \begin{cases}
-p(t) + \sigma w_{t+1} & \quad \text{if } t \leq K  \\
-s                     & \quad \text{otherwise }
+p(t) + \sigma w_{t+1} & \quad \text{如果 } t \leq K  \\
+s                     & \quad \text{其他情况}
 \end{cases}
 ```
 
