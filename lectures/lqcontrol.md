@@ -3,10 +3,12 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.1
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 ---
 
 (lqc)=
@@ -29,10 +31,9 @@ kernelspec:
 
 除了Anaconda中已有的库外，本讲座还需要以下库：
 
-```{code-cell} ipython
----
-tags: [hide-output]
----
+```{code-cell} ipython3
+:tags: [hide-output]
+
 !pip install quantecon
 ```
 
@@ -70,7 +71,7 @@ tags: [hide-output]
 
 让我们从一些导入开始：
 
-```{code-cell} ipython
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -705,9 +706,8 @@ $$
 这个消费者比之前的更有耐心，因此对后期消费赋予相对更大的权重。
 
 ```{code-cell} ipython3
----
-tags: [output_scroll]
----
+:tags: [output_scroll]
+
 # 计算解并模拟
 lq = LQ(Q, R, A, B, C, beta=0.96, T=T, Rf=Rf)
 x0 = (0, 1)
@@ -1296,7 +1296,6 @@ for ax in axes:
     ax.grid()
     ax.set_xlabel('时间')
     ax.legend(ncol=2, **legend_args)
-
 plt.show()
 ```
 
@@ -1436,7 +1435,6 @@ for ax in axes:
     ax.grid()
     ax.set_xlabel('时间')
     ax.legend(ncol=2, **legend_args)
-
 plt.show()
 ```
 
@@ -1528,7 +1526,7 @@ q = xp[1, :]
 # 绘制模拟结果
 fig, ax = plt.subplots(figsize=(10, 6.5))
 
-# 一些复杂的绘图设置 -- 如果你愿意可以简化
+# 一些复杂的绘图设置
 bbox = (0., 1.01, 1., .101)
 legend_args = {'bbox_to_anchor': bbox, 'loc': 3, 'mode': 'expand'}
 p_args = {'lw': 2, 'alpha': 0.6}
@@ -1538,11 +1536,10 @@ ax.set(xlabel='时间', xlim=(0, max(time)))
 ax.plot(time, q_bar, 'k-', lw=2, alpha=0.6, label=r'$\bar q_t$')
 ax.plot(time, q, 'b-', lw=2, alpha=0.6, label='$q_t$')
 ax.legend(ncol=2, **legend_args)
-s = f'动态过程，其中 $\gamma = {γ}$'
-ax.text(max(time) * 0.6, 1 * q_bar.max(), s, fontsize=14)
+s = fr'给定$\gamma = {γ}$下的动态过程'
+ax.text(min(time) + 1, 1 * q_bar.max(), s, fontsize=14)
 plt.show()
 ```
 
 ```{solution-end}
 ```
-
