@@ -792,7 +792,7 @@ plt.show()
 P_{t-1} = R - (\beta B' P_t A + N)'
 (Q + \beta B' P_t B)^{-1} (\beta B' P_t A + N) +
 \beta A' P_t A
-\quad \text{with } \quad
+\quad \text{且} \quad
 P_T = R_f
 ```
 
