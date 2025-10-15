@@ -76,7 +76,7 @@ plt.rcParams['font.family'] = ['Source Han Serif SC']
 plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from quantecon import MarkovChain
-from scipy.stats import norm
+import scipy.stats as stats
 from scipy.optimize import brentq
 from quantecon.distributions import BetaBinomial
 from numba import jit
@@ -616,9 +616,30 @@ $$
 
 工资报价分布将采用对数正态分布 $LN(\log(20),1)$ 的离散化版本，如下图所示：
 
-```{figure} /_static/lecture_specific/lake_model/lake_distribution_wages.png
+```{code-cell} ipython3
+def create_wage_distribution(max_wage: float, 
+                             wage_grid_size: int, 
+                             log_wage_mean: float):
+    """Create wage distribution"""
+    w_vec_temp = np.linspace(1e-8, max_wage, 
+                                wage_grid_size + 1)
+    cdf = stats.norm.cdf(np.log(w_vec_temp), 
+                            loc=np.log(log_wage_mean), scale=1)
+    pdf = cdf[1:] - cdf[:-1]
+    p_vec = pdf / pdf.sum()
+    w_vec = (w_vec_temp[1:] + w_vec_temp[:-1]) / 2
+    return w_vec, p_vec
 
+w_vec, p_vec = create_wage_distribution(170, 200, 20)
+
+fig, ax = plt.subplots()
+ax.plot(w_vec, p_vec)
+ax.set_xlabel('工资')
+ax.set_ylabel('概率')
+plt.tight_layout()
+plt.show()
 ```
+
 
 我们将一个时期设为一个月。
 
@@ -783,16 +804,6 @@ d = 0.00822
 β = 0.98
 γ = 1.0
 σ = 2.0
-
-# 默认工资分布 --- 离散化的对数正态
-log_wage_mean, wage_grid_size, max_wage = 20, 200, 170
-logw_dist = norm(np.log(log_wage_mean), 1)
-w_vec = np.linspace(1e-8, max_wage, wage_grid_size + 1)
-cdf = logw_dist.cdf(np.log(w_vec))
-pdf = cdf[1:] - cdf[:-1]
-p_vec = pdf / pdf.sum()
-w_vec = (w_vec[1:] + w_vec[:-1]) / 2
-
 
 def compute_optimal_quantities(c, τ):
     """
@@ -993,7 +1004,7 @@ class LakeModelModified:
 
 
     def rate_steady_state(self, tol=1e-6):
-        """
+        r"""
         找到系统 :math:`x_{t+1} = \hat A x_{t}` 的稳态
 
         返回
