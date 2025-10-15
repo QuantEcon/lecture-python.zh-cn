@@ -802,7 +802,7 @@ P_T = R_f
 :label: lq_oc_cp
 
 u_t  = - F_t x_t
-\quad \text{where} \quad
+\quad \text{其中} \quad
 F_t := (Q + \beta B' P_{t+1} B)^{-1} (\beta B' P_{t+1} A + N)
 ```
 
@@ -994,7 +994,6 @@ R :=
 0 & 0 & 0 & 0
 \end{array}
 \right)
-
 \quad \text{和} \quad
 R_f :=
 \left(
@@ -1190,7 +1189,6 @@ $$
 
 \min
 \mathbb E \,
-
 \sum_{t=0}^{\infty} \beta^t
 \left\{
     a_1 ( q_t - \bar q_t)^2 + \gamma u_t^2
