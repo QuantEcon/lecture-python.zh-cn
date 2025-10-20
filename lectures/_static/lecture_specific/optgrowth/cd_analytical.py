@@ -1,7 +1,7 @@
 
 def v_star(y, α, β, μ):
     """
-    True value function
+    真实价值函数
     """
     c1 = np.log(1 - α * β) / (1 - β)
     c2 = (μ + α * np.log(α * β)) / (1 - α)
@@ -11,7 +11,7 @@ def v_star(y, α, β, μ):
 
 def σ_star(y, α, β):
     """
-    True optimal policy
+    真实最优策略
     """
     return (1 - α * β) * y
 

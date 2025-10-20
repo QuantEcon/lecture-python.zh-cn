@@ -4,12 +4,12 @@ def solve_model(og,
                 verbose=True,
                 print_skip=25):
     """
-    Solve model by iterating with the Bellman operator.
+    通过迭代贝尔曼算子求解
 
     """
 
-    # Set up loop
-    v = og.u(og.grid)  # Initial condition
+    # 设置迭代循环
+    v = og.u(og.grid)  # 初始条件
     i = 0
     error = tol + 1
 
@@ -18,12 +18,12 @@ def solve_model(og,
         error = np.max(np.abs(v - v_new))
         i += 1
         if verbose and i % print_skip == 0:
-            print(f"Error at iteration {i} is {error}.")
+            print(f"第 {i} 次迭代的误差为 {error}。")
         v = v_new
 
     if error > tol:
-        print("Failed to converge!")
+        print("未能收敛！")
     elif verbose:
-        print(f"\nConverged in {i} iterations.")
+        print(f"\n在 {i} 次迭代后收敛。")
 
     return v_greedy, v_new

@@ -2,13 +2,13 @@ from numba import float64
 from numba.experimental import jitclass
 
 opt_growth_data = [
-    ('α', float64),          # Production parameter
-    ('β', float64),          # Discount factor
-    ('μ', float64),          # Shock location parameter
-    ('γ', float64),          # Preference parameter
-    ('s', float64),          # Shock scale parameter
-    ('grid', float64[:]),    # Grid (array)
-    ('shocks', float64[:])   # Shock draws (array)
+    ('α', float64),          # 生产参数
+    ('β', float64),          # 折现因子
+    ('μ', float64),          # 冲击的均值参数
+    ('γ', float64),          # 偏好参数
+    ('s', float64),          # 冲击的尺度参数
+    ('grid', float64[:]),    # 网格（数组）
+    ('shocks', float64[:])   # 冲击样本（数组）
 ]
 
 @jitclass(opt_growth_data)
@@ -27,29 +27,29 @@ class OptimalGrowthModel_CRRA:
 
         self.α, self.β, self.γ, self.μ, self.s = α, β, γ, μ, s
 
-        # Set up grid
+        # 设置网格
         self.grid = np.linspace(1e-5, grid_max, grid_size)
 
-        # Store shocks (with a seed, so results are reproducible)
+        # 存储冲击（设置随机种子以确保结果可重复）
         np.random.seed(seed)
         self.shocks = np.exp(μ + s * np.random.randn(shock_size))
 
-
     def f(self, k):
-        "The production function."
+        "生产函数"
         return k**self.α
 
     def u(self, c):
-        "The utility function."
+        "效用函数"
         return c**(1 - self.γ) / (1 - self.γ)
 
     def f_prime(self, k):
-        "Derivative of f."
+        "生产函数的一阶导数"
         return self.α * (k**(self.α - 1))
 
     def u_prime(self, c):
-        "Derivative of u."
+        "效用函数的一阶导数"
         return c**(-self.γ)
 
-    def u_prime_inv(c):
+    def u_prime_inv(self, c):
+        "效用函数一阶导数的反函数"
         return c**(-1 / self.γ)
