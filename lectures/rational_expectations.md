@@ -71,7 +71,7 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
-plt.rcParams["figure.figsize"] = (11, 5)  #set default figure size
+plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图片尺寸
 import numpy as np
 ```
 
@@ -448,7 +448,7 @@ Lucas和Prescott {cite}`LucasPrescott1971` 使用这种方法构建了理性预�
 
 我们的解决思路是将市场问题的欧拉方程与单个个体选择问题的欧拉方程相匹配。
 
-正如我们将看到的，这个规划问题可以通过LQ控制（{doc}`linear regulator <lqcontrol>`）来解决。
+正如我们将看到的，这个规划问题可以通过LQ控制（{doc}`线性调节器 <lqcontrol>`）来解决。
 
 规划问题的最优产出量就是理性预期均衡的产出量。
 
