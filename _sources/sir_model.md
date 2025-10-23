@@ -8,8 +8,7 @@ kernelspec:
   language: python
   name: python3
 ---
-
-```{raw} jupyter
+```{raw}
 <div id="qe-notebook-header" align="right" style="text-align:right;">
         <a href="https://quantecon.org/" title="quantecon.org">
                 <img style="width:250px;display:inline;" width="250px" src="https://assets.quantecon.org/img/qe-menubar-logo.svg" alt="QuantEcon">
@@ -17,32 +16,30 @@ kernelspec:
 </div>
 ```
 
-# {index}`新冠病毒建模 <single: Modeling COVID 19>`
+# 新冠病毒建模
 
-```{contents} 目录
+```{contents}
 :depth: 2
 ```
 
 ## 概述
 
-这是由[Andrew Atkeson](https://sites.google.com/site/andyatkeson/)提供的用于分析新冠疫情的代码的Python版本。
+这是由[Andrew Atkeson](https://sites.google.com/site/andyatkeson/)提供的用于分析新冠疫情的Python代码。
 
 特别参见
 
 * [NBER工作论文第26867号](https://www.nber.org/papers/w26867)
 * [COVID-19工作论文和代码](https://sites.google.com/site/andyatkeson/home?authuser=0)
 
-他的这些笔记的目的是向经济学家介绍定量建模
+他的这些笔记主要是介绍了定量建模传染病动态研究。
 
-传染病动态研究。
-
-疾病传播使用标准SIR（易感者-感染者-移除者）模型进行建模。
+疾病传播使用标准SIR（易感者-感染者-移出者）模型进行建模。
 
 模型动态用常微分方程组表示。
 
-主要目标是研究通过社交距离实施的抑制措施对感染传播的影响。
+其主要目的是研究通过社交距离实施的抑制措施对感染传播的影响。
 
-研究重点是美国的结果，但可以调整参数来研究其他国家。
+本课程主要模拟的是美国的结果，当然，也可以调整参数来研究其他国家。
 
 我们将使用以下标准导入：
 
@@ -58,7 +55,7 @@ import numpy as np
 from numpy import exp
 ```
 
-我们还将使用SciPy的数值例程odeint来求解微分方程。
+最后，我们使用SciPy的数值例程odeint来求解微分方程。
 
 ```{code-cell} ipython3
 from scipy.integrate import odeint
@@ -68,17 +65,17 @@ from scipy.integrate import odeint
 
 ## SIR模型
 
-在我们将要分析的SIR模型版本中有四个状态。
+我们要分析的是一个包含四个状态的SIR模型。在这个模型中，每个人都必须处于以下四种状态之一：
 
-假设人群中的所有个体都处于这四种状态之一。
+- 易感者(S)：尚未感染，可能被感染的人群
+- 潜伏者(E)：已感染但尚未具有传染性的人群 
+- 感染者(I)：已感染且具有传染性的人群
+- 移出者($R$)：已经康复或死亡的人群
 
-这些状态是：易感者(S)、潜伏者(E)、感染者(I)和移除者(R)。
-
-说明：
-
-* 处于R状态的人已经被感染并且已经康复或死亡。
-* 康复的人被假定已获得免疫力。
-* 处于潜伏期的群体尚未具有传染性。
+需要注意的是：
+- 一旦康复，就会获得免疫力，不会再次感染
+- 处于移出状态($R$)的人包括康复者和死亡者
+- 潜伏期的人虽然已感染，但还不能传染给他人
 
 ### 时间路径
 
@@ -88,8 +85,8 @@ from scipy.integrate import odeint
 
 主要关注的是
 
-* 在给定时间的感染人数（这决定了医疗系统是否会被压垮）以及
-* 病例负荷可以推迟多长时间（希望能够推迟到疫苗出现）
+* 在给定时间的感染人数（这决定了医疗系统是否会被压垮）
+* 病例负荷可以推迟多长时间（我们希望能够推迟到疫苗出现）
 
 使用小写字母表示处于各状态的人口比例，其动态方程为
 
@@ -99,9 +96,9 @@ from scipy.integrate import odeint
 \begin{aligned}
      \dot s(t)  & = - \beta(t) \, s(t) \,  i(t)
      \\
-     \dot e(t)  & = \beta(t) \,  s(t) \,  i(t)  - σ e(t)
+     \dot e(t)  & = \beta(t) \,  s(t) \,  i(t)  - \sigma e(t)
      \\
-     \dot i(t)  & = σ e(t)  - γ i(t)
+     \dot i(t)  & = \sigma e(t)  - \gamma i(t)
 \end{aligned}
 ```
 
@@ -120,7 +117,7 @@ from scipy.integrate import odeint
 
 (即所有已感染或曾经感染的人)。
 
-系统{eq}`sir_system`可以用向量形式表示为
+对于适当定义的$F$(见下面的代码), 系统{eq}`sir_system`可以用向量形式表示为
 
 ```{math}
 :label: dfcv
@@ -128,18 +125,16 @@ from scipy.integrate import odeint
 \dot x = F(x, t),  \qquad x := (s, e, i)
 ```
 
-对于适当定义的$F$(见下面的代码)。
-
 ### 参数
 
-$\sigma$和$\gamma$都被视为固定的、由生物学决定的参数。
+参数$\sigma$和$\gamma$由病毒的生物学特性决定，因此被视为固定值。
 
-按照Atkeson的说明，我们设定
+根据Atkeson的笔记，我们采用以下参数值：
 
-* $\sigma = 1/5.2$，反映平均潜伏期为5.2天。
-* $\gamma = 1/18$，对应平均病程18天。
+* $\sigma = 1/5.2$ - 这意味着平均潜伏期为5.2天
+* $\gamma = 1/18$ - 这表示患者平均需要18天才能康复或死亡
 
-传播率被建模为
+传播率被构造为
 
 * $\beta(t) := R(t) \gamma$，其中$R(t)$是时间$t$时的*有效再生数*。
 
@@ -174,11 +169,11 @@ def F(x, t, R0=1.6):
     """
     s, e, i = x
 
-    # 易感人群的新暴露
+    # 计算新增感染人数
     β = R0(t) * γ if callable(R0) else R0 * γ
     ne = β * s * i
 
-    # 时间导数
+    # 导数
     ds = - ne
     de = ne - σ * e
     di = σ * e - γ * i
@@ -191,7 +186,7 @@ def F(x, t, R0=1.6):
 初始条件设置为
 
 ```{code-cell} ipython3
-# initial conditions of s, e, i
+# 初始条件
 i_0 = 1e-7
 e_0 = 4 * i_0
 s_0 = 1 - i_0 - e_0
@@ -203,14 +198,12 @@ s_0 = 1 - i_0 - e_0
 x_0 = s_0, e_0, i_0
 ```
 
-我们使用odeint在一系列时间点`t_vec`上通过数值积分求解时间路径。
+我们使用odeint在一系列时间点 `t_vec`上通过数值积分求解时间路径。
 
 ```{code-cell} ipython3
 def solve_path(R0, t_vec, x_init=x_0):
     """
-    通过数值积分求解i(t)和c(t)，
-    给定R0的时间路径。
-
+    给定R0的时间路径，计算感染人数i(t)和累计病例c(t)的演变轨迹。
     """
     G = lambda x, t: F(x, t, R0)
     s_path, e_path, i_path = odeint(G, x_init, t_vec).transpose()
@@ -233,9 +226,9 @@ t_vec = np.linspace(0, t_length, grid_size)
 
 ### 实验1：固定R0的情况
 
-让我们从`R0`为常数的情况开始。
+让我们从 `R0`为常数的情况开始。
 
-我们在不同`R0`值的假设下计算感染人数的时间路径：
+我们在不同 `R0`值的假设下计算感染人数的时间路径：
 
 ```{code-cell} ipython3
 R0_vals = np.linspace(1.6, 3.0, 6)
@@ -271,7 +264,7 @@ plot_paths(i_paths, labels)
 
 正如预期的那样，较低的有效传播率会推迟感染高峰。
 
-它们也会导致当前病例的峰值降低。
+同时也会导致当前病例的峰值降低。
 
 以下是累计病例数（占总人口的比例）：
 
@@ -283,7 +276,7 @@ plot_paths(c_paths, labels)
 
 让我们来看一个逐步实施缓解措施（例如社交距离）的场景。
 
-以下是一个关于`R0`随时间变化的函数规范。
+以下是一个关于 `R0`随时间变化的函数规范。
 
 ```{code-cell} ipython3
 def R0_mitigating(t, r0=3, η=1, r_bar=1.6):
@@ -340,16 +333,18 @@ plot_paths(i_paths, labels)
 plot_paths(c_paths, labels)
 ```
 
-## 解除封锁
+## 解除封锁措施的影响分析
 
-以下复现了Andrew Atkeson关于解除封锁时机的[额外研究结果](https://drive.google.com/file/d/1uS7n-7zq5gfSgrL3S0HByExmpq4Bn3oh/view)。
+接下来我们将基于Andrew Atkeson的[研究](https://drive.google.com/file/d/1uS7n-7zq5gfSgrL3S0HByExmpq4Bn3oh/view)，探讨不同时机解除封锁措施对疫情发展的影响。
 
-考虑以下两种缓解情景：
+我们对比两种解封方案：
 
-1. 前30天$R_t = 0.5$，之后17个月$R_t = 2$。这相当于30天后解除封锁。
-1. 前120天$R_t = 0.5$，之后14个月$R_t = 2$。这相当于4个月后解除封锁。
+1. 短期封锁方案：实施30天严格封锁($R_t = 0.5$)，之后17个月放开管控($R_t = 2$)
+2. 长期封锁方案：实施120天严格封锁($R_t = 0.5$)，之后14个月放开管控($R_t = 2$)
 
-这里考虑的参数设置模型的初始状态为25,000个活跃感染者，以及75,000个已经接触病毒因此即将具有传染性的个体。
+模型的初始条件设定为:
+- 25,000名活跃感染者
+- 75,000名处于潜伏期的感染者(已感染但尚未具有传染性)
 
 ```{code-cell} ipython3
 # 初始条件
@@ -358,7 +353,6 @@ e_0 = 75_000 / pop_size
 s_0 = 1 - i_0 - e_0
 x_0 = s_0, e_0, i_0
 ```
-
 
 让我们计算路径：
 
@@ -382,7 +376,7 @@ for R0 in R0_paths:
 plot_paths(i_paths, labels)
 ```
 
-在这些场景下我们可以预期什么样的死亡率？
+在这些场景下，死亡率会是怎样的呢？
 
 假设1%的病例会导致死亡
 
@@ -404,5 +398,4 @@ paths = [path * ν * γ * pop_size for path in i_paths]
 plot_paths(paths, labels)
 ```
 
-如果能找到疫苗，将曲线峰值推迟到更远的未来可能会减少累计死亡人数。
-
+如果我们能够将感染高峰推迟到疫苗研发出来之前，就有可能大幅降低最终的死亡人数。

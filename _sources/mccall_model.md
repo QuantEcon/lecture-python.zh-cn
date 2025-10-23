@@ -18,7 +18,7 @@ kernelspec:
 </div>
 ```
 
-# 求职搜索 I: McCall搜寻模型
+# 工作搜寻 I: McCall搜寻模型
 
 ```{contents} 目录
 :depth: 2

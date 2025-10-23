@@ -1,0 +1,1535 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>53. 带扭曲性税收的双国模型 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=3bd9fcddbe64f63e07c8604843d1cc622a07b430" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=b4b7a797" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=30f7c850c5b005eca2ad6e48893cd350a6c6c4c2"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'cass_fiscal_2';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/cass_fiscal_2.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="54. 代际交叠模型中的转型" href="ak2.html" />
+    <link rel="prev" title="52. 带扭曲性税收的Cass-Koopmans模型" href="cass_fiscal.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="带扭曲性税收的双国模型"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="带扭曲性税收的双国模型" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/cass_fiscal_2.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=cass_fiscal_2>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">53.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cass-koopmans">53.2. 两国Cass-Koopmans模型</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">53.2.1. 资本流动性和税收</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">53.2.2. 初始条件和稳态</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">53.2.3. 均衡稳态值</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#t-10g0-20-4">53.2.3.1. 实验1：在t=10时预见到g从0.2增加到0.4</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">53.2.3.2. 实验2：在t=10时<span class="math notranslate nohighlight">\(g\)</span>从0.2可预见地增加到0.4</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/en/stable/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">带扭曲性税收的双国模型</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><span class="section-number">53. </span>带扭曲性税收的双国模型<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<section id="id2">
+<h2><span class="section-number">53.1. </span>概述<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>本讲是 QuantEcon 讲座 <a class="reference internal" href="cass_fiscal.html"><span class="doc">带扭曲性税收的Cass-Koopmans模型</span></a> 的续篇。在那一讲中，我们研究了可预见的财政和技术冲击对 Cass-Koopmans 增长模型(如 QuantEcon 讲座 <a class="reference internal" href="cass_koopmans_2.html"><span class="doc">Cass-Koopmans竞争均衡</span></a> 中所述)中竞争均衡价格和数量的影响。该模型是非随机版本。</p>
+<p>这里我们研究该模型的双国版本。</p>
+<p>我们通过将两个 <a class="reference internal" href="cass_koopmans_2.html"><span class="doc">Cass-Koopmans竞争均衡</span></a> 经济体背靠背放在一起来构建它，然后开放某些商品的国际贸易，而不是所有商品。</p>
+<p>这让我们能够关注 <span id="id3">Mendoza and Tesar [<a class="reference internal" href="zreferences.html#id10" title="Enrique G Mendoza and Linda L Tesar. The international ramifications of tax reforms: supply-side economics in a global economy. American Economic Review, pages 226–245, 1998.">1998</a>]</span> 研究的一些问题。</p>
+<p>让我们从一些导入开始：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">root</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpmath</span><span class="w"> </span><span class="kn">import</span> <span class="n">mp</span><span class="p">,</span> <span class="n">mpf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="c1"># 设置精度</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">dps</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">pretty</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="cass-koopmans">
+<h2><span class="section-number">53.2. </span>两国Cass-Koopmans模型<a class="headerlink" href="#cass-koopmans" title="Link to this heading">#</a></h2>
+<p>本节描述<a class="reference internal" href="cass_fiscal.html#cs-fs-model"><span class="std std-ref">经济模型</span></a>基本模型的两国版本。</p>
+<p>该模型的结构类似于国际实际商业周期文献中使用的模型，其思路遵循<span id="id4">Mendoza and Tesar [<a class="reference internal" href="zreferences.html#id10" title="Enrique G Mendoza and Linda L Tesar. The international ramifications of tax reforms: supply-side economics in a global economy. American Economic Review, pages 226–245, 1998.">1998</a>]</span>对扭曲性税收的分析。</p>
+<p>我们允许两国之间进行商品贸易和未来商品债权交易，但不允许劳动力流动。</p>
+<p>两国都拥有生产技术，每个国家的消费者都可以在任一国家持有资本，但需要接受不同的税收待遇。</p>
+<p>我们用星号(*)表示第二个国家的变量。</p>
+<p>两国的家庭都最大化终身效用：</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{t=0}^{\infty} \beta^t u(c_t) \quad \text{和} \quad \sum_{t=0}^{\infty} \beta^t u(c_t^*),
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(u(c) = \frac{c^{1-\gamma}}{1-\gamma}\)</span>，且<span class="math notranslate nohighlight">\(\gamma &gt; 0\)</span>。</p>
+<p>两国都采用具有相同技术参数的柯布-道格拉斯生产函数。</p>
+<p>这个两国经济的世界资源约束是：</p>
+<div class="math notranslate nohighlight">
+\[
+(c_t+c_t^*)+(g_t+g_t^*)+(k_{t+1}-(1-\delta)k_t)+(k_{t+1}^*-(1-\delta)k_t^*) = f(k_t)+f(k_t^*)
+\]</div>
+<p>该约束结合了两国的可行性约束。</p>
+<p>在后续计算中，我们将使用这个约束作为全球可行性约束。</p>
+<p>为了连接两个国家，我们需要明确资本如何跨境流动以及在不同司法管辖区如何征税。</p>
+<section id="id5">
+<h3><span class="section-number">53.2.1. </span>资本流动性和税收<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>第一国的消费者可以在任一国持有资本，但需要按照外国设定的税率对从外国资本持有中获得的租金缴税。</p>
+<p>两国居民都可以在时间<span class="math notranslate nohighlight">\(t\)</span>以相同的Arrow-Debreu价格<span class="math notranslate nohighlight">\(q_t\)</span>购买消费品。我们假设资本市场是完整的。</p>
+<p>让<span class="math notranslate nohighlight">\(B_t^f\)</span>表示本国代表性消费者通过向外国代表性消费者发行一期期票筹集的<span class="math notranslate nohighlight">\(t\)</span>期商品数量。</p>
+<p>因此，<span class="math notranslate nohighlight">\(B_t^f &gt; 0\)</span>表示本国消费者在<span class="math notranslate nohighlight">\(t\)</span>期从国外借款，而<span class="math notranslate nohighlight">\(B_t^f &lt; 0\)</span>表示本国消费者在<span class="math notranslate nohighlight">\(t\)</span>期向国外贷款。</p>
+<p>因此，第一国代表性消费者的预算约束为：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\sum_{t=0}^{\infty} q_t \left( c_t + (k_{t+1} - (1-\delta)k_t) + (\tilde{k}_{t+1} - (1-\delta)\tilde{k}_t) + R_{t-1,t}B_{t-1}^f \right) \leq \\
+\sum_{t=0}^{\infty} q_t \left( (\eta_t - \tau_{kt}(\eta_t - \delta))k_t + (\eta_t^* - \tau_{kt}^*(\eta_t^* - \delta))\tilde{k}_t + (1 - \tau_{nt})w_t n_t - \tau_{ht} + B_t^f \right).
+\end{aligned}
+\end{split}\]</div>
+<p>对于<span class="math notranslate nohighlight">\(t \geq 1\)</span>，<span class="math notranslate nohighlight">\(k_t\)</span>和<span class="math notranslate nohighlight">\(\tilde{k}_t\)</span>的无套利条件意味着</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+q_{t-1} &amp;= [(1 - \tau_{kt})(\eta_t - \delta) + 1] q_t, \\
+q_{t-1} &amp;= [(1 - \tau^*_{kt})(\eta^*_t - \delta) + 1] q_t,
+\end{aligned}
+\end{split}\]</div>
+<p>这两个等式共同表明，两国的税后资本租金率是相等的：</p>
+<div class="math notranslate nohighlight">
+\[
+(1 - \tau^*_{kt})(\eta^*_t - \delta) = (1 - \tau_{kt})(\eta_t - \delta).
+\]</div>
+<p><span class="math notranslate nohighlight">\(B_t^f\)</span> 的无套利条件对于 <span class="math notranslate nohighlight">\(t \geq 0\)</span> 是 <span class="math notranslate nohighlight">\(q_t = q_{t+1} R_{t+1,t}\)</span>，这意味着</p>
+<div class="math notranslate nohighlight">
+\[
+q_{t-1} = q_t R_{t-1,t}
+\]</div>
+<p>对于 <span class="math notranslate nohighlight">\(t \geq 1\)</span>。</p>
+<p>由于国内资本、国外资本和消费贷款具有相同的回报率，投资组合是不确定的。</p>
+<p>如果我们允许 <span class="math notranslate nohighlight">\(B_t^f\)</span> 为非零，我们可以将每个国家的国外资本持有量设为零。</p>
+<p>这种解决投资组合不确定性的方法很方便，因为它减少了我们需要指定的初始条件数量。</p>
+<p>因此，我们在允许国际借贷的同时，将两国的国外资本持有量都设为零。</p>
+<p>给定从国内到国外的初始债务水平 <span class="math notranslate nohighlight">\(B_{-1}^f\)</span>，且 <span class="math notranslate nohighlight">\(R_{t-1,t} = \frac{q_{t-1}}{q_t}\)</span>，国际债务动态满足</p>
+<div class="math notranslate nohighlight">
+\[
+B^f_t = R_{t-1,t} B^f_{t-1} + c_t + (k_{t+1} - (1 - \delta)k_t) + g_t - f(k_t)
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">Bf_path</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算 B^{f}_t:</span>
+<span class="sd">      Bf_t = R_{t-1} Bf_{t-1} + c_t + (k_{t+1}-(1-δ)k_t) + g_t - f(k_t)</span>
+<span class="sd">    其中 Bf_0 = 0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>                       
+    <span class="n">R</span> <span class="o">=</span> <span class="n">c</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">γ</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">γ</span><span class="p">))</span>
+
+    <span class="n">Bf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> 
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">S</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">inv</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span> <span class="o">*</span> <span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>         
+        <span class="n">Bf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">R</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Bf</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="n">inv</span> <span class="o">+</span> <span class="n">g</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> 
+            <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">model</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Bf</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">Bf_ss</span><span class="p">(</span><span class="n">c_ss</span><span class="p">,</span> <span class="n">k_ss</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算稳态 B^f</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">R_ss</span>   <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">model</span><span class="o">.</span><span class="n">β</span>  
+    <span class="n">inv_ss</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">δ</span> <span class="o">*</span> <span class="n">k_ss</span> 
+    <span class="n">num</span>    <span class="o">=</span> <span class="n">c_ss</span> <span class="o">+</span> <span class="n">inv_ss</span> <span class="o">+</span> <span class="n">g_ss</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">k_ss</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+    <span class="n">den</span>    <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">R_ss</span>
+    <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">den</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>且</p>
+<div class="math notranslate nohighlight">
+\[
+c^*_t + (k^*_{t+1} - (1 - \delta)k^*_t) + g^*_t - R_{t-1,t} B^f_{t-1} = f(k^*_t) - B^f_t.
+\]</div>
+<p>两国企业的一阶条件为：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\eta_t &amp;= f'(k_t), \quad w_t = f(k_t) - k_t f'(k_t) \\
+\eta^*_t &amp;= f'(k^*_t), \quad w^*_t = f(k^*_t) - k^*_t f'(k^*_t).
+\end{aligned}
+\end{split}\]</div>
+<p>国际商品贸易建立了：</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{q_t}{\beta^t} = \frac{u'(c_t)}{1 + \tau_{ct}} = \mu^* \frac{u'(c^*_t)}{1 + \tau^*_{ct}},
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(\mu^*\)</span>是一个非负数，是国家<span class="math notranslate nohighlight">\(*\)</span>中消费者预算约束的拉格朗日乘数的函数。</p>
+<p>我们已将国内国家预算约束的拉格朗日乘数标准化，将相应的国内国家<span class="math notranslate nohighlight">\(\mu\)</span>设为1。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_rs</span><span class="p">(</span><span class="n">c_t</span><span class="p">,</span> <span class="n">c_tp1</span><span class="p">,</span> <span class="n">c_s_t</span><span class="p">,</span> <span class="n">c_s_tp1</span><span class="p">,</span> <span class="n">τc_t</span><span class="p">,</span> 
+               <span class="n">τc_tp1</span><span class="p">,</span> <span class="n">τc_s_t</span><span class="p">,</span> <span class="n">τc_s_tp1</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算贸易开始后的国际风险分担。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">c_t</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">γ</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">τc_t</span><span class="p">))</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">τc_s_t</span><span class="p">)</span><span class="o">/</span><span class="n">c_s_t</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">γ</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span>
+        <span class="n">c_tp1</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">γ</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">τc_tp1</span><span class="p">))</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">τc_s_tp1</span><span class="p">)</span><span class="o">/</span><span class="n">c_s_tp1</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">γ</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>均衡要求以下两个国家欧拉方程在 <span class="math notranslate nohighlight">\(t \geq 0\)</span> 时满足：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+u'(c_t) &amp;= \beta u'(c_{t+1}) \left[ (1 - \tau_{kt+1})(f'(k_{t+1}) - \delta) + 1 \right] \left[ \frac{1 + \tau_{ct+1}}{1 + \tau_{ct}} \right], \\
+u'(c^*_t) &amp;= \beta u'(c^*_{t+1}) \left[ (1 - \tau^*_{kt+1})(f'(k^*_{t+1}) - \delta) + 1 \right] \left[ \frac{1 + \tau^*_{ct+1}}{1 + \tau^*_{ct}} \right].
+\end{aligned}
+\end{split}\]</div>
+<p>以下代码计算国内和国外的欧拉方程。</p>
+<p>由于它们具有相同的形式但使用不同的变量，我们可以编写一个函数来处理这两种情况。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_euler</span><span class="p">(</span><span class="n">c_t</span><span class="p">,</span> <span class="n">c_tp1</span><span class="p">,</span> <span class="n">τc_t</span><span class="p">,</span> 
+                    <span class="n">τc_tp1</span><span class="p">,</span> <span class="n">τk_tp1</span><span class="p">,</span> <span class="n">k_tp1</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算欧拉方程。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Rbar</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">τk_tp1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">f_prime</span><span class="p">(</span><span class="n">k_tp1</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="p">(</span><span class="n">c_tp1</span><span class="o">/</span><span class="n">c_t</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">γ</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">τc_t</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">τc_tp1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Rbar</span> <span class="o">-</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h3><span class="section-number">53.2.2. </span>初始条件和稳态<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<p>对于初始条件，我们选择贸易前的资本配置(<span class="math notranslate nohighlight">\(k_0, k_0^*\)</span>)和本国（未标星国家）欠外国（标星国家）的初始国际债务水平<span class="math notranslate nohighlight">\(B_{-1}^f\)</span>。</p>
+</section>
+<section id="id7">
+<h3><span class="section-number">53.2.3. </span>均衡稳态值<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p>两国模型的稳态由两组方程来表征。</p>
+<p>首先，以下方程确定每个国家的稳态资本-劳动比率<span class="math notranslate nohighlight">\(\bar k\)</span>和<span class="math notranslate nohighlight">\(\bar k^*\)</span>：</p>
+<div class="math notranslate nohighlight" id="equation-eq-steady-k-bar">
+<span class="eqno">(53.1)<a class="headerlink" href="#equation-eq-steady-k-bar" title="Link to this equation">#</a></span>\[
+f'(\bar{k}) = \delta + \frac{\rho}{1 - \tau_k}
+\]</div>
+<div class="math notranslate nohighlight" id="equation-eq-steady-k-star">
+<span class="eqno">(53.2)<a class="headerlink" href="#equation-eq-steady-k-star" title="Link to this equation">#</a></span>\[
+f'(\bar{k}^*) = \delta + \frac{\rho}{1 - \tau_k^*}
+\]</div>
+<p>给定这些稳态资本-劳动比率，本国和外国的消费值<span class="math notranslate nohighlight">\(\bar c\)</span>和<span class="math notranslate nohighlight">\(\bar c^*\)</span>由以下方程确定：</p>
+<div class="math notranslate nohighlight" id="equation-eq-steady-c-k-bar">
+<span class="eqno">(53.3)<a class="headerlink" href="#equation-eq-steady-c-k-bar" title="Link to this equation">#</a></span>\[
+(\bar{c} + \bar{c}^*) = f(\bar{k}) + f(\bar{k}^*) - \delta(\bar{k} + \bar{k}^*) - (\bar{g} + \bar{g}^*)
+\]</div>
+<div class="math notranslate nohighlight" id="equation-eq-steady-c-kb">
+<span class="eqno">(53.4)<a class="headerlink" href="#equation-eq-steady-c-kb" title="Link to this equation">#</a></span>\[
+\bar{c} = f(\bar{k}) - \delta\bar{k} - \bar{g} - \rho\bar{B}^f
+\]</div>
+<p>方程<a class="reference internal" href="#equation-eq-steady-c-k-bar">(53.3)</a>表示稳态下的可行性，而方程<a class="reference internal" href="#equation-eq-steady-c-kb">(53.4)</a>表示稳态下的贸易平衡，包括利息支付。</p>
+<p>本国对外国的稳态债务水平<span class="math notranslate nohighlight">\(\bar{B}^f\)</span>影响两国之间的消费分配，但不影响世界总资本存量。</p>
+<p>我们假设在稳态下<span class="math notranslate nohighlight">\(\bar{B}^f = 0\)</span>，这使我们得到以下函数来计算资本和消费的稳态值</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_steady_state_global</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">g_ss</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算资本、消费和投资的稳态值。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">k_ss</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span><span class="o">/</span><span class="n">model</span><span class="o">.</span><span class="n">β</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">δ</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">A</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">α</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">α</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">c_ss</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">k_ss</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">δ</span> <span class="o">*</span> <span class="n">k_ss</span> <span class="o">-</span> <span class="n">g_ss</span>
+    <span class="k">return</span> <span class="n">k_ss</span><span class="p">,</span> <span class="n">c_ss</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在，我们可以应用残差最小化方法来计算资本和消费的稳态值。</p>
+<p>我们再次对欧拉方程、全局资源约束和无套利条件的残差进行最小化。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_residuals_global</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">shocks</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">k0_ss</span><span class="p">,</span> <span class="n">k_star</span><span class="p">,</span> <span class="n">Bf_star</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算两国模型的残差。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">c_s</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">shocks</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">],</span> <span class="n">shocks</span><span class="p">[</span><span class="s1">&#39;g_s&#39;</span><span class="p">]</span>
+    <span class="n">τc</span><span class="p">,</span> <span class="n">τk</span> <span class="o">=</span> <span class="n">shocks</span><span class="p">[</span><span class="s1">&#39;τ_c&#39;</span><span class="p">],</span> <span class="n">shocks</span><span class="p">[</span><span class="s1">&#39;τ_k&#39;</span><span class="p">]</span>
+    <span class="n">τc_s</span><span class="p">,</span> <span class="n">τk_s</span> <span class="o">=</span> <span class="n">shocks</span><span class="p">[</span><span class="s1">&#39;τ_c_s&#39;</span><span class="p">],</span> <span class="n">shocks</span><span class="p">[</span><span class="s1">&#39;τ_k_s&#39;</span><span class="p">]</span>
+    
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">k0_ss</span><span class="p">,</span> <span class="n">k_s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">k0_ss</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">e_d</span> <span class="o">=</span> <span class="n">compute_euler</span><span class="p">(</span>
+            <span class="n">c</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> 
+            <span class="n">τc</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">τc</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">τk</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> 
+            <span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">model</span><span class="p">)</span>
+        
+        <span class="n">e_f</span> <span class="o">=</span> <span class="n">compute_euler</span><span class="p">(</span>
+            <span class="n">c_s</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">c_s</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> 
+            <span class="n">τc_s</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">τc_s</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">τk_s</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> 
+            <span class="n">k_s</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">model</span><span class="p">)</span>
+        
+        <span class="n">rs</span> <span class="o">=</span> <span class="n">compute_rs</span><span class="p">(</span>
+            <span class="n">c</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">c_s</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">c_s</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> 
+            <span class="n">τc</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">τc</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">τc_s</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">τc_s</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> 
+            <span class="n">model</span><span class="p">)</span>
+        
+        <span class="c1"># 全局资源约束</span>
+        <span class="n">grc</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">k_s</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span>
+            <span class="n">f</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">model</span><span class="p">)</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">k_s</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">model</span><span class="p">)</span> <span class="o">+</span>
+            <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="n">k_s</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">-</span>
+            <span class="n">c</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">c_s</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">g</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">gs</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="p">)</span>
+        
+        <span class="n">res</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">e_d</span><span class="p">,</span> <span class="n">e_f</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">grc</span><span class="p">])</span>
+
+    <span class="n">Bf_term</span> <span class="o">=</span> <span class="n">Bf_path</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">shocks</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">],</span> <span class="n">model</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">-</span> <span class="n">k_star</span><span class="p">)</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Bf_term</span> <span class="o">-</span> <span class="n">Bf_star</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在我们绘制结果</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 绘制全球双国模型结果的函数</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_global_results</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c_s</span><span class="p">,</span> <span class="n">shocks</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> 
+                        <span class="n">k0_ss</span><span class="p">,</span> <span class="n">c0_ss</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">shock</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span>
+                        <span class="c1"># 存储左下面板序列的字典</span>
+                        <span class="n">ll_series</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    绘制双国模型的结果。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">τc</span><span class="p">,</span> <span class="n">τk</span> <span class="o">=</span> <span class="n">shocks</span><span class="p">[</span><span class="s1">&#39;τ_c&#39;</span><span class="p">],</span> <span class="n">shocks</span><span class="p">[</span><span class="s1">&#39;τ_k&#39;</span><span class="p">]</span>
+    <span class="n">Bf</span> <span class="o">=</span> <span class="n">Bf_path</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">shocks</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">],</span> <span class="n">model</span><span class="p">)</span>
+    
+    <span class="c1"># 计算衍生序列</span>
+    <span class="n">R_ratio</span> <span class="o">=</span> <span class="n">c</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">γ</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">γ</span><span class="p">))</span> \
+    <span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">τc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">τc</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">inv</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span><span class="o">*</span><span class="n">k</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">inv_s</span> <span class="o">=</span> <span class="n">k_s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span><span class="o">*</span><span class="n">k_s</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># 将初始条件添加到序列中</span>
+    <span class="n">R_ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">model</span><span class="o">.</span><span class="n">β</span><span class="p">,</span> <span class="n">R_ratio</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c0_ss</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+    <span class="n">c_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c0_ss</span><span class="p">,</span> <span class="n">c_s</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k0_ss</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">k_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k0_ss</span><span class="p">,</span> <span class="n">k_s</span><span class="p">)</span>
+
+    <span class="c1"># 资本</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">[:</span><span class="n">T</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">k0_ss</span><span class="p">),</span> <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k_s</span><span class="p">[:</span><span class="n">T</span><span class="p">],</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1"># 消费</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">[:</span><span class="n">T</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">c0_ss</span><span class="p">),</span> <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c_s</span><span class="p">[:</span><span class="n">T</span><span class="p">],</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1"># 利率</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">R_ratio</span><span class="p">[:</span><span class="n">T</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">model</span><span class="o">.</span><span class="n">β</span><span class="p">),</span> <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\bar</span><span class="si">{R}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1"># 投资</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">δ</span> <span class="o">*</span> <span class="n">k0_ss</span><span class="p">),</span> 
+    <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">δ</span><span class="o">*</span><span class="n">k0_ss</span><span class="p">,</span> <span class="n">inv</span><span class="p">[:</span><span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> 
+    <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">δ</span><span class="o">*</span><span class="n">k0_ss</span><span class="p">,</span> <span class="n">inv_s</span><span class="p">[:</span><span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> 
+    <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1"># 冲击</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">shocks</span><span class="p">[</span><span class="n">shock</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">shocks</span><span class="p">[</span><span class="n">shock</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;$</span><span class="si">{</span><span class="n">shock</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1"># 资本流动</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Bf</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">T</span><span class="p">]),</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$B^</span><span class="si">{f}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>如同我们在<a class="reference internal" href="cass_fiscal.html"><span class="doc">带扭曲性税收的Cass-Koopmans模型</span></a>中的单一国家模型，我们假设一个柯布-道格拉斯生产函数：</p>
+<div class="math notranslate nohighlight">
+\[
+F(k, 1) = A k^\alpha
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    生产函数：f(k) = A * k^{α}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">*</span> <span class="n">k</span> <span class="o">**</span> <span class="n">model</span><span class="o">.</span><span class="n">α</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">f_prime</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    资本的边际产出：f&#39;(k) = α * A * k^{α - 1}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">α</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">k</span> <span class="o">**</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">α</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>类似地，我们定义资本租赁率</p>
+<div class="math notranslate nohighlight">
+\[
+\eta_t = f'(k_t)  
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_η_path</span><span class="p">(</span><span class="n">k_path</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">A_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算η路径：η_t = f&#39;(k_t)</span>
+<span class="sd">    对于增长模型可选择性地包含A_path。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">k_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">A_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">A_path</span><span class="p">)</span>
+    <span class="n">η_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">k_path</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+        <span class="n">η_path</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_prime</span><span class="p">(</span><span class="n">k_path</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="n">A</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">η_path</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="t-10g0-20-4">
+<h4><span class="section-number">53.2.3.1. </span>实验1：在t=10时预见到g从0.2增加到0.4<a class="headerlink" href="#t-10g0-20-4" title="Link to this heading">#</a></h4>
+<p>下图展示了国内经济中g从0.2增加到0.4（提前十个周期宣布）后的转换动态。</p>
+<p>我们从两个经济体的稳态开始，初始条件为<span class="math notranslate nohighlight">\(B_0^f = 0\)</span>。</p>
+<p>在下图中，蓝线代表国内经济，橙色虚线代表国外经济。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Model</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Model&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;β&quot;</span><span class="p">,</span> <span class="s2">&quot;γ&quot;</span><span class="p">,</span> <span class="s2">&quot;δ&quot;</span><span class="p">,</span> <span class="s2">&quot;α&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">])</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">β</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">γ</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">δ</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">α</span><span class="o">=</span><span class="mf">0.33</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="n">shocks_global</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">S</span><span class="o">-</span><span class="mi">9</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">))),</span>
+    <span class="s1">&#39;g_s&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+    <span class="s1">&#39;τ_c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s1">&#39;τ_k&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s1">&#39;τ_c_s&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s1">&#39;τ_k_s&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">g_ss</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">k0_ss</span><span class="p">,</span> <span class="n">c0_ss</span> <span class="o">=</span> <span class="n">compute_steady_state_global</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">)</span>
+
+<span class="n">k_star</span> <span class="o">=</span> <span class="n">k0_ss</span>
+<span class="n">Bf_star</span> <span class="o">=</span> <span class="n">Bf_ss</span><span class="p">(</span><span class="n">c0_ss</span><span class="p">,</span> <span class="n">k_star</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+<span class="n">init_glob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">([</span><span class="n">k0_ss</span><span class="p">,</span> <span class="n">c0_ss</span><span class="p">,</span> <span class="n">k0_ss</span><span class="p">,</span> <span class="n">c0_ss</span><span class="p">],</span> <span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sol_glob</span> <span class="o">=</span> <span class="n">root</span><span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">compute_residuals_global</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">shocks_global</span><span class="p">,</span>
+                                        <span class="n">S</span><span class="p">,</span> <span class="n">k0_ss</span><span class="p">,</span> <span class="n">k_star</span><span class="p">,</span> <span class="n">Bf_star</span><span class="p">),</span>
+    <span class="n">init_glob</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span>
+<span class="p">)</span>
+<span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">c_s</span> <span class="o">=</span> <span class="n">sol_glob</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># Plot global results via function</span>
+<span class="n">plot_global_results</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c_s</span><span class="p">,</span>
+                        <span class="n">shocks_global</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span>
+                        <span class="n">k0_ss</span><span class="p">,</span> <span class="n">c0_ss</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">,</span>
+                        <span class="n">S</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/7b3c35522c0a60398e4ddc88eeed368e916e0d27f1d98b5d13712f2714720ed4.png" src="_images/7b3c35522c0a60398e4ddc88eeed368e916e0d27f1d98b5d13712f2714720ed4.png" />
+</div>
+</div>
+<p>在时间1时，政府宣布国内政府支出<span class="math notranslate nohighlight">\(g\)</span>将在十个周期后上升，这将侵占未来的私人资源。</p>
+<p>为了平滑消费，国内家庭立即增加储蓄，以抵消预期中对其未来财富的冲击。</p>
+<p>在封闭经济中，他们只能通过积累额外的国内资本来储蓄；而在开放的资本市场中，他们还可以向外国人贷款。</p>
+<p>一旦资本流动在时间<span class="math notranslate nohighlight">\(1\)</span>开放，无套利条件将连接这两种储蓄方式的调整：国内家庭储蓄的增加将降低外国经济中债券和资本的均衡回报率，以防止套利机会。</p>
+<p>由于无套利使边际效用比率相等，两个经济体的消费和资本路径将同步变化。</p>
+<p>在更高的<span class="math notranslate nohighlight">\(g\)</span>生效之前，两个国家都继续增加其资本存量。</p>
+<p>当政府支出在10个周期后最终上升时，国内家庭开始动用部分资本来缓冲消费。</p>
+<p>同样根据无套利条件，当<span class="math notranslate nohighlight">\(g\)</span>实际增加时，两个国家都降低了其投资率。</p>
+<p>国内经济随之开始出现经常账户赤字，部分用于资助<span class="math notranslate nohighlight">\(g\)</span>的增加。</p>
+<p>这意味着外国家庭通过减少其资本存量来开始偿还部分外部债务。</p>
+</section>
+<section id="id8">
+<h4><span class="section-number">53.2.3.2. </span>实验2：在t=10时<span class="math notranslate nohighlight">\(g\)</span>从0.2可预见地增加到0.4<a class="headerlink" href="#id8" title="Link to this heading">#</a></h4>
+<p>我们现在探讨在t = 1时宣布的国内资本税上调政策在10个周期后的影响。</p>
+<p>由于这一变化是可预期的,尽管税收直到第11期才开始生效,两国家庭都会立即做出调整。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shocks_global</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">),</span>
+    <span class="s1">&#39;g_s&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">),</span>
+    <span class="s1">&#39;τ_c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s1">&#39;τ_k&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">S</span><span class="o">-</span><span class="mi">9</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))),</span>
+    <span class="s1">&#39;τ_c_s&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s1">&#39;τ_k_s&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+<span class="p">}</span>
+    
+<span class="n">k0_ss</span><span class="p">,</span> <span class="n">c0_ss</span> <span class="o">=</span> <span class="n">compute_steady_state_global</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">)</span>
+<span class="n">k_star</span> <span class="o">=</span> <span class="n">k0_ss</span>
+<span class="n">Bf_star</span> <span class="o">=</span> <span class="n">Bf_ss</span><span class="p">(</span><span class="n">c0_ss</span><span class="p">,</span> <span class="n">k_star</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+<span class="n">init_glob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">([</span><span class="n">k0_ss</span><span class="p">,</span> <span class="n">c0_ss</span><span class="p">,</span> <span class="n">k0_ss</span><span class="p">,</span> <span class="n">c0_ss</span><span class="p">],</span> <span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">sol_glob</span> <span class="o">=</span> <span class="n">root</span><span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">compute_residuals_global</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> 
+            <span class="n">shocks_global</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">k0_ss</span><span class="p">,</span> <span class="n">k_star</span><span class="p">,</span> <span class="n">Bf_star</span><span class="p">),</span>
+            <span class="n">init_glob</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
+
+<span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">c_s</span> <span class="o">=</span> <span class="n">sol_glob</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">S</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># plot </span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plot_global_results</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c_s</span><span class="p">,</span> <span class="n">shocks_global</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> 
+                                <span class="n">k0_ss</span><span class="p">,</span> <span class="n">c0_ss</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">shock</span><span class="o">=</span><span class="s1">&#39;τ_k&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/c4bd8b540dd4b8e2b61c1c2f9398a5b78b98b125a7db3eda53453474ec8f7c23.png" src="_images/c4bd8b540dd4b8e2b61c1c2f9398a5b78b98b125a7db3eda53453474ec8f7c23.png" />
+</div>
+</div>
+<p>在宣布增税后，国内家庭预见到资本的税后回报率降低，因此转向更高的当前消费，并允许国内资本存量下降。</p>
+<p>这种世界资本供应的萎缩推动全球实际利率上升，促使外国家庭也提高当前消费。</p>
+<p>在实际加税之前，国内经济通过进口资本为部分消费提供资金，产生经常账户赤字。</p>
+<p>当<span class="math notranslate nohighlight">\(\tau_k\)</span>最终上升时，国际套利导致投资者迅速将资本重新配置到未征税的国外市场，压缩了各地的债券收益率。</p>
+<p>债券利率下跌反映了国内资本的税后回报率降低，以及国外资本存量增加导致其边际产出下降。</p>
+<p>外国家庭通过对外借款为其资本购买提供资金，造成显著的经常账户赤字和外部债务的积累。</p>
+<p>政策变更后，两国平稳地向新的稳态过渡，其特点是：</p>
+<ul class="simple">
+<li><p>各经济体的消费水平稳定在其宣布前路径之下。</p></li>
+<li><p>资本存量的差异恰好足以使跨境税后回报率趋于相等。</p></li>
+</ul>
+<p>尽管承担着正的净负债，由于较大的资本存量带来更高的产出，外国能够享有更高的稳态消费。</p>
+<p>该案例展示了开放资本市场如何在国际间传递国内税收冲击：资本流动和利率变动共同分担负担，随着时间推移平滑了征税和未征税经济体的消费调整。</p>
+<div class="exercise admonition" id="cass_fiscal_ex4">
+
+<p class="admonition-title"><span class="caption-number">Exercise 53.1 </span></p>
+<section id="exercise-content">
+<p>在本练习中，用 <span class="math notranslate nohighlight">\(\eta_t\)</span> 替换 <span class="math notranslate nohighlight">\({x_t}\)</span> 的图表，以复制 <span id="id9">[<a class="reference internal" href="zreferences.html#id194" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span> 中的图形。</p>
+<p>比较 <span class="math notranslate nohighlight">\({k_t}\)</span> 和 <span class="math notranslate nohighlight">\(\eta_t\)</span> 的图形并讨论其经济含义。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="cass_fiscal_2-solution-1">
+
+<p class="admonition-title">Solution to<a class="reference internal" href="#cass_fiscal_ex4"> Exercise 53.1</a></p>
+<section id="solution-content">
+<p>这是一个解决方案。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plot_global_results</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c_s</span><span class="p">,</span> <span class="n">shocks_global</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> 
+                                <span class="n">k0_ss</span><span class="p">,</span> <span class="n">c0_ss</span><span class="p">,</span> <span class="n">g_ss</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">shock</span><span class="o">=</span><span class="s1">&#39;τ_k&#39;</span><span class="p">)</span>
+
+<span class="c1"># Clear the plot for x_t</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+
+<span class="c1"># Plot η_t</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">compute_η_path</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">model</span><span class="p">)[:</span><span class="mi">40</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">compute_η_path</span><span class="p">(</span><span class="n">k_s</span><span class="p">,</span> <span class="n">model</span><span class="p">)[:</span><span class="mi">40</span><span class="p">],</span> <span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="n">f_prime</span><span class="p">(</span><span class="n">k_s</span><span class="p">,</span> <span class="n">model</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\eta$&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/dadabeddf432d4427ee5a730d76e4bb8a62b9309be41af6f168ec064faa9ceae.png" src="_images/dadabeddf432d4427ee5a730d76e4bb8a62b9309be41af6f168ec064faa9ceae.png" />
+</div>
+</div>
+<p>当税收冲击后国内资本 <span class="math notranslate nohighlight">\({k_t}\)</span> 减少时，该国的租金率 <span class="math notranslate nohighlight">\(\eta_t\)</span> 上升。</p>
+<p>这是因为当资本变得稀缺时，其边际产出会上升。</p>
+</section>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础工具
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  统计与信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   30. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   31. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   32. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   33. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   34. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   35. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   36. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   37. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   38. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   39. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   40. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   41. 卡尔曼滤波器进阶
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   42. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   43. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   44. 工作搜寻 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   45. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   46. 工作搜寻 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   47. 工作搜寻 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   48. 工作搜寻 VII：McCall劳动者的Q学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 工作搜寻 VII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   50. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   51. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   52. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   53. 带扭曲性税收的双国模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   54. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   55. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   56. 吃蛋糕问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   57. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   58. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   59. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   60. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   61. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   62. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   63. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   64. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   65. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   66. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   67. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   68. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   69. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   70. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   71. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   72. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   73. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   74. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   75. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   76. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   77. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   78. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   79. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   80. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   81. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   82. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   83. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   84. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   85. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   86. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/cass_fiscal_2.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/cass_fiscal_2.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/cass_fiscal_2.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/cass_fiscal_2.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/cass_fiscal_2.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "cass_fiscal_2";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/cass_fiscal_2.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

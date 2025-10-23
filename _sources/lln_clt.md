@@ -717,14 +717,14 @@ plt.show()
 
 这种标准化可以基于以下三个观察结果来实现。
 
-首先，如果$\mathbf X$是$\mathbb R^k$中的随机向量，且$\mathbf A$是常数且为$k \times k$矩阵，那么
+首先，如果$\mathbf X$是$\mathbb R^k$中的随机向量，$\mathbf A$是常数且为$k \times k$矩阵，那么
 
 $$
 \mathop{\mathrm{Var}}[\mathbf A \mathbf X]
 = \mathbf A \mathop{\mathrm{Var}}[\mathbf X] \mathbf A'
 $$
 
-其次，根据[连续映射定理](https://en.wikipedia.org/wiki/Continuous_mapping_theorem)，如果$\mathbf Z_n \stackrel{d}{\to} \mathbf Z$在$\mathbb R^k$中成立，且$\mathbf A$是常数且为$k \times k$矩阵，那么
+其次，连续映射定理指出，如果$g(\cdot)$是一个连续函数，且随机变量序列$\{\mathbf{Z}_n\}$依分布收敛到随机变量$\mathbf{Z}$, 那么$\{g(\mathbf{Z}_n)\}$也依分布收敛到随机变量$g(\mathbf{Z})$。根据连续映射定理，如果$\mathbf Z_n \stackrel{d}{\to} \mathbf Z$在$\mathbb R^k$中成立，且$\mathbf A$是常数且为$k \times k$矩阵，那么
 
 $$
 \mathbf A \mathbf Z_n

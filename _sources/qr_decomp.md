@@ -19,7 +19,7 @@ kernelspec:
 
 * 正交投影和最小二乘法
 
-* Gram-Schmidt正交化过程
+* 格拉姆-施密特（Gram-Schmidt）正交化
 
 * 特征值和特征向量
 
@@ -41,23 +41,23 @@ $$
 
 * $R$是上三角矩阵
 
-我们将使用**Gram-Schmidt正交化过程**来计算QR分解
+我们将使用**格拉姆-施密特正交化**来计算QR分解
 
-由于这个过程很有教育意义，我们将编写自己的Python代码来完成这项工作
+由于这个过程很有意思，我们将编写自己的Python代码来完成这项工作
 
-## 格拉姆-施密特正交化过程
+## 格拉姆-施密特正交化
 
 我们从一个**方阵**$A$开始。
 
 如果方阵$A$是非奇异的，那么$QR$分解是唯一的。
 
-我们稍后会处理矩形矩阵$A$。
-
 实际上，我们的算法也适用于非方阵的矩形矩阵$A$。
 
-### 方阵$A$的格拉姆-施密特过程
+我们稍后会处理矩形矩阵$A$。
 
-这里我们对矩阵$A$的**列**应用格拉姆-施密特过程。
+### 方阵$A$的格拉姆-施密特正交化
+
+这里我们对矩阵$A$的**列**运用格拉姆-施密特正交化。
 
 具体来说，令
 
@@ -87,7 +87,7 @@ $$
 
 我们邀请读者通过验证 $e_1 \cdot e_2 = 0$ 来确认 $e_1$ 与 $e_2$ 正交。
 
-Gram-Schmidt过程继续迭代。
+格拉姆-施密特算法过程迭代这个过程。
 
 因此，对于 $k= 2, \ldots, n-1$，我们构造
 
@@ -97,8 +97,7 @@ $$
 
 这里的 $(a_j \cdot e_i)$ 可以被解释为 $a_j$ 在 $e_i$ 上的线性最小二乘**回归系数**
 
-* 它是 $a_j$ 和 $e_i$ 的内积除以 $e_i$ 的内积，其中
-    由于*标准化*，我们知道 $e_i \cdot e_i = 1$
+* 它是 $a_j$ 和 $e_i$ 的内积除以 $e_i$ 的内积，其中由于*标准化*，我们知道 $e_i \cdot e_i = 1$
     
 * 这个回归系数可以解释为**协方差**除以**方差**
 
@@ -108,11 +107,10 @@ $$
 A= \left[ \begin{array}{c|c|c|c} a_1 & a_2 & \cdots & a_n \end{array} \right]=
 \left[ \begin{array}{c|c|c|c} e_1 & e_2 & \cdots & e_n \end{array} \right]
 \left[ \begin{matrix} a_1·e_1 & a_2·e_1 & \cdots & a_n·e_1\\ 0 & a_2·e_2 & \cdots & a_n·e_2
-
 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & a_n·e_n \end{matrix} \right]
 $$
 
-因此，我们构造了分解
+因此，我们构造了矩阵分解
 
 $$ 
 A = Q R
@@ -128,8 +126,8 @@ $$
 且
 
 $$
-R = \left[ \begin{matrix} a_1·e_1 & a_2·e_1 & \cdots & a_n·e_1\\ 0 & a_2·e_2 & \cdots & a_n·e_2 
-\\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & a_n·e_n \end{matrix} \right]
+R = \left[ \begin{matrix} a_1·e_1 & a_2·e_1 & \cdots & a_n·e_1\\ 0 & a_2·e_2 & \cdots & a_n·e_2 \\ 
+\vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & a_n·e_n \end{matrix} \right]
 $$
 
 ### $A$ 非方阵
@@ -141,7 +139,6 @@ $$
 $$
 A= \left[ \begin{array}{c|c|c|c} a_1 & a_2 & \cdots & a_m \end{array} \right]=\left[ \begin{array}{c|c|c|c} e_1 & e_2 & \cdots & e_n \end{array} \right]
 \left[ \begin{matrix} a_1·e_1 & a_2·e_1 & \cdots & a_n·e_1 & a_{n+1}\cdot e_1 & \cdots & a_{m}\cdot e_1 \\
-
 0 & a_2·e_2 & \cdots & a_n·e_2 & a_{n+1}\cdot e_2 & \cdots & a_{m}\cdot e_2 \\ \vdots & \vdots & \ddots & \quad  \vdots & \vdots & \ddots & \vdots
 \\ 0 & 0 & \cdots & a_n·e_n & a_{n+1}\cdot e_n & \cdots & a_{m}\cdot e_n \end{matrix} \right]
 $$
@@ -160,7 +157,7 @@ a_m & = (a_m\cdot e_1) e_1 + (a_m\cdot e_2) e_2 + \cdots + (a_m \cdot e_n) e_n  
 
 ## 一些代码
 
-现在让我们编写一些自制的Python代码，通过部署上述的Gram-Schmidt过程来实现QR分解。
+现在让我们编写一些自制的Python代码，通过部署上述的格拉姆-施密特正交化来实现QR分解。
 
 ```{code-cell} ipython3
 import numpy as np
@@ -193,19 +190,19 @@ def QR_Decomposition(A):
     return Q, R
 ```
 
-前面的代码没问题，但可以进行一些进一步的整理。
+前面的代码没问题，但可以进一步进行整理。
 
-我们这样做是因为在本notebook后面部分，我们想要比较使用上面的自制代码与Python `scipy`包提供的QR代码所得到的结果。
+这样做的目的是为了后续能够将我们自制的QR分解代码与`scipy`包中的QR分解函数进行对比。
 
 不同的数值算法产生的$Q$和$R$矩阵之间可能存在符号差异。
 
 由于在计算$QR$时这些符号差异会相互抵消，所以这些都是有效的QR分解。
 
-但是，为了使我们自制函数和`scipy`中的QR模块的结果具有可比性，让我们要求$Q$具有正对角线元素。
+但是，为了使我们自制函数和`scipy`中QR模块的结果具有可比性，让我们要求$Q$具有正对角线元素。
 
 我们通过适当调整$Q$中列的符号和$R$中行的符号来实现这一点。
 
-为了实现这个目标，我们将定义一对函数。
+我们将定义一对函数来完成上述要求。
 
 ```{code-cell} ipython3
 def diag_sign(A):
@@ -218,7 +215,7 @@ def diag_sign(A):
 def adjust_sign(Q, R):
     """
     调整Q中列的符号和R中行的符号，
-    以确保Q的对角线为正
+    以确保Q的正对角线属性
     """
 
     D = diag_sign(Q)
@@ -231,13 +228,10 @@ def adjust_sign(Q, R):
 
 ## 示例
 
-现在让我们做一个例子。
+现在让我们举一个例子。
 
 ```{code-cell} ipython3
 A = np.array([[1.0, 1.0, 0.0], [1.0, 0.0, 1.0], [0.0, 1.0, 1.0]])
-# A = np.array([[1.0, 0.5, 0.2], [0.5, 0.5, 1.0], [0.0, 1.0, 1.0]])
-# A = np.array([[1.0, 0.5, 0.2], [0.5, 0.5, 1.0]])
-
 A
 ```
 
@@ -297,23 +291,19 @@ Q_scipy, R_scipy
 
 算法如下：
 
-1. 设 $A_0 = A$ 并形成 $A_0 = Q_0 R_0$
+1. 设 $A_0 = A$ 并构建 $A_0 = Q_0 R_0$
 
-2. 形成 $A_1 = R_0 Q_0$。注意 $A_1$ 与 $A_0$ 相似(易于验证)，因此具有相同的特征值。
+2. 构建 $A_1 = R_0 Q_0$。注意 $A_1$ 与 $A_0$ 相似(易于验证)，因此具有相同的特征值。
 
-3. 形成 $A_1 = Q_1 R_1$ (即，形成 $A_1$ 的 $QR$ 分解)。
+3. 构建 $A_1 = Q_1 R_1$ (即构建 $A_1$ 的 $QR$ 分解)。
 
-4. 形成 $A_2 = R_1 Q_1$ 然后 $A_2 = Q_2 R_2$。
+4. 构建 $A_2 = R_1 Q_1$ 然后构建 $A_2 = Q_2 R_2$。
 
 5. 迭代直至收敛。
 
 6. 计算 $A$ 的特征值，并将其与从该过程得到的极限 $A_n$ 的对角线值进行比较。
 
-```{todo}
-@mmcky to migrate this to use [sphinx-proof](https://sphinx-proof.readthedocs.io/en/latest/syntax.html#algorithms)
-```
-
-**注意：** 这个算法接近于计算特征值最有效的方法之一！
+**注意：** 这个算法实际上非常接近计算特征值最高效的方法！
 
 让我们编写一些Python代码来尝试这个算法
 
@@ -345,7 +335,7 @@ def QR_eigvals(A, tol=1e-12, maxiter=1000):
 开始吧
 
 ```{code-cell} ipython3
-# 用一个随机A矩阵做实验
+# 用一个随机矩阵A做实验
 A = np.random.random((3, 3))
 ```
 
@@ -365,7 +355,7 @@ $QR$ 分解与主成分分析（PCA）之间存在一些有趣的联系。
 
 以下是一些联系：
 
-1. 设 $X'$ 是一个 $k \times n$ 的随机矩阵，其中第 $j$ 列是从 ${\mathcal N}(\mu, \Sigma)$ 分布中随机抽取的样本，这里 $\mu$ 是 $k \times 1$ 的均值向量，$\Sigma$ 是 $k \times k$ 的协方差矩阵。我们需要 $n > > k$ —— 这是一个"计量经济学的例子"。
+1. 设 $X'$ 是一个 $k \times n$ 的随机矩阵，其中第 $j$ 列是从 ${\mathcal N}(\mu, \Sigma)$ 分布中随机抽取的样本，这里 $\mu$ 是 $k \times 1$ 的均值向量，$\Sigma$ 是 $k \times k$ 的协方差矩阵。我们需要 $n > > k$ —— 这是一个"计量经济学"的例子。
 
 2. 将 $X'$ 分解为 $X' = Q R$，其中 $Q$ 是 $k \times k$ 矩阵，$R$ 是 $k \times n$ 矩阵。
 
@@ -373,7 +363,7 @@ $QR$ 分解与主成分分析（PCA）之间存在一些有趣的联系。
 
 4. 构造 $X' X = Q \tilde P \Lambda \tilde P' Q'$ 并与特征分解 $X'X = P \hat \Lambda P'$ 进行比较。
 
-5. 我们将发现 $\Lambda = \hat \Lambda$ 且 $P = Q \tilde P$。
+5. 我们应该会发现 $\Lambda = \hat \Lambda$ 且 $P = Q \tilde P$。
 
 让我们用Python代码来验证推测5。
 
@@ -411,7 +401,7 @@ Q.shape, R.shape
 ```
 
 
-现在我们可以构造 $R R^{\prime}=\tilde{P} \Lambda \tilde{P}^{\prime}$ 并形成特征分解。
+现在我们可以构造 $R R^{\prime}=\tilde{P} \Lambda \tilde{P}^{\prime}$ 并构建特征分解。
 
 ```{code-cell} ipython3
 RR = R @ R.T

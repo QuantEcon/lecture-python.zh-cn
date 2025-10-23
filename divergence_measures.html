@@ -1,0 +1,1630 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>21. 统计散度度量 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=3bd9fcddbe64f63e07c8604843d1cc622a07b430" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=b4b7a797" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=30f7c850c5b005eca2ad6e48893cd350a6c6c4c2"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'divergence_measures';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/divergence_measures.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="22. 似然比过程" href="likelihood_ratio_process.html" />
+    <link rel="prev" title="20. 预测 AR(1) 过程" href="ar1_turningpts.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="统计散度度量"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="统计散度度量" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/divergence_measures.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=divergence_measures>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">21.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kl">21.2. 熵、交叉熵、KL散度入门</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#beta">21.3. 两个Beta分布：运行示例</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kullbackleibler">21.4. Kullback–Leibler散度</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jensen-shannon">21.5. Jensen-Shannon散度</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#chernoff">21.6. Chernoff 熵</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">21.7. 比较散度度量</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">21.8. KL散度和最大似然估计</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">21.9. 相关讲座</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/en/stable/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">统计散度度量</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="toc-backref" href="#id9" role="doc-backlink"><span class="section-number">21. </span>统计散度度量</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<nav class="contents" id="id2">
+<p class="topic-title">目录</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id9">统计散度度量</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id3" id="id10">概述</a></p></li>
+<li><p><a class="reference internal" href="#kl" id="id11">熵、交叉熵、KL散度入门</a></p></li>
+<li><p><a class="reference internal" href="#beta" id="id12">两个Beta分布：运行示例</a></p></li>
+<li><p><a class="reference internal" href="#kullbackleibler" id="id13">Kullback–Leibler散度</a></p></li>
+<li><p><a class="reference internal" href="#jensen-shannon" id="id14">Jensen-Shannon散度</a></p></li>
+<li><p><a class="reference internal" href="#chernoff" id="id15">Chernoff 熵</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id16">比较散度度量</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id17">KL散度和最大似然估计</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id18">相关讲座</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="id3">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink"><span class="section-number">21.1. </span>概述</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>统计散度用于量化两个不同概率分布之间的差异，这些分布可能难以区分，原因如下：</p>
+<ul class="simple">
+<li><p>在一个分布下具有正概率的每个事件在另一个分布下也具有正概率</p></li>
+<li><p>这意味着没有”确凿证据”事件的发生能让统计学家确定数据一定服从其中某一个概率分布</p></li>
+</ul>
+<p>统计散度是一个将两个概率分布映射到非负实数的<strong>函数</strong>。</p>
+<p>统计散度函数在统计学、信息论和现在许多人称之为”机器学习”的领域中发挥着重要作用。</p>
+<p>本讲座描述了三种散度度量：</p>
+<ul class="simple">
+<li><p><strong>库尔贝克-莱布勒(KL)散度</strong></p></li>
+<li><p><strong>Jensen-Shannon (JS) 散度</strong></p></li>
+<li><p><strong>切尔诺夫熵</strong></p></li>
+</ul>
+<p>这些概念将在多个 quantecon 课程中出现。</p>
+<p>让我们首先导入必要的 Python 工具。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">vectorize</span><span class="p">,</span> <span class="n">jit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">gamma</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">quad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize_scalar</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Math</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="kl">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink"><span class="section-number">21.2. </span>熵、交叉熵、KL散度入门</a><a class="headerlink" href="#kl" title="Link to this heading">#</a></h2>
+<p>在深入之前,我们先介绍一些有用的基本概念。</p>
+<p>我们暂时假设 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 是离散随机变量在状态空间 <span class="math notranslate nohighlight">\(I = \{1, 2, \ldots, n\}\)</span> 上的两个概率质量函数,满足 <span class="math notranslate nohighlight">\(f_i \geq 0, \sum_{i} f_i =1, g_i \geq 0, \sum_{i} g_i =1\)</span>。</p>
+<p>我们遵循一些统计学家和信息论学家的做法,将从分布 <span class="math notranslate nohighlight">\(f\)</span> 中观察到单次抽样 <span class="math notranslate nohighlight">\(x = i\)</span> 所关联的<strong>惊奇度</strong>或<strong>惊奇量</strong>定义为</p>
+<div class="math notranslate nohighlight">
+\[
+\log\left(\frac{1}{f_i}\right)
+\]</div>
+<p>他们进一步将从单次实现中预期获得的<strong>信息量</strong>定义为期望惊奇度</p>
+<div class="math notranslate nohighlight">
+\[
+H(f) = \sum_i f_i \log\left(\frac{1}{f_i}\right).  
+\]</div>
+<p>Claude Shannon <span id="id4">[<a class="reference internal" href="zreferences.html#id4" title="Claude E Shannon. A mathematical theory of communication. The Bell system technical journal, 27(3):379–423, 1948.">Shannon, 1948</a>]</span> 将 <span class="math notranslate nohighlight">\(H(f)\)</span> 称为分布 <span class="math notranslate nohighlight">\(f\)</span> 的<strong>熵</strong>。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>通过对 <span class="math notranslate nohighlight">\(\{f_1, f_2, \ldots, f_n\}\)</span> 在约束 <span class="math notranslate nohighlight">\(\sum_i f_i = 1\)</span> 下最大化 <span class="math notranslate nohighlight">\(H(f)\)</span>,我们可以验证使熵最大化的分布是均匀分布
+<span class="math notranslate nohighlight">\(
+f_i = \frac{1}{n} .
+\)</span>
+均匀分布的熵 <span class="math notranslate nohighlight">\(H(f)\)</span> 显然等于 <span class="math notranslate nohighlight">\(- \log(n)\)</span>。</p>
+</div>
+<p>Kullback 和 Leibler <span id="id5">[<a class="reference internal" href="zreferences.html#id5" title="Solomon Kullback and Richard A Leibler. On information and sufficiency. The Annals of Mathematical Statistics, 22(1):79–86, 1951.">Kullback and Leibler, 1951</a>]</span> 将单次抽样 <span class="math notranslate nohighlight">\(x\)</span> 用于区分 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 所提供的信息量定义为对数似然比</p>
+<div class="math notranslate nohighlight">
+\[
+\log \frac{f(x)}{g(x)}
+\]</div>
+<p>以下两个概念被广泛用于比较两个分布 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span>。</p>
+<p><strong>交叉熵:</strong></p>
+<div class="amsmath math notranslate nohighlight" id="equation-3fd3296a-fa41-4fc0-afe5-33887216b3dc">
+<span class="eqno">(21.1)<a class="headerlink" href="#equation-3fd3296a-fa41-4fc0-afe5-33887216b3dc" title="Permalink to this equation">#</a></span>\[\begin{equation}
+H(f,g) = -\sum_{i} f_i \log g_i
+\end{equation}\]</div>
+<p><strong>Kullback-Leibler (KL) 散度：</strong></p>
+<div class="amsmath math notranslate nohighlight" id="equation-df76995a-9653-4be3-bcea-c384c66bd018">
+<span class="eqno">(21.2)<a class="headerlink" href="#equation-df76995a-9653-4be3-bcea-c384c66bd018" title="Permalink to this equation">#</a></span>\[\begin{equation}
+D_{KL}(f \parallel g) = \sum_{i} f_i \log\left[\frac{f_i}{g_i}\right]
+\end{equation}\]</div>
+<p>这些概念通过以下等式相关联。</p>
+<div class="math notranslate nohighlight" id="equation-eq-klcross">
+<span class="eqno">(21.3)<a class="headerlink" href="#equation-eq-klcross" title="Link to this equation">#</a></span>\[
+D_{KL}(f \parallel g) = H(f,g) - H(f)
+\]</div>
+<p>要证明<a class="reference internal" href="#equation-eq-klcross">(21.3)</a>，注意到</p>
+<div class="amsmath math notranslate nohighlight" id="equation-65e08d4b-c1e0-4684-b81b-0c863a62e476">
+<span class="eqno">(21.4)<a class="headerlink" href="#equation-65e08d4b-c1e0-4684-b81b-0c863a62e476" title="Permalink to this equation">#</a></span>\[\begin{align}
+D_{KL}(f \parallel g) &amp;= \sum_{i} f_i \log\left[\frac{f_i}{g_i}\right] \\
+&amp;= \sum_{i} f_i \left[\log f_i - \log g_i\right] \\
+&amp;= \sum_{i} f_i \log f_i - \sum_{i} f_i \log g_i \\
+&amp;= -H(f) + H(f,g) \\
+&amp;= H(f,g) - H(f)
+\end{align}\]</div>
+<p>记住<span class="math notranslate nohighlight">\(H(f)\)</span>是从<span class="math notranslate nohighlight">\(f\)</span>中抽取<span class="math notranslate nohighlight">\(x\)</span>时的预期惊异度。</p>
+<p>那么上述等式告诉我们，KL散度是当预期<span class="math notranslate nohighlight">\(x\)</span>是从<span class="math notranslate nohighlight">\(f\)</span>中抽取而实际上是从<span class="math notranslate nohighlight">\(g\)</span>中抽取时产生的预期”额外惊异度”。</p>
+</section>
+<section id="beta">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink"><span class="section-number">21.3. </span>两个Beta分布：运行示例</a><a class="headerlink" href="#beta" title="Link to this heading">#</a></h2>
+<p>我们将广泛使用Beta分布来说明概念。</p>
+<p>Beta分布特别方便，因为它定义在<span class="math notranslate nohighlight">\([0,1]\)</span>上，并且通过适当选择其两个参数可以呈现多样的形状。</p>
+<p>具有参数<span class="math notranslate nohighlight">\(a\)</span>和<span class="math notranslate nohighlight">\(b\)</span>的Beta分布的密度函数为</p>
+<div class="math notranslate nohighlight">
+\[
+f(z; a, b) = \frac{\Gamma(a+b) z^{a-1} (1-z)^{b-1}}{\Gamma(a) \Gamma(b)}
+\quad \text{其中} \quad
+\Gamma(p) := \int_{0}^{\infty} x^{p-1} e^{-x} dx
+\]</div>
+<p>我们引入两个Beta分布<span class="math notranslate nohighlight">\(f(x)\)</span>和<span class="math notranslate nohighlight">\(g(x)\)</span>，我们将用它们来说明不同的散度度量。</p>
+<p>让我们在Python中定义参数和密度函数</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 两个Beta分布中的参数</span>
+<span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+<span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.2</span>
+
+<span class="nd">@vectorize</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">gamma</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">gamma</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span> <span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># 两个密度函数</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">))</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">))</span>
+
+<span class="c1"># 绘制分布图</span>
+<span class="n">x_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">f_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_range</span><span class="p">]</span>
+<span class="n">g_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_range</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">f_vals</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$f(x) \sim \text</span><span class="si">{Beta}</span><span class="s1">(1,1)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">g_vals</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$g(x) \sim \text</span><span class="si">{Beta}</span><span class="s1">(3,1.2)$&#39;</span><span class="p">)</span>
+
+<span class="c1"># 填充重叠区域</span>
+<span class="n">overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">g_vals</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">overlap</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;overlap&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;密度&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 23494 (\N{CJK UNIFIED IDEOGRAPH-5BC6}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+</pre></div>
+</div>
+<img alt="_images/8aac9eadfb938c42b12c3c077b81d2678ab713263c2c7179888164491b115bbf.png" src="_images/8aac9eadfb938c42b12c3c077b81d2678ab713263c2c7179888164491b115bbf.png" />
+</div>
+</div>
+</section>
+<section id="kullbackleibler">
+<span id="rel-entropy"></span><h2><a class="toc-backref" href="#id13" role="doc-backlink"><span class="section-number">21.4. </span>Kullback–Leibler散度</a><a class="headerlink" href="#kullbackleibler" title="Link to this heading">#</a></h2>
+<p>我们的第一个散度函数是<strong>Kullback–Leibler (KL)散度</strong>。</p>
+<p>对于概率密度（或概率质量函数）<span class="math notranslate nohighlight">\(f\)</span>和<span class="math notranslate nohighlight">\(g\)</span>，它的定义为</p>
+<div class="math notranslate nohighlight">
+\[
+D_{KL}(f\|g) = KL(f, g) = \int f(x) \log \frac{f(x)}{g(x)} \, dx.
+\]</div>
+<p>我们可以将<span class="math notranslate nohighlight">\(D_{KL}(f\|g)\)</span>解释为当数据由<span class="math notranslate nohighlight">\(f\)</span>生成而我们使用<span class="math notranslate nohighlight">\(g\)</span>时产生的预期超额对数损失（预期超额意外性）。</p>
+<p>它有几个重要的性质：</p>
+<ul class="simple">
+<li><p>非负性（Gibbs不等式）：<span class="math notranslate nohighlight">\(D_{KL}(f\|g) \ge 0\)</span>，当且仅当<span class="math notranslate nohighlight">\(f\)</span>几乎处处等于<span class="math notranslate nohighlight">\(g\)</span>时取等号</p></li>
+<li><p>不对称性：<span class="math notranslate nohighlight">\(D_{KL}(f\|g) \neq D_{KL}(g\|f)\)</span>（因此它不是度量）</p></li>
+<li><p>信息分解：
+<span class="math notranslate nohighlight">\(D_{KL}(f\|g) = H(f,g) - H(f)\)</span>，其中<span class="math notranslate nohighlight">\(H(f,g)\)</span>是交叉熵，<span class="math notranslate nohighlight">\(H(f)\)</span>是<span class="math notranslate nohighlight">\(f\)</span>的Shannon熵</p></li>
+<li><p>链式法则：对于联合分布<span class="math notranslate nohighlight">\(f(x, y)\)</span>和<span class="math notranslate nohighlight">\(g(x, y)\)</span>，
+<span class="math notranslate nohighlight">\(D_{KL}(f(x,y)\|g(x,y)) = D_{KL}(f(x)\|g(x)) + E_{f}\left[D_{KL}(f(y|x)\|g(y|x))\right]\)</span></p></li>
+</ul>
+<p>KL散度在统计推断中扮演着核心角色，包括模型选择和假设检验。</p>
+<p><a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a>描述了KL散度与预期对数似然比之间的联系，
+而讲座<a class="reference internal" href="wald_friedman.html"><span class="doc">让弥尔顿·弗里德曼困惑的问题</span></a>将其与序贯概率比检验的测试性能联系起来。</p>
+<p>让我们计算示例分布<span class="math notranslate nohighlight">\(f\)</span>和<span class="math notranslate nohighlight">\(g\)</span>之间的KL散度。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_KL</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    通过数值积分计算KL散度KL(f, g)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">integrand</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+        <span class="n">fw</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">gw</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fw</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">fw</span> <span class="o">/</span> <span class="n">gw</span><span class="p">)</span>
+    <span class="n">val</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="mf">1e-5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">val</span>
+
+<span class="c1"># 计算我们示例分布之间的KL散度</span>
+<span class="n">kl_fg</span> <span class="o">=</span> <span class="n">compute_KL</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+<span class="n">kl_gf</span> <span class="o">=</span> <span class="n">compute_KL</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;KL(f, g) = </span><span class="si">{</span><span class="n">kl_fg</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;KL(g, f) = </span><span class="si">{</span><span class="n">kl_gf</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>KL(f, g) = 0.7590
+KL(g, f) = 0.3436
+</pre></div>
+</div>
+</div>
+</div>
+<p>KL散度的不对称性具有重要的实际意义。</p>
+<p><span class="math notranslate nohighlight">\(D_{KL}(f\|g)\)</span> 惩罚那些 <span class="math notranslate nohighlight">\(f &gt; 0\)</span> 但 <span class="math notranslate nohighlight">\(g\)</span> 接近零的区域，反映了使用 <span class="math notranslate nohighlight">\(g\)</span> 来建模 <span class="math notranslate nohighlight">\(f\)</span> 的代价，反之亦然。</p>
+</section>
+<section id="jensen-shannon">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink"><span class="section-number">21.5. </span>Jensen-Shannon散度</a><a class="headerlink" href="#jensen-shannon" title="Link to this heading">#</a></h2>
+<p>有时我们需要一个对称的散度度量，用来衡量两个分布之间的差异，而不偏向任何一方。</p>
+<p>这种情况经常出现在聚类等应用中，我们想要比较分布，但不假设其中一个是真实模型。</p>
+<p><strong>Jensen-Shannon (JS) 散度</strong>通过将两个分布与它们的混合分布进行比较来使KL散度对称化：</p>
+<div class="math notranslate nohighlight">
+\[
+JS(f,g) = \frac{1}{2} D_{KL}(f\|m) + \frac{1}{2} D_{KL}(g\|m), \quad m = \frac{1}{2}(f+g).
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(m\)</span> 是对 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 取平均的混合分布</p>
+<p>让我们也可视化混合分布 <span class="math notranslate nohighlight">\(m\)</span>：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">m</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="n">m_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_range</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">f_vals</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$f(x)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">g_vals</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$g(x)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">m_vals</span><span class="p">,</span> <span class="s1">&#39;g--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$m(x) = \frac</span><span class="si">{1}{2}</span><span class="s1">(f(x) + g(x))$&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;density&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/458b779e309cfd688a5fd8f61804cebe60718d90d6dd522cacfd224aed2eaae4.png" src="_images/458b779e309cfd688a5fd8f61804cebe60718d90d6dd522cacfd224aed2eaae4.png" />
+</div>
+</div>
+<p>JS散度具有以下几个有用的性质：</p>
+<ul class="simple">
+<li><p>对称性：<span class="math notranslate nohighlight">\(JS(f,g)=JS(g,f)\)</span>。</p></li>
+<li><p>有界性：<span class="math notranslate nohighlight">\(0 \le JS(f,g) \le \log 2\)</span>。</p></li>
+<li><p>其平方根<span class="math notranslate nohighlight">\(\sqrt{JS}\)</span>在概率分布空间上是一个度量（Jensen-Shannon距离）。</p></li>
+<li><p>JS散度等于二元随机变量<span class="math notranslate nohighlight">\(Z \sim \text{Bernoulli}(1/2)\)</span>（用于指示源）与样本<span class="math notranslate nohighlight">\(X\)</span>之间的互信息，其中当<span class="math notranslate nohighlight">\(Z=0\)</span>时<span class="math notranslate nohighlight">\(X\)</span>从<span class="math notranslate nohighlight">\(f\)</span>抽样，当<span class="math notranslate nohighlight">\(Z=1\)</span>时从<span class="math notranslate nohighlight">\(g\)</span>抽样。</p></li>
+</ul>
+<p>Jensen-Shannon散度在某些生成模型的优化中起着关键作用，因为它是有界的、对称的，且比KL散度更平滑，通常能为训练提供更稳定的梯度。</p>
+<p>让我们计算示例分布<span class="math notranslate nohighlight">\(f\)</span>和<span class="math notranslate nohighlight">\(g\)</span>之间的JS散度</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_JS</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算Jensen-Shannon散度。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">m</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+    <span class="n">js_div</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">compute_KL</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">compute_KL</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">js_div</span>
+
+<span class="n">js_div</span> <span class="o">=</span> <span class="n">compute_JS</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Jensen-Shannon散度 JS(f,g) = </span><span class="si">{</span><span class="n">js_div</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jensen-Shannon散度 JS(f,g) = 0.0984
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们可以使用带权重 <span class="math notranslate nohighlight">\(\alpha = (\alpha_i)_{i=1}^{n}\)</span> 的广义 Jensen-Shannon 散度轻松推广到两个以上的分布:</p>
+<div class="math notranslate nohighlight">
+\[
+JS_\alpha(f_1, \ldots, f_n) = 
+H\left(\sum_{i=1}^n \alpha_i f_i\right) - \sum_{i=1}^n \alpha_i H(f_i)
+\]</div>
+<p>其中:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\alpha_i \geq 0\)</span> 且 <span class="math notranslate nohighlight">\(\sum_{i=1}^n \alpha_i = 1\)</span>，以及</p></li>
+<li><p><span class="math notranslate nohighlight">\(H(f) = -\int f(x) \log f(x) dx\)</span> 是分布 <span class="math notranslate nohighlight">\(f\)</span> 的<strong>香农熵</strong></p></li>
+</ul>
+</section>
+<section id="chernoff">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink"><span class="section-number">21.6. </span>Chernoff 熵</a><a class="headerlink" href="#chernoff" title="Link to this heading">#</a></h2>
+<p>Chernoff 熵源自<a class="reference external" href="https://en.wikipedia.org/wiki/Large_deviations_theory">大偏差理论</a>的早期应用，该理论通过提供罕见事件的指数衰减率来改进中心极限近似。</p>
+<p>对于密度函数 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span>，Chernoff 熵为</p>
+<div class="math notranslate nohighlight">
+\[
+C(f,g) = - \log \min_{\phi \in (0,1)} \int f^{\phi}(x) g^{1-\phi}(x) \, dx.
+\]</div>
+<p>注释：</p>
+<ul class="simple">
+<li><p>内部积分是 <strong>Chernoff 系数</strong>。</p></li>
+<li><p>当 <span class="math notranslate nohighlight">\(\phi=1/2\)</span> 时，它变成 <strong>Bhattacharyya 系数</strong> <span class="math notranslate nohighlight">\(\int \sqrt{f g}\)</span>。</p></li>
+<li><p>在具有 <span class="math notranslate nohighlight">\(T\)</span> 个独立同分布观测的二元假设检验中，最优错误概率以 <span class="math notranslate nohighlight">\(e^{-C(f,g) T}\)</span> 的速率衰减。</p></li>
+</ul>
+<p>我们将在 <a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a> 讲座中看到第三点的一个例子，
+我们将在模型选择的背景下研究 Chernoff 熵。</p>
+<p>让我们计算示例分布 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 之间的 Chernoff 熵。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">chernoff_integrand</span><span class="p">(</span><span class="n">ϕ</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算给定 ϕ 的 Chernoff 熵中的积分。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">integrand</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="o">**</span><span class="n">ϕ</span> <span class="o">*</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">ϕ</span><span class="p">)</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="mf">1e-5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_chernoff_entropy</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算 Chernoff 熵 C(f,g)。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">ϕ</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">chernoff_integrand</span><span class="p">(</span><span class="n">ϕ</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="mf">1e-5</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bounded&#39;</span><span class="p">)</span>
+    <span class="n">min_value</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">fun</span>
+    <span class="n">ϕ_optimal</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">chernoff_entropy</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">min_value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">chernoff_entropy</span><span class="p">,</span> <span class="n">ϕ_optimal</span>
+
+<span class="n">C_fg</span><span class="p">,</span> <span class="n">ϕ_optimal</span> <span class="o">=</span> <span class="n">compute_chernoff_entropy</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Chernoff 熵 C(f,g) = </span><span class="si">{</span><span class="n">C_fg</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;最优 ϕ = </span><span class="si">{</span><span class="n">ϕ_optimal</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Chernoff 熵 C(f,g) = 0.1212
+最优 ϕ = 0.5969
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink"><span class="section-number">21.7. </span>比较散度度量</a><a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>我们现在比较几对Beta分布之间的这些度量</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">distribution_pairs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># (f_params, g_params)</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="p">]</span>
+
+<span class="c1"># 创建比较表</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">((</span><span class="n">f_a</span><span class="p">,</span> <span class="n">f_b</span><span class="p">),</span> <span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">))</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">distribution_pairs</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">f_a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">f_b</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">g_a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">g_b</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+    <span class="n">kl_fg</span> <span class="o">=</span> <span class="n">compute_KL</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">kl_gf</span> <span class="o">=</span> <span class="n">compute_KL</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="n">js_div</span> <span class="o">=</span> <span class="n">compute_JS</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">chernoff_ent</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_chernoff_entropy</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s1">&#39;Pair (f, g)&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">text</span><span class="se">{{</span><span class="s2">Beta</span><span class="se">}}</span><span class="s2">(</span><span class="si">{</span><span class="n">f_a</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">f_b</span><span class="si">}</span><span class="s2">), </span><span class="se">\\</span><span class="s2">text</span><span class="se">{{</span><span class="s2">Beta</span><span class="se">}}</span><span class="s2">(</span><span class="si">{</span><span class="n">g_a</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">g_b</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;KL(f, g)&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kl_fg</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;KL(g, f)&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kl_gf</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;JS&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">js_div</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chernoff_ent</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">})</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="c1"># 按JS散度排序</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;JS_numeric&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;JS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;JS_numeric&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;JS_numeric&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">columns</span> <span class="o">=</span> <span class="s1">&#39; &amp; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">text</span><span class="se">{{</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="se">}}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="s1">&#39; </span><span class="se">\\\\\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="p">[</span><span class="s1">&#39; &amp; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> 
+     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">values</span><span class="p">])</span>
+
+<span class="n">latex_code</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">\begin</span><span class="se">{{</span><span class="s2">array</span><span class="se">}}{{</span><span class="s2">lcccc</span><span class="se">}}</span>
+<span class="si">{</span><span class="n">columns</span><span class="si">}</span><span class="s2"> \\</span>
+<span class="s2">\hline</span>
+<span class="si">{</span><span class="n">rows</span><span class="si">}</span>
+<span class="s2">\end</span><span class="se">{{</span><span class="s2">array</span><span class="se">}}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">display</span><span class="p">(</span><span class="n">Math</span><span class="p">(</span><span class="n">latex_code</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\begin{split}\displaystyle 
+\begin{array}{lcccc}
+\text{Pair (f, g)} &amp; \text{KL(f, g)} &amp; \text{KL(g, f)} &amp; \text{JS} &amp; \text{C} \\
+\hline
+\text{Beta}(1,1), \text{Beta}(1.1,1.05) &amp; 0.0028 &amp; 0.0026 &amp; 0.0007 &amp; 0.0007 \\
+\text{Beta}(1,1), \text{Beta}(1.2,1.1) &amp; 0.0105 &amp; 0.0092 &amp; 0.0024 &amp; 0.0025 \\
+\text{Beta}(1,1), \text{Beta}(0.9,0.8) &amp; 0.0143 &amp; 0.0166 &amp; 0.0038 &amp; 0.0039 \\
+\text{Beta}(1,1), \text{Beta}(1.5,1.2) &amp; 0.0589 &amp; 0.0437 &amp; 0.0121 &amp; 0.0126 \\
+\text{Beta}(1,1), \text{Beta}(0.7,0.6) &amp; 0.0673 &amp; 0.0924 &amp; 0.0186 &amp; 0.0201 \\
+\text{Beta}(1,1), \text{Beta}(2,1.5) &amp; 0.1781 &amp; 0.1081 &amp; 0.0309 &amp; 0.0339 \\
+\text{Beta}(1,1), \text{Beta}(0.5,0.5) &amp; 0.1448 &amp; 0.2190 &amp; 0.0400 &amp; 0.0461 \\
+\text{Beta}(1,1), \text{Beta}(2.5,1.8) &amp; 0.3323 &amp; 0.1731 &amp; 0.0502 &amp; 0.0577 \\
+\text{Beta}(1,1), \text{Beta}(0.3,0.4) &amp; 0.3317 &amp; 0.5572 &amp; 0.0869 &amp; 0.1203 \\
+\text{Beta}(1,1), \text{Beta}(3,1.2) &amp; 0.7590 &amp; 0.3436 &amp; 0.0984 &amp; 0.1212 \\
+\text{Beta}(1,1), \text{Beta}(0.3,0.3) &amp; 0.3935 &amp; 0.6516 &amp; 0.1008 &amp; 0.1456 \\
+\text{Beta}(1,1), \text{Beta}(4,1) &amp; 1.6134 &amp; 0.6362 &amp; 0.1733 &amp; 0.2341 \\
+\text{Beta}(1,1), \text{Beta}(0.1,0.2) &amp; 0.9811 &amp; 1.0036 &amp; 0.1783 &amp; 0.4556 \\
+\text{Beta}(1,1), \text{Beta}(5,1) &amp; 2.3901 &amp; 0.8094 &amp; 0.2162 &amp; 0.3128
+\end{array}
+\end{split}\]</div>
+</div>
+</div>
+<p>当我们改变Beta分布的参数时，我们可以清楚地看到各种散度测度之间的协同变化。</p>
+<p>接下来我们可视化KL散度、JS散度和切尔诺夫熵之间的关系。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">kl_fg_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;KL(f, g)&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+<span class="n">js_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;JS&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+<span class="n">chernoff_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">kl_fg_values</span><span class="p">,</span> <span class="n">js_values</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;KL散度 KL(f, g)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;JS散度&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;JS散度与KL散度的关系&#39;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">js_values</span><span class="p">,</span> <span class="n">chernoff_values</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;JS散度&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;切尔诺夫熵&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;切尔诺夫熵与JS散度的关系&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 25955 (\N{CJK UNIFIED IDEOGRAPH-6563}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 19982 (\N{CJK UNIFIED IDEOGRAPH-4E0E}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 30340 (\N{CJK UNIFIED IDEOGRAPH-7684}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 20851 (\N{CJK UNIFIED IDEOGRAPH-5173}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 31995 (\N{CJK UNIFIED IDEOGRAPH-7CFB}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 20999 (\N{CJK UNIFIED IDEOGRAPH-5207}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 23572 (\N{CJK UNIFIED IDEOGRAPH-5C14}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 35834 (\N{CJK UNIFIED IDEOGRAPH-8BFA}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 22827 (\N{CJK UNIFIED IDEOGRAPH-592B}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/105462246.py:17: UserWarning: Glyph 29109 (\N{CJK UNIFIED IDEOGRAPH-71B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 25955 (\N{CJK UNIFIED IDEOGRAPH-6563}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 19982 (\N{CJK UNIFIED IDEOGRAPH-4E0E}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 30340 (\N{CJK UNIFIED IDEOGRAPH-7684}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20851 (\N{CJK UNIFIED IDEOGRAPH-5173}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 31995 (\N{CJK UNIFIED IDEOGRAPH-7CFB}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 20999 (\N{CJK UNIFIED IDEOGRAPH-5207}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 23572 (\N{CJK UNIFIED IDEOGRAPH-5C14}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 35834 (\N{CJK UNIFIED IDEOGRAPH-8BFA}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 22827 (\N{CJK UNIFIED IDEOGRAPH-592B}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 29109 (\N{CJK UNIFIED IDEOGRAPH-71B5}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+</pre></div>
+</div>
+<img alt="_images/a7ebfe205ee6543d1eb9e1ac36252167837fb7f2e90b73165ddbc027ff0efb4d.png" src="_images/a7ebfe205ee6543d1eb9e1ac36252167837fb7f2e90b73165ddbc027ff0efb4d.png" />
+</div>
+</div>
+<p>现在我们生成图表来直观展示随着差异度量的增加，重叠程度如何减少。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">param_grid</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>   
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>  
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)),</span>  
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)),</span>
+    <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_dist_diff</span><span class="p">(</span><span class="n">para_grid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;绘制选定Beta分布对的重叠图。&quot;&quot;&quot;</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+    <span class="n">divergence_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">((</span><span class="n">f_a</span><span class="p">,</span> <span class="n">f_b</span><span class="p">),</span> <span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">))</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">param_grid</span><span class="p">):</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">f_a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">f_b</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">g_a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">g_b</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="n">kl_fg</span> <span class="o">=</span> <span class="n">compute_KL</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+        <span class="n">js_div</span> <span class="o">=</span> <span class="n">compute_JS</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+        <span class="n">chernoff_ent</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_chernoff_entropy</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+        <span class="n">divergence_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s1">&#39;f_params&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">f_a</span><span class="p">,</span> <span class="n">f_b</span><span class="p">),</span>
+            <span class="s1">&#39;g_params&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">),</span>
+            <span class="s1">&#39;kl_fg&#39;</span><span class="p">:</span> <span class="n">kl_fg</span><span class="p">,</span>
+            <span class="s1">&#39;js_div&#39;</span><span class="p">:</span> <span class="n">js_div</span><span class="p">,</span>
+            <span class="s1">&#39;chernoff&#39;</span><span class="p">:</span> <span class="n">chernoff_ent</span>
+        <span class="p">})</span>
+        <span class="n">x_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">f_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_range</span><span class="p">]</span>
+        <span class="n">g_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_range</span><span class="p">]</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">f_vals</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> 
+                        <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;f ~ Beta(</span><span class="si">{</span><span class="n">f_a</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">f_b</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">g_vals</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> 
+                        <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;g ~ Beta(</span><span class="si">{</span><span class="n">g_a</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">g_b</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="n">overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="n">g_vals</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> 
+                        <span class="n">overlap</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;重叠&#39;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;KL(f,g)=</span><span class="si">{</span><span class="n">kl_fg</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">, JS=</span><span class="si">{</span><span class="n">js_div</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">, C=</span><span class="si">{</span><span class="n">chernoff_ent</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> 
+            <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">divergence_data</span>
+
+<span class="n">divergence_data</span> <span class="o">=</span> <span class="n">plot_dist_diff</span><span class="p">(</span><span class="n">param_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9279/3821519245.py:34: UserWarning: Glyph 37325 (\N{CJK UNIFIED IDEOGRAPH-91CD}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/tmp/ipykernel_9279/3821519245.py:34: UserWarning: Glyph 21472 (\N{CJK UNIFIED IDEOGRAPH-53E0}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 37325 (\N{CJK UNIFIED IDEOGRAPH-91CD}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 21472 (\N{CJK UNIFIED IDEOGRAPH-53E0}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+</pre></div>
+</div>
+<img alt="_images/77dad5bfbb846e0dec630e321e4806788ca8c9ff431ee7f6c2e37449ee56bf54.png" src="_images/77dad5bfbb846e0dec630e321e4806788ca8c9ff431ee7f6c2e37449ee56bf54.png" />
+</div>
+</div>
+</section>
+<section id="id7">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink"><span class="section-number">21.8. </span>KL散度和最大似然估计</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>给定n个观测样本 <span class="math notranslate nohighlight">\(X = \{x_1, x_2, \ldots, x_n\}\)</span>，<strong>经验分布</strong>为</p>
+<div class="math notranslate nohighlight">
+\[p_e(x) = \frac{1}{n} \sum_{i=1}^n \delta(x - x_i)\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\delta(x - x_i)\)</span> 是中心在 <span class="math notranslate nohighlight">\(x_i\)</span> 的狄拉克德尔塔函数：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\delta(x - x_i) = \begin{cases}
++\infty &amp; \text{如果 } x = x_i \\
+0 &amp; \text{如果 } x \neq x_i
+\end{cases}
+\end{split}\]</div>
+<ul class="simple">
+<li><p><strong>离散概率测度</strong>：对每个观测数据点赋予概率 <span class="math notranslate nohighlight">\(\frac{1}{n}\)</span></p></li>
+<li><p><strong>经验期望</strong>：<span class="math notranslate nohighlight">\(\langle X \rangle_{p_e} = \frac{1}{n} \sum_{i=1}^n x_i = \bar{\mu}\)</span></p></li>
+<li><p><strong>支撑集</strong>：仅在观测数据点 <span class="math notranslate nohighlight">\(\{x_1, x_2, \ldots, x_n\}\)</span> 上</p></li>
+</ul>
+<p>从经验分布 <span class="math notranslate nohighlight">\(p_e\)</span> 到参数模型 <span class="math notranslate nohighlight">\(p_\theta(x)\)</span> 的KL散度为：</p>
+<div class="math notranslate nohighlight">
+\[D_{KL}(p_e \parallel p_\theta) = \int p_e(x) \log \frac{p_e(x)}{p_\theta(x)} dx\]</div>
+<p>利用狄拉克德尔塔函数的数学性质，可得</p>
+<div class="math notranslate nohighlight">
+\[D_{KL}(p_e \parallel p_\theta) = \sum_{i=1}^n \frac{1}{n} \log \frac{\left(\frac{1}{n}\right)}{p_\theta(x_i)}\]</div>
+<div class="math notranslate nohighlight">
+\[= \frac{1}{n} \sum_{i=1}^n \log \frac{1}{n} - \frac{1}{n} \sum_{i=1}^n \log p_\theta(x_i)\]</div>
+<div class="math notranslate nohighlight">
+\[= -\log n - \frac{1}{n} \sum_{i=1}^n \log p_\theta(x_i)\]</div>
+<p>由于参数 <span class="math notranslate nohighlight">\(\theta\)</span> 的对数似然函数为：</p>
+<div class="math notranslate nohighlight">
+\[
+\ell(\theta; X) = \sum_{i=1}^n \log p_\theta(x_i) ,
+\]</div>
+<p>因此最大似然选择参数以最小化</p>
+<div class="math notranslate nohighlight">
+\[ D_{KL}(p_e \parallel p_\theta) \]</div>
+<p>因此，MLE等价于最小化从经验分布到统计模型<span class="math notranslate nohighlight">\(p_\theta\)</span>的KL散度。</p>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink"><span class="section-number">21.9. </span>相关讲座</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>本讲座介绍了我们将在其他地方遇到的工具。</p>
+<ul class="simple">
+<li><p>其他应用散度度量与统计推断之间联系的quantecon讲座包括<a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a>、<a class="reference internal" href="wald_friedman.html"><span class="doc">让弥尔顿·弗里德曼困惑的问题</span></a>和<a class="reference internal" href="mix_model.html"><span class="doc">错误模型</span></a>。</p></li>
+<li><p>在研究Lawrence Blume和David Easley的异质信念和金融市场模型的<a class="reference internal" href="likelihood_ratio_process_2.html"><span class="doc">异质信念与金融市场</span></a>中，统计散度函数也占据核心地位。</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础工具
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  统计与信息论
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   30. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   31. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   32. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   33. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   34. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   35. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   36. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   37. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   38. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   39. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   40. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   41. 卡尔曼滤波器进阶
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   42. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   43. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   44. 工作搜寻 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   45. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   46. 工作搜寻 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   47. 工作搜寻 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   48. 工作搜寻 VII：McCall劳动者的Q学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 工作搜寻 VII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   50. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   51. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   52. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   53. 带扭曲性税收的双国模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   54. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   55. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   56. 吃蛋糕问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   57. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   58. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   59. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   60. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   61. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   62. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   63. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   64. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   65. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   66. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   67. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   68. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   69. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   70. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   71. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   72. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   73. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   74. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   75. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   76. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   77. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   78. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   79. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   80. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   81. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   82. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   83. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   84. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   85. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   86. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/divergence_measures.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/divergence_measures.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/divergence_measures.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/divergence_measures.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/divergence_measures.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "divergence_measures";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/divergence_measures.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

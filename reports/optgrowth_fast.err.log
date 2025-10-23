@@ -1,0 +1,96 @@
+Traceback (most recent call last):
+  File "/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+    ~~~~~~~~~^
+        nb,
+        ^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/nbclient/client.py", line 1319, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/runner/miniconda3/envs/quantecon/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+        cell, index, execution_count=self.code_cells_executed + 1
+    )
+  File "/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+from numba import float64
+from numba.experimental import jitclass
+
+opt_growth_data = [
+    ('α', float64),          # 生产参数
+    ('β', float64),          # 折现因子
+    ('μ', float64),          # 冲击的均值参数
+    ('s', float64),          # 冲击的尺度参数
+    ('grid', float64[:]),    # 网格（数组）
+    ('shocks', float64[:])   # 冲击样本（数组）
+]
+
+@jitclass(opt_growth_data)
+class OptimalGrowthModel:
+
+    def __init__(self,
+                α=0.4,
+                β=0.96,
+                μ=0,
+                s=0.1,
+                grid_max=4,
+                grid_size=120,
+                shock_size=250,
+                seed=1234):
+
+        self.α, self.β, self.μ, self.s = α, β, μ, s
+
+         # 设置网格
+        self.grid = np.linspace(1e-5, grid_max, grid_size)
+
+        # 存储冲击（设置随机种子以确保结果可重复）
+        np.random.seed(seed)
+        self.shocks = np.exp(μ + s * np.random.randn(shock_size))
+
+
+    def f(self, k):
+       "生产函数"
+        return k**self.α
+
+
+    def u(self, c):
+        "效用函数"
+        return np.log(c)
+
+    def f_prime(self, k):
+        "生产函数的一阶导数"
+        return self.α * (k**(self.α - 1))
+
+
+    def u_prime(self, c):
+        "效用函数的一阶导数"
+        return 1/c
+
+    def u_prime_inv(self, c):
+        "效用函数一阶导数的反函数"
+        return 1/c
+
+------------------
+
+
+[0;36m  Cell [0;32mIn[4], line 38[0;36m[0m
+[0;31m    return k**self.α[0m
+[0m    ^[0m
+[0;31mIndentationError[0m[0;31m:[0m unexpected indent
+
+

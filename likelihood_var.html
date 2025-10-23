@@ -1,0 +1,1813 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>24. VAR模型的似然过程 &#8212; Python中级数量经济学</title>
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=3bd9fcddbe64f63e07c8604843d1cc622a07b430" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=b4b7a797" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=30f7c850c5b005eca2ad6e48893cd350a6c6c4c2"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'likelihood_var';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/likelihood_var.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="25. 似然比过程的均值" href="imp_sample.html" />
+    <link rel="prev" title="23. 异质信念与金融市场" href="likelihood_ratio_process_2.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="VAR模型的似然过程"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="VAR模型的似然过程" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/likelihood_var.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=likelihood_var>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">24.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">24.2. VAR模型设置</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">24.2.1. 联合分布</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">24.2.2. 条件密度</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">24.3. 似然比过程</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ar-1">24.4. 示例1：两个AR(1)过程</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">24.5. 示例2：二元VAR模型</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">24.6. 应用：萨缪尔森乘数-加速器模型</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/en/stable/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                        <p class="qe-page__header-subheading">VAR模型的似然过程</p>
+
+                    </div>
+                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="var">
+<h1><a class="toc-backref" href="#id9" role="doc-backlink"><span class="section-number">24. </span>VAR模型的似然过程</a><a class="headerlink" href="#var" title="Link to this heading">#</a></h1>
+<nav class="contents" id="id1">
+<p class="topic-title">目录</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#var" id="id9">VAR模型的似然过程</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id10">概述</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id11">VAR模型设置</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id12">似然比过程</a></p></li>
+<li><p><a class="reference internal" href="#ar-1" id="id13">示例1：两个AR(1)过程</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id14">示例2：二元VAR模型</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id15">应用：萨缪尔森乘数-加速器模型</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="id2">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink"><span class="section-number">24.1. </span>概述</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>本讲座将我们对似然比过程的分析扩展到向量自回归(VAR)模型。</p>
+<p>我们将：</p>
+<ul class="simple">
+<li><p>构建VAR模型的似然函数</p></li>
+<li><p>形成用于比较两个VAR模型的似然比过程</p></li>
+<li><p>可视化似然比随时间的演变</p></li>
+<li><p>将VAR似然比与萨缪尔森乘数-加速器模型联系起来</p></li>
+</ul>
+<p>我们的分析建立在以下概念之上：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a></p></li>
+<li><p><a class="reference internal" href="linear_models.html"><span class="doc">线性状态空间模型</span></a></p></li>
+<li><p><a class="reference internal" href="samuelson.html"><span class="doc">萨缪尔森乘数-加速器模型</span></a></p></li>
+</ul>
+<p>让我们首先导入有用的库：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">multivariate_normal</span> <span class="k">as</span> <span class="n">mvn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quantecon</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearStateSpace</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">quantecon</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
+
+<span class="ne">NameError</span>: name &#39;mpl&#39; is not defined
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink"><span class="section-number">24.2. </span>VAR模型设置</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>考虑以下形式的VAR模型：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned} 
+x_{t+1} &amp; = A x_t + C w_{t+1} \\
+x_0 &amp; \sim \mathcal{N}(\mu_0, \Sigma_0) 
+\end{aligned}
+\end{split}\]</div>
+<p>其中：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(x_t\)</span> 是一个 <span class="math notranslate nohighlight">\(n \times 1\)</span> 状态向量</p></li>
+<li><p><span class="math notranslate nohighlight">\(w_{t+1} \sim \mathcal{N}(0, I)\)</span> 是一个 <span class="math notranslate nohighlight">\(m \times 1\)</span> 的冲击向量</p></li>
+<li><p><span class="math notranslate nohighlight">\(A\)</span> 是一个 <span class="math notranslate nohighlight">\(n \times n\)</span> 转移矩阵</p></li>
+<li><p><span class="math notranslate nohighlight">\(C\)</span> 是一个 <span class="math notranslate nohighlight">\(n \times m\)</span> 波动率矩阵</p></li>
+</ul>
+<p>让我们为VAR模型定义必要的数据结构</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">VARModel</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;VARModel&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;μ_0&#39;</span><span class="p">,</span> <span class="s1">&#39;Σ_0&#39;</span><span class="p">,</span>        
+                                    <span class="s1">&#39;CC&#39;</span><span class="p">,</span> <span class="s1">&#39;CC_inv&#39;</span><span class="p">,</span> <span class="s1">&#39;log_det_CC&#39;</span><span class="p">,</span> 
+                                    <span class="s1">&#39;Σ_0_inv&#39;</span><span class="p">,</span> <span class="s1">&#39;log_det_Σ_0&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_stationary_var</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算VAR模型的平稳均值和协方差</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># 检查稳定性</span>
+    <span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;VAR不是平稳的&quot;</span><span class="p">)</span>
+    
+    <span class="n">μ_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    
+    <span class="c1"># 平稳协方差：求解离散Lyapunov方程</span>
+    <span class="c1"># Σ_0 = A @ Σ_0 @ A.T + C @ C.T</span>
+    <span class="n">CC</span> <span class="o">=</span> <span class="n">C</span> <span class="o">@</span> <span class="n">C</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">Σ_0</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">solve_discrete_lyapunov</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">CC</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">μ_0</span><span class="p">,</span> <span class="n">Σ_0</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_var_model</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">μ_0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Σ_0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stationary</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    创建带有参数和预计算矩阵的VAR模型</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">CC</span> <span class="o">=</span> <span class="n">C</span> <span class="o">@</span> <span class="n">C</span><span class="o">.</span><span class="n">T</span>
+    
+    <span class="k">if</span> <span class="n">stationary</span><span class="p">:</span>
+        <span class="n">μ_0_comp</span><span class="p">,</span> <span class="n">Σ_0_comp</span> <span class="o">=</span> <span class="n">compute_stationary_var</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">μ_0_comp</span> <span class="o">=</span> <span class="n">μ_0</span> <span class="k">if</span> <span class="n">μ_0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">Σ_0_comp</span> <span class="o">=</span> <span class="n">Σ_0</span> <span class="k">if</span> <span class="n">Σ_0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    
+    <span class="c1"># 检查CC是否奇异</span>
+    <span class="n">det_CC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">CC</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">det_CC</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">:</span>
+        <span class="c1"># 对奇异情况使用伪逆</span>
+        <span class="n">CC_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">CC</span><span class="p">)</span>
+        <span class="n">CC_reg</span> <span class="o">=</span> <span class="n">CC</span> <span class="o">+</span> <span class="mf">1e-10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">CC</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">log_det_CC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">CC_reg</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">CC_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">CC</span><span class="p">)</span>
+        <span class="n">log_det_CC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">det_CC</span><span class="p">)</span>
+    
+    <span class="c1"># 对Σ_0进行相同的检查</span>
+    <span class="n">det_Σ_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">Σ_0_comp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">det_Σ_0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">:</span>
+        <span class="n">Σ_0_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">Σ_0_comp</span><span class="p">)</span>
+        <span class="n">Σ_0_reg</span> <span class="o">=</span> <span class="n">Σ_0_comp</span> <span class="o">+</span> <span class="mf">1e-10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">Σ_0_comp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">log_det_Σ_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">Σ_0_reg</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Σ_0_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Σ_0_comp</span><span class="p">)</span>
+        <span class="n">log_det_Σ_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">det_Σ_0</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">VARModel</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">μ_0</span><span class="o">=</span><span class="n">μ_0_comp</span><span class="p">,</span> <span class="n">Σ_0</span><span class="o">=</span><span class="n">Σ_0_comp</span><span class="p">,</span>
+                    <span class="n">CC</span><span class="o">=</span><span class="n">CC</span><span class="p">,</span> <span class="n">CC_inv</span><span class="o">=</span><span class="n">CC_inv</span><span class="p">,</span> <span class="n">log_det_CC</span><span class="o">=</span><span class="n">log_det_CC</span><span class="p">,</span>
+                    <span class="n">Σ_0_inv</span><span class="o">=</span><span class="n">Σ_0_inv</span><span class="p">,</span> <span class="n">log_det_Σ_0</span><span class="o">=</span><span class="n">log_det_Σ_0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id4">
+<h3><span class="section-number">24.2.1. </span>联合分布<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<p>联合概率分布 <span class="math notranslate nohighlight">\(f(x_T, x_{T-1}, \ldots, x_0)\)</span> 可以分解为：</p>
+<div class="math notranslate nohighlight">
+\[
+f(x_T, \ldots, x_0) = f(x_T | x_{T-1}) f(x_{T-1} | x_{T-2}) \cdots f(x_1 | x_0) f(x_0)
+\]</div>
+<p>由于VAR是马尔可夫的，<span class="math notranslate nohighlight">\(f(x_{t+1} | x_t, \ldots, x_0) = f(x_{t+1} | x_t)\)</span>。</p>
+</section>
+<section id="id5">
+<h3><span class="section-number">24.2.2. </span>条件密度<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>基于高斯结构，条件分布 <span class="math notranslate nohighlight">\(f(x_{t+1} | x_t)\)</span> 是高斯分布，其：</p>
+<ul class="simple">
+<li><p>均值：<span class="math notranslate nohighlight">\(A x_t\)</span></p></li>
+<li><p>协方差：<span class="math notranslate nohighlight">\(CC'\)</span></p></li>
+</ul>
+<p>对数条件密度为</p>
+<div class="math notranslate nohighlight" id="equation-eq-cond-den">
+<span class="eqno">(24.1)<a class="headerlink" href="#equation-eq-cond-den" title="Link to this equation">#</a></span>\[
+\log f(x_{t+1} | x_t) = -\frac{n}{2} \log(2\pi) - \frac{1}{2} \log \det(CC') - \frac{1}{2} (x_{t+1} - A x_t)' (CC')^{-1} (x_{t+1} - A x_t)
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">log_likelihood_transition</span><span class="p">(</span><span class="n">x_next</span><span class="p">,</span> <span class="n">x_curr</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算从x_curr到x_next的转移对数似然</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x_next</span><span class="p">)</span>
+    <span class="n">x_curr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x_curr</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_next</span><span class="p">)</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">x_next</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">A</span> <span class="o">@</span> <span class="n">x_curr</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">log_det_CC</span> <span class="o">+</span> 
+                  <span class="n">diff</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">CC_inv</span> <span class="o">@</span> <span class="n">diff</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>初始状态的对数密度为：</p>
+<div class="math notranslate nohighlight">
+\[
+\log f(x_0) = -\frac{n}{2} \log(2\pi) - \frac{1}{2} \log \det(\Sigma_0) - \frac{1}{2} (x_0 - \mu_0)' \Sigma_0^{-1} (x_0 - \mu_0)
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">log_likelihood_initial</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算初始状态的对数似然</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x_0</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_0</span><span class="p">)</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">x_0</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">μ_0</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">log_det_Σ_0</span> <span class="o">+</span> 
+                  <span class="n">diff</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">Σ_0_inv</span> <span class="o">@</span> <span class="n">diff</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在让我们把似然计算组合成一个函数，用于计算整个路径的对数似然</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">log_likelihood_path</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算整个路径的对数似然</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">T</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">log_L</span> <span class="o">=</span> <span class="n">log_likelihood_initial</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">model</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">log_L</span> <span class="o">+=</span> <span class="n">log_likelihood_transition</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">model</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">log_L</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_var</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_paths</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    从VAR模型中模拟路径</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N_paths</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_paths</span><span class="p">):</span>
+        <span class="c1"># 生成初始状态</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">mvn</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">μ_0</span><span class="p">,</span> <span class="n">cov</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">Σ_0</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+        
+        <span class="c1"># 向前模拟</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">A</span> <span class="o">@</span> <span class="n">x</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">C</span> <span class="o">@</span> <span class="n">w</span>
+            <span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+            
+    <span class="k">return</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">N_paths</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink"><span class="section-number">24.3. </span>似然比过程</a><a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>现在让我们计算两个VAR模型的似然比过程。</p>
+<p>对于具有状态向量<span class="math notranslate nohighlight">\(x_t\)</span>的VAR模型，在时间<span class="math notranslate nohighlight">\(t\)</span>的对数似然比为</p>
+<div class="math notranslate nohighlight">
+\[
+\ell_t = \log \frac{p_f(x_t | x_{t-1})}{p_g(x_t | x_{t-1})}
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(p_f\)</span>和<span class="math notranslate nohighlight">\(p_g\)</span>分别是模型<span class="math notranslate nohighlight">\(f\)</span>和<span class="math notranslate nohighlight">\(g\)</span>下的条件密度。</p>
+<p>累积对数似然比过程为</p>
+<div class="math notranslate nohighlight">
+\[
+L_t = \sum_{s=1}^{t} \ell_s = \sum_{s=1}^{t} \log \frac{p_f(x_s | x_{s-1})}{p_g(x_s | x_{s-1})}
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(p_f(x_t | x_{t-1})\)</span>和<span class="math notranslate nohighlight">\(p_g(x_t | x_{t-1})\)</span>由<a class="reference internal" href="#equation-eq-cond-den">(24.1)</a>中定义的各自条件密度给出。</p>
+<p>让我们用Python编写这些方程</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_likelihood_ratio_var</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">model_f</span><span class="p">,</span> <span class="n">model_g</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算VAR模型的似然比过程</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">paths</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">paths</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    
+    <span class="n">N_paths</span><span class="p">,</span> <span class="n">T_plus_1</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">paths</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">T_plus_1</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">log_L_ratios</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N_paths</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_paths</span><span class="p">):</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+        <span class="c1"># 初始对数似然比</span>
+        <span class="n">log_L_f_0</span> <span class="o">=</span> <span class="n">log_likelihood_initial</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">model_f</span><span class="p">)</span>
+        <span class="n">log_L_g_0</span> <span class="o">=</span> <span class="n">log_likelihood_initial</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">model_g</span><span class="p">)</span>
+        <span class="n">log_L_ratios</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">log_L_f_0</span> <span class="o">-</span> <span class="n">log_L_g_0</span>
+        
+        <span class="c1"># 递归计算</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">log_L_f_t</span> <span class="o">=</span> <span class="n">log_likelihood_transition</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">model_f</span><span class="p">)</span>
+            <span class="n">log_L_g_t</span> <span class="o">=</span> <span class="n">log_likelihood_transition</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">model_g</span><span class="p">)</span>
+            
+            <span class="c1"># 更新对数似然比</span>
+            <span class="n">log_diff</span> <span class="o">=</span> <span class="n">log_L_f_t</span> <span class="o">-</span> <span class="n">log_L_g_t</span>
+            
+            <span class="n">log_L_prev</span> <span class="o">=</span> <span class="n">log_L_ratios</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">log_L_new</span> <span class="o">=</span> <span class="n">log_L_prev</span> <span class="o">+</span> <span class="n">log_diff</span>
+            <span class="n">log_L_ratios</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">log_L_new</span>
+
+    <span class="k">return</span> <span class="n">log_L_ratios</span> <span class="k">if</span> <span class="n">N_paths</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">log_L_ratios</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="ar-1">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink"><span class="section-number">24.4. </span>示例1：两个AR(1)过程</a><a class="headerlink" href="#ar-1" title="Link to this heading">#</a></h2>
+<p>让我们从一个简单的例子开始，比较两个单变量AR(1)过程，其中<span class="math notranslate nohighlight">\(A_f = 0.8\)</span>，<span class="math notranslate nohighlight">\(A_g = 0.5\)</span>，以及<span class="math notranslate nohighlight">\(C_f = 0.3\)</span>，<span class="math notranslate nohighlight">\(C_g = 0.4\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 模型f：AR(1)，持续性系数 ρ = 0.8</span>
+<span class="n">A_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.8</span><span class="p">]])</span>
+<span class="n">C_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.3</span><span class="p">]])</span>
+
+<span class="c1"># 模型g：AR(1)，持续性系数 ρ = 0.5</span>
+<span class="n">A_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.5</span><span class="p">]])</span>
+<span class="n">C_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.4</span><span class="p">]])</span>
+
+<span class="c1"># 创建VAR模型</span>
+<span class="n">model_f</span> <span class="o">=</span> <span class="n">create_var_model</span><span class="p">(</span><span class="n">A_f</span><span class="p">,</span> <span class="n">C_f</span><span class="p">)</span>
+<span class="n">model_g</span> <span class="o">=</span> <span class="n">create_var_model</span><span class="p">(</span><span class="n">A_g</span><span class="p">,</span> <span class="n">C_g</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们从模型 <span class="math notranslate nohighlight">\(f\)</span> 生成100条长度为200的路径，并计算似然比过程</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 从模型f进行模拟</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">N_paths</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">paths_from_f</span> <span class="o">=</span> <span class="n">simulate_var</span><span class="p">(</span><span class="n">model_f</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)</span>
+
+<span class="n">L_ratios_f</span> <span class="o">=</span> <span class="n">compute_likelihood_ratio_var</span><span class="p">(</span><span class="n">paths_from_f</span><span class="p">,</span> <span class="n">model_f</span><span class="p">,</span> <span class="n">model_g</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L_ratios_f</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log L_t$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;对数似然比过程(本质 = f)&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>正如我们预期的那样，似然比过程随着T的增加趋向于<span class="math notranslate nohighlight">\(+\infty\)</span>，表明我们的算法正确选择了模型<span class="math notranslate nohighlight">\(f\)</span>。</p>
+</section>
+<section id="id7">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink"><span class="section-number">24.5. </span>示例2：二元VAR模型</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>现在让我们考虑一个二元VAR模型的例子，其中</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+A_f &amp; = \begin{bmatrix} 0.7 &amp; 0.2 \\ 0.1 &amp; 0.6 \end{bmatrix}, \quad C_f = \begin{bmatrix} 0.3 &amp; 0.1 \\ 0.1 &amp; 0.3 \end{bmatrix} 
+\end{split}\]</div>
+<p>和</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+A_g &amp; = \begin{bmatrix} 0.5 &amp; 0.3 \\ 0.2 &amp; 0.5 \end{bmatrix}, \quad C_g = \begin{bmatrix} 0.4 &amp; 0.0 \\ 0.0 &amp; 0.4 \end{bmatrix}
+\end{split}\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]])</span>
+
+<span class="n">C_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]])</span>
+
+<span class="n">A_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]])</span>
+
+<span class="n">C_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]])</span>
+
+<span class="c1"># 创建VAR模型</span>
+<span class="n">model2_f</span> <span class="o">=</span> <span class="n">create_var_model</span><span class="p">(</span><span class="n">A_f</span><span class="p">,</span> <span class="n">C_f</span><span class="p">)</span>
+<span class="n">model2_g</span> <span class="o">=</span> <span class="n">create_var_model</span><span class="p">(</span><span class="n">A_g</span><span class="p">,</span> <span class="n">C_g</span><span class="p">)</span>
+
+<span class="c1"># 检查平稳性</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;模型f的特征值:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">A_f</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;模型g的特征值:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">A_g</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们从两个模型中各生成50条长度为50的路径，并计算似然比过程</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 从两个模型中模拟</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">N_paths</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="n">paths_from_f</span> <span class="o">=</span> <span class="n">simulate_var</span><span class="p">(</span><span class="n">model2_f</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)</span>
+<span class="n">paths_from_g</span> <span class="o">=</span> <span class="n">simulate_var</span><span class="p">(</span><span class="n">model2_g</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)</span>
+
+<span class="c1"># 计算似然比</span>
+<span class="n">L_ratios_ff</span> <span class="o">=</span> <span class="n">compute_likelihood_ratio_var</span><span class="p">(</span><span class="n">paths_from_f</span><span class="p">,</span> <span class="n">model2_f</span><span class="p">,</span> <span class="n">model2_g</span><span class="p">)</span>
+<span class="n">L_ratios_gf</span> <span class="o">=</span> <span class="n">compute_likelihood_ratio_var</span><span class="p">(</span><span class="n">paths_from_g</span><span class="p">,</span> <span class="n">model2_f</span><span class="p">,</span> <span class="n">model2_g</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们可以看到，对于从模型 <span class="math notranslate nohighlight">\(f\)</span> 生成的路径，似然比过程趋向于 <span class="math notranslate nohighlight">\(+\infty\)</span>，而对于从模型 <span class="math notranslate nohighlight">\(g\)</span> 生成的路径，则趋向于 <span class="math notranslate nohighlight">\(-\infty\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 可视化结果</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L_ratios_ff</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log L_t$ (nature = f)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log L_t$&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L_ratios_gf</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log L_t$ (nature = g)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们应用<a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a>中描述的Neyman-Pearson频率主义决策规则，当<span class="math notranslate nohighlight">\(\log L_T \geq 0\)</span>时选择模型<span class="math notranslate nohighlight">\(f\)</span>，当<span class="math notranslate nohighlight">\(\log L_T &lt; 0\)</span>时选择模型<span class="math notranslate nohighlight">\(g\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">T_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">accuracy_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">T_values</span><span class="p">))</span>
+<span class="n">accuracy_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">T_values</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">T_values</span><span class="p">):</span>
+    <span class="c1"># 当数据来自f时的正确选择</span>
+    <span class="n">accuracy_f</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">L_ratios_ff</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># 当数据来自g时的正确选择</span>
+    <span class="n">accuracy_g</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">L_ratios_gf</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T_values</span><span class="p">,</span> <span class="n">accuracy_f</span><span class="p">,</span> <span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;accuracy (nature = f)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T_values</span><span class="p">,</span> <span class="n">accuracy_g</span><span class="p">,</span> <span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;accuracy (nature = g)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;accuracy&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>显然，随着 <span class="math notranslate nohighlight">\(T\)</span> 的增加，准确率趋近于 <span class="math notranslate nohighlight">\(1\)</span>，而且这个过程非常快。</p>
+<p>让我们也检查一下类型 I 和类型 II 错误作为 <span class="math notranslate nohighlight">\(T\)</span> 的函数的变化</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">model_selection_analysis</span><span class="p">(</span><span class="n">T_values</span><span class="p">,</span> <span class="n">model_f</span><span class="p">,</span> <span class="n">model_g</span><span class="p">,</span> <span class="n">N_sim</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    分析不同样本大小的模型选择性能</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">errors_f</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 类型 I 错误</span>
+    <span class="n">errors_g</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 类型 II 错误</span>
+    
+    <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="n">T_values</span><span class="p">:</span>
+        <span class="c1"># 从模型 f 模拟</span>
+        <span class="n">paths_f</span> <span class="o">=</span> <span class="n">simulate_var</span><span class="p">(</span><span class="n">model_f</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_sim</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">L_ratios_f</span> <span class="o">=</span> <span class="n">compute_likelihood_ratio_var</span><span class="p">(</span><span class="n">paths_f</span><span class="p">,</span> <span class="n">model_f</span><span class="p">,</span> <span class="n">model_g</span><span class="p">)</span>
+        
+        <span class="c1"># 从模型 g 模拟</span>
+        <span class="n">paths_g</span> <span class="o">=</span> <span class="n">simulate_var</span><span class="p">(</span><span class="n">model_g</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_sim</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">L_ratios_g</span> <span class="o">=</span> <span class="n">compute_likelihood_ratio_var</span><span class="p">(</span><span class="n">paths_g</span><span class="p">,</span> <span class="n">model_f</span><span class="p">,</span> <span class="n">model_g</span><span class="p">)</span>
+        
+        <span class="c1"># 决策规则：如果 log L_T &gt;= 0 则选择 f</span>
+        <span class="n">errors_f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">L_ratios_f</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">errors_g</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">L_ratios_g</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">errors_f</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">errors_g</span><span class="p">)</span>
+
+<span class="n">T_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">errors_f</span><span class="p">,</span> <span class="n">errors_g</span> <span class="o">=</span> <span class="n">model_selection_analysis</span><span class="p">(</span><span class="n">T_values</span><span class="p">,</span> <span class="n">model2_f</span><span class="p">,</span> <span class="n">model2_g</span><span class="p">,</span> <span class="n">N_sim</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T_values</span><span class="p">,</span> <span class="n">errors_f</span><span class="p">,</span> <span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;类型 I 错误&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T_values</span><span class="p">,</span> <span class="n">errors_g</span><span class="p">,</span> <span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;类型 II 错误&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T_values</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">errors_f</span> <span class="o">+</span> <span class="n">errors_g</span><span class="p">),</span> <span class="s1">&#39;g--&#39;</span><span class="p">,</span> 
+<span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;平均错误&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$T$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;错误概率&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;模型选择错误&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink"><span class="section-number">24.6. </span>应用：萨缪尔森乘数-加速器模型</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>现在让我们来看萨缪尔森乘数-加速器模型。</p>
+<p>该模型包括：</p>
+<ul class="simple">
+<li><p>消费：<span class="math notranslate nohighlight">\(C_t = \gamma + a Y_{t-1}\)</span> 其中 <span class="math notranslate nohighlight">\(a \in (0,1)\)</span> 是边际消费倾向</p></li>
+<li><p>投资：<span class="math notranslate nohighlight">\(I_t = b(Y_{t-1} - Y_{t-2})\)</span> 其中 <span class="math notranslate nohighlight">\(b &gt; 0\)</span> 是加速系数</p></li>
+<li><p>政府支出：<span class="math notranslate nohighlight">\(G_t = G\)</span> (常数)</p></li>
+</ul>
+<p>我们有国民收入恒等式</p>
+<div class="math notranslate nohighlight">
+\[
+Y_t = C_t + I_t + G_t
+\]</div>
+<p>这些方程得出二阶差分方程：</p>
+<div class="math notranslate nohighlight">
+\[
+Y_t = (\gamma + G) + (a + b)Y_{t-1} - b Y_{t-2} + \sigma \epsilon_t
+\]</div>
+<p>令 <span class="math notranslate nohighlight">\(\rho_1 = a + b\)</span> 且 <span class="math notranslate nohighlight">\(\rho_2 = -b\)</span>，我们得到：</p>
+<div class="math notranslate nohighlight">
+\[
+Y_t = (\gamma + G) + \rho_1 Y_{t-1} + \rho_2 Y_{t-2} + \sigma \epsilon_t
+\]</div>
+<p>为了符合我们的讨论，我们将其写成状态空间表示。</p>
+<p>为了正确处理常数项，我们使用增广状态向量 <span class="math notranslate nohighlight">\(\mathbf{x}_t = [1, Y_t, Y_{t-1}]'\)</span>：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{x}_{t+1} = \begin{bmatrix} 
+1 \\ 
+Y_{t+1} \\ 
+Y_t 
+\end{bmatrix} = \begin{bmatrix} 
+1 &amp; 0 &amp; 0 \\
+\gamma + G &amp; \rho_1 &amp; \rho_2 \\
+0 &amp; 1 &amp; 0 
+\end{bmatrix} \begin{bmatrix} 
+1 \\ 
+Y_t \\ 
+Y_{t-1} 
+\end{bmatrix} + \begin{bmatrix} 
+0 \\ 
+\sigma \\ 
+0 
+\end{bmatrix} \epsilon_{t+1}
+\end{split}\]</div>
+<p>观测方程提取经济变量：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{y}_t = \begin{bmatrix} 
+Y_t \\ 
+C_t \\ 
+I_t 
+\end{bmatrix} = \begin{bmatrix} 
+\gamma + G &amp; \rho_1 &amp; \rho_2 \\
+\gamma &amp; a &amp; 0 \\
+0 &amp; b &amp; -b 
+\end{bmatrix} \begin{bmatrix} 
+1 \\ 
+Y_t \\ 
+Y_{t-1} 
+\end{bmatrix}
+\end{split}\]</div>
+<p>这给出了：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(Y_t = (\gamma + G) \cdot 1 + \rho_1 Y_{t-1} + \rho_2 Y_{t-2}\)</span> (总产出)</p></li>
+<li><p><span class="math notranslate nohighlight">\(C_t = \gamma \cdot 1 + a Y_{t-1}\)</span> (消费)</p></li>
+<li><p><span class="math notranslate nohighlight">\(I_t = b(Y_{t-1} - Y_{t-2})\)</span> (投资)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">samuelson_to_var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">γ</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">σ</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    将萨缪尔森模型参数转换为带扩展状态的VAR形式</span>
+<span class="sd">    </span>
+<span class="sd">    萨缪尔森模型:</span>
+<span class="sd">    - Y_t = C_t + I_t + G</span>
+<span class="sd">    - C_t = γ + a*Y_{t-1}</span>
+<span class="sd">    - I_t = b*(Y_{t-1} - Y_{t-2})</span>
+<span class="sd">    </span>
+<span class="sd">    简化形式: Y_t = (γ+G) + (a+b)*Y_{t-1} - b*Y_{t-2} + σ*ε_t</span>
+<span class="sd">    </span>
+<span class="sd">    状态向量为 [1, Y_t, Y_{t-1}]&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ρ_1</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="n">ρ_2</span> <span class="o">=</span> <span class="o">-</span><span class="n">b</span>
+    
+    <span class="c1"># 扩展状态的状态转移矩阵</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>     <span class="mi">0</span><span class="p">],</span>
+                  <span class="p">[</span><span class="n">γ</span> <span class="o">+</span> <span class="n">G</span><span class="p">,</span>  <span class="n">ρ_1</span><span class="p">,</span>   <span class="n">ρ_2</span><span class="p">],</span>
+                  <span class="p">[</span><span class="mi">0</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>     <span class="mi">0</span><span class="p">]])</span>
+    
+    <span class="c1"># 冲击载荷矩阵</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span>
+                  <span class="p">[</span><span class="n">σ</span><span class="p">],</span>
+                  <span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    
+    <span class="c1"># 观测矩阵(提取Y_t, C_t, I_t)</span>
+    <span class="n">G_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">γ</span> <span class="o">+</span> <span class="n">G</span><span class="p">,</span>  <span class="n">ρ_1</span><span class="p">,</span>  <span class="n">ρ_2</span><span class="p">],</span>   <span class="c1"># Y_t</span>
+                      <span class="p">[</span><span class="n">γ</span><span class="p">,</span>      <span class="n">a</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span>     <span class="c1"># C_t</span>
+                      <span class="p">[</span><span class="mi">0</span><span class="p">,</span>      <span class="n">b</span><span class="p">,</span>   <span class="o">-</span><span class="n">b</span><span class="p">]])</span>    <span class="c1"># I_t</span>
+    
+    <span class="k">return</span> <span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G_obs</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们在下面的代码单元中定义函数来获取初始条件并检查稳定性</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_samuelson_initial_conditions</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">γ</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">y_0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y_m1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                                    <span class="n">stationary_init</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    获取萨缪尔森模型的初始条件</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 计算稳态</span>
+    <span class="n">y_ss</span> <span class="o">=</span> <span class="p">(</span><span class="n">γ</span> <span class="o">+</span> <span class="n">G</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">y_0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">y_0</span> <span class="o">=</span> <span class="n">y_ss</span>
+    <span class="k">if</span> <span class="n">y_m1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">y_m1</span> <span class="o">=</span> <span class="n">y_ss</span> <span class="k">if</span> <span class="n">stationary_init</span> <span class="k">else</span> <span class="n">y_0</span> <span class="o">*</span> <span class="mf">0.95</span>
+    
+    <span class="c1"># 初始均值</span>
+    <span class="n">μ_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">y_m1</span><span class="p">])</span>
+    
+    <span class="k">if</span> <span class="n">stationary_init</span><span class="p">:</span>
+        <span class="n">Σ_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>    <span class="mf">0.5</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="mf">0.5</span><span class="p">,</span>  <span class="mi">1</span><span class="p">]])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Σ_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="mi">25</span><span class="p">,</span>   <span class="mi">15</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="mi">15</span><span class="p">,</span>   <span class="mi">25</span><span class="p">]])</span>
+    
+    <span class="k">return</span> <span class="n">μ_0</span><span class="p">,</span> <span class="n">Σ_0</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">check_samuelson_stability</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    检查萨缪尔森模型的稳定性并返回特征根</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ρ_1</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="n">ρ_2</span> <span class="o">=</span> <span class="o">-</span><span class="n">b</span>
+
+    <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roots</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">ρ_1</span><span class="p">,</span> <span class="o">-</span><span class="n">ρ_2</span><span class="p">])</span>
+    <span class="n">max_abs_root</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">roots</span><span class="p">))</span>
+    <span class="n">is_stable</span> <span class="o">=</span> <span class="n">max_abs_root</span> <span class="o">&lt;</span> <span class="mi">1</span>
+    
+    <span class="c1"># 确定动态类型</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplex</span><span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">max_abs_root</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">dynamics</span> <span class="o">=</span> <span class="s2">&quot;阻尼振荡&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dynamics</span> <span class="o">=</span> <span class="s2">&quot;爆炸性振荡&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">max_abs_root</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">dynamics</span> <span class="o">=</span> <span class="s2">&quot;平滑收敛&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">dynamics</span> <span class="o">=</span> <span class="s2">&quot;爆炸性增长&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dynamics</span> <span class="o">=</span> <span class="s2">&quot;爆炸性振荡(实根)&quot;</span>
+    
+    <span class="k">return</span> <span class="n">is_stable</span><span class="p">,</span> <span class="n">roots</span><span class="p">,</span> <span class="n">max_abs_root</span><span class="p">,</span> <span class="n">dynamics</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<p>让我们实现并检查由两个具有不同参数的萨缪尔森模型产生的似然比过程。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_samuelson_var_model</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">γ</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">stationary_init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                               <span class="n">y_0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y_m1</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    从萨缪尔森参数创建VAR模型</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G_obs</span> <span class="o">=</span> <span class="n">samuelson_to_var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">γ</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">σ</span><span class="p">)</span>
+    
+    <span class="n">μ_0</span><span class="p">,</span> <span class="n">Σ_0</span> <span class="o">=</span> <span class="n">get_samuelson_initial_conditions</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">γ</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">y_m1</span><span class="p">,</span> <span class="n">stationary_init</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># 创建VAR模型</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">create_var_model</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">μ_0</span><span class="p">,</span> <span class="n">Σ_0</span><span class="p">,</span> <span class="n">stationary</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">is_stable</span><span class="p">,</span> <span class="n">roots</span><span class="p">,</span> <span class="n">max_root</span><span class="p">,</span> <span class="n">dynamics</span> <span class="o">=</span> <span class="n">check_samuelson_stability</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span> <span class="s1">&#39;γ&#39;</span><span class="p">:</span> <span class="n">γ</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span> <span class="n">G</span><span class="p">,</span> <span class="s1">&#39;σ&#39;</span><span class="p">:</span> <span class="n">σ</span><span class="p">,</span>
+        <span class="s1">&#39;ρ_1&#39;</span><span class="p">:</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="s1">&#39;ρ_2&#39;</span><span class="p">:</span> <span class="o">-</span><span class="n">b</span><span class="p">,</span>
+        <span class="s1">&#39;steady_state&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">γ</span> <span class="o">+</span> <span class="n">G</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">),</span>
+        <span class="s1">&#39;is_stable&#39;</span><span class="p">:</span> <span class="n">is_stable</span><span class="p">,</span>
+        <span class="s1">&#39;roots&#39;</span><span class="p">:</span> <span class="n">roots</span><span class="p">,</span>
+        <span class="s1">&#39;max_abs_root&#39;</span><span class="p">:</span> <span class="n">max_root</span><span class="p">,</span>
+        <span class="s1">&#39;dynamics&#39;</span><span class="p">:</span> <span class="n">dynamics</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">G_obs</span><span class="p">,</span> <span class="n">info</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_samuelson</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">G_obs</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_paths</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    模拟萨缪尔森模型</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 模拟状态路径</span>
+    <span class="n">states</span> <span class="o">=</span> <span class="n">simulate_var</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)</span>
+    
+    <span class="c1"># 使用G矩阵提取可观测值</span>
+    <span class="k">if</span> <span class="n">N_paths</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># 单一路径: states是(T+1, 3)</span>
+        <span class="n">observables</span> <span class="o">=</span> <span class="p">(</span><span class="n">G_obs</span> <span class="o">@</span> <span class="n">states</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># 多个路径: states是(N_paths, T+1, 3)</span>
+        <span class="n">observables</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N_paths</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_paths</span><span class="p">):</span>
+            <span class="n">observables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">G_obs</span> <span class="o">@</span> <span class="n">states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    
+    <span class="k">return</span> <span class="n">states</span><span class="p">,</span> <span class="n">observables</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在让我们模拟两个具有不同加速系数的萨缪尔森模型并绘制它们的样本路径</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 模型 f: 较高的加速系数</span>
+<span class="n">a_f</span><span class="p">,</span> <span class="n">b_f</span> <span class="o">=</span> <span class="mf">0.98</span><span class="p">,</span> <span class="mf">0.9</span>
+<span class="n">γ_f</span><span class="p">,</span> <span class="n">G_f</span><span class="p">,</span> <span class="n">σ_f</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.5</span>
+
+<span class="c1"># 模型 g: 较低的加速系数</span>
+<span class="n">a_g</span><span class="p">,</span> <span class="n">b_g</span> <span class="o">=</span> <span class="mf">0.98</span><span class="p">,</span> <span class="mf">0.85</span>
+<span class="n">γ_g</span><span class="p">,</span> <span class="n">G_g</span><span class="p">,</span> <span class="n">σ_g</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.5</span>
+
+
+<span class="n">model_sam_f</span><span class="p">,</span> <span class="n">G_obs_f</span><span class="p">,</span> <span class="n">info_f</span> <span class="o">=</span> <span class="n">create_samuelson_var_model</span><span class="p">(</span>
+    <span class="n">a_f</span><span class="p">,</span> <span class="n">b_f</span><span class="p">,</span> <span class="n">γ_f</span><span class="p">,</span> <span class="n">G_f</span><span class="p">,</span> <span class="n">σ_f</span><span class="p">,</span> 
+    <span class="n">stationary_init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+    <span class="n">y_0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">y_m1</span><span class="o">=</span><span class="mi">95</span>
+<span class="p">)</span>
+
+<span class="n">model_sam_g</span><span class="p">,</span> <span class="n">G_obs_g</span><span class="p">,</span> <span class="n">info_g</span> <span class="o">=</span> <span class="n">create_samuelson_var_model</span><span class="p">(</span>
+    <span class="n">a_g</span><span class="p">,</span> <span class="n">b_g</span><span class="p">,</span> <span class="n">γ_g</span><span class="p">,</span> <span class="n">G_g</span><span class="p">,</span> <span class="n">σ_g</span><span class="p">,</span>
+    <span class="n">stationary_init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">y_0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">y_m1</span><span class="o">=</span><span class="mi">95</span>
+<span class="p">)</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">N_paths</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="c1"># 获取状态和观测值</span>
+<span class="n">states_f</span><span class="p">,</span> <span class="n">obs_f</span> <span class="o">=</span> <span class="n">simulate_samuelson</span><span class="p">(</span><span class="n">model_sam_f</span><span class="p">,</span> <span class="n">G_obs_f</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)</span>
+<span class="n">states_g</span><span class="p">,</span> <span class="n">obs_g</span> <span class="o">=</span> <span class="n">simulate_samuelson</span><span class="p">(</span><span class="n">model_sam_g</span><span class="p">,</span> <span class="n">G_obs_g</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)</span>
+
+<span class="n">output_paths_f</span> <span class="o">=</span> <span class="n">obs_f</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> 
+<span class="n">output_paths_g</span> <span class="o">=</span> <span class="n">obs_g</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+    
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;模型 f:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ρ_1 = a + b = </span><span class="si">{</span><span class="n">info_f</span><span class="p">[</span><span class="s1">&#39;ρ_1&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ρ_2 = -b = </span><span class="si">{</span><span class="n">info_f</span><span class="p">[</span><span class="s1">&#39;ρ_2&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  特征根: </span><span class="si">{</span><span class="n">info_f</span><span class="p">[</span><span class="s1">&#39;roots&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  动态特征: </span><span class="si">{</span><span class="n">info_f</span><span class="p">[</span><span class="s1">&#39;dynamics&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">模型 g:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ρ_1 = a + b = </span><span class="si">{</span><span class="n">info_g</span><span class="p">[</span><span class="s1">&#39;ρ_1&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ρ_2 = -b = </span><span class="si">{</span><span class="n">info_g</span><span class="p">[</span><span class="s1">&#39;ρ_2&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  特征根: </span><span class="si">{</span><span class="n">info_g</span><span class="p">[</span><span class="s1">&#39;roots&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  动态特征: </span><span class="si">{</span><span class="n">info_g</span><span class="p">[</span><span class="s1">&#39;dynamics&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">output_paths_f</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">output_paths_g</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$t$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$Y_t$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;模型 f&#39;</span><span class="p">,</span> <span class="s1">&#39;模型 g&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 计算似然比</span>
+<span class="n">L_ratios_ff</span> <span class="o">=</span> <span class="n">compute_likelihood_ratio_var</span><span class="p">(</span><span class="n">states_f</span><span class="p">,</span> <span class="n">model_sam_f</span><span class="p">,</span> <span class="n">model_sam_g</span><span class="p">)</span>
+<span class="n">L_ratios_gf</span> <span class="o">=</span> <span class="n">compute_likelihood_ratio_var</span><span class="p">(</span><span class="n">states_g</span><span class="p">,</span> <span class="n">model_sam_f</span><span class="p">,</span> <span class="n">model_sam_g</span><span class="p">)</span> 
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L_ratios_ff</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log L_t$ (真实模型 = f)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log L_t$&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">N_paths</span><span class="p">)):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L_ratios_gf</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log L_t$ (真实模型 = g)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>在左图中,数据由<span class="math notranslate nohighlight">\(f\)</span>生成,似然比趋向正无穷。</p>
+<p>在右图中,数据由<span class="math notranslate nohighlight">\(g\)</span>生成,似然比趋向负无穷。</p>
+<p>在这两种情况下,为了数值稳定性,我们对对数似然比过程设置了上下限阈值,因为它们会很快增长到无界。</p>
+<p>在这两种情况下,似然比过程最终都能帮助我们选择正确的模型。</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础工具
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  统计与信息论
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   30. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   31. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   32. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   33. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   34. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   35. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   36. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   37. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   38. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   39. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   40. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   41. 卡尔曼滤波器进阶
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   42. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   43. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   44. 工作搜寻 III: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_correlated.html">
+   45. 工作搜寻 IV：相关工资报价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   46. 工作搜寻 V：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   47. 工作搜寻 VI：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   48. 工作搜寻 VII：McCall劳动者的Q学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   49. 工作搜寻 VII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  消费、储蓄与资本
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   50. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   51. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   52. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   53. 带扭曲性税收的双国模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   54. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_problem.html">
+   55. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cake_eating_numerical.html">
+   56. 吃蛋糕问题 II：数值方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth.html">
+   57. 最优增长 I：随机最优增长模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optgrowth_fast.html">
+   58. 最优增长 II：使用Numba加速代码
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coleman_policy_iter.html">
+   59. 最优增长 III：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="egm_policy_iter.html">
+   60. 最优增长 IV：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp.html">
+   61. 收入波动问题 I：基本模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   62. 收入波动问题 II：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   63. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   64. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   65. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   66. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   67. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   68. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   69. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   70. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   71. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   72. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   73. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   74. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   75. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   76. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   77. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   78. 异质信念与泡沫
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   79. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   80. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   81. 最大似然估计
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   82. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   83. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   84. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   85. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   86. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/likelihood_var.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/likelihood_var.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/likelihood_var.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/likelihood_var.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/likelihood_var.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "likelihood_var";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/likelihood_var.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

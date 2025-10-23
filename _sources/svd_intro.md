@@ -11,39 +11,36 @@ kernelspec:
   name: python3
 ---
 
-# 奇异值分解（SVD）
+# 奇异值分解
 
 ## 概述
 
-**奇异值分解**（SVD）是最小二乘投影应用中的重要工具，它构成了许多统计和机器学习方法的基础。
+**奇异值分解**（SVD）是一个强大的数学工具，在数据分析和机器学习中有着广泛的应用。它不仅可以用于最小二乘投影，还是许多统计和机器学习方法的基石。
 
-在定义SVD之后，我们将描述它与以下内容的联系：
+在这一讲中，我们将首先介绍SVD的基本概念，然后探讨它与以下几个重要领域的关系：
 
-* 线性代数中的**四个基本空间**
-* 欠定和超定的**最小二乘回归**
+* 线性代数中的**四个基本子空间**
+* **最小二乘回归**（包括欠定和超定情况）
 * **主成分分析**（PCA）
 
-与主成分分析（PCA）类似，DMD可以被视为一种数据降维程序，通过将数据投影到有限的因子集上来表示显著的模式。
 
-在这个关于{doc}`动态模式分解<var_dmd>`的后续讲座中，我们将描述如何使用SVD快速计算一阶向量自回归（VARs）的降阶近似。
+在后续的{doc}`动态模式分解<var_dmd>`讲座中，我们会看到如何利用SVD来高效地计算向量自回归（VAR）模型的简化形式。
 
 ## 基本设定
 
-设$X$是一个秩为$p$的$m \times n$矩阵。
+假设我们有一个$m \times n$的矩阵$X$，其秩为$p$。
 
-必然地，$p \leq \min(m,n)$。
+显然，$p$不会超过$m$和$n$的较小值，即$p \leq \min(m,n)$。
 
-在本讲座的大部分内容中，我们将把$X$视为一个**数据**矩阵，其中：
+在实际应用中，$X$通常代表一个**数据矩阵**：
 
-* 每一列是一个**个体**——根据应用场景可以是时间段或个人
-
-* 每一行是一个**随机变量**，描述时间段或个人的某个属性，具体取决于应用场景
+* 每一列代表一个**观测单位**（可以是某个时间点的数据，或是某个个体的信息）
+* 每一行代表一个**变量**（用来描述观测单位的某个特征或属性）
 
 
 我们将关注两种情况：
 
 * **矮胖**情况，即$m << n$，表示列数（个体）远多于行数（属性）。
-
 * **高瘦**情况，即$m >> n$，表示行数（属性）远多于列数（个体）。
 
 
@@ -55,7 +52,7 @@ kernelspec:
 
 在 $m >> n$ 的情况下，即属性数量 $m$ 远大于个体数量 $n$，且在时间序列环境中 $n$ 等于数据集 $X$ 中所覆盖的时间段数量时，我们将采用不同的方法。
 
-我们将再次使用**奇异值分解**，但这次是用来构建**动态模态分解**(DMD)。
+在这种情况下，我们仍然使用奇异值分解，但目的是构建动态模态分解(DMD)。
 
 ## 奇异值分解
 
@@ -70,7 +67,6 @@ $$ (eq:SVD101)
 $$
 \begin{aligned}
 UU^\top  &  = I  &  \quad U^\top  U = I \cr
-
 VV^\top  & = I & \quad V^\top  V = I
 \end{aligned}
 $$
@@ -176,7 +172,6 @@ $$ (eq:Xfour1a)
 
 $$
 \begin{aligned}
-
 X v_i & = \sigma_i u_i , \quad i = 1, \ldots, p \cr
 X v_i & = 0 ,  \quad i = p+1, \ldots, n
 \end{aligned}
@@ -237,7 +232,6 @@ $$
 {\mathcal N}(X^\top ) & = {\mathcal C}(U_R) \cr
 {\mathcal R}(X) & \equiv  {\mathcal C}(X^\top ) = {\mathcal C} (V_L) \cr
 {\mathcal N}(X) & = {\mathcal C} (V_R) \cr
-
 \end{aligned}
 $$ (eq:fourspaceSVD)
 
@@ -340,7 +334,7 @@ $$ (eq:Ekart)
 
 在介绍主成分分析时，我们会对此进行更详细的讨论。
 
-你可以在[这里](https://en.wikipedia.org/wiki/Low-rank_approximation)阅读关于Eckart-Young定理及其应用的内容。
+你可以在[这里](https://zhuanlan.zhihu.com/p/606447321)阅读关于Eckart-Young定理及其应用的内容。
 
 在讨论主成分分析(PCA)和动态模态分解(DMD)时，我们将会用到这个定理。
 
@@ -414,8 +408,8 @@ $$
 ```{code-cell} ipython3
 import numpy as np
 X = np.random.rand(5,2)
-U, S, V = np.linalg.svd(X,full_matrices=True)  # 完全SVD
-Uhat, Shat, Vhat = np.linalg.svd(X,full_matrices=False) # 经济SVD
+U, S, V = np.linalg.svd(X,full_matrices=True)  # 完整SVD
+Uhat, Shat, Vhat = np.linalg.svd(X,full_matrices=False) # 简化SVD
 print('U, S, V =')
 U, S, V
 ```
@@ -453,16 +447,14 @@ UhatUhatT, UhatTUhat
 
 **注释：**
 
-上述单元格展示了 `full_matrices=True` 和 `full_matrices=False` 选项的应用。
-使用 `full_matrices=False` 会返回一个简化的奇异值分解。
+上述代码展示了两种不同的SVD计算方式:
+
+- `full_matrices=True` 计算完整的SVD分解
+- `full_matrices=False` 计算简化的SVD分解,只保留非零奇异值对应的部分
 
 **完整**和**简化**的奇异值分解都能准确地分解一个 $m \times n$ 矩阵 $X$
 
 当我们在后面学习动态模态分解时，记住在这种高瘦矩阵情况下完整和简化奇异值分解的上述性质将很重要。
-
-
-
-
 
 现在让我们来看一个矮胖矩阵的情况。
 
@@ -472,7 +464,7 @@ UhatUhatT, UhatTUhat
 import numpy as np
 X = np.random.rand(2,5)
 U, S, V = np.linalg.svd(X,full_matrices=True)  # 完整SVD
-Uhat, Shat, Vhat = np.linalg.svd(X,full_matrices=False) # 经济SVD
+Uhat, Shat, Vhat = np.linalg.svd(X,full_matrices=False) # 简化SVD
 print('U, S, V = ')
 U, S, V
 ```
@@ -491,7 +483,7 @@ np.allclose(X, Uhat@SShat@Vhat)
 
 ## 极分解
 
-矩阵 $X$ 的**简化**奇异值分解(SVD)与其**极分解**相关
+矩阵 $X$ 的**简化**奇异值分解与其**极分解**相关
 
 $$
 X = SQ
@@ -531,17 +523,17 @@ $$
 
 其中对于 $j = 1, \ldots, n$，列向量 $X_j = \begin{bmatrix}x_{1j}\\x_{2j}\\\vdots\\x_{mj}\end{bmatrix}$ 是变量 $\begin{bmatrix}X_1\\X_2\\\vdots\\X_m\end{bmatrix}$ 的观测值向量。
 
-在**时间序列**设置中，我们将列 $j$ 视为观测随机变量的不同__时间__点的索引，而行则索引不同的随机变量。
+在**时间序列**分析中，列索引 $j$ 代表不同的时间点，而行索引代表不同的随机变量。
 
-在**横截面**设置中，我们将列 $j$ 视为观测随机变量的不同__个体__的索引，而行则索引不同的**属性**。
+在**横截面**分析中，列索引 $j$ 代表不同的个体，而行索引代表它们的不同属性。
 
-如我们之前所见，SVD是将矩阵分解为有用组件的一种方法，就像极分解、特征分解和许多其他方法一样。
+SVD 是一种将矩阵分解为有用组件的方法，类似于极分解、特征分解等。而 PCA 则是一种基于 SVD 的数据分析方法，它通过一系列统计步骤来捕捉数据中最重要的模式，帮助我们更好地理解和可视化数据。
 
-另一方面，PCA是一种基于SVD来分析数据的方法。其目标是应用特定步骤，使用统计工具捕捉数据中最重要的模式，以帮助更好地可视化数据中的模式。
+让我们来看看 PCA 的具体步骤：
 
-**第1步：标准化数据：**
+**第1步：数据标准化**
 
-由于我们的数据矩阵可能包含不同单位和尺度的变量，我们首先需要对数据进行标准化。
+由于数据可能包含不同单位和尺度的变量，我们首先需要标准化数据：
 
 首先计算 $X$ 的每一行的平均值。
 
@@ -561,15 +553,15 @@ $$
 B = X - \bar{X}
 $$
 
-**步骤2：计算协方差矩阵：**
+**第2步：计算协方差矩阵**
 
-然后因为我们想要提取变量之间的关系而不是仅仅它们的大小，换句话说，我们想知道它们如何相互解释，我们计算 $B$ 的协方差矩阵。
+为了研究变量之间的关系，我们计算中心化数据的协方差矩阵：
 
 $$
 C = \frac{1}{n} BB^{\top}
 $$
 
-**步骤3：分解协方差矩阵并排列奇异值：**
+**第3步：分解协方差矩阵**
 
 由于矩阵$C$是正定的，我们可以对其进行特征值分解，找出其特征值，并按降序重新排列特征值和特征向量矩阵。
 
@@ -589,18 +581,17 @@ $$
 
 然后我们可以重新排列矩阵$U$和$\Sigma$中的列，使奇异值按降序排列。
 
-**第4步：选择奇异值，（可选）截断其余部分：**
+**第4步：选择主成分**
 
 我们现在可以根据想要保留的方差量来决定选择多少个奇异值（例如，保留95%的总方差）。
 
 我们可以通过计算前$r$个因子包含的方差除以总方差来获得百分比：
 
 $$
-
 \frac{\sum_{i = 1}^{r} \sigma^2_{i}}{\sum_{i = 1}^{p} \sigma^2_{i}}
 $$
 
-**第5步：创建得分矩阵：**
+**第5步：创建主成分得分矩阵：**
 
 $$
 \begin{aligned}
@@ -610,18 +601,19 @@ T&= BV \cr
 \end{aligned}
 $$
 
+这个矩阵的每一列代表一个主成分，其中包含了原始数据在新坐标系下的投影。
 
 ## PCA与SVD的关系
 
-要将SVD与数据集$X$的PCA联系起来，首先构建数据矩阵$X$的SVD：
+让我们来探讨SVD与PCA之间的关系。假设我们有一个数据矩阵$X$，其中所有变量的样本均值都为零。
 
-让我们假设所有变量的样本均值为零，因此我们不需要标准化矩阵。
+$X$的SVD分解可以写成:
 
 $$
 X = U \Sigma V^\top  = \sigma_1 U_1 V_1^\top  + \sigma_2 U_2 V_2^\top  + \cdots + \sigma_p U_p V_p^\top
 $$ (eq:PCA1)
 
-其中
+其中矩阵$U$和$V$分别由列向量组成:
 
 $$
 U=\begin{bmatrix}U_1|U_2|\ldots|U_m\end{bmatrix}
@@ -636,11 +628,10 @@ $$
 因此，我们有
 
 $$
-
 X = \sigma_1 \begin{pmatrix}U_{11}V_{1}^\top \\U_{21}V_{1}^\top \\\cdots\\U_{m1}V_{1}^\top \\\end{pmatrix} + \sigma_2\begin{pmatrix}U_{12}V_{2}^\top \\U_{22}V_{2}^\top \\\cdots\\U_{m2}V_{2}^\top \\\end{pmatrix}+\ldots + \sigma_p\begin{pmatrix}U_{1p}V_{p}^\top \\U_{2p}V_{p}^\top \\\cdots\\U_{mp}V_{p}^\top \\\end{pmatrix}
 $$ (eq:PCA2)
 
-以下是我们如何在时间序列上下文中解释矩阵方程{eq}`eq:PCA2`中的对象：
+在时间序列分析的背景下，这个分解有着重要的含义:
 
 * $ \textrm{对于每个} \ k=1, \ldots, n $，对象 $\lbrace V_{kj} \rbrace_{j=1}^n$ 是第$k$个**主成分**的时间序列
 
@@ -649,7 +640,7 @@ $$ (eq:PCA2)
 
 * 对于每个$k=1, \ldots, p$，$\sigma_k$是第$k$个**主成分**的强度，这里的强度指的是对$X$的整体协方差的贡献。
 
-## 基于特征值和特征向量的PCA
+## 基于特征值分解的PCA
 
 现在我们使用样本协方差矩阵的特征分解来进行PCA。
 
@@ -665,19 +656,15 @@ $$
 \Omega = XX^\top
 $$
 
-然后使用特征分解将$\Omega$表示如下：
+其特征值分解为:
 
 $$
 \Omega =P\Lambda P^\top
 $$
 
-这里
+这里$P$是$m \times m$特征向量矩阵,而$\Lambda$是特征值对角矩阵。
 
-* $P$是$\Omega$的$m×m$特征向量矩阵
-
-* $\Lambda$是$\Omega$的特征值对角矩阵
-
-我们可以将$X$表示为
+我们可以将$X$表示为:
 
 $$
 X=P\epsilon
@@ -701,12 +688,11 @@ $$
 XX^\top =P\Lambda P^\top  .
 $$ (eq:XXo)
 
-因此，我们可以将数据矩阵$X$表示为
+因此数据矩阵$X$可以写成:
 
 \begin{equation*}
 X=\begin{bmatrix}X_1|X_2|\ldots|X_m\end{bmatrix} =\begin{bmatrix}P_1|P_2|\ldots|P_m\end{bmatrix}
 \begin{bmatrix}\epsilon_1\\\epsilon_2\\\ldots\\\epsilon_m\end{bmatrix}
-
 = P_1\epsilon_1+P_2\epsilon_2+\ldots+P_m\epsilon_m
 \end{equation*}
 
@@ -724,17 +710,17 @@ X&=\sqrt{\lambda_1}P_1\tilde{\epsilon_1}+\sqrt{\lambda_2}P_2\tilde{\epsilon_2}+\
 \end{aligned}
 $$
 
-这与下式一致
+这与SVD分解
 
 $$
 X=\sigma_1U_1{V_1}^{T}+\sigma_2 U_2{V_2}^{T}+\ldots+\sigma_{r} U_{r}{V_{r}}^{T}
 $$
 
-只要我们设定
+是等价的,只要我们令:
 
-* $U_j=P_j$（变量在第j个主成分上的载荷向量）
+* $U_j=P_j$ (变量在第j个主成分上的载荷向量)
 
-* ${V_k}^{T}=\tilde{\epsilon_k}$（第k个主成分）
+* ${V_k}^{T}=\tilde{\epsilon_k}$ (第k个主成分)
 
 由于计算数据矩阵$X$的$P$和$U$有不同的算法，根据所使用的算法，我们可能会得到符号差异或特征向量顺序的不同。
 
@@ -743,17 +729,17 @@ $$
 1. 将特征值和奇异值按降序排列
 2. 在$P$和$U$中强制使对角线为正，并相应地调整$V^\top$中的符号
 
-## 联系
+## 联系与总结
 
-为了将这些内容联系起来，把上面提到的一些公式组合并比较是很有用的。
+为了更好地理解前面的内容，让我们把这些公式联系起来，看看它们之间的关系。
 
-首先，考虑一个$m \times n$矩阵的SVD：
+首先，对于一个$m \times n$矩阵的奇异值分解（SVD）：
 
 $$
 X = U\Sigma V^\top
 $$
 
-计算：
+我们可以计算：
 
 $$
 \begin{aligned}
@@ -763,11 +749,9 @@ XX^\top &=U\Sigma V^\top V\Sigma^\top  U^\top \cr
 \end{aligned}
 $$  (eq:XXcompare)
 
-将表示式{eq}`eq:XXcompare`与上面的方程{eq}`eq:XXo`进行比较。
+将这个表达式{eq}`eq:XXcompare`与前面的方程{eq}`eq:XXo`对比，我们可以发现SVD分解中的$U$矩阵实际上就是$XX^\top$的特征向量矩阵$P$，而$\Sigma \Sigma^\top$就对应着特征值矩阵$\Lambda$。
 
-显然，SVD中的$U$就是$XX^\top$的特征向量矩阵$P$，而$\Sigma \Sigma^\top$就是特征值矩阵$\Lambda$。
-
-其次，让我们计算
+类似地，我们再来看：
 
 $$
 \begin{aligned}
@@ -776,31 +760,29 @@ X^\top X &=V\Sigma^\top  U^\top U\Sigma V^\top \\
 \end{aligned}
 $$
 
-因此，SVD中的矩阵$V$是$X^\top X$的特征向量矩阵。
+这个结果告诉我们，SVD中的$V$矩阵其实就是$X^\top X$的特征向量矩阵。
 
-总结并将各部分组合在一起，我们得到样本协方差矩阵的特征分解
+把这些发现整理一下，我们可以得到样本协方差矩阵的特征分解：
 
 $$
 X X^\top  = P \Lambda P^\top
 $$
 
-其中$P$是一个正交矩阵。
-
-此外，从$X$的SVD分解，我们知道
+这里的$P$是一个正交矩阵。而从$X$的SVD分解，我们也知道：
 
 $$
 X X^\top  = U \Sigma \Sigma^\top  U^\top
 $$
 
-其中$U$是一个正交矩阵。
+其中$U$同样是一个正交矩阵。
 
-因此，$P = U$，我们得到$X$的表示
+这两个表达式告诉我们$P = U$，因此$X$可以表示为：
 
 $$
 X = P \epsilon = U \Sigma V^\top
 $$
 
-由此可得
+进一步推导可得：
 
 $$
 U^\top  X = \Sigma V^\top  = \epsilon
@@ -809,7 +791,7 @@ $$
 注意上述推导意味着
 
 $$
-\epsilon \epsilon^\top  = \Sigma V^\top  V \Sigma^\top  = \Sigma \Sigma^\top  = \Lambda ,
+\epsilon \epsilon^\top  = \Sigma V^\top  V \Sigma^\top  = \Sigma \Sigma^\top  = \Lambda
 $$
 
 这样所有部分都完美契合。
@@ -884,7 +866,7 @@ class DecomAnalysis:
         𝜎_sq = self.𝜎 ** 2
         self.explained_ratio_svd = np.cumsum(𝜎_sq) / 𝜎_sq.sum()
 
-        # 按使用的成分数量切片矩阵
+        # 按使用的成分数量切分矩阵
         U = self.U[:, :self.r_component]
         Σ = self.Σ[:self.r_component, :self.r_component]
         VT = self.VT[:self.r_component, :]
@@ -951,7 +933,7 @@ def compare_pca_svd(da):
     axs[0].set_title('ε')
     axs[0].set_xlabel('n')
     axs[1].plot(da.VT[:da.r, :].T * np.sqrt(da.λ))
-    axs[1].set_title('$V^\top *\sqrt{\lambda}$')
+    axs[1].set_title(r'$V^\top *\sqrt{\lambda}$')
     axs[1].set_xlabel('n')
     plt.show()
 ```
@@ -965,7 +947,7 @@ def compare_pca_svd(da):
 
 在这些情况下，$ (X^\top X) $矩阵不可逆（其行列式为零）或病态（其行列式非常接近零）。
 
-我们可以改用所谓的[伪逆](https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse)，即创建一个满秩的逆矩阵近似，以此来计算 $ \hat{\beta} $。
+我们可以改用所谓的[伪逆](https://baike.baidu.com/item/%E4%BC%AA%E9%80%86%E7%9F%A9%E9%98%B5/7397859)，即创建一个满秩的逆矩阵近似，以此来计算 $ \hat{\beta} $。
 
 根据Eckart-Young定理，构建伪逆矩阵 $ X^{+} $ 并用它来计算 $ \hat{\beta} $。
 
