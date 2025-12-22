@@ -38,14 +38,14 @@ jobs:
       - name: Display Pip Versions
         shell: bash -l {0}
         run: pip list
-      # - name: Download "build" folder (cache)
-      #   uses: dawidd6/action-download-artifact@v9
-      #   with:
-      #     workflow: cache.yml
-      #     branch: main
-      #     name: build-cache
-      #     path: _build
-      # # Build Assets (Download Notebooks and PDF via LaTeX)
+      - name: Download "build" folder (cache)
+        uses: dawidd6/action-download-artifact@v9
+        with:
+          workflow: cache.yml
+          branch: main
+          name: build-cache
+          path: _build
+      # Build Assets (Download Notebooks and PDF via LaTeX)
       # - name: Build PDF from LaTeX
       #   shell: bash -l {0}
       #   run: |
@@ -71,7 +71,7 @@ jobs:
       - name: Build HTML
         shell: bash -l {0}
         run: |
-          jb build lectures --path-output ./ --keep-going
+          jb build lectures --path-output ./ -n -W --keep-going
       - name: Upload Execution Reports (HTML)
         uses: actions/upload-artifact@v4
         if: failure()
