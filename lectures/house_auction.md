@@ -537,7 +537,7 @@ def submit_bid(loser_list, p, ϵ, v, bid_info):
 ```
 
 ```{code-cell} ipython3
-p,bid_info = submit_bid(失败者列表, p, ϵ, v, bid_info)
+p,bid_info = submit_bid(loser_list, p, ϵ, v, bid_info)
 ```
 
 ```{code-cell} ipython3

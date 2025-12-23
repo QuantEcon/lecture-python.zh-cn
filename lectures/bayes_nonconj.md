@@ -46,6 +46,7 @@ kernelspec:
 # install dependencies
 !pip install numpyro pyro-ppl torch jax
 ```
+
 ```{code-cell} ipython3
 import numpy as np
 import seaborn as sns

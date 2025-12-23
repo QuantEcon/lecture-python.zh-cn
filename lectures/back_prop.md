@@ -533,8 +533,8 @@ Image(fig.to_image(format="png"))
 ```{code-cell} ipython3
 ## 检查环境中是否启用了gpu
 
-from jax.lib import xla_bridge
-print(xla_bridge.get_backend().platform)
+import jax.extend
+print(jax.extend.backend.get_backend().platform)
 ```
 
 ```{note}

@@ -34,7 +34,7 @@ class OptimalGrowthModel:
 
 
     def f(self, k):
-       "生产函数"
+        "生产函数"
         return k**self.α
 
 
