@@ -415,11 +415,11 @@ def newton(f, x_0, tol=1e-7, max_iter=100_000):
     while error > tol:
         n += 1
         if n > max_iter:
-            raise Exception("Max iteration reached without convergence")
+            raise Exception('达到最大迭代次数但未收敛')
         y = q(x)
         error = jnp.abs(x - y)
         x = y
-        print(f"iteration {n}, error = {error:.5f}")
+        print(f'迭代 {n}, 误差 = {error:.5f}')
     return x.item()
 ```
 
@@ -605,7 +605,7 @@ def plot_excess_demand(ax, good=0, grid_size=100, grid_max=4, surface=True):
     ctr1 = ax.contour(p_grid, p_grid, z.T, levels=[0.0])
     ax.set_xlabel("$p_0$")
     ax.set_ylabel("$p_1$")
-    ax.set_title(f"Excess demand for good {good}")
+    ax.set_title(f'超额需求函数 {good}')
     plt.clabel(ctr1, inline=1, fontsize=13)
 ```
 
@@ -759,7 +759,7 @@ def newton(f, x_0, tol=1e-5, max_iter=10):
             raise Exception("Solution not found with NaN generated")
         error = jnp.linalg.norm(x - y)
         x = y
-        print(f"iteration {n}, error = {error:.5f}")
+        print(f'尝试 {attempt}: 初始值为 {init} \n')
     print("\n" + f"Result = {x} \n")
     return x
 ```
