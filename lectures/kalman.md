@@ -59,7 +59,7 @@ translation:
 
 参见{doc}`kalman_2`，其中讨论了一个企业推断工人隐藏的人力资本和努力程度的经济学应用。
 
-参见{doc}`kalman_filter_var`，其中推导了新息表示及其与向量自回归的联系。
+参见{doc}`intermediate:kalman_filter_var`，其中推导了新息表示及其与向量自回归的联系。
 
 关于卡尔曼滤波的更多（进阶）阅读材料，请参见：
 
