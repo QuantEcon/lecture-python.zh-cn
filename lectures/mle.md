@@ -70,6 +70,10 @@ from statsmodels.api import Poisson
 from statsmodels.iolib.summary2 import summary_col
 
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
 from mpl_toolkits.mplot3d import Axes3D
 ```
 
