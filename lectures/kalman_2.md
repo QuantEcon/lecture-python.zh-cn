@@ -48,7 +48,7 @@ translation:
 
 我们将设定一个规则，说明公司如何根据每期获得的信息来支付劳动者工资。
 
-{doc}`kalman_filter_var` 这一讲座使用相同的递归来构建新息（innovations）、似然函数和向量自回归模型。
+{doc}`intermediate:kalman_filter_var` 这一讲座使用相同的递归来构建新息（innovations）、似然函数和向量自回归模型。
 
 除了Anaconda中的内容外，本讲座还需要以下库：
 
