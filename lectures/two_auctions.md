@@ -236,16 +236,16 @@ b = b_star(v,N)
 ```{code-cell} ipython3
 # Bidders' values are sorted in ascending order in each auction.
 # We record the order because we want to apply it to bid price and their id.
-idx = np.argsort(v, axis=0)
+idx = np.argsort(v, axis=0)  # 在每次拍卖中，竞买人的估值按升序排列。
 
 # same as np.sort(v, axis=0), except now we retain the idx
-v = np.take_along_axis(v, idx, axis=0)
+v = np.take_along_axis(v, idx, axis=0)  # 与np.sort(v, axis=0)相同，但保留了idx
 b = np.take_along_axis(b, idx, axis=0)
 
 # the id for the bidders is created.
 ii = np.repeat(np.arange(1, N+1)[:, None], R, axis=1)
 # the id is sorted according to bid price as well.
-ii = np.take_along_axis(ii, idx, axis=0)
+ii = np.take_along_axis(ii, idx, axis=0)  # ID也按照出价价格进行排序。
 
 # In FPSB and SPSB, winners are those with highest values.
 winning_player = ii[-1, :]
@@ -635,7 +635,7 @@ class bid_price_solution:
 
         idx = np.argsort(self.value_mat, axis=0)
         # same as np.sort(v, axis=0), except now we retain the idx
-        self.v = np.take_along_axis(self.value_mat, idx, axis=0)
+        self.v = np.take_along_axis(self.value_mat, idx, axis=0)  # 与np.sort(v, axis=0)相同，但保留了idx
         self.b = np.take_along_axis(self.b, idx, axis=0)
 
         N, R = self.value_mat.shape
