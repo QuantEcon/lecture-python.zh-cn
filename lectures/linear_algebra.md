@@ -7,6 +7,39 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 线性代数
+  headings:
+    Overview: 概述
+    Vectors: 向量
+    Vectors::Vector Operations: 向量运算
+    Vectors::Inner Product and Norm: 内积和范数
+    Vectors::Span: 张成空间
+    Vectors::Span::Examples: 示例
+    Vectors::Linear Independence: 线性无关
+    Vectors::Unique Representations: 唯一表示
+    Matrices: 矩阵
+    Matrices::Matrix Operations: 矩阵运算
+    Matrices::Matrices in NumPy: NumPy中的矩阵
+    Matrices::Matrices as Maps: 矩阵作为映射
+    Solving Systems of Equations: 求解方程组
+    Solving Systems of Equations::The Square Matrix Case: 方阵的情况
+    Solving Systems of Equations::The Square Matrix Case::Inverse Matrices: 逆矩阵
+    Solving Systems of Equations::The Square Matrix Case::Determinants: 行列式
+    Solving Systems of Equations::More Rows than Columns: 行数多于列数
+    Solving Systems of Equations::More Columns than Rows: 列数多于行数
+    Solving Systems of Equations::Linear Equations with SciPy: 使用SciPy求解线性方程
+    Eigenvalues and Eigenvectors: 特征值和特征向量
+    Eigenvalues and Eigenvectors::Generalized Eigenvalues: 广义特征值
+    Further Topics: 进阶概念
+    Further Topics::Series Expansions: 级数展开
+    Further Topics::Series Expansions::Matrix Norms: 矩阵范数
+    Further Topics::Series Expansions::Neumann's Theorem: 诺伊曼定理
+    Further Topics::Series Expansions::Spectral Radius: 谱半径
+    Further Topics::Positive Definite Matrices: 正定矩阵
+    Further Topics::Differentiating Linear and Quadratic Forms: 线性和二次型的求导
+    Further Topics::Further Reading: 延伸阅读
+    Exercises: 练习
 ---
 
 (linear_algebra)=
@@ -69,7 +102,9 @@ $$
 
 虽然本讲与我们在[之前的讲座](https://python-programming.quantecon.org/numpy.html)中已经介绍过NumPy数组的基本操作有所重合，但这里我们将从更理论的角度来探讨线性代数。
 
-这些理论知识将为我们后续的应用打下重要基础。
+请注意，本讲比大多数讲座更偏重理论，其中包含的背景知识将在我们后续的应用中逐步用到。
+
+让我们从一些导入开始：
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
@@ -100,9 +135,9 @@ from scipy.linalg import inv, solve, det, eig
 
 以$\mathbb R^2$为例，它代表二维平面，其中的每个向量都对应平面上的一个点。
 
-在几何上，我们通常将向量画成一个从原点出发的箭头。
+在传统上，向量在视觉上被表示为从原点指向该点的箭头。
 
-让我们看看下面这个例子，其中画出了三个不同的向量:
+下图以这种方式展示了三个向量
 
 ```{code-cell} ipython
 fig, ax = plt.subplots(figsize=(10, 8))
@@ -246,15 +281,25 @@ $$
 继续前面的例子，内积和范数可以按如下方式计算
 
 ```{code-cell} ipython3
-np.sum(x * y)          # x和y的内积
+np.sum(x * y)          # x和y的内积，方法1
 ```
 
 ```{code-cell} ipython3
-np.sqrt(np.sum(x**2))  # x的范数，第一种方法
+x @ y                  # x和y的内积，方法2（推荐）
+```
+
+推荐使用`@`运算符，因为它使用了经过优化的BLAS库来实现乘加融合运算，相比分别进行乘法和求和运算，具有更好的性能和数值精度。
+
+```{code-cell} ipython3
+np.sqrt(np.sum(x**2))  # x的范数，方法1
 ```
 
 ```{code-cell} ipython3
-np.linalg.norm(x)      # x的范数，第二次计算
+np.sqrt(x @ x)         # x的范数，方法2（推荐）
+```
+
+```{code-cell} ipython3
+np.linalg.norm(x)      # x的范数，方法3
 ```
 
 ### 张成空间
@@ -388,55 +433,47 @@ $$
 
 具体来说，在$\mathbb R ^n$中的一组向量$A := \{a_1, \ldots, a_k\}$被称为
 
-* *线性相关的*，如果集合中至少有一个向量可以表示为其他向量的线性组合。
-* *线性无关的*，如果集合中任何一个向量都不能表示为其他向量的线性组合。
+* *线性相关的*，如果$A$的某个真子集与$A$具有相同的张成空间。
+* *线性无关的*，如果它不是线性相关的。
 
-这个概念可以通过一个简单的例子来理解。
+换句话说，一组向量如果没有一个向量对张成空间来说是多余的，则该组向量是线性无关的，否则就是线性相关的。
 
-让我们回到{ref}`图示<la_3dvec>`中的例子，其中$\mathbb R ^3$中的两个向量$\{a_1, a_2\}$张成了一个经过原点的平面。
+为了说明这个概念，让我们回到{ref}`图示<la_3dvec>`中的例子，其中$\mathbb R ^3$中的两个向量$\{a_1, a_2\}$张成了一个经过原点的平面。
 
-如果我们添加第三个向量$a_3$，那么新的集合$\{a_1, a_2, a_3\}$的性质将取决于$a_3$的位置：
+如果我们添加第三个向量$a_3$，构成集合$\{a_1, a_2, a_3\}$，那么这个集合将是
 
-* 如果$a_3$落在$a_1$和$a_2$张成的平面上，那么$a_3$可以表示为$a_1$和$a_2$的线性组合，因此这三个向量是线性相关的
-* 如果$a_3$不在该平面上，那么它不能表示为$a_1$和$a_2$的线性组合，因此这三个向量是线性无关的
+* 线性相关的，如果$a_3$落在该平面上
+* 线性无关的，否则
 
-一个重要的性质是：在$\mathbb R ^n$中，任何超过$n$个向量的集合必定是线性相关的。这是因为$\mathbb R ^n$最多需要$n$个向量就能完全张成（就像我们之前看到的标准基向量那样）。
+作为该概念的另一个例证，由于$\mathbb R ^n$可以由$n$个向量张成（参见上面关于标准基向量的讨论），因此在$\mathbb R ^n$中任何超过$n$个向量（即$m > n$个向量）的集合必定是线性相关的。
 
-数学上，向量集合$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$的线性无关性可以用以下两种等价方式来表述：
+以下陈述与$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$的线性无关性是等价的
 
 1. 集合中的任何向量都不能写成其他向量的线性组合。
-2. 当且仅当所有系数$\beta_1, \ldots, \beta_k$都为零时，线性组合$\beta_1 a_1 + \cdots + \beta_k a_k$等于零向量。
+2. 如果对于标量$\beta_1, \ldots, \beta_k$，有$\beta_1 a_1 + \cdots + \beta_k a_k = 0$，那么$\beta_1 = \cdots = \beta_k = 0$。
 
-（这里的零向量指的是$\mathbb R ^n$中所有分量都是0的向量）
+（第一个表达式中的零指的是$\mathbb R ^n$的原点）
 
 (la_unique_reps)=
 ### 唯一表示
 
 线性独立向量集合的一个重要性质是唯一表示性：其张成空间中的每个向量都可以用唯一的一组系数来表示。
 
-具体来说，假设$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$是线性独立的，且向量$y$可以表示为:
+具体来说，假设$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$是线性独立的，且
 
 $$
-y = \beta_1 a_1 + \cdots + \beta_k a_k
+y = \beta_1 a_1 + \cdots \beta_k a_k
 $$
 
-那么这组系数$\beta_1, \ldots, \beta_k$是唯一的。
+那么不存在其他系数序列$\gamma_1, \ldots, \gamma_k$能够得到相同的向量$y$。
 
-也就是说，不存在另一组不同的系数$\gamma_1, \ldots, \gamma_k$使得:
-
-$$
-y = \gamma_1 a_1 + \cdots + \gamma_k a_k
-$$
-
-这一点可以通过反证法证明。如果存在这样两组不同的系数，那么:
+事实上，如果我们同时有$y = \gamma_1 a_1 + \cdots \gamma_k a_k$，那么
 
 $$
 (\beta_1 - \gamma_1) a_1 + \cdots + (\beta_k - \gamma_k) a_k = 0
 $$
 
-由线性独立性可知，这种情况只可能在$\beta_i = \gamma_i$ $(i=1,\ldots,k)$时发生。
-
-这与我们假设两组系数不同相矛盾。
+由线性无关性可知，对所有的$i$都有$\gamma_i = \beta_i$。
 
 ## 矩阵
 
@@ -529,6 +566,8 @@ $$
 并且其设计使得乘法能够很好地配合基本线性运算。
 
 如果$A$和$B$是两个矩阵，那么它们的乘积$A B$的第$i,j$个元素是由$A$的第$i$行与$B$的第$j$列的内积得到的。
+
+有许多教程可以帮助你理解这个运算，比如[这个](https://www.mathsisfun.com/algebra/matrix-multiplying.html)，或者[维基百科页面](https://en.wikipedia.org/wiki/Matrix_multiplication)上的讨论。
 
 如果$A$是$n \times k$矩阵，$B$是$j \times m$矩阵，那么要使$A$和$B$可以相乘，我们需要$k = j$，且得到的矩阵$A B$是$n \times m$的。
 
@@ -637,7 +676,7 @@ $$
 
 你可以验证，当$b$为零向量时，函数$f(x) = A x + b$满足这个性质，而当$b$非零时则不满足。
 
-事实上我们知道，$f$是线性的当且仅当存在矩阵$A$使得对所有的$x$都有$f(x) = Ax$。
+事实上，[已知](https://en.wikipedia.org/wiki/Linear_map#Matrices)$f$是线性的当且仅当存在矩阵$A$使得对所有的$x$都有$f(x) = Ax$。
 
 ## 求解方程组
 
@@ -779,7 +818,7 @@ $$
 ```{index} single: Matrix; Determinants
 ```
 
-每个方阵都有一个与之唯一对应的数值，这个数值被称为矩阵的*行列式*。行列式的具体计算方法可以在[这里](https://baike.baidu.com/item/%E8%A1%8C%E5%88%97%E5%BC%8F/2010180)找到。
+每个方阵都有一个与之唯一对应的数值，这个数值被称为矩阵的*行列式*。行列式的具体计算方法可以在[这里](https://en.wikipedia.org/wiki/Determinant)找到。
 
 如果矩阵$A$的行列式不为零，我们就说$A$是*非奇异的*。
 
@@ -877,14 +916,11 @@ A @ x          # 应该等于y
 solve(A, y)  # 产生相同的解
 ```
 
-我们可以通过两种方式求解线性方程$x = A^{-1}y$：
+请注意我们可以通过`inv(A) @ y`或使用`solve(A, y)`来求解$x = A^{-1} y$。
 
-1. 使用`inv(A) @ y`显式计算逆矩阵
-2. 使用`solve(A, y)`直接求解方程
+后一种方法使用了不同的算法（LU分解），该算法在数值上更加稳定，因此几乎总是应优先选用。
 
-第二种方法基于LU分解，数值稳定性更好，是更推荐的方法。
-
-如果需要求解最小二乘问题$\hat x = (A'A)^{-1}A'y$，可以使用`scipy.linalg.lstsq(A, y)`。
+如果需要求解最小二乘解$\hat x = (A'A)^{-1}A'y$，可以使用`scipy.linalg.lstsq(A, y)`。
 
 (la_eigen)=
 ## {index}`特征值 <single: Eigenvalues>`和{index}`特征向量 <single: Eigenvectors>`
@@ -1114,7 +1150,6 @@ $$
 1. $\frac{\partial A x}{\partial x} = A'$
 1. $\frac{\partial x'A x}{\partial x} = (A + A') x$
 1. $\frac{\partial y'B z}{\partial y} = B z$
-
 1. $\frac{\partial y'B z}{\partial B} = y z'$
 
 下面的{ref}`la_ex1`要求你应用这些公式。
@@ -1330,4 +1365,3 @@ $\tilde{P} := A'PA - A'PB(Q + B'PB)^{-1}B'PA$
 参见[此讨论](https://python-programming.quantecon.org/numpy.html#matrix-multiplication)。
 
 [^cfn]: 假设 $\|S \| < 1$。取任意非零向量 $x$，令 $r := \|x\|$。我们有 $\| Sx \| = r \| S (x/r) \| \leq r \| S \| < r = \| x\|$。因此每个点都被拉向原点。
-
