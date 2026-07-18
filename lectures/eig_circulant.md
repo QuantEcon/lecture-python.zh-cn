@@ -9,21 +9,35 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 循环矩阵
+  headings:
+    Overview: 概述
+    Constructing a Circulant Matrix: 构造循环矩阵
+    Constructing a Circulant Matrix::Some Properties of Circulant Matrices: 循环矩阵的一些性质
+    Connection to Permutation Matrix: 与置换矩阵的联系
+    Examples with Python: Python示例
+    Associated Permutation Matrix: 关联的置换矩阵
+    Discrete Fourier Transform: 离散傅里叶变换
 ---
 
 # 循环矩阵
 
 ## 概述
 
-本讲座将介绍循环矩阵这一特殊的矩阵类型。
+本讲座将介绍循环矩阵及其一些性质。
 
-循环矩阵有着独特的结构特征，这使得它们与许多重要的数学概念密切相关，比如：
+循环矩阵之所以有用，是因为与它们相乘和卷积密切相关，并且它们的特征向量可以用离散傅里叶变换来构造。
+
+我们用循环矩阵将几个有用的概念联系起来，包括
 
   * 卷积运算
   * 傅里叶变换
   * 置换矩阵
 
-正是由于这些重要联系，循环矩阵在机器学习等领域得到了广泛应用。例如，它们在图像处理中扮演着重要角色。
+关于特征值和特征向量的背景知识，请参见 {doc}`linear_algebra`；关于傅里叶变换和卷积的另一个应用，请参见 {doc}`hoist_failure`。
+
+循环矩阵在机器学习中也有广泛应用，例如在图像处理中。
 
 我们首先导入一些Python包：
 
@@ -62,13 +76,27 @@ c_{1} & c_{2} & c_{3} & c_{4} & c_{5} & \cdots & c_{0}
 \end{array}\right]
 $$ (eqn:circulant)
 
+这个模式可以形式化如下。
+
+```{prf:definition} 循环矩阵
+:label: def-circulant-matrix
+
+一个 $N \times N$ 矩阵 $C$ 是**循环的**，如果存在数字 $c_0, \ldots, c_{N-1}$，使得
+
+$$
+C_{ij} = c_{(j-i) \bmod N},
+\qquad 0 \leq i,j \leq N-1.
+$$
+
+等价地，每一行都是通过将上一行的元素向右移动一位而得到的。
+```
+
 也可以通过创建上述矩阵的转置来构造循环矩阵，在这种情况下只需要指定第一列。
 
 让我们编写一些Python代码来生成循环矩阵：
 
 ```{code-cell} ipython3
-@jit
-def construct_cirlulant(row):
+def construct_circulant(row):
 
     N = row.size
 
@@ -84,19 +112,22 @@ def construct_cirlulant(row):
 
 ```{code-cell} ipython3
 # 当 N = 3 时的一个简单例子
-construct_cirlulant(np.array([1., 2., 3.]))
+construct_circulant(np.array([1., 2., 3.]))
 ```
 
 ### 循环矩阵的一些性质
 
-以下是一些有用的性质。
+以下是一些有用的性质：
 
-假设 $A$ 和 $B$ 都是循环矩阵。那么可以验证：
+假设 $A$ 和 $B$ 都是同阶的循环矩阵，并且采用相同的循环移位约定构造。
+
+那么可以验证：
 
  * 循环矩阵的转置是循环矩阵
- * $A + B$ 是循环矩阵
- * $A B$ 是循环矩阵
- * $A B = B A$
+
+  * $A + B$ 是循环矩阵
+  * $A B$ 是循环矩阵
+  * $A B = B A$
 
 现在考虑一个第一行为
 
@@ -109,16 +140,18 @@ construct_cirlulant(np.array([1., 2., 3.]))
 向量 $c$ 和 $a$ 的**卷积**定义为向量 $b = c * a $，其分量为
 
 $$
- b_k = \sum_{i=0}^{n-1} c_{k-i} a_i
+ b_k = \sum_{i=0}^{N-1} c_{k-i} a_i
 $$ (eqn:conv)
+
+这里以及下文中，诸如 $k-i$ 之类的下标都按模 $N$ 来理解。
 
 我们使用 $*$ 来表示通过方程 {eq}`eqn:conv` 描述的**卷积**计算。
 
 可以验证向量 $b$ 满足
 
-$$ b = C^T a  $$
+$$ b = C^\top a  $$
 
-其中 $C^T$ 是方程 {eq}`eqn:circulant` 中定义的循环矩阵的转置。
+其中 $C^\top$ 是方程 {eq}`eqn:circulant` 中定义的循环矩阵的转置。
 
 ## 与置换矩阵的联系
 
@@ -167,7 +200,7 @@ $$
 并求解
 
 $$
-\textrm{det}(P - \lambda I) = (-1)^N \lambda^{N}-1=0
+\textrm{det}(P - \lambda I) = (-1)^N(\lambda^N - 1)=0
 $$
 
 来计算。
@@ -181,7 +214,7 @@ $$
 可以验证置换矩阵是正交矩阵：
 
 $$
-P P' = I
+P P^\top = I
 $$
 
 ## Python示例
@@ -189,8 +222,7 @@ $$
 让我们编写一些Python代码来说明这些概念：
 
 ```{code-cell} ipython3
-@jit
-def construct_P(N):
+def construct_cyclic_shift_matrix(N):
 
     P = np.zeros((N, N))
 
@@ -202,7 +234,7 @@ def construct_P(N):
 ```
 
 ```{code-cell} ipython3
-P4 = construct_P(4)
+P4 = construct_cyclic_shift_matrix(4)
 P4
 ```
 
@@ -213,16 +245,16 @@ P4
 
 ```{code-cell} ipython3
 for i in range(4):
-    print(f'𝜆{i} = {𝜆[i]:.1f} \nvec{i} = {Q[i, :]}\n')
+    print(f'𝜆{i} = {𝜆[i]:.1f} \nvec{i} = {Q[:, i]}\n')
 ```
 
-让我们在复平面上绘制移位置换矩阵的特征值。
+在下面的图中，我们将在复平面上描绘移位置换矩阵的特征值。
 
-从图中可以看出，这些特征值在单位圆上均匀分布。
+这些特征值在单位圆上均匀分布。
 
-这些特征值实际上就是单位根 -- 即满足方程 $z^n = 1$ 的复数 $z$。
+它们是**$n$ 个单位根**，也就是说，它们是满足 $z^n =1$ 的 $n$ 个数 $z$，其中 $z$ 是复数。
 
-具体来说，对于阶数为 $n$ 的置换矩阵，其特征值就是 $n$ 个单位根，它们的表达式为
+具体来说，$n$ 个单位根为
 
 $$
 z = \exp\left(\frac{2 \pi j k }{N} \right) , \quad k = 0, \ldots, N-1
@@ -238,7 +270,7 @@ for i, N in enumerate([3, 4, 6, 8]):
     row_i = i // 2
     col_i = i % 2
 
-    P = construct_P(N)
+    P = construct_cyclic_shift_matrix(N)
     𝜆, Q = np.linalg.eig(P)
 
     circ = plt.Circle((0, 0), radius=1, edgecolor='b', facecolor='None')
@@ -317,14 +349,14 @@ Q8 = F8 / np.sqrt(8)
 ```
 
 ```{code-cell} ipython3
-# 验证正交性
+# 验证正交性（酉性）
 Q8 @ np.conjugate(Q8)
 ```
 
 让我们验证 $Q_{8}$ 的第 $k$ 列是 $P_{8}$ 的特征向量，对应的特征值是 $w^{k}$。
 
 ```{code-cell} ipython3
-P8 = construct_P(8)
+P8 = construct_cyclic_shift_matrix(8)
 ```
 
 ```{code-cell} ipython3
@@ -338,12 +370,12 @@ for j in range(8):
 diff_arr
 ```
 
-## 循环矩阵与置换矩阵的关系
+## 关联的置换矩阵
 
-接下来，我们将验证方程 {eq}`eqn:circulant` 中定义的循环矩阵 $C$ 可以表示为置换矩阵的线性组合：
+接下来，我们进行计算以验证方程 {eq}`eqn:circulant` 中定义的循环矩阵 $C$ 可以写成
 
 $$
-C = c_{0} I + c_{1} P + \cdots + c_{n-1} P^{n-1}
+C = c_{0} I + c_{1} P + \cdots + c_{N-1} P^{N-1}
 $$
 
 并且 $P$ 的每个特征向量也是 $C$ 的特征向量。
@@ -359,10 +391,10 @@ c
 ```
 
 ```{code-cell} ipython3
-C8 = construct_cirlulant(c)
+C8 = construct_circulant(c)
 ```
 
-计算 $c_{0} I + c_{1} P + \cdots + c_{n-1} P^{n-1}$
+计算 $c_{0} I + c_{1} P + \cdots + c_{N-1} P^{N-1}$。
 
 ```{code-cell} ipython3
 N = 8
@@ -389,7 +421,7 @@ C8
 np.abs(C - C8).max()
 ```
 
-$P_8$ 的第 $k$ 列是 $C_8$ 的特征向量，其特征值为 $\sum_{h=0}^{7} c_h w^{hk}$，其中 $w^{k-1}$ 是 $P_8$ 对应的特征值。
+$Q_{8}$ 的第 $j$ 列是 $C_{8}$ 的特征向量，其关联的特征值为 $\sum_{k=0}^{7} c_k w^{j k}$。
 
 ```{code-cell} ipython3
 𝜆_C8 = np.zeros(8, dtype=complex)
@@ -482,7 +514,7 @@ def plot_magnitude(x=None, X=None):
     if (X is not None):
         data.append(X)
         names.append('X')
-        xs.append('j')
+        xs.append('k')
 
     num = len(data)
     for i in range(num):
@@ -510,7 +542,7 @@ x_{n} = \sum_{k=0}^{N-1} \frac{1}{N} X_{k} e^{2\pi\left(\frac{kn}{N}\right)i}, \
 $$
 
 ```{code-cell} ipython3
-def inverse_transform(X):
+def inverse_DFT(X):
 
     N = len(X)
     w = np.e ** (complex(0, 2*np.pi/N))
@@ -524,7 +556,7 @@ def inverse_transform(X):
 ```
 
 ```{code-cell} ipython3
-inverse_transform(X)
+inverse_DFT(X)
 ```
 
 另一个例子是
