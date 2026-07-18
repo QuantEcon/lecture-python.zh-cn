@@ -7,9 +7,20 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 最优储蓄 II：数值方法吃蛋糕问题
+  headings:
+    Overview: 概述
+    Reviewing the Model: 回顾模型
+    Value Function Iteration: 价值函数迭代
+    Value Function Iteration::The Bellman Operator: 贝尔曼算子
+    Value Function Iteration::Fitted Value Function Iteration: 拟合价值函数迭代
+    Value Function Iteration::Implementation: 实现
+    Value Function Iteration::Policy Function: 策略函数
+    Exercises: 练习
 ---
 
-# 吃蛋糕问题 II：数值方法
+# 最优储蓄 II：数值方法吃蛋糕问题
 
 ```{contents} 目录
 :depth: 2
@@ -17,21 +28,29 @@ kernelspec:
 
 ## 概述
 
-在本讲中，我们将继续研究{doc}`吃蛋糕问题 <cake_eating_problem>`。
+在本讲中，我们将继续研究{doc}`os`中描述的问题。
 
 本讲的目标是使用数值方法来求解该问题。
 
-这似乎没有必要，因为我们已经通过解析方法得到了最优策略。
+乍看之下这似乎没有必要，因为我们已经通过解析方法得到了最优策略。
 
-然而，吃蛋糕问题如果不加修改就过于简单，几乎没有实际用途。一旦我们对问题进行修改，求解就必须依赖数值方法。
+然而，吃蛋糕问题如果不加修改就过于简单，几乎没有实际用途。一旦我们对问题进行修改，数值方法就变得必不可少。
 
 因此，现在引入数值方法并在这个简单问题上进行测试是有意义的。
 
 由于我们已经知道解析解，这将使我们能够评估不同数值方法的精确度。
 
+```{note}
+下面的代码旨在追求清晰性，而非追求最高效率。
+
+在后面的讲座中，我们将探讨提高速度和效率的最佳实践。
+
+现在先把这些算法和代码优化放在一边。
+```
+
 我们将使用以下导入：
 
-```{code-cell} ipython
+```{code-cell} python3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -40,10 +59,12 @@ plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 import numpy as np
 from scipy.optimize import minimize_scalar, bisect
+from typing import NamedTuple
 ```
+
 ## 回顾模型
 
-在开始之前，你可能想要{doc}`回顾一下细节 <cake_eating_problem>`。
+在开始之前，你可能想要回顾一下{doc}`os`中的细节。
 
 特别要回顾的是贝尔曼方程：
 
@@ -58,10 +79,18 @@ v(x) = \max_{0\leq c \leq x} \{u(c) + \beta v(x-c)\}
 
 价值函数和最优策略的解析解如下所示。
 
-```{code-cell} ipython3
-:load: _static/lecture_specific/cake_eating_numerical/analytical.py
+```{code-cell} python3
+def c_star(x, β, γ):
+
+    return (1 - β ** (1/γ)) * x
+
+
+def v_star(x, β, γ):
+
+    return (1 - β**(1 / γ))**(-γ) * (x**(1-γ) / (1-γ))
 ```
-我们的第一个目标是用数值方法再现这些解析解。
+
+我们的第一个目标是用数值方法得到这些解析解。
 
 ## 价值函数迭代
 
@@ -72,13 +101,13 @@ v(x) = \max_{0\leq c \leq x} \{u(c) + \beta v(x-c)\}
 基本思路是：
 
 1. 取一个任意的初始猜测 $v$。
-1. 得到一个更新 $w$，其定义为
+1. 得到一个更新 $\hat v$，其定义为
 
    $$
-   w(x) = \max_{0\leq c \leq x} \{u(c) + \beta v(x-c)\}
+       \hat v(x) = \max_{0\leq c \leq x} \{u(c) + \beta v(x-c)\}
    $$
 
-1. 如果 $w$ 与 $v$ 大致相等，则停止；否则设 $v=w$ 并返回第2步。
+1. 如果 $\hat v$ 与 $v$ 大致相等，则停止；否则设 $v=\hat v$ 并返回第2步。
 
 让我们把它写得更数学化一些。
 
@@ -87,7 +116,7 @@ v(x) = \max_{0\leq c \leq x} \{u(c) + \beta v(x-c)\}
 我们引入**贝尔曼算子** $T$，它以函数 $v$ 为输入，返回一个新函数 $Tv$，定义为
 
 $$
-Tv(x) = \max_{0 \leq c \leq x} \{u(c) + \beta v(x - c)\}
+    Tv(x) = \max_{0 \leq c \leq x} \{u(c) + \beta v(x - c)\}
 $$
 
 从 $v$ 出发，我们得到 $Tv$，再应用 $T$ 得到 $T^2 v := T(Tv)$，依此类推。
@@ -111,145 +140,184 @@ $$
 这个过程如下：
 
 1. 从一组值 $\{ v_0, \ldots, v_I \}$ 开始，这些值表示初始函数 $v$ 在网格点$\{ x_0, \ldots, x_I \}$ 上的值。
-1. 通过线性插值，在状态空间 $\mathbb{R}_+$ 上建立函数 $\hat{v}$。
-1. 通过反复求解贝尔曼方程中的最大化问题，获取并记录每个网格点 $x_i$ 上的值 $T \hat v(x_i)$。
+1. 通过线性插值，基于插值点 $\{(x_i, v_i)\}$，在状态空间 $\mathbb{R}_+$ 上建立函数 $\hat{v}$。
+1. 将 $\hat v$ 代入贝尔曼方程右侧，获取并记录每个网格点 $x_i$ 上的值 $T \hat v(x_i)$。
 1. 除非满足某个停止条件，否则设置 $\{ v_0, \ldots, v_I \} = \{ T \hat v(x_0), \ldots, T \hat v(x_I) \}$ 并返回步骤2。
 
-在步骤2中，我们将使用连续分段线性插值。
+在步骤2中，我们将使用分段线性插值。
 
 ### 实现
 
-下面的`maximize`函数是一个小型辅助函数，它将SciPy的最小化程序转换为一个最大化程序。
+下面的 `maximize` 函数是一个小型辅助函数，它将SciPy的最小化程序转换为一个最大化程序。
 
-```{code-cell} ipython3
-def maximize(g, a, b, args):
+```{code-cell} python3
+def maximize(g, upper_bound):
     """
-    在区间[a, b]上最大化函数g。
+    在区间 [0, upper_bound] 上最大化函数 g。
 
-    我们利用了这样一个事实：在任意区间上，g 的最大值点，同时也是 -g 的最小值点。
-    参数元组 args 收集传递给 g 的额外参数。
+    我们利用了这样一个事实：在任意区间上，g 的最大值点，
+    同时也是 -g 的最小值点。
 
-    返回最大值和最大值点。
     """
 
-    objective = lambda x: -g(x, *args)
-    result = minimize_scalar(objective, bounds=(a, b), method='bounded')
+    objective = lambda x: -g(x)
+    bounds = (0, upper_bound)
+    result = minimize_scalar(objective, bounds=bounds, method='bounded')
     maximizer, maximum = result.x, -result.fun
     return maximizer, maximum
 ```
-我们将参数 $\beta$ 和 $\gamma$ 存储在一个名为 `CakeEating` 的类中。
 
-这个类还将提供一个名为 `state_action_value` 的方法。该方法用来返回在给定状态和函数 $v$ 的猜测下，某个消费选择的价值。
+我们将参数 $\beta$ 和 $\gamma$ 以及网格存储在一个名为 `Model` 的 `NamedTuple` 中。
 
-```{code-cell} ipython3
-class CakeEating:
+我们还将创建一个名为 `create_cake_eating_model` 的辅助函数，用于存储默认参数并构建 `Model` 的实例。
 
-    def __init__(self,
-                 β=0.96,           # 折现因子
-                 γ=1.5,            # 相对风险厌恶程度
-                 x_grid_min=1e-3,  # 为了数值稳定性排除零
-                 x_grid_max=2.5,   # 蛋糕大小
-                 x_grid_size=120):
+```{code-cell} python3
+class Model(NamedTuple):
+    β: float
+    γ: float
+    x_grid: np.ndarray
 
-        self.β, self.γ = β, γ
+def create_cake_eating_model(
+        β: float = 0.96,           # 折现因子
+        γ: float = 1.5,            # 相对风险厌恶程度
+        x_grid_min: float = 1e-3,  # 为了数值稳定性排除零
+        x_grid_max: float = 2.5,   # 蛋糕大小
+        x_grid_size: int = 120
+    ):
+    """
+    创建吃蛋糕模型的一个实例。
 
-        # 设置网格
-        self.x_grid = np.linspace(x_grid_min, x_grid_max, x_grid_size)
-
-    # 效用函数
-    def u(self, c):
-
-        γ = self.γ
-
-        if γ == 1:
-            return np.log(c)
-        else:
-            return (c ** (1 - γ)) / (1 - γ)
-
-    # 效用函数的一阶导数
-    def u_prime(self, c):
-
-        return c ** (-self.γ)
-
-    def state_action_value(self, c, x, v_array):
-        """
-        在给定 x 和 c 的情况下，贝尔曼方程右侧的值。
-        """
-
-        u, β = self.u, self.β
-        v = lambda x: np.interp(x, self.x_grid, v_array)
-
-        return u(c) + β * v(x - c)
+    """
+    x_grid = np.linspace(x_grid_min, x_grid_max, x_grid_size)
+    return Model(β, γ, x_grid)
 ```
 
-现在，我们定义贝尔曼算子：
+这是CRRA效用函数。
 
-```{code-cell} ipython3
-def T(v, ce):
+```{code-cell} python3
+def u(c, γ):
+    return (c ** (1 - γ)) / (1 - γ)
+```
+
+为了运用贝尔曼方程，我们把它写成
+
+$$
+    v(x) = \max_{0 \leq c \leq x} B(x, c, v)
+$$
+
+其中
+
+$$
+    B(x, c, v) := u(c) + \beta v(x - c)
+$$
+
+现在我们来实现函数 $B$。
+
+```{code-cell} python3
+def B(
+        x: float,               # 当前状态（剩余蛋糕）
+        c: float,               # 当前消费
+        v: np.ndarray,          # 当前对价值函数的猜测
+        model: Model            # 吃蛋糕模型的实例
+    ):
     """
-    贝尔曼算子。更新价值函数的猜测。
-
-    * ce 是 CakeEating 类的一个实例
-    * v 是一个数组，表示对价值函数的猜测
+    在给定 x 和 c 的情况下，贝尔曼方程右侧的值。
 
     """
+    # 拆包（简化名称）
+    β, γ, x_grid = model
+
+    # 通过线性插值将数组 v 转换为函数
+    vf = lambda x: np.interp(x, x_grid, v)
+
+    # 返回 B(x, c, v)
+    return u(c, γ) + β * vf(x - c)
+```
+
+现在我们定义作用于网格点上的贝尔曼算子：
+
+$$
+    Tv(x_i) = \max_{0 \leq c \leq x_i} B(x_i, c, v)
+    \qquad \text{对所有 } i
+$$
+
+```{code-cell} python3
+def T(
+        v: np.ndarray,          # 当前对价值函数的猜测
+        model: Model            # 吃蛋糕模型的实例
+    ):
+    " 贝尔曼算子。更新价值函数的猜测。 "
+
+    # 为新数组 v_new = Tv 分配内存
     v_new = np.empty_like(v)
 
-    for i, x in enumerate(ce.x_grid):
-        # 在状态 x 下最大化贝尔曼方程的右侧
-        v_new[i] = maximize(ce.state_action_value, 1e-10, x, (x, v))[1]
+    # 对所有 x 计算 Tv(x)
+    for i, x in enumerate(model.x_grid):
+        # 在 [0, x] 上关于 c 最大化贝尔曼方程的右侧
+        _, v_new[i] = maximize(lambda c: B(x, c, v, model), x)
 
     return v_new
 ```
+
 在定义了贝尔曼算子之后，我们就可以开始求解这个模型了。
 
-让我们先用默认参数创建一个`CakeEating`实例。
+让我们先用默认参数创建一个模型。
 
-```{code-cell} ipython3
-ce = CakeEating()
+```{code-cell} python3
+model = create_cake_eating_model()
+β, γ, x_grid = model
 ```
+
 现在让我们看看价值函数的迭代过程。
 
-我们从初始猜测 $v = u$开始，即对每个网格点$x$，$v(x) = u(x)$。
+我们从初始猜测 $v$ 开始，即对每个网格点 $x$，$v(x) = u(x)$。
 
-```{code-cell} ipython3
-x_grid = ce.x_grid
-v = ce.u(x_grid)       # 初始猜测
-n = 12                 # 迭代次数
-
+```{code-cell} python3
+v = u(x_grid, γ)  # 初始猜测
+n = 12                  # 迭代次数
 fig, ax = plt.subplots()
 
+# 初始图
 ax.plot(x_grid, v, color=plt.cm.jet(0),
         lw=2, alpha=0.6, label='初始猜测')
 
+# 迭代
 for i in range(n):
-    v = T(v, ce)  # 应用贝尔曼算子
+    v = T(v, model)  # 应用贝尔曼算子
     ax.plot(x_grid, v, color=plt.cm.jet(i / n), lw=2, alpha=0.6)
+
+# 最后一次更新和绘图
+v = T(v, model)  
+ax.plot(x_grid, v, color=plt.cm.jet(0),
+        lw=2, alpha=0.6, label='最终猜测')
 
 ax.legend()
 ax.set_ylabel('价值', fontsize=12)
 ax.set_xlabel('蛋糕大小 $x$', fontsize=12)
 ax.set_title('价值函数迭代')
-
 plt.show()
 ```
 
-为了更系统地完成这项工作，我们引入一个名为`compute_value_function`的包装函数，该函数会一直迭代直到满足某些收敛条件。
+为了更系统地进行迭代，我们引入一个名为 `compute_value_function` 的包装函数。
 
-```{code-cell} ipython3
-def compute_value_function(ce,
-                           tol=1e-4,
-                           max_iter=1000,
-                           verbose=True,
-                           print_skip=25):
+它的任务是使用 $T$ 进行迭代，直到满足某些收敛条件。
+
+```{code-cell} python3
+def compute_value_function(
+        model: Model,
+        tol: float = 1e-4,
+        max_iter: int = 1_000,
+        verbose: bool = True,
+        print_skip: int = 25
+    ):
 
     # 设置循环
-    v = np.zeros(len(ce.x_grid)) # 初始猜测
+    v = np.zeros(len(model.x_grid)) # 初始猜测
     i = 0
     error = tol + 1
 
     while i < max_iter and error > tol:
-        v_new = T(v, ce)
+        v_new = T(v, model)
 
         error = np.max(np.abs(v - v_new))
         i += 1
@@ -266,15 +334,16 @@ def compute_value_function(ce,
 
     return v_new
 ```
-现在让我们调用它。注意，运行需要一点时间。
 
-```{code-cell} ipython3
-v = compute_value_function(ce)
+现在让我们调用它，注意运行需要一点时间。
+
+```{code-cell} python3
+v = compute_value_function(model)
 ```
 
 现在我们可以绘图查看收敛后的价值函数是什么样子。
 
-```{code-cell} ipython3
+```{code-cell} python3
 fig, ax = plt.subplots()
 
 ax.plot(x_grid, v, label='近似价值函数')
@@ -287,10 +356,11 @@ plt.show()
 
 接下来让我们将其与解析解进行比较。
 
-```{code-cell} ipython3
-v_analytical = v_star(ce.x_grid, ce.β, ce.γ)
+```{code-cell} python3
+v_analytical = v_star(x_grid, β, γ)
 ```
-```{code-cell} ipython3
+
+```{code-cell} python3
 fig, ax = plt.subplots()
 
 ax.plot(x_grid, v_analytical, label='解析解')
@@ -301,69 +371,81 @@ ax.legend()
 ax.set_title('解析解与数值解的价值函数对比')
 plt.show()
 ```
-对于较大的 $x$ 值,近似的质量相当好,但在下边界附近则要差一些。
+
+对于较大的 $x$ 值，近似的质量相当好，但在下边界附近则要差一些。
 
 这是因为效用函数以及由此产生的价值函数在接近下边界时非常陡峭，因此难以逼近。
 
+```{note}
+解决这个问题的一种方法是使用非线性网格，在零点附近设置更多的点。
+
+不过，我们不打算深入探讨这个想法，而是把注意力转向使用策略函数进行处理。
+
+我们将会看到，通过对策略函数的猜测进行迭代，可以避免价值函数迭代。
+
+策略函数的曲率较小，因此比价值函数更容易插值。
+
+这些想法将在接下来的几讲中进行探讨。
+```
+
 ### 策略函数
 
-下面我们看看如何用它来计算最优策略。
+下面我们来尝试计算最优策略。
 
-在{doc}`吃蛋糕问题的第一讲 <cake_eating_problem>`中,最优消费策略被证明为
+在{doc}`os`中，最优消费策略被证明为
 
 $$
-\sigma^*(x) = \left(1-\beta^{1/\gamma} \right) x
+    \sigma^*(x) = \left(1-\beta^{1/\gamma} \right) x
 $$
 
 让我们看看我们的数值结果是否能得到类似的形式。
 
-我们的数值策略将是在一系列 $x$ 点上计算
+我们的数值策略是，对任意给定的 $v$，计算策略
 
 $$
-\sigma(x) = \arg \max_{0 \leq c \leq x} \{u(c) + \beta v(x - c)\}
+    \sigma(x) = \arg \max_{0 \leq c \leq x} \{u(c) + \beta v(x - c)\}
 $$
 
-然后进行插值。
+这个策略被称为 $v$-**贪婪策略**。
 
-对于 $v$,我们将使用我们上面获得的近似价值函数。
+在实践中，我们将在 $x$ 点组成的网格上计算 $\sigma$，然后进行插值。
 
-这是相关函数:
+对于 $v$，我们将使用上面得到的价值函数近似值。
 
-```{code-cell} ipython3
-def σ(ce, v):
-    """
-    最优策略函数。给定价值函数,
-    它找到每个状态下的最优消费。
+这是相关函数：
 
-    * ce 是 CakeEating 的一个实例
-    * v 是一个价值函数数组
+```{code-cell} python3
+def get_greedy(
+        v: np.ndarray,          # 当前对价值函数的猜测
+        model: Model            # 吃蛋糕模型的实例
+    ):
+    " 在 x_grid 上计算 v-贪婪策略。"
 
-    """
-    c = np.empty_like(v)
+    σ = np.empty_like(v)
 
-    for i in range(len(ce.x_grid)):
-        x = ce.x_grid[i]
+    for i, x in enumerate(model.x_grid):
         # 在状态 x 下最大化贝尔曼方程的右侧
-        c[i] = maximize(ce.state_action_value, 1e-10, x, (x, v))[0]
+        σ[i], _ = maximize(lambda c: B(x, c, v, model), x)
 
-    return c
+    return σ
 ```
-现在让我们传入近似值函数并计算最优消费：
 
-```{code-cell} ipython3
-c = σ(ce, v)
+现在让我们传入近似价值函数并计算最优消费：
+
+```{code-cell} python3
+σ = get_greedy(v, model)
 ```
+
 (pol_an)=
-
 让我们将其与真实的解析解进行对比绘图
 
-```{code-cell} ipython3
-c_analytical = c_star(ce.x_grid, ce.β, ce.γ)
+```{code-cell} python3
+c_analytical = c_star(model.x_grid, model.β, model.γ)
 
 fig, ax = plt.subplots()
 
-ax.plot(ce.x_grid, c_analytical, label='解析解')
-ax.plot(ce.x_grid, c, label='数值解')
+ax.plot(model.x_grid, c_analytical, label='解析解')
+ax.plot(model.x_grid, σ, label='数值解')
 ax.set_ylabel(r'$\sigma(x)$')
 ax.set_xlabel('$x$')
 ax.legend()
@@ -379,50 +461,8 @@ plt.show()
 
 另一种可能性是使用一种替代算法，它既有可能缩短计算时间，同时还能提高精确度。
 
-接下来我们将探讨这种方法。
+我们将在{doc}`os_time_iter`中探讨这一点。
 
-## 时间迭代
-
-现在我们来看另一种计算最优策略的方法。
-
-回忆一下，最优策略满足欧拉方程
-
-```{math}
-:label: euler-cen
-
-u' (\sigma(x)) = \beta u' ( \sigma(x - \sigma(x)))
-\quad \text{对所有 } x > 0
-```
-
-在计算上，我们可以从任意初始猜测 $\sigma_0$ 开始，然后选择 $c$ 来求解
-
-$$
-u^{\prime}( c ) = \beta u^{\prime} (\sigma_0(x - c))
-$$
-
-在所有 $x > 0$ 上解得的 $c$ 就生成了一个 $x$ 的函数。
-
-我们称这个新函数为 $\sigma_1$，并将它作为新的猜测，重复上述步骤。
-
-这被称为**时间迭代**。
-
-与值函数迭代一样，我们可以将更新步骤视为一个算子的作用，这次用 $K$ 表示。
-
-* 特别地，$K\sigma$ 是使用刚才描述的程序从 $\sigma$ 更新得到的策略。
-* 我们将在下面的练习中使用这个术语。
-
-相对于价值函数迭代，时间迭代的主要优势在于它在策略空间而不是价值函数空间中运算。
-
-这很有帮助，因为策略函数的曲率较小，因此更容易逼近。
-
-在练习中，你将被要求实现时间迭代，并与价值函数迭代进行比较。
-
-你会发现这种方法更快，也更精确。
-
-这是由于
-
-1. 刚才提到的曲率问题，以及
-1. 我们利用了更多的信息——在这里是一阶条件。
 
 ## 练习
 
@@ -439,7 +479,7 @@ $$
 
 变化，其中 $\alpha$ 是一个满足 $0 < \alpha < 1$ 的参数。
 
-(我们在学习最优增长模型时会看到这种更新规则。)
+（我们在学习最优增长模型时会看到这种更新规则。）
 
 请对价值函数迭代代码进行相应修改，并绘制价值函数和策略函数。
 
@@ -450,65 +490,124 @@ $$
 :class: dropdown
 ```
 
-我们需要创建一个类来保存基本要素，并返回贝尔曼方程的右端。
+我们需要创建一个扩展版本的模型和状态-行动价值函数。
 
-我们将使用[继承](https://developer.baidu.com/article/details/2837714)来最大化代码重用。
+我们将为扩展蛋糕模型创建一个新的 `NamedTuple`，以及一个辅助函数。
 
-```{code-cell} ipython3
-class OptimalGrowth(CakeEating):
+```{code-cell} python3
+# 创建扩展蛋糕模型的数据结构
+class ExtendedModel(NamedTuple):
+    β: float
+    γ: float
+    α: float
+    x_grid: np.ndarray
+
+def create_extended_model(β=0.96,           # 折现因子
+                          γ=1.5,            # 相对风险厌恶程度
+                          α=0.4,            # 生产力参数
+                          x_grid_min=1e-3,  # 为了数值稳定性排除零
+                          x_grid_max=2.5,   # 蛋糕大小
+                          x_grid_size=120):
     """
-    CakeEating的一个子类，添加了参数α并重写了
-    state_action_value方法。
+    创建扩展吃蛋糕模型的一个实例。
     """
+    x_grid = np.linspace(x_grid_min, x_grid_max, x_grid_size)
+    return ExtendedModel(β, γ, α, x_grid)
 
-    def __init__(self,
-                 β=0.96,           # 折现因子
-                 γ=1.5,            # 相对风险厌恶程度
-                 α=0.4,            # 生产力参数
-                 x_grid_min=1e-3,  # 为了数值稳定性排除零
-                 x_grid_max=2.5,   # 蛋糕大小
-                 x_grid_size=120):
+def extended_B(c, x, v, model):
+    """
+    在给定 x 和 c 的情况下，扩展蛋糕模型贝尔曼方程右侧的值。
 
-        self.α = α
-        CakeEating.__init__(self, β, γ, x_grid_min, x_grid_max, x_grid_size)
-
-    def state_action_value(self, c, x, v_array):
-        """
-       在给定 x 和 c 的情况下，贝尔曼方程右侧的值。
-        """
-
-        u, β, α = self.u, self.β, self.α
-        v = lambda x: np.interp(x, self.x_grid, v_array)
-
-        return u(c) + β * v((x - c)**α)
-```
-```{code-cell} ipython3
-og = OptimalGrowth()
+    """
+    β, γ, α, x_grid = model
+    vf = lambda x: np.interp(x, x_grid, v)
+    return u(c, γ) + β * vf((x - c)**α)
 ```
 
-以下是计算得到的价值函数：
+我们还需要一个修改后的贝尔曼算子：
 
-```{code-cell} ipython3
-v = compute_value_function(og, verbose=False)
+```{code-cell} python3
+def extended_T(v, model):
+    " 扩展蛋糕模型的贝尔曼算子。 "
+
+    v_new = np.empty_like(v)
+    for i, x in enumerate(model.x_grid):
+        _, v_new[i] = maximize(lambda c: extended_B(c, x, v, model), x)
+    return v_new
+```
+
+现在创建模型：
+
+```{code-cell} python3
+model = create_extended_model()
+```
+
+下面是一个计算价值函数的函数。
+
+```{code-cell} python3
+def compute_value_function_extended(model,
+                                    tol=1e-4,
+                                    max_iter=1000,
+                                    verbose=True,
+                                    print_skip=25):
+    """
+    计算扩展蛋糕模型的价值函数。
+    """
+    v = np.zeros(len(model.x_grid))
+    i = 0
+    error = tol + 1
+
+    while i < max_iter and error > tol:
+        v_new = extended_T(v, model)
+        error = np.max(np.abs(v - v_new))
+        i += 1
+        if verbose and i % print_skip == 0:
+            print(f"第 {i} 次迭代的误差是 {error}.")
+        v = v_new
+
+    if error > tol:
+        print("未能收敛！")
+    elif verbose:
+        print(f"\n在第 {i} 次迭代中收敛。")
+
+    return v_new
+
+v = compute_value_function_extended(model, verbose=False)
 
 fig, ax = plt.subplots()
 
-ax.plot(x_grid, v, lw=2, alpha=0.6)
+ax.plot(model.x_grid, v, lw=2, alpha=0.6)
 ax.set_ylabel('价值', fontsize=12)
 ax.set_xlabel('状态 $x$', fontsize=12)
 
 plt.show()
 ```
 
-下面是计算得到的策略函数，并与我们在标准吃蛋糕问题（$\alpha = 1$）情况下推导出的解进行比较：
+下面是计算得到的策略函数，并与我们在标准吃蛋糕问题（$\alpha=1$）情况下推导出的解进行比较。
 
-```{code-cell} ipython3
-c_new = σ(og, v)
+```{code-cell} python3
+def extended_get_greedy(model, v):
+    """
+    扩展蛋糕模型的最优策略函数。
+    """
+    σ = np.empty_like(v)
+
+    for i, x in enumerate(model.x_grid):
+        # 在 [0, x] 上关于 c 最大化 extended_B
+        σ[i], _ = maximize(lambda c: extended_B(c, x, v, model), x)
+
+    return σ
+
+σ = extended_get_greedy(model, v)
+
+# 获取基准模型用于比较
+baseline_model = create_cake_eating_model()
+c_analytical = c_star(baseline_model.x_grid, baseline_model.β, baseline_model.γ)
 
 fig, ax = plt.subplots()
 
-ax.plot(ce.x_grid, c_analytical, label=r'$\alpha=1$ 的解')
-ax.plot(ce.x_grid, c_new, label=fr'$\alpha={og.α}$ 的解')
+ax.plot(baseline_model.x_grid, c_analytical, label=r'$\alpha=1$ 的解')
+ax.plot(model.x_grid, σ, label=fr'$\alpha={model.α}$ 的解')
 
 ax.set_ylabel('消费', fontsize=12)
 ax.set_xlabel('$x$', fontsize=12)
@@ -518,105 +617,7 @@ ax.legend(fontsize=12)
 plt.show()
 ```
 
-当 $\alpha < 1$ 时，消费水平更高，因为对于较大的 $x$，储蓄的回报较低。
-
-```{solution-end}
-```
-
-
-```{exercise}
-:label: cen_ex2
-
-在原始设定下实现时间迭代(即,去掉上述练习中的修改)。
-```
-
-
-```{solution-start} cen_ex2
-:class: dropdown
-```
-
-下面是一种实现时间迭代的方法：
-
-```{code-cell} ipython3
-def K(σ_array, ce):
-    """
-    策略函数算子。给定策略函数,
-    使用欧拉方程更新最优消费。
-
-    * σ_array 是网格上策略函数值的数组
-    * ce 是 CakeEating 的一个实例
-
-    """
-
-    u_prime, β, x_grid = ce.u_prime, ce.β, ce.x_grid
-    σ_new = np.empty_like(σ_array)
-
-    σ = lambda x: np.interp(x, x_grid, σ_array)
-
-    def euler_diff(c, x):
-        return u_prime(c) - β * u_prime(σ(x - c))
-
-    for i, x in enumerate(x_grid):
-
-        # 单独处理小的 x --- 有助于数值稳定性
-        if x < 1e-12:
-            σ_new[i] = 0.0
-
-        # 处理其他 x
-        else:
-            σ_new[i] = bisect(euler_diff, 1e-10, x - 1e-10, x)
-
-    return σ_new
-```
-```{code-cell} ipython3
-def iterate_euler_equation(ce,
-                           max_iter=500,
-                           tol=1e-5,
-                           verbose=True,
-                           print_skip=25):
-
-    x_grid = ce.x_grid
-
-    σ = np.copy(x_grid)        # 初始猜测
-
-    i = 0
-    error = tol + 1
-    while i < max_iter and error > tol:
-
-        σ_new = K(σ, ce)
-
-        error = np.max(np.abs(σ_new - σ))
-        i += 1
-
-        if verbose and i % print_skip == 0:
-            print(f"第 {i} 次迭代的误差是{error}。")
-
-        σ = σ_new
-
-    if error > tol:
-        print("未能收敛！")
-    elif verbose:
-        print(f"\n在 {i} 次迭代后收敛。")
-
-    return σ
-```
-```{code-cell} ipython3
-ce = CakeEating(x_grid_min=0.0)
-c_euler = iterate_euler_equation(ce)
-```
-
-```{code-cell} ipython3
-fig, ax = plt.subplots()
-
-ax.plot(ce.x_grid, c_analytical, label='解析解')
-ax.plot(ce.x_grid, c_euler, label='时间迭代解')
-
-ax.set_ylabel('消费')
-ax.set_xlabel('$x$')
-ax.legend(fontsize=12)
-
-plt.show()
-```
+当 $\alpha < 1$ 时，消费水平更高，因为至少对于较大的 $x$，储蓄的回报较低。
 
 ```{solution-end}
 ```
