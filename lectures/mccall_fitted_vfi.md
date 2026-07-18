@@ -88,6 +88,10 @@ VFI和这个插值步骤的结合被称为**拟合值函数迭代**（拟合 VFI
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
 import jax
 import jax.numpy as jnp
 from jax import lax
