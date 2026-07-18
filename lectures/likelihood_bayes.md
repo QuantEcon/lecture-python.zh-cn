@@ -9,6 +9,21 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 似然比过程和贝叶斯学习
+  headings:
+    Overview: 概述
+    The Setting: 背景设置
+    Likelihood Ratio Processes and Bayes’ Law: 似然比过程和贝叶斯定律
+    Likelihood Ratio Processes and Bayes’ Law::A recursive formula: 递归公式
+    Another timing protocol: 另一种时序协议
+    Another timing protocol::Behavior of $\pi_t$ under wrong model: 在错误模型下 $\pi_t$ 的行为
+    Behavior of  Posterior Probability $\{\pi_t\}$  Under  Subjective Probability Distribution: 后验概率 $\{\pi_t\}$ 在主观概率分布下的行为
+    Behavior of  Posterior Probability $\{\pi_t\}$  Under  Subjective Probability Distribution::Mechanical details again: 再谈机械细节
+    Behavior of  Posterior Probability $\{\pi_t\}$  Under  Subjective Probability Distribution::Some simulations: 一些模拟
+    Initial Prior is Verified by Paths Drawn from Subjective Conditional Densities: 通过从主观条件密度中抽取的路径验证初始先验
+    Drilling Down a Little Bit: 深入分析
+    Related Lectures: 相关讲座
 ---
 
 (likelihood_ratio_process)=
@@ -34,9 +49,7 @@ kernelspec:
 
 我们还将介绍该公式的一个有用推广，该推广将今天的后验概率表示为初始先验和今天似然比过程实现值的函数。
 
-我们将研究在我们的设置中，贝叶斯学习者如何最终学习到生成数据的概率分布，这个结果
-
-这建立在{doc}`本讲座 <likelihood_ratio_process>`中研究的似然比过程的渐近行为之上。
+我们将研究在我们的设置中，贝叶斯学习者如何最终学习到生成数据的概率分布，这个结果建立在{doc}`本讲座 <likelihood_ratio_process>`中研究的似然比过程的渐近行为之上。
 
 我们还将深入探讨贝叶斯学习者的心理，研究其主观信念下的动态变化。
 
@@ -51,6 +64,7 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
+import matplotlib.pyplot as plt
 import numpy as np
 from numba import vectorize, jit, prange
 from math import gamma
@@ -568,9 +582,7 @@ $$
 
 而且在他的主观信念下，平均来说确实不会改变。
 
-我们将继续在这样的设定下讨论：McCall工人知道他的工资连续抽样要么来自 $F$ 要么来自 $G$，但不知道是这两个分布中的哪一个。
-
-自然在时间 $0$ 之前已经一次性地做出了选择。
+我们将继续在这样的设定下讨论：McCall工人知道他的工资连续抽样要么来自 $F$ 要么来自 $G$，但不知道自然界在时间 $0$ 之前已经一次性地选择了这两个分布中的哪一个。
 
 让我们回顾、重申并重新整理我们在上文和相关讲座中遇到的一些公式。
 
@@ -635,9 +647,7 @@ $$
 
 事实上，它是一个**有界鞅**，因为每个$\pi_t$作为概率都在0和1之间。
 
-在上述等式串的第一行中，第一个方括号中的项就是作为$w_{t}$函数的$\pi_t$，而第二个方括号中的项是在给定条件下$w_{t}$的密度。
-
-在 $w_{t-1}, \ldots , w_0$ 上，或等价地在 $w_{t-1}, \ldots , w_0$ 的*充分统计量* $\pi_{t-1}$ 上的条件。
+在上述等式串的第一行中，第一个方括号中的项就是作为$w_{t}$函数的$\pi_t$，而第二个方括号中的项是在给定$w_{t-1}, \ldots , w_0$，或等价地在$w_{t-1}, \ldots , w_0$的*充分统计量*$\pi_{t-1}$的条件下$w_{t}$的密度。
 
 注意这里我们是在括号中第二项所描述的**主观**密度下计算 $E(\pi_t | \pi_{t-1})$。
 
@@ -709,9 +719,7 @@ $$
 
 将此方程与方程(20)结合，我们推断出 ${\textrm{Prob}(\Omega)}$ 赋予 $\pi_\infty(\omega)$ 为 1 的概率必须是 $\pi_{-1}$。
 
-因此，在工人的主观分布下，$\pi_{-1}$ 的样本路径
-
-$\{\pi_t\}$将有$\pi_{-1}$的样本路径逐点收敛到$1$，有$1 - \pi_{-1}$的样本路径逐点收敛到$0$。
+因此，在工人的主观分布下，$\{\pi_t\}$将有$\pi_{-1}$的样本路径逐点收敛到$1$，有$1 - \pi_{-1}$的样本路径逐点收敛到$0$。
 
 ### 一些模拟
 
@@ -929,4 +937,3 @@ plt.show()
 ## 相关讲座
 
 本讲座致力于建立一些有用的基础设施，这将有助于我们理解在{doc}`这个讲座 <odu>`、{doc}`这个讲座 <wald_friedman>` 和{doc}`这个讲座 <navy_captain>` 中描述的结果的推理基础。
-
