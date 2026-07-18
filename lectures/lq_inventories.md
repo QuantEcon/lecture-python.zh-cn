@@ -7,6 +7,19 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 通过库存实现生产平滑
+  headings:
+    Overview: 概述
+    Example 1: 示例1
+    Inventories Not Useful: 库存无用处的情况
+    Inventories Useful but are Hardwired to be Zero Always: 库存有用但被强制设为永远为零
+    Example 2: 示例2
+    Example 3: 示例 3
+    Example 4: 示例 4
+    Example 5: 示例 5
+    Example 6: 示例6
+    Exercises: 练习
 ---
 
 (inventory_sales_smoothing-v6)=
@@ -46,9 +59,7 @@ tags: [hide-output]
 
 由于生产成本随产量增加呈二次增长，如果持有库存的成本不是太高，企业会将库存作为缓冲，以便在时间上平滑生产。
 
-但企业也希望从现有库存中进行销售，我们用二次方程来表示这种偏好，其中
-
-某时期的销售额与公司期初库存的差额。
+但企业也希望从现有库存中进行销售，我们用二次方程来表示这种偏好，其中该二次方程是关于某时期的销售额与公司期初库存的差额的。
 
 我们计算示例来说明公司如何在保持库存接近销售的同时实现最优生产平滑。
 
@@ -63,7 +74,6 @@ tags: [hide-output]
     - 持有库存的成本 $d_1 I_t$，以及
     - 库存偏离销售的成本 $d_2 (S_t - I_t)^2$
 - $p_t = a_0 - a_1 S_t + v_t$ 为公司产品的反需求函数，其中$a_0>0, a_1 >0$，且$v_t$为t时刻的需求冲击
-
 - $\pi\_t = p_t S_t - c(Q_t) - d(I_t, S_t)$ 是企业在时间 $t$ 的利润
 - $\sum_{t=0}^\infty \beta^t \pi_t$ 是企业在时间 $0$ 的利润现值
 - $I_{t+1} = I_t + Q_t - S_t$ 是库存的变动规律
@@ -87,8 +97,7 @@ $$
 
 $$
 \begin{aligned}
-
-\begin{bmatrix} I_{t+1} \cr z_t \end{bmatrix} = \left[\begin{array}{cc}
+ \begin{bmatrix} I_{t+1} \cr z_t \end{bmatrix} = \left[\begin{array}{cc}
 1 & 0\\
 0 & A_{22}
 \end{array}\right] \begin{bmatrix} I_t \cr z_t \end{bmatrix}
@@ -115,7 +124,6 @@ $$
 
 $$
 \begin{aligned}
-
 \pi_{t} =&p_{t}S_{t}-c\left(Q_{t}\right)-d\left(I_{t},S_{t}\right)  \\
     =&\left(a_{0}-a_{1}S_{t}+v_{t}\right)S_{t}-c_{1}Q_{t}-c_{2}Q_{t}^{2}-d_{1}I_{t}-d_{2}\left(S_{t}-I_{t}\right)^{2}  \\
     =&a_{0}S_{t}-a_{1}S_{t}^{2}+Gz_{t}S_{t}-c_{1}Q_{t}-c_{2}Q_{t}^{2}-d_{1}I_{t}-d_{2}S_{t}^{2}-d_{2}I_{t}^{2}+2d_{2}S_{t}I_{t}  \\
@@ -129,9 +137,6 @@ d_{2} & \frac{d_{1}}{2}S_{c}\\
 I_{t}\\
 z_{t}
 \end{array}\right]+\left[\begin{array}{cc}
-
-$$
-\begin{aligned}
 Q_{t} & S_{t}\end{array}\right]\underset{\equiv Q}{\underbrace{\left[\begin{array}{cc}
 c_{2} & 0\\
 0 & a_{1}+d_{2}
@@ -189,7 +194,7 @@ import numpy as np
 import quantecon as qe
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 class SmoothingExample:
     """
     用于构建、求解和绘制库存和销售平滑问题结果的类。
@@ -357,7 +362,7 @@ $$
 
 我们将计算并显示结果，然后在相关图表下方进行讨论。
 
-```{code-cell} ipython3
+```{code-cell} python3
 ex1 = SmoothingExample()
 
 x0 = [0, 1, 0]
@@ -411,9 +416,7 @@ $$
 ## 库存有用但被强制设为永远为零
 
 接下来，我们来看另一个不同的问题，在这个问题中库存是有用的 - 
-意味着销售不等于库存会产生$d_2 (I_t - S_t)^2$的成本 - 但我们任意地强加给企业
-
-这个不持有库存的代价高昂的限制。
+意味着销售不等于库存会产生$d_2 (I_t - S_t)^2$的成本 - 但我们任意地强加给企业这个不持有库存的代价高昂的限制。
 
 在这里，企业的最大化问题是
 
@@ -441,9 +444,7 @@ $$
 目的是通过与其他两个版本问题的结果比较，
 来阐明库存所发挥的作用。
 
-右下方面板显示了我们感兴趣的原始问题的生产路径（蓝线）以及一个
-
-对于存货无用的模型（绿色路径）以及存货虽然有用但被强制设为零且公司需要为销售量$S_t$不等于零而支付成本$d(0, Q_t)$的模型（橙色线），这是最优生产路径。
+右下方面板显示了我们感兴趣的原始问题的生产路径（蓝线），以及存货无用模型的最优生产路径（绿色路径），还有存货虽然有用但被强制设为零、且公司需要为销售量$S_t$不等于零而支付成本$d(0, Q_t)$的模型的生产路径（橙色线）。
 
 注意，当存货无用时，公司通常会选择生产更多。在这种情况下，不需要从存货中销售，也不会因销售量偏离存货量而产生成本。
 
@@ -453,15 +454,13 @@ $$
 
 在原始模型中早期的高最优生产量出现是因为公司希望快速积累存货，以便在后期使用大量存货。
 
-但是绿线与蓝线在早期的比较关系取决于
-
-需求冲击的演变，正如我们将在下面分析的确定性季节性需求冲击示例中所看到的。
+但是绿线与蓝线在早期的比较关系取决于需求冲击的演变，正如我们将在下面分析的确定性季节性需求冲击示例中所看到的。
 
 在该示例中，由于下一次正向需求冲击在较远的未来，原始企业会选择缓慢积累库存。
 
 为了更容易看清绿色-蓝色模型的生产对比，让我们将图表限制在前10个周期：
 
-```{code-cell} ipython3
+```{code-cell} python3
 ex1.simulate(x0, T=10)
 ```
 
@@ -475,7 +474,7 @@ $$
 
 同样，我们将计算并在一些图表中展示结果
 
-```{code-cell} ipython3
+```{code-cell} python3
 ex2 = SmoothingExample(C2=[[0], [0]])
 
 x0 = [0, 1, 0]
@@ -490,7 +489,7 @@ ex2.simulate(x0)
 
 现在，将销售量大致设置为等于库存量，并利用库存来很好地平滑生产变得最优，如下图所示：
 
-```{code-cell} ipython3
+```{code-cell} python3
 ex3 = SmoothingExample(d1=0)
 
 x0 = [0, 1, 0]
@@ -516,7 +515,6 @@ $$
 因此，当$d_1=d_2= 0$时，公司发现在所有时期$t$将$Q_t = \frac{-c_1}{2c_2}$设为最优，那么
 
 $$
-
 I_{t+1} - I_t = \frac{-c_1}{2c_2} - S_t < 0
 $$
 
@@ -528,7 +526,7 @@ $$
 
 以下图表证实了库存无限下降
 
-```{code-cell} ipython3
+```{code-cell} python3
 ex4 = SmoothingExample(d1=0, d2=0)
 
 x0 = [0, 1, 0]
@@ -539,7 +537,7 @@ ex4.simulate(x0)
 
 我们将用以下代码设置时间范围 $T =30$
 
-```{code-cell} ipython3
+```{code-cell} python3
 # shorter period
 ex4.simulate(x0, T=30)
 ```
@@ -567,13 +565,13 @@ G=\left[\begin{array}{cc}
 b & a\end{array}\right]
 $$
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 设置参数
 a = 0.5
 b = 3.
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 ex5 = SmoothingExample(A22=[[1, 0], [1, 1]], C2=[[0], [0]], G=[b, a])
 
 x0 = [0, 1, 0] # 将初始库存设为0
@@ -601,7 +599,7 @@ $$
 x_0 = \begin{bmatrix} 1 \cr 0 \cr 1 \cr 0 \cr 0 \end{bmatrix}
 $$
 
-```{code-cell} ipython3
+```{code-cell} python3
 ex6 = SmoothingExample(A22=[[1, 0, 0, 0, 0],
                             [0, 0, 0, 0, 1],
                             [0, 1, 0, 0, 0],
@@ -616,17 +614,17 @@ ex6.simulate(x00, T=20)
 
 现在我们将生成一些更多的例子，这些例子仅仅在开始需求冲击的**季节**上有所不同
 
-```{code-cell} ipython3
+```{code-cell} python3
 x01 = [0, 1, 1, 0, 0, 0]
 ex6.simulate(x01, T=20)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 x02 = [0, 1, 0, 0, 1, 0]
 ex6.simulate(x02, T=20)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 x03 = [0, 1, 0, 0, 0, 1]
 ex6.simulate(x03, T=20)
 ```
@@ -660,14 +658,14 @@ $\epsilon_t$。通过长期模拟计算稳态$\bar{x}$。
 :class: dropdown
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 设置参数
 α = 1
 ρ1 = 1.2
 ρ2 = -.3
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 构建矩阵
 A22 =[[1,  0,  0],
           [1, ρ1, ρ2],
@@ -676,14 +674,14 @@ C2 = [[0], [1], [0]]
 G = [0, 1, 0]
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 ex1 = SmoothingExample(A22=A22, C2=C2, G=G)
 
 x0 = [0, 1, 0, 0] # 初始条件
 ex1.simulate(x0)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 现在消除噪音
 ex1_no_noise = SmoothingExample(A22=A22, C2=[[0], [0], [0]], G=G)
 
@@ -697,18 +695,18 @@ x_bar
 
 在下面的内容中，我们对$\bar{\nu}_t$添加小幅和大幅冲击，并比较企业在产量方面的不同反应。由于在我们使用的参数化条件下冲击的持续性不是很强，我们主要关注短期反应。
 
-```{code-cell} ipython3
+```{code-cell} python3
 T = 40
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 小幅冲击
 x_bar1 = x_bar.copy()
 x_bar1[2] += 2
 ex1_no_noise.simulate(x_bar1, T=T)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 大幅冲击
 x_bar1 = x_bar.copy()
 x_bar1[2] += 10
@@ -731,18 +729,17 @@ ex1_no_noise.simulate(x_bar1, T=T)
 :class: dropdown
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 x0 = [0, 1, 0]
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 SmoothingExample(c2=5).simulate(x0)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 SmoothingExample(d2=5).simulate(x0)
 ```
 
 ```{solution-end}
 ```
-
