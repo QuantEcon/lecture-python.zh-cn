@@ -539,7 +539,7 @@ def analyze_roots(α, β, verbose=True):
     is_stable = all(abs(root) < 1 for root in roots)
     
     if verbose:
-        print(f'ρ_1 是 {ρ1}')
+        print(f"ρ1 = {ρ1:.2f}, ρ2 = {ρ2:.2f}")
         print(f"根为: {[f'{root:.2f}' for root in roots]}")
         print(f"根的类型: {'复数' if is_complex else '实数'}")
         print(f"稳定性: {'稳定' if is_stable else '不稳定'}")
@@ -737,14 +737,14 @@ period = 10                # 时间单位中的周期长度
 # 应用反向推导函数
 ρ1, ρ2, α, β = f(r, ϕ)
 
-print(f'ρ_2 是 {ρ2}')
-print(f'根为 {roots}')
+print(f"α, β = {α:.2f}, {β:.2f}")
+print(f"ρ1, ρ2 = {ρ1:.2f}, {ρ2:.2f}")
 ```
 
 根的实部为
 
 ```{code-cell} ipython3
-print(f'根的类型: {self.root_type()}')
+print(f"ρ1 = {ρ1.real:.2f}, ρ2 = {ρ2.real:.2f}")
 ```
 
 ### 使用numpy求根
@@ -757,8 +757,8 @@ r1, r2 = np.roots([1, -ρ1, -ρ2])
 p1 = cmath.polar(r1)
 p2 = cmath.polar(r2)
 
-print(f'解的类型: {self.solution_type()}')
-print(f'根: {str(self.roots)}')
+print(f"r, ϕ = {r:.2f}, {ϕ:.2f}")
+print(f"p1, p2 = ({p1[0]:.2f}, {p1[1]:.2f}), ({p2[0]:.2f}, {p2[1]:.2f})")
 
 print(f"α, β = {α:.2f}, {β:.2f}")
 print(f"ρ1, ρ2 = {ρ1:.2f}, {ρ2:.2f}")
