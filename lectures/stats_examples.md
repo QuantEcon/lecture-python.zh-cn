@@ -9,6 +9,17 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 一些概率分布
+  headings:
+    Some Discrete Probability Distributions: 一些离散概率分布
+    Geometric distribution: 几何分布
+    Pascal (negative binomial) distribution: 帕斯卡（负二项）分布
+    Newcomb–Benford distribution: 纽科姆-本福特分布
+    Univariate Gaussian distribution: 一元高斯分布
+    Uniform Distribution: 均匀分布
+    A Mixed Discrete-Continuous Distribution: 混合离散-连续分布
+    Drawing a  Random Number from a Particular Distribution: 从特定分布中抽取随机数
 ---
 
 # 一些概率分布
@@ -70,11 +81,13 @@ $$
 让我们使用Python从该分布中抽取观测值，并将样本均值和方差与理论结果进行比较。
 
 ```{code-cell} ipython3
+rng = np.random.default_rng()
+
 # 指定参数
 p, n = 0.3, 1_000_000
 
 # 从分布中抽取观测值
-x = np.random.geometric(p, n)
+x = rng.geometric(p, n)
 
 # 计算样本均值和方差
 μ_hat = np.mean(x)
@@ -116,19 +129,19 @@ $$
 $$
 
 ```{code-cell} ipython3
-# specify parameters
+# 指定参数
 r, p, n = 10, 0.3, 1_000_000
 
-# draw observations from the distribution
-x = np.random.negative_binomial(r, p, n)
+# 从分布中抽取观测值
+x = rng.negative_binomial(r, p, n)
 
-# compute sample mean and variance
+# 计算样本均值和方差
 μ_hat = np.mean(x)
 σ2_hat = np.var(x)
 
-print("The sample mean is: ", μ_hat, "\nThe sample variance is: ", σ2_hat)
-print("\nThe population mean is: ", r*(1-p)/p)
-print("The population variance is: ", r*(1-p)/p**2)
+print("样本均值为：", μ_hat, "\n样本方差为：", σ2_hat)
+print("\n总体均值为：", r*(1-p)/p)
+print("总体方差为：", r*(1-p)/p**2)
 ```
 
 ## 纽科姆-本福特分布
@@ -209,7 +222,7 @@ $$f(x|u,\sigma^2)=\frac{1}{\sqrt{2\pi \sigma^2}}e^{[-\frac{1}{2\sigma^2}(x-u)^2]
 n = 1_000_000
 
 # 从分布中抽取观测值
-x = np.random.normal(μ, σ, n)
+x = rng.normal(μ, σ, n)
 
 # 计算样本均值和方差
 μ_hat = np.mean(x)
@@ -251,7 +264,7 @@ a, b = 10, 20
 n = 1_000_000
 
 # 从分布中抽取观测值
-x = a + (b-a)*np.random.rand(n)
+x = a + (b-a)*rng.random(n)
 
 # 计算样本均值和方差
 μ_hat = np.mean(x)
@@ -287,9 +300,9 @@ $$
 让我们先生成一个随机样本并计算样本矩。
 
 ```{code-cell} ipython3
-x = np.random.rand(1_000_000)
+x = rng.random(1_000_000)
 # x[x > 0.95] = 100*x[x > 0.95]+300
-x[x > 0.95] = 100*np.random.rand(len(x[x > 0.95]))+300
+x[x > 0.95] = 100*rng.random(len(x[x > 0.95]))+300
 x[x <= 0.95] = 0
 
 μ_hat = np.mean(x)
@@ -429,13 +442,13 @@ $$
 n, λ = 1_000_000, 0.3
 
 # 生成均匀分布随机数
-u = np.random.rand(n)
+u = rng.random(n)
 
 # 转换
 x = -np.log(1-u)/λ
 
 # 生成指数分布
-x_g = np.random.exponential(1 / λ, n)
+x_g = rng.exponential(1 / λ, n)
 
 # 绘图并比较
 plt.hist(x, bins=100, density=True)
@@ -505,13 +518,13 @@ $$
 n, λ = 1_000_000, 0.8
 
 # 生成均匀分布随机数
-u = np.random.rand(n)
+u = rng.random(n)
 
 # 转换
 x = np.ceil(np.log(1-u)/np.log(λ) - 1)
 
 # 生成几何分布
-x_g = np.random.geometric(1-λ, n)
+x_g = rng.geometric(1-λ, n)
 
 # 绘图并比较
 plt.hist(x, bins=150, density=True)
@@ -520,7 +533,7 @@ plt.show()
 
 
 ```{code-cell} ipython3
-np.random.geometric(1-λ, n).max()
+rng.geometric(1-λ, n).max()
 ```
 
 ```{code-cell} ipython3
@@ -531,4 +544,3 @@ np.log(0.4)/np.log(0.3)
 plt.hist(x_g, bins=150, density=True, alpha=0.6)
 plt.show()
 ```
-
