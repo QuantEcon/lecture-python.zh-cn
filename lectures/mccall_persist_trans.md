@@ -66,6 +66,10 @@ translation:
 
 ```{code-cell} ipython
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
 import jax
 import jax.numpy as jnp
 import jax.random
