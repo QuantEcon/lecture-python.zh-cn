@@ -7,6 +7,34 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 萨缪尔森乘数-加速器模型
+  headings:
+    Overview: 概述
+    Overview::Samuelson's model: 萨缪尔森模型
+    Details: 详细内容
+    Details::Stochastic version of the model: 模型的随机版本
+    Details::Mathematical analysis of the model: 模型的数学分析
+    Details::Things this lecture does: 本讲内容
+    Implementation: 实现
+    Implementation::Function to describe implications of characteristic polynomial: 描述特征多项式含义的函数
+    Implementation::Function for plotting paths: 绘制路径的函数
+    Implementation::Manual or "by hand" root calculations: 手动或"人工"求根计算
+    Implementation::Reverse-engineering parameters to generate damped cycles: 反向推导参数以生成阻尼周期
+    Implementation::Root finding using numpy: 使用numpy求根
+    'Implementation::Reverse-engineered complex roots: Example': 反向推导复数根：示例
+    'Implementation::Digression: Using Sympy to find roots': 题外话：使用 Sympy 求根
+    Stochastic shocks: 随机冲击
+    Government spending: 政府支出
+    Wrapping everything into a class: 将所有内容封装到类中
+    Wrapping everything into a class::Illustration of Samuelson class: Samuelson类的说明
+    Wrapping everything into a class::Using the graph: 使用图形
+    Using the LinearStateSpace class: 使用LinearStateSpace类
+    Using the LinearStateSpace class::Other methods in the `LinearStateSpace` class: '`LinearStateSpace` 类中的其他方法'
+    Using the LinearStateSpace class::Inheriting methods from `LinearStateSpace`: 从 `LinearStateSpace` 继承方法
+    Using the LinearStateSpace class::Illustrations: 图示
+    Pure multiplier model: 纯乘数模型
+    Summary: 总结
 ---
 
 ```{raw} jupyter
@@ -25,10 +53,9 @@ kernelspec:
 
 除了Anaconda中已有的库外，这节课程还需要以下库：
 
-```{code-cell} ipython
----
-tags: [hide-output]
----
+```{code-cell} ipython3
+:tags: [hide-output]
+
 !pip install quantecon
 ```
 
@@ -36,7 +63,7 @@ tags: [hide-output]
 
 本讲将介绍保罗·萨缪尔森著名的乘数加速模型,包括其非随机和随机两个版本 {cite}`Samuelson1939`。
 
-在此过程中，我们将扩展[面向对象编程第二讲](https://python-programming.quantecon.org/python_oop.html#example-the-solow-growth-model)中的索洛模型类示例。
+在此过程中，我们将扩展[面向对象编程第二讲](https://python-programming.quantecon.org/python_oop.html)中的索洛模型类示例。
 
 本讲的主要目标包括：
 
@@ -46,7 +73,7 @@ tags: [hide-output]
 
 让我们从一些标准的导入开始：
 
-```{code-cell} ipython
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -57,9 +84,9 @@ plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 ```
 
-我们还将使用以下Python库：
+我们还将使用以下内容来完成下面描述的各种任务：
 
-```{code-cell} ipython
+```{code-cell} ipython3
 from quantecon import LinearStateSpace
 import cmath
 import math
@@ -76,16 +103,16 @@ from cmath import sqrt
 - 凯恩斯式的*消费函数*，表明$t$时期的消费等于一个常数乘以$t-1$时期的国民产出。
 - 投资*加速器*，表明$t$时期的投资等于一个称为*加速系数*的常数乘以$t-1$时期和$t-2$时期产出之差。
 
-消费、投资和政府购买的总和构成了*总需求*，根据供需平衡，这必然对应了相同数量的*总供给*。
+消费、投资和政府购买的总和构成了*总需求*，这自动引致相同数量的*总供给*。
 
-（关于线性差分方程的内容请参见[这里](https://baike.baidu.com/item/%E5%B8%B8%E7%B3%BB%E6%95%B0%E7%BA%BF%E6%80%A7%E9%80%92%E6%8E%A8%E6%95%B0%E5%88%97/8017610)或{cite}`Sargent1987`的第九章。）
+（关于线性差分方程的内容请参见[这里](https://en.wikipedia.org/wiki/Linear_difference_equation)或{cite}`Sargent1987`的第九章。）
 
-萨缪尔森使用该模型分析了边际消费倾向和加速系数的特定值如何在一定概率上导致国民产出出现暂时性的*商业周期*。
+萨缪尔森使用该模型分析了边际消费倾向和加速系数的特定值如何在国民产出中引发暂时性的**商业周期**。
 
 可能的动态特性包括以下几种：
 
-* 动态平稳收敛到一个固定的产出水平
-* 最终收敛到固定产出水平的衰减商业周期
+* 平滑收敛到一个固定的产出水平
+* 最终收敛到固定产出水平的阻尼商业周期
 * 既不衰减也不发散的持续性商业周期
 
 后面我们将介绍一个扩展模型，在国民收入恒等式右侧加入一个随机冲击项，代表总需求的随机波动。
@@ -99,8 +126,7 @@ from cmath import sqrt
 让我们假设：
 
 * $\{G_t\}$是一系列的政府支出水平 --
-
-我们先将所有时期的 $G_t = G$ 设为常数。
+  我们先将所有时期的 $G_t = G$ 设为常数。
 * $\{C_t\}$ 是总消费支出水平的序列，是模型中的一个关键内生变量。
 * $\{I_t\}$ 是投资率的序列，是另一个关键内生变量。
 * $\{Y_t\}$ 是国民收入水平的序列，也是一个内生变量。
@@ -160,7 +186,6 @@ Y_t = \rho_1 Y_{t-1} + \rho_2 Y_{t-2} + (\gamma + G_t)
 为完成这个模型，我们需要两个**初始条件**。
 
 如果模型要生成 $t=0, \ldots, T$ 的时间序列，我们
-
 需要初始值
 
 $$
@@ -169,25 +194,24 @@ $$
 
 我们通常会设置参数$(\alpha,\beta)$，使得从任意一对初始条件$(\bar Y_{-1}, \bar Y_{-2})$开始，国民收入$Y_t$在$t$变大时会收敛到一个常数值。
 
-也就是说，我们感兴趣的是：
+我们感兴趣的是研究
 
 - $Y_t$在收敛到其**稳态**水平过程中的暂时波动
-- 及其收敛到稳态水平的**速率**
+- 它收敛到稳态水平的**速率**
 
-到目前为止我们讨论的是模型的非随机版本，即没有随机冲击影响总需求的情况。在这种情况下，模型只会产生暂时的波动。
+到目前为止我们讨论的是模型的确定性版本，即没有随机冲击影响总需求的情况，这种情况下模型只会产生暂时的波动。
 
-为了使模型更贴近现实，我们可以在总需求中引入随机冲击，这样就能产生持续的、不规则的经济波动。
+我们可以通过在总需求中添加随机冲击，将模型转变为具有持续性、不规则波动的模型。
 
 ### 模型的随机版本
 
 我们通过在方程{eq}`second_order`的右侧加入一个**冲击**或**扰动**的随机过程$\{\sigma \epsilon_t \}$，创建模型的**随机**版本，
-
 由此得出**二阶标量线性随机差分方程**：
 
 ```{math}
 :label: second_stochastic
 
-Y_t = \gamma + G_t + (α+β) Y_{t-1} - β Y_{t-2} + \sigma \epsilon_{t}
+Y_t = (\alpha+\beta) Y_{t-1} - \beta Y_{t-2} + (\gamma + G_t) + \sigma \epsilon_t
 ```
 
 ### 模型的数学分析
@@ -224,9 +248,8 @@ z^2 - \rho_1 z  - \rho_2
 $\lambda_1, \lambda_2$。
 
 这是两个特殊的 $z$ 值，即 $z= \lambda_1$ 和
-$z= \lambda_2$，如果我们将 $z$ 设为其中之一
-
-将这些值代入表达式 {eq}`polynomial`，
+$z= \lambda_2$，如果我们将 $z$ 设为
+其中之一代入表达式 {eq}`polynomial`，
 特征多项式 {eq}`polynomial` 等于零：
 
 ```{math}
@@ -275,10 +298,10 @@ $$
 
 $$
 \begin{aligned}
-  Y_t & =  & c_1 (r e^{i \omega})^t + c_2 (r e^{-i \omega})^t  \\
-   & = & c_1 r^t e^{i\omega t} + c_2 r^t e^{-i \omega t} \\
-   & = &  c_1 r^t [\cos(\omega t) + i \sin(\omega t) ] + c_2 r^t [\cos(\omega t) - i \sin(\omega t) ] \\
-   & = & (c_1 + c_2) r^t \cos(\omega t) + i (c_1 - c_2) r^t \sin(\omega t)
+  Y_t & =   c_1 (r e^{i \omega})^t + c_2 (r e^{-i \omega})^t  \\
+   & = c_1 r^t e^{i\omega t} + c_2 r^t e^{-i \omega t} \\
+   & =  c_1 r^t [\cos(\omega t) + i \sin(\omega t) ] + c_2 r^t [\cos(\omega t) - i \sin(\omega t) ] \\
+   & = (c_1 + c_2) r^t \cos(\omega t) + i (c_1 - c_2) r^t \sin(\omega t)
  \end{aligned}
 $$
 
@@ -364,16 +387,14 @@ $$
 我们从 {cite}`Sargent1987` 第189页开始绘制一个信息丰富的图表
 
 ```{code-cell} ipython3
----
-tags: [output_scroll]
----
-def param_plot():
+:tags: [hide-input, output_scroll]
 
+def param_plot():
     """该函数创建了Sargent宏观经济理论第二版(1987年)第189页的图表。
     """
 
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.set_aspect('equal')
+    ax.set_aspect("equal")
 
     # 设置坐标轴
     xmin, ymin = -3, -2
@@ -382,56 +403,92 @@ def param_plot():
 
     # 设置坐标轴标签
     ax.set(xticks=[], yticks=[])
-    ax.set_xlabel(r'$\rho_2$', fontsize=16)
-    ax.xaxis.set_label_position('top')
-    ax.set_ylabel(r'$\rho_1$', rotation=0, fontsize=16)
-    ax.yaxis.set_label_position('right')
+    ax.set_xlabel(r"$\rho_2$", fontsize=16)
+    ax.xaxis.set_label_position("top")
+    ax.set_ylabel(r"$\rho_1$", rotation=0, fontsize=16)
+    ax.yaxis.set_label_position("right")
 
     # 绘制(t1, t2)点
     ρ1 = np.linspace(-2, 2, 100)
-    ax.plot(ρ1, -abs(ρ1) + 1, c='black')
-    ax.plot(ρ1, np.full_like(ρ1, -1), c='black')
-    ax.plot(ρ1, -(ρ1**2 / 4), c='black')
+    ax.plot(ρ1, -abs(ρ1) + 1, c="black")
+    ax.plot(ρ1, np.full_like(ρ1, -1), c="black")
+    ax.plot(ρ1, -(ρ1**2 / 4), c="black")
 
     # 关闭普通坐标轴
-    for spine in ['left', 'bottom', 'top', 'right']:
+    for spine in ["left", "bottom", "top", "right"]:
         ax.spines[spine].set_visible(False)
 
     # 添加表示坐标轴的箭头
-    axes_arrows = {'arrowstyle': '<|-|>', 'lw': 1.3}
-    ax.annotate('', xy=(xmin, 0), xytext=(xmax, 0), arrowprops=axes_arrows)
-    ax.annotate('', xy=(0, ymin), xytext=(0, ymax), arrowprops=axes_arrows)
+    axes_arrows = {"arrowstyle": "<|-|>", "lw": 1.3}
+    ax.annotate("", xy=(xmin, 0), xytext=(xmax, 0), arrowprops=axes_arrows)
+    ax.annotate("", xy=(0, ymin), xytext=(0, ymax), arrowprops=axes_arrows)
 
     # 在图上标注方程
-    plot_arrowsl = {'arrowstyle': '-|>', 'connectionstyle': "arc3, rad=-0.2"}
-    plot_arrowsr = {'arrowstyle': '-|>', 'connectionstyle': "arc3, rad=0.2"}
-    ax.annotate(r'$\rho_1 + \rho_2 < 1$', xy=(0.5, 0.3), xytext=(0.8, 0.6),
-                arrowprops=plot_arrowsr, fontsize='12')
-    ax.annotate(r'$\rho_1 + \rho_2 = 1$', xy=(0.38, 0.6), xytext=(0.6, 0.8),
-                arrowprops=plot_arrowsr, fontsize='12')
-    ax.annotate(r'$\rho_2 < 1 + \rho_1$', xy=(-0.5, 0.3), xytext=(-1.3, 0.6),
-                arrowprops=plot_arrowsl, fontsize='12')
-    ax.annotate(r'$\rho_2 = 1 + \rho_1$', xy=(-0.38, 0.6), xytext=(-1, 0.8),
-                arrowprops=plot_arrowsl, fontsize='12')
-    ax.annotate(r'$\rho_2 = -1$', xy=(1.5, -1), xytext=(1.8, -1.3),
-                arrowprops=plot_arrowsl, fontsize='12')
-    ax.annotate(r'${\rho_1}^2 + 4\rho_2 = 0$', xy=(1.15, -0.35),
-                xytext=(1.5, -0.3), arrowprops=plot_arrowsr, fontsize='12')
-    ax.annotate(r'${\rho_1}^2 + 4\rho_2 < 0$', xy=(1.4, -0.7),
-                xytext=(1.8, -0.6), arrowprops=plot_arrowsr, fontsize='12')
+    plot_arrowsl = {"arrowstyle": "-|>", "connectionstyle": "arc3, rad=-0.2"}
+    plot_arrowsr = {"arrowstyle": "-|>", "connectionstyle": "arc3, rad=0.2"}
+    ax.annotate(
+        r"$\rho_1 + \rho_2 < 1$",
+        xy=(0.5, 0.3),
+        xytext=(0.8, 0.6),
+        arrowprops=plot_arrowsr,
+        fontsize="12",
+    )
+    ax.annotate(
+        r"$\rho_1 + \rho_2 = 1$",
+        xy=(0.38, 0.6),
+        xytext=(0.6, 0.8),
+        arrowprops=plot_arrowsr,
+        fontsize="12",
+    )
+    ax.annotate(
+        r"$\rho_2 < 1 + \rho_1$",
+        xy=(-0.5, 0.3),
+        xytext=(-1.3, 0.6),
+        arrowprops=plot_arrowsl,
+        fontsize="12",
+    )
+    ax.annotate(
+        r"$\rho_2 = 1 + \rho_1$",
+        xy=(-0.38, 0.6),
+        xytext=(-1, 0.8),
+        arrowprops=plot_arrowsl,
+        fontsize="12",
+    )
+    ax.annotate(
+        r"$\rho_2 = -1$",
+        xy=(1.5, -1),
+        xytext=(1.8, -1.3),
+        arrowprops=plot_arrowsl,
+        fontsize="12",
+    )
+    ax.annotate(
+        r"${\rho_1}^2 + 4\rho_2 = 0$",
+        xy=(1.15, -0.35),
+        xytext=(1.5, -0.3),
+        arrowprops=plot_arrowsr,
+        fontsize="12",
+    )
+    ax.annotate(
+        r"${\rho_1}^2 + 4\rho_2 < 0$",
+        xy=(1.4, -0.7),
+        xytext=(1.8, -0.6),
+        arrowprops=plot_arrowsr,
+        fontsize="12",
+    )
 
     # 标注解的类别
-    ax.text(1.5, 1, '爆炸性\n增长', ha='center', fontsize=16)
-    ax.text(-1.5, 1, '爆炸性\n振荡', ha='center', fontsize=16)
-    ax.text(0.05, -1.5, '爆炸性振荡', ha='center', fontsize=16)
-    ax.text(0.09, -0.5, '阻尼振荡', ha='center', fontsize=16)
+    ax.text(1.5, 1, "爆炸性\n增长", ha="center", fontsize=16)
+    ax.text(-1.5, 1, "爆炸性\n振荡", ha="center", fontsize=16)
+    ax.text(0.05, -1.5, "爆炸性振荡", ha="center", fontsize=16)
+    ax.text(0.09, -0.5, "阻尼振荡", ha="center", fontsize=16)
 
     # 在y轴上添加小标记
-    ax.axhline(y=1.005, xmin=0.495, xmax=0.505, c='black')
-    ax.text(-0.12, -1.12, '-1', fontsize=10)
-    ax.text(-0.12, 0.98, '1', fontsize=10)
+    ax.axhline(y=1.005, xmin=0.495, xmax=0.505, c="black")
+    ax.text(-0.12, -1.12, "-1", fontsize=10)
+    ax.text(-0.12, 0.98, "1", fontsize=10)
 
     return fig
+
 
 param_plot()
 plt.show()
@@ -450,28 +507,112 @@ plt.show()
 
 ```{code-cell} ipython3
 def categorize_solution(ρ1, ρ2):
-
-    """该函数接收ρ1和ρ2的值，并用它们
-    来分类解的类型
     """
-
-    discriminant = ρ1 ** 2 + 4 * ρ2
+    该函数接收ρ1和ρ2的值，并用它们
+    来分类解的类型。
+    """
+    discriminant = ρ1**2 + 4 * ρ2
     if ρ2 > 1 + ρ1 or ρ2 < -1:
-        print('爆炸性振荡')
+        return "爆炸性振荡"
     elif ρ1 + ρ2 > 1:
-        print('爆炸性增长')
+        return "爆炸性增长"
     elif discriminant < 0:
-        print('根是复数且模小于1；\
-因此是衰减振荡')
+        return "阻尼振荡"
     else:
-        print('根是实数且绝对值小于1；\
-因此平滑收敛到稳态')
+        return "稳态收敛"
+
+def analyze_roots(α, β, verbose=True):
+    """
+    统一的函数，用于计算根并分析其性质。
+    """
+    ρ1 = α + β
+    ρ2 = -β
+    
+    # 计算特征多项式的根
+    roots = np.roots([1, -ρ1, -ρ2])
+    
+    # 对解的类型进行分类
+    solution_type = categorize_solution(ρ1, ρ2)
+    
+    # 确定根的性质
+    is_complex = all(isinstance(root, complex) for root in roots)
+    is_stable = all(abs(root) < 1 for root in roots)
+    
+    if verbose:
+        print(f"ρ1 = {ρ1:.2f}, ρ2 = {ρ2:.2f}")
+        print(f"根为: {[f'{root:.2f}' for root in roots]}")
+        print(f"根的类型: {'复数' if is_complex else '实数'}")
+        print(f"稳定性: {'稳定' if is_stable else '不稳定'}")
+        print(f"解的类型: {solution_type}")
+    
+    return {
+        'roots': roots,
+        'rho1': ρ1,
+        'rho2': ρ2,
+        'is_complex': is_complex,
+        'is_stable': is_stable,
+        'solution_type': solution_type
+    }
 ```
 
-```{code-cell} ipython3
-### 测试categorize_solution函数
+我们还编写了一个统一的模拟函数，可以处理模型的
+非随机和随机版本。
 
-categorize_solution(1.3, -.4)
+它允许几种简单形式的政府支出路径，我们通过字典`g_params`来指定
+
+```{code-cell} ipython3
+def simulate_samuelson(
+    y_0, y_1, α, β, γ=10, n=100, σ=0, g_params=None, seed=0
+):
+    """
+    萨缪尔森模型的统一模拟函数。
+    
+    参数:
+    g_params: 包含 'g'、'g_t'、'duration' 键的字典，用于政府支出
+    seed: 用于结果可重复的随机种子
+    """
+    analysis = analyze_roots(α, β, verbose=False)
+    ρ1, ρ2 = analysis['rho1'], analysis['rho2']
+    
+    # 初始化时间序列
+    y_t = [y_0, y_1]
+    
+    # 如果是随机情形，生成冲击
+    if σ > 0:
+        np.random.seed(seed)
+        ϵ = np.random.normal(0, 1, n)
+    
+    # 向前模拟
+    for t in range(2, n):
+
+        # 确定政府支出
+        g = 0
+        if g_params:
+            g_val, g_t_val = g_params.get('g', 0), g_params.get('g_t', 0)
+            duration = g_params.get('duration', None)
+            if duration == 'permanent' and t >= g_t_val:
+                g = g_val
+            elif duration == 'one-off' and t == g_t_val:
+                g = g_val
+            elif duration is None:
+                g = g_val
+        
+        # 计算下一个值
+        y_next = ρ1 * y_t[t-1] + ρ2 * y_t[t-2] + γ + g
+        if σ > 0:
+            y_next += σ * ϵ[t]
+        
+        y_t.append(y_next)
+    
+    return y_t, analysis
+```
+
+我们将使用这个函数来运行模型的模拟。
+
+但在此之前，让我们先测试一下分析函数
+
+```{code-cell} ipython3
+analysis = analyze_roots(α=1.3, β=0.4)
 ```
 
 ### 绘制路径的函数
@@ -480,14 +621,12 @@ categorize_solution(1.3, -.4)
 
 ```{code-cell} ipython3
 def plot_y(function=None):
-
     """该函数用于绘制 Y_t 的路径"""
 
     plt.subplots(figsize=(10, 6))
     plt.plot(function)
-    plt.xlabel('时间 $t$')
-    plt.ylabel('$Y_t$', rotation=0)
-    plt.grid()
+    plt.xlabel("$t$")
+    plt.ylabel("$Y_t$")
     plt.show()
 ```
 
@@ -495,51 +634,48 @@ def plot_y(function=None):
 
 以下函数使用高中代数方法计算特征多项式的根。
 
-（我们稍后会用其他方法计算根）
+（我们稍后会用`analyze_roots`以其他方式计算根）
 
 该函数还根据我们设置的初始条件绘制 $Y_t$ 的图像
 
 ```{code-cell} ipython3
-# 这是一个'手动'方法
-
-def y_nonstochastic(y_0=100, y_1=80, α=.92, β=.5, γ=10, n=80):
-
-    """接收参数值并计算特征多项式的根。它会说明这些根是实根还是复根，
-    以及它们的绝对值是否小于1。它还会根据给定的两个国民收入初始条件
-    计算长度为n的模拟序列
+def y_nonstochastic(y_0=100, y_1=80, α=0.92, β=0.5, γ=10, n=80):
     """
-
+    该函数手动计算特征多项式的根，
+    并返回从初始条件开始的y_t路径
+    """
     roots = []
 
     ρ1 = α + β
     ρ2 = -β
 
-    print(f'ρ_1 是 {ρ1}')
-    print(f'ρ_2 是 {ρ2}')
+    print(f"ρ_1 是 {ρ1:.2f}")
+    print(f"ρ_2 是 {ρ2:.2f}")
 
-    discriminant = ρ1 ** 2 + 4 * ρ2
+    discriminant = ρ1**2 + 4 * ρ2
 
     if discriminant == 0:
         roots.append(-ρ1 / 2)
-        print('单个实根：')
-        print(''.join(str(roots)))
+        print("单个实根：")
+        print("".join(f"{r:.2f}" for r in roots))
     elif discriminant > 0:
         roots.append((-ρ1 + sqrt(discriminant).real) / 2)
         roots.append((-ρ1 - sqrt(discriminant).real) / 2)
-        print('两个实根：')
-        print(''.join(str(roots)))
+        print("两个实根：")
+        print(" ".join(f"{r:.2f}" for r in roots))
     else:
         roots.append((-ρ1 + sqrt(discriminant)) / 2)
         roots.append((-ρ1 - sqrt(discriminant)) / 2)
-        print('两个复根：')
-        print(''.join(str(roots)))
+        print("两个复根：")
+        print(" ".join(f"{r.real:.2f}{r.imag:+.2f}j" for r in roots))
 
     if all(abs(root) < 1 for root in roots):
-        print('根的绝对值都小于1')
+        print("根的绝对值都小于1")
     else:
-        print('根的绝对值不都小于1')
+        print("根的绝对值不都小于1")
 
-    def transition(x, t): return ρ1 * x[t - 1] + ρ2 * x[t - 2] + γ
+    def transition(x, t):
+        return ρ1 * x[t - 1] + ρ2 * x[t - 2] + γ
 
     y_t = [y_0, y_1]
 
@@ -547,6 +683,7 @@ def y_nonstochastic(y_0=100, y_1=80, α=.92, β=.5, γ=10, n=80):
         y_t.append(transition(y_t, t))
 
     return y_t
+
 
 plot_y(y_nonstochastic())
 ```
@@ -563,53 +700,56 @@ $$
 - 然后反向推导出能生成这些根的 $(\alpha, \beta)$ 和 $(\rho_1, \rho_2)$ 对
 
 ```{code-cell} ipython3
-### 反向推导周期的代码
-### y_t = r^t (c_1 cos(ϕ t) + c2 sin(ϕ t))
-###
-
 def f(r, ϕ):
     """
     接收复数 r exp(j ϕ) 的模 r 和角度 ϕ，
     并创建特征多项式的 ρ1 和 ρ2，其中
     r exp(j ϕ) 和 r exp(- j ϕ) 是复根。
 
-    返回验证这些根的乘数系数 α 和加速器系数 β。
+    返回验证这些根的乘数系数 $\alpha$
+    和加速器系数 $\beta$。
     """
-    g1 = cmath.rect(r, ϕ)  # 生成两个复根
+    # 从极坐标创建共轭复数对
+    g1 = cmath.rect(r, ϕ)
     g2 = cmath.rect(r, -ϕ)
-    ρ1 = g1 + g2           # 隐含的 ρ1, ρ2
+
+    # 计算相应的 ρ1, ρ2 参数
+    ρ1 = g1 + g2
     ρ2 = -g1 * g2
-    β = -ρ2                # 反向推导验证这些的 α 和 β
+
+    # 从 ρ 参数推导出 α 和 β 系数
+    β = -ρ2
     α = ρ1 - β
     return ρ1, ρ2, α, β
-
-## 现在让我们在示例中使用这个函数
-## 这里是示例参数
-
-r = .95
-period = 10                # 时间单位中的周期长度
-ϕ = 2 * math.pi/period
-
-## 应用函数
-
-ρ1, ρ2, α, β = f(r, ϕ)
-
-print(f"α, β = {α}, {β}")
-print(f"ρ1, ρ2 = {ρ1}, {ρ2}")
 ```
+
+现在让我们在示例中使用这个函数。
+
+这里是示例参数
 
 ```{code-cell} ipython3
-## 打印 ρ1 和 ρ2 的实部
+r = 0.95
 
-ρ1 = ρ1.real
-ρ2 = ρ2.real
+# 时间单位中的周期长度
+period = 10
+ϕ = 2 * math.pi / period
 
-ρ1, ρ2
+# 应用反向推导函数
+ρ1, ρ2, α, β = f(r, ϕ)
+
+print(f"α, β = {α:.2f}, {β:.2f}")
+print(f"ρ1, ρ2 = {ρ1:.2f}, {ρ2:.2f}")
 ```
 
-### 使用Numpy求根
+根的实部为
 
-我们将使用`numpy`来计算特征多项式的根
+```{code-cell} ipython3
+print(f"ρ1 = {ρ1.real:.2f}, ρ2 = {ρ2.real:.2f}")
+```
+
+### 使用numpy求根
+
+我们将使用numpy来计算特征多项式的根
 
 ```{code-cell} ipython3
 r1, r2 = np.roots([1, -ρ1, -ρ2])
@@ -617,57 +757,28 @@ r1, r2 = np.roots([1, -ρ1, -ρ2])
 p1 = cmath.polar(r1)
 p2 = cmath.polar(r2)
 
-print(f"r, ϕ = {r}, {ϕ}")
-print(f"p1, p2 = {p1}, {p2}")
-# print(f"g1, g2 = {g1}, {g2}")
+print(f"r, ϕ = {r:.2f}, {ϕ:.2f}")
+print(f"p1, p2 = ({p1[0]:.2f}, {p1[1]:.2f}), ({p2[0]:.2f}, {p2[1]:.2f})")
 
-print(f"α, β = {α}, {β}")
-print(f"ρ1, ρ2 = {ρ1}, {ρ2}")
+print(f"α, β = {α:.2f}, {β:.2f}")
+print(f"ρ1, ρ2 = {ρ1:.2f}, {ρ2:.2f}")
 ```
 
 ```{code-cell} ipython3
-##=== 此方法使用numpy计算根 ===#
-
-
-def y_nonstochastic(y_0=100, y_1=80, α=.9, β=.8, γ=10, n=80):
-
-    """ 这个函数使用numpy来帮我们计算特征多项式的根，
-    而不是像之前那样手动计算
+def y_nonstochastic(y_0=100, y_1=80, α=0.9, β=0.8, γ=10, n=80):
+    """
+    该函数使用numpy来计算特征多项式的根。
     """
 
-    # 有用的常数
-    ρ1 = α + β
-    ρ2 = -β
+    y_series, analysis = simulate_samuelson(y_0, y_1, α, β, γ, n, 0, None, 42)
+    
+    print(f"解的类型: {analysis['solution_type']}")
+    print(f"根为 {analysis['roots']}")
+    print(f"根的类型: {'复数' if analysis['is_complex'] else '实数'}")
+    print(f"稳定性: {'稳定' if analysis['is_stable'] else '不稳定'}")
+    
+    return y_series
 
-    categorize_solution(ρ1, ρ2)
-
-    # 求多项式的根
-    roots = np.roots([1, -ρ1, -ρ2])
-    print(f'根为 {roots}')
-
-    # 检查是实根还是复根
-    if all(isinstance(root, complex) for root in roots):
-        print('根为复数')
-    else:
-        print('根为实数')
-
-    # 检查根的绝对值是否小于1
-    if all(abs(root) < 1 for root in roots):
-        print('根的绝对值小于1')
-    else:
-        print('根的绝对值不小于1')
-
-    # 定义转移方程
-    def transition(x, t): return ρ1 * x[t - 1] + ρ2 * x[t - 2] + γ
-
-    # 设置初始条件
-    y_t = [y_0, y_1]
-
-    # 生成y_t序列
-    for t in range(2, n):
-        y_t.append(transition(y_t, t))
-
-    return y_t
 
 plot_y(y_nonstochastic())
 ```
@@ -679,20 +790,19 @@ plot_y(y_nonstochastic())
 我们将生成一个周期为10的**无阻尼**循环
 
 ```{code-cell} ipython3
-r = 1   # 生成无阻尼、非爆炸性循环
+r = 1  # 生成无阻尼、非爆炸性循环
 
-period = 10   # 时间单位中的循环长度
-ϕ = 2 * math.pi/period
+period = 10  # 时间单位中的循环长度
+ϕ = 2 * math.pi / period
 
-## 应用反向推导函数f
-
+# 应用反向推导函数f
 ρ1, ρ2, α, β = f(r, ϕ)
 
-# 去掉虚部，使其成为y_nonstochastic的有效输入
+# 提取实部用于数值计算
 α = α.real
 β = β.real
 
-print(f"α, β = {α}, {β}")
+print(f"α, β = {α:.2f}, {β:.2f}")
 
 ytemp = y_nonstochastic(α=α, β=β, y_0=20, y_1=30)
 plot_y(ytemp)
@@ -709,7 +819,7 @@ r1 = Symbol("ρ_1")
 r2 = Symbol("ρ_2")
 z = Symbol("z")
 
-sympy.solve(z**2 - r1*z - r2, z)
+sympy.solve(z**2 - r1 * z - r2, z)
 ```
 
 ```{code-cell} ipython3
@@ -718,7 +828,7 @@ sympy.solve(z**2 - r1*z - r2, z)
 r1 = α + β
 r2 = -β
 
-sympy.solve(z**2 - r1*z - r2, z)
+sympy.solve(z**2 - r1 * z - r2, z)
 ```
 
 ## 随机冲击
@@ -727,50 +837,21 @@ sympy.solve(z**2 - r1*z - r2, z)
 
 ```{code-cell} ipython3
 def y_stochastic(y_0=0, y_1=0, α=0.8, β=0.2, γ=10, n=100, σ=5):
-
-    """该函数接收模型随机版本的参数，
-    并分析特征多项式的根，
-    同时生成一个模拟。
+    """
+    该函数接收模型随机版本的参数，
+    分析特征多项式的根，
+    并生成一个模拟。
     """
 
-    # 有用的常数
-    ρ1 = α + β
-    ρ2 = -β
+    y_series, analysis = simulate_samuelson(y_0, y_1, α, β, γ, n, σ, None, 42)
+    
+    print(f"解的类型: {analysis['solution_type']}")
+    print(f"根为 {[f'{root:.2f}' for root in analysis['roots']]}")
+    print(f"根的类型: {'复数' if analysis['is_complex'] else '实数'}")
+    print(f"稳定性: {'稳定' if analysis['is_stable'] else '不稳定'}")
+    
+    return y_series
 
-    # 对解进行分类
-    categorize_solution(ρ1, ρ2)
-
-    # 求多项式的根
-    roots = np.roots([1, -ρ1, -ρ2])
-    print(roots)
-
-    # 检查是实根还是复根
-    if all(isinstance(root, complex) for root in roots):
-        print('根是复数')
-    else:
-        print('根是实数')
-
-    # 检查根的绝对值是否小于1
-    if all(abs(root) < 1 for root in roots):
-        print('根的绝对值小于1')
-    else:
-        print('根的绝对值不小于1')
-
-    # 生成冲击
-    ϵ = np.random.normal(0, 1, n)
-
-    # 定义转移方程
-    def transition(x, t): return ρ1 * \
-        x[t - 1] + ρ2 * x[t - 2] + γ + σ * ϵ[t]
-
-    # 设置初始条件
-    y_t = [y_0, y_1]
-
-    # 生成y_t序列
-    for t in range(2, n):
-        y_t.append(transition(y_t, t))
-
-    return y_t
 
 plot_y(y_stochastic())
 ```
@@ -778,21 +859,20 @@ plot_y(y_stochastic())
 让我们进行一个模拟，其中存在冲击且特征多项式具有复根
 
 ```{code-cell} ipython3
-r = .97
+r = 0.97
 
-period = 10   # 时间单位中的周期长度
-ϕ = 2 * math.pi/period
+period = 10  # 时间单位中的周期长度
+ϕ = 2 * math.pi / period
 
-### 应用反向推导函数f
-
+# 应用反向推导函数f
 ρ1, ρ2, α, β = f(r, ϕ)
 
-# 去掉虚部，使其成为y_nonstochastic的有效输入
+# 提取实部用于数值计算
 α = α.real
 β = β.real
 
-print(f"α, β = {α}, {β}")
-plot_y(y_stochastic(y_0=40, y_1 = 42, α=α, β=β, σ=2, n=100))
+print(f"α, β = {α:.2f}, {β:.2f}")
+plot_y(y_stochastic(y_0=40, y_1=42, α=α, β=β, σ=2, n=100))
 ```
 
 ## 政府支出
@@ -800,99 +880,40 @@ plot_y(y_stochastic(y_0=40, y_1 = 42, α=α, β=β, σ=2, n=100))
 此函数计算对政府支出的永久性或一次性增加的响应
 
 ```{code-cell} ipython3
-def y_stochastic_g(y_0=20,
-                   y_1=20,
-                   α=0.8,
-                   β=0.2,
-                   γ=10,
-                   n=100,
-                   σ=2,
-                   g=0,
-                   g_t=0,
-                   duration='permanent'):
-
-    """此程序计算在时间20发生的政府支出
+def y_stochastic_g(
+    y_0=20, y_1=20, α=0.8, β=0.2, γ=10,
+    n=100, σ=2, g=0, g_t=0, duration="permanent"
+):
+    """
+    此程序计算在时间20发生的政府支出
     永久性增加的响应
     """
 
-    # 有用的常数
-    ρ1 = α + β
-    ρ2 = -β
-
-    # 对解进行分类
-    categorize_solution(ρ1, ρ2)
-
-    # 找出多项式的根
-    roots = np.roots([1, -ρ1, -ρ2])
-    print(roots)
-
-    # 检查是实数还是复数
-    if all(isinstance(root, complex) for root in roots):
-        print('根为复数')
-    else:
-        print('根为实数')
-
-    # 检查根是否小于1
-    if all(abs(root) < 1 for root in roots):
-        print('根小于1')
-    else:
-        print('根不小于1')
-
-    # 生成冲击
-    ϵ = np.random.normal(0, 1, n)
-
-    def transition(x, t, g):
-
-        # 非随机 - 分开以避免在不需要时
-        # 生成随机序列
-        if σ == 0:
-            return ρ1 * x[t - 1] + ρ2 * x[t - 2] + γ + g
-
-        # 随机
-        else:
-            ϵ = np.random.normal(0, 1, n)
-            return ρ1 * x[t - 1] + ρ2 * x[t - 2] + γ + g + σ * ϵ[t]
-
-    # 创建列表并设置初始条件
-    y_t = [y_0, y_1]
-
-    # 生成y_t序列
-    for t in range(2, n):
-
-        # 无政府支出
-        if g == 0:
-            y_t.append(transition(y_t, t))
-
-        # 政府支出（无冲击）
-        elif g != 0 and duration == None:
-            y_t.append(transition(y_t, t))
-
-        # 永久性政府支出冲击
-        elif duration == 'permanent':
-            if t < g_t:
-                y_t.append(transition(y_t, t, g=0))
-            else:
-                y_t.append(transition(y_t, t, g=g))
-
-        # 一次性政府支出冲击
-        elif duration == 'one-off':
-            if t == g_t:
-                y_t.append(transition(y_t, t, g=g))
-            else:
-                y_t.append(transition(y_t, t, g=0))
-    return y_t
+    g_params = (
+        {'g': g, 'g_t': g_t, 'duration': duration} if g != 0 else None
+    )
+    y_series, analysis = simulate_samuelson(
+        y_0, y_1, α, β, γ, n, σ, g_params, 42
+    )
+    
+    print(f"解的类型: {analysis['solution_type']}")
+    print(f"根: {analysis['roots']}")
+    print(f"根的类型: {'复数' if analysis['is_complex'] else '实数'}")
+    print(f"稳定性: {'稳定' if analysis['is_stable'] else '不稳定'}")
+    
+    return y_series
 ```
 
 可以按以下方式模拟永久性政府支出冲击
 
 ```{code-cell} ipython3
-plot_y(y_stochastic_g(g=10, g_t=20, duration='permanent'))
+plot_y(y_stochastic_g(g=10, g_t=20, duration="permanent"))
 ```
 
 我们还可以观察一次性政府支出增加所带来的响应
 
 ```{code-cell} ipython3
-plot_y(y_stochastic_g(g=500, g_t=50, duration='one-off'))
+plot_y(y_stochastic_g(g=500, g_t=50, duration="one-off"))
 ```
 
 ## 将所有内容封装到类中
@@ -902,16 +923,16 @@ plot_y(y_stochastic_g(g=500, g_t=50, duration='one-off'))
 现在让我们撸起袖子，为萨缪尔森模型编写一个名为`Samuelson`的Python类
 
 ```{code-cell} ipython3
-class Samuelson():
-
-    """这个类代表萨缪尔森模型，也称为多重加速器模型。该模型将凯恩斯乘数与
-    投资加速器理论相结合。
+class Samuelson:
+    """
+    这个类代表萨缪尔森模型，也称为多重加速器模型。
+    该模型将凯恩斯乘数与投资加速器理论相结合。
 
     产出路径由线性二阶差分方程控制
 
     .. math::
 
-        Y_t = + (α + β) Y_{t-1} - β Y_{t-2}
+        Y_t = \alpha (1 + \beta) Y_{t-1} - \alpha \beta Y_{t-2}
 
     参数
     ----------
@@ -936,157 +957,127 @@ class Samuelson():
 
     """
 
-    def __init__(self,
-                 y_0=100,
-                 y_1=50,
-                 α=1.3,
-                 β=0.2,
-                 γ=10,
-                 n=100,
-                 σ=0,
-                 g=0,
-                 g_t=0,
-                 duration=None):
+    def __init__(
+        self, y_0=100, y_1=50,
+        α=1.3, β=0.2, γ=10, n=100, σ=0, g=0, g_t=0, duration=None
+    ):
 
         self.y_0, self.y_1, self.α, self.β = y_0, y_1, α, β
         self.n, self.g, self.g_t, self.duration = n, g, g_t, duration
         self.γ, self.σ = γ, σ
-        self.ρ1 = α + β
-        self.ρ2 = -β
-        self.roots = np.roots([1, -self.ρ1, -self.ρ2])
+        
+        # 使用统一的分析函数
+        self.analysis = analyze_roots(α, β, verbose=False)
+        self.ρ1, self.ρ2 = self.analysis['rho1'], self.analysis['rho2']
+        self.roots = self.analysis['roots']
 
     def root_type(self):
-        if all(isinstance(root, complex) for root in self.roots):
-            return '复共轭'
-        elif len(self.roots) > 1:
-            return '双实根'
-        else:
-            return '单实根'
+        return "复共轭" if self.analysis['is_complex'] else "实数"
 
     def root_less_than_one(self):
-        if all(abs(root) < 1 for root in self.roots):
-            return True
+        return self.analysis['is_stable']
 
     def solution_type(self):
-        ρ1, ρ2 = self.ρ1, self.ρ2
-        discriminant = ρ1 ** 2 + 4 * ρ2
-        if ρ2 >= 1 + ρ1 or ρ2 <= -1:
-            return '爆炸性振荡'
-        elif ρ1 + ρ2 >= 1:
-            return '爆炸性增长'
-        elif discriminant < 0:
-            return '阻尼振荡'
-        else:
-            return '稳态'
+        return self.analysis['solution_type']
 
-    def _transition(self, x, t, g):
-
-        # 非随机 - 分开以避免在不需要时生成随机序列
-        if self.σ == 0:
-            return self.ρ1 * x[t - 1] + self.ρ2 * x[t - 2] + self.γ + g
-
-        # 随机
-        else:
-            ϵ = np.random.normal(0, 1, self.n)
-            return self.ρ1 * x[t - 1] + self.ρ2 * x[t - 2] + self.γ + g \
-                + self.σ * ϵ[t]
-
-    def generate_series(self):
-
-        # 创建列表并设置初始条件
-        y_t = [self.y_0, self.y_1]
-
-        # 生成y_t序列
-        for t in range(2, self.n):
-
-            # 无政府支出
-            if self.g == 0:
-                y_t.append(self._transition(y_t, t))
-
-            # 政府支出(无冲击)
-            elif self.g != 0 and self.duration == None:
-                y_t.append(self._transition(y_t, t))
-
-            # 永久性政府支出冲击
-            elif self.duration == 'permanent':
-                if t < self.g_t:
-                    y_t.append(self._transition(y_t, t, g=0))
-                else:
-                    y_t.append(self._transition(y_t, t, g=self.g))
-
-            # 一次性政府支出冲击
-            elif self.duration == 'one-off':
-                if t == self.g_t:
-                    y_t.append(self._transition(y_t, t, g=self.g))
-                else:
-                    y_t.append(self._transition(y_t, t, g=0))
-        return y_t
+    def generate_series(self, seed=0):
+        g_params = (
+            {'g': self.g, 'g_t': self.g_t, 'duration': self.duration} 
+            if self.g != 0 else None
+        )
+        y_series, _ = simulate_samuelson(
+            self.y_0, self.y_1, self.α, self.β, self.γ, 
+            self.n, self.σ, g_params, seed
+        )
+        return y_series
 
     def summary(self):
-        print('摘要\n' + '-' * 50)
-        print(f'根的类型: {self.root_type()}')
-        print(f'解的类型: {self.solution_type()}')
-        print(f'根: {str(self.roots)}')
+        print("摘要\n" + "-" * 50)
+        print(f"根的类型: {self.root_type()}")
+        print(f"解的类型: {self.solution_type()}")
+        print(f"根: {str(self.roots)}")
 
         if self.root_less_than_one() == True:
-            print('根的绝对值小于1')
+            print("根的绝对值小于1")
         else:
-            print('根的绝对值不小于1')
+            print("根的绝对值不小于1")
 
         if self.σ > 0:
-            print('随机序列，σ = ' + str(self.σ))
+            print("随机序列，σ = " + str(self.σ))
         else:
-            print('非随机序列')
+            print("非随机序列")
 
         if self.g != 0:
-            print('政府支出等于 ' + str(self.g))
+            print("政府支出等于 " + str(self.g))
 
         if self.duration != None:
-            print(self.duration.capitalize() +
-                  ' 政府支出冲击发生在 t = ' + str(self.g_t))
+            print(
+                self.duration.capitalize()
+                + " 政府支出冲击发生在 t = "
+                + str(self.g_t)
+            )
 
-    def plot(self):
+    def plot(self, seed=0):
         fig, ax = plt.subplots(figsize=(10, 6))
-        ax.plot(self.generate_series())
-        ax.set(xlabel='迭代次数', xlim=(0, self.n))
-        ax.set_ylabel('$Y_t$', rotation=0)
-        ax.grid()
+        ax.plot(self.generate_series(seed))
+        ax.set(xlabel="迭代次数", xlim=(0, self.n))
+        ax.set_ylabel("$Y_t$", rotation=0)
 
         # 在图中添加参数值
-        paramstr = f'''
-        $\\alpha={self.α:.2f}$
-        $\\beta={self.β:.2f}$ 
-        $\\gamma={self.γ:.2f}$
-        $\\sigma={self.σ:.2f}$
-        $\\rho_1={self.ρ1:.2f}$
-        $\\rho_2={self.ρ2:.2f}$'''
-        props = dict(fc='white', pad=10, alpha=0.5)
-        ax.text(0.87, 0.05, paramstr, transform=ax.transAxes,
-                fontsize=12, bbox=props, va='bottom')
+        paramstr = (
+            f"$α={self.α:.2f}$ \n $β={self.β:.2f}$ \n "
+            f"$\\gamma={self.γ:.2f}$ \n $\\sigma={self.σ:.2f}$ \n "
+            f"$\\rho_1={self.ρ1:.2f}$ \n $\\rho_2={self.ρ2:.2f}$"
+        )
+        props = dict(fc="white", pad=10, alpha=0.5)
+        ax.text(
+            0.87,
+            0.05,
+            paramstr,
+            transform=ax.transAxes,
+            fontsize=12,
+            bbox=props,
+            va="bottom",
+        )
 
         return fig
 
     def param_plot(self):
 
-        # 使用之前定义的param_plot()函数(这样它既可以单独使用，
-        # 也可以作为模型的一部分使用)
 
         fig = param_plot()
         ax = fig.gca()
 
-        # 在图例中添加λ值
+        # 在图例中显示特征值
         for i, root in enumerate(self.roots):
             if isinstance(root, complex):
-                # 需要为正数填充运算符，因为字符串被分开
-                operator = ['+', '']
-                label = rf'$\lambda_{i+1} = {sam.roots[i].real:.2f} {operator[i]} {sam.roots[i].imag:.2f}i$'
-            else:
-                label = rf'$\lambda_{i+1} = {sam.roots[i].real:.2f}$'
-            ax.scatter(0, 0, 0, label=label) # 虚拟点以添加到图例
 
-        # 在图中添加ρ对
-        ax.scatter(self.ρ1, self.ρ2, 100, 'red', '+',
-            label=r'$(\ \rho_1, \ \rho_2 \ )$', zorder=5)
+                # 处理复数显示的符号格式
+                operator = ["+", ""]
+                root_real = self.roots[i].real
+                root_imag = self.roots[i].imag
+                label = (
+                    rf"$\lambda_{i+1} = {root_real:.2f}"
+                    rf"{operator[i]} {root_imag:.2f}i$"
+                )
+            else:
+                label = rf"$\lambda_{i+1} = {self.roots[i].real:.2f}$"
+
+            # 添加不可见的点以生成图例条目
+            ax.scatter(
+                0, 0, s=0, label=label
+            )
+
+        # 在稳定性图上标出当前参数值
+        ax.scatter(
+            self.ρ1,
+            self.ρ2,
+            s=100,
+            c="red",
+            marker="+",
+            label=r"$(\rho_1, \rho_2)$",
+            zorder=5,
+        )
 
         plt.legend(fontsize=12, loc=3)
 
@@ -1098,7 +1089,7 @@ class Samuelson():
 现在我们用一个例子来展示Samuelson类的应用
 
 ```{code-cell} ipython3
-sam = Samuelson(α=0.8, β=0.5, σ=2, g=10, g_t=20, duration='permanent')
+sam = Samuelson(α=0.8, β=0.5, σ=2, g=10, g_t=20, duration="permanent")
 sam.summary()
 ```
 
@@ -1120,14 +1111,11 @@ plt.show()
 
 ## 使用LinearStateSpace类
 
-我们可以使用[QuantEcon.py](http://quantecon.org/quantecon-py)中的[LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)类来完成我们之前从头开始做的大部分工作。
+我们可以使用[QuantEcon.py](https://quantecon.org/quantecon-py/)中的[LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)类来完成我们之前从头开始做的大部分工作。
 
 以下是我们如何将萨缪尔森模型映射到`LinearStateSpace`类的实例中
 
 ```{code-cell} ipython3
-"""此脚本将萨缪尔森模型映射到
-``LinearStateSpace``类中
-"""
 α = 0.8
 β = 0.9
 ρ1 = α + β
@@ -1137,31 +1125,30 @@ plt.show()
 g = 10
 n = 100
 
-A = [[1,        0,      0],
-     [γ + g,   ρ1,     ρ2],
-     [0,        1,      0]]
+A = [[1, 0, 0], [γ + g, ρ1, ρ2], [0, 1, 0]]
 
-G = [[γ + g, ρ1,   ρ2],         # 这是Y_{t+1}
-     [γ,      α,    0],         # 这是C_{t+1}
-     [0,      β,   -β]]         # 这是I_{t+1}
+G = [
+    [γ + g, ρ1, ρ2],  # Y_{t+1}
+    [γ, α, 0],        # C_{t+1}
+    [0, β, -β],       # I_{t+1}
+]
 
 μ_0 = [1, 100, 50]
-C = np.zeros((3,1))
-C[1] = σ # 随机项
+C = np.zeros((3, 1))
+C[1] = σ  # 随机项
 
 sam_t = LinearStateSpace(A, C, G, mu_0=μ_0)
 
 x, y = sam_t.simulate(ts_length=n)
 
 fig, axes = plt.subplots(3, 1, sharex=True, figsize=(12, 8))
-titles = ['产出 ($Y_t$)', '消费 ($C_t$)', '投资 ($I_t$)']
-colors = ['darkblue', 'red', 'purple']
+titles = ["产出 ($Y_t$)", "消费 ($C_t$)", "投资 ($I_t$)"]
+colors = ["darkblue", "red", "purple"]
 for ax, series, title, color in zip(axes, y, titles, colors):
     ax.plot(series, color=color)
     ax.set(title=title, xlim=(0, n))
-    ax.grid()
 
-axes[-1].set_xlabel('迭代次数')
+axes[-1].set_xlabel("迭代次数")
 
 plt.show()
 ```
@@ -1183,7 +1170,7 @@ y1.shape
 ```{code-cell} ipython3
 A = np.asarray(A)
 w, v = np.linalg.eig(A)
-print(w)
+print(np.round(w, 2))
 ```
 
 ### 从 `LinearStateSpace` 继承方法
@@ -1192,105 +1179,117 @@ print(w)
 
 ```{code-cell} ipython3
 class SamuelsonLSS(LinearStateSpace):
-
     """
     这个子类将萨缪尔森乘数-加速器模型
     创建为线性状态空间系统。
     """
-    def __init__(self,
-                 y_0=100,
-                 y_1=50,
-                 α=0.8,
-                 β=0.9,
-                 γ=10,
-                 σ=1,
-                 g=10):
+
+    def __init__(self, y_0=100, y_1=50, α=0.8, β=0.9, γ=10, σ=1, g=10):
 
         self.α, self.β = α, β
         self.y_0, self.y_1, self.g = y_0, y_1, g
         self.γ, self.σ = γ, σ
 
-        # 定义初始条件
-        self.μ_0 = [1, y_0, y_1]
+        # 设置初始状态向量
+        self.initial_μ = [1, y_0, y_1]
 
         self.ρ1 = α + β
         self.ρ2 = -β
 
-        # 定义转移矩阵
-        self.A = [[1,                 0,         0],
-                  [γ + g,       self.ρ1,   self.ρ2],
-                  [0,                 1,         0]]
+        # 构造状态转移矩阵
+        self.A = [[1, 0, 0], [γ + g, self.ρ1, self.ρ2], [0, 1, 0]]
 
-        # 定义输出矩阵
-        self.G = [[γ + g, self.ρ1, self.ρ2],         # 这是 Y_{t+1}
-                  [γ,           α,       0],         # 这是 C_{t+1}
-                  [0,           β,      -β]]         # 这是 I_{t+1}
+        # 构造观测矩阵
+        self.G = [
+            [γ + g, self.ρ1, self.ρ2],  # Y_{t+1}
+            [γ, α, 0],                  # C_{t+1}
+            [0, β, -β],                 # I_{t+1}
+        ]  
 
         self.C = np.zeros((3, 1))
         self.C[1] = σ  # 随机项
 
-        # 用萨缪尔森模型的参数初始化 LSS
-        LinearStateSpace.__init__(self, self.A, self.C, self.G, mu_0=self.μ_0)
+        # 初始化 LinearStateSpace 实例
+        LinearStateSpace.__init__(
+            self, self.A, self.C, self.G, mu_0=self.initial_μ
+        )
 
-    def plot_simulation(self, ts_length=100, stationary=True):
+    # 为父类中的 mu_0 和 Sigma_0 创建 unicode 别名
+    @property
+    def μ_0(self):
+        return self.mu_0
+    
+    @μ_0.setter
+    def μ_0(self, value):
+        self.mu_0 = value
+    
+    @property
+    def Σ_0(self):
+        return self.Sigma_0
+    
+    @Σ_0.setter
+    def Σ_0(self, value):
+        self.Sigma_0 = value
 
-        # 临时存储原始参数
-        temp_mu = self.mu_0
-        temp_Sigma = self.Sigma_0
+    def plot_simulation(self, ts_length=100, stationary=True, seed=0):
 
-        # 将分布参数设置为其平稳值用于模拟
+        # 存储原始分布参数
+        temp_μ = self.μ_0
+        temp_Σ = self.Σ_0
+
+        # 使用平稳分布进行模拟
         if stationary == True:
             try:
-                self.mu_x, self.mu_y, self.Sigma_x, self.Sigma_y, self.Sigma_yx = \
-                    self.stationary_distributions()
-                self.mu_0 = self.mu_x
-                self.Sigma_0 = self.Sigma_x
-            # 计算平稳分布时未能收敛的异常情况
-            except ValueError:
-                print('平稳分布不存在')
+                (self.μ_x, self.μ_y, self.Σ_x, self.Σ_y, self.Σ_yx
+                ) = self.stationary_distributions()
+                self.μ_0 = self.μ_x
+                self.Σ_0 = self.Σ_x
 
+            # 处理平稳分布不存在的情况
+            except ValueError:
+                print("平稳分布不存在")
+
+        np.random.seed(seed)
         x, y = self.simulate(ts_length)
 
         fig, axes = plt.subplots(3, 1, sharex=True, figsize=(12, 8))
-        titles = ['产出 ($Y_t$)', '消费 ($C_t$)', '投资 ($I_t$)']
-        colors = ['darkblue', 'red', 'purple']
+        titles = ["产出 ($Y_t$)", 
+                  "消费 ($C_t$)", 
+                  "投资 ($I_t$)"]
+        colors = ["darkblue", "red", "purple"]
         for ax, series, title, color in zip(axes, y, titles, colors):
             ax.plot(series, color=color)
             ax.set(title=title, xlim=(0, n))
-            ax.grid()
 
-        axes[-1].set_xlabel('迭代次数')
+        axes[-1].set_xlabel("迭代次数")
+        plt.show()
 
-        # 将分布参数重置为初始值
-        self.mu_0 = temp_mu
-        self.Sigma_0 = temp_Sigma
-
-        return fig
+        # 恢复原始分布参数
+        self.μ_0 = temp_μ
+        self.Σ_0 = temp_Σ
 
     def plot_irf(self, j=5):
 
         x, y = self.impulse_response(j)
 
-        # 重塑为 3 x j 矩阵用于绘图
-        yimf = np.array(y).flatten().reshape(j+1, 3).T
+        # 重塑脉冲响应以便绘图
+        yimf = np.array(y).flatten().reshape(j + 1, 3).T
 
         fig, axes = plt.subplots(3, 1, sharex=True, figsize=(12, 8))
-        labels = ['$Y_t$', '$C_t$', '$I_t$']
-        colors = ['darkblue', 'red', 'purple']
+        labels = ["$Y_t$", "$C_t$", "$I_t$"]
+        colors = ["darkblue", "red", "purple"]
         for ax, series, label, color in zip(axes, yimf, labels, colors):
             ax.plot(series, color=color)
             ax.set(xlim=(0, j))
             ax.set_ylabel(label, rotation=0, fontsize=14, labelpad=10)
-            ax.grid()
 
-        axes[0].set_title('脉冲响应函数')
-        axes[-1].set_xlabel('迭代次数')
-
-        return fig
+        axes[0].set_title("脉冲响应函数")
+        axes[-1].set_xlabel("迭代次数")
+        plt.show()
 
     def multipliers(self, j=5):
         x, y = self.impulse_response(j)
-        return np.sum(np.array(y).flatten().reshape(j+1, 3), axis=0)
+        return np.sum(np.array(y).flatten().reshape(j + 1, 3), axis=0)
 ```
 
 ### 图示
@@ -1348,9 +1347,8 @@ pure_multiplier.plot_irf(100)
 
 ## 总结
 
-在本讲中，我们编写了函数和类来表示萨缪尔森乘数-加速器模型的非随机和随机版本，该模型在{cite}`Samuelson1939`中有所描述。
+在本讲中，我们编写了函数和类来表示萨缪尔森(1939)乘数-加速器模型的非随机和随机版本，该模型在{cite}`Samuelson1939`中有所描述。
 
 我们看到不同的参数值会导致不同的输出路径，这些路径可能是平稳的、发散的或振荡的。
 
-我们还能够使用[QuantEcon.py](http://quantecon.org/quantecon-py)的[LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)类来表示该模型。
-
+我们还能够使用[QuantEcon.py](https://quantecon.org/quantecon-py/)的[LinearStateSpace](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lss.py)类来表示该模型。
