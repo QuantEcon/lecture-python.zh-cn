@@ -461,7 +461,7 @@ plt.show()
 
 另一种可能性是使用一种替代算法，它既有可能缩短计算时间，同时还能提高精确度。
 
-我们将在{doc}`os_time_iter`中探讨这一点。
+我们将在{doc}`intermediate:os_time_iter`中探讨这一点。
 
 
 ## 练习
