@@ -69,6 +69,10 @@ Blume和Easley构建了正式模型，研究关于风险收入过程概率的不
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
 import numpy as np
 from numba import vectorize, jit, prange
 from math import gamma
