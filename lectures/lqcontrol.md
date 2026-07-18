@@ -9,6 +9,33 @@ kernelspec:
   name: python3
   display_name: Python 3 (ipykernel)
   language: python
+translation:
+  title: LQ控制：基础
+  headings:
+    Overview: 概述
+    Introduction: 引言
+    Introduction::The Law of Motion: 运动规律
+    Introduction::The Law of Motion::Example 1: 示例1
+    Introduction::The Law of Motion::Example 2: 示例2
+    Introduction::Preferences: 偏好
+    Introduction::Preferences::Example 1: 示例1
+    Introduction::Preferences::Example 2: 示例2
+    Optimality -- Finite Horizon: 最优性 —— 有限期问题
+    Optimality -- Finite Horizon::The Objective: 目标函数
+    Optimality -- Finite Horizon::Information: 信息
+    Optimality -- Finite Horizon::Solution: 解
+    Implementation: 实现
+    Implementation::An Application: 一个应用
+    Extensions and Comments: 扩展和评论
+    Extensions and Comments::Time-Varying Parameters: 时变参数
+    Extensions and Comments::Adding a Cross-Product Term: 添加交叉乘积项
+    Extensions and Comments::Infinite Horizon: 无限期限
+    Extensions and Comments::Certainty Equivalence: 确定性等价
+    Further Applications: 进一步应用
+    'Further Applications::Application 1: Age-Dependent Income Process': 应用1：与年龄相关的收入过程
+    'Further Applications::Application 2: A Permanent Income Model with Retirement': 应用2：包含退休的永久收入模型
+    'Further Applications::Application 3: Monopoly with Adjustment Costs': 应用3：具有调整成本的垄断
+    Exercises: 练习
 ---
 
 (lqc)=
@@ -41,13 +68,13 @@ kernelspec:
 
 线性二次（linear–quadratic，LQ）控制指的是一类在几乎所有科学领域都有应用的动态优化问题。
 
-正如我们将看到的，LQ 系统具有简洁的结构，使其成为解决各类经济问题的主力工具。
+本讲座对LQ控制及其经济应用进行介绍。
 
-此外，尽管线性二次结构看似具有约束性，它的实际灵活性远超最初印象。
+正如我们将看到的，LQ 系统具有简洁的结构，使其成为解决各类经济问题的主力工具。
 
 此外，虽然线性二次结构具有局限性，但实际上它比最初看起来要灵活得多。
 
-这些主题将在下文中会反复出现。
+这些主题将在下文中反复出现。
 
 从数学角度来看，LQ控制问题与{doc}`卡尔曼滤波<kalman>`密切相关
 
@@ -59,7 +86,7 @@ kernelspec:
 
 * 矩阵运算
 * 随机变量向量
-* 动态规划和贝尔曼方程（参见{doc}`这个讲座 <intro:short_path>`和{doc}`这个讲座 <optgrowth>`）
+* 动态规划和贝尔曼方程（参见{doc}`这个讲座 <intro:short_path>`和{doc}`os_stochastic`）
 
 关于LQ控制的更多阅读材料，请参见：
 
@@ -130,6 +157,7 @@ $$
 
 这显然是{eq}`lq_lom`的一个特例，其中资产是状态变量，消费是控制变量。
 
+(lq_hhp)=
 #### 示例2
 
 前一个模型中有一个不太现实的特征：非金融收入的均值为零，且经常为负值。
@@ -260,7 +288,6 @@ x_t' R x_t + u_t' Q u_t
 实际上，对于许多经济问题，可以放宽对 $R$ 和 $Q$ 的正定性条件。只需要 $R$ 和 $Q$ 的某些子矩阵是非负定的即可。详见 {cite}`HansenSargent2008`。
 ```
 
-(lq_hhp)=
 #### 示例1
 
 一个满足上述假设的简单例子是令 $R$ 和 $Q$ 都为单位矩阵，此时当期损失为：
@@ -332,7 +359,7 @@ $$
 
 为了说明这一点，考虑控制序列 $\{u_0, \ldots, u_{T-1}\}$。
 
-当决策者在选择这些控制变量时，他可以考虑冲击序列 ${w_1, \ldots, w_T}$ 对系统的影响。
+当决策者在选择这些控制变量时，他可以考虑冲击序列 $\{w_1, \ldots, w_T\}$ 对系统的影响。
 
 然而，我们通常假定（此处亦然），第 $t$ 期的控制 $u_t$ 只能基于当前与过去的冲击信息。
 
@@ -344,7 +371,7 @@ $$
 
 注意，$x_t$ 最终取决于 $x_0, w_1, w_2, \ldots, w_t$ 的实现值。
 
-事实上，$x_t$ 总结了所有历史冲击中与最优控制相关的全部信息。
+事实上，$x_t$ 总结了所有历史冲击中决策者用来实现最优控制所需的全部信息。
 
 更准确地说，可以证明任何最优控制 $u_t$ 都可以表示为仅与当前状态相关的函数。
 
@@ -527,7 +554,7 @@ F_t := (Q + \beta B' P_{t+1} B)^{-1} \beta B' P_{t+1} A
 
 特别是，由{eq}`lq_oc`和{eq}`lq_lom`给出的控制序列解决了我们的有限期LQ问题。
 
-更准确地说，由以下式子给出的序列 $u_0, \ldots, u_{T-1}$， 在我们的约束条件下实现了{eq}`lq_object`的最小值：对于$t = 0, \ldots, T-1$，
+更准确地说，对于$t = 0, \ldots, T-1$，由以下式子给出的序列 $u_0, \ldots, u_{T-1}$
 
 ```{math}
 :label: lq_xud
@@ -537,10 +564,11 @@ u_t = - F_t x_t
 x_{t+1} = (A - BF_t) x_t + C w_{t+1}
 ```
 
+在我们的约束条件下实现了{eq}`lq_object`的最小值。
 
 ## 实现
 
-我们将使用[QuantEcon.py](http://quantecon.org/quantecon-py)中的[lqcontrol.py](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lqcontrol.py)模块来求解有限和无限期线性二次控制问题。
+我们将使用[QuantEcon.py](https://quantecon.org/quantecon-py/)中的[lqcontrol.py](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lqcontrol.py)模块来求解有限和无限期线性二次控制问题。
 
 在该模块中，各种更新、模拟和不动点方法被封装在一个名为`LQ`的类中，包括
 
@@ -618,9 +646,8 @@ $$
 
 在生成冲击序列 $w_1, \ldots, w_T$ 之后，资产和消费的动态可以通过 {eq}`lq_xud` 来模拟。
 
-下图是使用参数 $r = 0.05, \beta = 1 / (1+ r)$ 计算得出的，
-
-\bar c = 2，\mu = 1，\sigma = 0.25，T = 45$ 和 $q = 10^6$。
+下图是使用参数 $r = 0.05, \beta = 1 / (1+ r),
+\bar c = 2,  \mu = 1, \sigma = 0.25, T = 45$ 和 $q = 10^6$ 计算得出的。
 
 冲击 $\{w_t\}$ 被设定为独立同分布的标准正态分布。
 
@@ -1195,7 +1222,7 @@ $$
 \right\}
 ```
 
-现在找到 $R$ 和 $Q$， 使得{eq}`lq_object_mp2`可以写成{eq}`lq_object_ih`的形式。
+现在找到 $R$ 和 $Q$， 使得{eq}`lq_object_mp2`可以写成{eq}`lq_object_ih`的形式相对直接。
 
 此外，通过写出状态每个元素的动态方程，可以找到{eq}`lq_lom`中的矩阵 $A, B$ 和 $C$。
 
@@ -1300,8 +1327,9 @@ plt.show()
 ```{solution-end}
 ```
 
-````{exercise}
+````{exercise-start}
 :label: lqc_ex2
+````
 
 复现{ref}`上面所示<solution_lqc_ex2_fig>`关于工作和退休的图。
 
@@ -1327,6 +1355,9 @@ plt.show()
 对于`lq_working`，偏好相同，但其终值条件 $R_f$ 应替换为由`lq_retired`从退休期末逆向迭代至退休起点所得到的最终值函数。
 
 通过仔细处理，可以将这两个独立模型的模拟结果拼接在一起生成完整的模拟。
+```
+
+````{exercise-end}
 ````
 
 ```{solution-start} lqc_ex2
@@ -1535,7 +1566,7 @@ ax.plot(time, q_bar, 'k-', lw=2, alpha=0.6, label=r'$\bar q_t$')
 ax.plot(time, q, 'b-', lw=2, alpha=0.6, label='$q_t$')
 ax.legend(ncol=2, **legend_args)
 s = fr'给定$\gamma = {γ}$下的动态过程'
-ax.text(min(time) + 1, 1 * q_bar.max(), s, fontsize=14)
+ax.text(max(time) * 0.6, 1 * q_bar.max(), s, fontsize=14)
 plt.show()
 ```
 
