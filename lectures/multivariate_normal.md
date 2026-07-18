@@ -444,7 +444,7 @@ print('μ2_hat, Σ2_hat = ', μ2_hat, Σ2_hat)
 ```{code-cell} python3
 # compute the cond. dist. of z1
 ind = 0
-z2 = np.array([5.]) # given z2
+z2 = np.array([5.]) # 给定 z2
 
 μ1_hat, Σ1_hat = multi_normal.cond_dist(ind, z2)
 print('μ1_hat, Σ1_hat = ', μ1_hat, Σ1_hat)
