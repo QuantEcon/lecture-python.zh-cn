@@ -7,6 +7,8 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 执行统计
 ---
 
 # 执行统计
@@ -39,3 +41,10 @@ kernelspec:
 !nvidia-smi
 ```
 
+您可以使用以下方式检查JAX所使用的后端：
+
+```{code-cell} ipython3
+import jax
+# 检查JAX是否使用GPU
+print(f"JAX backend: {jax.devices()[0].platform}")
+```
