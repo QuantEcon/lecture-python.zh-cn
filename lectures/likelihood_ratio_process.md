@@ -9,6 +9,26 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 似然比过程
+  headings:
+    Overview: 概述
+    Likelihood Ratio Process: 似然比过程
+    Nature permanently draws from density g: 当自然永久从密度g中抽取时
+    Peculiar property: 特殊性质
+    Nature permanently draws from density f: 自然永久从密度f中抽样
+    Likelihood ratio test: 似然比检验
+    Likelihood ratio test::A third distribution $h$: 第三个分布 $h$
+    Likelihood ratio test::A helpful formula: 一个有用的公式
+    Hypothesis testing and classification: 假设检验和分类
+    Hypothesis testing and classification::Model selection mistake probability: 模型选择错误概率
+    Hypothesis testing and classification::Classification: 分类
+    Hypothesis testing and classification::Error probability and divergence measures: 误差概率和散度度量
+    Markov chains: 马尔可夫链
+    Markov chains::KL divergence rate: KL散度率
+    Markov chains::Simulations: 模拟
+    Related lectures: 相关讲座
+    Exercises: 练习
 ---
 
 (likelihood_ratio_process)=
@@ -1223,7 +1243,7 @@ plt.show()
 
 显然，$e^{-C(f,g)T}$是误差率的上界。
 
-在`{doc}`divergence_measures`中，我们还研究了**Jensen-Shannon散度**作为分布之间的对称距离度量。
+在{doc}`divergence_measures`中，我们还研究了**Jensen-Shannon散度**作为分布之间的对称距离度量。
 
 我们可以使用Jensen-Shannon散度来测量分布$f$和$g$之间的距离，并计算它与模型选择错误概率的协方差。
 
@@ -1622,7 +1642,7 @@ markov_results = analyze_markov_chains(P_f, P_g)
 
 似然过程在贝叶斯学习中扮演重要角色，正如在{doc}`likelihood_bayes`中所描述的，并在{doc}`odu`中得到应用。
 
-似然比过程是Lawrence Blume和David Easley回答他们提出的问题"如果你那么聪明，为什么不富有？" {cite}`blume2006if`的核心，这是讲座{doc}`likelihood_ratio_process_2`的主题。
+似然比过程是Lawrence Blume和David Easley回答他们提出的问题"如果你那么聪明，为什么不富有？" {cite}`Blume_Easley2006`的核心，这是讲座{doc}`likelihood_ratio_process_2`的主题。
 
 似然比过程也出现在{doc}`advanced:additive_functionals`中，其中包含了另一个关于上述似然比过程**特殊性质**的说明。
 
@@ -1755,4 +1775,3 @@ $$
 
 ```{solution-end}
 ```
-
