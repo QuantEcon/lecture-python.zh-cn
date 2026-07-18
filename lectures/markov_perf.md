@@ -7,6 +7,24 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 马尔可夫完美均衡
+  headings:
+    Overview: 概述
+    Background: 背景
+    'Background::Example: A Duopoly Model': 示例：双寡头模型
+    Background::Computation: 计算
+    Linear Markov Perfect Equilibria: 线性马尔可夫完美均衡
+    Linear Markov Perfect Equilibria::Coupled Linear Regulator Problems: 耦合线性调节器问题
+    Linear Markov Perfect Equilibria::Computing Equilibrium: 计算均衡
+    Linear Markov Perfect Equilibria::Computing Equilibrium::Key Insight: 关键洞察
+    Linear Markov Perfect Equilibria::Computing Equilibrium::Infinite Horizon: 无限视界
+    Linear Markov Perfect Equilibria::Implementation: 实现
+    Application: 应用
+    Application::A Duopoly Model: 双寡头模型
+    Application::Parameters and Solution: 参数和解决方案
+    Application::Dynamics: 动态分析
+    Exercises: 练习
 ---
 
 (markov_perf)=
@@ -29,10 +47,9 @@ kernelspec:
 
 除了Anaconda中已有的库外，本讲座还需要以下库：
 
-```{code-cell} ipython
----
-tags: [hide-output]
----
+```{code-cell} ipython3
+:tags: [hide-output]
+
 !pip install quantecon
 ```
 
@@ -57,7 +74,7 @@ tags: [hide-output]
 
 让我们从一些标准导入开始：
 
-```{code-cell} ipython
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -146,7 +163,10 @@ v_i(q_i, q_{-i}) = \max_{\hat q_i}
    \left\{\pi_i (q_i, q_{-i}, \hat q_i) + \beta v_i(\hat q_i, f_{-i}(q_{-i}, q_i)) \right\}
 ```
 
-**定义**  双头垄断模型的*马尔可夫完美均衡*是一对价值函数$(v_1, v_2)$和一对策略函数$(f_1, f_2)$，对于每个$i \in \{1, 2\}$和每个可能的状态，满足：
+```{prf:definition} 马尔可夫完美均衡
+:label: def-markov-perfect-equilibrium
+
+双头垄断模型的**马尔可夫完美均衡**是一对价值函数$(v_1, v_2)$和一对策略函数$(f_1, f_2)$，对于每个$i \in \{1, 2\}$和每个可能的状态，满足：
 
 * 价值函数$v_i$满足贝尔曼方程{eq}`game4`。
 * {eq}`game4`右侧的最大化值等于$f_i(q_i, q_{-i})$。
@@ -156,6 +176,7 @@ v_i(q_i, q_{-i}) = \max_{\hat q_i}
 "完美"意味着完整，即均衡是通过反向归纳构建的，因此在所有可能的未来状态下都包含了每个公司的优化行为。
 
 * 这包括了许多状态，当我们从给定的初始状态开始，在一对均衡策略$f_i$上向前迭代时，这些状态不会被达到。
+```
 
 ### 计算
 
@@ -343,7 +364,7 @@ P_{2t} =
 
 ### 实现
 
-我们使用 [QuantEcon.py](http://quantecon.org/quantecon-py) 中的 [nnash](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lqnash.py) 函数，该函数按照上述方式计算无限视界线性二次动态博弈的马尔可夫完美均衡。
+我们使用 [QuantEcon.py](https://quantecon.org/quantecon-py/) 中的 [nnash](https://github.com/QuantEcon/QuantEcon.py/blob/master/quantecon/lqnash.py) 函数，该函数按照上述方式计算无限视界线性二次动态博弈的马尔可夫完美均衡。
 
 ## 应用
 
@@ -354,9 +375,7 @@ P_{2t} =
 
 ### 双寡头模型
 
-为了将双寡头模型映射到耦合的线性二次动态规划问题中，定义状态
-
-状态和控制变量为
+为了将双寡头模型映射到耦合的线性二次动态规划问题中，定义状态和控制变量为
 
 $$
 x_t :=
@@ -415,8 +434,7 @@ B_1 :=
 \quad
 B_2 :=
 \begin{bmatrix}
-
-0 \\
+            0 \\
             0 \\
             1
 \end{bmatrix}
@@ -443,19 +461,22 @@ x_{t+1} = (A - B_1 F_1 -B_1 F_2 ) x_t
 
 ```{code-cell} ipython3
 :load: _static/lecture_specific/markov_perf/duopoly_mpe.py
+
+
 ```
 
 运行代码会产生以下输出。
 
-通过使用[QuantEcon.py](http://quantecon.org/quantecon-py)的LQ类，我们可以看到$F_i$确实是在给定$F_2$的情况下对公司$i$来说是最优的。
+通过使用[QuantEcon.py](https://quantecon.org/quantecon-py/)的LQ类，我们可以看到$F_i$确实是在给定$F_2$的情况下对公司$i$来说是最优的。
 
 具体来说，让我们把上面计算得到的F2代入{eq}`eq_mpe_p1p`和{eq}`eq_mpe_p1d`中得到公司1的问题，并使用LQ来求解。
 
 我们希望得到的策略与上面计算的F1一致。
 
 ```{code-cell} ipython3
+beta = 0.96
 Λ1 = A - B2 @ F2
-lq1 = qe.LQ(Q1, R1, Λ1, B1, beta=β)
+lq1 = qe.LQ(Q1, R1, Λ1, B1, beta=beta)
 P1_ih, F1_ih, d = lq1.stationary_values()
 F1_ih
 ```
@@ -528,8 +549,7 @@ plt.show()
 
 参数与 duopoly_mpe.py 中的相同,你可以使用该代码计算双寡头垄断下的 MPE 策略。
 
-垄断者情况下的最优策略可以使用 [QuantEcon.py](http://quantecon.org/quantecon-py) 的 LQ 类来计算。
-
+垄断者情况下的最优策略可以使用 [QuantEcon.py](https://quantecon.org/quantecon-py/) 的 LQ 类来计算。
 ```
 
 ```{solution-start} mp_ex1
@@ -587,7 +607,7 @@ p = a0 - a1 * q   # 价格，MPE
 
 $$
 x_t = q_t - \bar q
-\quad \text{和} \quad
+\quad \text{and} \quad
 u_t = q_{t+1} - q_t
 $$
 
@@ -595,7 +615,7 @@ $$
 
 $$
 R = a_1
-\quad \text{和} \quad
+\quad \text{and} \quad
 Q = \gamma
 $$
 
@@ -623,7 +643,7 @@ x0 = qm[0] - q_bar
 x = x0
 for i in range(1, n):
     x = A * x - B * F * x
-    qm[i] = float(x) + q_bar
+    qm[i] = float(x.item()) + q_bar
 pm = a0 - a1 * qm
 ```
 
@@ -676,7 +696,6 @@ plt.show()
 库存遵循以下运动规律：
 
 $$
-
 I_{i,t+1} = (1 - \delta)  I_{it} + q_{it} - S_{it}
 $$
 
@@ -706,7 +725,7 @@ u_{it} =
     p_{it} \\
     q_{it}
 \end{bmatrix}
-\quad \text{和} \quad
+\quad \text{and} \quad
 x_t =
 \begin{bmatrix}
     I_{1t} \\
@@ -731,7 +750,8 @@ c1 = c2 = np.array([1, -2, 1])
 e1 = e2 = np.array([10, 10, 3])
 ```
 
-```{figure} /_static/lecture_specific/markov_perf/judd_fig2.png
+```{image} /_static/lecture_specific/markov_perf/judd_fig2.png
+:align: center
 ```
 
 库存量趋向于一个共同的稳态。
@@ -740,7 +760,8 @@ e1 = e2 = np.array([10, 10, 3])
 
 正如下图所示，确实如此
 
-```{figure} /_static/lecture_specific/markov_perf/judd_fig1.png
+```{image} /_static/lecture_specific/markov_perf/judd_fig1.png
+:align: center
 ```
 
 在这个练习中，重现 $\delta = 0.02$ 时的图形。
@@ -772,7 +793,7 @@ u_{it} =
     p_{it} \\
     q_{it}
 \end{bmatrix}
-\quad \text{和} \quad
+\quad \text{and} \quad
 x_t =
 \begin{bmatrix}
     I_{1t} \\
@@ -821,7 +842,6 @@ M1 = np.array([[0, 0], [0, D[0, 1] / 2.]])
 M2 = np.copy(M1)
 ```
 
-
 现在我们可以使用`qe.nnash`来计算均衡
 
 ```{code-cell} ipython3
@@ -857,4 +877,3 @@ plt.show()
 
 ```{solution-end}
 ```
-
