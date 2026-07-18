@@ -303,8 +303,8 @@ plt.plot(x1, x1, ':', linewidth=2)
 plt.xlim([0, 1])
 plt.ylim([0, 1])
 
-plt.xlabel('Pr(A|yes)')
-plt.ylabel('Pr(A|no)')
+plt.xlabel('Pr(A|是)')
+plt.ylabel('Pr(A|否)')
 plt.text(0.42, 0.3, "说真话", fontdict={'size':28, 'style':'italic'})
 plt.text(0.8, 0.1, "说谎", fontdict={'size':28, 'style':'italic'})
 
