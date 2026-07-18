@@ -9,10 +9,51 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: V, σ, μ
+  headings:
+    Overview: 概述
+    Environment: 经济环境
+    Environment::Demographics and time: 人口统计和时间
+    Environment::Individuals' state variables: 个体状态变量
+    Environment::Labor supply: 劳动供给
+    Environment::Initial conditions: 初始条件
+    Production: 生产
+    Government: 政府
+    Activities in factor markets: 要素市场活动
+    Activities in factor markets::Age-specific labor supplies: 特定年龄的劳动供给
+    Activities in factor markets::Asset market participation: 资产市场参与
+    Activities in factor markets::Key features: 主要特征
+    Representative firm's problem: 代表性企业的问题
+    Households' problems: 家庭问题
+    Population dynamics: 人口动态
+    Equilibrium: 均衡
+    Implementation: 实现
+    Computing a steady state: 计算稳态
+    Transition dynamics: 转换动态
+    'Experiment 1: Immediate tax cut': 实验1：即时减税
+    'Experiment 2: Preannounced tax cut': 实验2：预先宣布的减税
+---
+
+```
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.3
+kernelspec:
+  display_name: Python 3 (ipykernel)
+  language: python
+  name: python3
 ---
 
 
 # 长寿、异质性个体、世代交叠模型
+
+```{include} _admonition/gpu.md
+```
 
 除了Anaconda中已有的库之外，本讲座还需要以下库
 
@@ -937,8 +978,7 @@ def simulate_forwards(σ_seq, D_seq, μ_ss1, K_ss1, L_ss1, household, Q):
       - $\mu[t] \leftarrow \Gamma(\sigma[t], \mu[t-1])$ *(分布演化)*
       - $K[t] \leftarrow \int a \, d\mu[t] - D[t]$ *(总资本)*
       - $L[t] \leftarrow \int l(j)\gamma \, d\mu[t]$ *(总劳动)*
-
-- $r[t] \leftarrow \alpha Z(K[t]/L[t])^{\alpha-1}$ *(利率)*
+      - $r[t] \leftarrow \alpha Z(K[t]/L[t])^{\alpha-1}$ *(利率)*
       - $w[t] \leftarrow (1-\alpha)Z(K[t]/L[t])^{\alpha}$ *(工资率)*
       - $\tau[t] \leftarrow solve\_budget(r[t],w[t],K[t],L[t],D[t],G[t])$
 
@@ -1433,4 +1473,4 @@ ax2.set_ylabel(r"j")
 
 plt.show()
 ```
-
+```
