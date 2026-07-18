@@ -81,6 +81,10 @@ translation:
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
 from typing import NamedTuple
 from scipy.optimize import root
 import jax.numpy as jnp
@@ -759,7 +763,7 @@ def newton(f, x_0, tol=1e-5, max_iter=10):
             raise Exception("Solution not found with NaN generated")
         error = jnp.linalg.norm(x - y)
         x = y
-        print(f'尝试 {attempt}: 初始值为 {init} \n')
+        print(f'迭代 {n}, 误差 = {error:.5f}')
     print("\n" + f"Result = {x} \n")
     return x
 ```
