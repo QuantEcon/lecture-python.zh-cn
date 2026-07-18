@@ -49,7 +49,7 @@ translation:
 
 在{doc}`基准模型 <mccall_model>`中，工资报价在时间上是独立同分布的，这是不现实的。
 
-在{doc}`工作搜寻 III <mccall_model_with_sep_markov>`中，我们使用马尔可夫链引入了相关工资抽取，但同时也加入了离职因素。
+在{doc}`工作搜寻 III <intermediate:mccall_model_with_sep_markov>`中，我们使用马尔可夫链引入了相关工资抽取，但同时也加入了离职因素。
 
 这里我们采取不同的方法：我们通过一个AR(1)过程来建模持续性成分，再加上一个暂时性冲击，同时回到假设工作是永久性的（如{doc}`基准模型 <mccall_model>`中一样）。
 
