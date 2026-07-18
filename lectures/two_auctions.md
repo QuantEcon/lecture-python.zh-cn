@@ -9,6 +9,23 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 一价和二价拍卖
+  headings:
+    First-price sealed-bid auction (FPSB): 第一价格密封拍卖(FPSB)
+    First-price sealed-bid auction (FPSB)::Characterization of FPSB auction: 一价密封拍卖的特征
+    Second-price sealed-bid auction (SPSB): 二价密封拍卖(SPSB)
+    Characterization of SPSB auction: 二价密封拍卖的特征
+    Uniform distribution of private values: 私人价值的均匀分布
+    Setup: 设置
+    First price sealed bid auction: 第一价格密封投标拍卖
+    Second price sealed bid auction: 第二价格密封拍卖
+    Python code: Python代码
+    Revenue equivalence theorem: 收入等价定理
+    Calculation of  bid price in FPSB: FPSB中出价的计算
+    $\chi^2$ Distribution: $\chi^2$ 分布
+    Code summary: 代码总结
+    References: 参考文献
 ---
 
 # 一价和二价拍卖
@@ -72,8 +89,7 @@ Anders Munk-Nielsen 将他的代码放在了[GitHub](https://github.com/GamEconC
 
 - 如果$i$的出价恰好是$v_i$，她支付的正是她认为物品值得的价格，不会获得任何剩余价值。
 - 买家$i$永远不会想要出价高于$v_i$。
-
-- 如果买家 $i$ 出价 $b < v_i$ 并赢得拍卖，她获得的剩余价值为 $b - v_i > 0$。
+- 如果买家 $i$ 出价 $b < v_i$ 并赢得拍卖，她获得的剩余价值为 $v_i - b > 0$。
 - 如果买家 $i$ 出价 $b < v_i$ 而其他人出价高于 $b$，买家 $i$ 就会输掉拍卖且没有剩余价值。
 - 要继续进行，买家 $i$ 需要知道她的出价 $v_i$ 作为函数时赢得拍卖的概率
    - 这要求她知道其他潜在买家 $j \neq i$ 的出价 $v_j$ 的概率分布
@@ -170,7 +186,6 @@ $$
 $$
 \begin{aligned}
 \mathbf{E}(y_{i} | y_{i} < v_{i}) &= \frac{\int_{0}^{v_{i}} y_{i}\tilde{f}_{n-1}(y_{i})dy_{i}}{\int_{0}^{v_{i}} \tilde{f}_{n-1}(y_{i})dy_{i}} \\
-
 &= \frac{\int_{0}^{v_{i}}(n-1)y_{i}^{n-1}dy_{i}}{\int_{0}^{v_{i}}(n-1)y_{i}^{n-2}dy_{i}} \\
 &= \frac{n-1}{n}y_{i}\bigg{|}_{0}^{v_{i}} \\
 &= \frac{n-1}{n}v_{i}
@@ -188,20 +203,15 @@ $$
 ```{code-cell} ipython3
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
-
 import seaborn as sns
 import scipy.stats as stats
 import scipy.interpolate as interp
 
-# 用于绘图
+# for plots
+plt.rcParams.update({"text.usetex": True, 'font.size': 14})
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
-FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
-mpl.font_manager.fontManager.addfont(FONTPATH)
-plt.rcParams['font.family'] = ['Source Han Serif SC']
-
-# 确保笔记本生成相同的随机数
+# ensure the notebook generates the same randomness
 np.random.seed(1337)
 ```
 
@@ -213,31 +223,37 @@ np.random.seed(1337)
 N = 5
 R = 100_000
 
-v = np.random.uniform(0,1,(N,R))
+v = np.random.uniform(0, 1, (N, R))
 
-# 第一价格密封拍卖的贝叶斯纳什均衡
+# BNE in first-price sealed bid
 
-b_star = lambda vi,N :((N-1)/N) * vi
+b_star = lambda vi, N: ((N-1)/N) * vi
 b = b_star(v,N)
 ```
 
 我们计算并排序在一价密封拍卖（FPSB）和二价密封拍卖（SPSB）下产生的出价分布。
 
 ```{code-cell} ipython3
-idx = np.argsort(v, axis=0)  # 在每次拍卖中，竞买人的估值按升序排列。
-# 我们记录这个顺序是因为我们要将其应用于出价价格和竞买人ID。
+# Bidders' values are sorted in ascending order in each auction.
+# We record the order because we want to apply it to bid price and their id.
+idx = np.argsort(v, axis=0)
 
-v = np.take_along_axis(v, idx, axis=0)  # 与np.sort(v, axis=0)相同，但保留了idx
+# same as np.sort(v, axis=0), except now we retain the idx
+v = np.take_along_axis(v, idx, axis=0)
 b = np.take_along_axis(b, idx, axis=0)
 
-ii = np.repeat(np.arange(1,N+1)[:,None], R, axis=1)  # 创建竞买人的ID。
-ii = np.take_along_axis(ii, idx, axis=0)  # ID也按照出价价格进行排序。
+# the id for the bidders is created.
+ii = np.repeat(np.arange(1, N+1)[:, None], R, axis=1)
+# the id is sorted according to bid price as well.
+ii = np.take_along_axis(ii, idx, axis=0)
 
-winning_player = ii[-1,:] # 在FPSB和SPSB中，最高估值者为赢家。
+# In FPSB and SPSB, winners are those with highest values.
+winning_player = ii[-1, :]
 
-winner_pays_fpsb = b[-1,:]  # 最高出价
-winner_pays_spsb = v[-2,:]  # 第二高估值
-
+# highest bid
+winner_pays_fpsb = b[-1, :]
+# 2nd-highest valuation
+winner_pays_spsb = v[-2, :]
 ```
 
 让我们绘制_获胜_出价 $b_{(n)}$（即支付金额）与估值 $v_{(n)}$ 的关系图，分别针对FPSB和SPSB。
@@ -249,8 +265,7 @@ winner_pays_spsb = v[-2,:]  # 第二高估值
 
 ```{code-cell} ipython3
 # 我们打算计算不同群组投标者的平均支付金额
-
-binned = stats.binned_statistic(v[-1,:], v[-2,:], statistic='mean', bins=20)
+binned = stats.binned_statistic(v[-1, :], v[-2, :], statistic='mean', bins=20)
 xx = binned.bin_edges
 xx = [(xx[ii]+xx[ii+1])/2 for ii in range(len(xx)-1)]
 yy = binned.statistic
@@ -258,8 +273,9 @@ yy = binned.statistic
 fig, ax = plt.subplots(figsize=(6, 4))
 
 ax.plot(xx, yy, label='SPSB平均支付金额')
-ax.plot(v[-1,:], b[-1,:], '--', alpha = 0.8, label = 'FPSB解析解')
-ax.plot(v[-1,:], v[-2,:], 'o', alpha = 0.05, markersize = 0.1, label = 'SPSB：实际出价')
+ax.plot(v[-1, :], b[-1, :], '--', alpha=0.8, label='FPSB解析解')
+ax.plot(v[-1, :], v[-2, :], 'o', alpha=0.05, 
+                markersize=0.1, label='SPSB：实际出价')
 
 ax.legend(loc='best')
 ax.set_xlabel('估值, $v_i$')
@@ -297,7 +313,6 @@ $$
 &= n\mathbf{E_{v_i}}\left[\mathbf{E_{y_i}}[y_{i}|y_{i} < v_{i}]\tilde{F}_{n-1}(v_{i})\right] \\
 &= n\mathbf{E_{v_i}}[\frac{n-1}{n} \times v_{i} \times v_{i}^{n-1}] \\
 &= (n-1)\mathbf{E_{v_i}}[v_{i}^{n}] \\
-
 &= \frac{n-1}{n+1}
 \end{aligned}
 $$
@@ -309,8 +324,9 @@ $$
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(6, 4))
 
-for payment,label in zip([winner_pays_fpsb, winner_pays_spsb], ['FPSB', 'SPSB']):
-    print('The average payment of %s: %.4f. Std.: %.4f. Median: %.4f'% (label,payment.mean(),payment.std(),np.median(payment)))
+for payment, label in zip([winner_pays_fpsb, winner_pays_spsb], ['FPSB', 'SPSB']):
+    print('The average payment of %s: %.4f. Std.: %.4f. Median: %.4f' % (
+        label, payment.mean(), payment.std(), np.median(payment)))
     ax.hist(payment, density=True, alpha=0.6, label=label, bins=100)
 
 ax.axvline(winner_pays_fpsb.mean(), ls='--', c='g', label='Mean')
@@ -357,7 +373,7 @@ $$
 
 +++
 
-在方程{eq}`eq:optbid1`和{eq}`eq:optbid1`中，我们展示了FPSB拍卖中对称贝叶斯纳什均衡的最优出价公式。
+在方程{eq}`eq:optbid1`和{eq}`eq:optbid2`中，我们展示了FPSB拍卖中对称贝叶斯纳什均衡的最优出价公式。
 
 $$
 \mathbf{E}[y_{i} | y_{i} < v_{i}]
@@ -365,7 +381,6 @@ $$
 
 其中
 - $v_{i} = $ 投标者$i$的价值
-
 - $y_{i} = $：除了竞标者$i$以外所有竞标者的最大值，即$y_{i} = \max_{j \neq i} v_{j}$
 
 我们之前已经为私人价值呈均匀分布的情况下分析计算出了FPSB拍卖中的最优出价。
@@ -392,25 +407,37 @@ def evaluate_largest(v_hat, array, order=1):
                      除获胜者外第二大数的顺序是2。
 
     """
-    N,R = array.shape
-    array_residual=array[1:,:].copy()  # 删除第一行，因为我们假设第一行是获胜者的出价
+    N, R = array.shape
 
-    index=(array_residual<v_hat).all(axis=0)
-    array_conditional=array_residual[:,index].copy()
+    # 删除第一行，因为我们假设第一行是获胜者的出价
+    array_residual = array[1:, :].copy() 
 
-    array_conditional=np.sort(array_conditional, axis=0)
-    return array_conditional[-order,:].mean()
+    winning_auctions_mask = (array_residual < v_hat).all(axis=0) 
+
+    num_winning_auctions = np.sum(winning_auctions_mask)
+
+    if num_winning_auctions == 0:
+        return np.nan
+
+    array_conditional = array_residual[:, winning_auctions_mask]
+    
+    array_conditional_sorted = np.sort(array_conditional, axis=0)
+
+    order_largest_bids = array_conditional_sorted[-order, :] 
+    
+    return np.mean(order_largest_bids)
 ```
 
 我们可以通过将其与解析解进行比较来检验`evaluate_largest`方法的准确性。
 
-我们发现，尽管存在小的差异，evaluate_largest方法运行良好。
-
-此外，如果我们进行大量拍卖，比如100万次，这种差异就会消失。
+我们发现`evaluate_largest`方法运行良好
 
 ```{code-cell} ipython3
-v_grid = np.linspace(0.3,1,8)
-bid_analytical = b_star(v_grid,N)
+v_grid = np.linspace(0.3, 1, 8)
+bid_analytical = b_star(v_grid, N)
+
+# 重新抽取估值
+v = np.random.uniform(0, 1, (N, R))
 bid_simulated = [evaluate_largest(ii, v) for ii in v_grid]
 
 fig, ax = plt.subplots(figsize=(6, 4))
@@ -433,7 +460,7 @@ sns.despine()
 
 ```{code-cell} ipython3
 np.random.seed(1337)
-v = np.random.chisquare(df=2, size=(N*R,))
+v = np.random.chisquare(df=2, size=(N * R,))
 
 plt.hist(v, bins=50, edgecolor='w')
 plt.xlabel('Values: $v$')
@@ -444,21 +471,20 @@ plt.show()
 
 ```{code-cell} ipython3
 np.random.seed(1337)
-v = np.random.chisquare(df=2, size=(N,R))
-
+v = np.random.chisquare(df=2, size=(N, R))
 
 # 我们计算v的分位数作为我们的网格
 pct_quantile = np.linspace(0, 100, 101)[1:-1]
 v_grid = np.percentile(v.flatten(), q=pct_quantile)
 
-EV=[evaluate_largest(ii, v) for ii in v_grid]
 # 由于缺乏观测值，某些低分位数会返回nan值
+EV = [evaluate_largest(ii, v) for ii in v_grid]
 ```
 
 ```{code-cell} ipython3
 # 我们在网格和出价函数中插入0作为补充
-EV=np.insert(EV,0,0)
-v_grid=np.insert(v_grid,0,0)
+EV = np.insert(EV, 0, 0)
+v_grid = np.insert(v_grid, 0, 0)
 
 b_star_num = interp.interp1d(v_grid, EV, fill_value="extrapolate")
 ```
@@ -472,7 +498,8 @@ v_grid_fine = np.percentile(v.flatten(), q=pct_quantile_fine)
 fig, ax = plt.subplots(figsize=(6, 4))
 
 ax.plot(v_grid, EV, 'or', label='网格上的模拟')
-ax.plot(v_grid_fine, b_star_num(v_grid_fine) , '-', label='插值解')
+ax.plot(v_grid_fine, b_star_num(v_grid_fine), 
+                '-', label='插值解')
 
 ax.legend(loc='best')
 ax.set_xlabel('估值, $v_i$')
@@ -483,26 +510,31 @@ sns.despine()
 现在我们可以使用Python来计算中标者支付价格的概率分布
 
 ```{code-cell} ipython3
-b=b_star_num(v)
+b = b_star_num(v)
 
 idx = np.argsort(v, axis=0)
-v = np.take_along_axis(v, idx, axis=0)  # 与np.sort(v, axis=0)相同，但保留了idx
+# same as np.sort(v, axis=0), except now we retain the idx
+v = np.take_along_axis(v, idx, axis=0)
 b = np.take_along_axis(b, idx, axis=0)
 
-ii = np.repeat(np.arange(1,N+1)[:,None], R, axis=1)
+ii = np.repeat(np.arange(1, N + 1)[:, None], R, axis=1)
 ii = np.take_along_axis(ii, idx, axis=0)
 
-winning_player = ii[-1,:]
+winning_player = ii[-1, :]
 
-winner_pays_fpsb = b[-1,:]  # 最高出价
-winner_pays_spsb = v[-2,:]  # 第二高估值
+# highest bid
+winner_pays_fpsb = b[-1, :]
+# 2nd-highest valuation
+winner_pays_spsb = v[-2, :]
 ```
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(6, 4))
 
-for payment,label in zip([winner_pays_fpsb, winner_pays_spsb], ['FPSB', 'SPSB']):
-    print('%s的平均支付额：%.4f。标准差：%.4f。中位数：%.4f'% (label,payment.mean(),payment.std(),np.median(payment)))
+for payment, label in zip([winner_pays_fpsb, winner_pays_spsb],
+                          ['FPSB', 'SPSB']):
+    print('%s的平均支付额：%.4f。标准差：%.4f。中位数：%.4f' % (
+        label, payment.mean(), payment.std(), np.median(payment)))
     ax.hist(payment, density=True, alpha=0.6, label=label, bins=100)
 
 ax.axvline(winner_pays_fpsb.mean(), ls='--', c='g', label='均值')
@@ -514,7 +546,7 @@ ax.set_ylabel('密度')
 sns.despine()
 ```
 
-## 5 代码总结
+## 代码总结
 
 +++
 
@@ -532,11 +564,11 @@ class bid_price_solution:
         参数:
         ----------
 
-        array: 投标者价值的二维数组，形状为(N,R)，
+        array: 投标者价值的二维数组，形状为(N, R)，
                其中N: 玩家数量, R: 拍卖次数
 
         """
-        self.value_mat=array.copy()
+        self.value_mat = array.copy()
 
         return None
 
@@ -548,38 +580,48 @@ class bid_price_solution:
         return None
 
     def evaluate_largest(self, v_hat, order=1):
-        N,R = self.value_mat.shape
-        array_residual = self.value_mat[1:,:].copy()
-        # 删除第一行因为我们假设第一行是赢家的投标
+        N, R = self.value_mat.shape
 
-        index=(array_residual<v_hat).all(axis=0)
-        array_conditional=array_residual[:,index].copy()
+        # 删除第一行，因为我们假设第一行是获胜者的出价
+        array_residual = self.value_mat[1:, :].copy() 
 
-        array_conditional=np.sort(array_conditional, axis=0)
+        winning_auctions_mask = (array_residual < v_hat).all(axis=0) 
 
-        return array_conditional[-order,:].mean()
+        num_winning_auctions = np.sum(winning_auctions_mask)
+
+        if num_winning_auctions == 0:
+            return np.nan
+
+        array_conditional = array_residual[:, winning_auctions_mask]
+        array_conditional_sorted = np.sort(array_conditional, axis=0)
+        order_largest_bids = array_conditional_sorted[-order, :]
+
+        return np.mean(order_largest_bids)
 
     def compute_optimal_bid_FPSB(self):
         # 我们计算v的分位数作为网格
         pct_quantile = np.linspace(0, 100, 101)[1:-1]
         v_grid = np.percentile(self.value_mat.flatten(), q=pct_quantile)
 
-        EV=[self.evaluate_largest(ii) for ii in v_grid]
         # 由于缺乏观察值，某些低分位数会返回nan值
+        EV = [self.evaluate_largest(ii) for ii in v_grid]
 
         # 我们在网格和投标价格函数中插入0作为补充
-        EV=np.insert(EV,0,0)
-        v_grid=np.insert(v_grid,0,0)
+        EV = np.insert(EV, 0, 0)
+        v_grid = np.insert(v_grid, 0, 0)
 
-        self.b_star_num = interp.interp1d(v_grid, EV, fill_value="extrapolate")
+        self.b_star_num = interp.interp1d(v_grid, EV,
+                                           fill_value="extrapolate")
 
         pct_quantile_fine = np.linspace(0, 100, 1001)[1:-1]
-        v_grid_fine = np.percentile(self.value_mat.flatten(), q=pct_quantile_fine)
+        v_grid_fine = np.percentile(self.value_mat.flatten(),
+                                    q=pct_quantile_fine)
 
         fig, ax = plt.subplots(figsize=(6, 4))
 
         ax.plot(v_grid, EV, 'or', label='网格上的模拟')
-        ax.plot(v_grid_fine, self.b_star_num(v_grid_fine) , '-', label='插值解')
+        ax.plot(v_grid_fine, self.b_star_num(v_grid_fine), 
+                            '-', label='插值解')
 
         ax.legend(loc='best')
         ax.set_xlabel('估值, $v_i$')
@@ -592,21 +634,27 @@ class bid_price_solution:
         self.b = self.b_star_num(self.value_mat)
 
         idx = np.argsort(self.value_mat, axis=0)
-        self.v = np.take_along_axis(self.value_mat, idx, axis=0)  # 与np.sort(v, axis=0)相同，但保留了idx
+        # same as np.sort(v, axis=0), except now we retain the idx
+        self.v = np.take_along_axis(self.value_mat, idx, axis=0)
         self.b = np.take_along_axis(self.b, idx, axis=0)
 
-        self.ii = np.repeat(np.arange(1,N+1)[:,None], R, axis=1)
+        N, R = self.value_mat.shape
+        self.ii = np.repeat(np.arange(1, N + 1)[:, None], R, axis=1)
         self.ii = np.take_along_axis(self.ii, idx, axis=0)
 
-        winning_player = self.ii[-1,:]
+        winning_player = self.ii[-1, :]
 
-        winner_pays_fpsb = self.b[-1,:]  # 最高投标
-        winner_pays_spsb = self.v[-2,:]  # 第二高估值
+        # highest bid
+        winner_pays_fpsb = self.b[-1, :]
+        # 2nd-highest valuation
+        winner_pays_spsb = self.v[-2, :]
 
         fig, ax = plt.subplots(figsize=(6, 4))
 
-        for payment,label in zip([winner_pays_fpsb, winner_pays_spsb], ['FPSB', 'SPSB']):
-            print('%s的平均支付: %.4f. 标准差: %.4f. 中位数: %.4f'% (label,payment.mean(),payment.std(),np.median(payment)))
+        for payment, label in zip([winner_pays_fpsb, winner_pays_spsb],
+                                   ['FPSB', 'SPSB']):
+            print('%s的平均支付: %.4f. 标准差: %.4f. 中位数: %.4f' %
+                  (label, payment.mean(), payment.std(), np.median(payment)))
             ax.hist(payment, density=True, alpha=0.6, label=label, bins=100)
 
         ax.axvline(winner_pays_fpsb.mean(), ls='--', c='g', label='均值')
@@ -622,7 +670,7 @@ class bid_price_solution:
 
 ```{code-cell} ipython3
 np.random.seed(1337)
-v = np.random.chisquare(df=2, size=(N,R))
+v = np.random.chisquare(df=2, size=(N, R))
 
 chi_squ_case = bid_price_solution(v)
 ```
@@ -645,8 +693,7 @@ chi_squ_case.plot_winner_payment_distribution()
 
 1. 维基百科关于FPSB的条目：https://en.wikipedia.org/wiki/First-price_sealed-bid_auction
 2. 维基百科关于SPSB的条目：https://en.wikipedia.org/wiki/Vickrey_auction
-3. Chandra Chekuri的算法博弈论讲义：http://chekuri.cs.illinois.edu/teaching/spring2008/Lectures/scribed/Notes20.pdf
+3. Chandra Chekuri的算法博弈论讲义：https://chekuri.cs.illinois.edu/teaching/spring2008/Lectures/scribed/Notes20.pdf
 4. Tim Salmon的ECO 4400补充讲义：关于拍卖的一切：https://s2.smu.edu/tsalmon/auctions.pdf
 5. 拍卖理论-收益等价定理：https://michaellevet.wordpress.com/2015/07/06/auction-theory-revenue-equivalence-theorem/
 6. 顺序统计量：https://online.stat.psu.edu/stat415/book/export/html/834
-
