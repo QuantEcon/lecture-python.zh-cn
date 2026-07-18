@@ -9,6 +9,20 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 异质信念与金融市场
+  headings:
+    Overview: 概述
+    'Review: likelihood ratio processes': 回顾：似然比过程
+    Blume and Easley's setting: Blume和Easley的设定
+    Nature and agents' beliefs: 自然和个体的信念
+    A socialist risk-sharing arrangement: 社会主义风险分担安排
+    Social planner's allocation problem: 社会规划者的分配问题
+    If you're so smart, $\ldots$: 如果你这么聪明，$\ldots$
+    Competitive equilibrium prices: 竞争均衡价格
+    Simulations: 模拟
+    Related lectures: 相关讲座
+    Exercises: 练习
 ---
 
 (likelihood_ratio_process_2)=
@@ -28,7 +42,7 @@ kernelspec:
 
 ## 概述
 
-似然比过程是Lawrence Blume和David Easley回答他们提出的问题"如果你那么聪明，为什么不富有？"的基础 {cite}`blume2006if`。
+似然比过程是Lawrence Blume和David Easley回答他们提出的问题"如果你那么聪明，为什么不富有？"的基础 {cite}`Blume_Easley2006`。
 
 Blume和Easley构建了正式模型，研究关于风险收入过程概率的不同观点如何影响结果，以及如何反映在个人用来分享和对冲风险的股票、债券和保险政策的价格中。
 
@@ -55,10 +69,6 @@ Blume和Easley构建了正式模型，研究关于风险收入过程概率的不
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
-FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
-mpl.font_manager.fontManager.addfont(FONTPATH)
-plt.rcParams['font.family'] = ['Source Han Serif SC']
-
 import numpy as np
 from numba import vectorize, jit, prange
 from math import gamma
@@ -190,8 +200,7 @@ $$c^1(s_t) = y_t^1 = s_t. $$
 * 但除了自然之外，我们的模型中还有其他实体——我们称之为"个体"的人工个体
 * 每个个体对 $t=0, \ldots$ 时的 $s^t$ 都有一个概率分布序列
 * 个体 $i$ 认为自然从 $\{\pi_t^i(s^t)\}_{t=0}^\infty$ 中抽取独立同分布序列 $\{s_t\}_{t=0}^\infty$
-
-* 除非 $\pi_t^i(s^t) = \pi_t(s^t)$，否则个体 $i$ 是错误的
+   * 除非 $\pi_t^i(s^t) = \pi_t(s^t)$，否则个体 $i$ 是错误的
 
 ```{note}
 **理性预期**模型会对所有个体 $i$ 设定 $\pi_t^i(s^t) = \pi_t(s^t)$。
@@ -243,7 +252,7 @@ $$ (eq:feasibility)
 
 对所有 $s^t$ 和所有 $t \geq 0$ 成立。
 
-为了设计一个社会最优分配，社会规划者需要知道个体1对禀赋序列的信念以及他们对承担风险的态度。
+为了设计一个社会最优分配，社会规划者需要知道每个个体 $i$ 对禀赋序列的信念以及他们对承担风险的态度。
 
 关于禀赋序列，个体 $i$ 认为自然从联合密度中独立同分布地抽取序列
 
@@ -335,42 +344,57 @@ $$
 那么我们可以将社会规划者的分配规则表示为
 
 $$
-c_t^1(s^t) = \lambda_t(s^t) .
+c_t^1(s^t) = \lambda_t(s^t) 
+$$
+
+当然还有
+
+$$
+c_t^2(s^t) = 1- \lambda_t(s^t) .
 $$
 
 ## 如果你这么聪明，$\ldots$
 
-让我们计算一下对于一些有趣的似然比过程$l_t(s^t)$的极限值，其极限分配{eq}`eq:allocationrule1`的值：
+让我们计算一下对于一些有趣的似然比过程$l_t(s^t)$的极限值，其极限分配{eq}`eq:allocationrule1`的值。
 
-$$l_\infty (s^\infty)= 1; \quad c_\infty^1 = \lambda$$
+作为第一种情况，让我们假设
 
-* 在上述情况下，两个个体同样聪明（或同样不聪明），消费分配在两个个体之间保持在 $\lambda, 1 - \lambda$ 的分配比例。
+ $$l_\infty (s^\infty)= 1; \quad c_\infty^1 = \lambda$$
+ 
+  * 在这种情况下，两个个体同样聪明（或同样不聪明），消费分配在两个个体之间保持在 $\lambda, 1 - \lambda$ 的分配比例。
+
+作为第二种情况，让我们假设
 
 $$l_\infty (s^\infty) = 0; \quad c_\infty^1 = 0$$
 
-* 在上述情况下，个体2比个体1"更聪明"，个体1在总禀赋中的份额趋近于零。
+* 在这种情况下，个体2比个体1"更聪明"，个体1在总禀赋中的份额趋近于零。
+
+作为第三种情况，让我们假设
 
 $$l_\infty (s^\infty)= \infty; \quad c_\infty^1 = 1$$
 
-* 在上述情况下，个体1比个体2更聪明，个体1在总禀赋中的份额趋近于1。
+* 在这种情况下，个体1比个体2更聪明，个体1在总禀赋中的份额趋近于1。
 
 ```{note}
 这三种情况某种程度上告诉我们随着时间推移个体的相对**财富**是如何演变的。
 * 当两个个体同样聪明且 $\lambda \in (0,1)$ 时，个体1的财富份额永远保持在 $\lambda$。
 * 当个体1更聪明且 $\lambda \in (0,1)$ 时，个体1最终"拥有"全部的延续禀赋，而个体2最终"一无所有"。
 * 当个体2更聪明且 $\lambda \in (0,1)$ 时，个体2最终"拥有"全部的延续禀赋，而个体1最终"一无所有"。
-延续财富可以在我们引入竞争均衡**价格**体系后被精确定义。
+
+我们可以在下面构建竞争均衡**价格**体系之后精确定义延续财富。
 ```
 
 很快我们将进行一些模拟，这将进一步阐明可能的结果。
 
-但在此之前，让我们先转向研究社会规划问题的一些"影子价格"，这些价格可以很容易地转换为竞争均衡的"均衡价格"。
+但在此之前，让我们先转向研究社会规划问题的一些"影子价格"。
 
-这样做将使我们能够将分析与{cite}`alchian1950uncertainty`和{cite}`friedman1953essays`的论点联系起来,即竞争市场过程可以使风险资产的价格更好地反映现实的概率评估。
+我们很快就会看到，这些影子价格可以很容易地转换为竞争均衡的"均衡价格"。
+
+这样做将使我们能够将分析与{cite}`alchian1950uncertainty`和{cite}`friedman1953essays`的论点联系起来，即来自竞争资产市场交易的财富转移最终会使风险资产的价格反映现实的概率评估。
 
 ## 竞争均衡价格
 
-一般均衡模型的两个基本福利定理使我们预期,在我们一直研究的社会规划问题的解决方案与具有完整历史或有商品市场的**竞争均衡**配置之间存在联系。
+一般均衡模型的两个基本福利定理使我们预期,在我们一直研究的社会规划问题的解决方案与具有完整的时间和历史依赖消费商品或有商品市场的**竞争均衡**配置之间存在联系。
 
 ```{note}
 关于两个福利定理及其历史,请参见 <https://en.wikipedia.org/wiki/Fundamental_theorems_of_welfare_economics>。
@@ -387,11 +411,9 @@ $$l_\infty (s^\infty)= \infty; \quad c_\infty^1 = 1$$
 
 有**价格**,价格接受者可以按这些价格买卖他们想要的任何商品。
 
-贸易是多边的,因为存在一个生活在模型之外的"瓦尔拉斯拍卖师",其工作是验证
+贸易是多边的,因为存在一个生活在模型之外的"瓦尔拉斯拍卖师",其工作是验证每个个体的预算约束都得到满足。
 
-每个个体的预算约束都得到满足。
-
-这个预算约束涉及个体的禀赋流总值和消费流总值。
+这个预算约束要求个体的禀赋流总价值至少与其消费流总价值一样大。
 
 这些价值是根据个体视为既定的价格向量计算的——他们是"价格接受者"，假定他们可以按这些价格买入或卖出任何数量。
 
@@ -406,7 +428,7 @@ $$l_\infty (s^\infty)= \infty; \quad c_\infty^1 = 1$$
 
 市场在时间$-1$只开放一次。
 
-在时间$t =0, 1, 2, \ldots$执行在时间$-1$达成的交易。
+在时间$t =0, 1, 2, \ldots$，时间$-1$达成的交易只是被简单地执行，即，承诺的交付被履行。
 
 * 在背景中，有一个"执行"程序强制个体履行他们在时间$-1$同意的交换或"交付"。
 
@@ -489,18 +511,18 @@ $$ (eq:pformulafinal)
 
 现在让我们实现一些模拟，其中个体 $1$ 相信边际密度
 
-$$\pi^1(s_t) = f(s_t)$$
+$$\pi^1(s_t) = f(s_t) $$
 
 而个体 $2$ 相信边际密度
 
-$$\pi^2(s_t) = g(s_t)$$
+$$ \pi^2(s_t) = g(s_t) $$
 
 这里 $f$ 和 $g$ 是 Beta 分布，类似于我们在本讲座前面章节中使用的分布。
 
 同时，我们假设自然界相信边际密度
 
 $$
-\pi(s_t) = h(s_t)
+\pi(s_t) = h(s_t) 
 $$
 
 其中 $h(s_t)$ 可能是 $f$ 和 $g$ 的混合。
@@ -780,7 +802,7 @@ print(f"KL(h,f)={Kf_h:.3f}, KL(h,g)={Kg_h:.3f}")
 
 具有同质信念的完全市场模型，这种模型在宏观经济学和金融学中经常使用，在这个quantecon讲座{doc}`ge_arrow`中有研究。
 
-{cite}`blume2018case`讨论了反对完全市场的家长式论点。他们的分析假设社会规划者应该忽视个人偏好，即应该忽视其偏好中的主观信念成分。
+{cite}`blume2018case`讨论了反对完全市场的家长式论点。他们研究了假设社会规划者无视个人偏好（即忽视其偏好中的主观信念成分并用社会规划者自己对概率的信念取而代之）所带来的后果。
 
 似然过程在贝叶斯学习中扮演重要角色，这在{doc}`likelihood_bayes`中有描述，并在{doc}`odu`中有应用。
 
@@ -796,7 +818,6 @@ print(f"KL(h,f)={Kf_h:.3f}, KL(h,g)={Kg_h:.3f}")
 从{eq}`eq:priceequation1`开始，证明竞争均衡价格可以表示为
 
 $$
-
 p_t(s^t) = \frac{\delta^t}{\lambda(1-\lambda)} \pi_t^2(s^t) \bigl[1 - \lambda + \lambda l_t(s^t)\bigr]
 $$
 
@@ -863,7 +884,6 @@ $$
 \begin{aligned}
 p_t(s^t) &= \frac{\delta^t \pi_t^1(s^t)}{(1-\lambda) c_t^1(s^t)} \\
 &= \frac{\delta^t \pi_t^1(s^t)}{(1-\lambda)} \cdot \frac{1 - \lambda + \lambda l_t(s^t)}{\lambda l_t(s^t)} \\
-
 &= \frac{\delta^t \pi_t^1(s^t)}{(1-\lambda)\lambda l_t(s^t)} \bigl[1 - \lambda + \lambda l_t(s^t)\bigr].
 \end{aligned}
 $$
@@ -926,7 +946,6 @@ $$ (eq:be_mix_model)
 因此，消费者 $i$ 的概率模型是
 
 $$
-
 m^i(s^t) = \pi^i_t f(s^t) + (1- \pi^i_t) g(s^t)
 $$ (eq:prob_model)
 
@@ -1705,4 +1724,3 @@ plt.show()
 
 ```{solution-end}
 ```
-
