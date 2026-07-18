@@ -528,7 +528,7 @@ def newton_raphson(model, β, tol=1e-3, max_iter=100, display=True):
         i += 1
 
     print(f"迭代次数：{i}")
-    print(f"β_hat = {β.flatten()}")
+    print(f'迭代次数：{i}')
 
     return β
 ```
@@ -697,7 +697,7 @@ print(poisson_reg.summary())
 
 ```{code-cell} ipython3
 regs = [reg1, reg2, reg3]
-reg_names = ["Model 1", "Model 2", "Model 3"]
+reg_names = ['模型1', '模型2', '模型3']
 info_dict = {
     "Pseudo R-squared": lambda x: f"{x.prsquared:.2f}",
     "No. observations": lambda x: f"{int(x.nobs):d}",
