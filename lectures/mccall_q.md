@@ -9,9 +9,19 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 工作搜寻 IX：McCall劳动者的Q学习
+  headings:
+    Overview: 概述
+    Review of McCall Model: McCall 模型回顾
+    Implied Quality Function  $Q$: 隐含质量函数 $Q$
+    From Probabilities  to Samples: 从概率到样本
+    Q-Learning: Q-学习
+    Employed Worker Can't Quit: 禁止在职劳动者辞职的情况
+    Possible Extensions: 可能的扩展方向
 ---
 
-# 工作搜寻 VII：McCall劳动者的Q学习
+# 工作搜寻 IX：McCall劳动者的Q学习
 
 ## 概述
 
@@ -22,31 +32,37 @@ kernelspec:
 Q学习算法融合了两个关键思想：
 
 * 动态规划的原理
-* 最小二乘法的递归形式，也称为[时序差分学习 (Temporal Difference Learning or TD Learning)](https://rl.qiwihui.com/zh-cn/latest/partI/chapter6/temporal_difference_learning.html)
+* 最小二乘法的递归形式，也称为[时序差分学习 (Temporal Difference Learning or TD Learning)](https://en.wikipedia.org/wiki/Temporal_difference_learning)
 
 在本讲中，我们将Q学习算法应用到McCall求职模型中，探讨劳动者如何通过这种方法做出最优决策。
 
-我们还将扩展模型，考虑劳动者不仅可以接受或拒绝工作机会，还可以选择辞去当前工作的情况。
+我们还将扩展模型，考虑劳动者被赋予选择辞去当前工作的情况。
 
 与我们在 {doc}`quantecon 讲座 <mccall_model>` 中学习的 McCall 劳动者模型的动态规划方法相比，Q-学习算法的一个显著特点是：
 劳动者不需要完全了解
 
-* 工资是如何随机生成的
-* 接受或拒绝工作机会会带来什么样的奖励
+* 生成一系列工资的随机过程
+* 说明接受或拒绝工作机会所带来后果的奖励函数
 
-Q-学习算法通过统计学习方法来获取这些信息，这通常可以简化为某种形式的最小二乘法。
+Q-学习算法通过统计学习方法来获取这些信息。
 
-在讨论统计学习时，我们需要明确指出学习的目标是什么。
+统计学习通常可以简化为某种形式的最小二乘法，这里也不例外。
 
-对于Q-学习来说，学习的对象不是动态规划中常见的价值函数，尽管两者密切相关。
+每当我们提到**统计学习**，我们就必须说明学习的对象是什么。
 
-在我们研究的有限状态、有限动作环境中，学习目标是一个称为**Q-表** (Q-table) 的结构，它是Q-函数 (Q-function) 在有限集合上的具体表现形式。
+对于Q-学习来说，学习的对象不是动态规划中所关注的**价值函数**。
 
-这些Q-函数（或Q-表）有时也被称为质量函数或质量表。
+但它是与价值函数密切相关的一个对象。
 
-Q-表的结构很直观：行代表智能体可能处于的各种状态，列代表在每个状态下可以采取的不同行动。
+在本讲研究的有限动作、有限状态环境中，需要通过统计学习获得的对象是一个称为**Q-表** (Q-table) 的结构，它是有限集合上**Q-函数** (Q-function) 的具体表现形式。
 
-算法的核心是一个类似贝尔曼方程的等式，但它与我们在{doc}`McCall模型讲座<mccall_model>`中看到的贝尔曼方程有所不同。
+Q-函数（或Q-表）有时也被称为质量函数或质量表。
+
+Q-表的行和列分别对应智能体可能遇到的状态，以及在每个状态下可以采取的行动。
+
+算法中起重要作用的是一个类似于贝尔曼方程的方程。
+
+它与我们在{doc}`这个quantecon讲座<mccall_model>`中看到的McCall模型的贝尔曼方程有所不同。
 
 在本讲座中，我们将学习一些关于：
 
@@ -137,10 +153,10 @@ plt.show()
 
 ```{code-cell} ipython3
 mccall_data = [
-    ('c', float64),      # 失业补偿
-    ('β', float64),      # 贴现因子
-    ('w', float64[:]),   # 工资值数组，w[i] = 状态i下的工资
-    ('q', float64[:]),   # 概率数组
+    ('c', float64),      # unemployment compensation
+    ('β', float64),      # discount factor
+    ('w', float64[::1]),  # array of wage values, w[i] = wage at state i
+    ('q', float64[::1])   # array of probabilities
 ]
 
 
@@ -154,20 +170,20 @@ class McCallModel:
 
     def state_action_values(self, i, v):
         """
-        状态-行动对的值。
+        The values of state-action pairs.
         """
-        # 简化名称
+        # Simplify names
         c, β, w, q = self.c, self.β, self.w, self.q
-        # 评估每个状态-行动对的值
-        # 考虑行动： 接受或拒绝当前offer
+        # Evaluate value for each state-action pair
+        # Consider action = accept or reject the current offer
         accept = w[i] / (1 - β)
-        reject = c + β * np.sum(v * q)
+        reject = c + β * (v @ q)
 
         return np.array([accept, reject])
 
     def VFI(self, eps=1e-5, max_iter=500):
         """
-        找到最优价值函数。
+        Find the optimal value function.
         """
 
         n = len(self.w)
@@ -188,10 +204,10 @@ class McCallModel:
 
 def plot_value_function_seq(mcm, ax, num_plots=8):
     """
-    绘制一系列价值函数。
+    Plot a sequence of value functions.
 
-        * mcm: McCallModel的实例
-        * ax: 用于绘图的matplotlib轴对象
+        * mcm is an instance of McCallModel
+        * ax is an axes object that implements a plot method.
 
     """
 
@@ -200,10 +216,10 @@ def plot_value_function_seq(mcm, ax, num_plots=8):
     v_next = np.empty_like(v)
     for i in range(num_plots):
         ax.plot(mcm.w, v, '-', alpha=0.4, label=f"iterate {i}")
-        # 更新猜测值
+        # Update guess
         for i in range(n):
             v_next[i] = np.max(mcm.state_action_values(i, v))
-        v[:] = v_next  # 将内容复制到v中
+        v[:] = v_next  # copy contents into v
 
     ax.legend(loc='lower right')
 ```
@@ -303,11 +319,12 @@ $$
          c  & +\beta\int\max_{\text{accept, reject}}\left\{ Q(w', \textrm{accept}),Q\left(w',\text{reject}\right)\right\} dF\left(w'\right) - Q\left(w,\text{reject}\right)  = 0  \cr
 \end{aligned}
 $$ (eq:probtosample1)
+
 注意第二行中对$F(w')$的积分。
 
 为了开始思考Q-learning，我们可以尝试一个不严谨但有启发性的方法：移除积分符号。
 
-这样，我们可以构建一个差分方程系统，保留{eq}`eq:probtosample1`的第一个方程，但将第二个方程中对$F(w')$的积分替换为：
+这样，我们可以构建一个差分方程系统，保留{eq}`eq:probtosample1`的第一个方程，但将第二个方程中去除对$F(w')$的积分：
 
 $$
 \begin{aligned}
@@ -320,7 +337,7 @@ $$(eq:probtosample2)
 
 但是，也许我们可以借助大数定律，希望它能对一个长时间序列中抽取的$w_t, w_{t+1}$对**平均**成立，这里我们把$w_t$看作$w$，把$w_{t+1}$看作$w'$。
 
-Q-learning的基本思想是从$F$中抽取一个长样本序列（虽然我们假设劳动者不知道$F$，但我们是知道的）并对递归式进行迭代
+Q-learning的基本思想是从$F$中抽取一个长样本序列（虽然我们知道$F$，但我们假设劳动者不知道）并对递归式进行迭代，
 
 将日期 $t$ 时的 Q 函数估计值 $\hat Q_t$ 映射到日期 $t+1$ 时的改进估计值 $\hat Q_{t+1}$。
 
@@ -363,9 +380,9 @@ Q-学习通过更新 Q-函数来进行，决策者在模拟生成的工资序列
 
 在学习过程中，我们的 McCall 劳动者会采取各种行动，并从这些行动中获得相应的奖励。
 
-在这个过程中，他逐渐学习工资分布这一环境特征，以及与不同决策相关的奖励——包括失业补偿 $c$ 和接受工作后获得的工资现值。
+他同时了解环境（在此情形下即工资分布）以及奖励函数——在此情形下即失业补偿 $c$ 与工资的现值。
 
-Q学习的核心是一个递归更新过程，其基本形式如下（我们稍后会详细讨论其修改版本）：
+这一更新算法基于对以下递归式的一个小修改（稍后会加以说明）：
 
 $$
 \widetilde{Q}^{new}\left(w,a\right)=\widetilde{Q}^{old}\left(w,a\right)+\alpha \widetilde{TD}\left(w,a\right)
@@ -380,13 +397,11 @@ $$
 \end{aligned}
 $$ (eq:old4)
 
-对于 $a \in \{\textrm{accept}, \textrm{reject}\}$，$\widetilde{TD}(w,a)$ 表示**时序差分误差** （TD error），这是驱动Q值更新的关键因素。
+对于 $a \in \{\textrm{accept}, \textrm{reject}\}$，$\widetilde{TD}(w,a)$ 表示**时序差分误差** （TD error），这是驱动更新的关键因素。
 
 这个更新机制实际上就是我们在方程 {eq}`eq:old106` 中简要描述的自适应学习系统的具体实现。
 
-然而，方程组 {eq}`eq:old4` 还没有体现算法的一个重要特性：为了促进探索，我们需要通过随机实验来打破纯粹的贪婪策略
-
-我们偶尔将
+方程组 {eq}`eq:old4` 尚未体现出的算法的一个特征是随机**实验**，我们通过偶尔随机地将
 
 $$
 \textrm{argmax}_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w,a'\right)
@@ -410,6 +425,8 @@ $$
 \textrm{argmin}_{a'\in\mathcal{A}}\widetilde{Q}^{old}\left(w',a'\right)
 $$
 
+来添加这一特征。
+
 在以下McCall劳动者Q-学习的伪代码的第3步中，我们以概率$\epsilon$激活这种实验：
 
 1. 设置一个任意的初始Q表。
@@ -420,19 +437,19 @@ $$
 
     - 以概率$1-\epsilon$选择使价值最大化的行动，并且
 
-- 以概率 $\epsilon$ 随机选择另一个行动。
+    - 以概率 $\epsilon$ 选择另一个行动。
 
 4. 更新与所选行动相关的状态，并根据{eq}`eq:old4`计算 $\widetilde{TD}$，然后根据{eq}`eq:old3`更新 $\widetilde{Q}$。
 
 5. 如果需要则抽取新的状态 $w'$，否则采用现有工资，并再次根据{eq}`eq:old3`更新Q表。
 
-6. 当新旧Q表足够接近时停止，即对于给定的 $\delta$，满足 $\lVert\tilde{Q}^{new}-\tilde{Q}^{old}\rVert_{\infty}\leq\delta$，或者当劳动者连续接受 $T$ 期（对于预先规定的 $T$）时停止。
+6. 当新旧Q表足够接近时停止，即对于给定的 $\delta$，满足 $\lVert\tilde{Q}^{new}-\tilde{Q}^{old}\rVert_{\infty}\leq\delta$，或者当劳动者连续接受达到规定的 $T$ 期时停止。
 
 7. 带着更新后的Q表返回步骤2。
 
 重复此程序 $N$ 次回合或直到更新的Q表收敛。
 
-我们将步骤2到7的一次完整过程称为时序差分学习的一个"回合"或"轮次"。
+我们将步骤2到7的一次完整过程称为时序差分学习的一个"回合"或"轮次"（episode或epoch）。
 
 在我们的情境中，每个回合都始于个体抽取一个初始工资报价，即一个新状态。
 
@@ -442,33 +459,33 @@ Q表通过时序差分学习不断更新。
 
 我们重复这个过程直到Q表收敛或达到预设的最大回合数。
 
-多个回合使个体能够从不同起点开始探索，访问那些在单一回合中难以到达的状态。
+多个回合使个体能够从头开始，并访问那些从上一回合的终止状态出发不太可能访问到的状态。
 
-例如，如果个体接受了某个工资报价，他就会停留在该就业状态，无法探索其他可能的工资水平。
+例如，如果个体根据其Q表接受了某个工资报价，他就不太可能再从工资分布的其他部分抽取新的报价。
 
 通过使用$\epsilon$-贪婪策略并增加回合数，Q学习算法在探索新可能性和利用已知信息之间取得平衡。
 
-**注意：** 在{eq}`eq:old3`中定义的最优Q表对应的$\widetilde{TD}$值在所有状态-动作对上都等于零。我们的Q-learning算法是否能收敛到最优Q表，取决于算法是否能充分探索所有可能的状态-动作组合。
+**注意：** 在{eq}`eq:old3`中自动定义的最优Q表所对应的$\widetilde{TD}$，对所有状态-动作对都满足$\widetilde{TD}=0$。我们的Q-learning算法能否收敛到最优Q表，取决于算法是否足够频繁地访问所有状态-动作组合。
 
 下面我们将这个算法实现为Python类。
 
 为了简化，我们用`s`表示介于$0$和$n=50$之间的状态索引，其中$w_s=w[s]$表示对应的工资值。
 
-Q表的结构很直观：第一列表示拒绝工资的价值，第二列表示接受工资的价值。
+Q表的第一列表示拒绝工资所对应的价值，第二列表示接受工资所对应的价值。
 
 我们使用`numba`编译来提高计算效率。
 
 ```{code-cell} ipython3
 params=[
-    ('c', float64),            # 失业补偿
-    ('β', float64),            # 折现因子
-    ('w', float64[:]),         # 工资值数组，w[i] = 状态i的工资
-    ('q', float64[:]),         # 概率数组
-    ('eps', float64),          # epsilon贪婪算法参数
-    ('δ', float64),            # Q表阈值
-    ('lr', float64),           # 学习率α
-    ('T', int64),              # 接受的最大期数
-    ('quit_allowed', int64)    # 接受工资后是否允许辞职
+    ('c', float64),            # unemployment compensation
+    ('β', float64),            # discount factor
+    ('w', float64[:]),         # array of wage values, w[i] = wage at state i
+    ('q', float64[:]),         # array of probabilities
+    ('eps', float64),          # for epsilon greedy algorithm
+    ('δ', float64),            # Q-table threshold
+    ('lr', float64),           # the learning rate α
+    ('T', int64),              # maximum periods of accepting
+    ('quit_allowed', int64)    # whether quit is allowed after accepting the wage offer
 ]
 
 @jitclass(params)
@@ -605,14 +622,14 @@ plt.show()
 现在，让我们计算一个更大状态空间的情况：$n=30$（而不是$n=10$）。
 
 ```{code-cell} ipython3
-n, a, b = 30, 200, 100                        # 默认参数
-q_new = BetaBinomial(n, a, b).pdf()           # 默认的q选择
+n, a, b = 30, 200, 100                        # default parameters
+q_new = BetaBinomial(n, a, b).pdf()           # default choice of q
 
 w_min, w_max = 10, 60
 w_new = np.linspace(w_min, w_max, n+1)
 
 
-# 绘制工资报价分布
+# plot distribution of wage offer
 fig, ax = plt.subplots(figsize=(10,6))
 ax.plot(w_new, q_new, '-o', label='$q(w(i))$')
 ax.set_xlabel('工资')
@@ -620,7 +637,7 @@ ax.set_ylabel('概率')
 
 plt.show()
 
-# 值函数迭代
+# VFI
 mcm = McCallModel(w=w_new, q=q_new)
 valfunc_VFI, flag = mcm.VFI()
 ```
@@ -666,23 +683,25 @@ def plot_epochs(epochs_to_plot, quit_allowed=1):
 plot_epochs(epochs_to_plot=[100, 1000, 10000, 100000, 200000])
 ```
 
-从上述图表中，我们可以观察到两个重要现象：
+上述图表表明
 
-* Q-learning算法在学习较少出现的工资水平时表现不佳，这反映了算法对样本频率的依赖性
+* Q-learning算法在学习那些很少被抽到的工资的Q表时存在困难
 
-* 随着训练轮数增加，算法逐渐接近通过值函数迭代得到的"真实"值函数，表明学习质量随时间提高
+* 通过价值函数迭代计算出的"真实"价值函数，其近似质量会随着训练轮数增加而提升
 
 ## 禁止在职劳动者辞职的情况
 
-我们之前讨论的时序差分Q-learning版本（见方程{eq}`eq:old4`）允许已就业的劳动者辞去当前工作，从而在当期获得失业补助，并在下期有机会获得新的工作offer。
+前面在方程组 {eq}`eq:old4` 中描述的时序差分Q学习版本允许已就业的劳动者辞职，即作为在职者拒绝其工资，从而在本期获得失业补助，并在下一期抽取一个新的工作机会。
 
-这一选项在{doc}`标准McCall模型<mccall_model>`中并不存在，正如{cite}`Ljungqvist2012`第6章中关于工作搜寻的分析所证明的那样。
+这是{doc}`这个quantecon讲座 <mccall_model>`中描述的McCall劳动者不会采用的一个选项。
 
-然而，从学习算法的角度看，允许辞职选项实际上有助于加速学习过程。这是因为辞职选项促进了状态空间的探索，避免了过早地固定在某一决策上（即过早利用而非探索）。
+有关证明，请参见{cite}`Ljungqvist2012`第6章关于工作搜寻的内容。
 
-为了展示不允许辞职的情况，我们需要修改策略公式，限制已就业劳动者必须保持其当前工作。
+但在Q-learning的背景下，赋予劳动者在失业时选择辞职并领取失业补助的选项，结果证明能够加速学习过程，因为这促进了实验探索，而不是仅仅过早地利用已有信息。
 
-基于这种限制，我们可以得到以下修改后的策略值：
+为了说明这一点，我们将修改时序差分的公式，以禁止已就业的劳动者辞去她之前已经接受的工作。
+
+在这种可选行动的理解下，我们得到以下时序差分值：
 
 $$
 \begin{aligned}
@@ -691,25 +710,24 @@ $$
 \end{aligned}
 $$ (eq:temp-diff)
 
-实际上，当我们将公式{eq}`eq:temp-diff`与Q学习递归{eq}`eq:old3`结合使用时，智能体仍然能够最终学习到最优值函数，就像在允许辞职的情况下一样。
+事实证明，公式{eq}`eq:temp-diff`与我们的Q学习递归{eq}`eq:old3`相结合，也能使我们的智能体最终学习到最优价值函数，效果与可以行使重新抽取选项的情形一样好。
 
-然而，这种学习过程会变得更加缓慢。这是因为一旦个体接受了工资报价，他就失去了在当前回合中继续探索其他状态和更新相应价值估计的机会。
+但学习速度会更慢，因为一个过早接受工资报价的智能体，会在同一回合中失去探索新状态并调整该状态所关联价值的机会。
 
-在训练初期阶段（即训练轮数较少时），这种限制往往会导致次优的学习结果。
+当训练轮数/回合数较少时，这可能导致较差的结果。
 
-不过，随着我们增加训练轮数，学习误差会逐渐减小，最终结果会越来越接近最优解。
+但如果我们增加训练轮数/回合数，就可以观察到误差减小，结果也随之改善。
 
-下面的代码和图表将直观地展示这一学习过程。
+我们用以下代码和图表来说明这些情形。
 
 ```{code-cell} ipython3
 plot_epochs(epochs_to_plot=[100, 1000, 10000, 100000, 200000], quit_allowed=0)
 ```
 
-## 进一步的研究方向
+## 可能的扩展方向
 
-当我们需要处理连续状态空间的问题时，Q学习算法需要进行适当的扩展。一种常见的方法是采用特定函数形式来近似Q函数和策略函数。
+要将该算法扩展到处理连续状态空间的问题，一种典型方法是将Q函数和策略函数限制为特定的函数形式。
 
-这种思路发展出了**深度Q学习**（Deep Q-Learning）方法，它利用多层神经网络的强大表达能力来逼近复杂的Q函数。神经网络作为通用函数逼近器，能够有效捕捉连续状态空间中的价值信息。
+这就是**深度Q学习**（deep Q-learning）所采用的方法，其思路是使用多层神经网络作为良好的函数逼近器。
 
-在后续的quantecon课程中，我们将深入探讨深度Q学习及其在更复杂经济模型中的应用。
-
+我们将在后续的quantecon讲座中讨论这一主题。
