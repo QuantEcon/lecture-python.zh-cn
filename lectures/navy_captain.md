@@ -383,7 +383,7 @@ def compute_V_fre(L0_arr, L1_arr, π_star, wf):
 V_fre_arr, PFA_arr, PD_arr = compute_V_fre(L0_arr, L1_arr, π_star, wf)
 
 plt.plot(range(T), V_fre_arr, label=r'$\min_{d} \overline{V}_{fre}(t,d)$')
-plt.xlabel('t')
+plt.xlabel('时间t')
 plt.title(r'$\pi^*=0.5$')
 plt.legend()
 plt.show()
@@ -924,7 +924,7 @@ plt.legend()
 
 plt.xlabel('t')
 plt.ylabel('n')
-plt.title('Unconditional distribution of times')
+plt.title('目标值函数 $V(\pi)$')
 
 plt.show()
 ```
