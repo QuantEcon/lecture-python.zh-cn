@@ -117,6 +117,7 @@ $$
 
 import matplotlib.pyplot as plt
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+import matplotlib as mpl
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
