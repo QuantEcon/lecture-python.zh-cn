@@ -43,15 +43,15 @@ translation:
 
 在本讲中，我们继续研究以下讲座中的一个 IFP 版本：
 
-* {doc}`ifp_discrete` 和
-* {doc}`ifp_opi`。
+* {doc}`intermediate:ifp_discrete` 和
+* {doc}`intermediate:ifp_opi`。
 
 我们将做两处改动。
 
 1. 将时序改为一个更适合我们设定的时序。
 2. 使用内生网格法（EGM）来求解模型。
 
-我们之所以使用 EGM，是因为我们从 {doc}`os_egm_jax` 中已经知道它既快速又精确。
+我们之所以使用 EGM，是因为我们从 {doc}`intermediate:os_egm_jax` 中已经知道它既快速又精确。
 
 下文讨论的技术细节的主要参考文献是 {cite}`ma2020income`。
 
@@ -141,7 +141,7 @@ a_{t+1} = R (a_t - c_t) + Y_{t+1}
 此外，以离散化为目标并不总是一个好主意，因为
 它深受维度诅咒之苦。
 
-这些想法将在{doc}`下一讲 <ifp_egm_transient_shocks>`中变得更加清晰。
+这些想法将在{doc}`下一讲 <intermediate:ifp_egm_transient_shocks>`中变得更加清晰。
 ```
 
 我们进一步假设
@@ -179,7 +179,7 @@ V(a, z) := \max \, \mathbb{E}
 
 其中最大化是在所有从 $(a,z)$ 出发的可行消费路径上进行的。
 
-从 $(a,z)$ 出发的**最优消费路径**是一个从 $(a,z)$ 出发的可行消费路径，且使{eq}`eqvfs`最大化。
+从 $(a,z)$ 出发的**最优消费路径**是一个从 $(a,z)$ 出发的可行消费路径，且使{eq}`eqvfs_egm`最大化。
 
 为了刻画这样的路径，我们可以使用欧拉方程的一个版本，在当前设定中为
 
@@ -244,8 +244,8 @@ $$
 
 我们使用时间迭代法和内生网格法来求解最优消费策略，这两种方法此前已经在以下讲座中讨论过：
 
-* {doc}`os_time_iter`
-* {doc}`os_egm`
+* {doc}`intermediate:os_time_iter`
+* {doc}`intermediate:os_egm`
 
 ### 求解方法
 
