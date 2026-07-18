@@ -102,7 +102,7 @@ import quantecon as qe
 
 ## 模型
 
-假设读者已经熟悉{doc}`mccall_model_with_sep_markov`的内容，该模型可以概括如下。
+假设读者已经熟悉{doc}`intermediate:mccall_model_with_sep_markov`的内容，该模型可以概括如下。
 
 - 工资报价遵循连续的马尔可夫过程：$W_t = \exp(X_t)$，其中$X_{t+1} = \rho X_t + \nu Z_{t+1}$
 - $\{Z_t\}$是独立同分布的标准正态随机变量
@@ -115,11 +115,11 @@ import quantecon as qe
 
 让我们讨论一下如何求解这个模型。
 
-与{doc}`mccall_model_with_sep_markov`相比，唯一真正的变化是我们用积分代替了求和。
+与{doc}`intermediate:mccall_model_with_sep_markov`相比，唯一真正的变化是我们用积分代替了求和。
 
 ### 值函数迭代
 
-在{doc}`离散情形 <mccall_model_with_sep_markov>`中，我们最终对贝尔曼算子进行迭代
+在{doc}`离散情形 <intermediate:mccall_model_with_sep_markov>`中，我们最终对贝尔曼算子进行迭代
 
 ```{math}
 :label: bell2mcmc
@@ -370,7 +370,7 @@ def vfi(
 
 以下是一个函数，利用求得的解$v_u$来计算我们感兴趣的其余函数：$v_e$，以及延续价值函数$h$。
 
-在将求和替换为积分之后，我们使用与{doc}`离散情形 <mccall_model_with_sep_markov>`中相同的表达式。
+在将求和替换为积分之后，我们使用与{doc}`离散情形 <intermediate:mccall_model_with_sep_markov>`中相同的表达式。
 
 ```{code-cell} ipython3
 def compute_solution_functions(model, v_u):
