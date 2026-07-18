@@ -539,7 +539,7 @@ def analyze_roots(α, β, verbose=True):
     is_stable = all(abs(root) < 1 for root in roots)
     
     if verbose:
-        print(f"ρ1 = {ρ1:.2f}, ρ2 = {ρ2:.2f}")
+        print(f'ρ_1 是 {ρ1}')
         print(f"根为: {[f'{root:.2f}' for root in roots]}")
         print(f"根的类型: {'复数' if is_complex else '实数'}")
         print(f"稳定性: {'稳定' if is_stable else '不稳定'}")
@@ -625,7 +625,7 @@ def plot_y(function=None):
 
     plt.subplots(figsize=(10, 6))
     plt.plot(function)
-    plt.xlabel("$t$")
+    plt.xlabel('时间 $t$')
     plt.ylabel("$Y_t$")
     plt.show()
 ```
@@ -710,15 +710,15 @@ def f(r, ϕ):
     和加速器系数 $\beta$。
     """
     # 从极坐标创建共轭复数对
-    g1 = cmath.rect(r, ϕ)
+    g1 = cmath.rect(r, ϕ)  # 生成两个复根
     g2 = cmath.rect(r, -ϕ)
 
     # 计算相应的 ρ1, ρ2 参数
-    ρ1 = g1 + g2
+    ρ1 = g1 + g2           # 隐含的 ρ1, ρ2
     ρ2 = -g1 * g2
 
     # 从 ρ 参数推导出 α 和 β 系数
-    β = -ρ2
+    β = -ρ2                # 反向推导验证这些的 α 和 β
     α = ρ1 - β
     return ρ1, ρ2, α, β
 ```
@@ -731,20 +731,20 @@ def f(r, ϕ):
 r = 0.95
 
 # 时间单位中的周期长度
-period = 10
+period = 10                # 时间单位中的周期长度
 ϕ = 2 * math.pi / period
 
 # 应用反向推导函数
 ρ1, ρ2, α, β = f(r, ϕ)
 
-print(f"α, β = {α:.2f}, {β:.2f}")
-print(f"ρ1, ρ2 = {ρ1:.2f}, {ρ2:.2f}")
+print(f'ρ_2 是 {ρ2}')
+print(f'根为 {roots}')
 ```
 
 根的实部为
 
 ```{code-cell} ipython3
-print(f"ρ1 = {ρ1.real:.2f}, ρ2 = {ρ2.real:.2f}")
+print(f'根的类型: {self.root_type()}')
 ```
 
 ### 使用numpy求根
@@ -757,8 +757,8 @@ r1, r2 = np.roots([1, -ρ1, -ρ2])
 p1 = cmath.polar(r1)
 p2 = cmath.polar(r2)
 
-print(f"r, ϕ = {r:.2f}, {ϕ:.2f}")
-print(f"p1, p2 = ({p1[0]:.2f}, {p1[1]:.2f}), ({p2[0]:.2f}, {p2[1]:.2f})")
+print(f'解的类型: {self.solution_type()}')
+print(f'根: {str(self.roots)}')
 
 print(f"α, β = {α:.2f}, {β:.2f}")
 print(f"ρ1, ρ2 = {ρ1:.2f}, {ρ2:.2f}")
