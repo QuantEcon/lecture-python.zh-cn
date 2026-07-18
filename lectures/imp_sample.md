@@ -9,6 +9,16 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 似然比过程的均值
+  headings:
+    Overview: 概述
+    Mathematical expectation of likelihood ratio: 似然比的数学期望
+    Importance sampling: 重要性采样
+    Selecting a sampling distribution: 选择抽样分布
+    Approximating a cumulative likelihood ratio: 近似累积似然比
+    Distribution of sample mean: 样本均值的分布
+    Choosing a sampling distribution: 选择抽样分布
 ---
 
 # 似然比过程的均值
@@ -263,13 +273,12 @@ estimate(g_a, g_b, h_a, h_b, T=10, N=10000)
 下面的代码使用蒙特卡洛和重要性采样方法生成估计值的分布。
 
 ```{code-cell} ipython3
-@jit(parallel=True)
 def simulate(p_a, p_b, q_a, q_b, N_simu, T=1):
 
     μ_L_p = np.empty(N_simu)
     μ_L_q = np.empty(N_simu)
 
-    for i in prange(N_simu):
+    for i in range(N_simu):
         μ_L_p[i] = estimate(p_a, p_b, p_a, p_b, T=T)
         μ_L_q[i] = estimate(p_a, p_b, q_a, q_b, T=T)
 
@@ -468,4 +477,3 @@ plt.show()
 注意，即使在$T = 1$时，使用重要性抽样的均值估计比直接用$g$进行抽样的偏差更大。
 
 因此，我们的模拟表明，对于我们的问题，直接使用$g$进行蒙特卡洛近似会比使用$h_3$作为重要性抽样分布更好。
-
