@@ -71,21 +71,6 @@ import numpy as np
 from quantecon import Kalman, LinearStateSpace
 from collections import namedtuple
 from scipy.stats import multivariate_normal
-import matplotlib as mpl
-
-# Configure Matplotlib to use pdfLaTeX and CJKutf8
-mpl.rcParams.update({
-    'text.usetex': True,
-    'text.latex.preamble': r'''
-        \usepackage{{CJKutf8}}
-        \usepackage{{amsmath}}
-        \usepackage{{amsfonts}}
-    '''
-})
-
-# Function to wrap Chinese text in CJK environment
-def cjk(text):
-    return rf'\begin{{CJK}}{{UTF8}}{{gbsn}}{text}\end{{CJK}}'
 ```
 
 ## 劳动者的产出
@@ -299,17 +284,17 @@ mystnb:
 fig, ax = plt.subplots(1, 2)
 
 ax[0].plot(y_hat_t, label=r'$\mathbb{E}[y_t| y^{t-1}]$')
-ax[0].set_xlabel(cjk('时间'))
+ax[0].set_xlabel('时间')
 ax[0].set_ylabel(r'$\mathbb{E}[y_t| y^{t-1}]$')
-ax[0].set_title(cjk('$\mathbb{E}[y_t| y^{t-1}]$ 随时间变化'))
+ax[0].set_title(r'$\mathbb{E}[y_t| y^{t-1}]$ 随时间变化')
 ax[0].legend()
 
 ax[1].plot(u_hat_t, label=r'$\mathbb{E}[u_0|y^{t-1}]$')
 ax[1].axhline(y=u_0, color='grey', 
             linestyle='dashed', label=fr'$u_0={u_0:.2f}$')
-ax[1].set_xlabel(cjk('时间'))
+ax[1].set_xlabel('时间')
 ax[1].set_ylabel(r'$\mathbb{E}[u_0|y^{t-1}]$')
-ax[1].set_title(cjk('推断的工作伦理随时间变化'))
+ax[1].set_title('推断的工作伦理随时间变化')
 ax[1].legend()
 
 fig.tight_layout()
@@ -362,7 +347,7 @@ for i, t in enumerate(np.linspace(0, T-1, 3, dtype=int)):
     # 创建 PDF 的等高线图
     con = axs[i].contour(h, u, pdf_values, cmap='viridis')
     axs[i].clabel(con, inline=1, fontsize=10)
-    axs[i].set_title(cjk('时间步')+f' {t}')
+    axs[i].set_title('时间步'+f' {t}')
     axs[i].set_xlabel(r'$h_{{{}}}$'.format(str(t)))
     axs[i].set_ylabel(r'$u_{{{}}}$'.format(str(t)))
     
@@ -463,17 +448,17 @@ for t in range(T):
 fig, ax = plt.subplots(1, 2)
 
 ax[0].plot(y_hat_t, label=r'$\mathbb{E}[y_t| y^{t-1}]$')
-ax[0].set_xlabel(cjk('时间'))
+ax[0].set_xlabel('时间')
 ax[0].set_ylabel(r'$\mathbb{E}[y_t| y^{t-1}]$')
-ax[0].set_title(cjk('$\mathbb{E}[y_t| y^{t-1}]$ 随时间变化'))
+ax[0].set_title(r'$\mathbb{E}[y_t| y^{t-1}]$ 随时间变化')
 ax[0].legend()
 
 ax[1].plot(u_hat_t, label=r'$\mathbb{E}[u_0|y^{t-1}]$')
 ax[1].axhline(y=u_0, color='grey', 
             linestyle='dashed', label=fr'$u_0={u_0:.2f}$')
-ax[1].set_xlabel(cjk('时间'))
+ax[1].set_xlabel('时间')
 ax[1].set_ylabel(r'$\mathbb{E}[u_0|y^{t-1}]$')
-ax[1].set_title(cjk('推断的工作伦理随时间变化'))
+ax[1].set_title('推断的工作伦理随时间变化')
 ax[1].legend()
 
 fig.tight_layout()
@@ -543,7 +528,7 @@ def simulate_workers(worker, T, ax, μ_sim_0=None, Σ_sim_0=None,
     if diff :
         ax.plot(u_hat_t - u_0, alpha=.5, label=name)
         ax.axhline(y=0, color='grey', linestyle='dashed')
-        ax.set_xlabel(cjk('时间'))
+        ax.set_xlabel('时间')
         ax.set_ylabel(r'$\mathbb{E}[u_0|y^{t-1}] - u_0$')
         
     else:
@@ -553,7 +538,7 @@ def simulate_workers(worker, T, ax, μ_sim_0=None, Σ_sim_0=None,
         u_hat_plot = ax.plot(u_hat_t, label=label_line)
         ax.axhline(y=u_0, color=u_hat_plot[0].get_color(), 
                     linestyle='dashed', alpha=0.5)
-        ax.set_xlabel(cjk('时间'))
+        ax.set_xlabel('时间')
         ax.set_ylabel(r'$\mathbb{E}[u_0|y^{t-1}]$')
 ```
 
@@ -668,9 +653,9 @@ fig, ax = plt.subplots(figsize=(7, 7))
 
 worker = create_worker(uhat_0=1, α=0.5, β=0.3)
 simulate_workers(worker, T, ax, μ_sim_0=μ_sim_0_1, Σ_sim_0=Σ_sim_0, 
-                 diff=False, name=cjk('勤奋的劳动者'))
+                 diff=False, name='勤奋的劳动者')
 simulate_workers(worker, T, ax, μ_sim_0=μ_sim_0_2, Σ_sim_0=Σ_sim_0, 
-                 diff=False, name=cjk('普通劳动者'))
+                 diff=False, name='普通劳动者')
 ax.legend(bbox_to_anchor=(1, 0.5))
 plt.show()
 ```
