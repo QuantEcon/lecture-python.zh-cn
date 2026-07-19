@@ -7,6 +7,11 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 故障排除
+  headings:
+    Fixing Your Local Environment: 修复本地环境
+    Reporting an Issue: 报告问题
 ---
 
 (troubleshooting)=
@@ -41,7 +46,7 @@ kernelspec:
 
 另一个选择是直接删除Anaconda然后重新安装。
 
-你还需要保持外部代码库（如[QuantEcon.py](https://quantecon.org/quantecon-py)）的更新。
+你还需要保持外部代码库（如[QuantEcon.py](https://quantecon.org/quantecon-py/)）的更新。
 
 对于这个任务，你可以：
 
@@ -62,11 +67,8 @@ kernelspec:
 
 ## 报告问题
 
-提供反馈的一种方式是通过我们的[问题追踪器](https://github.com/QuantEcon/lecture-python/issues)提出问题。
+提供反馈的一种方式是通过我们的[问题追踪器](https://github.com/QuantEcon/lecture-python.myst/issues)提出问题。
 
 请尽可能具体。告诉我们问题出在哪里，并提供尽可能多的关于您本地设置的详细信息。
 
-另一个反馈选项是使用我们的[讨论论坛](https://discourse.quantecon.org/)。
-
 最后，您可以直接向[contact@quantecon.org](mailto:contact@quantecon.org)提供反馈。
-
