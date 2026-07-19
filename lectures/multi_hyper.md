@@ -7,6 +7,17 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 多元超几何分布
+  headings:
+    Overview: 概述
+    The Administrator's Problem: 管理员的问题
+    The Administrator's Problem::Details of the Awards Procedure Under Study: 研究中的奖励程序细节
+    The Administrator's Problem::Multivariate Hypergeometric Distribution: 多元超几何分布
+    Usage: 使用方法
+    Usage::First example: 第一个例子
+    Usage::Back to The Administrator's Problem: 回到管理员的问题
+    Usage::Quality of Normal Approximation: 正态近似的质量
 ---
 
 (multi_hyper_v7)=
@@ -71,12 +82,12 @@ kernelspec:
 在假设选拔过程根据提案质量进行判断，且质量与作者所在大洲无关的前提下，管理者将选拔程序的结果视为一个随机向量
 
 $$
-X = \begin{pmatrix} k_1 \cr k_2 \cr \vdots \cr k_c \end{pmatrix}.
+X = \begin{bmatrix} k_1 \cr k_2 \cr \vdots \cr k_c \end{bmatrix}.
 $$
 
 为了评估选择程序是否**色盲**，管理员想研究所抽取的$X$的特定实现是否可以合理地被认为是从**色盲**假设所暗示的概率分布中随机抽取的。
 
-适当的概率分布是[这里](https://baike.baidu.com/item/%E8%B6%85%E5%87%A0%E4%BD%95%E5%88%86%E5%B8%83/4782968)所描述的分布。
+适当的概率分布是[这里](https://en.wikipedia.org/wiki/Hypergeometric_distribution)所描述的分布。
 
 让我们现在具体化管理员的问题，同时继续使用彩色球的比喻。
 
@@ -93,7 +104,7 @@ $$
 管理员想知道结果的概率分布
 
 $$
-X = \begin{pmatrix} k_1 \cr k_2 \cr \vdots \cr k_4 \end{pmatrix}.
+X = \begin{bmatrix} k_1 \cr k_2 \cr \vdots \cr k_4 \end{bmatrix}.
 $$
 
 特别地，他想知道一个特定的结果——以一个 $4 \times 1$ 的整数向量形式记录蓝色、绿色、黄色和黑色球的数量——是否包含反对选择过程*公平性*的证据，这里*公平*意味着*色盲*且确实是从 $N$ 个球的总体中进行的无放回随机抽取。
@@ -122,7 +133,7 @@ from numba import jit, prange
 
 如果罐子里有$K_{i}$个第$i$种物品，我们不放回地随机抽取$n$次，那么样本中第$i$种物品的数量$(k_{1},k_{2},\dots,k_{c})$服从多元超几何分布。
 
-再次注意，$N=\sum_{i=1}^{c} K_{i}$是罐子中物品的总数，且$n=\sum_{i=1}^{c}k_{i}$是我们抽取的次数。
+再次注意，$N=\sum_{i=1}^{c} K_{i}$是罐子中物品的总数，且$n=\sum_{i=1}^{c}k_{i}$。
 
 **符号说明**
 
@@ -154,7 +165,7 @@ $$
 
 为了帮我们完成工作，我们将编写一个`Urn`类。
 
-```{code-cell} ipython3
+```{code-cell} python3
 class Urn:
 
     def __init__(self, K_arr):
@@ -247,44 +258,46 @@ class Urn:
 
 ### 第一个例子
 
-举例说明：假设一个罐子中有5个黑色、10个白色和15个红色的弹珠。如果不放回地抽取6个弹珠，抽到每种颜色各两个的概率是
+将其应用到[wiki](https://en.wikipedia.org/wiki/Hypergeometric_distribution#Multivariate_hypergeometric_distribution)中的一个例子：
+
+假设一个罐子中有5个黑色、10个白色和15个红色的弹珠。如果不放回地抽取6个弹珠，抽到每种颜色各两个的概率是
 
 $$
 P(2{\text{ 黑色}},2{\text{ 白色}},2{\text{ 红色}})={{{5 \choose 2}{10 \choose 2}{15 \choose 2}} \over {30 \choose 6}}=0.079575596816976
 $$
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 构造罐子
 K_arr = [5, 10, 15]
 urn = Urn(K_arr)
 ```
 
-现在使用 Urn 类的 `pmf` 方法来计算结果 $X = \begin{pmatrix} 2 & 2 & 2 \end{pmatrix}$ 的概率
+现在使用 Urn 类的 `pmf` 方法来计算结果 $X = \begin{bmatrix} 2 & 2 & 2 \end{bmatrix}$ 的概率
 
-```{code-cell} ipython3
+```{code-cell} python3
 k_arr = [2, 2, 2] # 观察到成功次数的数组
 urn.pmf(k_arr)
 ```
 
 我们可以通过构建一个二维数组`k_arr`来计算一系列可能结果的概率，`pmf`将返回一个数组，包含观察到每种情况的概率。
 
-```{code-cell} ipython3
+```{code-cell} python3
 k_arr = [[2, 2, 2], [1, 3, 2]]
 urn.pmf(k_arr)
 ```
 
 现在让我们计算均值向量和方差-协方差矩阵。
 
-```{code-cell} ipython3
+```{code-cell} python3
 n = 6
 μ, Σ = urn.moments(n)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 μ
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 Σ
 ```
 
@@ -292,58 +305,58 @@ n = 6
 
 现在让我们回到拨款管理员的问题。
 
-在这里，罐子里中各类物品数量构成的数组是
+在这里，罐子里各类物品数量构成的数组是
 $\left(157, 11, 46, 24\right)$。
 
-```{code-cell} ipython3
+```{code-cell} python3
 K_arr = [157, 11, 46, 24]
 urn = Urn(K_arr)
 ```
 
 让我们计算结果 $\left(10, 1, 4, 0 \right)$ 的概率。
 
-```{code-cell} ipython3
+```{code-cell} python3
 k_arr = [10, 1, 4, 0]
 urn.pmf(k_arr)
 ```
 
 我们可以通过构建一个3维数组`k_arr`并使用`Urn`类的`pmf`方法来计算三种可能结果的概率。
 
-```{code-cell} ipython3
+```{code-cell} python3
 k_arr = [[5, 5, 4 ,1], [10, 1, 2, 2], [13, 0, 2, 0]]
 urn.pmf(k_arr)
 ```
 
 现在让我们计算当 $n=6$ 时 $X$ 的均值和方差-协方差矩阵。
 
-```{code-cell} ipython3
+```{code-cell} python3
 n = 6 # 抽取次数
 μ, Σ = urn.moments(n)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 均值
 μ
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 方差-协方差矩阵
 Σ
 ```
 
 我们可以模拟一个大样本，并验证样本均值和协方差与总体均值和协方差非常接近。
 
-```{code-cell} ipython3
+```{code-cell} python3
 size = 10_000_000
 sample = urn.simulate(n, size=size)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 均值
 np.mean(sample, 0)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 方差协方差矩阵
 np.cov(sample.T)
 ```
@@ -352,13 +365,13 @@ np.cov(sample.T)
 
 ### 正态近似的质量
 
-为了评估多元正态分布对多元超几何分布的近似质量，我们考虑一个多元正态分布。这个多元正态分布具有跟我们关注的多元超几何分布相同的的均值向量和协方差矩阵，即$\mu$和$\Sigma$。 我们从这个多元正态分布中抽取大量样本，并将模拟得到的分布与总体的多元超几何分布进行比较。
+为了评估多元正态分布对多元超几何分布的近似质量，我们从一个具有相应多元超几何分布的均值向量和协方差矩阵的多元正态分布中抽取一个大样本，并将模拟得到的分布与总体的多元超几何分布进行比较。
 
-```{code-cell} ipython3
+```{code-cell} python3
 sample_normal = np.random.multivariate_normal(μ, Σ, size=size)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 def bivariate_normal(x, y, μ, Σ, i, j):
 
     μ_x, μ_y = μ[i], μ[j]
@@ -375,7 +388,7 @@ def bivariate_normal(x, y, μ, Σ, i, j):
     return np.exp(-z / (2 * (1 - ρ**2))) / denom
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 @jit
 def count(vec1, vec2, n):
     size = sample.shape[0]
@@ -387,7 +400,7 @@ def count(vec1, vec2, n):
     return count_mat
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 c = urn.c
 fig, axs = plt.subplots(c, c, figsize=(14, 14))
 
@@ -434,7 +447,7 @@ plt.show()
 
 > `normaltest` 返回与每个 $k_i$ 样本测试相关的p值数组。
 
-```{code-cell} ipython3
+```{code-cell} python3
 test_multihyper = normaltest(sample)
 test_multihyper.pvalue
 ```
@@ -443,10 +456,9 @@ test_multihyper.pvalue
 
 相比之下，来自正态分布的样本并不拒绝零假设。
 
-```{code-cell} ipython3
+```{code-cell} python3
 test_normal = normaltest(sample_normal)
 test_normal.pvalue
 ```
 
 从这里得到的教训是，正态近似并不完美。
-

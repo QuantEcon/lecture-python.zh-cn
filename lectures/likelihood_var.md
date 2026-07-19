@@ -9,6 +9,17 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: VAR模型的似然过程
+  headings:
+    Overview: 概述
+    VAR model setup: VAR模型设置
+    VAR model setup::Joint distribution: 联合分布
+    VAR model setup::Conditional densities: 条件密度
+    Likelihood ratio process: 似然比过程
+    'Example 1: two AR(1) processes': 示例1：两个AR(1)过程
+    'Example 2: bivariate VAR models': 示例2：二元VAR模型
+    'Application: Samuelson multiplier-accelerator': 应用：萨缪尔森乘数-加速器模型
 ---
 
 (var_likelihood)=
@@ -24,6 +35,14 @@ kernelspec:
 
 ```{contents} 目录
 :depth: 2
+```
+
+除了Anaconda中已有的库外，本讲座还需要以下库：
+
+```{code-cell} ipython3
+:tags: [hide-output]
+
+!pip install quantecon
 ```
 
 ## 概述
@@ -48,6 +67,7 @@ kernelspec:
 import numpy as np
 import matplotlib.pyplot as plt
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+import matplotlib as mpl
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
@@ -786,4 +806,3 @@ plt.show()
 在这两种情况下,为了数值稳定性,我们对对数似然比过程设置了上下限阈值,因为它们会很快增长到无界。
 
 在这两种情况下,似然比过程最终都能帮助我们选择正确的模型。
-
