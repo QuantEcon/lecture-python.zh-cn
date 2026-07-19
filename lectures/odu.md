@@ -7,6 +7,31 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: '工作搜寻 VIII: 带学习的搜索'
+  headings:
+    Overview: 概述
+    Overview::Model Features: 模型特点
+    Model: 模型
+    Model::The Basic McCall Model: 基本McCall模型
+    Model::Offer Distribution Unknown: 报价分布未知
+    Model::Parameterization: 参数化
+    Model::Looking Forward: 展望未来
+    'Take 1: Solution by VFI': 方法一：通过值函数迭代求解
+    'Take 2: A More Efficient Method': 方案二：一个更高效的方法
+    Another Functional Equation: 另一个泛函方程
+    Solving the RWFE: 求解RWFE
+    Implementation: 实现
+    Exercises: 练习
+    Solutions: 解答
+    Appendix A: 附录A
+    Appendix B: 附录B
+    Examples: 示例
+    Examples::Example 1 (Baseline): 示例1（基准）
+    Examples::Example 2: 示例 2
+    Examples::Example 3: 示例 3
+    Examples::Example 4: 示例 4
+    Examples::Example 5: 示例 5
 ---
 
 (odu_v2)=
@@ -18,7 +43,7 @@ kernelspec:
 </div>
 ```
 
-# 工作搜寻 VII: 带学习的搜索
+# 工作搜寻 VIII: 带学习的搜索
 
 ```{contents} 目录
 :depth: 2
@@ -105,7 +130,7 @@ v(w)
 ```
 
 最优策略具有形式 $\mathbf{1}\{w \geq \bar w\}$，其中
-$\bar w$ 是一个称为*保留工资*的常数。
+$\bar w$ 是一个称为**保留工资**的常数。
 
 ### 报价分布未知
 
@@ -204,7 +229,7 @@ v(w, \pi)
 
 密度函数 $f$ 和 $g$ 具有以下形状
 
-```{code-cell} ipython3
+```{code-cell} python3
 @vectorize
 def p(x, a, b):
     r = gamma(a + b) / (gamma(a) * gamma(b))
@@ -250,10 +275,11 @@ plt.show()
 
 `SearchProblem`类用于存储计算最优行为所需的参数和方法。
 
-```{code-cell} ipython3
+```{code-cell} python3
 class SearchProblem:
     """
     一个用于存储"报价分布未知"模型特定参数化的类。
+
     """
 
     def __init__(self,
@@ -285,7 +311,7 @@ class SearchProblem:
 
 以下函数接收这个类的实例，并返回贝尔曼算子`T`的即时编译版本，以及一个`get_greedy()`函数，用于根据值函数的猜测值`v`计算近似最优策略
 
-```{code-cell} ipython3
+```{code-cell} python3
 def operator_factory(sp, parallel_flag=True):
 
     f, g = sp.f, sp.g
@@ -368,7 +394,7 @@ def operator_factory(sp, parallel_flag=True):
 
 为了求解这个模型，我们将使用以下函数，该函数通过T进行迭代来寻找不动点
 
-```{code-cell} ipython3
+```{code-cell} python3
 def solve_model(sp,
                 use_parallel=True,
                 tol=1e-4,
@@ -411,7 +437,7 @@ def solve_model(sp,
 
 让我们看看从值函数迭代计算得出的解
 
-```{code-cell} ipython3
+```{code-cell} python3
 sp = SearchProblem()
 v_star = solve_model(sp)
 fig, ax = plt.subplots(figsize=(6, 6))
@@ -425,7 +451,7 @@ plt.show()
 
 我们还将绘制最优策略
 
-```{code-cell} ipython3
+```{code-cell} python3
 T, get_greedy = operator_factory(sp)
 σ_star = get_greedy(v_star)
 
@@ -468,7 +494,6 @@ plt.show()
 :label: odu_mvf2
 
 \frac{\bar w(\pi)}{1 - \beta}
-
 = c + \beta \int v(w', \pi') \, q_{\pi}(w') \, dw'
 ```
 
@@ -506,7 +531,7 @@ $$
 
 方程{eq}`odu_mvf4`可以理解为一个泛函方程,其中$\bar w$是未知函数。
 
-* 我们称之为*保留工资泛函方程*(RWFE)。
+* 我们称之为**保留工资泛函方程**(RWFE)。
 * RWFE的解$\bar w$就是我们想要计算的对象。
 
 ## 求解RWFE
@@ -540,7 +565,6 @@ $$
 |(Q \omega)(\pi) - (Q \omega')(\pi)|
 \leq \beta \int
 \left|
-
 \max \left\{w', \omega \circ \kappa(w', \pi) \right\} -
 \max \left\{w', \omega' \circ \kappa(w', \pi) \right\}
 \right|
@@ -587,7 +611,7 @@ $$
 
 以下函数接收一个`SearchProblem`实例并返回算子`Q`
 
-```{code-cell} ipython3
+```{code-cell} python3
 def Q_factory(sp, parallel_flag=True):
 
     f, g = sp.f, sp.g
@@ -661,7 +685,7 @@ def Q_factory(sp, parallel_flag=True):
 
 与上面类似，我们设置一个函数来使用`Q`进行迭代以找到不动点
 
-```{code-cell} ipython3
+```{code-cell} python3
 def solve_wbar(sp,
                use_parallel=True,
                tol=1e-4,
@@ -697,7 +721,7 @@ def solve_wbar(sp,
 
 解决方案可以按如下方式绘制
 
-```{code-cell} ipython3
+```{code-cell} python3
 sp = SearchProblem()
 w_bar = solve_wbar(sp)
 
@@ -726,7 +750,7 @@ plt.show()
 
 结果导致失业率激增。
 
-```{code-cell} ipython3
+```{code-cell} python3
 F_a, F_b, G_a, G_b = 1, 1, 3, 1.2
 
 sp = SearchProblem(F_a=F_a, F_b=F_b, G_a=G_a, G_b=G_b)
@@ -811,7 +835,7 @@ plt.show()
 
 首先，我们定义两个函数来计算失业持续时间和就业时π的经验分布。
 
-```{code-cell} ipython3
+```{code-cell} python3
 @jit
 def empirical_dist(F_a, F_b, G_a, G_b, w_bar, π_grid,
                    N=10000, T=600):
@@ -882,7 +906,7 @@ def cumfreq_x(res):
 
 此外，它还计算两个关键对象的经验累积分布。
 
-```{code-cell} ipython3
+```{code-cell} python3
 def job_search_example(F_a=1, F_b=1, G_a=3, G_b=1.2, c=0.3):
     """
     给定指定F和G分布的参数，
@@ -1035,7 +1059,7 @@ $$
 
 失业持续时间的经验累积分布验证了我们的推测。
 
-```{code-cell} ipython3
+```{code-cell} python3
 job_search_example()
 ```
 
@@ -1049,7 +1073,7 @@ $F$ ~ Beta(1, 1), $G$ ~ Beta(1.2, 1.2), $c$=0.3。
 
 因此，我们观察到最优策略$\overline{w}(\pi)$随$\pi$增加而增加。
 
-```{code-cell} ipython3
+```{code-cell} python3
 job_search_example(1, 1, 1.2, 1.2, 0.3)
 ```
 
@@ -1059,7 +1083,7 @@ $F$ ~ Beta(1, 1), $G$ ~ Beta(2, 2), $c$=0.3.
 
 如果$G$的方差更小，我们在结果中观察到$G$甚至更加"劣势"，且$\overline{w}(\pi)$的斜率更大。
 
-```{code-cell} ipython3
+```{code-cell} python3
 job_search_example(1, 1, 2, 2, 0.3)
 ```
 
@@ -1077,7 +1101,7 @@ $F$ ~ Beta(1, 1)，$G$ ~ Beta(3, 1.2)，且 $c$=0.8。
 
 这意味着当劳动者最终选择接受工资报价时，他对真实分布有了更好的认识。
 
-```{code-cell} ipython3
+```{code-cell} python3
 job_search_example(1, 1, 3, 1.2, c=0.8)
 ```
 
@@ -1088,7 +1112,6 @@ $F$ ~ Beta(1, 1), $G$ ~ Beta(3, 1.2), 且 $c$=0.1。
 
 正如预期的那样，较小的 $c$ 使失业劳动者在获取较少的工资分布信息后就更早地接受工资offer。
 
-```{code-cell} ipython3
+```{code-cell} python3
 job_search_example(1, 1, 3, 1.2, c=0.1)
 ```
-
