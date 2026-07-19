@@ -72,8 +72,19 @@ from quantecon import Kalman, LinearStateSpace
 from collections import namedtuple
 from scipy.stats import multivariate_normal
 import matplotlib as mpl
-mpl.rcParams['text.usetex'] = True
-mpl.rcParams['text.latex.preamble'] = r'\usepackage{amsmath,amsfonts}'
+
+# Configure Matplotlib to use pdfLaTeX and CJKutf8
+mpl.rcParams.update({
+    'text.usetex': True,
+    'text.latex.preamble': r'''
+        \usepackage{{CJKutf8}}
+        \usepackage{{amsmath}}
+    '''
+})
+
+# Function to wrap Chinese text in CJK environment
+def cjk(text):
+    return rf'\begin{{CJK}}{{UTF8}}{{gbsn}}{text}\end{{CJK}}'
 ```
 
 ## 劳动者的产出
