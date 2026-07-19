@@ -9,6 +9,15 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 用Pandas处理面板数据
+  headings:
+    Overview: 概述
+    Slicing and Reshaping Data: 切片和重塑数据
+    Merging Dataframes and Filling NaNs: 合并数据框和填充空值（NaN 值）
+    Grouping and Summarizing Data: 数据分组和汇总
+    Final Remarks: 总结
+    Exercises: 练习
 ---
 
 (ppd)=
@@ -60,7 +69,7 @@ kernelspec:
 数据集可通过以下链接访问：
 
 ```{code-cell} ipython3
-url1 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/realwage.csv'
+url1 = 'https://github.com/QuantEcon/data-lectures/raw/main/lectures/realwage.csv'
 ```
 
 ```{code-cell} ipython3
@@ -126,13 +135,13 @@ realwage['United States'].head()
 `.stack()`将列`MultiIndex`的最低层级旋转到行索引（`.unstack()`执行反向操作 - 你可以试试看）
 
 ```{code-cell} ipython3
-realwage.stack().head()
+realwage.stack(future_stack=True).head()
 ```
 
 我们也可以传入一个参数来选择我们想要堆叠的层级
 
 ```{code-cell} ipython3
-realwage.stack(level='Country').head()
+realwage.stack(level='Country', future_stack=True).head()
 ```
 
 使用`DatetimeIndex`可以轻松选择特定的时间段。
@@ -140,7 +149,7 @@ realwage.stack(level='Country').head()
 选择一年并堆叠`MultiIndex`的两个较低层级，可以创建我们面板数据的横截面。
 
 ```{code-cell} ipython3
-realwage.loc['2015'].stack(level=(1, 2)).transpose().head()
+realwage.loc['2015'].stack(level=(1, 2), future_stack=True).transpose().head()
 ```
 
 在本讲后续内容中，我们将使用按国家和时间维度统计的每小时实际最低工资数据框（计量单位为2015年不变价美元）。
@@ -162,7 +171,7 @@ realwage_f.head()
 可以通过以下链接访问数据集：
 
 ```{code-cell} ipython3
-url2 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/countries.csv'
+url2 = 'https://github.com/QuantEcon/data-lectures/raw/main/lectures/countries.csv'
 ```
 
 ```{code-cell} ipython3
@@ -192,8 +201,8 @@ realwage_f.transpose().head()
 
 * 左连接（left）只包含左侧数据集中的国家
 * 右连接（right）只包含右侧数据集中的国家
+* 外连接（outer）包含左侧或右侧数据集中的任一国家
 * 内连接（inner）只包含左右数据集共有的国家
-* 外连接（outer）包含左侧和右侧数据集中的任一国家
 
 默认情况下，`merge`将使用内连接（inner）。
 
@@ -260,8 +269,8 @@ merged[merged['Country'] == 'Korea']
 replace = ['Central America', 'North America', 'South America']
 
 for country in replace:
-    merged['Continent'] = merged['Continent'].replace(
-                                {country:'America'})
+    merged.Continent = merged.Continent.replace(to_replace=country,
+                                value='America')
 ```
 
 现在我们已经将所有想要的数据都放在一个`DataFrame`中，我们将把它重新整形成带有`MultiIndex`的面板形式。
@@ -327,10 +336,6 @@ country_map = pd.read_csv(map_url).set_index('English')['Chinese']
 ```
 
 ```{code-cell} ipython3
-merged.T.groupby(level='Continent').mean()
-```
-
-```{code-cell} ipython3
 merged.mean().sort_values(ascending=False).plot(
           kind='bar',
           title="2006-2016年平均实际最低工资")
@@ -367,7 +372,7 @@ plt.show()
 我们也可以指定`MultiIndex`的一个层级（在列轴上）来进行聚合
 
 ```{code-cell} ipython3
-merged.T.groupby(level='Continent').mean().head()
+merged.T.groupby(level='Continent').mean().T.head()
 ```
 
 我们可以将每个大洲的平均最低工资绘制成时间序列图
@@ -409,18 +414,16 @@ plt.show()
 `.describe()` 可以快速获取一些常见的描述性统计量的汇总结果
 
 ```{code-cell} ipython3
-merged.stack().describe()
+merged.stack(future_stack=True).describe()
 ```
 
-让我们更深入地了解 `groupby` 的工作原理。
+这是使用 `groupby` 的一种简化方式。
 
-`groupby` 操作遵循一个称为"拆分-应用-合并"的模式:
+使用 `groupby` 通常遵循"拆分-应用-合并"的过程：
 
-1. 首先，数据会按照指定的一个或多个键被拆分成多个组
-2. 然后，对每个组分别执行相同的操作或计算
-3. 最后，将所有组的结果合并成一个新的数据结构
-
-这种模式使我们能够对数据子集进行灵活的分组分析。
+* 拆分：数据根据一个或多个键被分组
+* 应用：函数被独立地应用于每个组
+* 合并：函数调用的结果被合并成一个新的数据结构
 
 `groupby` 方法实现了这个过程的第一步，创建一个新的 `DataFrameGroupBy` 对象，将数据拆分成组。
 
@@ -428,10 +431,10 @@ merged.stack().describe()
 
 ```{code-cell} ipython3
 grouped = merged.T.groupby(level='Continent')
-grouped.keys
+grouped
 ```
 
-在对象上调用`groupby`方法时，该函数会被应用于每个组，运算结果会被合并到一个新的数据结构中。
+在对象上调用聚合方法时，该函数会被应用于每个组，运算结果会被合并到一个新的数据结构中。
 
 例如，我们可以使用`.size()`返回数据集中每个大洲的国家数量。
 
@@ -454,7 +457,6 @@ for continent in continents:
 
 plt.title('2015年实际最低工资')
 plt.xlabel('美元')
-plt.ylabel('密度')
 plt.legend()
 plt.show()
 ```
@@ -476,7 +478,7 @@ plt.show()
 可以通过以下链接访问数据集：
 
 ```{code-cell} ipython3
-url3 = 'https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/employ.csv'
+url3 = 'https://github.com/QuantEcon/data-lectures/raw/main/lectures/employ.csv'
 ```
 
 读取 CSV 文件会返回一个长格式的面板数据集。使用 `.pivot_table()` 构建一个带有 `MultiIndex` 列的宽格式数据框。
