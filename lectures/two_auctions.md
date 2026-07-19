@@ -212,7 +212,7 @@ import scipy.stats as stats
 import scipy.interpolate as interp
 
 # for plots
-plt.rcParams.update({"text.usetex": True, 'font.size': 14})
+plt.rcParams.update({'font.size': 14})
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
 # ensure the notebook generates the same randomness
