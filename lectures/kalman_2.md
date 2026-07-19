@@ -9,9 +9,18 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 卡尔曼滤波器进阶
+  headings:
+    A worker's output: 劳动者的产出
+    A firm's wage-setting policy: 公司的工资设定政策
+    A state-space representation: 状态空间表示
+    An innovations representation: 创新表示
+    Some computational experiments: 一些计算实验
+    Future extensions: 未来扩展
 ---
 
-(kalman)=
+(kalman_2)=
 ```{raw} jupyter
 <div id="qe-notebook-header" align="right" style="text-align:right;">
         <a href="https://quantecon.org/" title="quantecon.org">
@@ -29,17 +38,17 @@ kernelspec:
 :depth: 2
 ```
 
-在之前的量化经济学讲座 {doc}`卡尔曼滤波器的初步介绍 <kalman>` 中，我们使用卡尔曼滤波器来估计火箭的位置。
+在 {doc}`kalman` 中，我们使用卡尔曼滤波器来估计火箭的位置。
 
-在本讲座中，我们将使用卡尔曼滤波器来推断劳动者的：
-1. 人力资本
-2. 劳动者投入人力资本积累的努力程度
+在本讲座中，我们将使用卡尔曼滤波器来推断劳动者的人力资本，以及劳动者投入人力资本积累的努力程度，这两个变量都是公司无法直接观察到的。
 
-这两个变量都是公司无法直接观察到的。
+本讲座是对 {doc}`kalman` 中介绍的滤波与预测递归的一个应用。
 
 公司只能通过观察劳动者历史产出，以及理解这些产出如何依赖于劳动者的人力资本，以及人力资本如何作为劳动者努力程度的函数来演化，来了解上述变量。
 
 我们将设定一个规则，说明公司如何根据每期获得的信息来支付劳动者工资。
+
+{doc}`intermediate:kalman_filter_var` 这一讲座使用相同的递归来构建新息（innovations）、似然函数和向量自回归模型。
 
 除了Anaconda中的内容外，本讲座还需要以下库：
 
@@ -49,7 +58,7 @@ kernelspec:
 !pip install quantecon
 ```
 
-为了进行模拟，我们引入以下函数库，与 {doc}`卡尔曼滤波器的初步介绍 <kalman>` 相同：
+为了进行模拟，我们引入以下函数库，与 {doc}`kalman` 相同：
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
@@ -70,6 +79,7 @@ mpl.rcParams.update({
     'text.latex.preamble': r'''
         \usepackage{{CJKutf8}}
         \usepackage{{amsmath}}
+        \usepackage{{amsfonts}}
     '''
 })
 
@@ -88,9 +98,9 @@ def cjk(text):
 :label: worker_model
 
 \begin{aligned}
-h_{t+1} &= \alpha h_t + \beta u_t + c w_{t+1}, \quad w_{t+1} \sim {N}(0,1) \\
+h_{t+1} &= \alpha h_t + \beta u_t + c \epsilon_{t+1}, \quad \epsilon_{t+1} \sim N(0,1) \\
 u_{t+1} & = u_t \\
-y_t & = g h_t + v_t , \quad v_t \sim {N} (0, R)
+y_t & = g h_t + v_t , \quad v_t \sim N(0, R)
 \end{aligned}
 ```
 
@@ -99,44 +109,47 @@ y_t & = g h_t + v_t , \quad v_t \sim {N} (0, R)
 * $h_t$ 是时间 $t$ 时的人力资本对数
 * $u_t$ 是时间 $t$ 时劳动者投入人力资本积累的努力程度的对数
 * $y_t$ 是时间 $t$ 时劳动者产出的对数
-* $h_0 \sim {N}(\hat h_0, \sigma_{h,0})$
-* $u_0 \sim {N}(\hat u_0, \sigma_{u,0})$
+* $\epsilon_{t+1}$ 是人力资本上一个独立同分布的标准正态冲击
+* $h_0 \sim N(\hat h_0, \sigma_{h,0}^2)$
+* $u_0 \sim N(\hat u_0, \sigma_{u,0}^2)$
 
-模型的参数包括 $\alpha, \beta, c, R, g, \hat h_0, \hat u_0, \sigma_h, \sigma_u$。
+模型的参数是 $\alpha, \beta, c, R, g, \hat h_0, \hat u_0, \sigma_{h,0}, \sigma_{u,0}$，其中 $\sigma_{h,0}$ 和 $\sigma_{u,0}$ 是公司关于 $h_0$ 和 $u_0$ 的初始信念的标准差。
+
+我们假设 $h_0$、$u_0$、$\{\epsilon_t\}$ 和 $\{v_t\}$ 是相互独立的。
 
 在时间 $0$，公司雇佣了劳动者。
 
 劳动者永久依附于公司，因此在所有时间 $t =0, 1, 2, \ldots$ 都为同一家公司工作。
 
-在时间 $0$ 开始时，公司既无法观察到劳动者的初始人力资本 $h_0$，也无法观察到其固有的永久努力水平 $u_0$。
+在时间 $0$ 开始时，公司既无法观察到劳动者天生的初始人力资本 $h_0$，也无法观察到其固有的永久努力水平 $u_0$。
 
-公司认为特定劳动者的 $u_0$ 服从高斯概率分布，因此由 $u_0 \sim {N}(\hat u_0, \sigma_{u,0})$ 描述。
+公司认为特定劳动者的 $u_0$ 服从高斯概率分布，因此由 $u_0 \sim N(\hat u_0, \sigma_{u,0}^2)$ 描述。
 
-劳动者"类型"中的 $h_t$ 部分随时间变化，但努力程度部分 $u_t = u_0$ 保持不变。
+劳动者"类型"中的 $h_t$ 部分随时间变化，而方程 $u_{t+1} = u_t$ 意味着对所有 $t$ 都有 $u_t = u_0$。
 
-这意味着从公司的角度来看，劳动者的努力程度实际上是一个未知的固定"参数"。
+因此，从公司的角度来看，努力程度是劳动者类型中一个固定的、不可观测的组成部分，必须从产出观测值中加以推断。
 
-在任意时间点 $t\geq 1$，公司能观察到该劳动者从雇佣开始到当前时刻的所有历史产出记录，记为 $y^{t-1} = [y_{t-1}, y_{t-2}, \ldots, y_0]$。
+在时间 $t \geq 1$ 开始时，在设定工资 $w_t$ 之前，公司已经观察到历史记录 $y^{t-1} = [y_{t-1}, y_{t-2}, \ldots, y_0]$。
 
-虽然公司无法直接观察劳动者的真实"类型"（即初始人力资本 $h_0$ 和固有努力水平 $u_0$），但可以通过观察劳动者当前的产出 $y_t$ 以及回顾其历史产出记录 $y^{t-1}$ 来进行推断。
+公司无法观察劳动者的"类型" $(h_0, u_0)$。
+
+在第 $t$ 期生产之后，公司观察到劳动者的产出 $y_t$，然后用它来更新进入第 $t+1$ 期的信念。
 
 ## 公司的工资设定政策
 
-公司根据掌握的劳动者信息来确定工资。具体来说：
-
-对于 $t \geq 1$ 时期，公司基于截至 $t-1$ 时期的产出历史 $y^{t-1}$ 来预测劳动者当前的人力资本水平 $h_t$。劳动者的对数工资设定为：
+在时间 $t \geq 1$，在观察到当期产出 $y_t$ 之前，公司使用过去的产出历史 $y^{t-1}$ 来设定劳动者的对数工资：
 
 $$
-w_t = g  E [ h_t | y^{t-1} ], \quad t \geq 1
+w_t = g \mathbb{E}[h_t | y^{t-1}], \quad t \geq 1
 $$
 
-而在初始时期 $t=0$，由于还没有任何历史信息，公司只能基于先验均值来设定工资：
+而在时间 $0$，公司支付给劳动者的对数工资等于 $y_0$ 的无条件均值：
 
 $$
 w_0 = g \hat h_0
 $$
 
-这种工资设定方式考虑到了一个事实:劳动者的实际产出中包含一个纯随机的成分 $v_t$。这个随机成分与劳动者的人力资本 $h_t$ 和努力水平 $u_t$ 都是相互独立的。
+在使用这一支付规则时，公司考虑到劳动者当期的对数产出部分源于纯粹由运气决定的随机成分 $v_t$，且假设该成分与 $h_t$ 和 $u_t$ 相互独立。
 
 ## 状态空间表示
 
@@ -144,7 +157,7 @@ $$
 
 ```{math}
 \begin{aligned}
-\begin{bmatrix} h_{t+1} \cr u_{t+1} \end{bmatrix} &= \begin{bmatrix} \alpha & \beta \cr 0 & 1 \end{bmatrix}\begin{bmatrix} h_{t} \cr u_{t} \end{bmatrix} + \begin{bmatrix} c \cr 0 \end{bmatrix} w_{t+1} \cr
+\begin{bmatrix} h_{t+1} \cr u_{t+1} \end{bmatrix} &= \begin{bmatrix} \alpha & \beta \cr 0 & 1 \end{bmatrix}\begin{bmatrix} h_{t} \cr u_{t} \end{bmatrix} + \begin{bmatrix} c \cr 0 \end{bmatrix} \epsilon_{t+1} \cr
 y_t & = \begin{bmatrix} g & 0 \end{bmatrix} \begin{bmatrix} h_{t} \cr u_{t} \end{bmatrix} + v_t
 \end{aligned}
 ```
@@ -154,9 +167,9 @@ y_t & = \begin{bmatrix} g & 0 \end{bmatrix} \begin{bmatrix} h_{t} \cr u_{t} \end
 ```{math}
 :label: ssrepresent
 \begin{aligned} 
-x_{t+1} & = A x_t + C w_{t+1} \cr
+x_{t+1} & = A x_t + C \epsilon_{t+1} \cr
 y_t & = G x_t + v_t \cr
-x_0 & \sim {N}(\hat x_0, \Sigma_0) 
+x_0 & \sim N(\hat x_0, \Sigma_0) 
 \end{aligned}
 ```
 
@@ -165,8 +178,8 @@ x_0 & \sim {N}(\hat x_0, \Sigma_0)
 ```{math}
 x_t  = \begin{bmatrix} h_{t} \cr u_{t} \end{bmatrix} , \quad
 \hat x_0  = \begin{bmatrix} \hat h_0 \cr \hat u_0 \end{bmatrix} , \quad
-\Sigma_0  = \begin{bmatrix} \sigma_{h,0} & 0 \cr
-                     0 & \sigma_{u,0} \end{bmatrix}
+\Sigma_0  = \begin{bmatrix} \sigma_{h,0}^2 & 0 \cr
+                     0 & \sigma_{u,0}^2 \end{bmatrix}
 ```
 
 为了计算公司的工资设定政策，我们首先创建一个 `namedtuple` 来存储模型的参数：
@@ -177,27 +190,28 @@ WorkerModel = namedtuple("WorkerModel",
 
 def create_worker(α=.8, β=.2, c=.2,
                   R=.5, g=1.0, hhat_0=4, uhat_0=4, 
-                  σ_h=4, σ_u=4):
+                  σ_h=2, σ_u=2):
     
     A = np.array([[α, β], 
                   [0, 1]])
     C = np.array([[c], 
                   [0]])
-    G = np.array([g, 1])
+    G = np.array([g, 0])
 
     # 定义初始状态和协方差矩阵
     xhat_0 = np.array([[hhat_0], 
                        [uhat_0]])
     
-    Σ_0 = np.array([[σ_h, 0],
-                    [0, σ_u]])
+    # σ_h 和 σ_u 是标准差，因此 Σ_0 保存的是它们的平方
+    Σ_0 = np.array([[σ_h**2, 0],
+                    [0, σ_u**2]])
     
     return WorkerModel(A=A, C=C, G=G, R=R, xhat_0=xhat_0, Σ_0=Σ_0)
 ```
 
-`WorkerModel` namedtuple 为我们创建了所有需要的对象，以便构建状态空间表示 {eq}`ssrepresent`。
+请注意 `WorkerModel` namedtuple 是如何创建计算相应状态空间表示 {eq}`ssrepresent` 所需的所有对象的。
 
-这使得我们能够方便地使用 [`LinearStateSpace`](https://quanteconpy.readthedocs.io/en/latest/tools/lss.html) 类来模拟劳动者的历史 $\{y_t, h_t\}$。
+这十分方便，因为为了模拟劳动者的历史 $\{y_t, h_t\}$，我们需要使用 [`LinearStateSpace`](https://quanteconpy.readthedocs.io/en/latest/tools/lss.html) 类为其构建状态空间系统。
 
 ```{code-cell} ipython3
 # 定义 A, C, G, R, xhat_0, Σ_0
@@ -216,13 +230,15 @@ y = y.flatten()
 h_0, u_0 = x[0, 0], x[1, 0]
 ```
 
-接下来，为了计算公司基于其获得的关于劳动者的信息来设定对数工资的政策，我们使用本量化经济学讲座 {doc}`卡尔曼滤波器的初步介绍 <kalman>` 中描述的卡尔曼滤波器。
+我们设定 `Sigma_0=np.zeros((2,2))`，使得模拟过程固定某个特定劳动者的初始状态 $(h_0, u_0)$，而公司在进入第 $0$ 期时，仍然持有驱动其卡尔曼滤波器的非退化先验信念 $\hat x_0$ 和 $\Sigma_0$。
+
+接下来，为了计算公司基于其获得的关于劳动者的信息来设定对数工资的政策，我们使用本量化经济学讲座 {doc}`kalman` 中描述的卡尔曼滤波器。
 
 特别是，我们想要计算"创新表示"中的所有对象。
 
 ## 创新表示
 
-我们已经掌握了形成劳动者产出过程 $\{y_t\}_{t=0}^T$ 的创新表示所需的所有对象。
+我们已经掌握了形成劳动者产出过程 $\{y_t\}_{t=0}^{T-1}$ 的创新表示所需的所有对象。
 
 让我们现在编写代码：
 
@@ -232,50 +248,67 @@ h_0, u_0 = x[0, 0], x[1, 0]
 y_{t} & = G \hat x_t + a_t
 \end{aligned}
 ```
-其中 $K_t$ 是时间 $t$ 的卡尔曼增益矩阵。
+其中 $\hat x_t = \mathbb{E}[x_t | y^{t-1}]$ 是公司在观察到 $y_t$ 之前形成的对状态的预测，而 $K_t$ 是时间 $t$ 的卡尔曼增益矩阵。
 
-我们使用 [`Kalman`](https://quanteconpy.readthedocs.io/en/latest/tools/kalman.html) 类来完成这个任务：
+这里 $a_t = y_t - G \hat x_t$ 是时间 $t$ 的**新息（innovation）**，即公司根据历史记录 $y^{t-1}$ 对产出 $y_t$ 进行一步预测所产生的误差。
+
+由于 $\hat x_t$ 是以 $y^{t-1}$（而非 $y^t$）为条件的，增益 $K_t$ 将利用当期观测值 $y_t$ 的滤波更新，与将状态推进到 $t+1$ 期的一步预测，两者合而为一。
+
+记 $\Sigma_t = \mathbb{E}[(x_t - \hat x_t)(x_t - \hat x_t)' | y^{t-1}]$ 为状态的条件协方差，则增益为
+
+```{math}
+K_t = A \Sigma_t G' (G \Sigma_t G' + R)^{-1} = A L_t ,
+```
+
+其中 $L_t = \Sigma_t G' (G \Sigma_t G' + R)^{-1}$ 是滤波增益，用于在观察到 $y_t$ 之后更新公司关于 $x_t$ 的信念。
+
+我们使用 [`Kalman`](https://quanteconpy.readthedocs.io/en/latest/tools/kalman.html) 类在以下代码中完成这个任务：
 
 ```{code-cell} ipython3
 kalman = Kalman(ss, xhat_0, Σ_0)
-Σ_t = np.zeros((*Σ_0.shape, T-1))
-y_hat_t = np.zeros(T-1)
-x_hat_t = np.zeros((2, T-1))
+Σ_t = np.zeros((*Σ_0.shape, T))
+y_hat_t = np.zeros(T)
+x_hat_t = np.zeros((2, T))
 
-for t in range(1, T):
-    kalman.update(y[t])
+for t in range(T):
+    # 记录公司在看到 y_t 之前，基于 y^{t-1} 对 x_t 的信念
     x_hat, Σ = kalman.x_hat, kalman.Sigma
-    Σ_t[:, :, t-1] = Σ
-    x_hat_t[:, t-1] = x_hat.reshape(-1)
-    [y_hat_t[t-1]] = worker.G @ x_hat
+    Σ_t[:, :, t] = Σ
+    x_hat_t[:, t] = x_hat.reshape(-1)
+    y_hat_t[t] = (worker.G @ x_hat).item()
+    
+    # 然后纳入观测值 y_t，并将滤波器推进到 t+1 期
+    kalman.update(y[t])
 
-x_hat_t = np.concatenate((x[:, 1][:, np.newaxis], 
-                    x_hat_t), axis=1)
-Σ_t = np.concatenate((worker.Σ_0[:, :, np.newaxis], 
-                    Σ_t), axis=2)
 u_hat_t = x_hat_t[1, :]
 ```
 
-对于 $h_0, u_0$ 的一个实现，我们绘制 $E y_t = G \hat x_t $，其中 $\hat x_t = E [x_t | y^{t-1}]$。
+对于这个固定的劳动者初始状态，我们绘制 $\mathbb{E}[y_t | y^{t-1}] = G \hat x_t$，其中 $\hat x_t = \mathbb{E}[x_t | y^{t-1}]$。
 
-我们还绘制 $E [u_0 | y^{t-1}]$，这是公司基于其拥有的信息 $y^{t-1}$ 对劳动者固有的"工作努力程度" $u_0$ 的推断。
+我们还绘制 $\mathbb{E}[u_0 | y^{t-1}]$，这是公司基于其在第 $t$ 期获得的关于该劳动者的信息 $y^{t-1}$，对劳动者固有的"工作伦理" $u_0$ 所做出的推断。
 
-我们可以观察公司对劳动者工作努力程度的推断 $E [u_0 | y^{t-1}]$ 如何逐渐收敛于隐藏的 $u_0$，而 $u_0$ 是公司无法直接观察到的。
+我们可以观察随着更多产出观测值的到来，公司如何更新它对劳动者工作伦理的推断 $\mathbb{E}[u_0 | y^{t-1}]$。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 公司的产出预测与随时间推移推断出的工作伦理
+    name: fig-kalman2-inference
+---
 fig, ax = plt.subplots(1, 2)
 
-ax[0].plot(y_hat_t, label=r'$E[y_t| y^{t-1}]$')
+ax[0].plot(y_hat_t, label=r'$\mathbb{E}[y_t| y^{t-1}]$')
 ax[0].set_xlabel(cjk('时间'))
-ax[0].set_ylabel(r'$E[y_t]$')
-ax[0].set_title(cjk('$E[y_t]$ 随时间变化'))
+ax[0].set_ylabel(r'$\mathbb{E}[y_t| y^{t-1}]$')
+ax[0].set_title(cjk('$\mathbb{E}[y_t| y^{t-1}]$ 随时间变化'))
 ax[0].legend()
 
-ax[1].plot(u_hat_t, label=r'$E[u_t|y^{t-1}]$')
+ax[1].plot(u_hat_t, label=r'$\mathbb{E}[u_0|y^{t-1}]$')
 ax[1].axhline(y=u_0, color='grey', 
             linestyle='dashed', label=fr'$u_0={u_0:.2f}$')
 ax[1].set_xlabel(cjk('时间'))
-ax[1].set_ylabel(r'$E[u_t|y^{t-1}]$')
+ax[1].set_ylabel(r'$\mathbb{E}[u_0|y^{t-1}]$')
 ax[1].set_title(cjk('推断的工作伦理随时间变化'))
 ax[1].legend()
 
@@ -285,7 +318,7 @@ plt.show()
 
 ## 一些计算实验
 
-让我们看看 $\Sigma_0$ 和 $\Sigma_T$，以表示公司在设定的时间范围内对隐藏状态了解多少。
+让我们看看 $\Sigma_0$ 和 $\Sigma_{T-1}$，以观察在我们设定的时间范围内，公司对隐藏状态了解了多少。
 
 ```{code-cell} ipython3
 print(Σ_t[:, :, 0])
@@ -295,11 +328,17 @@ print(Σ_t[:, :, 0])
 print(Σ_t[:, :, -1])
 ```
 
-显然，条件协方差矩阵中的元素随时间变小。
+显然，条件方差随时间变小。
 
-通过在不同时间 $t$ 绘制 $E [x_t |y^{t-1}] $ 周围的置信椭圆，我们可以形象地展示条件协方差矩阵 $\Sigma_t$ 如何演化。
+通过在不同时间 $t$ 绘制给定 $y^{t-1}$ 条件下 $x_t$ 的条件二元正态密度的等高线，我们可以形象地展示公司的条件信念是如何演化的。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 三个时间点上公司关于 $x_t$ 的信念密度等高线
+    name: fig-kalman2-contours
+---
 # 创建用于等高线绘制的点网格
 h_range = np.linspace(x_hat_t[0, :].min()-0.5*Σ_t[0, 0, 1], 
                       x_hat_t[0, :].max()+0.5*Σ_t[0, 0, 1], 100)
@@ -313,9 +352,9 @@ fig, axs = plt.subplots(1, 3, figsize=(12, 7))
 # 遍历每个时间步
 for i, t in enumerate(np.linspace(0, T-1, 3, dtype=int)):
     # 创建具有时间步 t 的 x_hat 和 Σ 的多变量正态分布
-    mu = x_hat_t[:, t]
+    μ = x_hat_t[:, t]
     cov = Σ_t[:, :, t]
-    mvn = multivariate_normal(mean=mu, cov=cov)
+    mvn = multivariate_normal(mean=μ, cov=cov)
     
     # 在网格上评估多变量正态 PDF
     pdf_values = mvn.pdf(np.dstack((h, u)))
@@ -323,13 +362,14 @@ for i, t in enumerate(np.linspace(0, T-1, 3, dtype=int)):
     # 创建 PDF 的等高线图
     con = axs[i].contour(h, u, pdf_values, cmap='viridis')
     axs[i].clabel(con, inline=1, fontsize=10)
-    axs[i].set_title(cjk('时间步')+f'{t+1}')
-    axs[i].set_xlabel(r'$h_{{{}}}$'.format(str(t+1)))
-    axs[i].set_ylabel(r'$u_{{{}}}$'.format(str(t+1)))
+    axs[i].set_title(cjk('时间步')+f' {t}')
+    axs[i].set_xlabel(r'$h_{{{}}}$'.format(str(t)))
+    axs[i].set_ylabel(r'$u_{{{}}}$'.format(str(t)))
     
-    cov_latex = r'$\Sigma_{{{}}}= \begin{{bmatrix}} {:.2f} & {:.2f} \\ {:.2f} & {:.2f} \end{{bmatrix}}$'.format(
-        t+1, cov[0, 0], cov[0, 1], cov[1, 0], cov[1, 1]
-    )
+    cov_latex = (
+        r'$\Sigma_{{{}}}= \begin{{bmatrix}} {:.2f} & {:.2f} \\ '
+        r'{:.2f} & {:.2f} \end{{bmatrix}}$'
+    ).format(t, cov[0, 0], cov[0, 1], cov[1, 0], cov[1, 1])
     axs[i].text(0.33, -0.15, cov_latex, transform=axs[i].transAxes)
 
     
@@ -337,7 +377,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-注意 $y^t$ 的积累是如何随着样本量 $t$ 的增长影响置信椭圆的形状。
+注意，随着样本量 $t$ 的增长，证据 $y^{t-1}$ 的积累是如何影响密度等高线的形状的。
 
 现在让我们使用我们的代码将隐藏状态 $x_0$ 设置为特定的向量，以观察公司如何从我们感兴趣的某个 $x_0$ 开始学习。
 
@@ -347,10 +387,11 @@ plt.show()
 
 ```{code-cell} ipython3
 # 例如，我们可能想要 h_0 = 0 和 u_0 = 4
-mu_0 = np.array([0.0, 4.0])
+μ_0 = np.array([[0.0],
+                [4.0]])
 
 # 创建一个 LinearStateSpace 对象，其中 Sigma_0 为零矩阵
-ss_example = LinearStateSpace(A, C, G, np.sqrt(R), mu_0=mu_0, 
+ss_example = LinearStateSpace(A, C, G, np.sqrt(R), mu_0=μ_0, 
                               # 这行强制 h_0=0 和 u_0=4
                               Sigma_0=np.zeros((2, 2))
                              )
@@ -365,17 +406,18 @@ print('h_0 =', h_0)
 print('u_0 =', u_0)
 ```
 
-实现相同例子的另一种方式是使用以下代码：
+实现相同目标的另一种方式是使用以下代码：
 
 ```{code-cell} ipython3
 # 如果我们想要设置初始 
-# h_0 = hhat_0 = 0 和 u_0 = uhhat_0 = 4.0:
-worker = create_worker(hhat_0=0.0, uhat_0=4.0)
+# h_0 = hhat_0 = 0.0 和 u_0 = uhat_0 = 4.0:
+worker_example = create_worker(hhat_0=0.0, uhat_0=4.0)
 
+# 公司的先验仍然保持在原来的 xhat_0 和 Σ_0
 ss_example = LinearStateSpace(A, C, G, np.sqrt(R), 
-                              # 这行取 h_0=hhat_0 和 u_0=uhhat_0
-                              mu_0=worker.xhat_0,
-                              # 这行强制 h_0=hhat_0 和 u_0=uhhat_0
+                              # 这行取 h_0=hhat_0 和 u_0=uhat_0
+                              mu_0=worker_example.xhat_0,
+                              # 这行强制 h_0=hhat_0 和 u_0=uhat_0
                               Sigma_0=np.zeros((2, 2))
                              )
 
@@ -383,7 +425,7 @@ T = 100
 x, y = ss_example.simulate(T)
 y = y.flatten()
 
-# 现在 h_0 和 u_0 将精确等于 hhat_0
+# 现在 h_0 和 u_0 将精确等于 hhat_0 和 uhat_0
 h_0, u_0 = x[0, 0], x[1, 0]
 print('h_0 =', h_0)
 print('u_0 =', u_0)
@@ -392,36 +434,45 @@ print('u_0 =', u_0)
 对于这个劳动者，让我们生成一个类似上面的图：
 
 ```{code-cell} ipython3
-# 首先我们使用初始 xhat_0 和 Σ_0 计算卡尔曼滤波器
-kalman = Kalman(ss, xhat_0, Σ_0)
+---
+mystnb:
+  figure:
+    caption: "$u_0=4$ 的劳动者的产出预测与推断出的工作伦理"
+    name: fig-kalman2-worker
+---
+# 公司使用其先验信念 xhat_0 和 Σ_0 对 ss_example 的产出进行滤波
+kalman = Kalman(ss_example, xhat_0, Σ_0)
 Σ_t = []
-y_hat_t = np.zeros(T-1)
-u_hat_t = np.zeros(T-1)
+y_hat_t = np.zeros(T)
+u_hat_t = np.zeros(T)
 
 # 然后我们使用基于上述线性状态模型的观测值 y 
 # 迭代更新卡尔曼滤波器类：
-for t in range(1, T):
-    kalman.update(y[t])
+for t in range(T):
+    # 记录公司在看到 y_t 之前，基于 y^{t-1} 对 x_t 的信念
     x_hat, Σ = kalman.x_hat, kalman.Sigma
     Σ_t.append(Σ)
-    [y_hat_t[t-1]] = worker.G @ x_hat
-    [u_hat_t[t-1]] = x_hat[1]
+    y_hat_t[t] = (G @ x_hat).item()
+    u_hat_t[t] = x_hat[1].item()
+
+    # 然后纳入观测值 y_t，并将滤波器推进到 t+1 期
+    kalman.update(y[t])
 
 
 # 生成 y_hat_t 和 u_hat_t 的图
 fig, ax = plt.subplots(1, 2)
 
-ax[0].plot(y_hat_t, label=r'$E[y_t| y^{t-1}]$')
+ax[0].plot(y_hat_t, label=r'$\mathbb{E}[y_t| y^{t-1}]$')
 ax[0].set_xlabel(cjk('时间'))
-ax[0].set_ylabel(r'$E[y_t]$')
-ax[0].set_title(cjk('$E[y_t]$ 随时间变化'))
+ax[0].set_ylabel(r'$\mathbb{E}[y_t| y^{t-1}]$')
+ax[0].set_title(cjk('$\mathbb{E}[y_t| y^{t-1}]$ 随时间变化'))
 ax[0].legend()
 
-ax[1].plot(u_hat_t, label=r'$E[u_t|y^{t-1}]$')
+ax[1].plot(u_hat_t, label=r'$\mathbb{E}[u_0|y^{t-1}]$')
 ax[1].axhline(y=u_0, color='grey', 
             linestyle='dashed', label=fr'$u_0={u_0:.2f}$')
 ax[1].set_xlabel(cjk('时间'))
-ax[1].set_ylabel(r'$E[u_t|y^{t-1}]$')
+ax[1].set_ylabel(r'$\mathbb{E}[u_0|y^{t-1}]$')
 ax[1].set_title(cjk('推断的工作伦理随时间变化'))
 ax[1].legend()
 
@@ -435,168 +486,197 @@ plt.show()
 
 ```{code-cell} ipython3
 # 我们可以在创建劳动者时设置这些参数 -- 就像类一样！
-hard_working_worker =  create_worker(α=.4, β=.8, 
+hard_working_worker = create_worker(α=.4, β=.8, 
                         hhat_0=7.0, uhat_0=100, σ_h=2.5, σ_u=3.2)
 
 print(hard_working_worker)
 ```
 
-让我们通过模拟不同劳动者在50个时期内的表现来进一步理解这个系统。
+我们还可以为不同的劳动者模拟这个系统 $T = 100$ 期。
 
-有趣的是,我们会发现随着时间推移,公司对劳动者真实努力程度的估计会越来越准确 - 估计值和实际值之间的差异会逐渐趋近于零。
+当努力通过人力资本影响产出时，即 $g \neq 0$ 且 $\beta \neq 0$ 时，公司对 $u_0$ 的不确定性会随时间下降，推断出的工作伦理会收敛到真实的 $u_0$。
 
-这说明卡尔曼滤波器在帮助公司和劳动者之间建立信息沟通的桥梁,使公司对劳动者真实努力程度的估计越来越准确。
+如果 $\beta = 0$，努力永远不会影响 $h_t$；如果 $g = 0$，产出不携带关于 $h_t$ 的任何信息，那么在这两种情况下，公司都无法仅从产出中学习到 $u_0$。
+
+这说明，在这些可观测性条件下，滤波器会逐渐让公司了解到劳动者的努力程度。
 
 ```{code-cell} ipython3
 :tags: [hide-input]
 
-def simulate_workers(worker, T, ax, mu_0=None, Sigma_0=None, 
-                    diff=True, name=None, title=None):
+def simulate_workers(worker, T, ax, μ_sim_0=None, Σ_sim_0=None, 
+                    diff=True, name=None, random_state=None):
     A, C, G, R = worker.A, worker.C, worker.G, worker.R
-    xhat_0, Σ_0 = worker.xhat_0, worker.Σ_0
+    xhat_0, Σ_prior = worker.xhat_0, worker.Σ_0
     
-    if isinstance(mu_0, type(None)):
-        mu_0 = xhat_0
-    if isinstance(Sigma_0, type(None)):
-        Sigma_0 = worker.Σ_0
+    # μ_sim_0 和 Σ_sim_0 设定被模拟劳动者的初始状态，而
+    # xhat_0 和 Σ_prior 是滤波器中公司的先验信念
+    if μ_sim_0 is None:
+        μ_sim_0 = xhat_0
+    if Σ_sim_0 is None:
+        Σ_sim_0 = Σ_prior
         
     ss = LinearStateSpace(A, C, G, np.sqrt(R), 
-                        mu_0=mu_0, Sigma_0=Sigma_0)
+                        mu_0=μ_sim_0, Sigma_0=Σ_sim_0)
 
-    x, y = ss.simulate(T)
+    x, y = ss.simulate(T, random_state=random_state)
     y = y.flatten()
 
     u_0 = x[1, 0]
     
     # 计算卡尔曼滤波器
-    kalman = Kalman(ss, xhat_0, Σ_0)
+    kalman = Kalman(ss, xhat_0, Σ_prior)
     Σ_t = []
     
     y_hat_t = np.zeros(T)
     u_hat_t = np.zeros(T)
 
     for i in range(T):
-        kalman.update(y[i])
+        # 记录公司在看到 y_i 之前，基于 y^{i-1} 对 x_i 的信念
         x_hat, Σ = kalman.x_hat, kalman.Sigma
         Σ_t.append(Σ)
-        [y_hat_t[i]] = worker.G @ x_hat
-        [u_hat_t[i]] = x_hat[1]
+        y_hat_t[i] = (worker.G @ x_hat).item()
+        u_hat_t[i] = x_hat[1].item()
 
-    if diff == True:
-        title = (cjk('推断的工作努力程度与真实工作努力程度的差异随时间变化') 
-                 if title == None else title)
-        
-        ax.plot(u_hat_t - u_0, alpha=.5)
+        # 然后纳入观测值 y_i，并推进滤波器
+        kalman.update(y[i])
+
+    if diff :
+        ax.plot(u_hat_t - u_0, alpha=.5, label=name)
         ax.axhline(y=0, color='grey', linestyle='dashed')
         ax.set_xlabel(cjk('时间'))
-        ax.set_ylabel(r'$E[u_t|y^{t-1}] - u_0$')
-        ax.set_title(title)
+        ax.set_ylabel(r'$\mathbb{E}[u_0|y^{t-1}] - u_0$')
         
     else:
-        label_line = (r'$E[u_t|y^{t-1}]$' if name == None 
+        label_line = (r'$\mathbb{E}[u_0|y^{t-1}]$' if name is None 
                       else name)
-        title = (cjk('推断的工作努力程度随时间变化')
-                if title == None else title)
         
         u_hat_plot = ax.plot(u_hat_t, label=label_line)
         ax.axhline(y=u_0, color=u_hat_plot[0].get_color(), 
                     linestyle='dashed', alpha=0.5)
         ax.set_xlabel(cjk('时间'))
-        ax.set_ylabel(r'$E[u_t|y^{t-1}]$')
-        ax.set_title(title)
+        ax.set_ylabel(r'$\mathbb{E}[u_0|y^{t-1}]$')
 ```
 
+对于三位劳动者，我们首先绘制公司推断出的工作伦理与真实 $u_0$ 之间的差距随时间的变化。
+
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 推断出的工作伦理与真实工作伦理之间的差异随时间的变化
+    name: fig-kalman2-diff
+---
 num_workers = 3
-T = 50
+T = 100
 fig, ax = plt.subplots(figsize=(7, 7))
 
 for i in range(num_workers):
     worker = create_worker(uhat_0=4+2*i)
-    simulate_workers(worker, T, ax)
+    simulate_workers(worker, T, ax, name=fr'$\hat u_0 = {4+2*i}$',
+                     random_state=2 + i)
 ax.set_ylim(ymin=-2, ymax=2)
+ax.legend()
 plt.show()
 ```
 
-```{code-cell} ipython3
-# 我们还可以生成 u_t 的图：
+在这个模拟中，公司推断出的工作伦理逐渐趋向真实的 $u_0$。
 
-T = 50
+在正确设定的可观测线性-高斯模型下，$u_0$ 的后验均值是一致的，因此随着产出历史的增长，这一差距会逐渐缩小。
+
+通过设置 `diff=False`，我们转而绘制每位劳动者推断出的工作伦理水平 $\mathbb{E}[u_0|y^{t-1}]$，并附上一条表示真实 $u_0$ 的虚线。
+
+```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 三位劳动者随时间推断出的工作伦理
+    name: fig-kalman2-three
+---
 fig, ax = plt.subplots(figsize=(7, 7))
 
 uhat_0s = [2, -2, 1]
 αs = [0.2, 0.3, 0.5]
-βs = [0.1, 0.9, 0.3]
+βs = [0.2, 0.9, 0.3]
 
 for i, (uhat_0, α, β) in enumerate(zip(uhat_0s, αs, βs)):
     worker = create_worker(uhat_0=uhat_0, α=α, β=β)
-    simulate_workers(worker, T, ax,
-                    # 通过设置 diff=False，它将给出 u_t
-                    diff=False, name=r'$u_{{{}, t}}$'.format(i))
-    
-ax.axhline(y=u_0, xmin=0, xmax=0, color='grey', 
-           linestyle='dashed', label=r'$u_{i, 0}$')
+    simulate_workers(worker, T, ax, diff=False, 
+                     name=r'$u_{{{}, 0}}$'.format(i),
+                     random_state=3 + i)
+
 ax.legend(bbox_to_anchor=(1, 0.5))
 plt.show()
 ```
 
-```{code-cell} ipython3
-# 我们还可以为所有劳动者使用精确的 u_0=1 和 h_0=2
+这三位劳动者不仅 $\hat u_0$ 不同，$\alpha$ 和 $\beta$ 也不同，他们学习的速度也大相径庭。
 
-T = 50
+$\beta$ 最大的劳动者（此处为 $\beta = 0.9$ 的 $u_{1,0}$）几乎立即收敛到其真实值的虚线上，而 $\beta$ 最小的劳动者（此处为 $\beta = 0.2$ 的 $u_{0,0}$）收敛得更慢。
+
+原因在于努力仅通过人力资本影响产出，因此在这些 $|\alpha| < 1$ 的稳定例子中，其对产出的稳态影响由 $g \beta / (1 - \alpha)$ 决定，而较小的 $\beta$ 使公司在此时间范围内获得的信号太少，不足以准确确定 $u_0$。
+
+学习速度也反映了测量噪声 $R$、冲击尺度 $c$，以及公司的先验方差。
+
+我们还可以通过向 `simulate_workers` 传入一个固定的 `μ_sim_0` 和一个零矩阵 `Σ_sim_0`，让每位劳动者拥有相同的真实初始状态，这里设为 $h_0=2$ 和 $u_0=1$。
+
+```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 当每位劳动者都从 $h_0=2$ 和 $u_0=1$ 开始时推断出的工作伦理
+    name: fig-kalman2-exact
+---
 fig, ax = plt.subplots(figsize=(7, 7))
 
-# 这两行设置所有劳动者的 u_0=1 和 h_0=2
-mu_0 = np.array([[1],
-                 [2]])
-Sigma_0 = np.zeros((2,2))
+μ_sim_0 = np.array([[2.0],
+                    [1.0]])
+Σ_sim_0 = np.zeros((2,2))
 
 uhat_0s = [2, -2, 1]
 αs = [0.2, 0.3, 0.5]
-βs = [0.1, 0.9, 0.3]
+βs = [0.2, 0.9, 0.3]
 
 for i, (uhat_0, α, β) in enumerate(zip(uhat_0s, αs, βs)):
     worker = create_worker(uhat_0=uhat_0, α=α, β=β)
-    simulate_workers(worker, T, ax, mu_0=mu_0, Sigma_0=Sigma_0, 
-                     diff=False, name=r'$u_{{{}, t}}$'.format(i))
+    simulate_workers(worker, T, ax, μ_sim_0=μ_sim_0, Σ_sim_0=Σ_sim_0, 
+                     diff=False, name=r'$u_{{{}, 0}}$'.format(i))
     
 # 这控制图的边界
 ax.set_ylim(ymin=-3, ymax=3)
-ax.axhline(y=u_0, xmin=0, xmax=0, color='grey', 
-           linestyle='dashed', label=r'$u_{i, 0}$')
 ax.legend(bbox_to_anchor=(1, 0.5))
 plt.show()
 ```
 
-```{code-cell} ipython3
-# 我们可以只为其中一个劳动者生成图：
+尽管公司从不同的先验均值 $\hat u_0$ 出发，但这三位劳动者都拥有相同的真实工作伦理 $u_0 = 1$，推断出的路径以各自反映 $\beta$ 的速度收敛到那条共同的虚线上。
 
+最后，我们追踪同一类型的劳动者在两种不同真实努力水平下的表现，比较一位 $u_0=100$ 的勤奋劳动者与一位 $u_0=30$ 的普通劳动者。
+
+```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 一位勤奋的劳动者和一位不太勤奋的劳动者
+    name: fig-kalman2-two
+---
 T = 50
 fig, ax = plt.subplots(figsize=(7, 7))
 
-mu_0_1 = np.array([[1],
-                 [100]])
-mu_0_2 = np.array([[1],
-                 [30]])
-Sigma_0 = np.zeros((2,2))
+μ_sim_0_1 = np.array([[1],
+                      [100]])
+μ_sim_0_2 = np.array([[1],
+                      [30]])
+Σ_sim_0 = np.zeros((2, 2))
 
-uhat_0s = 100
-αs = 0.5
-βs = 0.3
-
-worker = create_worker(uhat_0=uhat_0, α=α, β=β)
-simulate_workers(worker, T, ax, mu_0=mu_0_1, Sigma_0=Sigma_0, 
+worker = create_worker(uhat_0=1, α=0.5, β=0.3)
+simulate_workers(worker, T, ax, μ_sim_0=μ_sim_0_1, Σ_sim_0=Σ_sim_0, 
                  diff=False, name=cjk('勤奋的劳动者'))
-simulate_workers(worker, T, ax, mu_0=mu_0_2, Sigma_0=Sigma_0, 
-                 diff=False, 
-                 title=cjk('一个勤奋的劳动者和一个不太勤奋的劳动者'),
-                 name=cjk('普通劳动者'))
-ax.axhline(y=u_0, xmin=0, xmax=0, color='grey', 
-           linestyle='dashed', label=r'$u_{i, 0}$')
+simulate_workers(worker, T, ax, μ_sim_0=μ_sim_0_2, Σ_sim_0=Σ_sim_0, 
+                 diff=False, name=cjk('普通劳动者'))
 ax.legend(bbox_to_anchor=(1, 0.5))
 plt.show()
 ```
 
+两条推断路径都从公司共同的先验 $\hat u_0 = 1$ 出发，逐渐朝各自不同的真实值攀升，这表明随着证据的积累，滤波器会不断修正先验与真实值之间的差距。
+
 ## 未来扩展
 
-我们可以进行许多有趣的实验，比如创建不同类型的劳动者，让公司通过观察他们的产出历史来推断他们的隐藏特征（如能力和努力程度）。这种设置可以帮助我们理解信息不对称下的劳动力市场动态。
+我们可以通过创建新类型的劳动者，并让公司仅通过观察他们的产出历史来学习他们（公司未曾观察到的）隐藏状态，从而进行许多有启发性的实验。
