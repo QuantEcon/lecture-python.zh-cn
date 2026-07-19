@@ -804,7 +804,7 @@ plt.show()
 
 ```{code-cell} ipython3
 α_0, x, p = n1.expansion()
-print(f'对偶问题得到的原问题解为 = {x}')
+print(f'α_0 = {α_0}')
 print(f'x_0 = {x}')
 print(f'对偶问题得到的相应p值 = {p}')
 ```
