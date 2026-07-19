@@ -7,6 +7,20 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 最大似然估计
+  headings:
+    Overview: 概述
+    Overview::Prerequisites: 预备知识
+    Set up and assumptions: 设置和假设
+    Set up and assumptions::Flow of ideas: 思路流程
+    Set up and assumptions::Counting billionaires: 研究亿万富豪
+    Conditional distributions: 条件分布
+    Maximum likelihood estimation: 最大似然估计
+    MLE with numerical methods: 使用数值方法的最大似然估计
+    Maximum likelihood estimation with `statsmodels`: 使用 `statsmodels` 进行最大似然估计
+    Summary: 总结
+    Exercises: 练习
 ---
 
 ```{raw} jupyter
@@ -18,6 +32,9 @@ kernelspec:
 ```
 
 # 最大似然估计
+
+```{include} _admonition/gpu.md
+```
 
 ```{contents} 目录
 :depth: 2
@@ -39,23 +56,25 @@ kernelspec:
 
 我们需要以下导入：
 
-```{code-cell} ipython
+```{code-cell} ipython3
+import numpy as np
+import jax.numpy as jnp
+import jax
+import pandas as pd
+from typing import NamedTuple
+
+from jax.scipy.special import factorial, gammaln
+from jax.scipy.stats import norm
+
+from statsmodels.api import Poisson
+from statsmodels.iolib.summary2 import summary_col
+
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
-
-plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
-import numpy as np
-from numpy import exp
-from scipy.special import factorial
-import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D
-import statsmodels.api as sm
-from statsmodels.api import Poisson
-from scipy.stats import norm
-from statsmodels.iolib.summary2 import summary_col
 ```
 
 ### 预备知识
@@ -74,23 +93,25 @@ from statsmodels.iolib.summary2 import summary_col
 
 * 比如正态分布族或伽马分布族。
 
-每个分布族都由一些参数来确定具体的分布形式。
+每个分布族都由有限个参数索引的分布家族。
 
 * 以正态分布为例，它由均值 $\mu \in (-\infty, \infty)$ 和标准差 $\sigma \in (0, \infty)$ 两个参数来确定。
 
 我们会利用数据来估计这些参数，从而找到最适合数据的具体分布。
 
-这种方法就是**最大似然估计**。
+这样得到的参数估计值将被称为**最大似然估计**。
 
 ### 研究亿万富豪
 
 在Treisman {cite}`Treisman2016` 的研究中，他想要分析各国亿万富豪的数量。
 
-由于亿万富豪数量只能是整数，我们需要选择一个只取整数值的分布。
+亿万富豪的数量是整数值。
+
+因此我们考虑只取非负整数值的分布。
 
 （这是最小二乘回归不是当前问题最佳工具的原因之一，因为线性回归中的因变量不限于整数值）
 
-对于这类计数数据，[泊松分布](https://en.wikipedia.org/wiki/Poisson_distribution)是一个很好的选择。它的概率质量函数(pmf)为
+一种整数分布是[泊松分布](https://en.wikipedia.org/wiki/Poisson_distribution)，它的概率质量函数(pmf)为
 
 $$
 f(y) = \frac{\mu^{y}}{y!} e^{-\mu},
@@ -100,7 +121,12 @@ $$
 我们可以按如下方式绘制不同 $\mu$ 值下的泊松分布图
 
 ```{code-cell} ipython3
-poisson_pmf = lambda y, μ: μ**y / factorial(y) * exp(-μ)
+@jax.jit
+def poisson_pmf(y, μ):
+    return μ**y / factorial(y) * jnp.exp(-μ)
+```
+
+```{code-cell} ipython3
 y_values = range(0, 25)
 
 fig, ax = plt.subplots(figsize=(12, 8))
@@ -109,16 +135,18 @@ for μ in [1, 5, 10]:
     distribution = []
     for y_i in y_values:
         distribution.append(poisson_pmf(y_i, μ))
-    ax.plot(y_values,
-            distribution,
-            label=fr'$\mu$={μ}',
-            alpha=0.5,
-            marker='o',
-            markersize=8)
+    ax.plot(
+        y_values,
+        distribution,
+        label=rf"$\mu$={μ}",
+        alpha=0.5,
+        marker="o",
+        markersize=8,
+    )
 
 ax.grid()
-ax.set_xlabel('$y$', fontsize=14)
-ax.set_ylabel(r'$f(y \mid \mu)$', fontsize=14)
+ax.set_xlabel(r"$y$", fontsize=14)
+ax.set_ylabel(r"$f(y \mid \mu)$", fontsize=14)
 ax.axis(xmin=0, ymin=0)
 ax.legend(fontsize=14)
 
@@ -135,25 +163,26 @@ Treisman的主要数据来源是《福布斯》年度富豪榜及其估计净资
 或其[AER页面](https://www.aeaweb.org/articles?id=10.1257/aer.p20161068)下载。
 
 ```{code-cell} ipython3
-pd.options.display.max_columns = 10
-
 # 加载数据并查看
-df = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/mle/fp.dta?raw=true')
+df = pd.read_stata(
+    "https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/mle/fp.dta"
+)
 df.head()
 ```
 
 通过直方图，我们可以查看2008年各国亿万富翁人数`numbil0`的分布情况（为了方便绘图，我们排除了美国数据）
 
 ```{code-cell} ipython3
-numbil0_2008 = df[(df['year'] == 2008) & (
-    df['country'] != 'United States')].loc[:, 'numbil0']
+numbil0_2008 = df[
+    (df["year"] == 2008) & (df["country"] != "United States")
+].loc[:, "numbil0"]
 
 plt.subplots(figsize=(12, 8))
 plt.hist(numbil0_2008, bins=30)
 plt.xlim(left=0)
 plt.grid()
-plt.xlabel('2008年亿万富翁人数')
-plt.ylabel('计数')
+plt.xlabel("2008年亿万富翁人数")
+plt.ylabel("计数")
 plt.show()
 ```
 
@@ -165,7 +194,7 @@ plt.show()
 
 这意味着$y_i$的分布取决于这些解释变量(记为向量$\mathbf{x}_i$)。
 
-这种关系可以用*泊松回归*模型来描述:
+这种标准表述——即所谓的**泊松回归**模型——如下所示：
 
 ```{math}
 :label: poissonreg
@@ -187,33 +216,37 @@ $$
 y_values = range(0, 20)
 
 # 定义一个带有估计值的参数向量
-β = np.array([0.26, 0.18, 0.25, -0.1, -0.22])
+β = jnp.array([0.26, 0.18, 0.25, -0.1, -0.22])
 
 # 创建一些观测值X
-datasets = [np.array([0, 1, 1, 1, 2]),
-            np.array([2, 3, 2, 4, 0]),
-            np.array([3, 4, 5, 3, 2]),
-            np.array([6, 5, 4, 4, 7])]
+datasets = [
+    jnp.array([0, 1, 1, 1, 2]),
+    jnp.array([2, 3, 2, 4, 0]),
+    jnp.array([3, 4, 5, 3, 2]),
+    jnp.array([6, 5, 4, 4, 7]),
+]
 
 
 fig, ax = plt.subplots(figsize=(12, 8))
 
 for X in datasets:
-    μ = exp(X @ β)
+    μ = jnp.exp(X @ β)
     distribution = []
     for y_i in y_values:
         distribution.append(poisson_pmf(y_i, μ))
-    ax.plot(y_values,
-            distribution,
-            label=fr'$\mu_i$={μ:.1}',
-            marker='o',
-            markersize=8,
-            alpha=0.5)
+    ax.plot(
+        y_values,
+        distribution,
+        label=rf"$\mu_i$={μ:.1}",
+        marker="o",
+        markersize=8,
+        alpha=0.5,
+    )
 
 ax.grid()
 ax.legend()
-ax.set_xlabel(r'$y \mid x_i$')
-ax.set_ylabel(r'$f(y \mid x_i; \beta )$')
+ax.set_xlabel(r"$y \mid x_i$")
+ax.set_ylabel(r"$f(y \mid x_i; \beta )$")
 ax.axis(xmin=0, ymin=0)
 plt.show()
 ```
@@ -250,21 +283,22 @@ $f(y_1, y_2) = f(y_1) \cdot f(y_2)$。
 
 ```{code-cell} ipython3
 def plot_joint_poisson(μ=7, y_n=20):
-    yi_values = np.arange(0, y_n, 1)
+    yi_values = jnp.arange(0, y_n, 1)
 
     # 创建 X 和 Y 的坐标点
-    X, Y = np.meshgrid(yi_values, yi_values)
+    X, Y = jnp.meshgrid(yi_values, yi_values)
 
     # 将分布相乘
     Z = poisson_pmf(X, μ) * poisson_pmf(Y, μ)
 
     fig = plt.figure(figsize=(12, 8))
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_surface(X, Y, Z.T, cmap='terrain', alpha=0.6)
-    ax.scatter(X, Y, Z.T, color='black', alpha=0.5, linewidths=1)
-    ax.set(xlabel='$y_1$', ylabel='$y_2$')
-    ax.set_zlabel('$f(y_1, y_2)$', labelpad=10)
+    ax = fig.add_subplot(111, projection="3d")
+    ax.plot_surface(X, Y, Z.T, cmap="terrain", alpha=0.6)
+    ax.scatter(X, Y, Z.T, color="black", alpha=0.5, linewidths=1)
+    ax.set(xlabel=r"$y_1$", ylabel=r"$y_2$")
+    ax.set_zlabel(r"$f(y_1, y_2)$", labelpad=10)
     plt.show()
+
 
 plot_joint_poisson(μ=7, y_n=20)
 ```
@@ -318,7 +352,7 @@ $$
         = &
         \sum_{i=1}^{n} y_i \log{\mu_i} -
         \sum_{i=1}^{n} \mu_i -
-        \sum_{i=1}^{n} \log y!
+        \sum_{i=1}^{n} \log y_i!
 \end{split}
 $$
 
@@ -328,7 +362,7 @@ $$
 \underset{\beta}{\max} \Big(
 \sum_{i=1}^{n} y_i \log{\mu_i} -
 \sum_{i=1}^{n} \mu_i -
-\sum_{i=1}^{n} \log y! \Big)
+\sum_{i=1}^{n} \log y_i! \Big)
 $$
 
 然而，上述问题没有解析解——要找到最大似然估计，我们需要使用数值方法。
@@ -350,26 +384,39 @@ $$
 $$
 
 ```{code-cell} ipython3
-β = np.linspace(1, 20)
-logL = -(β - 10) ** 2 - 10
-dlogL = -2 * β + 20
+@jax.jit
+def logL(β):
+    return -((β - 10) ** 2) - 10
+```
+
+为了求出上述函数梯度的值，我们可以使用[jax.grad](https://jax.readthedocs.io/en/latest/_autosummary/jax.grad.html)，它可以对给定函数自动求导。
+
+我们进一步使用[jax.vmap](https://jax.readthedocs.io/en/latest/_autosummary/jax.vmap.html)，它可以对给定函数进行向量化，即原本作用于标量输入的函数现在可以用于向量输入。
+
+```{code-cell} ipython3
+dlogL = jax.vmap(jax.grad(logL))
+```
+
+```{code-cell} ipython3
+β = jnp.linspace(1, 20)
 
 fig, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(12, 8))
 
-ax1.plot(β, logL, lw=2)
-ax2.plot(β, dlogL, lw=2)
+ax1.plot(β, logL(β), lw=2)
+ax2.plot(β, dlogL(β), lw=2)
 
-ax1.set_ylabel(r'$log \mathcal{L(\beta)}$',
-               rotation=0,
-               labelpad=35,
-               fontsize=15)
-ax2.set_ylabel(r'$\frac{dlog \mathcal{L(\beta)}}{d \beta}$ ',
-               rotation=0,
-               labelpad=35,
-               fontsize=19)
-ax2.set_xlabel(r'$\beta$', fontsize=15)
+ax1.set_ylabel(
+    r"$log \mathcal{L(\beta)}$", rotation=0, labelpad=35, fontsize=15
+)
+ax2.set_ylabel(
+    r"$\frac{dlog \mathcal{L(\beta)}}{d \beta}$ ",
+    rotation=0,
+    labelpad=35,
+    fontsize=19,
+)
+ax2.set_xlabel(r"$\beta$", fontsize=15)
 ax1.grid(), ax2.grid()
-plt.axhline(c='black')
+plt.axhline(c="black")
 plt.show()
 ```
 
@@ -401,7 +448,7 @@ H(\boldsymbol{\beta}_{(k)}) = \frac{d^2 \log \mathcal{L(\boldsymbol{\beta}_{(k)}
    \end{aligned}
    $$
 
-1. 检查 $\boldsymbol{\beta}_{(k+1)} - \boldsymbol{\beta}_{(k)} < tol$ 是否成立
+2. 检查 $\boldsymbol{\beta}_{(k+1)} - \boldsymbol{\beta}_{(k)} < tol$ 是否成立
     - 如果成立，则停止迭代并设定
       $\hat{\boldsymbol{\beta}} = \boldsymbol{\beta}_{(k+1)}$
     - 如果不成立，则更新 $\boldsymbol{\beta}_{(k+1)}$
@@ -410,38 +457,40 @@ H(\boldsymbol{\beta}_{(k)}) = \frac{d^2 \log \mathcal{L(\boldsymbol{\beta}_{(k)}
 
 （在实践中，当差异小于一个很小的容差阈值时，我们就停止迭代）
 
-让我们来实现牛顿-拉弗森算法。
+让我们来实现牛顿-拉夫森算法。
 
 首先，我们创建一个名为 `PoissonRegression` 的类，这样我们就可以在每次迭代时轻松重新计算对数似然、梯度和海森矩阵的值
 
 ```{code-cell} ipython3
-class PoissonRegression:
+class PoissonRegression(NamedTuple):
+    X: jnp.ndarray
+    y: jnp.ndarray
+```
 
-    def __init__(self, y, X, β):
-        self.X = X
-        self.n, self.k = X.shape
-        # 将y重塑为n_by_1列向量
-        self.y = y.reshape(self.n,1)
-        # 将β重塑为k_by_1列向量
-        self.β = β.reshape(self.k,1)
+现在我们可以用Python定义对数似然函数
 
-    def μ(self):
-        return np.exp(self.X @ self.β)
+```{code-cell} ipython3
+@jax.jit
+def logL(β, model):
+    y = model.y
+    μ = jnp.exp(model.X @ β)
+    return jnp.sum(model.y * jnp.log(μ) - μ - jnp.log(factorial(y)))
+```
 
-    def logL(self):
-        y = self.y
-        μ = self.μ()
-        return np.sum(y * np.log(μ) - μ - np.log(factorial(y)))
+为了求出`poisson_logL`的梯度，我们再次使用[jax.grad](https://jax.readthedocs.io/en/latest/_autosummary/jax.grad.html)。
 
-    def G(self):
-        y = self.y
-        μ = self.μ()
-        return X.T @ (y - μ)
+根据[相关文档](https://jax.readthedocs.io/en/latest/notebooks/autodiff_cookbook.html#jacobians-and-hessians-using-jacfwd-and-jacrev)：
 
-    def H(self):
-        X = self.X
-        μ = self.μ()
-        return -(X.T @ (μ * X))
+* `jax.jacfwd`使用前向模式自动微分，对于"高"雅可比矩阵更高效，而
+* `jax.jacrev`使用反向模式，对于"宽"雅可比矩阵更高效。
+
+（文档还指出，当矩阵接近方阵时，`jax.jacfwd`可能比`jax.jacrev`更有优势。）
+
+因此，为了求Hessian矩阵，我们可以直接使用`jax.jacfwd`。
+
+```{code-cell} ipython3
+G_logL = jax.grad(logL)
+H_logL = jax.jacfwd(G_logL)
 ```
 
 我们的函数`newton_raphson`将接收一个`PoissonRegression`对象，该对象包含参数向量$\boldsymbol{\beta}_0$的初始猜测值。
@@ -456,7 +505,7 @@ class PoissonRegression:
 为了让我们能够了解算法运行时的情况，添加了`display=True`选项来打印每次迭代的值。
 
 ```{code-cell} ipython3
-def newton_raphson(model, tol=1e-3, max_iter=1000, display=True):
+def newton_raphson(model, β, tol=1e-3, max_iter=100, display=True):
 
     i = 0
     error = 100  # 初始误差值
@@ -469,46 +518,40 @@ def newton_raphson(model, tol=1e-3, max_iter=1000, display=True):
 
     # 当error中的任何值大于容差且未达到最大迭代次数时，
     # while循环继续运行
-    while np.any(error > tol) and i < max_iter:
-        H, G = model.H(), model.G()
-        β_new = model.β - (np.linalg.inv(H) @ G)
-        error = np.abs(β_new - model.β)
-        model.β = β_new
+    while jnp.any(error > tol) and i < max_iter:
+        H, G = jnp.squeeze(H_logL(β, model)), G_logL(β, model)
+        β_new = β - (jnp.dot(jnp.linalg.inv(H), G))
+        error = jnp.abs(β_new - β)
+        β = β_new
 
-        # 打印迭代结果
         if display:
-            β_list = [f'{t:.3}' for t in list(model.β.flatten())]
-            update = f'{i:<13}{model.logL():<16.8}{β_list}'
+            β_list = [f"{t:.3}" for t in list(β.flatten())]
+            update = f"{i:<13}{logL(β, model):<16.8}{β_list}"
             print(update)
 
         i += 1
 
-    print(f'迭代次数：{i}')
-    print(f'β_hat = {model.β.flatten()}')
+    print(f"迭代次数：{i}")
+    print(f"β_hat = {β.flatten()}")
 
-    # 返回β的扁平数组（而不是k×1的列向量）
-    return model.β.flatten()
+    return β
 ```
 
 让我们用一个包含5个观测值和3个变量的小数据集来测试我们的算法$\mathbf{X}$。
 
 ```{code-cell} ipython3
-X = np.array([[1, 2, 5],
-              [1, 1, 3],
-              [1, 4, 2],
-              [1, 5, 2],
-              [1, 3, 1]])
+X = jnp.array([[1, 2, 5], [1, 1, 3], [1, 4, 2], [1, 5, 2], [1, 3, 1]])
 
-y = np.array([1, 0, 1, 1, 0])
+y = jnp.array([1, 0, 1, 1, 0])
 
 # 对初始β值进行猜测
-init_β = np.array([0.1, 0.1, 0.1])
+init_β = jnp.array([0.1, 0.1, 0.1])
 
 # 创建一个包含泊松模型值的对象
-poi = PoissonRegression(y, X, β=init_β)
+poi = PoissonRegression(X=X, y=y)
 
 # 使用牛顿-拉弗森方法找到最大似然估计
-β_hat = newton_raphson(poi, display=True)
+β_hat = newton_raphson(poi, init_β, display=True)
 ```
 
 由于这是一个观测值较少的简单模型，算法仅用7次迭代就达到了收敛。
@@ -524,43 +567,47 @@ poi = PoissonRegression(y, X, β=init_β)
 在$\hat{\boldsymbol{\beta}}$处，梯度向量应该接近0
 
 ```{code-cell} ipython3
-poi.G()
+G_logL(β_hat, poi)
 ```
 
 迭代过程可以在下图中可视化，其中最大值在 $\beta = 10$ 处
 
 ```{code-cell} ipython3
----
-tags: [output_scroll]
----
-logL = lambda x: -(x - 10) ** 2 - 10
+@jax.jit
+def logL(x):
+    return -((x - 10) ** 2) - 10
 
+
+@jax.jit
 def find_tangent(β, a=0.01):
     y1 = logL(β)
-    y2 = logL(β+a)
-    x = np.array([[β, 1], [β+a, 1]])
-    m, c = np.linalg.lstsq(x, np.array([y1, y2]), rcond=None)[0]
+    y2 = logL(β + a)
+    x = jnp.array([[β, 1], [β + a, 1]])
+    m, c = jnp.linalg.lstsq(x, jnp.array([y1, y2]), rcond=None)[0]
     return m, c
+```
 
-β = np.linspace(2, 18)
+```{code-cell} ipython3
+:tags: [output_scroll]
+
+β = jnp.linspace(2, 18)
 fig, ax = plt.subplots(figsize=(12, 8))
-ax.plot(β, logL(β), lw=2, c='black')
+ax.plot(β, logL(β), lw=2, c="black")
 
 for β in [7, 8.5, 9.5, 10]:
-    β_line = np.linspace(β-2, β+2)
+    β_line = jnp.linspace(β - 2, β + 2)
     m, c = find_tangent(β)
     y = m * β_line + c
-    ax.plot(β_line, y, '-', c='purple', alpha=0.8)
-    ax.text(β+2.05, y[-1], f'$G({β}) = {abs(m):.0f}$', fontsize=12)
-    ax.vlines(β, -24, logL(β), linestyles='--', alpha=0.5)
-    ax.hlines(logL(β), 6, β, linestyles='--', alpha=0.5)
+    ax.plot(β_line, y, "-", c="purple", alpha=0.8)
+    ax.text(β + 2.05, y[-1], rf"$G({β}) = {abs(m):.0f}$", fontsize=12)
+    ax.vlines(β, -24, logL(β), linestyles="--", alpha=0.5)
+    ax.hlines(logL(β), 6, β, linestyles="--", alpha=0.5)
 
 ax.set(ylim=(-24, -4), xlim=(6, 13))
-ax.set_xlabel(r'$\beta$', fontsize=15)
-ax.set_ylabel(r'$log \mathcal{L(\beta)}$',
-               rotation=0,
-               labelpad=25,
-               fontsize=15)
+ax.set_xlabel(r"$\beta$", fontsize=15)
+ax.set_ylabel(
+    r"$log \mathcal{L(\beta)}$", rotation=0, labelpad=25, fontsize=15
+)
 ax.grid(alpha=0.3)
 plt.show()
 ```
@@ -577,16 +624,16 @@ plt.show()
 
 在开始之前，让我们用 `statsmodels` 重新估计我们的简单模型，并确认我们能得到相同的系数和对数似然值。
 
+现在，由于`statsmodels`只接受NumPy数组，我们可以使用`np.array`方法将它们转换为NumPy数组。
+
 ```{code-cell} ipython3
-X = np.array([[1, 2, 5],
-              [1, 1, 3],
-              [1, 4, 2],
-              [1, 5, 2],
-              [1, 3, 1]])
+X = jnp.array([[1, 2, 5], [1, 1, 3], [1, 4, 2], [1, 5, 2], [1, 3, 1]])
 
-y = np.array([1, 0, 1, 1, 0])
+y = jnp.array([1, 0, 1, 1, 0])
 
-stats_poisson = Poisson(y, X).fit()
+y_numpy = np.array(y)
+X_numpy = np.array(X)
+stats_poisson = Poisson(y_numpy, X_numpy).fit()
 print(stats_poisson.summary())
 ```
 
@@ -605,17 +652,33 @@ Treisman首先估计方程{eq}`poissonreg`，其中：
 
 ```{code-cell} ipython3
 # 仅保留2008年数据
-df = df[df['year'] == 2008]
+df = df[df["year"] == 2008]
 
 # 添加常数项
-df['const'] = 1
+df["const"] = 1
 
 # 变量集
-reg1 = ['const', 'lngdppc', 'lnpop', 'gattwto08']
-reg2 = ['const', 'lngdppc', 'lnpop',
-        'gattwto08', 'lnmcap08', 'rintr', 'topint08']
-reg3 = ['const', 'lngdppc', 'lnpop', 'gattwto08', 'lnmcap08',
-        'rintr', 'topint08', 'nrrents', 'roflaw']
+reg1 = ["const", "lngdppc", "lnpop", "gattwto08"]
+reg2 = [
+    "const",
+    "lngdppc",
+    "lnpop",
+    "gattwto08",
+    "lnmcap08",
+    "rintr",
+    "topint08",
+]
+reg3 = [
+    "const",
+    "lngdppc",
+    "lnpop",
+    "gattwto08",
+    "lnmcap08",
+    "rintr",
+    "topint08",
+    "nrrents",
+    "roflaw",
+]
 ```
 
 然后我们可以使用`statsmodels`中的`Poisson`函数来拟合模型。
@@ -624,8 +687,9 @@ reg3 = ['const', 'lngdppc', 'lnpop', 'gattwto08', 'lnmcap08',
 
 ```{code-cell} ipython3
 # Specify model
-poisson_reg = sm.Poisson(df[['numbil0']], df[reg1],
-                         missing='drop').fit(cov_type='HC0')
+poisson_reg = Poisson(df[["numbil0"]], df[reg1], missing="drop").fit(
+    cov_type="HC0"
+)
 print(poisson_reg.summary())
 ```
 
@@ -638,32 +702,41 @@ print(poisson_reg.summary())
 ```{code-cell} ipython3
 regs = [reg1, reg2, reg3]
 reg_names = ['模型1', '模型2', '模型3']
-info_dict = {'伪R方': lambda x: f"{x.prsquared:.2f}",
-             '观测数': lambda x: f"{int(x.nobs):d}"}
-regressor_order = ['const',
-                   'lngdppc',
-                   'lnpop',
-                   'gattwto08',
-                   'lnmcap08',
-                   'rintr',
-                   'topint08',
-                   'nrrents',
-                   'roflaw']
+info_dict = {
+    "Pseudo R-squared": lambda x: f"{x.prsquared:.2f}",
+    "No. observations": lambda x: f"{int(x.nobs):d}",
+}
+regressor_order = [
+    "const",
+    "lngdppc",
+    "lnpop",
+    "gattwto08",
+    "lnmcap08",
+    "rintr",
+    "topint08",
+    "nrrents",
+    "roflaw",
+]
 results = []
 
 for reg in regs:
-    result = sm.Poisson(df[['numbil0']], df[reg],
-                        missing='drop').fit(cov_type='HC0',
-                                            maxiter=100, disp=0)
+    result = Poisson(df[["numbil0"]], df[reg], missing="drop").fit(
+        cov_type="HC0", maxiter=100, disp=0
+    )
     results.append(result)
 
-results_table = summary_col(results=results,
-                            float_format='%0.3f',
-                            stars=True,
-                            model_names=reg_names,
-                            info_dict=info_dict,
-                            regressor_order=regressor_order)
-results_table.add_title('表1 - 解释2008年各国亿万富翁数量')
+results_table = summary_col(
+    results=results,
+    float_format="%0.3f",
+    stars=True,
+    model_names=reg_names,
+    info_dict=info_dict,
+    regressor_order=regressor_order,
+)
+results_table.add_title(
+    "Table 1 - Explaining the Number of Billionaires \
+                        in 2008"
+)
 print(results_table)
 ```
 
@@ -672,24 +745,36 @@ print(results_table)
 为了更好地理解各国的具体情况，我们来看看模型预测值与实际观测值之间的差异。我们将按差异大小排序，并展示差异最大的前15个国家。
 
 ```{code-cell} ipython3
-data = ['const', 'lngdppc', 'lnpop', 'gattwto08', 'lnmcap08', 'rintr',
-        'topint08', 'nrrents', 'roflaw', 'numbil0', 'country']
+data = [
+    "const",
+    "lngdppc",
+    "lnpop",
+    "gattwto08",
+    "lnmcap08",
+    "rintr",
+    "topint08",
+    "nrrents",
+    "roflaw",
+    "numbil0",
+    "country",
+]
 results_df = df[data].dropna()
 
 # 使用最后一个模型（模型3）
-results_df['prediction'] = results[-1].predict()
+results_df["prediction"] = results[-1].predict()
 
 # 计算差异
-results_df['difference'] = results_df['numbil0'] - results_df['prediction']
+results_df["difference"] = results_df["numbil0"] - results_df["prediction"]
 
 # 按降序排列
-results_df.sort_values('difference', ascending=False, inplace=True)
+results_df.sort_values("difference", ascending=False, inplace=True)
 
 # 绘制前15个数据点
-results_df[:15].plot('country', 'difference', kind='bar',
-                    figsize=(12,8), legend=False)
-plt.ylabel('高于预测水平的亿万富翁数量')
-plt.xlabel('国家')
+results_df[:15].plot(
+    "country", "difference", kind="bar", figsize=(12, 8), legend=False
+)
+plt.ylabel("高于预测水平的亿万富翁数量")
+plt.xlabel("国家")
 plt.show()
 ```
 
@@ -703,9 +788,8 @@ Treisman利用这一实证结果讨论了俄罗斯亿万富豪过多的可能原
 
 `statsmodels`包含其他内置的似然模型，如[Probit](https://www.statsmodels.org/dev/generated/statsmodels.discrete.discrete_model.Probit.html)和[Logit](https://www.statsmodels.org/dev/generated/statsmodels.discrete.discrete_model.Logit.html)。
 
-为了提供更大的灵活性，`statsmodels`提供了使用`GenericLikelihoodModel`类手动指定分布的方法 - 示例notebook可以在这里找到
-
-[此处](https://www.statsmodels.org/dev/examples/notebooks/generated/generic_mle.html)。
+为了提供更大的灵活性，`statsmodels`提供了使用`GenericLikelihoodModel`类手动指定分布的方法 - 示例notebook可以在
+[此处](https://www.statsmodels.org/dev/examples/notebooks/generated/generic_mle.html)找到。
 
 ## 练习
 
@@ -723,7 +807,7 @@ f(y_i; \boldsymbol{\beta}) = \mu_i^{y_i} (1-\mu_i)^{1-y_i}, \quad y_i = 0,1 \\
 \end{aligned}
 $$
 
-$\Phi$ 表示*累积正态分布*，它将预测的 $y_i$ 限制在0和1之间（这是概率所必需的）。
+$\Phi$ 表示**累积正态分布**，它将预测的 $y_i$ 限制在0和1之间（这是概率所必需的）。
 
 $\boldsymbol{\beta}$ 是一个系数向量。
 
@@ -731,11 +815,10 @@ $\boldsymbol{\beta}$ 是一个系数向量。
 
 首先，找出对数似然函数并推导梯度和海森矩阵。
 
-`scipy`模块中的`stats.norm`包含计算正态分布的累积分布函数和概率质量函数所需的函数。
+`jax.scipy.stats`模块中的`norm`包含计算正态分布的累积分布函数和概率密度函数所需的函数。
 ```
 
 ```{solution-start} mle_ex1
-
 :class: dropdown
 ```
 
@@ -771,7 +854,6 @@ Probit模型的Hessian矩阵是
 $$
 \frac {\partial^2 \log \mathcal{L}} {\partial \boldsymbol{\beta} \partial \boldsymbol{\beta}'} =
 -\sum_{i=1}^n \phi (\mathbf{x}_i' \boldsymbol{\beta})
-
 \Big[
 y_i \frac{ \phi (\mathbf{x}_i' \boldsymbol{\beta}) + \mathbf{x}_i' \boldsymbol{\beta} \Phi (\mathbf{x}_i' \boldsymbol{\beta}) } { [\Phi (\mathbf{x}_i' \boldsymbol{\beta})]^2 } +
 (1 - y_i) \frac{ \phi (\mathbf{x}_i' \boldsymbol{\beta}) - \mathbf{x}_i' \boldsymbol{\beta} (1 - \Phi (\mathbf{x}_i' \boldsymbol{\beta})) } { [1 - \Phi (\mathbf{x}_i' \boldsymbol{\beta})]^2 }
@@ -782,36 +864,22 @@ $$
 根据这些结果，我们可以按如下方式编写Probit模型的类
 
 ```{code-cell} ipython3
-class ProbitRegression:
+class ProbitRegression(NamedTuple):
+    X: jnp.ndarray
+    y: jnp.ndarray
+```
 
-    def __init__(self, y, X, β):
-        self.X, self.y, self.β = X, y, β
-        self.n, self.k = X.shape
+```{code-cell} ipython3
+@jax.jit
+def logL(β, model):
+    y = model.y
+    μ = norm.cdf(model.X @ β.T)
+    return y @ jnp.log(μ) + (1 - y) @ jnp.log(1 - μ)
+```
 
-    def μ(self):
-        return norm.cdf(self.X @ self.β.T)
-
-    def ϕ(self):
-        return norm.pdf(self.X @ self.β.T)
-
-    def logL(self):
-        μ = self.μ()
-        return np.sum(y * np.log(μ) + (1 - y) * np.log(1 - μ))
-
-    def G(self):
-        μ = self.μ()
-        ϕ = self.ϕ()
-        return np.sum((X.T * y * ϕ / μ - X.T * (1 - y) * ϕ / (1 - μ)),
-                     axis=1)
-
-    def H(self):
-        X = self.X
-        β = self.β
-        μ = self.μ()
-        ϕ = self.ϕ()
-        a = (ϕ + (X @ β.T) * μ) / μ**2
-        b = (ϕ - (X @ β.T) * (1 - μ)) / (1 - μ)**2
-        return -(ϕ * (y * a + (1 - y) * b) * X.T) @ X
+```{code-cell} ipython3
+G_logL = jax.grad(logL)
+H_logL = jax.jacfwd(G_logL)
 ```
 
 ```{solution-end}
@@ -868,30 +936,26 @@ from statsmodels.discrete.discrete_model import Probit
 这是一个解决方案
 
 ```{code-cell} ipython3
-X = np.array([[1, 2, 4],
-              [1, 1, 1],
-              [1, 4, 3],
-              [1, 5, 6],
-              [1, 3, 5]])
+X = jnp.array([[1, 2, 4], [1, 1, 1], [1, 4, 3], [1, 5, 6], [1, 3, 5]])
 
-y = np.array([1, 0, 1, 1, 0])
+y = jnp.array([1, 0, 1, 1, 0])
 
-# 对β初始值进行猜测
-β = np.array([0.1, 0.1, 0.1])
+# 对初始β值进行猜测
+β = jnp.array([0.1, 0.1, 0.1])
 
-# 创建Probit回归类的实例
-prob = ProbitRegression(y, X, β)
+# 创建一个Probit回归模型
+prob = ProbitRegression(y=y, X=X)
 
 # 运行牛顿-拉夫森算法
-newton_raphson(prob)
+newton_raphson(prob, β)
 ```
 
 ```{code-cell} ipython3
 # 使用statsmodels验证结果
-
-print(Probit(y, X).fit().summary())
+y_numpy = np.array(y)
+X_numpy = np.array(X)
+print(Probit(y_numpy, X_numpy).fit().summary())
 ```
 
 ```{solution-end}
 ```
-
