@@ -7,6 +7,31 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 理性预期均衡
+  headings:
+    Overview: 概述
+    Overview::The Big Y, little y Trick: 大 $Y$，小 $y$ 技巧
+    Overview::The Big Y, little y Trick::A Simple Static Example of the Big Y, little y Trick: '"大 $Y$，小 $y$" 技巧的简单静态示例'
+    Overview::Related Planning Problem: 相关的规划问题
+    Overview::Further Reading: 延伸阅读
+    Rational Expectations Equilibrium: 理性预期均衡
+    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs: 带调整成本的竞争均衡
+    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::The Firm's Problem: 企业的问题
+    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::Prices and Aggregate Output: 价格和总产出
+    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::Representative Firm's Beliefs: 代表性企业的信念
+    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::Optimal Behavior Given Beliefs: 给定信念下的最优行为
+    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::Characterization with First-Order Necessary Conditions: 使用一阶必要条件的特征化
+    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::The Actual Law of Motion for Output: 产出的实际动态规律
+    Rational Expectations Equilibrium::Definition of Rational Expectations Equilibrium: 理性预期均衡的定义
+    Rational Expectations Equilibrium::Definition of Rational Expectations Equilibrium::Fixed Point Characterization: 不动点表征
+    Computing  an Equilibrium: 计算均衡
+    Computing  an Equilibrium::Failure of Contractivity: 收缩性的失效
+    Computing  an Equilibrium::A Planning Problem Approach: 规划问题方法
+    Computing  an Equilibrium::Solution of  Planning Problem: 规划问题的求解
+    Computing  an Equilibrium::Key Insight: 关键洞见
+    Computing  an Equilibrium::Key Insight::Structure of the Law of Motion: 动态规律的结构
+    Exercises: 练习
 ---
 
 (ree)=
@@ -41,7 +66,7 @@ tags: [hide-output]
 
 本讲义介绍*理性预期均衡*的概念。
 
-为加以说明，我们描述了一个由Lucas和Prescott提出的线性二次模型的版本{cite}`LucasPrescott1971`。
+为加以说明，我们描述了一个由Lucas和Prescott提出的线性二次模型的版本{cite}`Lucas_Prescott_1971`。
 
 这篇1971年的论文是引发*理性预期革命*的少数几篇研究文章之一。
 
@@ -51,7 +76,7 @@ tags: [hide-output]
 
 我们将学习代表性个体问题与计划者问题的差异，以及如何通过计划问题来求得理性预期均衡中的数量与价格。
 
-我们还将学习如何将理性预期均衡表示为从*感知的动态规律*到*实际的动态规律*的映射的[不动点](https://baike.baidu.com/item/%E4%B8%8D%E5%8A%A8%E7%82%B9/8535695)。
+我们还将学习如何将理性预期均衡表示为从*感知的动态规律*到*实际的动态规律*的映射的[不动点](https://en.wikipedia.org/wiki/Fixed_point_%28mathematics%29)。
 
 当市场内生变量的感知动态规律与实际动态规律相等时，即构成理性预期均衡的核心思想。
 
@@ -137,7 +162,7 @@ p = a_0 - a_1 Y
 
 $$
 c(y) = c_1 y + 0.5 c_2 y^2,
-\qquad c_i > 0, \quad i = 1,2
+\qquad c_i > 0 \text{ for } i = 1,2
 $$
 
 一个代表性企业的利润是 $p y - c(y)$。
@@ -206,7 +231,7 @@ $$
 
 本讲义的参考文献包括
 
-* {cite}`LucasPrescott1971`
+* {cite}`Lucas_Prescott_1971`
 * {cite}`Sargent1987`, 第XIV章
 * {cite}`Ljungqvist2012`, 第7章
 
@@ -311,7 +336,7 @@ Y_{t+1} =  H(Y_t)
 
 其中 $Y_0$ 是已知的初始条件。
 
-*信念函数* $H$ 是一个均衡对象，因此还有待确定。
+**信念函数** $H$ 是一个均衡对象，因此还有待确定。
 
 #### 给定信念下的最优行为
 
@@ -358,13 +383,13 @@ h(y, Y) := \textrm{argmax}_{y'}
 -\gamma (y' - y) + \beta v_y(y', H(Y) ) = 0
 ```
 
-Benveniste-Scheinkman {cite}`BenvenisteScheinkman1979`包络定理表明，要对 $v$ 关于 $y$ 求导，我们可以直接对{eq}`comp4`右侧进行求导，得到
+Benveniste-Scheinkman {cite}`BenvenisteScheinkman1979`的一个重要且有用的包络定理表明，要对 $v$ 关于 $y$ 求导，我们可以直接对{eq}`comp4`右侧进行求导，得到
 
 $$
 v_y(y,Y) = a_0 - a_1 Y + \gamma (y' - y)
 $$
 
-将此方程代入 {eq}`comp5` 得到*欧拉方程*
+将此方程代入 {eq}`comp5` 得到**欧拉方程**
 
 ```{math}
 :label: ree_comp7
@@ -377,7 +402,7 @@ $$
 * 初始条件 $(y_0, Y_0)$，
 * 终端条件 $\lim_{t \rightarrow \infty } \beta^t y_t v_y(y_{t}, Y_t) = 0$。
 
-最后这个条件被称为*横截条件*，其作用相当于"无穷远处"的一阶必要条件。
+最后这个条件被称为**横截条件**，其作用相当于"无穷远处"的一阶必要条件。
 
 代表性企业的决策规则需在给定初始条件 $y_0$ 和横截条件下，求解差分方程 {eq}`ree_comp7`。
 
@@ -387,7 +412,7 @@ $$
 
 如前所述，给定的信念会转化为特定的决策规则 $h$。
 
-回想一下，在均衡中，由于 $Y_t = y_t$，市场整体产出的*实际动态规律*为
+回想一下，在均衡中，由于 $Y_t = y_t$，市场整体产出的**实际动态规律**为
 
 ```{math}
 :label: ree_comp9a
@@ -400,7 +425,7 @@ Y_{t+1} =  h(Y_t, Y_t)
 (ree_def)=
 ### 理性预期均衡的定义
 
-在带调整成本的模型中，*理性预期均衡*或*递归竞争均衡*是一对决策规则 $h$ 和总体动态规律 $H$，使得：
+在带调整成本的模型中，**理性预期均衡**或**递归竞争均衡**是一对决策规则 $h$ 和总体动态规律 $H$，使得：
 
 1. 在给定信念 $H$ 的情况下，映射 $h$ 是企业的最优政策函数。
 1. 运动规律 $H$ 满足对所有 $Y$ 都有 $H(Y)= h(Y,Y)$。
@@ -436,7 +461,7 @@ Y_{t+1} =  h(Y_t, Y_t)
 
 该方法利用了福利经济学基本定理中所表达的均衡与帕累托最优之间的联系（参见{cite}`MCWG1995`）。
 
-Lucas和Prescott {cite}`LucasPrescott1971` 使用这种方法构建了理性预期均衡。
+Lucas和Prescott {cite}`Lucas_Prescott_1971` 使用这种方法构建了理性预期均衡。
 
 以下是一些细节。
 
@@ -465,7 +490,7 @@ s(Y_t, Y_{t+1})
 
 第一项是需求曲线下的面积，而第二项衡量的是产出变化的社会成本。
 
-*规划问题*是选择一个生产计划 $\{Y_t\}$ 来最大化
+**规划问题**是选择一个生产计划 $\{Y_t\}$ 来最大化
 
 $$
 \sum_{t=0}^\infty \beta^t s(Y_t, Y_{t+1})
@@ -497,7 +522,6 @@ V(Y) = \max_{Y'}
 应用相同的Benveniste-Scheinkman公式得到
 
 $$
-
 V'(Y) = a_0 - a_1 Y + \gamma (Y' - Y)
 $$
 
@@ -520,7 +544,7 @@ $$
 1. 找到代表性企业的欧拉方程，并且
 1. 代入 $Y_t = y_t$ 以确保代表性企业确实代表整个行业。
 
-如果对这两个差分方程应用相同的终端条件，那么规划问题的解也就是理性预期均衡的产出序列。
+如果对这两个差分方程应用相同的终端条件（事实也确实如此），那么我们就验证了规划问题的解也是理性预期均衡的产出序列。
 
 因此，对于这个例子，我们可以通过构建与贝尔曼方程{eq}`comp12`相应的最优线性调节器问题来计算均衡产出量。
 
@@ -562,7 +586,7 @@ y_{t+1} = h_0 + h_1 y_t + h_2 Y_t
 
 将企业的问题表述为一个贴现最优线性调节器问题，注意要详细描述所需的所有对象。
 
-使用[QuantEcon.py](http://quantecon.org/quantecon-py)包中的`LQ`类来解决以下参数值的企业问题：
+使用[QuantEcon.py](https://quantecon.org/quantecon-py/)包中的`LQ`类来解决以下参数值的企业问题：
 
 $$
 a_0= 100, a_1= 0.05, \beta = 0.95, \gamma=10, \kappa_0 = 95.5, \kappa_1 = 0.95
@@ -633,7 +657,7 @@ $$
 
 参考代码：
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 模型参数
 
 a0 = 100
@@ -721,7 +745,7 @@ $$
 
 以下代码实现了这个检验
 
-```{code-cell} ipython3
+```{code-cell} python3
 candidates = ((94.0886298678, 0.923409232937),
               (93.2119845412, 0.984323478873),
               (95.0818452486, 0.952459076301))
@@ -812,7 +836,7 @@ $$
 
 解决此问题的Python代码如下：
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 构建规划者的LQ问题
 
 A = np.array([[1, 0], [0, 1]])
@@ -874,7 +898,7 @@ $$
 
 问题可以按如下方式求解：
 
-```{code-cell} ipython3
+```{code-cell} python3
 A = np.array([[1, 0], [0, 1]])
 B = np.array([[1], [0]])
 R = np.array([[a1, -a0 / 2], [-a0 / 2, 0]])
@@ -905,5 +929,4 @@ $Y_{t+1} = 95.0818 + 0.9525 Y_t$。
 ```{solution-end}
 ```
 
-[^fn_im]: 有一类文献研究：当模型中的个体具有学习行为时，这些个体是否能收敛到理性预期。该文献探讨的核心是对映射 $\Phi$ 的修正型迭代，其可近似表示为 $\gamma \Phi + (1-\gamma)I$。这里 $I$ 是恒等算子，$\gamma \in (0,1)$ 是一个*松弛参数*。参见 {cite}`MarcetSargent1989` 和 {cite}`EvansHonkapohja2001` 中关于这种方法的阐述和应用，该方法用于确定在什么条件下使用最小二乘学习的自适应代理群体会收敛到理性预期均衡。
-
+[^fn_im]: 有一类文献研究：当模型中的个体具有学习行为时，这些个体是否能收敛到理性预期均衡。该文献探讨的核心是对映射 $\Phi$ 的修正型迭代，其可近似表示为 $\gamma \Phi + (1-\gamma)I$。这里 $I$ 是恒等算子，$\gamma \in (0,1)$ 是一个*松弛参数*。参见 {cite}`MarcetSargent1989` 和 {cite}`EvansHonkapohja2001` 中关于这种方法的阐述和应用，该方法用于确定在什么条件下使用最小二乘学习的自适应代理群体会收敛到理性预期均衡。
