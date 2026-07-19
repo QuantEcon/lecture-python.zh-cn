@@ -924,7 +924,7 @@ plt.legend()
 
 plt.xlabel('t')
 plt.ylabel('n')
-plt.title('目标值函数 $V(\pi)$')
+plt.title('时间的无条件分布')
 
 plt.show()
 ```
