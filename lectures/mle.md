@@ -532,7 +532,7 @@ def newton_raphson(model, β, tol=1e-3, max_iter=100, display=True):
         i += 1
 
     print(f"迭代次数：{i}")
-    print(f'迭代次数：{i}')
+    print(f"β_hat = {β.flatten()}")
 
     return β
 ```
