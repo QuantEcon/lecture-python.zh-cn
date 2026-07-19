@@ -79,6 +79,7 @@ mpl.rcParams.update({
     'text.latex.preamble': r'''
         \usepackage{{CJKutf8}}
         \usepackage{{amsmath}}
+        \usepackage{{amsfonts}}
     '''
 })
 
