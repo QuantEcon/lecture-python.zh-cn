@@ -62,10 +62,10 @@ translation:
 
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
-import matplotlib.pyplot as plt
 import numpy as np
 from numba import vectorize, jit, prange
 from math import gamma

@@ -10,7 +10,7 @@ kernelspec:
   language: python
   name: python3
 translation:
-  title: V, σ, μ
+  title: 长寿、异质性个体、世代交叠模型
   headings:
     Overview: 概述
     Environment: 经济环境
@@ -34,21 +34,6 @@ translation:
     'Experiment 1: Immediate tax cut': 实验1：即时减税
     'Experiment 2: Preannounced tax cut': 实验2：预先宣布的减税
 ---
-
-```
----
-jupytext:
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.17.3
-kernelspec:
-  display_name: Python 3 (ipykernel)
-  language: python
-  name: python3
----
-
 
 # 长寿、异质性个体、世代交叠模型
 
@@ -1476,5 +1461,4 @@ ax2.set_xlabel(r"t")
 ax2.set_ylabel(r"j")
 
 plt.show()
-```
 ```

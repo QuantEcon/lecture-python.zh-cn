@@ -352,8 +352,8 @@ for i, t in enumerate(np.linspace(0, T-1, 3, dtype=int)):
     axs[i].set_ylabel(r'$u_{{{}}}$'.format(str(t)))
     
     cov_latex = (
-        r'$\Sigma_{{{}}}= \begin{{bmatrix}} {:.2f} & {:.2f} \\ '
-        r'{:.2f} & {:.2f} \end{{bmatrix}}$'
+        r'$\Sigma_{{{}}}= \left[ \substack{{{:.2f} \; {:.2f} \\ '
+        r'{:.2f} \; {:.2f}}} \right]$'
     ).format(t, cov[0, 0], cov[0, 1], cov[1, 0], cov[1, 1])
     axs[i].text(0.33, -0.15, cov_latex, transform=axs[i].transAxes)
 
