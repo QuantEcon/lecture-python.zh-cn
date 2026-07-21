@@ -109,12 +109,15 @@ from numba.experimental import jitclass
 
 上面已经导入的[QuantEcon.py](https://github.com/QuantEcon/QuantEcon.py)包含了计算洛伦兹曲线的函数。
 
-举例说明，假设以下数据代表了10,000个家庭的财富分布
+举例说明，假设
 
 ```{code-cell} ipython3
+rng = np.random.default_rng()
 n = 10_000                      # 样本大小
-w = np.exp(np.random.randn(n))  # 生成对数正态分布的随机样本
+w = np.exp(rng.standard_normal(n))  # 生成对数正态分布的随机样本
 ```
+
+是代表10,000个家庭财富的数据。
 
 我们可以按如下方式计算并绘制洛伦兹曲线：
 
@@ -147,7 +150,7 @@ a_vals = (1, 2, 5)              # 帕累托分布的尾部指数
 n = 10_000                      # 每个样本的大小
 fig, ax = plt.subplots()
 for a in a_vals:
-    u = np.random.uniform(size=n)
+    u = rng.uniform(size=n)
     y = u**(-1/a)               # 服从尾部指数为a的帕累托分布
     f_vals, l_vals = qe.lorenz_curve(y)
     ax.plot(f_vals, l_vals, label=f'$a = {a}$')
@@ -184,7 +187,7 @@ n = 100
 
 fig, ax = plt.subplots()
 for a in a_vals:
-    y = np.random.weibull(a, size=n)
+    y = rng.weibull(a, size=n)
     ginis.append(qe.gini_coefficient(y))
     ginis_theoretical.append(1 - 2**(-1/a))
 ax.plot(a_vals, ginis, label='基尼系数估值')
@@ -543,13 +546,14 @@ plt.show()
 这是一个解法，它在理论和模拟之间产生了很好的匹配。
 
 ```{code-cell} ipython3
+rng = np.random.default_rng()
 a_vals = np.linspace(1, 10, 25)  # 帕累托尾部指数
 ginis = np.empty_like(a_vals)
 
 n = 1000                         # 每个样本的大小
 fig, ax = plt.subplots()
 for i, a in enumerate(a_vals):
-    y = np.random.uniform(size=n)**(-1/a)
+    y = rng.uniform(size=n)**(-1/a)
     ginis[i] = qe.gini_coefficient(y)
 ax.plot(a_vals, ginis, label='抽样值')
 ax.plot(a_vals, 1/(2*a_vals - 1), label='理论值')
