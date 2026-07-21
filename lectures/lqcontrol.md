@@ -14,27 +14,27 @@ translation:
   headings:
     Overview: 概述
     Introduction: 引言
-    Introduction::The Law of Motion: 运动规律
-    Introduction::The Law of Motion::Example 1: 示例1
-    Introduction::The Law of Motion::Example 2: 示例2
+    Introduction::The law of motion: 运动规律
+    Introduction::The law of motion::Example 1: 示例1
+    Introduction::The law of motion::Example 2: 示例2
     Introduction::Preferences: 偏好
     Introduction::Preferences::Example 1: 示例1
     Introduction::Preferences::Example 2: 示例2
-    Optimality -- Finite Horizon: 最优性 —— 有限期问题
-    Optimality -- Finite Horizon::The Objective: 目标函数
-    Optimality -- Finite Horizon::Information: 信息
-    Optimality -- Finite Horizon::Solution: 解
+    Optimality -- finite horizon: 最优性 —— 有限期问题
+    Optimality -- finite horizon::The objective: 目标函数
+    Optimality -- finite horizon::Information: 信息
+    Optimality -- finite horizon::Solution: 解
     Implementation: 实现
-    Implementation::An Application: 一个应用
-    Extensions and Comments: 扩展和评论
-    Extensions and Comments::Time-Varying Parameters: 时变参数
-    Extensions and Comments::Adding a Cross-Product Term: 添加交叉乘积项
-    Extensions and Comments::Infinite Horizon: 无限期限
-    Extensions and Comments::Certainty Equivalence: 确定性等价
-    Further Applications: 进一步应用
-    'Further Applications::Application 1: Age-Dependent Income Process': 应用1：与年龄相关的收入过程
-    'Further Applications::Application 2: A Permanent Income Model with Retirement': 应用2：包含退休的永久收入模型
-    'Further Applications::Application 3: Monopoly with Adjustment Costs': 应用3：具有调整成本的垄断
+    Implementation::An application: 一个应用
+    Extensions and comments: 扩展和评论
+    Extensions and comments::Time-varying parameters: 时变参数
+    Extensions and comments::Adding a cross-product term: 添加交叉乘积项
+    Extensions and comments::Infinite horizon: 无限期限
+    Extensions and comments::Certainty equivalence: 确定性等价
+    Further applications: 进一步应用
+    'Further applications::Application 1: Age-dependent income process': 应用1：与年龄相关的收入过程
+    'Further applications::Application 2: A permanent income model with retirement': 应用2：包含退休的永久收入模型
+    'Further applications::Application 3: Monopoly with adjustment costs': 应用3：具有调整成本的垄断
     Exercises: 练习
 ---
 
@@ -58,9 +58,10 @@ translation:
 
 除了Anaconda中已有的库外，本讲座还需要以下库：
 
-```{code-cell} ipython3
-:tags: [hide-output]
-
+```{code-cell} ipython
+---
+tags: [hide-output]
+---
 !pip install quantecon
 ```
 
@@ -78,15 +79,14 @@ translation:
 
 从数学角度来看，LQ控制问题与{doc}`卡尔曼滤波<kalman>`密切相关
 
-* 线性二次控制问题和卡尔曼滤波问题的递归表述都涉及矩阵**黎卡提方程**。
-
-* 线性控制和线性滤波问题的经典表述使用类似的矩阵分解（参见[这个讲座](https://python-advanced.quantecon.org/lu_tricks.html)和[这个讲座](https://python-advanced.quantecon.org/classical_filtering.html)）。
+* 线性二次控制问题和卡尔曼滤波问题的递归表述都涉及矩阵[黎卡提方程](https://en.wikipedia.org/wiki/Riccati_equation)。
+* 线性控制和线性滤波问题的经典表述使用类似的矩阵分解（参见{doc}`advanced:lu_tricks`和{doc}`advanced:classical_filtering`）。
 
 阅读下文时，熟悉以下内容会更有帮助：
 
 * 矩阵运算
 * 随机变量向量
-* 动态规划和贝尔曼方程（参见{doc}`这个讲座 <intro:short_path>`和{doc}`os_stochastic`）
+* 动态规划和贝尔曼方程（参见{doc}`intro:short_path`和{doc}`os_stochastic`）
 
 关于LQ控制的更多阅读材料，请参见：
 
@@ -98,7 +98,7 @@ translation:
 
 让我们从一些导入开始：
 
-```{code-cell} ipython3
+```{code-cell} ipython
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -107,6 +107,7 @@ plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 import numpy as np
 from quantecon import LQ
+from typing import NamedTuple
 ```
 
 ## 引言
@@ -131,7 +132,7 @@ x_{t+1} = A x_t + B u_t + C w_{t+1},
 这里
 
 * $u_t$ 是一个“控制”向量，包含了决策者面对当前状态 $x_t$ 时可用的选择
-* $\{w_t\}$ 是一个均值为零、互不相关的冲击过程，满足 $\mathbb E w_t w_t' = I$，其中右边是单位矩阵
+* $\{w_t\}$ 是一个均值为零、互不相关的冲击过程，满足 $\mathbb E w_t w_t^\top = I$，其中右边是单位矩阵
 
 关于维度的规定如下：
 
@@ -195,37 +196,27 @@ a_{t+1} = (1 + r) a_t - u_t - \bar c + \sigma w_{t+1} + \mu
 ```{math}
 :label: lq_lowmc
 
-\left(
-\begin{array}{c}
+\begin{bmatrix}
 a_{t+1} \\
 1
-\end{array}
-\right) =
-\left(
-\begin{array}{cc}
+\end{bmatrix} =
+\begin{bmatrix}
 1 + r & -\bar c + \mu \\
 0     & 1
-\end{array}
-\right)
-\left(
-\begin{array}{c}
+\end{bmatrix}
+\begin{bmatrix}
 a_t \\
 1
-\end{array}
-\right) +
-\left(
-\begin{array}{c}
+\end{bmatrix} +
+\begin{bmatrix}
 -1 \\
 0
-\end{array}
-\right)
+\end{bmatrix}
 u_t +
-\left(
-\begin{array}{c}
+\begin{bmatrix}
 \sigma \\
 0
-\end{array}
-\right)
+\end{bmatrix}
 w_{t+1}
 ```
 
@@ -237,36 +228,28 @@ w_{t+1}
 :label: lq_lowmc2
 
 x_t :=
-\left(
-\begin{array}{c}
+\begin{bmatrix}
 a_t \\
 1
-\end{array}
-\right),
+\end{bmatrix},
 \quad
 A :=
-\left(
-\begin{array}{cc}
+\begin{bmatrix}
 1 + r & -\bar c + \mu \\
 0     & 1
-\end{array}
-\right),
+\end{bmatrix},
 \quad
 B :=
-\left(
-\begin{array}{c}
+\begin{bmatrix}
 -1 \\
 0
-\end{array}
-\right),
+\end{bmatrix},
 \quad
 C :=
-\left(
-\begin{array}{c}
+\begin{bmatrix}
 \sigma \\
 0
-\end{array}
-\right)
+\end{bmatrix}
 ```
 
 实际上，我们通过增加另一个状态变量获得了线性特性。
@@ -278,14 +261,20 @@ C :=
 ```{math}
 :label: lq_pref_flow
 
-x_t' R x_t + u_t' Q u_t
+x_t^\top R x_t + u_t^\top Q u_t
 ```
-其中，
+
+$R$ 和 $Q$ 中的元素根据所研究的具体问题来选定。
+
+这里
+
 * 假设 $R$ 是 $n \times n$ 的对称非负定矩阵。
 * 假设 $Q$ 是 $k \times k$ 的对称正定矩阵。
 
 ```{note}
 实际上，对于许多经济问题，可以放宽对 $R$ 和 $Q$ 的正定性条件。只需要 $R$ 和 $Q$ 的某些子矩阵是非负定的即可。详见 {cite}`HansenSargent2008`。
+
+还需注意，这种记号并非通用：有些作者让 $Q$ 表示与状态相关的矩阵，而 $R$ 表示与控制相关的矩阵。
 ```
 
 #### 示例1
@@ -293,7 +282,7 @@ x_t' R x_t + u_t' Q u_t
 一个满足上述假设的简单例子是令 $R$ 和 $Q$ 都为单位矩阵，此时当期损失为：
 
 $$
-x_t' I x_t + u_t' I u_t = \| x_t \|^2 + \| u_t \|^2
+x_t^\top I x_t + u_t^\top I u_t = \| x_t \|^2 + \| u_t \|^2
 $$
 
 因此，对于状态变量和控制变量，损失都被度量为与原点的平方距离。
@@ -312,7 +301,7 @@ $$
 在{ref}`之前研究的家庭问题 <lq_hhp>`中，设定 $R=0$ 和 $Q=1$ 得到的偏好为
 
 $$
-x_t' R x_t + u_t' Q u_t = u_t^2 = (c_t - \bar c)^2
+x_t^\top R x_t + u_t^\top Q u_t = u_t^2 = (c_t - \bar c)^2
 $$
 
 在这种设定下，家庭当前的损失是消费与理想水平$\bar c$的差的平方。
@@ -335,8 +324,7 @@ $$
 
 \mathbb E \,
 \left\{
-
-\sum_{t=0}^{T-1} \beta^t (x_t' R x_t + u_t' Q u_t) + \beta^T x_T' R_f x_T
+    \sum_{t=0}^{T-1} \beta^t (x_t^\top R x_t + u_t^\top Q u_t) + \beta^T x_T^\top R_f x_T
 \right\}
 ```
 
@@ -344,13 +332,13 @@ $$
 
 这里引入的新对象是 $\beta$ 和矩阵 $R_f$。
 
-标量 $\beta$ 是折现因子，而 $x' R_f x$ 给出与状态 $x$ 相关的终值损失。
+标量 $\beta$ 是折现因子，而 $x^\top R_f x$ 给出与状态 $x$ 相关的终值损失。
 
 注释：
 
 * 我们假设 $R_f$ 是 $n \times n$ 的、对称且非负定的矩阵。
 * 我们允许 $\beta = 1$，因此包含了未折现的情形。
-* $x_0$ 本身可能是随机的，在这种情形下，我们要求它与冲击序列 $w_1, \ldots, w_T$ 相互独立。
+* $x_0$ 本身可能是随机的，在这种情形下，我们要求它与冲击序列 $\{w_1, \ldots, w_T\}$ 相互独立。
 
 (lq_cp)=
 ### 信息
@@ -383,9 +371,9 @@ LQ情形的特殊之处在于——正如我们即将看到的——最优控制
 
 ### 解
 
-为了解决有限期LQ问题，我们可以使用基于逆向归纳的动态规划策略，这在概念上类似于{doc}`本讲座 <intro:short_path>`中采用的方法。
+为了解决有限期LQ问题，我们可以使用基于逆向归纳的动态规划策略，这在概念上类似于{doc}`intro:short_path`中采用的方法。
 
-为了后续推导方便，我们首先引入符号 $J_T(x) = x' R_f x$。
+为了后续推导方便，我们首先引入符号 $J_T(x) = x^\top R_f x$。
 
 现在考虑决策者在倒数第二个时期的问题。
 
@@ -395,10 +383,12 @@ LQ情形的特殊之处在于——正如我们即将看到的——最优控制
 
 $$
 \min_u \{
-x_{T-1}' R x_{T-1} + u' Q u + \beta \,
+x_{T-1}^\top R x_{T-1} + u^\top Q u + \beta \,
 \mathbb E J_T(A x_{T-1} + B u + C w_T)
 \}
 $$
+
+这里我们使用 $u$ 而非 $u_{T-1}$ 以简化记号。
 
 此时我们定义函数：
 
@@ -407,7 +397,7 @@ $$
 
 J_{T-1} (x) =
 \min_u \{
-x' R x + u' Q u + \beta \,
+x^\top R x + u^\top Q u + \beta \,
 \mathbb E J_T(A x + B u + C w_T)
 \}
 ```
@@ -416,7 +406,7 @@ x' R x + u' Q u + \beta \,
 
 现在让我们回到$T-2$时期。
 
-对于$T-2$时期的决策者来说，$J_{T-1}(x)$ 的作用类似于终端损失 $J_T(x) = x' R_f x$ 对 $T-1$ 时期决策者的作用。
+对于$T-2$时期的决策者来说，$J_{T-1}(x)$ 的作用类似于终端损失 $J_T(x) = x^\top R_f x$ 对 $T-1$ 时期决策者的作用。
 
 也就是说，$J_{T-1}(x)$ 概括了转移到状态 $x$ 所关联的未来损失。
 
@@ -430,7 +420,7 @@ x' R x + u' Q u + \beta \,
 $$
 \min_u
 \{
-x_{T-2}' R x_{T-2} + u' Q u + \beta \,
+x_{T-2}^\top R x_{T-2} + u^\top Q u + \beta \,
 \mathbb E J_{T-1}(Ax_{T-2} + B u + C w_{T-1})
 \}
 $$
@@ -441,7 +431,7 @@ $$
 J_{T-2} (x)
 = \min_u
 \{
-x' R x + u' Q u + \beta \,
+x^\top R x + u^\top Q u + \beta \,
 \mathbb E J_{T-1}(Ax + B u + C w_{T-1})
 \}
 $$
@@ -454,11 +444,11 @@ $$
 J_{t-1} (x)
 = \min_u
 \{
-x' R x + u' Q u + \beta \,
+x^\top R x + u^\top Q u + \beta \,
 \mathbb E J_{t}(Ax + B u + C w_t)
 \}
 \quad \text{和} \quad
-J_T(x) = x' R_f x
+J_T(x) = x^\top R_f x
 $$
 
 第一个等式是动态规划理论中的贝尔曼方程，专门用于有限期LQ问题。
@@ -467,7 +457,7 @@ $$
 
 作为第一步，让我们看看价值函数是什么样的。
 
-事实证明，每个 $J_t$ 都具有形式 $J_t(x) = x' P_t x + d_t$，其中 $P_t$ 是一个 $n \times n$ 矩阵，而 $d_t$ 是一个常数。
+事实证明，每个 $J_t$ 都具有形式 $J_t(x) = x^\top P_t x + d_t$，其中 $P_t$ 是一个 $n \times n$ 矩阵，而 $d_t$ 是一个常数。
 
 我们可以通过归纳法证明这一点，从 $P_T := R_f$ 和 $d_T = 0$ 开始。
 
@@ -478,8 +468,8 @@ $$
 
 J_{T-1} (x) =
 \min_u \{
-x' R x + u' Q u + \beta \,
-\mathbb E (A x + B u + C w_T)' P_T (A x + B u + C w_T)
+x^\top R x + u^\top Q u + \beta \,
+\mathbb E (A x + B u + C w_T)^\top P_T (A x + B u + C w_T)
 \}
 ```
 
@@ -490,14 +480,13 @@ x' R x + u' Q u + \beta \,
 ```{math}
 :label: lq_oc0
 
-u  = - (Q + \beta B' P_T B)^{-1} \beta B' P_T A x
+u  = - (Q + \beta B^\top P_T B)^{-1} \beta B^\top P_T A x
 ```
 
 将此代回{eq}`lq_fswb`并整理，得到
 
 $$
-
-J_{T-1} (x) = x' P_{T-1} x + d_{T-1}
+J_{T-1} (x) = x^\top P_{T-1} x + d_{T-1}
 $$
 
 其中
@@ -505,8 +494,8 @@ $$
 ```{math}
 :label: lq_finr
 
-P_{T-1} = R - \beta^2 A' P_T B (Q + \beta B' P_T B)^{-1} B' P_T A +
-\beta A' P_T A
+P_{T-1} = R - \beta^2 A^\top P_T B (Q + \beta B^\top P_T B)^{-1} B^\top P_T A +
+\beta A^\top P_T A
 ```
 
 且
@@ -514,18 +503,18 @@ P_{T-1} = R - \beta^2 A' P_T B (Q + \beta B' P_T B)^{-1} B' P_T A +
 ```{math}
 :label: lq_finrd
 
-d_{T-1} := \beta \mathop{\mathrm{trace}}(C' P_T C)
+d_{T-1} := \beta \mathop{\mathrm{trace}}(C^\top P_T C)
 ```
 
 (这个代数运算是一个很好的练习——我们把它留给读者。)
 
-如果我们继续按这种方式向后推导，很快就会清楚 $J_t (x) = x' P_t x + d_t$，其中 $\{P_t\}$ 和 $\{d_t\}$ 满足递归式
+如果我们继续按这种方式向后推导，很快就会清楚 $J_t (x) = x^\top P_t x + d_t$，正如前面所声称的，其中 $P_t$ 和 $d_t$ 满足递归式
 
 ```{math}
 :label: lq_pr
 
-P_{t-1} = R - \beta^2 A' P_t B (Q + \beta B' P_t B)^{-1} B' P_t A +
-\beta A' P_t A
+P_{t-1} = R - \beta^2 A^\top P_t B (Q + \beta B^\top P_t B)^{-1} B^\top P_t A +
+\beta A^\top P_t A
 \quad \text{其中} \quad
 P_T = R_f
 ```
@@ -535,7 +524,7 @@ P_T = R_f
 ```{math}
 :label: lq_dd
 
-d_{t-1} = \beta (d_t + \mathop{\mathrm{trace}}(C' P_t C))
+d_{t-1} = \beta (d_t + \mathop{\mathrm{trace}}(C^\top P_t C))
 \quad \text{其中} \quad
 d_T = 0
 ```
@@ -547,14 +536,14 @@ d_T = 0
 
 u_t  = - F_t x_t
 \quad \text{其中} \quad
-F_t := (Q + \beta B' P_{t+1} B)^{-1} \beta B' P_{t+1} A
+F_t := (Q + \beta B^\top P_{t+1} B)^{-1} \beta B^\top P_{t+1} A
 ```
 
 这些是我们{ref}`上面讨论过的<lq_cp>`线性最优控制策略。
 
 特别是，由{eq}`lq_oc`和{eq}`lq_lom`给出的控制序列解决了我们的有限期LQ问题。
 
-更准确地说，对于$t = 0, \ldots, T-1$，由以下式子给出的序列 $u_0, \ldots, u_{T-1}$
+更准确地说，对于$t = 0, \ldots, T-1$，由以下式子给出的序列 $\{u_0, \ldots, u_{T-1}\}$
 
 ```{math}
 :label: lq_xud
@@ -618,7 +607,7 @@ x_{t+1} = (A - BF_t) x_t + C w_{t+1}
 
 和之前一样，我们设定 $y_t = \sigma w_{t+1} + \mu$ 和 $u_t := c_t - \bar c$，之后约束条件可以写成 {eq}`lq_lomwc` 的形式。
 
-我们看到这个约束条件可以通过设定 $x_t = (a_t \; 1)'$ 并使用 {eq}`lq_lowmc2` 中的定义，转化为 LQ 形式 $x_{t+1} = Ax_t + Bu_t + Cw_{t+1}$。
+我们看到这个约束条件可以通过设定 $x_t = (a_t \; 1)^\top$ 并使用 {eq}`lq_lowmc2` 中的定义，转化为 LQ 形式 $x_{t+1} = Ax_t + Bu_t + Cw_{t+1}$。
 
 为了与这个状态和控制变量相匹配，目标函数 {eq}`lq_pio` 可以通过选择以下参数写成 {eq}`lq_object` 的形式：
 
@@ -626,88 +615,110 @@ $$
 Q := 1,
 \quad
 R :=
-\left(
-\begin{array}{cc}
+\begin{bmatrix}
 0 & 0 \\
 0 & 0
-\end{array}
-\right),
+\end{bmatrix},
 \quad \text{和} \quad
 R_f :=
-\left(
-\begin{array}{cc}
+\begin{bmatrix}
 q & 0 \\
 0 & 0
-\end{array}
-\right)
+\end{bmatrix}
 $$
 
 现在问题已经表达为 LQ 形式，我们可以通过应用 {eq}`lq_pr` 和 {eq}`lq_oc` 来求解。
 
-在生成冲击序列 $w_1, \ldots, w_T$ 之后，资产和消费的动态可以通过 {eq}`lq_xud` 来模拟。
+在生成冲击序列 $\{w_1, \ldots, w_T\}$ 之后，资产和消费的动态可以通过 {eq}`lq_xud` 来模拟。
 
 下图是使用参数 $r = 0.05, \beta = 1 / (1+ r),
 \bar c = 2,  \mu = 1, \sigma = 0.25, T = 45$ 和 $q = 10^6$ 计算得出的。
 
 冲击 $\{w_t\}$ 被设定为独立同分布的标准正态分布。
 
-```{code-cell} ipython3
-# 模型参数
-r = 0.05
-β = 1/(1 + r)
-T = 45
-c_bar = 2
-σ = 0.25
-μ = 1
-q = 1e6
+```{code-cell} python3
+class LQModel(NamedTuple):
+    r: float              # 利率
+    β: float              # 折现因子
+    T: int                # 时间范围
+    c_bar: float          # 目标消费水平
+    σ: float              # 收入冲击标准差
+    μ: float              # 平均收入水平
+    q: float              # 终端惩罚权重
+    Q: float              # 控制惩罚矩阵
+    R: np.ndarray         # 状态惩罚矩阵
+    Rf: np.ndarray        # 终端状态惩罚矩阵
+    A: np.ndarray         # 状态转移矩阵
+    B: np.ndarray         # 控制矩阵
+    C: np.ndarray         # 冲击矩阵
 
-# 构建为LQ问题
-Q = 1
-R = np.zeros((2, 2))
-Rf = np.zeros((2, 2))
-Rf[0, 0] = q
-A = [[1 + r, -c_bar + μ],
-    [0,              1]]
-B = [[-1],
-    [ 0]]
-C = [[σ],
-    [0]]
 
-# 计算解并模拟
-lq = LQ(Q, R, A, B, C, beta=β, T=T, Rf=Rf)
-x0 = (0, 1)
-xp, up, wp = lq.compute_sequence(x0)
+def create_lq_model(r=0.05,
+                    T=45,
+                    c_bar=2,
+                    σ=0.25,
+                    μ=1,
+                    q=1e6):
+    β = 1 / (1 + r)
 
-# 转换回资产、消费和收入
-assets = xp[0, :]           # a_t
-c = up.flatten() + c_bar    # c_t
-income = σ * wp[0, 1:] + μ  # y_t
+    # 构建为LQ问题
+    Q = 1
+    R = np.zeros((2, 2))
+    Rf = np.zeros((2, 2))
+    Rf[0, 0] = q
+    A = np.array([[1 + r, -c_bar + μ],
+                  [0,      1]])
+    B = np.array([[-1],
+                  [ 0]])
+    C = np.array([[σ],
+                  [0]])
 
-# 绘制结果
-n_rows = 2
-fig, axes = plt.subplots(n_rows, 1, figsize=(12, 10))
+    return LQModel(r=r, β=β, T=T, c_bar=c_bar, σ=σ, μ=μ,
+                   q=q, Q=Q, R=R, Rf=Rf, A=A, B=B, C=C)
 
-plt.subplots_adjust(hspace=0.5)
+def simulate_and_plot(model):
+    # 拆解模型
+    r, β, T, c_bar, σ, μ, q, Q, R, Rf, A, B, C = model
 
-bbox = (0., 1.02, 1., .102)
-legend_args = {'bbox_to_anchor': bbox, 'loc': 3, 'mode': 'expand'}
-p_args = {'lw': 2, 'alpha': 0.7}
+    # 计算解并模拟
+    lq = LQ(Q, R, A, B, C, beta=β, T=T, Rf=Rf)
+    x0 = (0, 1)
+    xp, up, wp = lq.compute_sequence(x0)
 
-axes[0].plot(list(range(1, T+1)), income, 'g-', label="非金融收入",
-            **p_args)
-axes[0].plot(list(range(T)), c, 'k-', label="消费", **p_args)
+    # 转换回资产、消费和收入
+    assets = xp[0, :]           # a_t
+    c = up.flatten() + c_bar    # c_t
+    income = σ * wp[0, 1:] + μ  # y_t
 
-axes[1].plot(list(range(1, T+1)), np.cumsum(income - μ), 'r-',
-            label="累计未预期收入", **p_args)
-axes[1].plot(list(range(T+1)), assets, 'b-', label="资产", **p_args)
-axes[1].plot(list(range(T)), np.zeros(T), 'k-')
+    # 绘制结果
+    n_rows = 2
+    fig, axes = plt.subplots(n_rows, 1, figsize=(12, 10))
 
-for ax in axes:
-    ax.grid()
-    ax.set_xlabel('时间')
-    ax.legend(ncol=2, **legend_args)
+    plt.subplots_adjust(hspace=0.5)
 
-plt.show()
+    bbox = (0., 1.02, 1., .102)
+    legend_args = {'bbox_to_anchor': bbox, 'loc': 3, 'mode': 'expand'}
+    p_args = {'lw': 2, 'alpha': 0.7}
+
+    axes[0].plot(range(1, T+1), income, 'g-', label="非金融收入",
+                **p_args)
+    axes[0].plot(range(T), c, 'k-', label="消费", **p_args)
+
+    axes[1].plot(range(1, T+1), np.cumsum(income - μ), 'r-',
+                label="累计未预期收入", **p_args)
+    axes[1].plot(range(T+1), assets, 'b-', label="资产", **p_args)
+    axes[1].plot(range(T), np.zeros(T), 'k-')
+
+    for ax in axes:
+        ax.grid()
+        ax.set_xlabel('时间')
+        ax.legend(ncol=2, **legend_args)
+
+    plt.show()
+
+# 创建模型实例并模拟
+model = create_lq_model()
+simulate_and_plot(model)
 ```
 
 上图的第一面板显示了模拟中消费 $c_t$ 和收入 $y_t$ 的时间路径。
@@ -732,44 +743,13 @@ $$
 
 这个消费者比之前的更有耐心，因此对后期消费赋予相对更大的权重。
 
-```{code-cell} ipython3
-:tags: [output_scroll]
+由于 `LQModel` 是一个 `NamedTuple`，我们可以通过复制原有模型并修改单个字段来获得新模型。
 
-# 计算解并模拟
-lq = LQ(Q, R, A, B, C, beta=0.96, T=T, Rf=Rf)
-x0 = (0, 1)
-xp, up, wp = lq.compute_sequence(x0)
-
-# 转换回资产、消费和收入
-assets = xp[0, :]           # a_t
-c = up.flatten() + c_bar    # c_t
-income = σ * wp[0, 1:] + μ  # y_t
-
-# 绘制结果
-n_rows = 2
-fig, axes = plt.subplots(n_rows, 1, figsize=(12, 10))
-
-plt.subplots_adjust(hspace=0.5)
-
-bbox = (0., 1.02, 1., .102)
-legend_args = {'bbox_to_anchor': bbox, 'loc': 3, 'mode': 'expand'}
-p_args = {'lw': 2, 'alpha': 0.7}
-
-axes[0].plot(list(range(1, T+1)), income, 'g-', label="非金融收入",
-             **p_args)
-axes[0].plot(list(range(T)), c, 'k-', label="消费", **p_args)
-
-axes[1].plot(list(range(1, T+1)), np.cumsum(income - μ), 'r-',
-             label="累计未预期收入", **p_args)
-axes[1].plot(list(range(T+1)), assets, 'b-', label="资产", **p_args)
-axes[1].plot(list(range(T)), np.zeros(T), 'k-')
-
-for ax in axes:
-    ax.grid()
-    ax.set_xlabel('时间')
-    ax.legend(ncol=2, **legend_args)
-
-plt.show()
+```{code-cell} python3
+---
+tags: [output_scroll]
+---
+simulate_and_plot(model._replace(β=0.96))
 ```
 
 现在我们有一个缓慢上升的消费路径，以及在中期出现驼峰形状的资产积累来为不断增长的消费提供资金。
@@ -798,14 +778,14 @@ plt.show()
 
 ### 添加交叉乘积项
 
-在某些LQ问题中，偏好包含一个交叉乘积项$u_t' N x_t$，使得目标函数变为
+在某些LQ问题中，偏好包含一个交叉乘积项$u_t^\top N x_t$，使得目标函数变为
 
 ```{math}
 :label: lq_object_cp
 
 \mathbb E \,
 \left\{
-    \sum_{t=0}^{T-1} \beta^t (x_t' R x_t + u_t' Q u_t + 2 u_t' N x_t) + \beta^T x_T' R_f x_T
+    \sum_{t=0}^{T-1} \beta^t (x_t^\top R x_t + u_t^\top Q u_t + 2 u_t^\top N x_t) + \beta^T x_T^\top R_f x_T
 \right\}
 ```
 
@@ -816,9 +796,9 @@ plt.show()
 ```{math}
 :label: lq_pr_cp
 
-P_{t-1} = R - (\beta B' P_t A + N)'
-(Q + \beta B' P_t B)^{-1} (\beta B' P_t A + N) +
-\beta A' P_t A
+P_{t-1} = R - (\beta B^\top P_t A + N)^\top
+(Q + \beta B^\top P_t B)^{-1} (\beta B^\top P_t A + N) +
+\beta A^\top P_t A
 \quad \text{且} \quad
 P_T = R_f
 ```
@@ -830,7 +810,7 @@ P_T = R_f
 
 u_t  = - F_t x_t
 \quad \text{其中} \quad
-F_t := (Q + \beta B' P_{t+1} B)^{-1} (\beta B' P_{t+1} A + N)
+F_t := (Q + \beta B^\top P_{t+1} B)^{-1} (\beta B^\top P_{t+1} A + N)
 ```
 
  式{eq}`lq_dd`中的序列 $\{d_t\}$保持不变。
@@ -850,7 +830,7 @@ F_t := (Q + \beta B' P_{t+1} B)^{-1} (\beta B' P_{t+1} A + N)
 
 \mathbb E \,
 \left\{
-    \sum_{t=0}^{\infty} \beta^t (x_t' R x_t + u_t' Q u_t + 2 u_t' N x_t)
+    \sum_{t=0}^{\infty} \beta^t (x_t^\top R x_t + u_t^\top Q u_t + 2 u_t^\top N x_t)
 \right\}
 ```
 
@@ -862,15 +842,15 @@ F_t := (Q + \beta B' P_{t+1} B)^{-1} (\beta B' P_{t+1} A + N)
 
 不出所料，$P$ 和 $d$也是常数。
 
-稳态矩阵 $P$ 是[离散时间代数黎卡提方程](https://blog.csdn.net/weixin_36815313/article/details/111773535#:~:text=%E4%BB%A3%E6%95%B0%20Riccati%20%E6%96%B9%E7%A8%8B%EF%BC%88algebr)的解。
+稳态矩阵 $P$ 是[离散时间代数黎卡提方程](https://en.wikipedia.org/wiki/Algebraic_Riccati_equation)的解。
 
 (riccati_equation)=
 ```{math}
 :label: lq_pr_ih
 
-P = R - (\beta B' P A + N)'
-(Q + \beta B' P B)^{-1} (\beta B' P A + N) +
-\beta A' P A
+P = R - (\beta B^\top P A + N)^\top
+(Q + \beta B^\top P B)^{-1} (\beta B^\top P A + N) +
+\beta A^\top P A
 ```
 
 方程 {eq}`lq_pr_ih` 也被称为 *LQ 贝尔曼方程*，将给定的 $P$ 映射到 {eq}`lq_pr_ih` 右侧的映射被称为 *LQ 贝尔曼算子*。
@@ -882,7 +862,7 @@ P = R - (\beta B' P A + N)'
 
 u  = - F x
 \quad \text{其中} \quad
-F = (Q + \beta B' P B)^{-1} (\beta B' P A + N)
+F = (Q + \beta B^\top P B)^{-1} (\beta B^\top P A + N)
 ```
 
 {eq}`lq_dd` 中的序列 $\{d_t\}$ 被常数值替代
@@ -891,7 +871,7 @@ F = (Q + \beta B' P B)^{-1} (\beta B' P A + N)
 :label: lq_dd_ih
 
 d
-:= \mathop{\mathrm{trace}}(C' P C) \frac{\beta}{1 - \beta}
+:= \mathop{\mathrm{trace}}(C^\top P C) \frac{\beta}{1 - \beta}
 ```
 
 状态按照时间齐次过程 $x_{t+1} = (A - BF) x_t + C w_{t+1}$ 演化。
@@ -953,7 +933,6 @@ a_{t+1} = (1 + r) a_t - u_t - \bar c + m_1 t + m_2 t^2 + \sigma w_{t+1}
 
 注意，$a_{t+1}$ 是 $(a_t, 1, t, t^2)$ 的线性函数，因此我们将这四个变量作为状态向量 $x_t$。
 
-
 一旦对状态变量与控制变量作出合适的选择（回忆 $u_t = c_t - \bar c$ ），
 其余部分的设定就相对容易确定。
 
@@ -963,44 +942,36 @@ a_{t+1} = (1 + r) a_t - u_t - \bar c + m_1 t + m_2 t^2 + \sigma w_{t+1}
 :label: lq_lowmc3
 
 x_t :=
-\left(
-\begin{array}{c}
+\begin{bmatrix}
 a_t \\
 1 \\
 t \\
 t^2
-\end{array}
-\right),
+\end{bmatrix},
 \quad
 A :=
-\left(
-\begin{array}{cccc}
+\begin{bmatrix}
 1 + r & -\bar c & m_1 & m_2 \\
 0     & 1       & 0   & 0   \\
 0     & 1       & 1   & 0   \\
 0     & 1       & 2   & 1
-\end{array}
-\right),
+\end{bmatrix},
 \quad
 B :=
-\left(
-\begin{array}{c}
+\begin{bmatrix}
 -1 \\
 0 \\
 0 \\
 0
-\end{array}
-\right),
+\end{bmatrix},
 \quad
 C :=
-\left(
-\begin{array}{c}
+\begin{bmatrix}
 \sigma \\
 0 \\
 0 \\
 0
-\end{array}
-\right)
+\end{bmatrix}
 ```
 
 如果你使用这个设定展开表达式 $x_{t+1} = A x_t + B u_t + C w_{t+1}$，你会发现资产按照期望的方式遵循{eq}`lq_hib`，且其他状态变量也会适当更新。
@@ -1013,24 +984,20 @@ C :=
 Q := 1,
 \quad
 R :=
-\left(
-\begin{array}{cccc}
+\begin{bmatrix}
 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0
-\end{array}
-\right)
+\end{bmatrix}
 \quad \text{和} \quad
 R_f :=
-\left(
-\begin{array}{cccc}
+\begin{bmatrix}
 q & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0
-\end{array}
-\right)
+\end{bmatrix}
 ```
 
 下图显示了使用`lqcontrol.py`中的`compute_sequence`方法计算的消费和资产的模拟结果，初始资产设为零。
@@ -1191,7 +1158,7 @@ $$
 
 这种转换的关键在于选择正确的状态变量——这有点像一门艺术。
 
-这里我们取 $x_t = (\bar q_t \;\, q_t \;\, 1)'$，而控制变量选择为 $u_t = q_{t+1} - q_t$。
+这里我们取 $x_t = (\bar q_t \;\, q_t \;\, 1)^\top$，而控制变量选择为 $u_t = q_{t+1} - q_t$。
 
 我们还对利润函数做了轻微调整。
 
@@ -1216,7 +1183,7 @@ $$
 
 \min
 \mathbb E \,
-\sum_{t=0}^{\infty} \beta^t
+    \sum_{t=0}^{\infty} \beta^t
 \left\{
     a_1 ( q_t - \bar q_t)^2 + \gamma u_t^2
 \right\}
@@ -1241,6 +1208,7 @@ $$
 
 ```{solution-start} lqc_ex1
 :class: dropdown
+:label: lqc_ex1_solution
 ```
 
 以下是一种可行的解法。
@@ -1258,7 +1226,7 @@ $$
 - $p(0) = 0, p(T/2) = \mu$，以及
 - $p(T) = 0$
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 模型参数
 r = 0.05
 β = 1/(1 + r)
@@ -1270,7 +1238,7 @@ q = 1e4
 m1 = T * (μ/(T/2)**2)
 m2 = -(μ/(T/2)**2)
 
-# 构建为 LQ 问题
+# 构建为LQ问题
 Q = 1
 R = np.zeros((4, 4))
 Rf = np.zeros((4, 4))
@@ -1321,15 +1289,16 @@ for ax in axes:
     ax.grid()
     ax.set_xlabel('时间')
     ax.legend(ncol=2, **legend_args)
+
 plt.show()
 ```
 
 ```{solution-end}
 ```
 
-````{exercise-start}
+```{exercise-start}
 :label: lqc_ex2
-````
+```
 
 复现{ref}`上面所示<solution_lqc_ex2_fig>`关于工作和退休的图。
 
@@ -1357,18 +1326,19 @@ plt.show()
 通过仔细处理，可以将这两个独立模型的模拟结果拼接在一起生成完整的模拟。
 ```
 
-````{exercise-end}
-````
+```{exercise-end}
+```
 
 ```{solution-start} lqc_ex2
 :class: dropdown
+:label: lqc_ex2_solution
 ```
 
 这是一个永久收入/生命周期模型，工作期间收入呈多项式增长，退休后收入固定。
 
 该模型通过组合两个LQ规划问题来求解，正如讲座中所述。
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 模型参数
 r = 0.05
 β = 1/(1 + r)
@@ -1464,6 +1434,7 @@ for ax in axes:
     ax.grid()
     ax.set_xlabel('时间')
     ax.legend(ncol=2, **legend_args)
+
 plt.show()
 ```
 
@@ -1482,11 +1453,12 @@ plt.show()
 
 ```{solution-start} lqc_ex3
 :class: dropdown
+:label: lqc_ex3_solution
 ```
 
 第一个任务是找到定义LQ问题的矩阵 $A, B, C, Q, R$。
 
-回顾一下 $x_t = (\bar q_t \;\, q_t \;\, 1)'$，而 $u_t = q_{t+1} - q_t$。
+回顾一下 $x_t = (\bar q_t \;\, q_t \;\, 1)^\top$，而 $u_t = q_{t+1} - q_t$。
 
 令 $m_0 := (a_0 - c) / 2a_1$ 且 $m_1 := 1 / 2 a_1$，我们
 可以写成 $\bar q_t = m_0 + m_1 d_t$，然后经过一些
@@ -1513,7 +1485,7 @@ $$
 
 我们的代码如下：
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 模型参数
 a0 = 5
 a1 = 0.5
