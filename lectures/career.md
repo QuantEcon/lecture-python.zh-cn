@@ -83,8 +83,8 @@ from quantecon.distributions import BetaBinomial
 
 在下文中，我们区分职业和工作，其中
 
-* *职业*被理解为包含许多工作的一个领域，而
-* *工作*被理解为在特定公司的一个职位
+* **职业**被理解为包含许多工作的一个领域，而
+* **工作**被理解为在特定公司的一个职位
 
 对于劳动者来说，工资可以分解为工作和职业的贡献
 
@@ -342,7 +342,7 @@ ax.contour(tg, eg, greedy_star.T, colors='k', levels=lvls, linewidths=2)
 ax.set(xlabel='θ', ylabel='ϵ')
 ax.text(1.8, 2.5, '新生活', fontsize=14)
 ax.text(4.5, 2.5, '新工作', fontsize=14, rotation='vertical')
-ax.text(4.0, 4.5, '维持现状', fontsize=14)
+ax.text(4.0, 4.5, '原地不动', fontsize=14)
 plt.show()
 ```
 
@@ -350,7 +350,7 @@ plt.show()
 
 * 如果工作和职业都很差或一般，劳动者会尝试新的工作和新的职业。
 * 如果职业足够好，劳动者会保持这个职业，并尝试新的工作直到找到一个足够好的工作。
-* 如果工作和职业都很好，劳动者会保持现状。
+* 如果工作和职业都很好，劳动者会原地不动。
 
 注意，劳动者会倾向于保持一个好的职业发展方向，但是高薪工作却不一定会一直做下去。
 
@@ -545,7 +545,7 @@ ax.contour(tg, eg, greedy_star.T, colors='k', levels=lvls, linewidths=2)
 ax.set(xlabel='θ', ylabel='ϵ')
 ax.text(1.8, 2.5, '新生活', fontsize=14)
 ax.text(4.5, 1.5, '新工作', fontsize=14, rotation='vertical')
-ax.text(4.0, 4.5, '保持现状', fontsize=14)
+ax.text(4.0, 4.5, '原地不动', fontsize=14)
 plt.show()
 ```
 
