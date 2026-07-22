@@ -9,6 +9,16 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 带扭曲性税收的双国模型
+  headings:
+    Overview: 概述
+    A Two-Country Cass-Koopmans Model: 两国Cass-Koopmans模型
+    A Two-Country Cass-Koopmans Model::Capital Mobility and Taxation: 资本流动性和税收
+    A Two-Country Cass-Koopmans Model::Initial condition and steady state: 初始条件和稳态
+    A Two-Country Cass-Koopmans Model::Equilibrium steady state values: 均衡稳态值
+    'A Two-Country Cass-Koopmans Model::Equilibrium steady state values::Experiment 1: A foreseen increase in $g$ from 0.2 to 0.4 at t=10': 实验1：在t=10时预见到g从0.2增加到0.4
+    'A Two-Country Cass-Koopmans Model::Equilibrium steady state values::Experiment 2: A foreseen increase in $g$ from 0.2 to 0.4 at t=10': 实验2：在t=10时$g$从0.2可预见地增加到0.4
 ---
 
 # 带扭曲性税收的双国模型

@@ -7,6 +7,23 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 线性理性预期模型中的稳定性
+  headings:
+    Overview: 概述
+    Linear Difference Equations: 线性差分方程
+    Linear Difference Equations::First Order: 一阶方程
+    Linear Difference Equations::Second Order: 二阶
+    'Illustration: Cagan''s Model': 示例：凯根模型
+    Some Python Code: Python代码示例
+    Alternative Code: 替代代码
+    Alternative Code::Special Case: 特殊情况
+    Another Perspective: 另一个视角
+    Another Perspective::Refining the Formula: 完善公式
+    Another Perspective::Remarks about Feedback: 关于反馈的说明
+    Log money Supply Feeds Back on Log Price Level: 对数货币供应对对数价格水平的反馈
+    Big $P$, Little $p$ Interpretation: 大 $P$，小 $p$ 解释
+    Fun with SymPy: 玩转 SymPy
 ---
 
 (re_with_feedback)=

@@ -7,6 +7,31 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 资产定价：有限状态模型
+  headings:
+    Overview: 概述
+    Pricing Models: 定价模型
+    Pricing Models::Risk-Neutral Pricing: 风险中性定价
+    Pricing Models::Pricing with Random Discount Factor: 随机贴现因子定价
+    Pricing Models::Asset Pricing and Covariances: 资产定价与协方差
+    Pricing Models::The Price-Dividend Ratio: 价格-股息比率
+    Prices in the Risk-Neutral Case: 风险中性情况下的价格
+    'Prices in the Risk-Neutral Case::Example 1: Constant Dividends': 示例1：常数股息
+    'Prices in the Risk-Neutral Case::Example 2: Dividends with Deterministic Growth Paths': 示例2：具有确定性增长路径的股息
+    'Prices in the Risk-Neutral Case::Example 3: Markov Growth, Risk-Neutral Pricing': 例3：马尔可夫增长，风险中性定价
+    'Prices in the Risk-Neutral Case::Example 3: Markov Growth, Risk-Neutral Pricing::Pricing Formula': 定价公式
+    Prices in the Risk-Neutral Case::Code: 代码
+    Risk Aversion and Asset Prices: 风险规避与资产价格
+    Risk Aversion and Asset Prices::Pricing a Lucas Tree: 卢卡斯树模型定价
+    Risk Aversion and Asset Prices::Pricing a Lucas Tree::Special Cases: 特殊情况
+    Risk Aversion and Asset Prices::A Risk-Free Consol: 无风险永续债券
+    Risk Aversion and Asset Prices::Pricing an Option to Purchase the Consol: 定价购买永续债券的期权
+    Risk Aversion and Asset Prices::Pricing an Option to Purchase the Consol::An Infinite Horizon Call Option: 无限期限看涨期权
+    Risk Aversion and Asset Prices::Risk-Free Rates: 无风险利率
+    Risk Aversion and Asset Prices::Risk-Free Rates::The One-period Risk-free Interest Rate: 一期无风险利率
+    Risk Aversion and Asset Prices::Risk-Free Rates::Other Terms: 其他期限
+    Exercises: 练习
 ---
 
 (mass)=

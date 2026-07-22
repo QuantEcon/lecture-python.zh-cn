@@ -7,6 +7,30 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 永久收入模型
+  headings:
+    Overview: 概述
+    The Savings Problem: 储蓄问题
+    The Savings Problem::Preliminaries: 预备知识
+    The Savings Problem::The Decision Problem: 决策问题
+    The Savings Problem::Assumptions: 假设
+    The Savings Problem::First-Order Conditions: 一阶条件
+    The Savings Problem::The Optimal Decision Rule: 最优决策规则
+    The Savings Problem::The Optimal Decision Rule::Responding to the State: 对状态的响应
+    The Savings Problem::The Optimal Decision Rule::A State-Space Representation: 状态空间表示
+    The Savings Problem::The Optimal Decision Rule::A Simple Example with IID Income: 一个简单的独立同分布收入示例
+    Alternative Representations: 替代表示方法
+    Alternative Representations::Hall's Representation: 霍尔的表示方法
+    Alternative Representations::Cointegration: 协整
+    Alternative Representations::Cross-Sectional Implications: 横截面含义
+    Alternative Representations::Impulse Response Functions: 脉冲响应函数
+    Alternative Representations::Moving Average Representation: 移动平均表示
+    Two Classic Examples: 两个经典例子
+    Two Classic Examples::Example 1: 示例1
+    Two Classic Examples::Example 2: 示例2
+    Further Reading: 延伸阅读
+    'Appendix: The Euler Equation': 附录：欧拉方程
 ---
 
 (perm_income)=
