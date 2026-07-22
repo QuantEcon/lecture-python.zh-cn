@@ -9,6 +9,23 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 故障树不确定性
+  headings:
+    Overview: 概述
+    Log normal distribution: 对数正态分布
+    The Convolution Property: 卷积性质
+    Approximating Distributions: 近似分布
+    create sums of two and three log normal random variates ssum2 = s1 + s2 and ssum3 = s1 + s2 + s3: 创建两个和三个对数正态随机变量的和 ssum2 = s1 + s2 和 ssum3 = s1 + s2 + s3
+    Cell to check -- note what happens when don't normalize!: 检查单元格 -- 注意当不进行归一化时会发生什么！
+    things match up without adjustment. Compare with above: 无需调整即可匹配。与上面进行比较
+    compute number of points to evaluate the probability mass function: 计算评估概率质量函数的点数
+    Convolving Probability Mass Functions: 概率质量函数的卷积
+    Let's compute the mean of the discretized pdf: 让我们计算离散化pdf的均值
+    Failure Tree Analysis: 故障树分析
+    Application: 应用
+    Failure Rates Unknown: 未知的故障率
+    Waste Hoist Failure Rate: 废物提升机失效率
 ---
 
 

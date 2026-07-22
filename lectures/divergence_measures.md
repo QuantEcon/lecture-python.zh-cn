@@ -9,6 +9,18 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 统计散度度量
+  headings:
+    Overview: 概述
+    Primer on entropy, cross-entropy, KL divergence: 熵、交叉熵、KL散度入门
+    'Two Beta distributions: running example': 两个Beta分布：运行示例
+    Kullback–Leibler divergence: Kullback–Leibler散度
+    Jensen-Shannon divergence: Jensen-Shannon散度
+    Chernoff entropy: Chernoff 熵
+    Comparing divergence measures: 比较散度度量
+    KL divergence and maximum-likelihood estimation: KL散度和最大似然估计
+    Related lectures: 相关讲座
 ---
 
 (divergence_measures)=

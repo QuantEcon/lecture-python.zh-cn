@@ -9,6 +9,14 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 消除交叉项
+  headings:
+    Overview: 概述
+    Undiscounted Dynamic Programming Problem: 无折现动态规划问题
+    Kalman Filter: 卡尔曼滤波
+    Kalman Filter::Algorithm: 算法
+    Duality table: 对偶表
 ---
 
 # 消除交叉项
