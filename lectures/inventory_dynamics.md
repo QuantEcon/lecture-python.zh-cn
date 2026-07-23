@@ -13,8 +13,8 @@ translation:
   title: 库存动态
   headings:
     Overview: 概述
-    Sample Paths: 样本路径
-    Marginal Distributions: 边际分布
+    Sample paths: 样本路径
+    Marginal distributions: 边际分布
     Exercises: 练习
 ---
 
@@ -48,13 +48,18 @@ translation:
 
 早期文献和其对宏观经济的影响可以在{cite}`caplin1985variability`中找到。
 
-我们的本节的目标是学习更多关于模拟、时间序列和马尔可夫动态的知识。
+我们本节的目标是学习更多关于模拟、时间序列和马尔可夫动态的知识。
 
 尽管我们的马尔可夫环境和涉及的概念与{doc}`有限马尔可夫链讲座 <finite_markov>`的概念是相关的，但在当前应用中状态空间是连续的。
 
 让我们从导入一些库开始
 
 ```{code-cell} ipython3
+from functools import partial
+from typing import NamedTuple
+import jax
+import jax.numpy as jnp
+from jax import random
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -62,9 +67,7 @@ mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
-import numpy as np
-from numba import jit, float64, prange
-from numba.experimental import jitclass
+from sklearn.neighbors import KernelDensity
 ```
 
 ## 样本路径
@@ -95,64 +98,75 @@ $$
 
 下面是一个类，它用于存储参数并生成库存的时间路径。
 
-```{code-cell} python3
-firm_data = [
-   ('s', float64),          # 触发补货水平
-   ('S', float64),          # 库存总容量
-   ('mu', float64),         # 冲击位置参数
-   ('sigma', float64)       # 冲击规模参数
-]
+```{code-cell} ipython3
+class Firm(NamedTuple):
+    s: int    # 触发补货水平
+    S: int    # 库存总容量
+    μ: float  # 冲击位置参数
+    σ: float  # 冲击规模参数
+```
 
+```{code-cell} ipython3
+@partial(jax.jit, static_argnames="sim_length")
+def sim_inventory_path(firm, x_init, key, sim_length):
+    """
+    从单个 key 出发，模拟长度为 sim_length 的库存路径。
 
-@jitclass(firm_data)
-class Firm:
+    每一期都会通过将时期索引折叠进 key 中，生成一个新的冲击，
+    因此调用者只需为每条路径传入一个 key，而不是整个 key 数组。
 
-    def __init__(self, s=10, S=100, mu=1.0, sigma=0.5):
+    Args:
+        firm: Firm 对象
+        x_init: 初始库存水平
+        key: 单个 JAX 随机 key
+        sim_length: 需要模拟的时期数量
 
-        self.s, self.S, self.mu, self.sigma = s, S, mu, sigma
+    Returns:
+        库存水平数组 [X_0, X_1, ..., X_{sim_length-1}]
+    """
 
-    def update(self, x):
-        "根据当前状态x更新t到t+1的状态。"
+    def update(t, X):
+        x = X[t - 1]
+        Z = random.normal(random.fold_in(key, t))   # 该期的新冲击
+        D = jnp.exp(firm.μ + firm.σ * Z)
+        x_new = jnp.where(
+            x <= firm.s,
+            jnp.maximum(firm.S - D, 0.0),   # 补货至S，再满足需求
+            jnp.maximum(x - D, 0.0),        # 直接满足需求
+        )
+        return X.at[t].set(x_new)
 
-        Z = np.random.randn()
-        D = np.exp(self.mu + self.sigma * Z)
-        if x <= self.s:
-            return max(self.S - D, 0)
-        else:
-            return max(x - D, 0)
+    X = jnp.zeros(sim_length).at[0].set(x_init)
+    return jax.lax.fori_loop(1, sim_length, update, X)
+```
 
-    def sim_inventory_path(self, x_init, sim_length):
+```{note}
+写作 `X.at[t].set(x_new)` 会返回一个 *新* 数组，而不是就地修改 `X`，这符合 JAX 的函数式风格。这看起来会浪费资源，但实际上并非如此：在经过 `jax.jit` 编译的函数内部，XLA 编译器会发现旧数组不再被使用，因此会就地执行更新，也就不会在每个时期都分配新的数组。
+```
 
-        X = np.empty(sim_length)
-        X[0] = x_init
+```{code-cell} ipython3
+firm = Firm(s=10, S=100, μ=1.0, σ=0.5)
+```
 
-        for t in range(sim_length-1):
-            X[t+1] = self.update(X[t])
-        return X
+```{code-cell} ipython3
+sim_length = 100
+x_init = 50
+X = sim_inventory_path(firm, x_init, random.key(21), sim_length)
 ```
 
 让我们运行第一个模拟，模拟单个路径：
 
 ```{code-cell} ipython3
-firm = Firm()
-
 s, S = firm.s, firm.S
-sim_length = 100
-x_init = 50
-
-X = firm.sim_inventory_path(x_init, sim_length)
 
 fig, ax = plt.subplots()
-bbox = (0., 1.02, 1., .102)
-legend_args = {'ncol': 3,
-               'bbox_to_anchor': bbox,
-               'loc': 3,
-               'mode': 'expand'}
+bbox = (0.0, 1.02, 1.0, 0.102)
+legend_args = {"ncol": 3, "bbox_to_anchor": bbox, "loc": 3, "mode": "expand"}
 
 ax.plot(X, label="库存")
-ax.plot(np.full(sim_length, s), 'k--', label="$s$")
-ax.plot(np.full(sim_length, S), 'k-', label="$S$")
-ax.set_ylim(0, S+10)
+ax.plot(jnp.full(sim_length, s), "k--", label="$s$")
+ax.plot(jnp.full(sim_length, S), "k-", label="$S$")
+ax.set_ylim(0, S + 10)
 ax.set_xlabel("时间")
 ax.legend(**legend_args)
 
@@ -162,17 +176,17 @@ plt.show()
 现在让我们模拟多条路径，从而更全面地了解不同结果的概率：
 
 ```{code-cell} ipython3
-sim_length=200
+sim_length = 200
 fig, ax = plt.subplots()
 
-ax.plot(np.full(sim_length, s), 'k--', label="$s$")
-ax.plot(np.full(sim_length, S), 'k-', label="$S$")
-ax.set_ylim(0, S+10)
+ax.plot(jnp.full(sim_length, s), "k--", label="$s$")
+ax.plot(jnp.full(sim_length, S), "k-", label="$S$")
+ax.set_ylim(0, S + 10)
 ax.legend(**legend_args)
 
 for i in range(400):
-    X = firm.sim_inventory_path(x_init, sim_length)
-    ax.plot(X, 'b', alpha=0.2, lw=0.5)
+    X = sim_inventory_path(firm, x_init, random.key(i), sim_length)
+    ax.plot(X, "b", alpha=0.2, lw=0.5)
 
 plt.show()
 ```
@@ -201,27 +215,29 @@ for ax in axes:
 ax = axes[0]
 
 ax.set_ylim(ymin, ymax)
-ax.set_ylabel('$X_t$', fontsize=16)
+ax.set_ylabel("$X_t$", fontsize=16)
 ax.vlines((T,), -1.5, 1.5)
 
 ax.set_xticks((T,))
-ax.set_xticklabels((r'$T$',))
+ax.set_xticklabels((r"$T$",))
 
-sample = np.empty(M)
+sample = []
 for m in range(M):
-    X = firm.sim_inventory_path(x_init, 2 * T)
-    ax.plot(X, 'b-', lw=1, alpha=0.5)
-    ax.plot((T,), (X[T+1],), 'ko', alpha=0.5)
-    sample[m] = X[T+1]
+    X = sim_inventory_path(firm, x_init, random.key(m), 2 * T)
+    ax.plot(X, "b-", lw=1, alpha=0.5)
+    ax.plot((T,), (X[T],), "ko", alpha=0.5)
+    sample.append(X[T])
 
 axes[1].set_ylim(ymin, ymax)
 
-axes[1].hist(sample,
-             bins=16,
-             density=True,
-             orientation='horizontal',
-             histtype='bar',
-             alpha=0.5)
+axes[1].hist(
+    sample,
+    bins=16,
+    density=True,
+    orientation="horizontal",
+    histtype="bar",
+    alpha=0.5,
+)
 
 plt.show()
 ```
@@ -234,16 +250,14 @@ M = 50_000
 
 fig, ax = plt.subplots()
 
-sample = np.empty(M)
-for m in range(M):
-    X = firm.sim_inventory_path(x_init, T+1)
-    sample[m] = X[T]
+# 通过为每条路径分配一个key，一次性向量化地生成M条路径
+keys = random.split(random.key(0), M)
+paths = jax.vmap(
+    sim_inventory_path, in_axes=(None, None, 0, None)
+)(firm, x_init, keys, T + 1)
+sample = paths[:, T]
 
-ax.hist(sample,
-         bins=36,
-         density=True,
-         histtype='bar',
-         alpha=0.75)
+ax.hist(sample, bins=36, density=True, histtype="bar", alpha=0.75)
 
 plt.show()
 ```
@@ -262,16 +276,13 @@ plt.show()
 我们将使用[scikit-learn](https://scikit-learn.org/stable/)中的核密度估计量
 
 ```{code-cell} ipython3
-from sklearn.neighbors import KernelDensity
-
-def plot_kde(sample, ax, label=''):
-
-    xmin, xmax = 0.9 * min(sample), 1.1 * max(sample)
-    xgrid = np.linspace(xmin, xmax, 200)
-    kde = KernelDensity(kernel='gaussian').fit(sample[:, None])
+def plot_kde(sample, ax, label=""):
+    xmin, xmax = 0.9 * sample.min(), 1.1 * sample.max()
+    xgrid = jnp.linspace(xmin, xmax, 200)
+    kde = KernelDensity(kernel="gaussian").fit(sample[:, None])
     log_dens = kde.score_samples(xgrid[:, None])
 
-    ax.plot(xgrid, np.exp(log_dens), label=label)
+    ax.plot(xgrid, jnp.exp(log_dens), label=label)
 ```
 
 ```{code-cell} ipython3
@@ -289,7 +300,7 @@ plt.show()
 
 这个模型是渐近平稳的，具有唯一的平稳分布。
 
-（作为背景知识，有关平稳性的讨论，请参见{doc}`我们关于AR(1)过程的讲座 <intro:ar1_processes>`——基本概念是相同的。）
+（作为背景知识，有关平稳性的讨论，请参见 {doc}`我们关于AR(1)过程的讲座 <intro:ar1_processes>`——基本概念是相同的。）
 
 特别是，边际分布序列$\{\psi_t\}$正在收敛到一个唯一的极限分布，且该分布不依赖于初始条件。
 
@@ -310,29 +321,49 @@ plt.show()
 
 以下是其中一种解法：
 
-由于这个计算需要大量的CPU运算，我们尝试编写更高效的代码。
-
-为此，我们编写了一个专门的函数来替代之前使用的类。
+由于这个计算需要大量的CPU运算，我们尝试使用`jax.jit`和`jax.vmap`来编写高效的代码，以便在CPU/GPU上运行。
 
 ```{code-cell} ipython3
-s, S, mu, sigma = firm.s, firm.S, firm.mu, firm.sigma
+@jax.jit
+def simulate_firm_forward(firm, x_init, key, num_periods):
+    """
+    将单个公司向前模拟num_periods步，并返回其最终库存水平。
+    每期都会从key中抽取一个新的冲击。
+    """
 
-@jit(parallel=True)
-def shift_firms_forward(current_inventory_levels, num_periods):
+    def update(t, x):
+        Z = random.normal(random.fold_in(key, t))
+        D = jnp.exp(firm.μ + firm.σ * Z)
+        return jnp.where(
+            x <= firm.s,
+            jnp.maximum(firm.S - D, 0.0),
+            jnp.maximum(x - D, 0.0),
+        )
 
+    return jax.lax.fori_loop(0, num_periods, update, x_init * 1.0)
+
+
+# 对公司进行向量化：每个公司都有自己的初始水平和自己的key
+simulate_firms_forward = jax.vmap(
+    simulate_firm_forward, in_axes=(None, 0, 0, None)
+)
+```
+
+```{code-cell} ipython3
+def shift_firms_forward(firm, current_inventory_levels, num_periods, key):
+    """
+    使用JAX向量化，将多个公司向前推移num_periods个时期。
+    返回：
+        经过num_periods后的新库存水平数组
+    """
+
+    # 为每个公司生成一个独立的随机key
     num_firms = len(current_inventory_levels)
-    new_inventory_levels = np.empty(num_firms)
-
-    for f in prange(num_firms):
-        x = current_inventory_levels[f]
-        for t in range(num_periods):
-            Z = np.random.randn()
-            D = np.exp(mu + sigma * Z)
-            if x <= s:
-                x = max(S - D, 0)
-            else:
-                x = max(x - D, 0)
-        new_inventory_levels[f] = x
+    firm_keys = random.split(key, num_firms)
+    # 并行运行所有公司的模拟
+    new_inventory_levels = simulate_firms_forward(
+        firm, current_inventory_levels, firm_keys, num_periods
+    )
 
     return new_inventory_levels
 ```
@@ -343,20 +374,20 @@ num_firms = 50_000
 
 sample_dates = 0, 10, 50, 250, 500, 750
 
-first_diffs = np.diff(sample_dates)
+first_diffs = jnp.diff(jnp.array(sample_dates))
 
 fig, ax = plt.subplots()
 
-X = np.full(num_firms, x_init)
+X = jnp.full(num_firms, x_init)
 
 current_date = 0
 for d in first_diffs:
-    X = shift_firms_forward(X, d)
+    X = shift_firms_forward(firm, X, d, random.key(current_date + 1))
     current_date += d
-    plot_kde(X, ax, label=f't = {current_date}')
+    plot_kde(X, ax, label=f"t = {current_date}")
 
-ax.set_xlabel('库存')
-ax.set_ylabel('概率')
+ax.set_xlabel("库存")
+ax.set_ylabel("概率")
 ax.legend()
 plt.show()
 ```
@@ -386,48 +417,80 @@ plt.show()
 
 这里是一种解法。
 
-同样地，由于计算量相对较大，我们编写了一个专门的函数而不是使用上面的类。
-
-我们还将利用公司之间的并行计算。
-
-```{code-cell} ipython3
-@jit(parallel=True)
-def compute_freq(sim_length=50, x_init=70, num_firms=1_000_000):
-
-    firm_counter = 0  # 记录补货2次或以上的公司数量
-    for m in prange(num_firms):
-        x = x_init
-        restock_counter = 0  # 将记录公司m的补货次数
-
-        for t in range(sim_length):
-            Z = np.random.randn()
-            D = np.exp(mu + sigma * Z)
-            if x <= s:
-                x = max(S - D, 0)
-                restock_counter += 1
-            else:
-                x = max(x - D, 0)
-
-        if restock_counter > 1:
-            firm_counter += 1
-
-    return firm_counter / num_firms
-```
+同样地，由于计算量相对较大，我们编写了一个专门的经过JAX即时编译的函数，并使用`jax.vmap`来实现公司之间的并行计算。
 
 记录程序运行所需的时间和输出结果。
 
 ```{code-cell} ipython3
-%%time
+@jax.jit
+def simulate_firm_restocks(firm, x_init, key, num_periods):
+    """
+    将单个公司模拟num_periods个时期，并报告其是否补货超过一次。
+    每期都会从key中抽取一个新的冲击。
 
-freq = compute_freq()
-print(f"至少发生两次缺货的频率 = {freq}")
+    返回：
+        如果公司补货次数 > 1，则返回1，否则返回0
+    """
+
+    def update(t, carry):
+        x, restock_count = carry
+        Z = random.normal(random.fold_in(key, t))
+        D = jnp.exp(firm.μ + firm.σ * Z)
+        restock = x <= firm.s
+        x_new = jnp.where(
+            restock,
+            jnp.maximum(firm.S - D, 0.0),
+            jnp.maximum(x - D, 0.0),
+        )
+        return x_new, restock_count + restock
+
+    # 记录库存水平以及累计补货次数
+    _, total_restocks = jax.lax.fori_loop(
+        0, num_periods, update, (x_init * 1.0, 0)
+    )
+    return (total_restocks > 1).astype(jnp.int32)
+
+
+# 对所有公司进行向量化模拟（每个公司一个key）
+simulate_firms_restocks = jax.vmap(
+    simulate_firm_restocks, in_axes=(None, None, 0, None)
+)
 ```
 
-尝试将上面`@jit`装饰器中的`parallel`参数改为`False`。
+```{code-cell} ipython3
+def compute_freq(
+    firm, x_init=70, sim_length=50, num_firms=1_000_000, key=random.key(2)
+):
+    """
+    使用JAX计算补货2次或以上的公司的频率。
 
-根据你的系统配置，运行速度的差异可能会很大。
+    参数：
+        firm：Firm数据类
+        x_init：所有公司的初始库存水平
+        sim_length：每个公司的模拟长度
+        num_firms：要模拟的公司数量
+        key：JAX随机key
 
-（在我们的系统上运行速度提升了5倍。）
+    返回：
+        补货2次或以上的公司所占的比例
+    """
+    # 为每个公司生成一个独立的随机key
+    firm_keys = random.split(key, num_firms)
+    # 对所有公司运行模拟
+    restock_indicators = simulate_firms_restocks(
+        firm, x_init, firm_keys, sim_length
+    )
+    # 计算频率（补货次数 > 1的公司所占比例）
+    frequency = jnp.mean(restock_indicators)
+    return frequency
+```
+
+```{code-cell} ipython3
+%%time
+
+freq = compute_freq(firm)
+print(f"至少发生两次缺货的频率 = {freq}")
+```
 
 ```{solution-end}
 ```
