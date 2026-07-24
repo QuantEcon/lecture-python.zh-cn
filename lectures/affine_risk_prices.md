@@ -568,8 +568,7 @@ mystnb:
 import matplotlib as mpl  # i18n
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"  # i18n
 mpl.font_manager.fontManager.addfont(FONTPATH)  # i18n
-mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
-
+mpl.rcParams['font.family'] = ['Source Han Serif SC', 'DejaVu Sans']  # i18n
 n_max_1f = 60
 maturities_1f = np.arange(1, n_max_1f + 1)
 

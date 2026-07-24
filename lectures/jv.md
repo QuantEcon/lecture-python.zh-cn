@@ -56,7 +56,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
-plt.rcParams['font.family'] = ['Source Han Serif SC']
+plt.rcParams['font.family'] = ['Source Han Serif SC', 'DejaVu Sans']
 import scipy.stats as stats
 import jax
 import jax.numpy as jnp
