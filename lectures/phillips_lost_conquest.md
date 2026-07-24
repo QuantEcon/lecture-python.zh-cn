@@ -79,9 +79,9 @@ translation:
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl  # i18n
-FONTPATH = "_fonts/SourceHanSerifSC-SemiBold.otf"  # i18n
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"  # i18n
 mpl.font_manager.fontManager.addfont(FONTPATH)  # i18n
-mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
+plt.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
 import numpy as np
 import pandas as pd
 import datetime
