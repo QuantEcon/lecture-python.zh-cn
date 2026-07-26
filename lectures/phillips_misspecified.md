@@ -34,6 +34,9 @@ translation:
 
 # 最优错误设定信念
 
+```{index} single: Phillips Curve; Optimal Misspecified Beliefs
+```
+
 ```{contents} Contents
 :depth: 2
 ```
@@ -43,6 +46,12 @@ translation:
 本讲座继续研究菲利普斯曲线的权衡关系。
 
 内容遵循 {cite}`Sargent1999` 的第 6 章。
+
+在 {doc}`phillips_adaptive` 中，公众使用一个固定的适应性规则来预测通货膨胀，其中的参数 $\lambda$ 是我们直接选定的。
+
+从某种意义上说，这种做法并不令人满意，而 {doc}`phillips_two_stories` 中的*印证*故事是无法容忍这一点的：描述预期的自由参数正是理性预期本应消除的东西。
+
+在这里，我们朝着"赢得"这个参数迈出了第一步——让代理人自己选择该参数，以拟合由他们自身信念所产生的数据。
 
 我们描述了贯穿本系列讲座的三个概念性问题：
 
@@ -283,14 +292,20 @@ print(f"actual one-step forecast error std  σ̄_ε = {σ_bar:.4f}")
 对于均衡 $C$，我们绘制真实模型与近似模型的均衡谱密度。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 真实价格过程与代理人近似模型的谱密度
+    name: fig-mis-spectra
+---
 F = bray.true_spectrum(C_star)
 σ_ε2 = fitted_sigma2(bray, C_star, c_star)
 G = bray.approx_spectrum(c_star, σ_ε2)
 
 half = bray.N // 2
 fig, ax = plt.subplots(figsize=(8, 5))
-ax.plot(bray.ω[:half], np.log(F[:half]), 'C0', label='true model')
-ax.plot(bray.ω[:half], np.log(G[:half]), 'C1--', label='forecasting model')
+ax.plot(bray.ω[:half], np.log(F[:half]), 'C0', label='true model', lw=2)
+ax.plot(bray.ω[:half], np.log(G[:half]), 'C1--', label='forecasting model', lw=2)
 ax.set_xlabel(r'angular frequency $\omega$')
 ax.set_ylabel('log spectral density')
 ax.legend()
@@ -308,6 +323,12 @@ plt.show()
 我们通过向每个移动平均表示输入一个单位冲击，来比较两个模型的脉冲响应函数。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 真实模型与近似模型的脉冲响应
+    name: fig-mis-irf
+---
 def impulse_response(num_roots, den_roots, T=25):
     "IRF of (1 - num L)/(1 - den L): coefficients of the ratio of lag polys."
     h = np.empty(T)
@@ -323,8 +344,8 @@ irf_true = scale * impulse_response(1 - C_star, φ)          # f(L)
 irf_approx = impulse_response(1 - c_star, bray.ρ)           # g(L)
 
 fig, ax = plt.subplots(figsize=(8, 5))
-ax.plot(irf_true, 'C0o-', ms=4, label='true model')
-ax.plot(irf_approx, 'C1s--', ms=4, label='approximating model')
+ax.plot(irf_true, 'C0o-', ms=4, label='true model', lw=2)
+ax.plot(irf_approx, 'C1s--', ms=4, label='approximating model', lw=2)
 ax.set_xlabel('lag')
 ax.set_ylabel('response')
 ax.legend()
@@ -373,9 +394,10 @@ b_grid = np.arange(0.1, 0.85, 0.1)
 C_of_b = [solve_equilibrium(BrayModel(a=1.0, b=b, σ_u=1.0)) for b in b_grid]
 
 fig, ax = plt.subplots(figsize=(8, 4.5))
-ax.plot(b_grid, C_of_b, 'o-')
+ax.plot(b_grid, C_of_b, 'o-', lw=2)
 ax.set_xlabel('feedback parameter $b$')
 ax.set_ylabel('equilibrium belief $C$')
+ax.set_title('Equilibrium belief by expectational feedback')
 plt.show()
 ```
 
@@ -409,6 +431,7 @@ ax.annotate('equilibrium', (C_star, C_star),
             (C_star + 0.05, C_star - 0.03))
 ax.set_xlabel('$C$')
 ax.set_ylabel('$B(C)$')
+ax.set_title('The best-estimate map and its fixed point')
 ax.legend()
 plt.show()
 ```
