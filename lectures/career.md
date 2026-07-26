@@ -39,14 +39,15 @@ translation:
 ```{include} _admonition/gpu.md
 ```
 
-除了Anaconda中已有的库外，本讲座还需要以下库：
+除了 Anaconda 中已有的库外，本讲座还需要以下库：
 
 ```{code-cell} ipython
 ---
 tags: [hide-output]
 ---
-!pip install quantecon
+!pip install quantecon jax
 ```
+
 ## 概述
 
 接下来，我们研究一个关于职业和工作选择的计算问题。
