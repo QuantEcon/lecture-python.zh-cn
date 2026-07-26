@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.1
+    jupytext_version: 1.16.7
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -49,6 +49,14 @@ translation:
 
 ```{contents} 目录
 :depth: 2
+```
+
+除了 Anaconda 中已有的库之外，本讲座还需要以下库：
+
+```{code-cell} ipython3
+:tags: [hide-output]
+
+!pip install jax
 ```
 
 ## 概述
@@ -217,7 +225,6 @@ plt.show()
 
 我们看到 $k^*$ 确实是唯一的正固定点。
 
-
 #### 连续近似法
 
 首先让我们用连续近似法来计算固定点。
@@ -361,7 +368,6 @@ plot_trajectories(params)
 
 我们可以看到牛顿法比连续逼近法收敛得更快。
 
-
 ##  一维求根
 
 在上一节中我们计算了不动点。
@@ -369,7 +375,6 @@ plot_trajectories(params)
 事实上，牛顿法更常与寻找函数零点的问题相关联。
 
 让我们讨论这个"求根"问题，然后说明它与寻找不动点的问题是如何联系的。
-
 
 ### 牛顿法求零点
 
@@ -451,7 +456,6 @@ k_star_approx_newton
 ```
 
 结果证实了我们在上面图表中看到的收敛情况：仅需5次迭代就达到了非常精确的结果。
-
 
 ## 多元牛顿法
 
@@ -677,7 +681,6 @@ e_p.item()
 
 这确实是一个很小的误差。
 
-
 #### 添加梯度信息
 
 在许多情况下，对于应用于光滑函数的零点查找算法，提供函数的[雅可比矩阵](https://baike.baidu.com/item/%E9%9B%85%E5%8F%AF%E6%AF%94%E7%9F%A9%E9%98%B5?fromModule=lemma_search-box)可以带来更好的收敛性质。
@@ -783,7 +786,6 @@ e_p.item()
 结果非常准确。
 
 在开销较大的情况下，速度并不比经过优化的`scipy`函数更快。
-
 
 ### 高维问题
 
