@@ -36,6 +36,9 @@ translation:
 
 # 自我确认均衡
 
+```{index} single: Phillips Curve; Self-Confirming Equilibria
+```
+
 ```{contents} Contents
 :depth: 2
 ```
@@ -50,9 +53,9 @@ translation:
 
 ## 概述
 
-本讲座完成了 {doc}`phillips_credibility` 中开始的关于菲利普斯曲线权衡的研究。
+本讲座完成了 {doc}`phillips_credibility` 中开始研究的*均衡*部分。
 
-它遵循 {cite}`Sargent1999` 的第 7 章。
+它遵循 {cite}`Sargent1999` 的第 7 章，在此之后，本系列将从固定信念转向实时学习的信念。
 
 我们寻求这样一些模型：它们与 {doc}`phillips_credibility` 中 {cite}`KydlandPrescott1977` 的基本模型偏离最小，但同时也让政府的*信念*由其自身政策所产生的数据来塑造。
 
@@ -83,13 +86,13 @@ from scipy.optimize import minimize_scalar
 政府相信一个简约形式的菲利普斯曲线，它可以按两个方向拟合：
 
 $$
-\text{古典：} \quad U_t = \gamma' X_{C,t} + \varepsilon_{C,t},
-\qquad X_{C,t} = \begin{bmatrix} y_t & X_{t-1}' \end{bmatrix}',
+\text{古典：} \quad U_t = \gamma^\top X_{C,t} + \varepsilon_{C,t},
+\qquad X_{C,t} = \begin{bmatrix} y_t & X_{t-1}^\top \end{bmatrix}^\top,
 $$
 
 $$
-\text{凯恩斯：} \quad y_t = \beta' X_{K,t} + \varepsilon_{K,t},
-\qquad X_{K,t} = \begin{bmatrix} U_t & X_{t-1}' \end{bmatrix}' .
+\text{凯恩斯：} \quad y_t = \beta^\top X_{K,t} + \varepsilon_{K,t},
+\qquad X_{K,t} = \begin{bmatrix} U_t & X_{t-1}^\top \end{bmatrix}^\top.
 $$
 
 求解费尔普斯问题以政府的信念 $\gamma$ 为给定，得出通货膨胀的决策规则 $h(\gamma)$。
@@ -112,7 +115,7 @@ $$
 U_t = U^* - \frac{\theta}{1 - \rho_2 L}(y_t - x_t) + \frac{v_{1t}}{1 - \rho_1 L},
 ```
 
-其中 $|\rho_1| < 1$，$|\rho_2| < 1$，且 $v_t = (v_{1t}, v_{2t})'$ 为向量白噪声，其中 $v_{2t} \equiv y_t - x_t$ 是通货膨胀的意外部分。
+其中 $|\rho_1| < 1$，$|\rho_2| < 1$，且 $v_t = (v_{1t}, v_{2t})^\top$ 为向量白噪声，其中 $v_{2t} \equiv y_t - x_t$ 是通货膨胀的意外部分。
 
 在本讲座的大部分内容中，我们设 $\rho_1 = \rho_2 = 0$ 以阐明理论要点，这将 {eq}`sc_actual` 化简为
 
@@ -136,7 +139,7 @@ $$
 （c）失业率由实际菲利普斯曲线 {eq}`sc_actual` 生成；以及
 
 （d）政府的信念满足最小二乘正交性条件
-$E\left[U_t - \gamma' X_{C,t}\right] X_{C,t}' = 0$（**古典**拟合方向）。
+$\mathbb{E}\left[U_t - \gamma^\top X_{C,t}\right] X_{C,t}^\top = 0$（**古典**拟合方向）。
 ```
 
 条件（d）使政府的信念依赖于矩矩阵，而这些矩矩阵通过（a）-（c）本身又依赖于政府的信念。
@@ -145,12 +148,18 @@ $E\left[U_t - \gamma' X_{C,t}\right] X_{C,t}' = 0$（**古典**拟合方向）�
 
 将（d）替换为**凯恩斯**拟合方向，会得到一个不同的自我确认均衡：
 
-> （d′）政府拟合凯恩斯菲利普斯曲线，$E\left[y_t - \beta' X_{K,t}\right] X_{K,t}' = 0$，然后通过反演公式 {eq}`sc_invert` 恢复 $\gamma$。
+> （d′）政府拟合凯恩斯菲利普斯曲线，$\mathbb{E}\left[y_t - \beta^\top X_{K,t}\right] X_{K,t}^\top = 0$，然后通过反演公式 {eq}`sc_invert` 恢复 $\gamma$。
 
 由于政府的信念会影响数据的整个概率分布，最小化的方向会影响结果。
 
 ```{note}
-一般而言，计算自我确认均衡意味着寻找映射 $\gamma = T(h(\gamma))$（古典）或 $\beta = S(h(\gamma(\beta)))$（凯恩斯）的不动点。正交性条件中的矩是通过求解一个离散李雅普诺夫方程，从该系统的状态空间表示中得到的。实践中，人们迭代一个松弛算法 $\beta_{j+1} = \kappa\beta_j + (1-\kappa) S(\beta_j)$，这与 {doc}`phillips_credibility` 中的最小二乘学习递归相似。
+一般而言，计算自我确认均衡意味着寻找映射 $\gamma = T(h(\gamma))$
+（古典）或 $\beta = S(h(\gamma(\beta)))$（凯恩斯）的不动点。
+
+正交性条件中的矩是通过求解一个离散李雅普诺夫方程，从该系统的状态空间表示中得到的。
+
+实践中，人们迭代一个松弛算法 $\beta_{j+1} = \kappa\beta_j + (1-\kappa) S(\beta_j)$，
+这与 {doc}`phillips_credibility` 中的最小二乘学习递归相似。
 ```
 
 ## 手工可解的特殊情形
@@ -162,9 +171,9 @@ $E\left[U_t - \gamma' X_{C,t}\right] X_{C,t}' = 0$（**古典**拟合方向）�
 ```{math}
 :label: sc_moments
 
-\operatorname{var}(U_t) = \theta^2 \sigma_2^2 + \sigma_1^2,
+\mathbb{V}[U_t] = \theta^2 \sigma_2^2 + \sigma_1^2,
 \qquad
-\operatorname{var}(y_t) = \sigma_2^2,
+\mathbb{V}[y_t] = \sigma_2^2,
 \qquad
 \operatorname{cov}(U_t, y_t) = -\theta \sigma_2^2 .
 ```
@@ -172,7 +181,7 @@ $E\left[U_t - \gamma' X_{C,t}\right] X_{C,t}' = 0$（**古典**拟合方向）�
 **古典拟合方向**（$U$ 对 $y$）：斜率为
 
 $$
-\gamma_1 = \frac{\operatorname{cov}(U_t, y_t)}{\operatorname{var}(y_t)} = -\theta,
+\gamma_1 = \frac{\operatorname{cov}(U_t, y_t)}{\mathbb{V}[y_t]} = -\theta,
 $$
 
 而均值必须落在回归线上这一要求给出截距 $\gamma_{-1} = (\gamma_1^2 + 1) U^*$。
@@ -180,7 +189,7 @@ $$
 **凯恩斯拟合方向**（$y$ 对 $U$）：斜率为
 
 $$
-\beta_1 = \frac{\operatorname{cov}(U_t, y_t)}{\operatorname{var}(U_t)}
+\beta_1 = \frac{\operatorname{cov}(U_t, y_t)}{\mathbb{V}[U_t]}
         = \frac{-\theta \sigma_2^2}{\sigma_1^2 + \theta^2 \sigma_2^2},
 $$
 
@@ -236,13 +245,19 @@ print(f"  γ_1 = {γ1_K:.1f},  γ_(-1) = {γ0_K:.1f},  mean inflation = {y_K:.1f
 让我们绘制这两条自我确认的菲利普斯曲线，重现图 7.1。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: The two self-confirming Phillips curves, one for each direction of fit
+    name: fig-sce-two-curves
+---
 fig, ax = plt.subplots(figsize=(7, 6))
 
 U_grid = np.linspace(0, 12, 100)
 
 # perceived Phillips curves U = γ_{-1} + γ_1 y  =>  y = (U - γ_{-1}) / γ_1
-ax.plot(U_grid, (U_grid - γ0_C) / γ1_C, 'C0', label='P: classical fit')
-ax.plot(U_grid, (U_grid - γ0_K) / γ1_K, 'C1', label='Q: Keynesian fit')
+ax.plot(U_grid, (U_grid - γ0_C) / γ1_C, 'C0', label='P: classical fit', lw=2)
+ax.plot(U_grid, (U_grid - γ0_K) / γ1_K, 'C1', label='Q: Keynesian fit', lw=2)
 
 ax.plot(sce.U_star, y_C, 'C0o')
 ax.annotate('Nash', (sce.U_star, y_C), (sce.U_star + 0.4, y_C - 0.6))
@@ -292,7 +307,7 @@ x_t = C y_{t-1} + (1 - C) x_{t-1}, \quad C \in (0, 1),
 
 其中公众持有常数增益的适应性预期，参数 $C$ 由其*根据数据进行调整*。
 
-将 $x_t$ 视为状态变量，政府求解费尔普斯问题：通过选择一个反馈规则 $y_t = f_1 + f_2 x_t + v_{2t}$，最大化 $-E_0 \sum_{t=0}^\infty \delta^t\left[(U^* - \theta(y_t - x_t))^2 + y_t^2\right]$。
+将 $x_t$ 视为状态变量，政府求解费尔普斯问题：通过选择一个反馈规则 $y_t = f_1 + f_2 x_t + v_{2t}$，最大化 $-\mathbb{E}_0 \sum_{t=0}^\infty \delta^t\left[(U^* - \theta(y_t - x_t))^2 + y_t^2\right]$。
 
 这恰好是 {doc}`phillips_adaptive` 中带有适应参数 $\lambda = 1 - C$ 的 LQ 费尔普斯问题。
 
@@ -400,6 +415,12 @@ print(f"Nash inflation   θ U*  = {mp.θ * mp.U_star:.3f}")
 随着政府变得更有耐心，均衡平均通货膨胀率会降至拉姆齐值零附近。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 随着政府变得更有耐心，平均通货膨胀率与均衡增益的变化
+    name: fig-sce-patience
+---
 δ_grid = np.array([0.95, 0.96, 0.97, 0.98, 0.99, 0.995])
 C_vals, ν_vals = [], []
 for δ in δ_grid:
@@ -414,7 +435,7 @@ axes[0].set_xlabel(r'discount factor $\delta$')
 axes[0].set_ylabel('mean inflation')
 axes[0].legend()
 
-axes[1].plot(δ_grid, C_vals, 'o-', color='C1')
+axes[1].plot(δ_grid, C_vals, 'o-', color='C1', lw=2)
 axes[1].set_xlabel(r'discount factor $\delta$')
 axes[1].set_ylabel('equilibrium gain $C$')
 
@@ -425,7 +446,10 @@ plt.show()
 在每个贴现因子下，平均通货膨胀都远低于纳什值，并随着 $\delta \to 1$ 趋近于拉姆齐值零。
 
 ```{note}
-精确的均衡值取决于用来保证被感知模型谱密度良好定义的近单位根近似 $\rho$，正如 {doc}`phillips_misspecified` 中所讨论的那样。定性的结论——即结果优于纳什，并随着 $\delta \to 1$ 趋近拉姆齐——是稳健的。
+精确的均衡值取决于用来保证被感知模型谱密度良好定义的近单位根近似 $\rho$，正如
+{doc}`phillips_misspecified` 中所讨论的那样。
+
+定性的结论——即结果优于纳什，并随着 $\delta \to 1$ 趋近拉姆齐——是稳健的。
 ```
 
 ### 谱与脉冲响应
@@ -433,6 +457,12 @@ plt.show()
 让我们比较均衡处真实与近似的通货膨胀过程，如 {cite}`Sargent1999` 的图 7.2 和图 7.3 所示。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 均衡处真实与近似通货膨胀过程的谱密度
+    name: fig-sce-spectra
+---
 ν_star, F, _ = mp.true_process(C_star)
 c_star = mp.best_estimate(C_star)
 H = np.abs((1 - (1 - c_star) * mp.z) / (1 - mp.ρ * mp.z))**2
@@ -441,8 +471,8 @@ G = H * σ_ε2
 
 half = mp.N // 2
 fig, ax = plt.subplots(figsize=(8, 5))
-ax.plot(mp.ω[:half], np.log(F[:half]), 'C0', label='true model')
-ax.plot(mp.ω[:half], np.log(G[:half]), 'C1--', label='approximating model')
+ax.plot(mp.ω[:half], np.log(F[:half]), 'C0', label='true model', lw=2)
+ax.plot(mp.ω[:half], np.log(G[:half]), 'C1--', label='approximating model', lw=2)
 ax.set_xlabel(r'angular frequency $\omega$')
 ax.set_ylabel('log spectral density')
 ax.legend()
@@ -454,6 +484,12 @@ plt.show()
 真实的通货膨胀率仅具有中等程度的序列相关性，而——正如 {doc}`phillips_misspecified` 中的布雷模型一样——近似模型使用单位根来模拟均值，即用二阶矩来捕捉一阶矩。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 真实与近似通货膨胀过程的脉冲响应
+    name: fig-sce-irf
+---
 def ima_impulse(num, den, T=25):
     "IRF of (1 - num L)/(1 - den L)."
     h = np.empty(T)
@@ -468,8 +504,8 @@ irf_true = ima_impulse(1 - C_star, ψ)
 irf_approx = ima_impulse(1 - c_star, mp.ρ)
 
 fig, ax = plt.subplots(figsize=(8, 5))
-ax.plot(irf_true, 'C0o-', ms=4, label='true model')
-ax.plot(irf_approx, 'C1s--', ms=4, label='approximating model')
+ax.plot(irf_true, 'C0o-', ms=4, label='true model', lw=2)
+ax.plot(irf_approx, 'C1s--', ms=4, label='approximating model', lw=2)
 ax.set_xlabel('lag')
 ax.set_ylabel('response')
 ax.legend()
@@ -521,6 +557,7 @@ ax.plot(σ1_grid, y_keynes, label='Keynesian mean inflation')
 ax.axhline(5.0, color='k', ls='--', lw=1, label='Nash')
 ax.set_xlabel(r'$\sigma_1$')
 ax.set_ylabel('mean inflation')
+ax.set_title('Keynesian mean inflation by shock size')
 ax.legend()
 plt.show()
 ```
@@ -560,6 +597,7 @@ ax.plot(C_star, C_star, 'ko')
 ax.annotate('equilibrium', (C_star, C_star), (C_star + 0.03, C_star - 0.03))
 ax.set_xlabel('$C$')
 ax.set_ylabel('$B(C)$')
+ax.set_title('The best-estimate map and the equilibrium gain')
 ax.legend()
 plt.show()
 ```
