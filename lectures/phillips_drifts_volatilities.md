@@ -56,6 +56,9 @@ translation:
 
 # 漂移与波动率
 
+```{index} single: Phillips Curve; Drifts and Volatilities
+```
+
 ```{contents} Contents
 :depth: 2
 ```
@@ -90,10 +93,9 @@ translation:
 
 我们将依次讲解数据变换、先验、抽样器和主要的实证结果。
 
-让我们从一些导入语句和数据路径开始。
+让我们从一些导入语句和数据的 URL 开始。
 
 ```{code-cell} ipython3
-from pathlib import Path
 import time
 
 import matplotlib.pyplot as plt
@@ -105,19 +107,11 @@ from scipy.special import expit
 from scipy.stats import invwishart
 
 
-def locate_data_assets():
-    """Find assets from either a MyST build or the repository root."""
-    relative = Path('_static/lecture_specific/phillips_drifts_volatilities')
-    candidates = (relative, Path('lectures') / relative)
-    for candidate in candidates:
-        if (candidate / 'NEWQDATA.csv').is_file():
-            return candidate
-    searched = ', '.join(str(path.resolve()) for path in candidates)
-    raise FileNotFoundError(f'NEWQDATA.csv was not found; searched {searched}')
-
-
-asset_path = locate_data_assets()
-data_path = asset_path / 'NEWQDATA.csv'
+data_url = (
+    'https://raw.githubusercontent.com/QuantEcon/lecture-python.myst/'
+    'main/lectures/_static/lecture_specific/phillips_drifts_volatilities/'
+    'NEWQDATA.csv'
+)
 ```
 
 ## 政策不当还是运气不好？
@@ -146,12 +140,13 @@ data_path = asset_path / 'NEWQDATA.csv'
 
 因此，科格利和萨金特构建了一个能同时容纳*这两种*渠道的模型，并让贝叶斯后验来判定数据究竟需要多少这两种成分。
 
+(csdv-model)=
 ## 一个系数漂移且波动率随机变化的 VAR
 
 设变量按名义利率、变换后的失业率、通货膨胀的顺序排列，
 
 $$
-y_t = \begin{bmatrix} i_t & u_t & \pi_t \end{bmatrix}'.
+y_t = \begin{bmatrix} i_t & u_t & \pi_t \end{bmatrix}^\top.
 $$
 
 （这里的 $u_t$ 并非原始的失业率，而是其logit变换，我们将在下面的数据部分定义这一变换。）
@@ -160,9 +155,9 @@ $$
 
 ```{math}
 :label: csdv_measurement
-y_t = X_t'\theta_t + \varepsilon_t,
+y_t = X_t^\top \theta_t + \varepsilon_t,
 \qquad
-X_t' = I_3 \otimes \begin{bmatrix} 1 & y_{t-1}' & y_{t-2}' \end{bmatrix}.
+X_t^\top = I_3 \otimes \begin{bmatrix} 1 & y_{t-1}^\top & y_{t-2}^\top \end{bmatrix}.
 ```
 
 每个方程都有一个截距项和六个滞后系数，因此 $\theta_t$ 包含
@@ -324,7 +319,7 @@ $\beta$ 和 $(\sigma_1,\sigma_2,\sigma_3)$。
 ```{code-cell} ipython3
 def prepare_data(source, ordering=('i', 'u', 'pi')):
     """Transform a quarterly table and construct the VAR data."""
-    if isinstance(source, (str, Path)):
+    if isinstance(source, str):
         table = pd.read_csv(source)
     else:
         table = source.copy()
@@ -359,7 +354,7 @@ def prepare_data(source, ordering=('i', 'u', 'pi')):
     }
 
 
-data = prepare_data(data_path)
+data = prepare_data(data_url)
 
 data_summary = pd.Series(
     {
@@ -521,6 +516,7 @@ prior_summary = pd.Series(
 prior_summary.to_frame()
 ```
 
+(csdv-sampler)=
 ## 一个 Metropolis-within-Gibbs 抽样器
 
 我们通过遍历 {cite:t}`CogleySargent2005` 所使用的五个参数模块来模拟后验。
@@ -824,7 +820,7 @@ $$
 $$
 \pi_{\mathcal A}(z\mid\lambda,Y^T)
 = \frac{N(z;m,C)\,\mathbb{1}_{\mathcal A}(z)}
-       {\Pr(z\in\mathcal A\mid\lambda,Y^T)}.
+       {\mathbb{P}\{z\in\mathcal A\mid\lambda,Y^T\}}.
 $$
 
 那个归一化概率难以计算，但椭圆转移从不需要对它求值。
@@ -1073,10 +1069,11 @@ def validate_posterior_arrays(result, periods):
 expected_shapes = validate_posterior_arrays(posterior, len(data['dates']))
 ```
 
+(csdv-results)=
 ## 数据揭示了什么
 
-我们用后验均值系数路径 $E(\theta_t\mid T)$ 和后验均值协方差路径
-$E(R_t\mid T)$ 来总结后验，然后在我们所提出问题的背景下对其加以解释。
+我们用后验均值系数路径 $\mathbb{E}(\theta_t\mid T)$ 和后验均值协方差路径
+$\mathbb{E}(R_t\mid T)$ 来总结后验，然后在我们所提出问题的背景下对其加以解释。
 
 ### 漂移的速率与结构
 
@@ -1465,11 +1462,11 @@ f_{\pi\pi}(\omega,t)
 s_\pi
 (I-A_{t\mid T}e^{-i\omega})^{-1}
 \mathcal R_t
-(I-A_{t\mid T}'e^{i\omega})^{-1}
-s_\pi',
+(I-A_{t\mid T}^\top e^{i\omega})^{-1}
+s_\pi^\top,
 ```
 
-其中 $\mathcal R_t$ 将 $E(R_t\mid T)$ 嵌入伴随系统中。
+其中 $\mathcal R_t$ 将 $\mathbb{E}(R_t\mid T)$ 嵌入伴随系统中。
 
 低频功率既取决于自回归系数，也取决于创新协方差。
 
@@ -1742,8 +1739,8 @@ plt.show()
 ```{math}
 :label: csdv_policy_rule
 i_t = \beta_0
-+ \beta_1 E_t\bar\pi_{t,t+h_\pi}
-+ \beta_2 E_t\bar u_{t,t+h_u}
++ \beta_1 \mathbb{E}_t\bar\pi_{t,t+h_\pi}
++ \beta_2 \mathbb{E}_t\bar u_{t,t+h_u}
 + \beta_3 i_{t-1}
 + \nu_t.
 ```
@@ -2076,7 +2073,7 @@ if len(incomplete_quarters):
 else:
     complete_extension = quarterly_unfilled
 
-cs_sample = pd.read_csv(data_path)
+cs_sample = pd.read_csv(data_url)
 overlap_date = pd.Timestamp('2000-10-01')
 cs_sample_overlap = cs_sample.iloc[-1]
 latest_overlap = latest_quarterly.loc[overlap_date]
@@ -2964,6 +2961,7 @@ plt.show()
 
 2025年第三季度的自然失业率和政策边际估计仍不够精确，尤其是因为并非每一次后验抽样都满足 $|\beta_3|<1$。
 
+(csdv-verdict)=
 ## 政策不当还是运气不好？一个结论
 
 贝叶斯 VAR 模型对本讲座开篇提出的问题给出了一个细致入微的答案。
