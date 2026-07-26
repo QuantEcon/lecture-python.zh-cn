@@ -51,7 +51,7 @@ translation:
 ---
 tags: [hide-output]
 ---
-!pip install quantecon
+!pip install quantecon jax
 ```
 
 ## 概述
@@ -84,8 +84,6 @@ from jax import vmap
 from typing import NamedTuple
 from functools import partial
 ```
-
-
 
 ## 模型
 
@@ -291,7 +289,6 @@ c_i =
 通过在每个 $z$ 上对 $\{a_i, c_i\}$ 插值，就可以得到政策 $(a,z) \mapsto \sigma(a,z)$ 的近似。
 
 在下面的内容中，我们使用线性插值。
-
 
 ## 实现
 
@@ -637,14 +634,11 @@ plt.show()
 
 下面我们更详细地研究这一点。
 
-
-
 ## 财富不平等
 
 让我们通过计算这一现象的一些标准度量来考察财富不平等。
 
 我们还将考察不平等程度如何随利率变化。
-
 
 ### 度量不平等
 
