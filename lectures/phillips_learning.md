@@ -46,15 +46,18 @@ translation:
 
 # 适应性学习与逃逸动态
 
+```{index} single: Phillips Curve; Adaptive Learning and Escape Dynamics
+```
+
 ```{contents} Contents
 :depth: 2
 ```
 
 ## 概述
 
-本讲座是*菲利普斯曲线权衡*系列讲座的集大成之作。
+本讲座是 {cite}`Sargent1999` 所构建理论的集大成之作。
 
-它遵循 {cite}`Sargent1999` 的第 8 章，这是该书最具野心的一章。
+它遵循该书第 8 章——这是全书最具野心的一章，而本系列此后的所有内容，要么进一步深化其分析（{doc}`phillips_escaping_nash`、{doc}`phillips_priors`），要么将其工具应用于更晚近的一段历史事件（{doc}`phillips_lost_conquest`），要么对其核心论断进行实证检验（{doc}`phillips_drifts_volatilities`）。
 
 在 {doc}`phillips_self_confirming` 中，政府对菲利普斯曲线持有*固定*的信念——这些信念被由它们本身所生成的数据所证实。
 
@@ -70,7 +73,7 @@ translation:
 答案取决于一个单一的参数——支配旧数据被折扣速度的**增益**（gain）：
 
 * 若采用实现最小二乘法的*递减*增益，均值动态会将经济拉向自我确认均衡，我们不会得到什么新结果：系统被困在纳什结果附近。
-* 若采用*常数*增益，主体会对过去数据打折扣，收敛被阻止，**新的结果便会涌现**。系统会反复地从自我确认均衡*逃逸*向拉姆齐（零通胀）结果——这种自发的稳定化现象，颇似沃尔克时代的到来。
+* 若采用*常数*增益，主体会对过去数据打折扣，收敛被阻止，**新的结果便会涌现**：系统会反复地从自我确认均衡*逃逸*向拉姆齐（零通胀）结果，呈现出颇似沃尔克时代到来的自发稳定化现象。
 
 这些逃逸正是 {doc}`phillips_two_stories` 中"econometric 政策评估的证明"故事的核心：一个学习索洛-托宾分布滞后版本自然率假说的适应性政府，会因偶然的观察结果而稳定住通货膨胀。
 
@@ -98,7 +101,7 @@ from scipy.linalg import solve_discrete_are
 
 在经典识别方案下，自我确认均衡由政府关于某些总体矩及其所隐含的回归系数的信念所确定。
 
-在经典识别方案下，这些信念由三元组 $(\gamma, \, E X_{C} X_{C}', \, E U X_{C})$ 度量，其中 $\gamma$ 是菲利普斯曲线系数向量。
+在经典识别方案下，这些信念由三元组 $(\gamma, \, E X_{C} X_{C}^\top, \, E U X_{C})$ 度量，其中 $\gamma$ 是菲利普斯曲线系数向量。
 
 在本讲座的适应性模型中，这些对象的*时间 $t$ 的取值*是经济的状态变量之一；它们只有在自我确认均衡中才不再作为状态变量存在，因为在那里它们是常数。
 
@@ -108,8 +111,8 @@ from scipy.linalg import solve_discrete_are
 :label: pl_scemoments
 
 \begin{aligned}
-E\, R_{XC}^{-1}(\gamma)\left[ U_t X_{Ct}' - \left(X_{Ct} X_{Ct}'\right)\gamma \right] &= 0, \\
-E\, X_{Ct} X_{Ct}' - R_{XC}(\gamma) &= 0,
+\mathbb{E}\, R_{XC}^{-1}(\gamma)\left[ U_t X_{Ct}^\top - \left(X_{Ct} X_{Ct}^\top \right)\gamma \right] &= 0, \\
+\mathbb{E}\, X_{Ct} X_{Ct}^\top - R_{XC}(\gamma) &= 0,
 \end{aligned}
 ```
 
@@ -134,9 +137,9 @@ E\, X_{Ct} X_{Ct}' - R_{XC}(\gamma) &= 0,
 ```{math}
 :label: pl_bdef
 
-E\left[F(\phi, \zeta)\right] = 0,
+\mathbb{E}\left[F(\phi, \zeta)\right] = 0,
 \qquad
-b(\phi) \equiv E\left[F(\phi, \zeta)\right],
+b(\phi) \equiv \mathbb{E}\left[F(\phi, \zeta)\right],
 ```
 
 其中 $\zeta$ 是一个随机向量，期望是关于其分布计算的（同样，该分布依赖于 $\phi$）。
@@ -165,7 +168,7 @@ b(\phi_f) = 0 .
 
 这正是 {doc}`phillips_self_confirming` 中用来计算自我确认均衡的松弛算法。
 
-每一步都需要计算数学期望 $b(\phi) = E[F(\phi, \zeta)]$——这正是我们在那里需要矩（李雅普诺夫）公式的原因。
+每一步都需要计算数学期望 $b(\phi) = \mathbb{E}[F(\phi, \zeta)]$——这正是我们在那里需要矩（李雅普诺夫）公式的原因。
 
 ### 随机逼近
 
@@ -194,7 +197,11 @@ t_n = \sum_{k=0}^n a_k ,
 增益序列 $\{a_n\}$ 不同的递减速率会产生不同的逼近过程，因为它们改变了从实际时间 $n$ 到人为时间 $t_n$ 的映射 {eq}`pl_artificial`。
 
 ```{note}
-递归随机逼近起源于 {cite}`RobbinsMonro1951`，他设计了 {eq}`pl_sa` 用于在噪声观测下寻找回归函数的根；以及 {cite}`KieferWolfowitz1952`，他将其改造用于寻找回归函数的最大值（下文提到的"K-W"算法）。用于分析此类递归的"ODE 方法"——即用微分方程的解来逼近插值过程——归功于 {cite}`Ljung1977`；书籍级的详尽处理见 {cite}`BenvenisteMetivierPriouret1990` 和 {cite}`KushnerYin2003`。将其用于研究自我指涉宏观经济模型中的学习问题，由 {cite}`MarcetSargent1989` 开创，并被 {cite}`EvansHonkapohja2001` 全面发展。
+递归随机逼近起源于 {cite}`RobbinsMonro1951`，他设计了 {eq}`pl_sa` 用于在噪声观测下寻找回归函数的根；以及 {cite}`KieferWolfowitz1952`，他将其改造用于寻找回归函数的最大值（下文提到的“K-W”算法）。
+
+用于分析此类递归的“ODE 方法”——即用微分方程的解来逼近插值过程——归功于 {cite}`Ljung1977`；书籍级的详尽处理见 {cite}`BenvenisteMetivierPriouret1990` 和 {cite}`KushnerYin2003`。
+
+将其用于研究自我指涉宏观经济模型中的学习问题，由 {cite}`MarcetSargent1989` 开创，并被 {cite}`EvansHonkapohja2001` 全面发展。
 ```
 
 ### 均值动态
@@ -263,17 +270,19 @@ t_n = \sum_{k=0}^n a_k ,
 ```{math}
 :label: pl_mgf
 
-H(\theta, \phi) = \log E \exp\left(\theta' F(\phi, \zeta)\right),
+H(\theta, \phi) = \log \mathbb{E} \exp\left(\theta^\top F(\phi, \zeta)\right),
 ```
 
 其中期望是关于 $\zeta$ 的分布计算的。
 
 ```{note}
-方程 {eq}`pl_mgf` 是一个启发性的简写。实际进入理论的对象是一个*时间平均*极限；{cite}`DupuisKushner1987` 和 {cite}`KushnerYin2003` 假设对每个 $\delta > 0$，以下极限在任意紧集上关于 $\phi_i, \alpha_i$ 一致存在：
+方程 {eq}`pl_mgf` 是一个启发性的简写。
+
+实际进入理论的对象是一个*时间平均*极限；{cite}`DupuisKushner1987` 和 {cite}`KushnerYin2003` 假设对每个 $\delta > 0$，以下极限在任意紧集上关于 $\phi_i, \alpha_i$ 一致存在：
 $$
 \sum_{i=0}^{T/\delta - 1} \delta\, H(\alpha_i, \phi_i)
 = \lim_{N \to \infty} \frac{\delta}{N}
-  \log E \exp \sum_{i=0}^{T/\delta - 1} \alpha_i'
+  \log \mathbb{E} \exp \sum_{i=0}^{T/\delta - 1} \alpha_i^\top
   \sum_{j=iN}^{iN+N-1} F(\phi_i, \zeta_j) .
 $$
 内部的求和对长度为 $N$ 的一个区块内的创新项做平均；双重极限使我们能够处理序列相关的创新项。
@@ -284,10 +293,10 @@ $$
 ```{math}
 :label: pl_legendre
 
-L(\beta, \phi) = \sup_\theta \left[ \theta'\beta - H(\theta, \phi) \right] .
+L(\beta, \phi) = \sup_\theta \left[ \theta^\top \beta - H(\theta, \phi) \right] .
 ```
 
-第三是**行动泛函**（action functional），它衡量候选逃逸路径 $\phi(\cdot)$ 的"代价"：
+第三是**行动泛函**（action functional），它衡量候选逃逸路径 $\phi(\cdot)$ 的“代价”：
 
 ```{math}
 :label: pl_action
@@ -326,7 +335,7 @@ A = \left\{ \phi(\cdot) \in C[0,T] : \phi(T) \in \partial D \right\} .
 
 换句话说：*在系统逃离集合 $D$ 的条件下，它离开该集合的位置会接近最小行动路径的终点*——因此逃逸具有确定的方向和形态，尽管它是由偶然性触发的。
 
-正是在这个意义上，下文中的逃逸虽然不需要任何巨大的冲击触发，却"看起来有目的性"：它们遵循 {eq}`pl_escapeproblem` 所规定的最小行动路径。
+正是在这个意义上，下文中的逃逸虽然不需要任何巨大的冲击触发，却“看起来有目的性”：它们遵循 {eq}`pl_escapeproblem` 所规定的最小行动路径。
 
 一个关键的对比：均值动态 {eq}`pl_ode` *不*依赖于其周围的噪声，而逃逸路径*却*依赖于噪声——噪声不仅在 {eq}`pl_ode` 周围添加随机波动，它还开辟出了这第二类路径。
 
@@ -346,7 +355,7 @@ $$
 F(\phi, \zeta) = b(\phi) + \sigma(\phi)\, \zeta,
 $$
 
-其中 $\zeta_n$ 是平稳的且服从高斯分布，但不一定是序列不相关的，并定义 $R = \sum_j E\, \zeta_t \zeta_{t-j}'$。
+其中 $\zeta_n$ 是平稳的且服从高斯分布，但不一定是序列不相关的，并定义 $R = \sum_j \mathbb{E}\, \zeta_t \zeta_{t-j}^\top$。
 
 那么行动泛函取如下二次形式：
 
@@ -354,22 +363,26 @@ $$
 :label: pl_action2
 
 S(T, \phi) = \frac{1}{2} \int_0^T
-\left(\tfrac{d}{ds}\phi - b(\phi)\right)'
-\left[\sigma(\phi)\, R\, \sigma(\phi)'\right]^{+}
+\left(\tfrac{d}{ds}\phi - b(\phi)\right)^\top
+\left[\sigma(\phi)\, R\, \sigma(\phi)^\top \right]^{+}
 \left(\tfrac{d}{ds}\phi - b(\phi)\right)
 h(s)\, ds ,
 ```
 
-其中 $(\cdot)^{+}$ 是摩尔-彭若斯广义逆（用于处理 $\sigma R \sigma'$ 可能出现的随机奇异性）。
+其中 $(\cdot)^{+}$ 是摩尔-彭若斯广义逆（用于处理 $\sigma R \sigma^\top$ 可能出现的随机奇异性）。
 
 权重 $h(s)$ 依赖于增益：当 $a_n = a_0 / n^\gamma$ 中的 $\gamma = 1$ 时，$h(s) = \exp(s)$；当 $\gamma < 1$ 时，$h(s) = 1$。
 
-将 {eq}`pl_action2` 理解为一种代价，它惩罚*实际漂移* $\tfrac{d}{ds}\phi$ 与*均值漂移* $b(\phi)$ 之间的偏离，并按局部噪声协方差 $\sigma R \sigma'$ 的逆对每个方向加权。
+将 {eq}`pl_action2` 理解为一种代价，它惩罚*实际漂移* $\tfrac{d}{ds}\phi$ 与*均值漂移* $b(\phi)$ 之间的偏离，并按局部噪声协方差 $\sigma R \sigma^\top$ 的逆对每个方向加权。
 
 因此最小行动逃逸路径会穿过均值动态较弱而噪声信息量较大的区域——而在我们的模型中，这恰恰是*归纳假设*所指的方向。
 
 ```{note}
-这个二次行动泛函正是 {cite}`ChoWilliamsSargent2002` 中所最小化的对象，该文是本讲座模型的正式发表版本。他们求解了纳什自我确认均衡的控制问题 {eq}`pl_escapeproblem`，并从解析上证明了最小行动逃逸会将通货膨胀权重之和推向激活归纳假设的值——也就是趋向拉姆齐结果。{cite}`SargentWilliams2005` 研究了政府先验（等价地，即增益算法的协方差结构，我们的 $P_0$ 与遗忘因子）如何重塑逃逸，而 {cite}`Kasa2004` 将同样的大偏差机制应用于反复出现的货币危机。
+这个二次行动泛函正是 {cite}`ChoWilliamsSargent2002` 中所最小化的对象，该文是本讲座模型的正式发表版本。
+
+他们求解了纳什自我确认均衡的控制问题 {eq}`pl_escapeproblem`，并从解析上证明了最小行动逃逸会将通货膨胀权重之和推向激活归纳假设的值——也就是趋向拉姆齐结果。
+
+{cite}`SargentWilliams2005` 研究了政府先验（等价地，即增益算法的协方差结构，我们的 $P_0$ 与遗忘因子）如何重塑逃逸，而 {cite}`Kasa2004` 将同样的大偏差机制应用于反复出现的货币危机。
 ```
 
 ### 从计算到适应
@@ -384,7 +397,17 @@ h(s)\, ds ,
 2. 递减速度更慢的增益序列——极限情形下即为对过去打折扣的常数增益——则*阻止*了这种拉力，并增加了逃逸动态影响结果的频率。
 
 ```{note}
-一段简短的思想史。{cite}`Lucas_Prescott_1971` 曾摒弃对矩条件 {eq}`pl_scezero` 进行迭代这一计算策略，但 {cite}`Townsend1983` 却使用了它。{cite}`Woodford1990` 和 {cite}`MarcetSargent1989` 用均值动态 {eq}`pl_ode` 建立了含有自我指涉的模型中最小二乘学习收敛于理性预期的条件，两者都要求 $b(\phi)$ 的连续性。曹寅坤（In-Koo Cho）研究了带有*不连续* $b(\phi)$ 的问题，这种不连续性源自可信度和搜索问题中不连续的决策规则（触发策略）；为了使最小二乘学习逼近理性预期，他使用了满足 $\tfrac{1}{\log n} < a_n < \tfrac{1}{\sqrt n}$ 的增益，这为 {eq}`pl_sa` 产生了一个*扩散*逼近，促进了足够的试探以发现均衡。{cite}`KandoriMailathRob1993` 运用相关数学方法，通过突变在博弈中选择长期均衡，而罗杰·迈尔森（Roger Myerson）将逃逸路径的计算应用于一个投票问题。这些学习方法的现代综合体现在 {cite}`EvansHonkapohja2001` 中。
+一段简短的思想史。
+
+{cite}`Lucas_Prescott_1971` 曾摒弃对矩条件 {eq}`pl_scezero` 进行迭代这一计算策略，但 {cite}`Townsend1983` 却使用了它。
+
+{cite}`Woodford1990` 和 {cite}`MarcetSargent1989` 用均值动态 {eq}`pl_ode` 建立了含有自我指涉的模型中最小二乘学习收敛于理性预期的条件，两者都要求 $b(\phi)$ 的连续性。
+
+曹寅坤（In-Koo Cho）研究了带有*不连续* $b(\phi)$ 的问题，这种不连续性源自可信度和搜索问题中不连续的决策规则（触发策略）；为了使最小二乘学习逼近理性预期，他使用了满足 $\tfrac{1}{\log n} < a_n < \tfrac{1}{\sqrt n}$ 的增益，这为 {eq}`pl_sa` 产生了一个*扩散*逼近，促进了足够的试探以发现均衡。
+
+{cite}`KandoriMailathRob1993` 运用相关数学方法，通过突变在博弈中选择长期均衡，而罗杰·迈尔森（Roger Myerson）将逃逸路径的计算应用于一个投票问题。
+
+这些学习方法的现代综合体现在 {cite}`EvansHonkapohja2001` 中。
 ```
 
 ## 适应性模型
@@ -398,9 +421,9 @@ h(s)\, ds ,
 ```{math}
 :label: pl_belief
 
-U_t = \gamma' X_{C,t} + \varepsilon_{C,t},
+U_t = \gamma^\top X_{C,t} + \varepsilon_{C,t},
 \qquad
-X_{C,t} = \begin{bmatrix} y_t & U_{t-1} & U_{t-2} & y_{t-1} & y_{t-2} & 1 \end{bmatrix}' .
+X_{C,t} = \begin{bmatrix} y_t & U_{t-1} & U_{t-2} & y_{t-1} & y_{t-2} & 1 \end{bmatrix}^\top.
 ```
 
 在时间 $t$ 到达时，凭借估计值 $\gamma_{t-1}$，政府通过求解菲尔普斯问题来设定通货膨胀的系统性部分，*就好像* $\gamma_{t-1}$ 将永远支配菲利普斯曲线一样：
@@ -410,7 +433,7 @@ X_{C,t} = \begin{bmatrix} y_t & U_{t-1} & U_{t-2} & y_{t-1} & y_{t-2} & 1 \end{b
 
 y_t = h(\gamma_{t-1}) X_{t-1} + v_{2t},
 \qquad
-X_{t-1} = \begin{bmatrix} U_{t-1} & U_{t-2} & y_{t-1} & y_{t-2} & 1 \end{bmatrix}' .
+X_{t-1} = \begin{bmatrix} U_{t-1} & U_{t-2} & y_{t-1} & y_{t-2} & 1 \end{bmatrix}^\top.
 ```
 
 随后它通过**递归最小二乘法**（RLS）更新其信念：
@@ -419,8 +442,8 @@ X_{t-1} = \begin{bmatrix} U_{t-1} & U_{t-2} & y_{t-1} & y_{t-2} & 1 \end{bmatrix
 :label: pl_rls
 
 \begin{aligned}
-\gamma_t &= \gamma_{t-1} + g_t R_{XC,t}^{-1} X_{C,t}\left(U_t - \gamma_{t-1}' X_{C,t}\right), \\
-R_{XC,t} &= R_{XC,t-1} + g_t\left(X_{C,t} X_{C,t}' - R_{XC,t-1}\right),
+\gamma_t &= \gamma_{t-1} + g_t R_{XC,t}^{-1} X_{C,t}\left(U_t - \gamma_{t-1}^\top X_{C,t}\right), \\
+R_{XC,t} &= R_{XC,t-1} + g_t\left(X_{C,t} X_{C,t}^\top - R_{XC,t-1}\right),
 \end{aligned}
 ```
 
@@ -440,14 +463,14 @@ $$
 
 给定一个信念 $\gamma$，决策规则 $h(\gamma)$ 求解一个 LQ 控制问题。
 
-将所信奉的菲利普斯曲线写为 $U_t = \gamma_0 y_t + c' s_t$，其中 $\gamma_0$ 是当期通货膨胀的系数，$c$ 收集了状态 $s_t = X_{t-1}$ 上的系数。
+将所信奉的菲利普斯曲线写为 $U_t = \gamma_0 y_t + c^\top s_t$，其中 $\gamma_0$ 是当期通货膨胀的系数，$c$ 收集了状态 $s_t = X_{t-1}$ 上的系数。
 
-政府最小化 $E\sum_t \delta^t (U_t^2 + y_t^2)$，因此每期损失为 $s_t' (cc') s_t + (\gamma_0^2 + 1) y_t^2 + 2\gamma_0\, y_t\, c' s_t$，状态按 $s_{t+1} = A s_t + B y_t$ 演化，其中：
+政府最小化 $\mathbb{E}\sum_t \delta^t (U_t^2 + y_t^2)$，因此每期损失为 $s_t^\top (cc^\top) s_t + (\gamma_0^2 + 1) y_t^2 + 2\gamma_0\, y_t\, c^\top s_t$，状态按 $s_{t+1} = A s_t + B y_t$ 演化，其中：
 
 $$
 s_{t+1} = \begin{bmatrix} U_t \\ U_{t-1} \\ y_t \\ y_{t-1} \\ 1 \end{bmatrix},
 \qquad
-U_t = c' s_t + \gamma_0 y_t .
+U_t = c^\top s_t + \gamma_0 y_t .
 $$
 
 我们使用 `scipy` 的离散代数李卡提方程求解器来求解这个折扣 LQ 问题。
@@ -572,6 +595,12 @@ print(f"  h(γ_sce) = {np.round(h_sce, 3)}  (a constant rule of "
 首先，采用最小二乘法（递减增益）。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: "最小二乘法下的经典适应性模型：通货膨胀紧贴着自我确认值"
+    name: fig-learn-ls
+---
 ls = simulate(model, λ=1.0, T_prior=5000, n=1000, seed=1)
 
 fig, ax = plt.subplots(figsize=(9, 4.5))
@@ -580,7 +609,6 @@ ax.axhline(5, color='k', ls='--', lw=1, label='self-confirming (Nash)')
 ax.axhline(0, color='C2', ls=':', lw=1, label='Ramsey')
 ax.set_xlabel('$t$')
 ax.set_ylabel('inflation $y_t$')
-ax.set_title('Figure 8.1: classical adaptive model, least squares')
 ax.legend()
 plt.show()
 ```
@@ -594,6 +622,12 @@ plt.show()
 现在赋予政府一个*常数*增益 $\lambda = 0.975$，使其对过去数据打折扣。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: "Classical adaptive model under a constant gain: recurrent escapes toward Ramsey"
+    name: fig-learn-cgain
+---
 cg = simulate(model, λ=0.975, T_prior=300, n=1000, seed=1)
 
 fig, ax = plt.subplots(figsize=(9, 4.5))
@@ -602,13 +636,9 @@ ax.axhline(5, color='k', ls='--', lw=1, label='self-confirming (Nash)')
 ax.axhline(0, color='C2', ls=':', lw=1, label='Ramsey')
 ax.set_xlabel('$t$')
 ax.set_ylabel('inflation $y_t$')
-ax.set_title('Figure 8.2: classical adaptive model, constant gain '
-             r'($\lambda = 0.975$)')
 ax.legend()
 plt.show()
 ```
-
-图景完全不同了。
 
 通货膨胀最初接近自我确认值 5，随后几乎跌落至零并停留在那里很长一段时间，然后缓慢地朝 5 迈进，却又再一次被推向零。
 
@@ -630,6 +660,12 @@ print(f"constant-gain inflation: mean {cg['y'].mean():.2f}, "
 让我们将通货膨胀与这一权重之和一起绘图。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 稳定化恰好对应着通货膨胀权重之和上升趋近于零
+    name: fig-learn-escape-route
+---
 fig, axes = plt.subplots(2, 1, figsize=(9, 7), sharex=True)
 
 axes[0].plot(cg['y'], lw=0.8)
@@ -656,6 +692,12 @@ plt.show()
 我们可以通过绘制估计出的菲利普斯曲线中常数项与权重之和的联合路径，直接看出这条逃逸路径。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 信念空间中的逃逸路径，按时间着色
+    name: fig-learn-belief-path
+---
 fig, ax = plt.subplots(figsize=(8, 6))
 sc = ax.scatter(cg['constant'], cg['sumweights'], c=np.arange(len(cg['y'])),
                 cmap='viridis', s=6)
@@ -685,6 +727,12 @@ plt.show()
 降低 $\delta$ 会提高低通货膨胀插曲期间观测到的通货膨胀率，这与归纳假设下菲尔普斯问题的运作机制是一致的。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 随着政府变得更有耐心，向拉姆齐方向的逃逸变得更加显著
+    name: fig-learn-discount
+---
 fig, ax = plt.subplots(figsize=(9, 4.5))
 for δ in [0.90, 0.95, 0.98]:
     m = AdaptivePhillips(δ=δ)
@@ -694,7 +742,6 @@ ax.axhline(0, color='k', lw=0.5)
 ax.set_xlabel('$t$')
 ax.set_ylabel('inflation $y_t$')
 ax.legend()
-ax.set_title('Escapes toward Ramsey deepen as the government becomes patient')
 plt.show()
 ```
 
@@ -722,7 +769,13 @@ plt.show()
 
 适应性使得政府的信念成为一种隐藏状态，它给通货膨胀和失业率注入了序列相关性——因此，一个外部预测者若使用随机系数模型，或者进行卢卡斯在其批判 {cite}`lucas1976econometric` 中所指出的那种不断调整，会做得更好。
 
-在这个意义上，适应性模型包含了证明 econometric 政策评估的基础——这正是 {doc}`phillips_two_stories` 中两个故事的第二个。
+在这个意义上，适应性模型包含了证明经济计量政策评估的基础——这正是 {doc}`phillips_two_stories` 中两个故事的第二个。
+
+最后这一观察是可以检验的，值得在任何人查看数据之前记录下模型的预测。
+
+如果政府的信念确实是一个隐藏的漂移状态，那么对战后通货膨胀与失业率的简化形式描述应当显示出*漂移的系数*，而不仅仅是漂移的冲击方差。
+
+{doc}`phillips_drifts_volatilities` 将恰好这样一个模型拟合到数据上，并给出了结论——其中包括逃逸机制的一个预测，而数据并未能证实这一预测。
 
 ## 练习
 
@@ -730,13 +783,21 @@ plt.show()
 :label: pl_ex1
 ```
 
-构建**凯恩斯主义**适应性模型，其中政府沿相反方向拟合菲利普斯曲线，将通货膨胀对失业率做回归。
+以上所有内容都取决于常数增益，因此值得看看其影响究竟有多大。
 
-回归量是 $X_{K,t} = \begin{bmatrix} U_t & U_{t-1} & U_{t-2} & y_{t-1} & y_{t-2} & 1 \end{bmatrix}'$，政府在 $y_t = \beta' X_{K,t} + \varepsilon_{K,t}$ 中估计 $\beta$，然后在求解菲尔普斯问题之前将其反转为 $\gamma$。
-
-不必重新推导所有内容，而是探索*经典*模型对常数增益的敏感性：用 $\lambda \in \{0.99, 0.975, 0.95\}$ 进行模拟，比较通货膨胀朝拉姆齐逃逸的频率。
+用 $\lambda \in \{0.99, 0.975, 0.95\}$ 模拟经典适应性模型，比较通货膨胀朝拉姆齐逃逸的频率。
 
 更大的增益（更小的 $\lambda$，对过去更快地打折扣）如何影响逃逸的频率？
+
+```{note}
+本练习的一个更具挑战性的版本是构建**凯恩斯主义**适应性模型，其中政府沿相反方向拟合菲利普斯曲线，将通货膨胀对失业率做回归。
+
+回归量是 $X_{K,t} = \begin{bmatrix} U_t & U_{t-1} & U_{t-2} & y_{t-1} & y_{t-2} & 1 \end{bmatrix}^\top$；
+政府在 $y_t = \beta^\top X_{K,t} + \varepsilon_{K,t}$ 中估计 $\beta$，然后使用 {doc}`phillips_self_confirming` 中的反演公式
+$\gamma_1 = \beta_1^{-1}$、$\gamma_{-1} = -\beta_{-1}/\beta_1$ 将其反转为 $\gamma$，之后再求解菲尔普斯问题。
+
+{cite}`Sargent1999` 指出，这一变体不像经典模型那样容易发生逃逸。
+```
 
 ```{exercise-end}
 ```
@@ -755,6 +816,7 @@ for λ in [0.99, 0.975, 0.95]:
 ax.axhline(0, color='k', lw=0.5)
 ax.set_xlabel('$t$')
 ax.set_ylabel('inflation $y_t$')
+ax.set_title('Escape frequency by constant gain')
 ax.legend()
 plt.show()
 ```
