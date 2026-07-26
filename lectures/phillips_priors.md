@@ -36,6 +36,9 @@ translation:
 
 # 先验、逃逸与学习循环
 
+```{index} single: Phillips Curve; Priors and Learning Cycles
+```
+
 ```{contents} Contents
 :depth: 2
 ```
@@ -92,7 +95,7 @@ U_n &= u - (\pi_n - \hat x_n) + \sigma_1 W_{1n}, \qquad u > 0, \\
 \end{aligned}
 ```
 
-其中 $U_n$ 是失业率，$\pi_n$ 是通货膨胀率，$x_n$ 是政府设定的通胀的系统性部分，$\hat x_n$ 是公众的（理性）预测，$W_n = (W_{1n}, W_{2n})'$ 是独立同分布的标准高斯噪声。
+其中 $U_n$ 是失业率，$\pi_n$ 是通货膨胀率，$x_n$ 是政府设定的通胀的系统性部分，$\hat x_n$ 是公众的（理性）预测，$W_n = (W_{1n}, W_{2n})^\top$ 是独立同分布的标准高斯噪声。
 
 由于 $\pi_n - \hat x_n = \sigma_2 W_{2n}$，真实的失业率是 $U_n = u - \sigma_2 W_{2n} + \sigma_1 W_{1n}$——无论系统性政策如何，它都围绕自然率 $u$ 波动。
 
@@ -108,7 +111,20 @@ U_n = a + b\, \pi_n + \eta_n ,
 
 信念向量为 $\gamma = (a, b)$（截距和斜率），并将 $\eta_n$ 视为外生冲击。
 
-在相信 {eq}`pp_belief` 的前提下，政府求解菲尔普斯问题——最小化 $\hat E \sum_n \delta^n (U_n^2 + \pi_n^2)$——其静态最优反应将通胀设定为常数
+```{warning}
+{doc}`phillips_escaping_nash` 研究的是同一个静态模型，但信念向量的排列顺序相反，写作
+$\gamma = (\gamma_1, \gamma_{-1})$，*斜率*在前，回归量为 $\Phi = (\pi, 1)$，遵循
+{cite}`ChoWilliamsSargent2002` 的做法。
+
+在这里，我们把*截距*放在前面，$\Phi = (1, \pi)$，遵循 {cite}`SargentWilliams2005` 的做法。
+
+这两者其实是同一个模型在不同坐标下的表示：$a = \gamma_{-1}$ 且 $b = \gamma_1$，因此本讲中的自我确认信念
+$(2u, -1)$ 对应于上一讲中的 $(-1, u(1+\theta^2))$，其中 $\theta = 1$。
+
+诸如 $M$、$V$ 和 $P$ 这样的矩阵，其行和列也相应地进行了转置。
+```
+
+在相信 {eq}`pp_belief` 的前提下，政府求解菲尔普斯问题——最小化 $\hat{\mathbb{E}} \sum_n \delta^n (U_n^2 + \pi_n^2)$——其静态最优反应将通胀设定为常数
 
 ```{math}
 :label: pp_bestresp
@@ -144,7 +160,7 @@ class StaticPhillips:
 
 有三个信念向量值得命名。
 
-* **信念 1（纳什）：** $b = -1$，截距使政府设定 $x = u$。这是 {cite}`KydlandPrescott1977` 的时间一致性结果。
+* **信念 1（纳什）：** $b = -1$，截距使政府设定 $x = u$，这是 {cite}`KydlandPrescott1977` 的时间一致性结果。
 * **信念 2（拉姆齐）：** $b = 0$，因此政府认为*不存在*权衡，设定 $x = 0$。
 * **信念 3（归纳）：** 在动态版本中，当前和滞后通胀的系数之和为零，这对于一个有耐心的政府来说也会使通胀趋向 $0$。
 
@@ -154,7 +170,7 @@ class StaticPhillips:
 
 对于静态模型，这可以手工轻松求解。
 
-斜率为 $b = \operatorname{cov}(U, \pi)/\operatorname{var}(\pi) = -\sigma_2^2/\sigma_2^2 = -1$，均值匹配给出截距 $a = u + x(\bar\gamma)$。
+斜率为 $b = \operatorname{cov}(U, \pi)/\mathbb{V}[\pi] = -\sigma_2^2/\sigma_2^2 = -1$，均值匹配给出截距 $a = u + x(\bar\gamma)$。
 
 将最优反应 {eq}`pp_bestresp`（$b = -1$）代入，得到 $x = a/2$，因此 $a = u + a/2$，即 $a = 2u$。
 
@@ -189,13 +205,13 @@ print(f"check g_bar(γ_sce) = {model.g_bar(γ_sce)}")
 
 协方差矩阵 $V$ 是政府对**参数漂移的先验信念**——这是我们要放开的对象。
 
-对于回归量 $\Phi_n = (1, \pi_n)'$，卡尔曼滤波的大样本近似（见 {cite}`BenvenisteMetivierPriouret1990`）为
+对于回归量 $\Phi_n = (1, \pi_n)^\top$，卡尔曼滤波的大样本近似（见 {cite}`BenvenisteMetivierPriouret1990`）为
 
 ```{math}
 :label: pp_kalman
 
 \begin{aligned}
-\gamma_{n+1} &= \gamma_n + P_n \Phi_n\left(U_n - \Phi_n' \gamma_n\right), \\
+\gamma_{n+1} &= \gamma_n + P_n \Phi_n\left(U_n - \Phi_n^\top \gamma_n\right), \\
 P_{n+1} &= P_n - P_n M(\gamma_n) P_n + \sigma^{-2} V ,
 \end{aligned}
 ```
@@ -301,6 +317,12 @@ V(\lambda) = \begin{bmatrix} V^*_{11} & \sqrt\lambda\, V^*_{12} \\ \sqrt\lambda\
 对每个 $\lambda$，我们求解里卡蒂方程并观察 $\bar P(\lambda)\, \partial\bar g/\partial\gamma$ 特征值中最大实部：当该值为正时，自证均衡是不稳定的。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 随着斜率先验收紧，自证均衡的稳定性变化
+    name: fig-pri-stability
+---
 def V_tighten_slope(λ, V_star):
     V = V_star.copy()
     V[0, 1] = V[1, 0] = np.sqrt(λ) * V_star[0, 1]
@@ -320,7 +342,6 @@ ax.plot(λ_grid, max_re)
 ax.axhline(0, color='k', lw=0.8)
 ax.set_xlabel(r'prior-tightening parameter $\lambda$')
 ax.set_ylabel('max real part of eigenvalue')
-ax.set_title(r'Figure 4: stability of the SCE as the slope prior tightens')
 plt.show()
 ```
 
@@ -348,16 +369,22 @@ mask = sol.t > sol.t[-1] - 800
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 系数循环，以及信念空间中的极限循环
+    name: fig-pri-cycle
+---
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
-axes[0].plot(sol.t[mask], a_path[mask], label='intercept')
-axes[0].plot(sol.t[mask], b_path[mask], label='slope')
+axes[0].plot(sol.t[mask], a_path[mask], label='intercept', lw=2)
+axes[0].plot(sol.t[mask], b_path[mask], label='slope', lw=2)
 axes[0].set_xlabel('time')
 axes[0].set_ylabel('coefficient')
 axes[0].set_title('Figure 5a: coefficients cycle')
 axes[0].legend()
 
-axes[1].plot(a_path[mask], b_path[mask])
+axes[1].plot(a_path[mask], b_path[mask], lw=2)
 axes[1].plot(*γ_sce, 'kx', ms=10, label='SCE')
 axes[1].set_xlabel('intercept')
 axes[1].set_ylabel('slope')
@@ -373,13 +400,18 @@ plt.show()
 由于通胀通过最优反应 {eq}`pp_bestresp` 是系数的函数，信念中的循环表现为通胀在纳什和拉姆齐结果之间振荡的循环。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 沿着学习循环，通胀在纳什和拉姆齐结果之间振荡
+    name: fig-pri-inflation-cycle
+---
 fig, ax = plt.subplots(figsize=(9, 4.5))
 ax.plot(sol.t[mask], x_path[mask])
 ax.axhline(model.u, color='k', ls='--', lw=1, label='Nash')
 ax.axhline(0, color='C2', ls=':', lw=1, label='Ramsey')
 ax.set_xlabel('time')
 ax.set_ylabel('inflation $x$')
-ax.set_title('Figure 6: inflation oscillates between Nash and Ramsey along the cycle')
 ax.legend()
 plt.show()
 ```
@@ -431,7 +463,30 @@ print(f"terminal beliefs  ≈ {terminal.round(2)}   (Belief 2 = [u, 0] = Ramsey)
 
 西姆斯则使用了 $\sigma \neq \sigma_1$（且没有缩小增益），这*错误地分配*了观测到的变异，从而产生了长期、也许是永久性的偏离自证均衡的情形。
 
-让我们在两种设定下模拟静态模型。
+在我们模拟任何东西之前，这一机制在里卡蒂方程 {eq}`pp_riccati` 中就已经显现出来。
+
+一个对其回归误差赋予*过少*方差的政府，必须将它所观察到的变异归因于其他因素，而唯一可用的其他因素就是其自身系数的漂移。
+
+因此 $\sigma < \sigma_1$ 会使稳态的 $P$ 膨胀，而 $P$ 正是在 {eq}`pp_kalman` 中乘以每个预测误差的量。
+
+因此，低估误差方差会使政府*学习得更快*——而这恰恰削弱了均值动态的拉力。
+
+```{code-cell} ipython3
+def effective_gain(model, σ_govt, ε, λ=1.0):
+    "Steady-state weight the filter puts on a single forecast error at the SCE."
+    V = ε**2 * V_tighten_slope(λ, V_star)
+    P = solve_riccati(V, M_sce, σ_govt)
+    Φ = np.array([1.0, model.x(γ_sce)])
+    return (P @ Φ)[0] / (σ_govt**2 + Φ @ P @ Φ)
+
+ε_common = 0.0002
+for σ_govt, tag in ((model.σ1, 'σ = σ1  (correct) '), (0.1, 'σ ≠ σ1  (Sims)   ')):
+    print(f"{tag}: effective gain = {effective_gain(model, σ_govt, ε_common):.5f}")
+```
+
+即使先验 $V$ 和尺度 $\varepsilon$ 在两次运行中都相同，低估误差方差也会使有效增益放大二十多倍。
+
+现在让我们在两种设定下模拟静态模型，保持 $\varepsilon$ 固定不变，这样两者*唯一*的差异就在于政府对其自身回归误差所赋予的方差。
 
 ```{code-cell} ipython3
 def simulate(model, σ_govt, ε, λ=1.0, T=3000, seed=0):
@@ -456,35 +511,66 @@ def simulate(model, σ_govt, ε, λ=1.0, T=3000, seed=0):
         infl[n] = π
     return infl
 
-x_base = simulate(model, σ_govt=model.σ1, ε=0.05, seed=1)     # σ = σ1
-x_sims = simulate(model, σ_govt=0.1,       ε=0.20, seed=1)     # σ ≠ σ1 (Sims-like)
+T_sim, seeds = 6000, range(10)
 
-print(f"σ = σ1  : mean inflation {x_base.mean():.2f}, "
-      f"fraction near Ramsey {(x_base < 2).mean():.0%}")
-print(f"σ ≠ σ1  : mean inflation {x_sims.mean():.2f}, "
-      f"fraction near Ramsey {(x_sims < 2).mean():.0%}")
+def summarize(σ_govt):
+    "Mean inflation and time near Ramsey, across seeds."
+    paths = [simulate(model, σ_govt=σ_govt, ε=ε_common, T=T_sim, seed=s)
+             for s in seeds]
+    return (np.array([p.mean() for p in paths]),
+            np.array([(p < 2).mean() for p in paths]))
+
+mean_base, ramsey_base = summarize(model.σ1)
+mean_sims, ramsey_sims = summarize(0.1)
+
+print(f"{'seed':>4} | {'σ = σ1: mean π':>15} {'near Ramsey':>12}"
+      f" | {'σ ≠ σ1: mean π':>15} {'near Ramsey':>12}")
+for s in seeds:
+    print(f"{s:>4} | {mean_base[s]:>15.2f} {ramsey_base[s]:>11.0%}"
+          f" | {mean_sims[s]:>15.2f} {ramsey_sims[s]:>11.0%}")
+print(f"\nnever escaped in {T_sim} periods:  "
+      f"σ = σ1: {np.sum(ramsey_base < 0.01)}/{len(seeds)} paths,   "
+      f"σ ≠ σ1: {np.sum(ramsey_sims < 0.01)}/{len(seeds)} paths")
 ```
 
+这两列的表现相当不同，而这种差异关乎经济*多频繁地*离开纳什水平，而不在于它逃逸后去往何处。
+
+在误差方差设定正确的情况下，逃逸是一个真正罕见的事件：若干条样本路径在六千个周期内始终停留在纳什利率附近，从未逃逸；其余路径则在某个时刻逃逸，此后又被拉回到拉姆齐水平附近。
+
+而在西姆斯的错误分配下，*每条*路径都会逃逸，并且每一条都将大部分时间停留在拉姆齐水平附近。
+
+三个种子无需任何挑选就能说明问题：种子 0 从未逃逸，种子 4 反复逃逸并每次都被拉回，种子 6 逃逸后则长时间远离纳什水平。
+
 ```{code-cell} ipython3
-fig, axes = plt.subplots(2, 1, figsize=(9, 7), sharex=True)
-axes[0].plot(x_base, lw=0.6)
-axes[0].axhline(model.u, color='k', ls='--', lw=1)
-axes[0].set_ylabel('inflation')
-axes[0].set_title(r'$\sigma = \sigma_1$: recurrent escapes, pulled back to Nash')
+---
+mystnb:
+  figure:
+    caption: 在误差方差设定正确的情况下逃逸是罕见的，而在西姆斯的错误分配下逃逸则普遍存在
+    name: fig-pri-sims
+---
+show = (0, 4, 6)
 
-axes[1].plot(x_sims, lw=0.6, color='C1')
-axes[1].axhline(model.u, color='k', ls='--', lw=1)
+fig, axes = plt.subplots(2, 1, figsize=(9.5, 7), sharex=True, sharey=True)
+for s in show:
+    axes[0].plot(simulate(model, σ_govt=model.σ1, ε=ε_common, T=T_sim, seed=s),
+                 lw=0.5, label=f'seed {s}')
+    axes[1].plot(simulate(model, σ_govt=0.1, ε=ε_common, T=T_sim, seed=s),
+                 lw=0.5, label=f'seed {s}')
+for ax, title in zip(axes, [r'$\sigma = \sigma_1$ (correct): escapes are rare events',
+                            r'$\sigma \neq \sigma_1$ (Sims): every path escapes and lingers']):
+    ax.axhline(model.u, color='k', ls='--', lw=1)
+    ax.axhline(0, color='C2', ls=':', lw=1)
+    ax.set_ylabel('inflation')
+    ax.set_title(title)
+    ax.legend(frameon=False, fontsize=8, ncol=3, loc='lower right')
 axes[1].set_xlabel('$n$')
-axes[1].set_ylabel('inflation')
-axes[1].set_title(r'$\sigma \neq \sigma_1$ (Sims): prolonged spells near Ramsey')
-
 plt.tight_layout()
 plt.show()
 ```
 
-在误差方差设定正确的情况下，均值动态会重新发挥作用，通胀被反复拉回纳什水平附近。
+在误差方差设定正确的情况下，均值动态占主导地位：经济停留在纳什水平，只有异常连续的一连串冲击才能将其撼动——这正是 {doc}`phillips_learning` 和 {doc}`phillips_escaping_nash` 中呈现的罕见逃逸图景。
 
-而在西姆斯的错误分配下，这种拉力被削弱，经济则长期停留在拉姆齐结果附近——政府的行为就好像它已经*永久*学会了一个足够好的自然率假说版本。
+而在西姆斯的错误分配下，政府学习得太快，以至于均值动态无法将其维持住，于是它几乎立即逃逸，其行为就好像已经*永久*学会了一个足够好的自然率假说版本。
 
 正如 {cite}`SargentWilliams2005` 所言，这种差异可以用两种等价的方式来理解：要么是西姆斯允许了过多的参数漂移以至于无法收敛，要么是他没有让政府对其回归误差归因足够多的变异。
 
@@ -520,7 +606,9 @@ plt.show()
 
 它决定了经济是收敛到纳什状态、在纳什和拉姆齐之间循环，还是逃逸到拉姆齐状态并停留在那里。
 
-最后一讲，{doc}`phillips_lost_conquest`，将同样的工具——固定增益学习、预期效用菲尔普斯问题以及自证均衡——带入当下，用以解释美联储对 2020 年代通胀的应对。
+{doc}`phillips_lost_conquest` 将同样的工具——固定增益学习、预期效用菲尔普斯问题以及自证均衡——带入当下，用以解释美联储对 2020 年代通胀的应对。
+
+{doc}`phillips_drifts_volatilities` 随后为本系列画上句点，对这整套论述进行了一次实证检验：将一个带漂移系数、随机波动率的向量自回归模型拟合到战后数据，探究大通胀在多大程度上源于信念漂移，又在多大程度上仅仅是运气不佳。
 
 ## 练习
 
@@ -566,6 +654,7 @@ ax.plot(λ_grid, max_re, ls='--', label='tighten slope (for comparison)')
 ax.axhline(0, color='k', lw=0.8)
 ax.set_xlabel(r'$\lambda$')
 ax.set_ylabel('max real part of eigenvalue')
+ax.set_title('Stability under a tighter intercept prior')
 ax.legend()
 plt.show()
 ```
@@ -609,9 +698,11 @@ for name, V in [("baseline V*", V_star),
     print(f"{name:24s}: direction {v.round(3)}, terminal {term.round(2)}")
 ```
 
-两种先验都将信念导向斜率为 $0$ 的终端点——即拉姆齐信念——但沿着不同的方向，并到达略有不同的截距。
+两种先验都将信念导向斜率为 $0$ 的终端点——即拉姆齐信念——但沿着不同的方向，且二者到达的截距差异相当大：斜率收紧先验落在的截距略高于基准情形截距的一半。
 
-目的地（零通胀）是一个稳健的特征；而*路径*则取决于先验的形状。
+在对政策有意义的层面上，目的地是稳健的：斜率为 $0$ 意味着政府认为不存在可利用的权衡关系，此时 {eq}`pp_bestresp` 无论截距如何，都会将通胀设为零。
+
+而*路径*，以及逃逸在拉姆齐线上具体终止于何处，则取决于先验的形状。
 
 ```{solution-end}
 ```
