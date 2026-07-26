@@ -33,6 +33,9 @@ translation:
 
 # 失落的征服：2020 年代的美联储政策
 
+```{index} single: Phillips Curve; Fed Policy in the 2020s
+```
+
 ```{contents} Contents
 :depth: 2
 ```
@@ -93,19 +96,22 @@ from scipy.linalg import solve_discrete_are
 
 前两个要素是现代宏观经济学中记录最为详实的事实之一。
 
-**持续性下降。**
-从 20 世纪 70 年代到 80 年代，通货膨胀具有很强的持续性；一次冲击会使通货膨胀持续数年之久。
+**持续性下降。** 从 20 世纪 70 年代到 80 年代，通货膨胀具有很强的持续性；一次冲击会使通货膨胀持续数年之久。
+
 {cite}`CogleySargentConquest2005` 和 {cite}`StockWatson2007` 记录了 20 世纪 80 年代中期之后持续性的显著下降——通货膨胀开始更快地回归目标值。
 
-**更平坦的菲利普斯曲线。**
-自 20 世纪 90 年代以来，菲利普斯曲线斜率的估计值趋于零——大衰退之后的“消失的反通胀”便是最典型的例子。
+**更平坦的菲利普斯曲线。** 自 20 世纪 90 年代以来，菲利普斯曲线斜率的估计值趋于零——大衰退之后的“消失的反通胀”便是最典型的例子。
+
 这两个事实都曾出现在政策制定者的脑海中。
+
 前美联储主席珍妮特·耶伦在 2019 年曾指出：“菲利普斯曲线的斜率……自 20 世纪 60 年代以来已显著下降……而且……通货膨胀的持续性已大大降低。”
+
 正如 {cite}`Bernanke2022` 所写：“平坦的菲利普斯曲线意味着通货膨胀作为经济过热的指标可靠性降低了，将通货膨胀重新降至目标水平所需付出的失业代价，可能比过去更高。”
 
-**实时不确定性。**
-{cite}`Orphanides2001` 强调的第三个要素是，产出缺口在*实时*中会被严重误测，尤其是在商业周期的转折点。
+**实时不确定性。** {cite}`Orphanides2001` 强调的第三个要素是，产出缺口在*实时*中会被严重误测，尤其是在商业周期的转折点。
+
 在 2020 年至 2023 年间，实时缺口持续*低于*后来修订后的度量值，因此美联储感知到了更多的经济松弛——这强化了通货膨胀会自行消退的信念。
+
 我们在下文使用当前版本的数据，并在结论部分回到实时数据的区别问题上。
 
 ## 美联储的漂移系数信念
@@ -123,12 +129,12 @@ from scipy.linalg import solve_discrete_are
 美联储通过常增益递归最小二乘法更新 $\theta_t = (\alpha_{0,t}, \rho_t, \kappa_t)$——这正是 {doc}`phillips_learning` 和 {doc}`phillips_priors` 中的算法，增益 $\gamma$ 对过去的数据进行折扣，从而使估计值能够*追踪*漂移：
 
 $$
-\theta_{t+1} = \theta_t + \gamma R_t^{-1} X_t\left(\pi_t - X_t'\theta_t\right),
+\theta_{t+1} = \theta_t + \gamma R_t^{-1} X_t\left(\pi_t - X_t^\top \theta_t\right),
 \qquad
-R_{t+1} = R_t + \gamma\left(X_t X_t' - R_t\right),
+R_{t+1} = R_t + \gamma\left(X_t X_t^\top - R_t\right),
 $$
 
-其中 $X_t = (1, \pi_{t-1}, x_t)'$。
+其中 $X_t = (1, \pi_{t-1}, x_t)^\top$。
 
 我们从 FRED 下载季度个人消费支出（PCE）通货膨胀率、国会预算办公室（CBO）产出缺口和联邦基金利率。
 
@@ -172,6 +178,12 @@ beliefs = estimate_beliefs(data)
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 美联储感知的通货膨胀持续性和菲利普斯曲线斜率
+    name: fig-lc-beliefs
+---
 fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
 axes[0].plot(beliefs['rho'])
 axes[0].axhline(1, color='k', lw=0.5, ls=':')
@@ -188,8 +200,6 @@ plt.tight_layout()
 plt.show()
 ```
 
-这两幅图讲述了这个故事。
-
 在通货膨胀高企的 20 世纪 70 年代和 80 年代，感知的**持续性** $\rho_t$ 接近 1，随后在 80 年代中期之后逐渐下降，在 2008 年之后触底——然后在 2022 年信念更新恢复时*又跳回*接近 1 的水平，恰好也是美联储放弃“暂时性”表述并开始收紧政策的时候。
 
 感知的**斜率** $\kappa_t$ 在整个 2010 年代趋向于零：菲利普斯曲线趋于平坦。
@@ -200,7 +210,7 @@ plt.show()
 
 美联储在每一期通过求解一个线性二次型菲尔普斯问题来设定其政策利率，将其*当前*的估计值视为将永远成立——这正是我们在 {doc}`phillips_learning` 中遇到的 {cite}`Kreps1998` 的预期效用假设。
 
-将信念菲利普斯曲线 {eq}`lc_pc` 与一条固定的“IS 曲线” $x_t = b_0 + b_1 x_{t-1} + g(i_{t-1} - \pi_{t-1}) + \varepsilon^x_t$ 相配对，可以得到状态 $X_t = (1, \pi_t, x_t, i_{t-1})'$ 的线性动态：
+将信念菲利普斯曲线 {eq}`lc_pc` 与一条固定的“IS 曲线” $x_t = b_0 + b_1 x_{t-1} + g(i_{t-1} - \pi_{t-1}) + \varepsilon^x_t$ 相配对，可以得到状态 $X_t = (1, \pi_t, x_t, i_{t-1})^\top$ 的线性动态：
 
 $$
 X_{t+1} = A_t X_t + B_t\, i_t + C \varepsilon_{t+1},
@@ -230,7 +240,7 @@ b0, b1, g = np.linalg.lstsq(X_is, x[1:], rcond=None)[0]
 
 β, π_star, λ_x, η = 0.95, 2.0, 0.2, 0.5
 
-def phelps_rate(θ, state):
+def phelps_rate(θ, state, η=η):
     "在给定信念 θ=(α₀,ρ,κ) 和状态的情况下计算（主观上）最优的联邦基金利率。"
     α0, ρ, κ = θ
     A = np.array([[1, 0, 0, 0],
@@ -270,13 +280,18 @@ optimal = pd.Series(opt, index=data.index[1:])
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 信念驱动的菲尔普斯规则与实际联邦基金利率对比
+    name: fig-lc-phelps-rate
+---
 fig, ax = plt.subplots(figsize=(10, 4.5))
 window = slice('1991', None)
 ax.plot(optimal[window], 'C0', label="菲尔普斯问题的建议利率")
 ax.plot(data['i'][window], 'C3', lw=1, label='实际联邦基金利率')
 ax.set_xlabel('年份')
 ax.set_ylabel('百分比')
-ax.set_title("信念驱动的菲尔普斯规则与实际政策对比")
 ax.legend()
 plt.show()
 
@@ -293,6 +308,12 @@ print(f"1991-2025 年建议利率与实际利率的相关性：{corr:.2f}")
 为了分离出漂移信念所起的作用，我们重新计算菲尔普斯建议利率，这次将信念*固定*在 2000 年 1 月的取值上——当时人们仍然认为通货膨胀具有持续性，且菲利普斯曲线更陡峭。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: "反事实分析：一个自 2000 年以来未曾更新信念的美联储"
+    name: fig-lc-counterfactual
+---
 counterfactual = pd.Series(
     [phelps_rate(θ_2000, np.array([1.0, pi[t], x[t], i_[t - 1]]))
      for t in range(1, n)],
@@ -305,12 +326,9 @@ ax.plot(counterfactual[w], 'C1--', label='反事实情形（信念冻结于 2000
 ax.plot(data['i'][w], 'C3', lw=1, alpha=0.7, label='实际联邦基金利率')
 ax.set_xlabel('年份')
 ax.set_ylabel('百分比')
-ax.set_title('反事实分析：一个自 2000 年以来未曾更新信念的美联储')
 ax.legend()
 plt.show()
 ```
-
-对比结果十分鲜明。
 
 一个持有 2000 年信念的美联储——认为通货膨胀具有持续性且菲利普斯曲线更陡峭——本应在 2021 年*立即而剧烈地*收紧政策，在实际美联储尚未采取任何行动之前，就将联邦基金利率推高至远超 4% 的水平。
 
@@ -357,6 +375,12 @@ i_t &= \phi_\pi\, \pi_t ,
 让我们通过求解三次方程的稳定根来重现 {prf:ref}`lc_prop1`。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 激进的政策使通货膨胀看起来持续性更低
+    name: fig-lc-persistence
+---
 def measured_persistence(φ_π, β=0.99, γ_b=0.5, κ=0.1, σ=1.0):
     "稳定的最小状态变量根 λ(φ_π)：计量经济学家将测得的持续性。"
     coeffs = [β, -(1 + β + κ * σ), 1 + γ_b + κ * σ * φ_π, -γ_b]
@@ -369,10 +393,9 @@ def measured_persistence(φ_π, β=0.99, γ_b=0.5, κ=0.1, σ=1.0):
 λ_path = [measured_persistence(φ) for φ in φ_grid]
 
 fig, ax = plt.subplots(figsize=(8, 4.5))
-ax.plot(φ_grid, λ_path)
+ax.plot(φ_grid, λ_path, lw=2)
 ax.set_xlabel(r'泰勒规则激进程度 $\phi_\pi$')
 ax.set_ylabel(r'测量的持续性 $\lambda$')
-ax.set_title('激进的政策使通货膨胀看起来持续性更低')
 plt.show()
 ```
 
@@ -399,8 +422,16 @@ plt.show()
 这是《征服》一书中反复出现的动态在更高层次上的一次现代重演：这一机制现在通过菲利普斯曲线感知的斜率和持续性，以及政策利率工具发挥作用，而误设并非关于预期，而是关于美联储将简化形式菲利普斯曲线视为结构性的这一*政策内生性*问题——正如 {doc}`phillips_two_stories` 中所描述的“平反”故事那样，忽视了卢卡斯批判。
 
 ```{note}
-正如 {cite}`SargentWilliams2025` 所指出的，漂移系数模型纯粹是一个描述性的“开普勒阶段”模型，而非结构性的“牛顿阶段”模型。原论文也承认了另一种解读方式，即 2020 年代的宽松政策起源于财政因素——参见其所引用的财政理论论述——这是对同一政策路径的一种截然不同的解释。
+正如 {cite}`SargentWilliams2025` 所指出的，漂移系数模型纯粹是一个描述性的“开普勒阶段”模型，
+而非结构性的“牛顿阶段”模型。
+
+原论文也承认了另一种解读方式，即 2020 年代的宽松政策起源于财政因素——参见其所引用的财政理论
+论述——这是对同一政策路径的一种截然不同的解释。
 ```
+
+本讲将漂移的信念归结于美联储，然后追问这些信念会推荐怎样的政策。
+
+本系列的收尾讲座 {doc}`phillips_drifts_volatilities` 则从相反的方向审视同一时期：它追问数据，经济的*简化形式*究竟是否真的发生了漂移，以及那些看似信念漂移的现象，究竟有多少实际上是冲击方差在漂移。
 
 ## 练习
 
@@ -422,10 +453,8 @@ plt.show()
 ```
 
 ```{code-cell} ipython3
-def recommend(θ_path_fn, η_val):
-    global η
-    η_save = η
-    η = η_val
+def recommend(η_val):
+    "在给定平滑权重下，沿整个样本计算菲尔普斯建议利率。"
     θ, R = np.array([0.5, 0.9, 0.05]), np.diag([1.0, 10.0, 5.0])
     out = []
     for t in range(1, n):
@@ -433,17 +462,18 @@ def recommend(θ_path_fn, η_val):
         X = np.array([1.0, pi[t - 1], x[t]])
         R = R + g_t * (np.outer(X, X) - R)
         θ = θ + g_t * np.linalg.solve(R, X * (pi[t] - X @ θ))
-        out.append(phelps_rate(θ, np.array([1.0, pi[t], x[t], i_[t - 1]])))
-    η = η_save
+        out.append(phelps_rate(θ, np.array([1.0, pi[t], x[t], i_[t - 1]]),
+                               η=η_val))
     return pd.Series(out, index=data.index[1:])
 
 fig, ax = plt.subplots(figsize=(10, 4.5))
 w = slice('2015', None)
 for η_val in [0.1, 0.5, 2.0]:
-    ax.plot(recommend(None, η_val)[w], lw=1, label=rf'$\eta = {η_val}$')
+    ax.plot(recommend(η_val)[w], lw=1, label=rf'$\eta = {η_val}$')
 ax.plot(data['i'][w], 'k:', lw=1.5, label='实际利率')
 ax.set_xlabel('年份')
 ax.set_ylabel('百分比')
+ax.set_title('不同平滑权重下的菲尔普斯建议利率')
 ax.legend()
 plt.show()
 ```
