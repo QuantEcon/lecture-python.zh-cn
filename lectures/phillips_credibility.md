@@ -34,6 +34,9 @@ translation:
 
 # 信誉问题
 
+```{index} single: Phillips Curve; Credibility Problem
+```
+
 ```{contents} Contents
 :depth: 2
 ```
@@ -42,7 +45,7 @@ translation:
 
 本讲座描述了一个由 {cite}`KydlandPrescott1977` 以及罗伯特·巴罗和大卫·戈登所研究的那种基本预期菲利普斯曲线模型。
 
-这是基于 {cite}`Sargent1999` 各章内容的系列讲座中的第一讲。
+这是基于 {cite}`Sargent1999` 各章内容的系列讲座中第一讲*建模*讲座，紧接 {doc}`phillips_two_stories` 之后，后者阐述了两种叙事并回顾了卢卡斯批判。
 
 那些章节形式化了：
 
@@ -119,7 +122,9 @@ r(x, y) = - \frac{1}{2} \left[ \left(U^* - \theta (y - x)\right)^2 + y^2 \right]
 
 **纳什均衡：** 满足 (i) $x = y$，以及 (ii) $y = B(x)$ 的二元组 $(x, y)$。
 
-**拉姆齐问题：** $\max_y r(y, y)$。*拉姆齐结果*是达到最大值的 $y$。
+**拉姆齐问题：** $\max_y r(y, y)$。
+
+*拉姆齐结果*是达到最大值的 $y$。
 
 **最优反应动态：** 动态系统 $y_t = B(y_{t-1})$，给定 $y_0$。
 
@@ -218,6 +223,12 @@ print(f"Ramsey payoff       r   = {cm.r(y_R, y_R):.3f}")
 给定 $x$ 时，政府对 $y$ 的最优反应出现在无差异曲线与由 $x$ 索引的菲利普斯曲线相切的位置。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 以预期通货膨胀率为索引的菲利普斯曲线、政府无差异曲线以及纳什和拉姆齐结果
+    name: fig-cred-nash-ramsey
+---
 fig, ax = plt.subplots(figsize=(7, 6))
 
 U_grid = np.linspace(0, 12, 200)
@@ -230,7 +241,7 @@ for x in [0.0, y_N / 2, y_N]:
 
 # government indifference curves (circles U^2 + y^2 = const)
 ξ = np.linspace(0, 2 * np.pi, 200)
-for R in [y_R, np.hypot(cm.U_star, y_N)]:
+for R in [np.hypot(cm.U_star, y_R), np.hypot(cm.U_star, y_N)]:
     if R > 0:
         ax.plot(R * np.cos(ξ), R * np.sin(ξ), 'C1--', lw=1)
 
@@ -277,6 +288,12 @@ y_path = best_response_path(cm, y0=0.0, T=20)
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 最优反应动态蛛网图收敛至纳什通货膨胀率
+    name: fig-cred-best-response
+---
 fig, ax = plt.subplots(figsize=(6, 6))
 
 x_grid = np.linspace(0, y_N + 1, 100)
@@ -374,12 +391,18 @@ def ls_learning(cm, T=2000, σ_η=1.0, seed=0):
     for t in range(1, T + 1):
         η = σ_η * rng.standard_normal()
         y[t] = cm.B(x[t - 1]) + η
-        gain = 1.0 / (t + 1)          # decreasing gain
+        gain = 1.0 / t                # the 1/(t-1) gain of equation (7), reindexed
         x[t] = x[t - 1] + gain * (cm.B(x[t - 1]) - x[t - 1] + η)
     return x, y
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 预期通货膨胀率的最小二乘学习收敛于纳什结果
+    name: fig-cred-ls-learning
+---
 x, y = ls_learning(cm, T=2000, σ_η=1.0)
 
 fig, ax = plt.subplots(figsize=(9, 5))
@@ -410,9 +433,11 @@ plt.show()
 
 后续讲座描述了三种建模前瞻性的方式，它们赋予不同程度的理性，并预测不同质量的结果：
 
-1. 一种声誉方法，将理性预期同时赋予政府和公众。许多结果都是可持续的，从拉姆齐结果的重复到比纳什结果重复更差的路径都有可能。
-2. 一种方法，保持政府的理性，但赋予公众原始凯根-弗里德曼意义上的*适应性*预期。这是 {doc}`phillips_adaptive` 的主题。根据贴现因子与适应参数的比较，这种设定可以改善结果，甚至可能维持拉姆齐结果的重复。
-3. 一种将适应性行为同时赋予政府和公众的方法。这是 {doc}`phillips_misspecified` 和 {doc}`phillips_self_confirming` 的主题。
+1. 一种声誉方法，将理性预期同时赋予政府和公众，这是 {doc}`phillips_credible_policies` 的主题。
+   - 许多结果都是可持续的，从拉姆齐结果的重复到比纳什结果重复更差的路径都有可能，而这种多重性正是该理论的主要启示。
+2. 一种方法，保持政府的理性，但赋予公众原始凯根-弗里德曼意义上的*适应性*预期，这是 {doc}`phillips_adaptive` 的主题。
+   - 根据贴现因子与适应参数的比较，这种设定可以改善结果，甚至可能维持拉姆齐结果的重复。
+3. 一种将适应性行为同时赋予政府和公众的方法，这是 {doc}`phillips_misspecified` 和 {doc}`phillips_self_confirming` 的主题。
 
 ## 附录：随机逼近
 
@@ -498,6 +523,7 @@ for θ in [0.5, 1.0, 2.0]:
 ax.axhline(0, color='k', lw=0.8)
 ax.set_xlabel('$t$')
 ax.set_ylabel('$x_t - \\theta U^*$')
+ax.set_title('按菲利普斯斜率划分的最小二乘学习')
 ax.legend()
 plt.show()
 ```

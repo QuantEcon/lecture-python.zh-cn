@@ -13,6 +13,7 @@ translation:
   title: 美国通货膨胀的兴衰
   headings:
     Overview: 概述
+    Overview::A note on notation: 关于记号的说明
     Facts: 事实
     The Phillips curve in the data: 数据中的菲利普斯曲线
     Two interpretations: 两种解释
@@ -45,6 +46,9 @@ translation:
 
 # 美国通货膨胀的兴衰
 
+```{index} single: Phillips Curve; Rise and Fall of U.S. Inflation
+```
+
 ```{contents} Contents
 :depth: 2
 ```
@@ -74,13 +78,15 @@ translation:
 两个故事的区别在于该理论是如何被采纳的：
 
 * **自然率理论的胜利。** 学术经济学家发现了自然率假说，指出任何通货膨胀与失业之间的权衡都是暂时的，并最终说服政策制定者追求低通货膨胀。
-* **计量经济学政策评估的平反。** 政策制定者从未放弃罗伯特·卢卡斯在其著名批判中所抨击的方法。他们反复重新估计菲利普斯曲线并用它来选择目标，而正是*数据本身*——一条不断向不利方向漂移的经验菲利普斯曲线——引导他们走向更低的通货膨胀。
+* **计量经济学政策评估的平反。** 政策制定者从未放弃罗伯特·卢卡斯在其著名批判中所抨击的方法。
+  - 他们反复重新估计菲利普斯曲线并用它来选择目标，正是*数据本身*——一条不断向不利方向漂移的经验菲利普斯曲线——引导他们走向更低的通货膨胀。
 
 本讲座介绍了支持这两个故事的事实，勾勒出这两种解释，并回顾了第二章既援引又修正的卢卡斯批判。
 
 该系列的其余讲座建立了相应的模型：
 
 * {doc}`phillips_credibility` —— 单期基德兰德-普雷斯科特（Kydland-Prescott）可信度问题（第三章）。
+* {doc}`phillips_credible_policies` —— 重复经济中的声誉问题，以及为何可信政策理论用不可知论取代了悲观主义（第四章）。
 * {doc}`phillips_adaptive` —— 适应性预期与菲尔普斯问题（第五章）。
 * {doc}`phillips_misspecified` —— 最优错误设定信念下的均衡（第六章）。
 * {doc}`phillips_self_confirming` —— 自我确认均衡（第七章）。
@@ -89,6 +95,39 @@ translation:
 * {doc}`phillips_priors` —— 政府关于漂移系数的先验如何影响收敛、循环与逃逸（{cite}`SargentWilliams2005`）。
 * {doc}`phillips_lost_conquest` —— 将同样的工具应用于 2020 年代的通货膨胀以及美联储的迟缓反应（{cite}`SargentWilliams2025`）。
 * {doc}`phillips_drifts_volatilities` —— 一篇实证后记，将带漂移系数、随机波动率的向量自回归模型拟合到数据上，探讨大通胀究竟是政策不当还是运气不佳造成的（{cite}`CogleySargent2005`）。
+
+(phillips_notation)=
+### 关于记号的说明
+
+各讲座遵循其各自所依据来源的记号约定，而这些来源彼此之间并不一致。
+
+与其强加一套统一的记号方案、从而使读者难以对照可能想要参阅的原始论文，我们选择让每一讲都忠实于其来源，并在此记录各讲之间的记号对应关系。
+
+| 对象 | 符号 | 出处 |
+|---|---|---|
+| 通货膨胀 | $y$ | {doc}`phillips_credibility` 至 {doc}`phillips_self_confirming` |
+| | $\pi$ | 从 {doc}`phillips_escaping_nash` 起 |
+| 公众的预期通货膨胀 | $x$ | {doc}`phillips_credibility`、{doc}`phillips_adaptive` |
+| 政府的系统性通货膨胀 | $x$ | {doc}`phillips_escaping_nash`、{doc}`phillips_priors` |
+| 自然失业率 | $U^*$ | {doc}`phillips_credibility` 至 {doc}`phillips_learning` |
+| | $u$ | {doc}`phillips_escaping_nash`、{doc}`phillips_priors` |
+| 菲利普斯曲线斜率 | $\theta$ | {doc}`phillips_credibility` 至 {doc}`phillips_escaping_nash` |
+| 政府的信念 | $\gamma$ | {doc}`phillips_adaptive` 至 {doc}`phillips_priors` |
+| | $\theta$ | {doc}`phillips_lost_conquest`、{doc}`phillips_drifts_volatilities` |
+| 贴现因子 | $\delta$ | {doc}`phillips_credible_policies` 至 {doc}`phillips_learning` |
+| | $\beta$ | {doc}`phillips_lost_conquest`、{doc}`phillips_drifts_volatilities` |
+| 学习增益 | $\lambda$、$g_t$ | {doc}`phillips_adaptive`、{doc}`phillips_learning` |
+| | $\varepsilon$ | {doc}`phillips_escaping_nash`、{doc}`phillips_priors` |
+
+有三处符号冲突值得提前指出，因为如果读者把符号含义一路带下去，就会在这些地方被绊住。
+
+字母 $x$ 换了阵营：在 {doc}`phillips_credibility` 中它表示*公众*的预期，而从 {doc}`phillips_escaping_nash` 起，它表示的是*政府*所设定的量。
+
+二者在均衡中恰好相等，这正是这一转变容易被忽略的原因。
+
+字母 $\theta$ 在前几讲中是菲利普斯曲线的斜率，而在最后两讲中则是政府的整个信念向量。
+
+而 $\lambda$ 则身兼四职：在 {doc}`phillips_adaptive` 中是凯根-弗里德曼适应性参数，在 {doc}`phillips_learning` 中是遗忘因子，在 {doc}`phillips_priors` 中是先验紧缩参数，在 {doc}`phillips_lost_conquest` 中则是实测的持续性根。
 
 让我们从一些导入开始：
 
@@ -103,7 +142,9 @@ from statsmodels.tsa.filters.bk_filter import bkfilter
 
 ```{note}
 接下来两节中的图表复现了 {cite}`Sargent1999` 第一章和第二章中的图表，这些图表所用的数据取自 20 世纪 90 年代末。
+
 我们从 [FRED](https://fred.stlouisfed.org/) 下载相应的原始数据序列，并将关注范围限定在与原书相同的历史区间内。
+
 之后的 {ref}`phillips_after_1999` 一节会将其中最具启发性的图表延伸到当下，并探讨这额外的四分之一个世纪的数据对这两个故事意味着什么。
 ```
 
@@ -124,6 +165,12 @@ inflation_ma = inflation.rolling(13, center=True).mean()
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: Monthly CPI inflation, 13-month centered moving average, 1948-1999
+    name: fig-ts-inflation
+---
 fig, ax = plt.subplots(figsize=(9, 5))
 ax.plot(inflation_ma, lw=1.2)
 ax.axhline(0, color='k', lw=0.5)
@@ -159,6 +206,12 @@ data.head()
 图 1.2 将这两个原始序列绘制在一起。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: Monthly unemployment (white men 20+) and inflation rates
+    name: fig-ts-raw-series
+---
 fig, ax = plt.subplots(figsize=(9, 5))
 ax.plot(data.index, data['inflation'], 'C0', lw=1, label='inflation (CPI)')
 ax.plot(data.index, data['unemployment'], 'C1:', lw=1.2,
@@ -182,6 +235,12 @@ bk.columns = ['inflation_cycle', 'unemployment_cycle']
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: Business-cycle components of inflation and unemployment, Baxter-King bandpass filter
+    name: fig-ts-bandpass
+---
 fig, ax = plt.subplots(figsize=(9, 5))
 ax.plot(bk.index, bk['inflation_cycle'], 'C0', lw=1, label='inflation')
 ax.plot(bk.index, bk['unemployment_cycle'], 'C1:', lw=1.2,
@@ -202,6 +261,12 @@ plt.show()
 图 1.4 将原始序列相互对照绘制，图 1.5 则展示了商业周期成分。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: "Inflation against unemployment, 1960-1982: raw series and business-cycle components"
+    name: fig-ts-scatter-6082
+---
 sub = slice('1960', '1982')
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -227,7 +292,11 @@ plt.show()
 图 1.5 揭示了**菲利普斯回路**：通货膨胀与失业率描绘出的是逆时针方向的回路，而非单一的稳定曲线，这正是自然率理论所强调的、位于故事核心的预期转变的特征表现。
 
 ```{note}
-原书通过选取单一失业率序列来调整人口结构变化的影响。若采用更广义的失业定义，就会引入额外的低频人口结构成分，人们可能会用单位根过程来对其建模。而本文则从另一个来源——即摆脱布雷顿森林体系约束后货币当局*漂移的信念*——将单位根引入通货膨胀-失业率过程之中。
+原书通过选取单一失业率序列来调整人口结构变化的影响。
+
+若采用更广义的失业定义，就会引入额外的低频人口结构成分，人们可能会用单位根过程来对其建模。
+
+而本文则从另一个来源——即摆脱布雷顿森林体系约束后货币当局*漂移的信念*——将单位根引入通货膨胀-失业率过程之中。
 ```
 
 ## 两种解释
@@ -307,7 +376,7 @@ plt.show()
 
 尽管政府的不变性假设是错误的，但它并未在结果中受挫，因为这些结果在统计上与它的信念是一致的。
 
-自我确认均衡是一种理性预期均衡，但其自由参数比卢卡斯所使用的模型*更少*——而恰恰正是这些缺失的参数，才是表现制度变迁所需要的。
+在自我确认均衡中，政府的信念*沿均衡路径*是正确的，因此其预测满足与理性预期均衡相同的跨方程约束；但相对于卢卡斯所使用的完全结构化模型而言，政府的模型所包含的自由参数*更少*——而恰恰正是这些缺失的参数，才是表现制度变迁所需要的。
 
 要容纳制度变迁和漂移系数，就必须*抵制*向自我确认均衡的收敛。
 
@@ -339,6 +408,8 @@ plt.show()
 
 单期的 {cite}`KydlandPrescott1977` 模型得出了一个悲观的预测——即高通货膨胀的时间一致（纳什）结果——但可信政策理论的重复经济版本，用*不可知论*取代了这种悲观：太多的结果都变得可维持，以至于该理论只能给出微弱的预测。
 
+{doc}`phillips_credible_policies` 证明了这一点，它用 {cite}`APS1990` 的递归方法计算出可维持数值的整个集合，并展示了三种带来相同收益却截然不同的均衡。
+
 这种弱预测性是我们在宣称自然率理论取得胜利之前应当迟疑的第一个理由。
 
 随后我们从卢卡斯批判处折返，重新从费尔普斯基准出发，但作一处改动：政府对私人部门的模型不再是任意的——它是*拟合历史数据*得到的。
@@ -351,7 +422,7 @@ plt.show()
 
 这些适应性模型是对理性预期一种*有节制的*退让，而非对其的彻底抛弃。
 
-它们不包含控制预期的自由参数；在每一期，它们都施加与理性预期模型相同的跨方程约束；并且——由于自我确认均衡是其*均值动态*的吸引子——它们在平静的条件下会收敛回理性预期，满足了 {cite}`Kreps1998` 所提出的一个诉求。
+它们不包含控制预期的自由参数；在每一期，它们都施加与理性预期模型相同的跨方程约束；并且——由于自我确认均衡是其*均值动态*的吸引子——在平静的条件下它们会收敛回自我确认均衡，从而在均衡路径上收敛回理性预期，满足了 {cite}`Kreps1998` 所提出的一个诉求。
 
 但是，遵循 {cite}`Sims1988` 的思路，我们真正感兴趣的是适应性所带来的*周期性*动态。
 
@@ -427,6 +498,12 @@ inflation_yoy = 100 * (cpi_full / cpi_full.shift(12) - 1)
 将其延伸至今，增添了原书所无法看到的三段历程：从 20 世纪 80 年代中期开始、通货膨胀低而稳定的*大缓和*时期；2008 年金融危机后，一段长期接近于零、并一度略低于零的时期；以及 2021-2022 年一次骤然飙升至 1981 年以来最高水平、随后又迅速回落的过程。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: Inflation extended to the present, with the book's window shaded
+    name: fig-ts-inflation-long
+---
 fig, ax = plt.subplots(figsize=(11, 5))
 ax.plot(inflation_ma_full, lw=1)
 ax.axhline(0, color='k', lw=0.5)
@@ -457,6 +534,12 @@ plt.show()
 将其延伸后，展示了新数据中最引人注目的两大宏观经济事件：2020 年新冠疫情导致的失业率骤升——一度是大萧条以来的最高水平——以及随之而来的通货膨胀飙升。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: Unemployment and inflation since 1990
+    name: fig-ts-recent
+---
 recent = slice('1990', None)
 
 fig, ax = plt.subplots(figsize=(11, 5))
@@ -485,6 +568,12 @@ plt.show()
 我们将样本划分为原书所涉及的加速时期、大缓和时期，以及 2008 年之后的时期，并在每个时期分别绘制通货膨胀对失业率的散点图。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: The inflation-unemployment scatter across three eras
+    name: fig-ts-three-eras
+---
 scatter_data = pd.concat([inflation_yoy.rename('inflation'),
                           u_full.rename('unemployment')], axis=1).dropna()
 
@@ -503,8 +592,6 @@ axes[0].set_ylabel('inflation (year-over-year)')
 plt.tight_layout()
 plt.show()
 ```
-
-这三片散点云的样貌几乎不可能相差更大。
 
 在 1960-1983 年间，数据点散布在一个很宽的通货膨胀率范围内——这正是预期不断变化、菲利普斯曲线呈现*回路*形态的时代。
 
@@ -531,12 +618,16 @@ plt.show()
 2020 年之前那十年近乎零通货膨胀的时期——那条看似*平坦*的菲利普斯曲线，既没有出现 2009-2013 年"消失的反通货膨胀"，也没有出现 2015-2019 年"消失的通货膨胀"，都不符合一条稳定曲线——恰恰正是本书中适应性政府会实时追踪其斜率和截距不断变化的那种漂移型经验关系。
 
 ```{note}
-本书自身也会坚持提出这样一个警示：其机制假设*基本面*——即真实的数据生成过程——是稳定的，因此所有的作用都来自政府不断演化的信念。而 2021-2022 年这一事件涉及了真实的供给冲击（疫情引发的中断、能源价格），这已超出了该假设的范围。将信念的转变与基本面的转变区分开来，正是使这段历史如此难以捉摸、也如此引人入胜的那个识别问题。
+本书自身也会坚持提出这样一个警示：其机制假设*基本面*——即真实的数据生成过程——是稳定的，因此所有的作用都来自政府不断演化的信念。
+
+2021-2022 年这一事件涉及了真实的供给冲击（疫情引发的中断、能源价格），这已超出了该假设的范围。
+
+将信念的转变与基本面的转变区分开来，正是使这段历史如此难以捉摸、也如此引人入胜的那个识别问题。
 ```
 
 本系列后续讲座中所建立的工具——自我确认均衡、漂移系数以及逃逸动态——仍然是探讨新数据所提出的这一问题的一种自然语言：一个可信的低通货膨胀均衡，是否会在每次冲击之后重新锚定，还是说一连串的意外仍可能使信念重新开始漂移，就像 1965 年之后所发生的那样？
 
-最后一讲，{doc}`phillips_lost_conquest`，正是把这些工具应用于 2021-2022 年的飙升，并探讨了为什么美联储的反应如此迟缓。
+{doc}`phillips_lost_conquest` 正是把这些工具应用于 2021-2022 年的飙升，并探讨了为什么美联储的反应如此迟缓，而收尾一讲 {doc}`phillips_drifts_volatilities` 则直接从数据出发，探讨战后宏观经济动态的系数究竟是否真的发生了漂移。
 
 ## 练习
 

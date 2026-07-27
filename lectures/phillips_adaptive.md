@@ -35,6 +35,9 @@ translation:
 
 # 适应性预期与费尔普斯问题
 
+```{index} single: Phillips Curve; Adaptive Expectations
+```
+
 ```{contents} Contents
 :depth: 2
 ```
@@ -59,6 +62,10 @@ translation:
 本讲座延续了 {doc}`phillips_credibility` 中开始研究的菲利普斯曲线权衡关系。
 
 本讲座遵循 {cite}`Sargent1999` 第 5 章的内容。
+
+{doc}`phillips_credible_policies` 追求优于纳什结果的结果，同时保持*每个人*都是理性的，结果发现了太多这样的结果：一个可持续值的连续统，而理论内部没有任何依据可以从中做出选择。
+
+在这里，我们以尽可能小的方式退让这种完美性，保持政府是理性的，但给予公众一个机械式的预测规则。
 
 我们将描述：
 
@@ -115,6 +122,12 @@ x_t = (1 - \lambda) \sum_{i=1}^{\infty} \lambda^{i-1} y_{t-i} .
 让我们用数值方法验证这个归纳性质。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: "适应性预期收敛到恒定通货膨胀政策：归纳性质"
+    name: fig-adapt-induction
+---
 def adaptive_forecast(y, λ, x0=0.0):
     "Simulate x_t = λ x_{t-1} + (1-λ) y_{t-1}."
     T = len(y)
@@ -168,26 +181,26 @@ U_t = U^* - \theta(y_t - x_t) .
 
 因此，政府的问题是一个带有以下要素的贴现 LQ 控制问题：
 
-* 状态 $s_t = \begin{bmatrix} 1 & x_t \end{bmatrix}'$，
+* 状态 $s_t = \begin{bmatrix} 1 & x_t \end{bmatrix}^\top$，
 * 控制 $y_t$，以及
 * 转移方程 $x_{t+1} = \lambda x_t + (1 - \lambda) y_t$。
 
 ### 将问题转化为 LQ 形式
 
-令 $U_t = a' s_t - \theta y_t$，其中 $a = \begin{bmatrix} U^* & \theta \end{bmatrix}'$。
+令 $U_t = a^\top s_t - \theta y_t$，其中 $a = \begin{bmatrix} U^* & \theta \end{bmatrix}^\top$。
 
 那么每期损失 $\tfrac{1}{2}(U_t^2 + y_t^2)$ 等于
 
 $$
-\frac{1}{2}\left[ s_t'(a a') s_t + (\theta^2 + 1) y_t^2 - 2 \theta \, y_t \, (a' s_t) \right] .
+\frac{1}{2}\left[ s_t^\top (a a^\top) s_t + (\theta^2 + 1) y_t^2 - 2 \theta \, y_t \, (a^\top s_t) \right] .
 $$
 
-将其与 QuantEcon 的 LQ 损失 $s_t' R s_t + y_t' Q y_t + 2 y_t' N s_t$ 进行匹配，并将转移方程与 $s_{t+1} = A s_t + B y_t$ 进行匹配，得到
+将其与 QuantEcon 的 LQ 损失 $s_t^\top R s_t + y_t^\top Q y_t + 2 y_t^\top N s_t$ 进行匹配，并将转移方程与 $s_{t+1} = A s_t + B y_t$ 进行匹配，得到
 
 $$
-R = \tfrac{1}{2} a a', \quad
+R = \tfrac{1}{2} a a^\top, \quad
 Q = \tfrac{1}{2}(\theta^2 + 1), \quad
-N = -\tfrac{1}{2}\theta\, a', \quad
+N = -\tfrac{1}{2}\theta\, a^\top, \quad
 A = \begin{bmatrix} 1 & 0 \\ 0 & \lambda \end{bmatrix}, \quad
 B = \begin{bmatrix} 0 \\ 1 - \lambda \end{bmatrix} .
 $$
@@ -290,6 +303,12 @@ for δ in [0.96, 1.0]:
 让我们绘制完整的反通货膨胀路径。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 菲尔普斯问题在有贴现和无贴现情形下的最优反通货膨胀路径
+    name: fig-adapt-disinflation
+---
 fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
 
 for δ, ax in zip([0.96, 1.0], axes):
@@ -316,23 +335,23 @@ plt.show()
 定义向量
 
 $$
-X_{U,t} = \begin{bmatrix} U_{t-1} & \cdots & U_{t-m_U} \end{bmatrix}',
+X_{U,t} = \begin{bmatrix} U_{t-1} & \cdots & U_{t-m_U} \end{bmatrix}^\top,
 \qquad
-X_{y,t} = \begin{bmatrix} y_{t-1} & \cdots & y_{t-m_y} \end{bmatrix}',
+X_{y,t} = \begin{bmatrix} y_{t-1} & \cdots & y_{t-m_y} \end{bmatrix}^\top,
 $$
 
-以及状态向量 $X_t = \begin{bmatrix} X_{U,t}' & X_{y,t}' & 1 \end{bmatrix}'$，其中收集了 $t-1$ 期及更早时期的信息。
+以及状态向量 $X_t = \begin{bmatrix} X_{U,t}^\top & X_{y,t}^\top & 1 \end{bmatrix}^\top$，其中收集了 $t-1$ 期及更早时期的信息。
 
 我们可以写出两条简化形式的菲利普斯曲线，它们仅在*拟合方向*上有所不同：
 
 $$
-\text{古典型：} \quad U_t = \gamma' X_{C,t} + \varepsilon_{C,t},
-\qquad X_{C,t} = \begin{bmatrix} y_t & X_{t-1}' \end{bmatrix}',
+\text{古典型：} \quad U_t = \gamma^\top X_{C,t} + \varepsilon_{C,t},
+\qquad X_{C,t} = \begin{bmatrix} y_t & X_{t-1}^\top \end{bmatrix}^\top,
 $$
 
 $$
-\text{凯恩斯型：} \quad y_t = \beta' X_{K,t} + \varepsilon_{K,t},
-\qquad X_{K,t} = \begin{bmatrix} U_t & X_{t-1}' \end{bmatrix}' .
+\text{凯恩斯型：} \quad y_t = \beta^\top X_{K,t} + \varepsilon_{K,t},
+\qquad X_{K,t} = \begin{bmatrix} U_t & X_{t-1}^\top \end{bmatrix}^\top.
 $$
 
 下标 $C$ 和 $K$ 分别代表*古典型*（将 $U$ 对 $y$ 回归）和*凯恩斯型*（将 $y$ 对 $U$ 回归）。
@@ -354,7 +373,10 @@ h = h(\gamma) .
 这些对象——$\gamma$、$\beta$、$h(\gamma)$，以及两种拟合方向——正是我们在 {doc}`phillips_self_confirming` 中定义**自我确认均衡**所需要的关键要素。
 
 ```{note}
-**归纳假设**是这样一种限制：在凯恩斯型菲利普斯曲线 $y_t = \beta' X_{K,t} + \varepsilon_{K,t}$ 中，滞后 $y$ 值上的权重之和为一（等价地，在古典形式中，当期与滞后 $y$ 值上的权重之和为零）。在适应性预期下，这一点成立，因为 {eq}`pa_geom` 中的权重之和为一。
+**归纳假设**是这样一种限制：在凯恩斯型菲利普斯曲线 $y_t = \beta^\top X_{K,t} + \varepsilon_{K,t}$ 中，
+滞后 $y$ 值上的权重之和为一（等价地，在古典形式中，当期与滞后 $y$ 值上的权重之和为零）。
+
+在适应性预期下，这一点成立，因为 {eq}`pa_geom` 中的权重之和为一。
 ```
 
 ## 检验自然率假说
@@ -430,9 +452,10 @@ for δ in δ_grid:
     y_inf.append(y[-1])
 
 fig, ax = plt.subplots(figsize=(8, 4.5))
-ax.plot(δ_grid, y_inf, 'o-')
+ax.plot(δ_grid, y_inf, 'o-', lw=2)
 ax.set_xlabel(r'discount factor $\delta$')
 ax.set_ylabel(r'limiting inflation $y_\infty$')
+ax.set_title('Limiting inflation falls as patience rises')
 plt.show()
 ```
 

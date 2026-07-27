@@ -37,6 +37,9 @@ translation:
 
 # 逃离纳什通胀
 
+```{index} single: Phillips Curve; Escaping Nash Inflation
+```
+
 ```{contents} Contents
 :depth: 2
 ```
@@ -88,7 +91,7 @@ U_n = u - \theta(\pi_n - \hat x_n) + \sigma_1 W_{1n},
 \hat x_n = x_n,
 ```
 
-其中 $\theta, u > 0$，且 $W_n = (W_{1n}, W_{2n})'$ 为独立同分布的标准高斯变量。
+其中 $\theta, u > 0$，且 $W_n = (W_{1n}, W_{2n})^\top$ 为独立同分布的标准高斯变量。
 
 政府并不知道 {eq}`en_truth`。
 
@@ -101,6 +104,12 @@ U_n = \gamma_1 \pi_n + \gamma_{-1} + \eta_n ,
 ```
 
 信念为 $\gamma = (\gamma_1, \gamma_{-1})$（斜率与截距），并将 $\eta_n$ 视为外生的。
+
+```{note}
+这里斜率在前，回归量为 $\Phi = (\pi, 1)$，与 {cite}`ChoWilliamsSargent2002` 以及 {doc}`phillips_self_confirming` 中 $\gamma_1, \gamma_{-1}$ 的约定保持一致。
+
+{doc}`phillips_priors` 研究了同一模型，但截距在前；有关这种转换请参阅该处的提示。
+```
 
 在相信 {eq}`en_belief` 的前提下，政府求解 {doc}`菲尔普斯问题 <phillips_adaptive>`，其静态最优反应将通货膨胀设定为常数
 
@@ -146,7 +155,7 @@ class EscapeModel:
 将这些总体系数记为 $T(\gamma)$，CWS 证明
 
 $$
-\bar g(\gamma) \equiv E\left[\Phi(U - \Phi'\gamma)\right] = \bar M \left(T(\gamma) - \gamma\right),
+\bar g(\gamma) \equiv \mathbb{E}\left[\Phi(U - \Phi^\top \gamma)\right] = \bar M \left(T(\gamma) - \gamma\right),
 $$
 
 因此自我确认均衡解出 $\bar g(\gamma) = 0$。
@@ -165,9 +174,15 @@ print(f"check g_bar = {model.g_bar(γ_sce)}")
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: The unique self-confirming equilibrium in belief space
+    name: fig-esc-sce
+---
 γ1_grid = np.linspace(-2, 1, 200)
 fig, ax = plt.subplots(figsize=(7, 6))
-ax.plot(γ1_grid, model.u * (1 + γ1_grid**2), label=r'$\gamma_{-1} = u(1+\gamma_1^2)$')
+ax.plot(γ1_grid, model.u * (1 + γ1_grid**2), label=r'$\gamma_{-1} = u(1+\gamma_1^2)$', lw=2)
 ax.axvline(-model.θ, color='C1', ls='--', label=r'$\gamma_1 = -\theta$')
 ax.plot(γ_sce[0], γ_sce[1], 'ko', ms=8)
 ax.annotate('SCE (Nash)', γ_sce, (γ_sce[0] + 0.1, γ_sce[1] + 1))
@@ -198,6 +213,12 @@ plt.show()
 因此，仅在均值动态作用下，适应性政府会被吸引到纳什通货膨胀水平。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: "均值动态：从一个受扰动的起点出发，信念回归纳什水平"
+    name: fig-esc-mean-dynamics
+---
 def mean_ode(t, z, model):
     γ, R = z[:2], z[2:].reshape(2, 2)
     return np.concatenate([np.linalg.inv(R) @ model.g_bar(γ),
@@ -236,7 +257,7 @@ plt.show()
 ```{math}
 :label: en_control
 
-\bar S = \inf_{v(\cdot),\, T} \; \frac12 \int_0^T v(s)' Q(\gamma(s), R(s))^{-1} v(s)\, ds
+\bar S = \inf_{v(\cdot),\, T} \; \frac12 \int_0^T v(s)^\top Q(\gamma(s), R(s))^{-1} v(s)\, ds
 ```
 
 约束条件为*受扰动的*均值动态
@@ -306,6 +327,12 @@ infl = -intercept * slope / (1 + slope**2)
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 主导逃逸路径及其沿路径的通货膨胀率
+    name: fig-esc-dominant-path
+---
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
 axes[0].plot(esc.t, intercept, label='intercept $\\gamma_{-1}$')
@@ -353,15 +380,18 @@ R0 = model.M(γ_sce)
 R0_inv = np.linalg.inv(R0)
 σ1σ2 = model.σ1 * model.σ2
 
+x_sce = model.x(γ_sce)
+
+# each pair of shock realizations induces its own escape forcing
 candidates = {
-    "{(1,1),(-1,-1)}  → Ramsey": np.array([σ1σ2, 0.0]),
+    "{(1,1),(-1,-1)}  → Ramsey":   np.array([σ1σ2, 0.0]),
     "{(1,-1),(-1,1)}  → higher π": np.array([-σ1σ2, 0.0]),
-    "{(1,1),(1,-1)}": R0 @ (R0_inv @ np.array([model.x(γ_sce) * model.σ1, model.σ1])),
-    "{(-1,1),(-1,-1)}": R0 @ (R0_inv @ np.array([-model.x(γ_sce) * model.σ1, -model.σ1])),
+    "{(1,1),(1,-1)}":              np.array([x_sce * model.σ1, model.σ1]),
+    "{(-1,1),(-1,-1)}":            np.array([-x_sce * model.σ1, -model.σ1]),
 }
 
 for name, force in candidates.items():
-    v = R0_inv @ force
+    v = R0_inv @ force                     # belief velocity along this candidate
     print(f"  {name:28s}  |velocity| = {np.linalg.norm(v):.3f}")
 ```
 
@@ -369,7 +399,7 @@ for name, force in candidates.items():
 
 其镜像组合 $\{(1,-1),(-1,1)\}$ 具有相同的速率，但方向错误——指向*更高*的通货膨胀——而在那个方向上均值动态会与之对抗，很快将其拉回。
 
-因此这场竞速的胜者是朝向拉姆齐方向的路径，它所诱导出的逃逸强制项正是 {eq}`en_force` 中的 $R^{-1}(\sigma_1\sigma_2, 0)'$。
+因此这场竞速的胜者是朝向拉姆齐方向的路径，它所诱导出的逃逸强制项正是 {eq}`en_force` 中的 $R^{-1}(\sigma_1\sigma_2, 0)^\top$。
 
 ## 均值动态强化逃逸
 
@@ -382,6 +412,12 @@ for name, force in candidates.items():
 我们可以通过绘制信念空间中的均值动态向量场来观察这一点。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 叠加了逃逸路径的均值动态向量场
+    name: fig-esc-vector-field
+---
 gs = np.linspace(-1.2, 0.1, 16)      # slope
 gi = np.linspace(4.5, 10.5, 16)      # intercept
 GS, GI = np.meshgrid(gs, gi)
@@ -436,7 +472,13 @@ CWS 的一个引人注目的发现是，当政府的模型更加丰富时，逃�
 一个更丰富的模型使政府能够检测到自然率假说更为微妙的分布滞后（"归纳假说"）版本，因此它更容易朝拉姆齐方向逃逸。
 
 ```{note}
-逃逸动态继承了使均值动态如此有用的同一种"近似确定性"：对于较小的增益，{doc}`phillips_learning` 中的随机模拟会紧贴此处推导出的确定性逃逸路径。下一讲 {doc}`phillips_priors` 表明，政府关于其系数如何漂移的*先验*会重塑这两种动态——甚至可能使逃逸变成一个确定性的*循环*。
+逃逸动态继承了使均值动态如此有用的同一种"近似确定性"：
+对于较小的增益，{doc}`phillips_learning` 中的随机模拟会紧贴此处推导出的确定性
+逃逸路径。
+
+下一讲 {doc}`phillips_priors` 表明，政府关于其系数如何漂移的*先验*
+会重塑这两种动态——甚至可能使逃逸变成一个确定性的
+*循环*。
 ```
 
 ## 逃离高波动通货膨胀
@@ -456,7 +498,7 @@ CWS 的一个引人注目的发现是，当政府的模型更加丰富时，逃�
 ```{math}
 :label: en_vol
 
-E(\sigma_\pi \mid \gamma) = \left[ \sigma_2^2 + \left(\frac{\gamma_1}{1 + \gamma_1^2}\right)^2 \sigma_3^2 \right]^{1/2} .
+\mathbb{E}(\sigma_\pi \mid \gamma) = \left[ \sigma_2^2 + \left(\frac{\gamma_1}{1 + \gamma_1^2}\right)^2 \sigma_3^2 \right]^{1/2} .
 ```
 
 在自我确认均衡 $\gamma_1 = -\theta$ 处，政府相信政策是有效的，并积极对抗 $W_3$，因此通货膨胀是*波动的*。
@@ -466,6 +508,12 @@ E(\sigma_\pi \mid \gamma) = \left[ \sigma_2^2 + \left(\frac{\gamma_1}{1 + \gamma
 将 {eq}`en_vol` 应用于我们已经计算出的信念路径，可以看出通货膨胀的水平与波动性*同步*逃逸。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 通货膨胀的水平与波动性同步逃逸
+    name: fig-esc-volatility
+---
 σ3 = 0.9                                   # size of the stabilizable shock
 infl_vol = np.sqrt(model.σ2**2 + (slope / (1 + slope**2))**2 * σ3**2)
 
@@ -494,6 +542,12 @@ plt.show()
 政府能够抵消的冲击越多，触发逃逸所需的序列就越复杂，等待时间也就越长。
 
 如果按字面理解，这意味着一个经济体恰恰在需要稳定化的冲击*较少*时，才更有可能逃向低通胀——这为二十世纪八十年代中期出现的经济平静与伴随而来的反通胀之间提供了一种颇具启发性的联系。
+
+这同时也是一个关于数据的论断，它指向了本系列讲座压轴的实证内容。
+
+如果经济平静与反通胀是同时到来的，那么一个统计模型必须能够区分*冲击的缩小*与*动态的转变*，才能判断究竟是何者导致了何者。
+
+{doc}`phillips_drifts_volatilities` 构建了一个可以同时容纳这两条渠道的模型，并让数据来判定二者各自的贡献。
 
 ## 练习
 
@@ -530,7 +584,7 @@ for σ in [0.2, 0.3, 0.4, 0.5]:
     print(f"σ = {σ}: exit time along the escape path = {s.t[-1]:.2f}")
 ```
 
-更大的 $\sigma$ 会使逃逸强制项 $R^{-1}(\sigma_1\sigma_2, 0)'$ 变得更强，因此信念沿逃逸路线移动得更快（沿确定性路径的退出*时间*更短）。
+更大的 $\sigma$ 会使逃逸强制项 $R^{-1}(\sigma_1\sigma_2, 0)^\top$ 变得更强，因此信念沿逃逸路线移动得更快（沿确定性路径的退出*时间*更短）。
 
 请注意，这与逃逸的*频率*不同，后者由行动值 $\bar S$ 与增益 $\varepsilon$ 支配；一个噪声更大的经济体，一旦逃逸开始，会更快地走完某条既定的逃逸路线。
 
