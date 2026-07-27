@@ -3,8 +3,10 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.16.7
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 translation:
@@ -38,6 +40,14 @@ translation:
 
 ```{contents} 目录
 :depth: 2
+```
+
+除了 Anaconda 中已有的库之外，本讲座还需要以下库：
+
+```{code-cell} ipython3
+:tags: [hide-output]
+
+!pip install jax
 ```
 
 ## 概述

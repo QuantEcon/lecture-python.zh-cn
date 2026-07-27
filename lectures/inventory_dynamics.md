@@ -35,6 +35,14 @@ translation:
 :depth: 2
 ```
 
+除了 Anaconda 中已有的库之外，本讲座还需要以下库：
+
+```{code-cell} ipython3
+:tags: [hide-output]
+
+!pip install jax
+```
+
 ## 概述
 
 在本讲座中，我们将研究企业的库存时间路径，其遵循所谓的s-S库存动态。

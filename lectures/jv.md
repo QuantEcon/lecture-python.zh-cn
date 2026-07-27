@@ -41,6 +41,14 @@ translation:
 ```{include} _admonition/gpu.md
 ```
 
+除了 Anaconda 中已有的库之外，本讲座还需要以下库：
+
+```{code-cell} ipython3
+:tags: [hide-output]
+
+!pip install jax
+```
+
 ## 概述
 
 在本节中，我们将解决一个简单的在职搜索模型
