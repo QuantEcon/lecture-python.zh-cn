@@ -90,7 +90,7 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
-np.random.seed(123)
+rng = np.random.default_rng(123)
 ```
 
 ## McCall 模型回顾
@@ -499,15 +499,15 @@ class Qlearning_McCall:
         self.quit_allowed = quit_allowed
 
 
-    def draw_offer_index(self):
+    def draw_offer_index(self, rng):
         """
         从工资分布中抽取状态索引。
         """
 
         q = self.q
-        return np.searchsorted(np.cumsum(q), np.random.random(), side="right")
+        return np.searchsorted(np.cumsum(q), rng.random(), side="right")
 
-    def temp_diff(self, qtable, state, accept):
+    def temp_diff(self, qtable, state, accept, rng):
         """
         计算与状态和动作相关的TD。
         """
@@ -515,7 +515,7 @@ class Qlearning_McCall:
         c, β, w = self.c, self.β, self.w
 
         if accept==0:
-            state_next = self.draw_offer_index()
+            state_next = self.draw_offer_index(rng)
             TD = c + β*np.max(qtable[state_next, :]) - qtable[state, accept]
         else:
             state_next = state
@@ -526,7 +526,7 @@ class Qlearning_McCall:
 
         return TD, state_next
 
-    def run_one_epoch(self, qtable, max_times=20000):
+    def run_one_epoch(self, qtable, rng, max_times=20000):
         """
         运行一个"轮次"。
         """
@@ -534,7 +534,7 @@ class Qlearning_McCall:
         c, β, w = self.c, self.β, self.w
         eps, δ, lr, T = self.eps, self.δ, self.lr, self.T
 
-        s0 = self.draw_offer_index()
+        s0 = self.draw_offer_index(rng)
         s = s0
         accept_count = 0
 
@@ -542,7 +542,7 @@ class Qlearning_McCall:
 
             # 选择动作
             accept = np.argmax(qtable[s, :])
-            if np.random.random()<=eps:
+            if rng.random()<=eps:
                 accept = 1 - accept
 
             if accept == 1:
@@ -550,7 +550,7 @@ class Qlearning_McCall:
             else:
                 accept_count = 0
 
-            TD, s_next = self.temp_diff(qtable, s, accept)
+            TD, s_next = self.temp_diff(qtable, s, accept, rng)
 
             # 更新qtable
             qtable_new = qtable.copy()
@@ -567,7 +567,7 @@ class Qlearning_McCall:
         return qtable_new
 
 @jit
-def run_epochs(N, qlmc, qtable):
+def run_epochs(N, qlmc, qtable, rng):
     """
     运行N次轮次，每次使用上一次迭代的qtable。
     """
@@ -575,7 +575,7 @@ def run_epochs(N, qlmc, qtable):
     for n in range(N):
         if n%(N/10)==0:
             print(f"进度：轮次 = {n}")
-        new_qtable = qlmc.run_one_epoch(qtable)
+        new_qtable = qlmc.run_one_epoch(qtable, rng)
         qtable = new_qtable
 
     return qtable
@@ -593,7 +593,7 @@ qlmc = Qlearning_McCall()
 
 # 运行
 qtable0 = np.zeros((len(w_default), 2))
-qtable = run_epochs(20000, qlmc, qtable0)
+qtable = run_epochs(20000, qlmc, qtable0, rng)
 ```
 
 ```{code-cell} ipython3
@@ -670,7 +670,7 @@ def plot_epochs(epochs_to_plot, quit_allowed=1):
             ax.plot(w_new, valfunc_qlr, '-o', label=f'QL:训练轮数={n}, 平均误差={error}')
 
 
-        new_qtable = qlmc_new.run_one_epoch(qtable)
+        new_qtable = qlmc_new.run_one_epoch(qtable, rng)
         qtable = new_qtable
 
     ax.set_xlabel('工资')
