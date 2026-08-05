@@ -94,7 +94,7 @@ import quantecon as qe
 
 在时间开始之前，自然界一次性地决定是从 $f$ 还是 $g$ 中进行一系列独立同分布的抽样。
 
-我们有时用 $q$ 表示自然界一次性选择的密度，所以 $q$ 要么是 $f$ 要么是 $g$，且是永久性的。
+我们用 $q$ 表示自然界一次性选择的密度，所以 $q$ 要么是 $f$ 要么是 $g$，且是永久性的。
 
 自然界知道它永久性地从哪个密度中抽样，但我们这些观察者并不知道。
 
@@ -163,18 +163,18 @@ def likelihood_ratio(w, f_func, g_func):
     return f_func(w) / g_func(w)
 
 @jit
-def simulate_likelihood_ratios(a, b, f_func, g_func, T=50, N=500):
+def simulate_likelihood_ratios(a, b, f_func, g_func, rng, T=50, N=500):
     """
     Generate N sets of T observations of the likelihood ratio.
     """
     l_arr = np.empty((N, T))
     for i in range(N):
         for j in range(T):
-            w = np.random.beta(a, b)
+            w = rng.beta(a, b)
             l_arr[i, j] = f_func(w) / g_func(w)
     return l_arr
 
-def simulate_sequences(distribution, f_func, g_func, 
+def simulate_sequences(distribution, f_func, g_func, rng,
         F_params=(1, 1), G_params=(3, 1.2), T=50, N=500):
     """
     Generate N sequences of T observations from specified distribution.
@@ -186,7 +186,7 @@ def simulate_sequences(distribution, f_func, g_func,
     else:
         raise ValueError("distribution must be 'f' or 'g'")
     
-    l_arr = simulate_likelihood_ratios(a, b, f_func, g_func, T, N)
+    l_arr = simulate_likelihood_ratios(a, b, f_func, g_func, rng, T, N)
     l_seq = np.cumprod(l_arr, axis=1)
     return l_arr, l_seq
 
