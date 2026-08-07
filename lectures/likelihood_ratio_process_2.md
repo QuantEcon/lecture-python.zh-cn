@@ -87,7 +87,7 @@ from scipy.integrate import quad
 
 在时间开始之前，自然界一劳永逸地决定是从 $f$ 还是 $g$ 中进行一系列独立同分布的抽样。
 
-我们有时用 $q$ 表示自然界永久选择的密度，所以 $q$ 要么是 $f$，要么是 $g$，且是永久性的。
+我们用 $q$ 表示自然界永久选择的密度，所以 $q$ 要么是 $f$，要么是 $g$，且是永久性的。
 
 自然界知道它永久从哪个密度中抽样，但我们这些观察者并不知道。
 
@@ -152,7 +152,7 @@ g = jit(lambda x: p(x, G_a, G_b))
 
 ```{code-cell} ipython3
 @jit
-def simulate(a, b, T=50, N=500):
+def simulate(a, b, rng, T=50, N=500):
     '''
     生成N组T个似然比观测值，
     以N x T矩阵形式返回。
@@ -162,7 +162,7 @@ def simulate(a, b, T=50, N=500):
 
     for i in range(N):
         for j in range(T):
-            w = np.random.beta(a, b)
+            w = rng.beta(a, b)
             l_arr[i, j] = f(w) / g(w)
 
     return l_arr
@@ -800,8 +800,6 @@ print(f"KL(h,f)={Kf_h:.3f}, KL(h,g)={Kg_h:.3f}")
 
 这与{eq}`eq:kl_likelihood_link`很好地联系在一起。
 
-
-
 ## 相关讲座
 
 具有同质信念的完全市场模型，这种模型在宏观经济学和金融学中经常使用，在这个quantecon讲座{doc}`ge_arrow`中有研究。
@@ -811,8 +809,6 @@ print(f"KL(h,f)={Kf_h:.3f}, KL(h,g)={Kg_h:.3f}")
 似然过程在贝叶斯学习中扮演重要角色，这在{doc}`likelihood_bayes`中有描述，并在{doc}`odu`中有应用。
 
 似然比过程在{doc}`advanced:additive_functionals`中再次出现。
-
-
 
 ## 练习
 
