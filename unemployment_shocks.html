@@ -1,0 +1,1992 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>132. 具有非对称冲击的失业动态 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'unemployment_shocks';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/unemployment_shocks.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="133. 一价和二价拍卖" href="two_auctions.html" />
+    <link rel="prev" title="131. 失业的线性模型" href="unemployment_linear.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="具有非对称冲击的失业动态"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="具有非对称冲击的失业动态" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/unemployment_shocks.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=unemployment_shocks>
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">132.1. 数据</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">132.2. 具有非对称冲击的模型</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">132.3. 贝叶斯估计</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">132.4. 用交叉验证比较模型</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">132.4.1. 指导原则：样本外预测</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">132.4.2. 留一交叉验证</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">132.4.3. 计算方法</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arviz">132.4.4. ArviZ 实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">132.4.5. 适应时间序列结构</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">132.5. 结论</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">132.6. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 22, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/unemployment_shocks.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/be4a8b2" class="changelog-hash">be4a8b2</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">Seed the 37 missing lectures — full source-TOC coverage (#196)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><span class="section-number">132. </span>具有非对称冲击的失业动态<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<div class="warning admonition">
+<p class="admonition-title">GPU</p>
+<p>本讲座是在配有GPU的机器上构建的——不过没有GPU也可以运行。</p>
+<p><a class="reference external" href="https://colab.research.google.com/">Google Colab</a> 提供带GPU的免费套餐，使用方法如下：</p>
+<ol class="arabic simple">
+<li><p>点击右上角的”播放”图标</p></li>
+<li><p>选择 Colab</p></li>
+<li><p>将运行时环境设置为包含GPU</p></li>
+</ol>
+</div>
+<p>本讲座是 <a class="reference internal" href="unemployment_linear.html"><span class="doc">失业的线性模型</span></a> 的续篇。</p>
+<p>在那里，我们对美国失业率拟合了一个线性 AR(1) 模型，并考察了持续性。</p>
+<p>我们发现但未加以处理的一点是：模型的残差既是<em>重尾的，又是右偏的</em>。</p>
+<p>失业率在衰退中急剧上升，而在复苏中缓慢回落。</p>
+<p>采用对称高斯冲击的模型无法重现这些特征。</p>
+<p>在本讲座中，我们允许扰动为右偏，并在一定程度上具有重尾特征。</p>
+<p>我们还借本讲座介绍一种非常有用的贝叶斯技术：通过留一交叉验证进行<em>模型比较</em>。</p>
+<p>我们用它来判断一个模型是否真的比另一个模型预测得更好。</p>
+<p>我们的计划是：</p>
+<ol class="arabic simple">
+<li><p>构建一个具有线性均值但冲击非对称、偶尔较大的模型，</p></li>
+<li><p>在年度数据上对其进行估计，</p></li>
+<li><p>通过交叉验证将其与原始的高斯模型进行比较。</p></li>
+</ol>
+<p>除了 Anaconda 中已有的库之外，本讲座还需要以下库。</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>numpyro<span class="w"> </span>jax<span class="w"> </span>pandas_datareader<span class="w"> </span>arviz
+</pre></div>
+</div>
+</div>
+<details class="admonition hide below-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell output</p>
+<p class="expanded admonition-title">Hide code cell output</p>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: numpyro in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (0.21.0)
+Requirement already satisfied: jax in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (0.11.0)
+Requirement already satisfied: pandas_datareader in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (0.11.1)
+Requirement already satisfied: arviz in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (1.2.0)
+Requirement already satisfied: jaxlib&gt;=0.7.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from numpyro) (0.11.0)
+Requirement already satisfied: multipledispatch in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from numpyro) (1.0.0)
+Requirement already satisfied: numpy in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from numpyro) (2.4.6)
+Requirement already satisfied: tqdm in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from numpyro) (4.68.2)
+Requirement already satisfied: ml_dtypes&gt;=0.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (0.5.4)
+Requirement already satisfied: opt_einsum in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (3.4.0)
+Requirement already satisfied: scipy&gt;=1.15 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (1.18.0)
+Requirement already satisfied: lxml in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from pandas_datareader) (6.1.1)
+Requirement already satisfied: pandas&gt;=2.1.4 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from pandas_datareader) (3.0.3)
+Requirement already satisfied: requests&gt;=2.19.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from pandas_datareader) (2.34.2)
+Requirement already satisfied: setuptools in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from pandas_datareader) (83.0.0)
+Requirement already satisfied: arviz_base&lt;1.3.0,&gt;=1.2.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from arviz) (1.2.0)
+Requirement already satisfied: arviz_stats&lt;1.3.0,&gt;=1.2.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from arviz_stats[xarray]&lt;1.3.0,&gt;=1.2.0-&gt;arviz) (1.2.0)
+Requirement already satisfied: arviz_plots&lt;1.3.0,&gt;=1.2.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from arviz) (1.2.0)
+Requirement already satisfied: xarray&gt;=2024.11.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from arviz_base&lt;1.3.0,&gt;=1.2.0-&gt;arviz) (2026.7.0)
+Requirement already satisfied: typing-extensions&gt;=3.10 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from arviz_base&lt;1.3.0,&gt;=1.2.0-&gt;arviz) (4.16.0)
+Requirement already satisfied: lazy_loader&gt;=0.4 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from arviz_base&lt;1.3.0,&gt;=1.2.0-&gt;arviz) (0.5)
+Requirement already satisfied: xarray-einstats in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from arviz_stats[xarray]&lt;1.3.0,&gt;=1.2.0-&gt;arviz) (0.11.0)
+Requirement already satisfied: packaging in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from lazy_loader&gt;=0.4-&gt;arviz_base&lt;1.3.0,&gt;=1.2.0-&gt;arviz) (26.0)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from pandas&gt;=2.1.4-&gt;pandas_datareader) (2.9.0.post0)
+Requirement already satisfied: six&gt;=1.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from python-dateutil&gt;=2.8.2-&gt;pandas&gt;=2.1.4-&gt;pandas_datareader) (1.17.0)
+Requirement already satisfied: charset_normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests&gt;=2.19.0-&gt;pandas_datareader) (3.4.7)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests&gt;=2.19.0-&gt;pandas_datareader) (3.18)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.26 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests&gt;=2.19.0-&gt;pandas_datareader) (2.7.0)
+Requirement already satisfied: certifi&gt;=2023.5.7 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests&gt;=2.19.0-&gt;pandas_datareader) (2026.6.17)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<p>我们将使用以下导入。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>  <span class="c1"># i18n</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>  <span class="c1"># i18n</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas_datareader</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span> <span class="k">as</span> <span class="n">web</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span><span class="p">,</span> <span class="n">log_likelihood</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id2">
+<h2><span class="section-number">132.1. </span>数据<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>我们使用与 <a class="reference internal" href="unemployment_linear.html"><span class="doc">失业的线性模型</span></a> 中相同的序列——美国失业率（来自 FRED 的 <code class="docutils literal notranslate"><span class="pre">UNRATE</span></code>），排除 COVID-19 期间的激增——并以年度频率进行处理。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">1948</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span>
+<span class="n">unrate</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">DataReader</span><span class="p">(</span><span class="s2">&quot;UNRATE&quot;</span><span class="p">,</span> <span class="s2">&quot;fred&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)[</span><span class="s2">&quot;UNRATE&quot;</span><span class="p">]</span>
+<span class="n">pre_covid</span> <span class="o">=</span> <span class="n">unrate</span><span class="p">[</span><span class="n">unrate</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="s2">&quot;2020-01-01&quot;</span><span class="p">]</span>
+<span class="n">u_annual</span> <span class="o">=</span> <span class="n">pre_covid</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s2">&quot;YE&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">years</span> <span class="o">=</span> <span class="n">pre_covid</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s2">&quot;YE&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">year</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们希望捕捉的形态在年度序列中显而易见。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="n">u_annual</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;年份&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;失业率 (%)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-annual-data">
+<img alt="_images/92d278136f66f65d354c0bb3de974a6df05a930661633561dad5035b7542ae09.png" src="_images/92d278136f66f65d354c0bb3de974a6df05a930661633561dad5035b7542ae09.png" />
+<figcaption>
+<p><span class="caption-number">图 132.1 </span><span class="caption-text">美国年度失业率</span><a class="headerlink" href="#fig-annual-data" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>在 <a class="reference internal" href="#fig-annual-data"><span class="std std-numref">图 132.1</span></a> 中，每次衰退都表现为急剧上升，随后是漫长、缓慢的下降——上升快，下降慢。</p>
+</section>
+<section id="id3">
+<h2><span class="section-number">132.2. </span>具有非对称冲击的模型<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>我们保留 <a class="reference internal" href="unemployment_linear.html"><span class="doc">失业的线性模型</span></a> 中的线性结构：</p>
+<div class="math notranslate nohighlight" id="equation-eq-shocks">
+<span class="eqno">(132.1)<a class="headerlink" href="#equation-eq-shocks" title="Link to this equation">#</a></span>\[
+u_{t+1} = \bar u + \rho\,(u_t - \bar u) + \eta_{t+1},
+\qquad 0 \le \rho &lt; 1,
+\]</div>
+<p>然而在这里，扰动 <span class="math notranslate nohighlight">\(\eta_{t+1}\)</span> 是从<em>两个正态分布的混合</em>中抽取的：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\eta_{t+1} \sim
+\begin{cases}
+N(0, \sigma_s^2) &amp; \text{以概率 } 1-p \quad\text{（平静年份）},\\[4pt]
+N(\mu_J, \sigma_J^2) &amp; \text{以概率 } p \quad\text{（衰退跳跃）},
+\end{cases}
+\qquad \mu_J &gt; 0 .
+\end{split}\]</div>
+<p>该模型有六个参数：</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>符号</p></th>
+<th class="head"><p>名称</p></th>
+<th class="head"><p>作用</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\bar u\)</span></p></td>
+<td><p>底线</p></td>
+<td><p>序列回归到的低水平</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\rho\)</span></p></td>
+<td><p>持续性</p></td>
+<td><p>回归速度（如线性讲座中所述）</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(p\)</span></p></td>
+<td><p>跳跃概率</p></td>
+<td><p>大冲击到来的频率</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\mu_J\)</span></p></td>
+<td><p>跳跃幅度</p></td>
+<td><p>衰退平均向上的推动</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\sigma_s,\ \sigma_J\)</span></p></td>
+<td><p>冲击幅度</p></td>
+<td><p>平静与跳跃时的波动率</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>这一机制导致失业率呈现锯齿状动态。</p>
+<p>大多数年份是平静的，只有小的噪声。</p>
+<p>偶尔一个正向跳跃将失业率大幅推高。</p>
+<p>然后，在大多数情况下，线性回归会将其缓慢拉回到 <span class="math notranslate nohighlight">\(\bar u\)</span>。</p>
+<p>因此，激增在一步内到来，而恢复需要时间——这正是我们在数据中观察到的非对称动态。</p>
+<p>从精神上讲，这就是米尔顿·弗里德曼的”拨弦模型”：一条接近充分就业的底线，坏冲击从这条底线向上拨动序列。</p>
+<p>下一个单元格展示了冲击的密度及其两个组成部分。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">normal_pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">s</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+
+<span class="n">η</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+<span class="n">p_</span><span class="p">,</span> <span class="n">μJ_</span><span class="p">,</span> <span class="n">σs_</span><span class="p">,</span> <span class="n">σJ_</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">1.2</span>
+<span class="n">quiet</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p_</span><span class="p">)</span> <span class="o">*</span> <span class="n">normal_pdf</span><span class="p">(</span><span class="n">η</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">σs_</span><span class="p">)</span>
+<span class="n">jump</span>  <span class="o">=</span> <span class="n">p_</span> <span class="o">*</span> <span class="n">normal_pdf</span><span class="p">(</span><span class="n">η</span><span class="p">,</span> <span class="n">μJ_</span><span class="p">,</span> <span class="n">σJ_</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">η</span><span class="p">,</span> <span class="n">quiet</span> <span class="o">+</span> <span class="n">jump</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;冲击密度&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">η</span><span class="p">,</span> <span class="n">quiet</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;平静年份&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">η</span><span class="p">,</span> <span class="n">jump</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;衰退跳跃&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;扰动 $</span><span class="se">\\</span><span class="s1">eta$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-shock-density">
+<img alt="_images/aa3e57d30ce8094db01a6585d3e95b74cfcdc32d36ba821b291b34e35db2f91b.png" src="_images/aa3e57d30ce8094db01a6585d3e95b74cfcdc32d36ba821b291b34e35db2f91b.png" />
+<figcaption>
+<p><span class="caption-number">图 132.2 </span><span class="caption-text">作为混合分布的冲击分布</span><a class="headerlink" href="#fig-shock-density" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p><a class="reference internal" href="#fig-shock-density"><span class="std std-numref">图 132.2</span></a> 展示了一个在零点处又高又窄的峰值，对应普通年份，加上一个位于正侧的低而宽的隆起，对应衰退跳跃。</p>
+</section>
+<section id="id4">
+<h2><span class="section-number">132.3. </span>贝叶斯估计<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>我们对六个参数施加弱信息先验。</p>
+<p>该混合分布使用 NumPyro 的 <code class="docutils literal notranslate"><span class="pre">MixtureSameFamily</span></code> 编写，它会解析地对两个组成部分求和。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">jump_model</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+    <span class="c1"># 设置先验</span>
+    <span class="n">ubar</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;ubar&quot;</span><span class="p">,</span>    <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">))</span>  
+    <span class="n">ρ</span>    <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;rho&quot;</span><span class="p">,</span>     <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>  
+    <span class="n">p</span>    <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span>       <span class="n">dist</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">))</span>      
+    <span class="n">μ_J</span>  <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mu_J&quot;</span><span class="p">,</span>    <span class="n">dist</span><span class="o">.</span><span class="n">HalfNormal</span><span class="p">(</span><span class="mf">2.0</span><span class="p">))</span>
+    <span class="n">σ_s</span>  <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;sigma_s&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">HalfNormal</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+    <span class="n">σ_J</span>  <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;sigma_J&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">HalfNormal</span><span class="p">(</span><span class="mf">1.5</span><span class="p">))</span>
+    <span class="c1"># 构建模型</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">base</span>   <span class="o">=</span> <span class="n">ubar</span> <span class="o">+</span> <span class="n">ρ</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ubar</span><span class="p">)</span>
+    <span class="n">locs</span>   <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">base</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="n">μ_J</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">scales</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">jnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">σ_s</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,)),</span>
+                        <span class="n">jnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">σ_J</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,))],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">probs</span>  <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">]),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">mix</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">MixtureSameFamily</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">probs</span><span class="o">=</span><span class="n">probs</span><span class="p">),</span>
+                                 <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">locs</span><span class="p">,</span> <span class="n">scales</span><span class="p">))</span>
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;u_obs&quot;</span><span class="p">,</span> <span class="n">mix</span><span class="p">,</span> <span class="n">obs</span><span class="o">=</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们使用 NUTS 进行采样，四条链，向量化处理，因此代码可在 CPU 或 GPU 上运行。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_nuts</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">num_chains</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="s2">&quot;使用 NUTS 采样器对 NumPyro 模型进行采样。&quot;</span>
+    <span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">NUTS</span><span class="p">(</span><span class="n">model</span><span class="p">),</span>
+                <span class="n">num_warmup</span><span class="o">=</span><span class="n">num_warmup</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="n">num_samples</span><span class="p">,</span>
+                <span class="n">num_chains</span><span class="o">=</span><span class="n">num_chains</span><span class="p">,</span> <span class="n">chain_method</span><span class="o">=</span><span class="s2">&quot;vectorized&quot;</span><span class="p">,</span>
+                <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">mcmc</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们将模型拟合到年度数据。</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcmc_jump</span> <span class="o">=</span> <span class="n">run_nuts</span><span class="p">(</span><span class="n">jump_model</span><span class="p">,</span> <span class="n">u_annual</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们看看后验分布。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcmc_jump</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                mean       std    median      5.0%     95.0%     n_eff     r_hat
+      mu_J      1.25      0.42      1.20      0.57      1.96   4198.18      1.00
+         p      0.35      0.09      0.35      0.20      0.50   4966.77      1.00
+       rho      0.83      0.04      0.84      0.76      0.90   5809.25      1.00
+   sigma_J      1.29      0.26      1.29      0.89      1.76   4648.01      1.00
+   sigma_s      0.39      0.09      0.38      0.25      0.54   4297.53      1.00
+      ubar      3.02      0.75      3.08      1.84      4.22   5452.41      1.00
+
+Number of divergences: 0
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">r_hat</span></code> 值基本上都是 1，因此各条链已经收敛。</p>
+<p>注意其中明显的跳跃成分：正常年份的幅度 <span class="math notranslate nohighlight">\(\sigma_s\)</span> 很小，而跳跃幅度 <span class="math notranslate nohighlight">\(\sigma_J\)</span> 很大，且均值 <span class="math notranslate nohighlight">\(\mu_J\)</span> 为正。</p>
+<p>让我们做一个快速检查，将拟合的冲击密度叠加到模型的实际残差上，就像我们在 <a class="reference internal" href="unemployment_linear.html"><span class="doc">失业的线性模型</span></a> 中所做的那样。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mcmc_jump</span><span class="o">.</span><span class="n">get_samples</span><span class="p">()[</span><span class="n">k</span><span class="p">]))</span>
+     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ubar&quot;</span><span class="p">,</span> <span class="s2">&quot;rho&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;mu_J&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma_s&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma_J&quot;</span><span class="p">)}</span>
+<span class="n">resid</span> <span class="o">=</span> <span class="n">u_annual</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s2">&quot;ubar&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;rho&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u_annual</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;ubar&quot;</span><span class="p">]))</span>
+
+<span class="n">η</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">resid</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">resid</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+<span class="n">quiet</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="n">normal_pdf</span><span class="p">(</span><span class="n">η</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;sigma_s&quot;</span><span class="p">])</span>
+<span class="n">jump</span>  <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">normal_pdf</span><span class="p">(</span><span class="n">η</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;mu_J&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;sigma_J&quot;</span><span class="p">])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;残差&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">η</span><span class="p">,</span> <span class="n">quiet</span> <span class="o">+</span> <span class="n">jump</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;拟合密度&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">η</span><span class="p">,</span> <span class="n">jump</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;跳跃成分&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;扰动 $</span><span class="se">\\</span><span class="s1">eta$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-jump-fit">
+<img alt="_images/016a6f638bf5ce8fc942423c09a64356ae642e05c13561198100371752d80c6f.png" src="_images/016a6f638bf5ce8fc942423c09a64356ae642e05c13561198100371752d80c6f.png" />
+<figcaption>
+<p><span class="caption-number">图 132.3 </span><span class="caption-text">拟合的冲击密度与残差对比</span><a class="headerlink" href="#fig-jump-fit" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>拟合看起来相当不错（尽管我们仍难以捕捉右尾中的某些大冲击）。</p>
+</section>
+<section id="id5">
+<h2><span class="section-number">132.4. </span>用交叉验证比较模型<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<p>跳跃模型看起来合理，但它真的比线性模型更好吗？</p>
+<p>为了回答这个问题，我们将使用一种<em>贝叶斯模型比较</em>的方法。</p>
+<p>我们分阶段构建它：指导原则、留一估计，以及计算的实际执行方式。</p>
+<section id="id6">
+<h3><span class="section-number">132.4.1. </span>指导原则：样本外预测<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<p>我们很容易通过询问哪个模型更好地拟合观测数据来比较两个模型。</p>
+<p>但这并不是正确的标准：更复杂的模型总是可以调整得更好地匹配它们所拟合的数据。</p>
+<p>正确的问题反而是：哪个模型更好地预测它未曾见过的数据？</p>
+<p>换句话说，我们关心的标准是样本外预测精度。</p>
+<p>我们没有用于样本外测试的新数据，因此使用<em>交叉验证</em>来制造一些。</p>
+</section>
+<section id="id7">
+<h3><span class="section-number">132.4.2. </span>留一交叉验证<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p>其思想是留出一个观测值，将模型拟合到其余数据，然后使用由数据集其余部分构建的预测分布对留出的点进行评分。</p>
+<p>给定其余数据 <span class="math notranslate nohighlight">\(u_{-i}\)</span>，数据点 <span class="math notranslate nohighlight">\(u_i\)</span> 的预测分布为</p>
+<div class="math notranslate nohighlight">
+\[
+p(u_i \mid u_{-i}) = \int p(u_i \mid \theta)\, p(\theta \mid u_{-i})\, d\theta .
+\]</div>
+<p>这里 <span class="math notranslate nohighlight">\(p(\theta \mid u_{-i})\)</span> 是从 <span class="math notranslate nohighlight">\(u_{-i}\)</span> 中的数据获得的后验。</p>
+<p>我们用这个密度的<em>对数</em>对每个留出的点进行评分。</p>
+<p>这会奖励那些对实际发生的事件赋予高概率的模型。</p>
+<p>将所有数据点的这些分数相加，就得到了<strong>期望对数预测密度</strong>（elpd），这里是其留一（LOO）形式：</p>
+<div class="math notranslate nohighlight">
+\[
+\text{elpd}_{\text{loo}} = \sum_{i=1}^{n} \log p(u_i \mid u_{-i}).
+\]</div>
+</section>
+<section id="id8">
+<h3><span class="section-number">132.4.3. </span>计算方法<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>elpd 的定义表明，我们需要重新拟合模型 <span class="math notranslate nohighlight">\(n\)</span> 次，每次对应一个被省略的点。</p>
+<p>这将非常耗时。</p>
+<p>这里我们讨论一种方法，只保留第一次拟合，使用我们已经采样过的完整后验。</p>
+<p>关于记号：设 <span class="math notranslate nohighlight">\(u = (u_1, \dots, u_n)\)</span>，用 <span class="math notranslate nohighlight">\(u_{-i}\)</span> 表示删除了 <span class="math notranslate nohighlight">\(u_i\)</span> 后的样本。</p>
+<p>该方法依赖于以下独立性类型的假设：</p>
+<div class="proof assumption admonition" id="assm-cond-ind">
+<p class="admonition-title"><span class="caption-number">假设 132.1 </span></p>
+<section class="assumption-content" id="proof-content">
+<p>给定 <span class="math notranslate nohighlight">\(\theta\)</span>，观测值是条件独立的：</p>
+<div class="math notranslate nohighlight">
+\[
+p(u \mid \theta) = \prod_{j=1}^{n} p(u_j \mid \theta) .
+\]</div>
+</section>
+</div><p>对于我们的自回归数据，这个假设是错误的，因为每个 <span class="math notranslate nohighlight">\(u_i\)</span> 都通过转移动态依赖于早先的观测值。</p>
+<p>尽管如此，我们仍然采用它，因为</p>
+<ul class="simple">
+<li><p>它使得留一计算变得可处理，并且</p></li>
+<li><p>它是一个非常标准的、需要理解的过程。</p></li>
+</ul>
+<p>我们将在下面关于时间序列结构的部分讨论其后果。</p>
+<p>在我们的假设条件下，下面的命题是精确的。</p>
+<div class="proof proposition admonition" id="prop-loo-identity">
+<p class="admonition-title"><span class="caption-number">命题 132.1 </span></p>
+<section class="proposition-content" id="proof-content">
+<p>在 <a class="reference internal" href="#assm-cond-ind">假设 132.1</a> 下，我们有</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{p(u_i \mid u_{-i})}
+\;=\;
+\int \frac{1}{p(u_i \mid \theta)}\, p(\theta \mid u)\, d\theta
+\qquad (i = 1, \dots, n).
+\]</div>
+</section>
+</div><div class="proof admonition" id="proof">
+<p>Proof. 根据贝叶斯法则，<span class="math notranslate nohighlight">\(p(\theta \mid u) = p(u \mid \theta)\, p(\theta) / p(u)\)</span> 且 <span class="math notranslate nohighlight">\(p(\theta \mid u_{-i}) = p(u_{-i} \mid \theta)\, p(\theta) / p(u_{-i})\)</span>。</p>
+<p>根据 <a class="reference internal" href="#assm-cond-ind">假设 132.1</a>，<span class="math notranslate nohighlight">\(p(u \mid \theta) = p(u_i \mid \theta)\, p(u_{-i} \mid \theta)\)</span>。</p>
+<p>将两个后验相除并代入这个因式分解，</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{p(\theta \mid u)}{p(\theta \mid u_{-i})}
+\;=\;
+\frac{p(u \mid \theta)}{p(u_{-i} \mid \theta)} \cdot \frac{p(u_{-i})}{p(u)}
+\;=\;
+p(u_i \mid \theta) \cdot \frac{p(u_{-i})}{p(u)} ,
+\]</div>
+<p>因此，重新整理后，</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{p(\theta \mid u)}{p(u_i \mid \theta)}
+\;=\;
+\frac{p(u_{-i})}{p(u)}\, p(\theta \mid u_{-i}) .
+\]</div>
+<p>现在对两边关于 <span class="math notranslate nohighlight">\(\theta\)</span> 积分。</p>
+<p>在右边，<span class="math notranslate nohighlight">\(\int p(\theta \mid u_{-i})\, d\theta = 1\)</span>，只剩下常数因子 <span class="math notranslate nohighlight">\(p(u_{-i}) / p(u)\)</span>，因此</p>
+<div class="math notranslate nohighlight">
+\[
+\int \frac{1}{p(u_i \mid \theta)}\, p(\theta \mid u)\, d\theta
+\;=\;
+\frac{p(u_{-i})}{p(u)}
+\;=\;
+\frac{1}{p(u_i \mid u_{-i})} ,
+\]</div>
+<p>最后一个等式源于 <span class="math notranslate nohighlight">\(p(u) = p(u_i \mid u_{-i})\, p(u_{-i})\)</span>。</p>
+</div>
+<p>留-<span class="math notranslate nohighlight">\(i\)</span>-出的后验已经消失；只剩下完整后验，而我们对它有 <span class="math notranslate nohighlight">\(S\)</span> 个抽样 <span class="math notranslate nohighlight">\(\theta^1, \dots, \theta^S\)</span>。</p>
+<p>用这些抽样上的平均值替换 <a class="reference internal" href="#prop-loo-identity">命题 132.1</a> 中的积分，得到</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{p(u_i \mid u_{-i})}
+\;\approx\;
+\frac{1}{S} \sum_{s=1}^{S} \frac{1}{p(u_i \mid \theta^s)},
+\qquad\text{因此}\qquad
+p(u_i \mid u_{-i})
+\;\approx\;
+\frac{S}{\sum_{s=1}^{S} 1 / p(u_i \mid \theta^s)} ,
+\]</div>
+<p>这是 <span class="math notranslate nohighlight">\(u_i\)</span> 的每个抽样似然的调和平均数。</p>
+<p>被积函数具有有限的均值，等于 <span class="math notranslate nohighlight">\(1/p(u_i \mid u_{-i})\)</span> 本身，因此大数定律适用。</p>
+<p>当 <span class="math notranslate nohighlight">\(S \to \infty\)</span> 时，该平均值因此收敛到那个均值，并且在极限处，近似以概率一成为精确的。</p>
+<p>其唯一的成分是每个观测值在每个抽样下的似然——<strong>逐点对数似然</strong>——这就是我们一直小心保留它的原因。</p>
+<p>为了数值稳定性，我们在对数尺度上计算，此时调和平均数变为</p>
+<div class="math notranslate nohighlight">
+\[
+\log p(u_i \mid u_{-i})
+\;\approx\;
+\log S - \log \sum_{s=1}^{S} e^{-\ell_i^s},
+\qquad \ell_i^s = \log p(u_i \mid \theta^s),
+\]</div>
+<p>这就是我们下面使用的 <code class="docutils literal notranslate"><span class="pre">jnp.log(S)</span> <span class="pre">-</span> <span class="pre">logsumexp(-ll)</span></code>。</p>
+<p>为了与线性模型进行比较，我们首先在相同的数据上拟合它。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">linear_model</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+    <span class="n">ubar</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;ubar&quot;</span><span class="p">,</span>  <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">5.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">))</span>
+    <span class="n">ρ</span>    <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;rho&quot;</span><span class="p">,</span>   <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+    <span class="n">σ</span>    <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">HalfNormal</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;u_obs&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">ubar</span> <span class="o">+</span> <span class="n">ρ</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ubar</span><span class="p">),</span> <span class="n">σ</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们在相同的年度数据上对其采样。</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcmc_lin</span> <span class="o">=</span> <span class="n">run_nuts</span><span class="p">(</span><span class="n">linear_model</span><span class="p">,</span> <span class="n">u_annual</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在我们可以用几行代码手动完成整个留一计算。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jax.scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">logsumexp</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">pointwise_loo</span><span class="p">(</span><span class="n">mcmc</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+    <span class="s2">&quot;每个观测值的留一对数预测密度。&quot;</span>
+    <span class="n">ll</span> <span class="o">=</span> <span class="n">log_likelihood</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">(),</span>
+                        <span class="n">u</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">u_annual</span><span class="p">))[</span><span class="s2">&quot;u_obs&quot;</span><span class="p">]</span>  <span class="c1"># (抽样, 观测)</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">ll</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># 每个观测值的每抽样似然的调和平均数的对数</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="o">-</span> <span class="n">logsumexp</span><span class="p">(</span><span class="o">-</span><span class="n">ll</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">elpd_jump</span> <span class="o">=</span> <span class="n">pointwise_loo</span><span class="p">(</span><span class="n">mcmc_jump</span><span class="p">,</span> <span class="n">jump_model</span><span class="p">)</span>
+<span class="n">elpd_lin</span>  <span class="o">=</span> <span class="n">pointwise_loo</span><span class="p">(</span><span class="n">mcmc_lin</span><span class="p">,</span>  <span class="n">linear_model</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jump   elpd_loo = </span><span class="si">{</span><span class="n">elpd_jump</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;linear elpd_loo = </span><span class="si">{</span><span class="n">elpd_lin</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>jump   elpd_loo = -93.9
+linear elpd_loo = -105.8
+</pre></div>
+</div>
+</div>
+</div>
+<p>跳跃模型得分更高（更接近零），因此在样本外预测上它获胜。</p>
+<p>为了帮助理解这个差距是否真实，我们计算其标准误差：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">diff</span> <span class="o">=</span> <span class="n">elpd_jump</span> <span class="o">-</span> <span class="n">elpd_lin</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">size</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;elpd difference = </span><span class="si">{</span><span class="n">diff</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;standard error  = </span><span class="si">{</span><span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">diff</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>elpd difference = 11.9
+standard error  = 5.7
+</pre></div>
+</div>
+</div>
+</div>
+<p>跳跃模型领先约十二个点，而标准误差接近六——略超过两个标准误差，因此是一个真实的改进。</p>
+</section>
+<section id="arviz">
+<h3><span class="section-number">132.4.4. </span>ArviZ 实现<a class="headerlink" href="#arviz" title="Link to this heading">#</a></h3>
+<p>在实践中，大多数人使用像 ArviZ 这样的库来进行这个计算。</p>
+<p>我们将相同的逐点对数似然以其数据格式打包交给它。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">to_arviz</span><span class="p">(</span><span class="n">mcmc</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="s2">&quot;为 ArviZ 打包 NumPyro 拟合结果，附带逐点对数似然。&quot;</span>
+    <span class="n">idata</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">from_numpyro</span><span class="p">(</span><span class="n">mcmc</span><span class="p">)</span>
+    <span class="n">ll</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">log_likelihood</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">(),</span>
+                                   <span class="n">u</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">u</span><span class="p">))[</span><span class="s2">&quot;u_obs&quot;</span><span class="p">])</span>
+    <span class="n">ll</span> <span class="o">=</span> <span class="n">ll</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">mcmc</span><span class="o">.</span><span class="n">num_chains</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ll</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">idata</span><span class="p">[</span><span class="s2">&quot;log_likelihood&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;u_obs&quot;</span><span class="p">:</span> <span class="p">((</span><span class="s2">&quot;chain&quot;</span><span class="p">,</span> <span class="s2">&quot;draw&quot;</span><span class="p">,</span> <span class="s2">&quot;obs&quot;</span><span class="p">),</span> <span class="n">ll</span><span class="p">)})</span>
+    <span class="k">return</span> <span class="n">idata</span>
+
+<span class="n">az</span><span class="o">.</span><span class="n">compare</span><span class="p">({</span>
+    <span class="s2">&quot;linear&quot;</span><span class="p">:</span> <span class="n">to_arviz</span><span class="p">(</span><span class="n">mcmc_lin</span><span class="p">,</span>  <span class="n">linear_model</span><span class="p">,</span> <span class="n">u_annual</span><span class="p">),</span>
+    <span class="s2">&quot;jump&quot;</span><span class="p">:</span>   <span class="n">to_arviz</span><span class="p">(</span><span class="n">mcmc_jump</span><span class="p">,</span> <span class="n">jump_model</span><span class="p">,</span>   <span class="n">u_annual</span><span class="p">),</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>rank</th>
+      <th>elpd_diff</th>
+      <th>dse</th>
+      <th>p_worse</th>
+      <th>diag_diff</th>
+      <th>diag_elpd</th>
+      <th>p</th>
+      <th>elpd</th>
+      <th>se</th>
+      <th>weight</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>jump</th>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td></td>
+      <td></td>
+      <td>6.5</td>
+      <td>-90.0</td>
+      <td>9.2</td>
+      <td>0.86</td>
+    </tr>
+    <tr>
+      <th>linear</th>
+      <td>1</td>
+      <td>-10.0</td>
+      <td>5.7</td>
+      <td>0.98</td>
+      <td>N &lt; 100</td>
+      <td></td>
+      <td>3.6</td>
+      <td>-110.0</td>
+      <td>7.3</td>
+      <td>0.14</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>这里 <code class="docutils literal notranslate"><span class="pre">az.compare</span></code> 确认了手工计算，并将跳跃模型排在第一位（其表格为了显示对分数进行了取整）。</p>
+</section>
+<section id="id9">
+<h3><span class="section-number">132.4.5. </span>适应时间序列结构<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p>留一法每次删除一个转移，但它并不尊重时间的顺序。</p>
+<p>当它对从 <span class="math notranslate nohighlight">\(u_t\)</span> 到 <span class="math notranslate nohighlight">\(u_{t+1}\)</span> 的步骤进行评分时，进行评分的模型是在位于该步骤<em>两侧</em>的数据上拟合的——包括相邻值 <span class="math notranslate nohighlight">\(u_t\)</span> 和 <span class="math notranslate nohighlight">\(u_{t+1}\)</span> 本身。</p>
+<p>因此，留出的点从未真正未被看见。</p>
+<p>形式上正确的度量是<strong>留未来交叉验证</strong>。</p>
+<p>它只向前预测：在 <span class="math notranslate nohighlight">\(u_1, \dots, u_t\)</span> 上拟合模型，对其提前一步预测 <span class="math notranslate nohighlight">\(u_{t+1}\)</span> 进行评分，然后将窗口扩展一步并重复。</p>
+<p>现在模型对它被要求预测的未来是真正盲目的，这正如真实的预测。</p>
+<p>代价是计算量。</p>
+<p>留一法通过其重要性采样的捷径重用了单次拟合，但留未来法没有这样的技巧。</p>
+<p>对于我们这条短的年度序列，留未来交叉验证仍然可行，但对于长序列，它可能变得难以承受。</p>
+<p>（我们在此处未纳入的情况下运行了它，结论依然成立：在留未来法下，跳跃模型仍然击败线性模型，且优势幅度更大。）</p>
+</section>
+</section>
+<section id="id10">
+<h2><span class="section-number">132.5. </span>结论<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>在 <a class="reference internal" href="unemployment_linear.html"><span class="doc">失业的线性模型</span></a> 中，我们对失业率应用了带高斯冲击的线性 AR(1) 模型，并在月度数据中发现了高水平的持续性。</p>
+<p>我们还论证了该模型过于简单。</p>
+<p>在这里，我们发现线性模型最明显遗漏的特征——衰退的非对称性——可以通过对冲击的分布进行建模来解决。</p>
+<p>带有大的、单侧扰动的线性回归匹配了高斯模型无法捕捉的右偏、重尾冲击。</p>
+<p>交叉验证更偏好它。</p>
+<p>一个比上面所考虑的更好的模型将允许经济在持续扩张和衰退状态之间切换。</p>
+<p>这就是马尔可夫切换方法，我们将其留作进一步阅读。</p>
+</section>
+<section id="id11">
+<h2><span class="section-number">132.6. </span>练习<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="unemp_shocks_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 132.1 </span></p>
+<section id="exercise-content">
+<p>这里的跳跃成分本身是对称的，<span class="math notranslate nohighlight">\(N(\mu_J, \sigma_J^2)\)</span>。</p>
+<p>将两成分混合替换为单一的<strong>偏正态</strong>（或带偏度的 Student-<span class="math notranslate nohighlight">\(t\)</span>）扰动，重新拟合，并使用 <code class="docutils literal notranslate"><span class="pre">az.compare</span></code> 与混合模型进行比较。</p>
+<p>更简单的偏斜冲击表现得和混合模型一样好吗？</p>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Tools and Techniques
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Elementary Statistics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bayes Law
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Statistics and Information
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Linear Programming
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   36. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   37. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Dynamics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   38. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   39. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   40. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   43. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   44. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   45. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Search
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   50. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   53. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   55. 工作搜寻 VI：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   56. 工作搜寻 VII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   57. 工作搜寻 VIII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Reinforcement Learning
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   72. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   73. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   74. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   75. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   83. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   107. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   108. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   109. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   110. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Asset Pricing and Finance
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   119. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Data and Empirics
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   128. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   129. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   132. 具有非对称冲击的失业动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Auctions
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   133. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   134. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   135. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   136. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   137. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/unemployment_shocks.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/unemployment_shocks.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/unemployment_shocks.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/unemployment_shocks.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/unemployment_shocks.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "unemployment_shocks";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/unemployment_shocks.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

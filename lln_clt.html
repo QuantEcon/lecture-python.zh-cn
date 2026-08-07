@@ -9,9 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>10. 大数定律 和 中心极限定理 &#8212; Python中级数量经济学</title>
-    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
     
         <script>
             MathJax = {
@@ -70,13 +77,13 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=a459934d9fea1f60268e46d95e2569a33e1f6ec2" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
-    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=b4b7a797" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -94,8 +101,8 @@
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-    <script src="_static/scripts/quantecon-book-theme.js?digest=06ebc90d5139b434c2742937a4ef3b185cb93e2f"></script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
     <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
     <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
@@ -150,10 +157,31 @@
 <meta property="og:site_name" content="Python中级数量经济学" />
 <meta name="theme-color" content="#ffffff" />
 
+
+
+
   </head>
 <body>
 
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
 <!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
 
     <span id="top"></span>
 
@@ -165,7 +193,12 @@
 
                 <div class="qe-page__toc">
 
-                    <div class="inner">
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
 
                         
                         <div class="qe-page__toc-header">
@@ -202,17 +235,23 @@
                                 
                             </p>
 
-                            <p class="powered">Powered by <a href="https://jupyterbook.org/en/stable/">Jupyter Book</a></p>
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
 
                         </nav>
 
                         <div class="qe-page__toc-footer">
                             
                             
-                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                            
+                            
+                            
                         </div>
 
                     </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
 
                 </div>
 
@@ -222,10 +261,9 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">大数定律 和 中心极限定理</p>
-
                     </div>
-                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+
+                    <!-- Authors section -->
                         <p class="qe-page__header-authors" font-size="18">
                             
                                 
@@ -238,6 +276,82 @@
                             
                         </p>
 
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 19, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/lln_clt.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c5b0082" class="changelog-hash">c5b0082</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">[action-translation] resync: lln_clt.md (#128)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/6ca48ab" class="changelog-hash">6ca48ab</a>
+                                
+                                <span class="changelog-author">nisha617</span>
+                                <span class="changelog-time">11 months ago</span>
+                                <span class="changelog-message">Update lln_clt.md</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/cc25eab" class="changelog-hash">cc25eab</a>
+                                
+                                <span class="changelog-author">nisha617</span>
+                                <span class="changelog-time">11 months ago</span>
+                                <span class="changelog-message">Add files via upload</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c4c4b86" class="changelog-hash">c4c4b86</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update matplotlib</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/0f3e233" class="changelog-hash">0f3e233</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/ab0498b" class="changelog-hash">ab0498b</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update all translated lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/387e084" class="changelog-hash">387e084</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lecture series</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
 
                 </div> <!-- .page__header -->
 
@@ -310,7 +424,7 @@
 <section id="lln-ksl">
 <span id="id6"></span><h3><span class="section-number">10.3.1. </span>经典大数定律<a class="headerlink" href="#lln-ksl" title="Link to this heading">#</a></h3>
 <p>经典大数定律涉及独立同分布（IID）随机变量。</p>
-<p>这里是经典大数定律的最强版本，被称为<em>柯尔莫戈洛夫强大数定律</em>。</p>
+<p>这里是经典大数定律的最强版本，被称为<strong>柯尔莫戈洛夫强大数定律</strong>。</p>
 <p>设 <span class="math notranslate nohighlight">\(X_1, \ldots, X_n\)</span> 是独立同分布的标量随机变量，具有相同的分布 <span class="math notranslate nohighlight">\(F\)</span>。</p>
 <p>当存在时，令 <span class="math notranslate nohighlight">\(\mu\)</span> 表示该样本的共同均值：</p>
 <div class="math notranslate nohighlight">
@@ -332,7 +446,7 @@
 </section>
 <section id="id7">
 <h3><span class="section-number">10.3.2. </span>证明<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
-<p id="index-5">Kolmogorov强大数定律的证明并不简单 – 参见<span id="id8">[<a class="reference internal" href="zreferences.html#id169" title="R M Dudley. Real Analysis and Probability. Cambridge Studies in Advanced Mathematics. Cambridge University Press, 2002.">Dudley, 2002</a>]</span>的定理8.3.5。</p>
+<p id="index-5">Kolmogorov强大数定律的证明并不简单 – 参见<span class="bibtex-citation" id="id8">[<a class="reference internal" href="zreferences.html#id255" title="R M Dudley. Real Analysis and Probability. Cambridge Studies in Advanced Mathematics. Cambridge University Press, 2002.">Dudley, 2002</a>]</span>的定理8.3.5。</p>
 <p>另一方面，我们可以很容易地证明大数定律的一个较弱版本，而且</p>
 <p>仍然可以理解大部分直观含义。</p>
 <p>我们要证明的版本如下：如果 <span class="math notranslate nohighlight">\(X_1, \ldots, X_n\)</span> 是独立同分布的，且 <span class="math notranslate nohighlight">\(\mathbb E X_i^2 &lt; \infty\)</span>，
@@ -427,7 +541,7 @@ n \to \infty\]</div>
 
     <span class="c1"># 绘图</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">data</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-    <span class="n">axlabel</span> <span class="o">=</span> <span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">bar</span><span class="si">{X}</span><span class="s1">_n$ for $X_i \sim$&#39;</span> <span class="o">+</span> <span class="n">name</span>
+    <span class="n">axlabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;$\bar</span><span class="si">{X}</span><span class="s1">_n$ for $X_i \sim$&#39;</span> <span class="o">+</span> <span class="n">name</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">sample_mean</span><span class="p">,</span> <span class="s1">&#39;g-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">axlabel</span><span class="p">)</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mu$&#39;</span><span class="p">)</span>
@@ -439,7 +553,12 @@ n \to \infty\]</div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/f24ffa8994164752cf2d886fe741ce10499d83bec69b78828fd9c492a3f1d7da.png" src="_images/f24ffa8994164752cf2d886fe741ce10499d83bec69b78828fd9c492a3f1d7da.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/457a79992dde8b6dbbd1c6e8fe9fb628db5306c9161271fcfed7ed71e2aff19a.png" src="_images/457a79992dde8b6dbbd1c6e8fe9fb628db5306c9161271fcfed7ed71e2aff19a.png" />
 </div>
 </div>
 <p>这三个分布是从存储在字典 <code class="docutils literal notranslate"><span class="pre">distributions</span></code> 中的选项中随机选择的。</p>
@@ -456,14 +575,14 @@ n \to \infty\]</div>
 <span class="math notranslate nohighlight">\(\mu\)</span> 和相同的方差 <span class="math notranslate nohighlight">\(\sigma^2 \in (0, \infty)\)</span>，那么</p>
 <div class="math notranslate nohighlight" id="equation-lln-clt">
 <span class="eqno">(10.5)<a class="headerlink" href="#equation-lln-clt" title="Link to this equation">#</a></span>\[\sqrt{n} ( \bar X_n - \mu ) \stackrel { d } {\to} N(0, \sigma^2)
-\quad \text{当} \quad
+\quad \text{as} \quad
 n \to \infty\]</div>
 <p>这里 <span class="math notranslate nohighlight">\(\stackrel { d } {\to} N(0, \sigma^2)\)</span> 表示<a class="reference external" href="https://en.wikipedia.org/wiki/Convergence_of_random_variables#Convergence_in_distribution">分布收敛</a>到一个中心化的（即均值为零）正态分布，其标准差为 <span class="math notranslate nohighlight">\(\sigma\)</span>。</p>
 </section>
 <section id="id12">
 <h3><span class="section-number">10.4.2. </span>直观理解<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
 <p id="index-8">中心极限定理最引人注目的含义是，对于<strong>任何</strong>具有有限二阶矩的分布，简单地将独立样本相加<strong>总是</strong>会导致高斯曲线。</p>
-<p>通过使用特征函数可以得到中心极限定理相对简单的证明（参见<span id="id13">[<a class="reference internal" href="zreferences.html#id169" title="R M Dudley. Real Analysis and Probability. Cambridge Studies in Advanced Mathematics. Cambridge University Press, 2002.">Dudley, 2002</a>]</span>的定理9.5.6）。</p>
+<p>通过使用特征函数可以得到中心极限定理相对简单的证明（参见<span class="bibtex-citation" id="id13">[<a class="reference internal" href="zreferences.html#id255" title="R M Dudley. Real Analysis and Probability. Cambridge Studies in Advanced Mathematics. Cambridge University Press, 2002.">Dudley, 2002</a>]</span>的定理9.5.6）。</p>
 <p>这个证明很优雅但几乎有点令人失望，因为它提供的直观理解非常有限。</p>
 <p>事实上，我们所知道的所有中心极限定理的证明在这方面都是类似的。</p>
 <p>为什么将独立样本相加会产生钟形分布？</p>
@@ -491,7 +610,7 @@ n \to \infty\]</div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/69d6c4b16ee7328603785a1dab154e70da96514ecb2fd105e979f136b2d72fc1.png" src="_images/69d6c4b16ee7328603785a1dab154e70da96514ecb2fd105e979f136b2d72fc1.png" />
+<img alt="_images/982c0cb47a3f7a23b76f7aed9dbb76e69bf96959d44605cf1a7ddc6638512a08.png" src="_images/982c0cb47a3f7a23b76f7aed9dbb76e69bf96959d44605cf1a7ddc6638512a08.png" />
 </div>
 </div>
 <p>当 <span class="math notranslate nohighlight">\(n = 1\)</span> 时，分布是平坦的 — 一次成功或零次成功具有相同的概率。</p>
@@ -522,7 +641,7 @@ n \to \infty\]</div>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置参数</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">250</span>                  <span class="c1"># n的选择</span>
-<span class="n">k</span> <span class="o">=</span> <span class="mi">100000</span>              <span class="c1"># Y_n的抽样次数</span>
+<span class="n">k</span> <span class="o">=</span> <span class="mi">100000</span>               <span class="c1"># Y_n的抽样次数</span>
 <span class="n">distribution</span> <span class="o">=</span> <span class="n">expon</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># 指数分布，λ = 1/2</span>
 <span class="n">μ</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">distribution</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
 
@@ -547,7 +666,10 @@ n \to \infty\]</div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c88748ae84c29c67f8801602477e2810b1600c7f8fb20fe62a3e2b2bafec7f83.png" src="_images/c88748ae84c29c67f8801602477e2810b1600c7f8fb20fe62a3e2b2bafec7f83.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/b09c353cad2bf317af341fab0ed26fd64fe5c3bcec99052cd7c97b02e088432c.png" src="_images/b09c353cad2bf317af341fab0ed26fd64fe5c3bcec99052cd7c97b02e088432c.png" />
 </div>
 </div>
 <p>注意这里没有使用for循环 — 每个操作都是向量化的，这意味着主要计算都转移到了高度优化的C代码中。</p>
@@ -569,7 +691,7 @@ n \to \infty\]</div>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">beta_dist</span> <span class="o">=</span> <span class="n">beta</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">gen_x_draws</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gen_x_draws</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    返回一个包含从底层随机变量 X 的分布中独立抽取 k 次的扁平数组。</span>
 <span class="sd">    这个分布本身是三个贝塔分布的凸组合。</span>
@@ -580,7 +702,7 @@ n \to \infty\]</div>
     <span class="n">bdraws</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="mf">0.6</span>
     <span class="n">bdraws</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-=</span> <span class="mf">1.1</span>
     <span class="c1"># 设置 X[i] = bdraws[j, i]，其中 j 是从 {0, 1, 2} 中随机抽取的</span>
-    <span class="n">js</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">js</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">bdraws</span><span class="p">[</span><span class="n">js</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span>
     <span class="c1"># 重新缩放，使随机变量均值为零</span>
     <span class="n">m</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">X</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
@@ -589,11 +711,12 @@ n \to \infty\]</div>
 <span class="n">nmax</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="n">reps</span> <span class="o">=</span> <span class="mi">100000</span>
 <span class="n">ns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nmax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
 
 <span class="c1"># 构建矩阵 Z，使每列都是 X 的 reps 个独立抽样</span>
 <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">reps</span><span class="p">,</span> <span class="n">nmax</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmax</span><span class="p">):</span>
-    <span class="n">Z</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">gen_x_draws</span><span class="p">(</span><span class="n">reps</span><span class="p">)</span>
+    <span class="n">Z</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">gen_x_draws</span><span class="p">(</span><span class="n">reps</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
 <span class="c1"># 对列进行累积求和</span>
 <span class="n">S</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="c1"># 将第 j 列乘以 sqrt j</span>
@@ -629,7 +752,7 @@ n \to \infty\]</div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/add0b79393cf3ed89536ea42a57bb47de87edf30785bfb96170db536e9b6e2f7.png" src="_images/add0b79393cf3ed89536ea42a57bb47de87edf30785bfb96170db536e9b6e2f7.png" />
+<img alt="_images/e12ea69c5caefd4b8b51da1026b22be2c898b0efcd4f2930bb7ed1cbbddff9fd.png" src="_images/e12ea69c5caefd4b8b51da1026b22be2c898b0efcd4f2930bb7ed1cbbddff9fd.png" />
 </div>
 </div>
 <p>正如预期的那样，随着<span class="math notranslate nohighlight">\(n\)</span>的增加，分布逐渐平滑成钟形曲线。</p>
@@ -673,9 +796,10 @@ n \to \infty\]</div>
 \end{array}
 \right) =: \boldsymbol \mu
 \end{split}\]</div>
-<p>随机向量 <span class="math notranslate nohighlight">\(\mathbf X\)</span> 的<em>方差-协方差矩阵</em>定义为</p>
+<p>随机向量 <span class="math notranslate nohighlight">\(\mathbf X\)</span> 的<strong>方差-协方差矩阵</strong>定义为</p>
 <div class="math notranslate nohighlight">
-\[\mathop{\mathrm{Var}}[\mathbf X]
+\[
+\mathop{\mathrm{Var}}[\mathbf X]
 := \mathbb E
 [ (\mathbf X - \boldsymbol \mu) (\mathbf X - \boldsymbol \mu)']
 \]</div>
@@ -771,7 +895,7 @@ n \to \infty\]</div>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">error_obs</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">xgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
-<span class="n">lb</span> <span class="o">=</span> <span class="s2">&quot;$N(0, g&#39;(\mu)^2  \sigma^2)$&quot;</span>
+<span class="n">lb</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;$N(0, g&#39;(\mu)^2  \sigma^2)$&quot;</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xgrid</span><span class="p">,</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">xgrid</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">asymptotic_sd</span><span class="p">),</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lb</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -779,7 +903,7 @@ n \to \infty\]</div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/a23bc6a722c3fd271c0bc204048fa9b4a92e61abb6867c6830e52a744f5cb1f7.png" src="_images/a23bc6a722c3fd271c0bc204048fa9b4a92e61abb6867c6830e52a744f5cb1f7.png" />
+<img alt="_images/98ab3262542288fcd313deaf2945d51602d32170dbd11d3d6dabe1f488959f36.png" src="_images/98ab3262542288fcd313deaf2945d51602d32170dbd11d3d6dabe1f488959f36.png" />
 </div>
 </div>
 <p>当你将<span class="math notranslate nohighlight">\([0, \pi / 2]\)</span>替换为<span class="math notranslate nohighlight">\([0, \pi]\)</span>时会发生什么？</p>
@@ -809,7 +933,7 @@ n \to \infty\]</div>
 \mathop{\mathrm{Var}}[\mathbf A \mathbf X]
 = \mathbf A \mathop{\mathrm{Var}}[\mathbf X] \mathbf A'
 \]</div>
-<p>其次，连续映射定理指出，如果<span class="math notranslate nohighlight">\(g(\cdot)\)</span>是一个连续函数，且随机变量序列<span class="math notranslate nohighlight">\(\{\mathbf{Z}_n\}\)</span>依分布收敛到随机变量<span class="math notranslate nohighlight">\(\mathbf{Z}\)</span>, 那么<span class="math notranslate nohighlight">\(\{g(\mathbf{Z}_n)\}\)</span>也依分布收敛到随机变量<span class="math notranslate nohighlight">\(g(\mathbf{Z})\)</span>。根据连续映射定理，如果<span class="math notranslate nohighlight">\(\mathbf Z_n \stackrel{d}{\to} \mathbf Z\)</span>在<span class="math notranslate nohighlight">\(\mathbb R^k\)</span>中成立，且<span class="math notranslate nohighlight">\(\mathbf A\)</span>是常数且为<span class="math notranslate nohighlight">\(k \times k\)</span>矩阵，那么</p>
+<p>其次，根据<a class="reference external" href="https://en.wikipedia.org/wiki/Continuous_mapping_theorem">连续映射定理</a>，如果<span class="math notranslate nohighlight">\(\mathbf Z_n \stackrel{d}{\to} \mathbf Z\)</span>在<span class="math notranslate nohighlight">\(\mathbb R^k\)</span>中成立，且<span class="math notranslate nohighlight">\(\mathbf A\)</span>是常数且为<span class="math notranslate nohighlight">\(k \times k\)</span>矩阵，那么</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbf A \mathbf Z_n
@@ -817,7 +941,8 @@ n \to \infty\]</div>
 \]</div>
 <p>第三，如果<span class="math notranslate nohighlight">\(\mathbf S\)</span>是一个<span class="math notranslate nohighlight">\(k \times k\)</span>对称正定矩阵，那么存在一个对称正定矩阵<span class="math notranslate nohighlight">\(\mathbf Q\)</span>，称为<span class="math notranslate nohighlight">\(\mathbf S\)</span>的<a class="reference external" href="https://en.wikipedia.org/wiki/Square_root_of_a_matrix">平方根</a>的逆，使得</p>
 <div class="math notranslate nohighlight">
-\[\mathbf Q \mathbf S\mathbf Q' = \mathbf I
+\[
+\mathbf Q \mathbf S\mathbf Q' = \mathbf I
 \]</div>
 <p>这里 <span class="math notranslate nohighlight">\(\mathbf I\)</span> 是 <span class="math notranslate nohighlight">\(k \times k\)</span> 单位矩阵。</p>
 <p>把这些内容放在一起，你的第一个练习是证明如果 <span class="math notranslate nohighlight">\(\mathbf Q\)</span> 是 <span class="math notranslate nohighlight">\(\mathbf \Sigma\)</span> 的逆平方根，那么</p>
@@ -844,14 +969,15 @@ n \to \infty\]</div>
 <p>你的第二个练习是通过模拟来说明 <a class="reference internal" href="#equation-lln-ctc">(10.10)</a> 中的收敛性。</p>
 <p>在此过程中，令</p>
 <div class="math notranslate nohighlight">
-\[ \begin{align}\begin{aligned}
+\[\begin{split}
 \mathbf X_i :=
-\left(\\\begin{split}\begin{array}{c}
+\left(
+\begin{array}{c}
     W_i \\
     U_i + W_i
 \end{array}
 \right)
-\end{split}\end{aligned}\end{align} \]</div>
+\end{split}\]</div>
 <p>其中</p>
 <ul class="simple">
 <li><p>每个 <span class="math notranslate nohighlight">\(W_i\)</span> 是从区间 <span class="math notranslate nohighlight">\([-1, 1]\)</span> 上的均匀分布中独立同分布抽取的。</p></li>
@@ -888,10 +1014,11 @@ N(\mathbf 0, \mathbf I)
 \]</div>
 <p>根据多元中心极限定理和连续映射定理，我们有</p>
 <div class="math notranslate nohighlight">
-\[ \begin{align}\begin{aligned}
-\mathbf Q \mathbf Y_n\\\stackrel{d}{\to}
+\[
+\mathbf Q \mathbf Y_n
+\stackrel{d}{\to}
 \mathbf Q \mathbf Y
-\end{aligned}\end{align} \]</div>
+\]</div>
 <p>由于正态随机变量的线性组合也是正态的，向量<span class="math notranslate nohighlight">\(\mathbf Q \mathbf Y\)</span>也是正态的。</p>
 <p>其均值显然为<span class="math notranslate nohighlight">\(\mathbf 0\)</span>，其方差-协方差矩阵为</p>
 <div class="math notranslate nohighlight">
@@ -952,7 +1079,7 @@ N(\mathbf 0, \mathbf I)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/de7c2e5f677e89e8bdd3e6010eaed8018cc31a52463400570dcd8016c6d82589.png" src="_images/de7c2e5f677e89e8bdd3e6010eaed8018cc31a52463400570dcd8016c6d82589.png" />
+<img alt="_images/1d4b36546c3bb0a71ef1cbd5a2be3e7036f82e30095d7a022a6a89ddfdc8f355.png" src="_images/1d4b36546c3bb0a71ef1cbd5a2be3e7036f82e30095d7a022a6a89ddfdc8f355.png" />
 </div>
 </div>
 </section>
@@ -1013,7 +1140,7 @@ N(\mathbf 0, \mathbf I)
                 <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
                     <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础工具
+  Tools and Techniques
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -1055,7 +1182,7 @@ N(\mathbf 0, \mathbf I)
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础统计学
+  Elementary Statistics
  </span>
 </p>
 <ul class="current nav bd-sidenav nav sidenav_l1">
@@ -1112,7 +1239,7 @@ N(\mathbf 0, \mathbf I)
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  贝叶斯定律
+  Bayes Law
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -1134,7 +1261,7 @@ N(\mathbf 0, \mathbf I)
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  统计与信息论
+  Statistics and Information
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -1184,358 +1311,648 @@ N(\mathbf 0, \mathbf I)
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mix_model.html">
-   30. 错误模型
+   32. 错误模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="navy_captain.html">
-   31. 贝叶斯与频率主义决策规则的比较
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  线性规划
+  Linear Programming
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="opt_transport.html">
-   32. 最优传输
+   36. 最优传输
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="von_neumann_model.html">
-   33. 冯·诺依曼增长模型（及其推广）
+   37. 冯·诺依曼增长模型（及其推广）
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  动态系统导论
+  Introduction to Dynamics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="finite_markov.html">
-   34. 有限马尔可夫链
+   38. 有限马尔可夫链
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="inventory_dynamics.html">
-   35. 库存动态
+   39. 库存动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="linear_models.html">
-   36. 线性状态空间模型
+   40. 线性状态空间模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="samuelson.html">
-   37. 萨缪尔森乘数-加速器模型
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kesten_processes.html">
-   38. Kesten过程与企业动态
+   43. Kesten过程与企业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="wealth_dynamics.html">
-   39. 财富分布动态
+   44. 财富分布动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman.html">
-   40. 初见卡尔曼滤波器
+   45. 初见卡尔曼滤波器
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman_2.html">
-   41. 卡尔曼滤波器进阶
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  搜索
+  Search
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model.html">
-   42. 工作搜寻 I: McCall搜寻模型
+   50. 工作搜寻 I: McCall搜寻模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model_with_separation.html">
-   43. 工作搜寻 II：搜寻与离职
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   44. 工作搜寻 III: 拟合值函数迭代
+   53. 工作搜寻 IV: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="mccall_correlated.html">
-   45. 工作搜寻 IV：相关工资报价
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   46. 工作搜寻 V：职业选择建模
+   55. 工作搜寻 VI：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   47. 工作搜寻 VI：在职搜索
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mccall_q.html">
-   48. 工作搜寻 VII：McCall劳动者的Q学习
+   56. 工作搜寻 VII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   49. 工作搜寻 VII: 带学习的搜索
+   57. 工作搜寻 VIII: 带学习的搜索
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  消费、储蓄与资本
+  Reinforcement Learning
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_1.html">
-   50. Cass-Koopmans模型
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_2.html">
-   51. Cass-Koopmans竞争均衡
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal.html">
-   52. 带扭曲性税收的Cass-Koopmans模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal_2.html">
-   53. 带扭曲性税收的双国模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ak2.html">
-   54. 代际交叠模型中的转型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_problem.html">
-   55. 吃蛋糕问题 I：最优储蓄导论
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_numerical.html">
-   56. 吃蛋糕问题 II：数值方法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth.html">
-   57. 最优增长 I：随机最优增长模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth_fast.html">
-   58. 最优增长 II：使用Numba加速代码
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="coleman_policy_iter.html">
-   59. 最优增长 III：时间迭代
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="egm_policy_iter.html">
-   60. 最优增长 IV：内生网格法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp.html">
-   61. 收入波动问题 I：基本模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp_advanced.html">
-   62. 收入波动问题 II：资产随机收益
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  LQ控制
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   63. LQ控制：基础
+   72. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   64. LQ控制的拉格朗日方法
+   73. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   65. 消除交叉项
+   74. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   66. 永久收入模型
+   75. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   67. 永久收入 II：线性二次方法
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   68. 通过库存实现生产平滑
+   83. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  多主体模型
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   69. 就业与失业的湖泊模型
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   70. 理性预期均衡
+   107. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   71. 线性理性预期模型中的稳定性
+   108. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   72. 马尔可夫完美均衡
+   109. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   73. 不确定性陷阱
+   110. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   74. 艾亚加里模型
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   75. 长寿、异质性个体、世代交叠模型
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  资产定价与金融
+  Asset Pricing and Finance
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   76. 资产定价：有限状态模型
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   77. 带有阿罗证券的竞争均衡
+   119. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   78. 异质信念与泡沫
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  数据与实证
+  Data and Empirics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="pandas_panel.html">
-   79. 用Pandas处理面板数据
+   128. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   80. Python线性回归
+   129. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   81. 最大似然估计
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  拍卖
+  Auctions
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   82. 一价和二价拍卖
+   133. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   83. 多种商品分配机制
+   134. 多种商品分配机制
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  其他
+  Other
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   84. 故障排除
+   135. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   85. 参考文献
+   136. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   86. 执行统计
+   137. 执行统计
   </a>
  </li>
 </ul>
@@ -1579,6 +1996,8 @@ N(\mathbf 0, \mathbf I)
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/lln_clt.md" download><i data-feather="github"></i></a></li>
                     -->
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
                 </ul>
 
             </div>

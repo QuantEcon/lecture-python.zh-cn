@@ -7,6 +7,18 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 不确定性陷阱
+  headings:
+    Overview: 概述
+    The Model: 模型
+    The Model::Fundamentals: 基本原理
+    The Model::Output: 产出
+    The Model::Information and Beliefs: 信息和信念
+    The Model::Participation: 参与
+    Implementation: 实现
+    Results: 结果
+    Exercises: 练习
 ---
 
 (uncertainty_traps)=

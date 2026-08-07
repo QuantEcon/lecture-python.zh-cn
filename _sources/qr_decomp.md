@@ -9,6 +9,18 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: QR分解
+  headings:
+    Overview: 概述
+    Matrix Factorization: 矩阵分解
+    Gram-Schmidt process: 格拉姆-施密特正交化
+    Gram-Schmidt process::Gram-Schmidt process for square $A$: 方阵$A$的格拉姆-施密特正交化
+    Gram-Schmidt process::$A$ not square: $A$ 非方阵
+    Some Code: 一些代码
+    Example: 示例
+    Using QR Decomposition to Compute Eigenvalues: 使用QR分解计算特征值
+    $QR$ and PCA: $QR$ 分解与主成分分析（PCA）
 ---
 
 # QR分解
@@ -51,9 +63,9 @@ $$
 
 如果方阵$A$是非奇异的，那么$QR$分解是唯一的。
 
-实际上，我们的算法也适用于非方阵的矩形矩阵$A$。
-
 我们稍后会处理矩形矩阵$A$。
+
+实际上，我们的算法也适用于非方阵的矩形矩阵$A$。
 
 ### 方阵$A$的格拉姆-施密特正交化
 
@@ -232,6 +244,9 @@ def adjust_sign(Q, R):
 
 ```{code-cell} ipython3
 A = np.array([[1.0, 1.0, 0.0], [1.0, 0.0, 1.0], [0.0, 1.0, 1.0]])
+# A = np.array([[1.0, 0.5, 0.2], [0.5, 0.5, 1.0], [0.0, 1.0, 1.0]])
+# A = np.array([[1.0, 0.5, 0.2], [0.5, 0.5, 1.0]])
+
 A
 ```
 
@@ -302,6 +317,10 @@ Q_scipy, R_scipy
 5. 迭代直至收敛。
 
 6. 计算 $A$ 的特征值，并将其与从该过程得到的极限 $A_n$ 的对角线值进行比较。
+
+```{todo}
+@mmcky 将此迁移为使用 [sphinx-proof](https://sphinx-proof.readthedocs.io/en/latest/syntax.html#algorithms)
+```
 
 **注意：** 这个算法实际上非常接近计算特征值最高效的方法！
 
@@ -444,4 +463,3 @@ QPΛPQ = Q @ P_tilde @ Λ @ P_tilde.T @ Q.T
 ```{code-cell} ipython3
 np.abs(QPΛPQ - XX).max()
 ```
-

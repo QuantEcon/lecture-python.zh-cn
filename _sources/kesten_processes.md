@@ -3,10 +3,29 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.16.7
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: Kesten过程与企业动态
+  headings:
+    Overview: 概述
+    Kesten processes: Kesten过程
+    'Kesten processes::Example: GARCH volatility': 示例：GARCH波动率
+    'Kesten processes::Example: wealth dynamics': 示例：财富动态
+    Kesten processes::Stationarity: 平稳性
+    Kesten processes::Cross-sectional interpretation: 横截面解释
+    Kesten processes::Conditions for stationarity: 平稳性条件
+    Heavy tails: 重尾
+    Heavy tails::The Kesten--Goldie theorem: Kesten--Goldie定理
+    Heavy tails::Intuition: 直觉解释
+    'Application: firm dynamics': 应用：企业动态
+    'Application: firm dynamics::Gibrat''s law': Gibrat定律
+    'Application: firm dynamics::Heavy tails': 重尾
+    Exercises: 练习
 ---
 
 ```{raw} jupyter
@@ -26,14 +45,15 @@ kernelspec:
 :depth: 2
 ```
 
-除了Anaconda中包含的内容外，本讲座还需要以下库：
+```{include} _admonition/gpu.md
+```
 
-```{code-cell} ipython
----
-tags: [hide-output]
----
-!pip install quantecon
-!pip install --upgrade yfinance
+除了 Anaconda 中包含的内容外，本讲座还需要以下库：
+
+```{code-cell} ipython3
+:tags: [hide-output]
+
+!pip install --upgrade quantecon yfinance jax
 ```
 
 ## 概述
@@ -47,29 +67,21 @@ tags: [hide-output]
 虽然Kesten过程的数学形式看起来很简单，但它们在经济学中非常重要，主要有两个原因：
 
 1. 很多关键的经济过程可以用Kesten过程来描述。
-2. Kesten过程能够产生复杂的动态行为，尤其是在某些条件下，它们可以生成带有"重尾"特征的横截面分布，这与我们在现实经济数据中观察到的情况相符。
+2. Kesten过程能够产生复杂的动态行为，尤其是在某些条件下，它们可以生成带有"重尾"特征的横截面分布。
 
 我们接下来会讨论这些问题。
 
 现在我们从一些导入开始：
 
-```{code-cell} ipython
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
-plt.rcParams['font.family'] = ['Source Han Serif SC']
-
-plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
+plt.rcParams['font.family'] = ['Source Han Serif SC', 'DejaVu Sans']
 import numpy as np
 import quantecon as qe
-```
-
-以下两行仅用于避免pandas和matplotlib之间的兼容性问题导致的`FutureWarning`。
-
-```{code-cell} ipython
-from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
+import yfinance as yf
 ```
 
 关于本讲座的更多技术细节，读者可以参考{cite}`buraczewski2016stochastic`这本专著。
@@ -106,19 +118,18 @@ GARCH模型在金融应用中很常见，其中时间序列（如资产收益）
 例如，考虑以下纳斯达克综合指数从2006年1月1日到2019年11月1日的日收益率图。
 
 (ndcode)=
-```{code-cell} python3
-import yfinance as yf
 
-s = yf.download('^IXIC', '2006-1-1', '2019-11-1', auto_adjust=False)['Adj Close']
+```{code-cell} ipython3
+s = yf.download(
+    "^IXIC", "2006-1-1", "2019-11-1", auto_adjust=False
+)["Adj Close"]
 
 r = s.pct_change()
 
 fig, ax = plt.subplots()
-
 ax.plot(r, alpha=0.7)
-
-ax.set_ylabel('收益率', fontsize=12)
-ax.set_xlabel('日期', fontsize=12)
+ax.set_ylabel("收益率", fontsize=12)
+ax.set_xlabel("日期", fontsize=12)
 
 plt.show()
 ```
@@ -262,7 +273,7 @@ Kesten过程$X_{t+1} = a_{t+1} X_t + \eta_{t+1}$并不总是具有平稳分布�
 
 在某些条件下，Kesten过程的平稳分布具有帕累托尾。
 
-（参见我们{doc}`之前关于重尾分布的讲座 <intro:heavy_tails>`。）
+（参见我们{doc}`关于重尾的讲座 <intro:heavy_tails>`以了解背景。）
 
 这个事实对经济学很重要，因为帕累托尾分布在经济现象中广泛存在。
 
@@ -299,7 +310,7 @@ $$
 
 ### 直觉解释
 
-稍后我们将通过绘秩-规模图来直观地验证Kesten--Goldie定理的结论。
+稍后我们将通过秩-规模图来直观地验证Kesten--Goldie定理的结论。
 
 在此之前，我们可以对定理条件进行以下直觉性解释。
 
@@ -323,23 +334,23 @@ $$
 μ = -0.5
 σ = 1.0
 
-def kesten_ts(ts_length=100):
+def kesten_ts(rng, ts_length=100):
     x = np.zeros(ts_length)
-    for t in range(ts_length-1):
-        a = np.exp(μ + σ * np.random.randn())
-        b = np.exp(np.random.randn())
+    for t in range(ts_length - 1):
+        a = np.exp(μ + σ * rng.standard_normal())
+        b = np.exp(rng.standard_normal())
         x[t+1] = a * x[t] + b
     return x
 
 fig, ax = plt.subplots()
 
 num_paths = 10
-np.random.seed(12)
+rng = np.random.default_rng(12)
 
 for i in range(num_paths):
-    ax.plot(kesten_ts())
+    ax.plot(kesten_ts(rng))
 
-ax.set(xlabel='时间', ylabel='$X_t$')
+ax.set(xlabel="时间", ylabel="$X_t$")
 plt.show()
 ```
 
@@ -386,7 +397,7 @@ s_{t+1} = a_{t+1} s_t + b_{t+1}
 
 其中$\{a_t\}$和$\{b_t\}$都是独立同分布的，且相互独立。
 
-在练习中，你需要证明{eq}`firm_dynam`中的Gibrat定律比{eq}`firm_dynam_gb`中的更符合上述实证结果。
+在练习中，你需要证明{eq}`firm_dynam`比{eq}`firm_dynam_gb`中的Gibrat定律更符合上述实证结果。
 
 ### 重尾
 
@@ -431,22 +442,22 @@ s_{t+1} = a_{t+1} s_t + b_{t+1}
 years = 15
 days = years * 250
 
-def garch_ts(ts_length=days):
+def garch_ts(rng, ts_length=days):
     σ2 = 0
     r = np.zeros(ts_length)
-    for t in range(ts_length-1):
-        ξ = np.random.randn()
+    for t in range(ts_length - 1):
+        ξ = rng.standard_normal()
         σ2 = α_0 + σ2 * (α_1 * ξ**2 + β)
-        r[t] = np.sqrt(σ2) * np.random.randn()
+        r[t] = np.sqrt(σ2) * rng.standard_normal()
     return r
 
 fig, ax = plt.subplots()
 
-np.random.seed(12)
+rng = np.random.default_rng(12)
 
-ax.plot(garch_ts(), alpha=0.7)
+ax.plot(garch_ts(rng), alpha=0.7)
 
-ax.set(xlabel='时间', ylabel='$\\sigma_t^2$')
+ax.set(xlabel="时间", ylabel="$\\sigma_t^2$")
 plt.show()
 ```
 
@@ -549,7 +560,7 @@ $$
 :label: kp_ex4
 ```
 
-在如{eq}`firm_dynam`中所述的企业动态模型中，的一个不现实方面是它忽略了企业的进入和退出。
+在如{eq}`firm_dynam`中所述的企业动态模型中，一个不现实的方面是它忽略了企业的进入和退出。
 
 在任何时期和任何市场中，我们都能观察到大量企业进入和退出市场。
 
@@ -622,42 +633,60 @@ s_init = 1.0      # 每个企业的初始条件
 :class: dropdown
 ```
 
-这是一种答案。
-首先生成观测值：
+这是一种解答。
+
+我们需要模拟一个大规模的企业横截面，因此这是使用JAX的一个很好的应用场景。
+
+我们将企业参数存储在一个`NamedTuple`中，并将单个企业的更新规则{eq}`firm_dynam_ee`写成一个纯函数。
 
 ```{code-cell} ipython3
-from numba import jit, prange
-from numpy.random import randn
+import jax
+import jax.numpy as jnp
+from functools import partial
+from typing import NamedTuple
 
 
-@jit(parallel=True)
-def generate_draws(μ_a=-0.5,
-                   σ_a=0.1,
-                   μ_b=0.0,
-                   σ_b=0.5,
-                   μ_e=0.0,
-                   σ_e=0.5,
-                   s_bar=1.0,
-                   T=500,
-                   M=1_000_000,
-                   s_init=1.0):
+class Firm(NamedTuple):
+    μ_a: float
+    σ_a: float
+    μ_b: float
+    σ_b: float
+    μ_e: float
+    σ_e: float
+    s_bar: float
 
-    draws = np.empty(M)
-    for m in prange(M):
-        s = s_init
-        for t in range(T):
-            if s < s_bar:
-                new_s = np.exp(μ_e + σ_e *  randn())
-            else:
-                a = np.exp(μ_a + σ_a * randn())
-                b = np.exp(μ_b + σ_b * randn())
-                new_s = a * s + b
-            s = new_s
-        draws[m] = s
 
-    return draws
+def update(s, key, firm):
+    "在给定一个新的随机密钥的情况下，更新单个企业的规模s。"
+    a_key, b_key, e_key = jax.random.split(key, 3)
+    a = jnp.exp(firm.μ_a + firm.σ_a * jax.random.normal(a_key))
+    b = jnp.exp(firm.μ_b + firm.σ_b * jax.random.normal(b_key))
+    e = jnp.exp(firm.μ_e + firm.σ_e * jax.random.normal(e_key))
+    return jnp.where(s < firm.s_bar, e, a * s + b)
+```
 
-data = generate_draws()
+我们使用`lax.scan`对一个企业模拟`T`期，然后使用`vmap`并行运行所有`M`个企业。
+
+```{code-cell} ipython3
+@partial(jax.jit, static_argnames=("T", "M"))
+def generate_draws(firm, s_init=1.0, T=500, M=1_000_000, seed=0):
+    keys = jax.random.split(jax.random.PRNGKey(seed), M)
+
+    def sim_firm(key):
+        step_keys = jax.random.split(key, T)
+        s_final, _ = jax.lax.scan(
+            lambda s, k: (update(s, k, firm), None), s_init, step_keys
+        )
+        return s_final
+
+    return jax.vmap(sim_firm)(keys)
+```
+
+现在我们根据上面的参数构建企业，并生成样本。
+
+```{code-cell} ipython3
+firm = Firm(μ_a, σ_a, μ_b, σ_b, μ_e, σ_e, s_bar)
+data = generate_draws(firm, s_init=s_init, T=T, M=M)
 ```
 
 现在来生成秩-规模图：
@@ -666,7 +695,7 @@ data = generate_draws()
 fig, ax = plt.subplots()
 
 rank_data, size_data = qe.rank_size(data, c=0.01)
-ax.loglog(rank_data, size_data, 'o', markersize=3.0, alpha=0.5)
+ax.loglog(rank_data, size_data, "o", markersize=3.0, alpha=0.5)
 ax.set_xlabel("对数秩")
 ax.set_ylabel("对数规模")
 

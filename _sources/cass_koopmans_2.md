@@ -7,6 +7,26 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: Cass-Koopmans竞争均衡
+  headings:
+    Overview: 概述
+    Review of Cass-Koopmans Model: Cass-Koopmans模型回顾
+    Review of Cass-Koopmans Model::Planning Problem: 规划问题
+    Competitive Equilibrium: 竞争均衡
+    Market Structure: 市场结构
+    Market Structure::Prices: 价格
+    Firm Problem: 企业问题
+    Firm Problem::Zero Profit Conditions: 零利润条件
+    Household Problem: 家庭问题
+    Household Problem::Definitions: 定义
+    Computing a Competitive Equilibrium: 计算竞争均衡
+    Computing a Competitive Equilibrium::Guess for Price System: 价格体系的猜测
+    Computing a Competitive Equilibrium::Verification Procedure: 验证程序
+    Computing a Competitive Equilibrium::Household's Lagrangian: 家庭的拉格朗日函数
+    Computing a Competitive Equilibrium::Representative Firm's Problem: 代表性企业的问题
+    Computing a Competitive Equilibrium::Representative Firm's Problem::Varying Curvature: 改变曲率
+    Yield Curves and Hicks-Arrow Prices: 收益率曲线和Hicks-Arrow价格
 ---
 
 (cass_koopmans_2)=

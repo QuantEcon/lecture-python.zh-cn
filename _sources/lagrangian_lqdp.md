@@ -9,6 +9,20 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: LQ控制的拉格朗日方法
+  headings:
+    Overview: 概述
+    Undiscounted LQ DP Problem: 无折现LQ动态规划问题
+    Lagrangian: 拉格朗日量
+    State-Costate Dynamics: 状态-协状态动态
+    Reciprocal Pairs Property: 倒数对性质
+    Schur decomposition: Schur分解
+    Application: 应用
+    Other Applications: 其他应用
+    Discounted Problems: 折现问题
+    Discounted Problems::Transforming States and Controls to Eliminate Discounting: 转换状态和控制以消除折现
+    Discounted Problems::Lagrangian for Discounted Problem: 折现问题的拉格朗日量
 ---
 
 +++
@@ -186,28 +200,28 @@ $$ (eqn:muPx)
 * 将得到的方程和 {eq}`lag-lqdp-eq2` 的第二个方程整理成如下形式
 
 $$
-L\ \begin{pmatrix}x_{t+1}\cr \mu_{t+1}\cr\end{pmatrix}\ = \ N\ \begin{pmatrix}x_t\cr \mu_t\cr\end{pmatrix}\
+L\ \begin{bmatrix}x_{t+1}\cr \mu_{t+1}\cr\end{bmatrix}\ = \ N\ \begin{bmatrix}x_t\cr \mu_t\cr\end{bmatrix}\
 ,\ t \geq 0,
 $$ (eq:systosolve)
 
 其中
 
 $$
-L = \ \begin{pmatrix}I & BQ^{-1} B^\prime \cr 0 & A^\prime\cr\end{pmatrix}, \quad N = \
-\begin{pmatrix}A & 0\cr -R & I\cr\end{pmatrix}.
+L = \ \begin{bmatrix}I & BQ^{-1} B^\prime \cr 0 & A^\prime\cr\end{bmatrix}, \quad N = \
+\begin{bmatrix}A & 0\cr -R & I\cr\end{bmatrix}.
 $$
 
 当 $L$ 满秩时（即当 $A$ 满秩时），我们可以将系统 {eq}`eq:systosolve` 写作
 
 $$
-\begin{pmatrix}x_{t+1}\cr \mu_{t+1}\cr\end{pmatrix}\ = M\ \begin{pmatrix}x_t\cr\mu_t\cr\end{pmatrix}
+\begin{bmatrix}x_{t+1}\cr \mu_{t+1}\cr\end{bmatrix}\ = M\ \begin{bmatrix}x_t\cr\mu_t\cr\end{bmatrix}
 $$ (eq4orig)
 
 其中
 
 $$
-M\equiv L^{-1} N = \begin{pmatrix}A+B Q^{-1} B^\prime A^{\prime-1}R &
--B Q^{-1} B^\prime A^{\prime-1}\cr -A^{\prime -1} R & A^{\prime -1}\cr\end{pmatrix}.
+M\equiv L^{-1} N = \begin{bmatrix}A+B Q^{-1} B^\prime A^{\prime-1}R &
+-B Q^{-1} B^\prime A^{\prime-1}\cr -A^{\prime -1} R & A^{\prime -1}\cr\end{bmatrix}.
 $$ (Mdefn)
 
 +++
@@ -216,8 +230,8 @@ $$ (Mdefn)
 
 我们希望求解差分方程系统{eq}`eq4orig`，其解为满足以下条件的序列 $\{x_t\}_{t=0}^\infty$：
 
-* 初始条件为
-* 终端条件为 $\lim_{t \rightarrow +\infty} x_t =0$
+* $x_0$ 的一个初始条件
+* 终端条件 $\lim_{t \rightarrow +\infty} x_t =0$
 
 这个终端条件反映了我们对**稳定**解的需求，即解不会在 $t \to \infty$ 时发散。
 
@@ -238,7 +252,7 @@ $$
 为此，我们引入一个 $(2n \times 2n)$ 矩阵
 
 $$
-J = \begin{pmatrix}0 & -I_n\cr I_n & 0\cr\end{pmatrix}.
+J = \begin{bmatrix}0 & -I_n\cr I_n & 0\cr\end{bmatrix}.
 $$
 
 矩阵 $J$ 的秩为 $2n$。
@@ -280,12 +294,12 @@ $$
 y_{t+1} = M y_t
 $$ (eq658)
 
-其中 $y_t = \begin{pmatrix}x_t\cr \mu_t\cr\end{pmatrix}$。
+其中 $y_t = \begin{bmatrix}x_t\cr \mu_t\cr\end{bmatrix}$。
 
 考虑 $M$ 的**三角化**
 
 $$
-V^{-1} M V= \begin{pmatrix}W_{11} & W_{12} \cr 0 & W_{22}\cr\end{pmatrix}
+V^{-1} M V= \begin{bmatrix}W_{11} & W_{12} \cr 0 & W_{22}\cr\end{bmatrix}
 $$ (eqn:triangledecomp)
 
 其中
@@ -323,9 +337,9 @@ $$
 将方程{eq}`eq6510`写作
 
 $$
-\begin{pmatrix}y^\ast_{1t}\cr y^\ast_{2t}\cr\end{pmatrix}\ =\ \left[\begin{matrix} W^t_{11} &
-W_{12, t}\cr 0 & W^t_{22}\cr\end{matrix}\right]\quad \begin{pmatrix}y^\ast_{10}\cr
-y^\ast_{20}\cr\end{pmatrix}
+\begin{bmatrix}y^\ast_{1t}\cr y^\ast_{2t}\cr\end{bmatrix}\ =\ \left[\begin{matrix} W^t_{11} &
+W_{12, t}\cr 0 & W^t_{22}\cr\end{matrix}\right]\quad \begin{bmatrix}y^\ast_{10}\cr
+y^\ast_{20}\cr\end{bmatrix}
 $$
 
 其中 $y^\ast_t = V^{-1} y_t$，特别地
@@ -358,10 +372,10 @@ $$
 \mu_t = - (V^{22})^{-1} V^{21} x_t.
 $$
 
-但注意，由于 $(V^{21} \ V^{22})$ 是 $V$ 的逆矩阵的第二行块，因此
+但注意，由于 $(V^{21}\ V^{22})$ 是 $V$ 的逆矩阵的第二行块，因此
 
 $$
-(V^{21} \ V^{22})\quad \begin{pmatrix}V_{11}\cr V_{21}\cr\end{pmatrix} = 0
+(V^{21} \ V^{22})\quad \begin{bmatrix}V_{11}\cr V_{21}\cr\end{bmatrix} = 0
 $$
 
 这意味着
@@ -406,11 +420,14 @@ $$ (eqn:Pvaughn)
 
 ## 应用
 
-这里我们通过一个示例来演示计算过程，这个示例是从[quantecon讲座](https://python.quantecon.org/lqcontrol.html)中借鉴的确定性版本。
+这里我们用来自 {doc}`lqcontrol` 的确定性永久收入示例来演示这一计算方法。
+
+由于该模型是带折现的，我们将不变子空间方法应用于由变换矩阵 $\hat A = \beta^{1/2} A$ 和 $\hat B = \beta^{1/2} B$ 得到的等价*无折现*系统。
 
 ```{code-cell} ipython3
 # 模型参数
 r = 0.05
+β = 1 / (1 + r)
 c_bar = 2
 μ = 1
 
@@ -423,7 +440,7 @@ B = [[-1],
      [0]]
 
 # 构造一个LQ实例
-lq = LQ(Q, R, A, B)
+lq = LQ(Q, R, A, B, beta=β)
 ```
 
 给定矩阵 $A$、$B$、$Q$、$R$，我们可以计算 $L$、$N$ 和 $M=L^{-1}N$。
@@ -431,7 +448,7 @@ lq = LQ(Q, R, A, B)
 ```{code-cell} ipython3
 def construct_LNM(A, B, Q, R):
 
-    n, k = lq.n, lq.k
+    n = A.shape[0]
 
     # 构造 L 和 N
     L = np.zeros((2*n, 2*n))
@@ -451,7 +468,10 @@ def construct_LNM(A, B, Q, R):
 ```
 
 ```{code-cell} ipython3
-L, N, M = construct_LNM(lq.A, lq.B, lq.Q, lq.R)
+A_bar = lq.A * lq.beta ** (1/2)
+B_bar = lq.B * lq.beta ** (1/2)
+
+L, N, M = construct_LNM(A_bar, B_bar, lq.Q, lq.R)
 ```
 
 ```{code-cell} ipython3
@@ -472,7 +492,7 @@ M @ J @ M.T - J
 我们可以使用`np.linalg.eigvals`计算矩阵$M$的特征值，并按升序排列。
 
 ```{code-cell} ipython3
-eigvals = sorted(np.linalg.eigvals(M))
+eigvals = sorted(np.linalg.eigvals(M), key=lambda z: (abs(z), z.real, z.imag))
 eigvals
 ```
 
@@ -484,18 +504,14 @@ eigvals
 为了得到我们想要的结果，让我们定义一个排序函数，告诉`scipy.schur`将模小于1的对应特征值排序到左上角。
 
 ```{code-cell} ipython3
-stable_eigvals = eigvals[:n]
+tol = 1e-10
 
 def sort_fun(x):
     "将模小于1的特征值排序到左上角。"
+    return abs(x) < 1 - tol
 
-    if x in stable_eigvals:
-        stable_eigvals.pop(stable_eigvals.index(x))
-        return True
-    else:
-        return False
-
-W, V, _ = schur(M, sort=sort_fun)
+W, V, stable_dim = schur(M, sort=sort_fun)
+stable_dim
 ```
 
 ```{code-cell} ipython3
@@ -538,25 +554,24 @@ def stable_solution(M, verbose=True):
         表示线性差分方程系统的矩阵。
     """
     n = M.shape[0] // 2
-    stable_eigvals = list(sorted(np.linalg.eigvals(M))[:n])
+    tol = 1e-10
 
     def sort_fun(x):
         "将模小于1的特征值排序到左上角。"
+        return abs(x) < 1 - tol
 
-        if x in stable_eigvals:
-            stable_eigvals.pop(stable_eigvals.index(x))
-            return True
-        else:
-            return False
-
-    W, V, _ = schur(M, sort=sort_fun)
+    W, V, stable_dim = schur(M, sort=sort_fun)
+    if stable_dim != n:
+        raise ValueError(
+    f"预期有{n}个模小于1的稳定特征值，但实际找到{stable_dim}个。"
+    )
     if verbose:
         print('特征值：\n')
         print('    W11: {}'.format(np.diag(W[:n, :n])))
         print('    W22: {}'.format(np.diag(W[n:, n:])))
 
-    # 计算 V21 V11^{-1}
-    P = V[n:, :n] @ np.linalg.inv(V[:n, :n])
+    # 计算 V21 V11^{-1}，不显式构造逆矩阵
+    P = np.linalg.solve(V[:n, :n].T, V[n:, :n].T).T
 
     return W, V, P
 
@@ -621,7 +636,7 @@ lq.stationary_values()
 
 ## 其他应用
 
-上述对潜在不稳定的线性差分方程系统施加稳定性约束的方法，并不限于线性二次型动态最优化问题
+上述对潜在不稳定的线性差分方程系统施加稳定性约束的方法，并不限于线性二次型动态最优化问题。
 
 例如，在我们的[线性理性预期模型中的稳定性](https://python.quantecon.org/re_with_feedback.html#another-perspective)讲座中也使用了相同的方法。
 
@@ -677,7 +692,7 @@ $$
 \hat x_{t+1} = \hat A \hat x_t + \hat B \hat u_t. 
 $$ 
 
-那么由 $A, B, R, Q, \beta$ 定义的折现最优控制问题，等价于一个由 $\hat A, \hat B, Q, R$ 定义的无折现问题。变换前的现最优控制问题的最优策略由 $P, F$ 表征，那么对于变换后的无折现问题，它的解由满足以下方程的 $\hat F, \hat P$ 表征：
+那么由 $A, B, R, Q, \beta$ 定义的折现最优控制问题，其最优策略由 $P, F$ 表征，对应于一个由 $\hat A, \hat B, Q, R$ 定义的等价无折现问题，其最优策略由满足以下方程的 $\hat F, \hat P$ 表征：
 
 $$
 \hat F=(Q+B'\hat PB)^{-1}\hat B'P \hat A
@@ -700,11 +715,6 @@ $$
 例如，当 $\beta=\frac{1}{1+r}$ 时，我们可以用 $\hat{A}=\beta^{1/2} A$ 和 $\hat{B}=\beta^{1/2} B$ 求解 $P$。
 
 这些设定在上面定义的 `stationary_P` 函数中是默认采用的。
-
-```{code-cell} ipython3
-β = 1 / (1 + r)
-lq.beta = β
-```
 
 ```{code-cell} ipython3
 stationary_P(lq)
@@ -832,4 +842,3 @@ $$ (eq667)
 这里我们必须要求 $F$ 满足方程{eq}`eqn:optimalFformula`。
 
 方程{eq}`eq666`和{eq}`eq667`为最优值函数提供了不同的视角。
-

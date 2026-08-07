@@ -9,6 +9,29 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 代际交叠模型中的转型
+  headings:
+    Introduction: 引言
+    Setting: 设定
+    Production: 生产
+    Government: 政府
+    Activities in Factor Markets: 要素市场中的活动
+    Representative firm's problem: 代表性企业的问题
+    Individuals' problems: 个体问题
+    Individuals' problems::Initial old person: 初始老年人
+    Individuals' problems::Young person: 年轻人
+    Equilbrium: 均衡
+    Next steps: 后续步骤
+    Closed form solution: 封闭形式解
+    Closed form solution::Steady states: 稳态
+    Closed form solution::Implementation: 实现
+    Closed form solution::Transitions: 转型
+    'Closed form solution::Experiment 1: Tax cut': 实验1：减税
+    'Closed form solution::Experiment 2: Government asset accumulation': 实验2：政府资产积累
+    'Closed form solution::Experiment 3: Temporary expenditure cut': 实验3：暂时性支出削减
+    A computational strategy: 计算策略
+    'A computational strategy::Experiment 4: Unfunded Social Security System': 实验4：无基金的社会保障制度
 ---
 
 # 代际交叠模型中的转型
@@ -64,7 +87,7 @@ Auerbach 和 Kotlikoff 使用计算机代码来计算他们的长寿人群模型
 
 每个时期 $t \geq 0$，政府进行征税、支出、转移支付和借贷。
 
-在 $t=0$ 时刻，模型之外给定的初始条件为
+在模型之外、于时点 $t=0$ 设定的初始条件为
 
 * $K_0$：由一个代表性的初始老年人在时点 $t=0$ 时带入的初始资本存量
 * $D_0$：由一个代表性的老年人在时点 $t=0$ 持有并在 $t=0$ 到期的政府债务
@@ -145,7 +168,7 @@ $$
 或等价地
 
 $$
-D_{t+1} = (1 + r_t)  D_t + G_t - T_t
+D_{t+1} = (1 + r_t)  D_t + G_t - T_t  .
 $$ (eq:govbudgetsequence) 
 
 其中，总税收净额（扣除转移支付）为 $T_t$，满足
@@ -262,7 +285,7 @@ $$ (eq:lagC)
 
 其中 $\lambda$ 是跨期预算约束 {eq}`eq:onebudgetc` 的拉格朗日乘子。
 
-经过代数运算，由 {eq}`eq:onebudgetc` 和最大化 ${\mathcal L}$ 的一阶条件可得最优消费计划满足
+经过若干代数运算，跨期预算约束 {eq}`eq:onebudgetc` 以及关于 $C_{yt}, C_{o,t+1}$ 最大化 ${\mathcal L}$ 的一阶条件表明，最优消费计划满足
 
 $$
 \begin{aligned}
@@ -271,7 +294,7 @@ C_{yt} & = \beta \Bigl[ W_t (1 - \tau_t) - \delta_{yt} - \frac{\delta_{ot}}{1 + 
 \end{aligned}
 $$ (eq:optconsplan)
 
-最小化拉格朗日函数 {eq}`eq:lagC` 关于 $\lambda$ 的一阶条件可恢复预算约束 {eq}`eq:onebudgetc`，进而利用 {eq}`eq:optconsplan` 得到最优储蓄计划
+最小化拉格朗日函数 {eq}`eq:lagC` 关于拉格朗日乘子 $\lambda$ 的一阶条件可恢复预算约束 {eq}`eq:onebudgetc`，进而利用 {eq}`eq:optconsplan` 得到最优储蓄计划
 
 $$
 A_{t+1} = (1-\beta) [ (1- \tau_t) W_t - \delta_{yt}] + \beta \frac{\delta_{ot}}{1 + r_{t+1}(1 - \tau_{t+1})} 
@@ -290,9 +313,11 @@ $$ (eq:optsavingsplan)
 ## 后续步骤
 
 
-为分析均衡结果，我们将研究 Auerbach 和 Kotlikoff (1987) {cite}`auerbach1987dynamic` 第2章的一个特例。
+为开启对均衡结果的分析，我们将研究 Auerbach 和 Kotlikoff (1987) {cite}`auerbach1987dynamic` 在第2章开篇所采用的特例模型。
 
-它可以手工求解，我们将在下一步展示这一点。
+它可以手工求解。
+
+我们接下来就将这样做。
 
 在我们推导出封闭形式解之后，我们将假定自己事先并不知道解，并据此计算均衡路径。
 
@@ -336,9 +361,10 @@ $$ (eq:steadystates)
 这意味着
 
 $$
-\hat{K} = \left[\left(1-\hat{\tau}\right)\left(1-\alpha\right)\left(1-\beta\right)\right]^{\frac{1}{1-\alpha}},
-\qquad
-\hat{\tau} = \frac{\hat{G} + \hat{r} \hat{D}}{\hat{Y} + \hat{r} \hat{D}}.
+\begin{aligned}
+\hat{K} &= \left[\left(1-\hat{\tau}\right)\left(1-\alpha\right)\left(1-\beta\right)\right]^{\frac{1}{1-\alpha}} \\
+\hat{\tau} &= \frac{\hat{G} + \hat{r} \hat{D}}{\hat{Y} + \hat{r} \hat{D}}
+\end{aligned}
 $$
 
 示例：考虑以下情况：
@@ -349,11 +375,11 @@ $$
 由稳态公式可得
 
 $$
-\hat{D} = 0,
-\qquad
-\hat{G} = 0.15 \hat{Y},
-\qquad
-\hat{\tau} = 0.15.
+\begin{aligned}
+\hat{D} &= 0 \\
+\hat{G} &= 0.15 \hat{Y} \\
+\hat{\tau} &= 0.15 \\
+\end{aligned}
 $$
 
 
@@ -386,7 +412,7 @@ D_hat = 0.
 K_hat = ((1 - τ_hat) * (1 - α) * (1 - β)) ** (1 / (1 - α))
 K_hat
 ```
-知道 $\hat K$ 后,我们可以计算其他变量的稳态值。
+知道 $\hat K$ 后,我们可以计算其他均衡量。
 
 首先，定义一些 Python 辅助函数。
 
@@ -419,7 +445,7 @@ def K_to_C(K, D, τ, r, α, β):
 
     return Cy, Co
 ```
-我们可以使用这些辅助函数来获得 $\hat{K}$ 和 $\hat{r}$ 对应的稳态值 $\hat{Y}$、$\hat{r}$ 和 $\hat{W}$。
+我们可以使用这些辅助函数来获得与稳态值 $\hat{K}$ 和 $\hat{r}$ 相对应的稳态值 $\hat{Y}$、$\hat{r}$ 和 $\hat{W}$。
 
 ```{code-cell} ipython3
 Y_hat, r_hat, W_hat = K_to_Y(K_hat, α), K_to_r(K_hat, α), K_to_W(K_hat, α)
@@ -476,7 +502,7 @@ init_ss = np.array([K_hat, Y_hat, Cy_hat, Co_hat,     # 数量
 
 接着，我们利用政府预算约束，计算唯一剩余的内生变量。
 
-在模拟转型路径时，有必要区分**状态变量**（如 $K_t,Y_t,D_t,W_t,r_t$）和**控制变量**（如 $C_{yt},C_{ot},\tau_{t},G_t$）。
+在模拟转型路径时，有必要区分**状态变量**（如时点 $t$ 的 $K_t,Y_t,D_t,W_t,r_t$）和**控制变量**（如 $C_{yt},C_{ot},\tau_{t},G_t$）。
 
 ```{code-cell} ipython3
 class ClosedFormTrans:
@@ -637,14 +663,14 @@ closed = ClosedFormTrans(α, β)
 
 $$
 \begin{aligned}
-K_{t+1} &= K_{t}^{\alpha}\left(1-\tau_{t}\right)\left(1-\alpha\right)\left(1-\beta\right) - \bar{D}， \\
-\tau_{0} &= (1-\frac{1}{3}) \hat{\tau}， \\
-\bar{D} &= \hat{G} - \tau_0\hat{Y}， \\
-\quad\tau_{t} & =\frac{\hat{G}+r_{t} \bar{D}}{\hat{Y}+r_{t} \bar{D}}。
+K_{t+1} &= K_{t}^{\alpha}\left(1-\tau_{t}\right)\left(1-\alpha\right)\left(1-\beta\right) - \bar{D} \\
+\tau_{0} &= (1-\frac{1}{3}) \hat{\tau} \\
+\bar{D} &= \hat{G} - \tau_0\hat{Y} \\
+\quad\tau_{t} & =\frac{\hat{G}+r_{t} \bar{D}}{\hat{Y}+r_{t} \bar{D}}
 \end{aligned}
 $$
 
-我我们可以模拟 20 期的转型过程，之后经济将非常接近新的稳态。
+我们可以模拟 20 期的转型过程，之后经济将非常接近新的稳态。
 
 第一步是准备一组刻画财政政策的政策变量序列。
 
@@ -695,8 +721,8 @@ fig, axs = plt.subplots(3, 3, figsize=(14, 10))
 # 数量
 for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
     ax = axs[i//3, i%3]
-    ax.plot(range(T+1), quant_seq1[:T+1, i], label=name+', 1/3')
-    ax.plot(range(T+1), quant_seq2[:T+1, i], label=name+', 0.2')
+    ax.plot(range(T+1), quant_seq1[:T+1, i], label=f'{name}, 1/3')
+    ax.plot(range(T+1), quant_seq2[:T+1, i], label=f'{name}, 0.2')
     ax.hlines(init_ss[i], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -704,8 +730,8 @@ for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
 # 价格
 for i, name in enumerate(['W', 'r']):
     ax = axs[(i+4)//3, (i+4)%3]
-    ax.plot(range(T+1), price_seq1[:T+1, i], label=name+', 1/3')
-    ax.plot(range(T+1), price_seq2[:T+1, i], label=name+', 0.2')
+    ax.plot(range(T+1), price_seq1[:T+1, i], label=f'{name}, 1/3')
+    ax.plot(range(T+1), price_seq2[:T+1, i], label=f'{name}, 0.2')
     ax.hlines(init_ss[i+4], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -713,8 +739,8 @@ for i, name in enumerate(['W', 'r']):
 # 政策
 for i, name in enumerate(['τ', 'D', 'G']):
     ax = axs[(i+6)//3, (i+6)%3]
-    ax.plot(range(T+1), policy_seq1[:T+1, i], label=name+', 1/3')
-    ax.plot(range(T+1), policy_seq2[:T+1, i], label=name+', 0.2')
+    ax.plot(range(T+1), policy_seq1[:T+1, i], label=f'{name}, 1/3')
+    ax.plot(range(T+1), policy_seq2[:T+1, i], label=f'{name}, 0.2')
     ax.hlines(init_ss[i+6], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -727,7 +753,7 @@ for i, name in enumerate(['τ', 'D', 'G']):
 
 假设经济最初处于相同的稳态。
 
-现在政府承诺将其在公共服务与商品上的支出削减一半，并从 $t \geq 0$ 开始执行。
+现在政府承诺将其在公共服务与商品上的支出削减一半，并对所有 $t \geq 0$ 都保持这一削减。
 
 政府设定的目标是保持相同的税率 $\tau_t=\hat{\tau}$，并通过时间推移逐步积累资产 $-D_t$。
 
@@ -767,7 +793,7 @@ plt.title('-D/K');
 
 ### 实验3：暂时性支出削减
 
-我们接下来考察一种情形，即政府将支出削减一半并积累资产。
+我们接下来考察一种情形，即政府同样将支出削减一半并积累资产。
 
 但在此实验中，政府只在 $t=0$ 时削减支出。
 
@@ -788,7 +814,7 @@ closed.plot()
 ```
 经济体很快收敛到一个新的稳态，在该稳态下，物质资本存量更高、利率更低、工资更高，且年轻人与老年人的消费水平均有所提高。
 
-尽管从 $t \geq 1$ 起，政府支出 $G_t$ 恢复到其较高的初始水平，但由于政府在临时削减支出期间积累了资产，从而获得了额外收入 $-r_t D_t$​，因此可以在更低的税率下维持预算平衡。
+尽管从 $t \geq 1$ 起，政府支出 $G_t$ 恢复到其较高的初始水平，但由于政府在临时削减支出期间积累了资产，从而获得了额外收入 $-r_t D_t$，因此可以在更低的税率下维持预算平衡。
 
 与 {ref}`exp-expen-cut` 相似，转型期初期的老年人会因该政策冲击而受到损失。
 
@@ -809,7 +835,7 @@ closed.plot()
 
   * 该不动点确定了一个均衡。
 
-为引入这一映射，我们回到 {ref}`sec-equilibrium` 一节的概念。
+为引入这一寻求其不动点的映射，我们回到 {ref}`sec-equilibrium` 一节中引入的概念。
 
 
 **定义:** 给定参数 $\{\alpha$, $\beta\}$，一个竞争性均衡由以下内容组成：
@@ -817,7 +843,7 @@ closed.plot()
 * 最优消费序列 $\{C_{yt}, C_{ot}\}$
 * 价格序列 $\{W_t, r_t\}$
 * 资本存量和产出序列 $\{K_t, Y_t\}$
-* 税率、政府资产(债务)、政府购买与一次性税收/转移支付的序列 $\{\tau_t, D_t, G_t\, \delta_{yt}, \delta_{ot}\}$
+* 税率、政府资产(债务)、政府购买序列 $\{\tau_t, D_t, G_t\, \delta_{yt}, \delta_{ot}\}$
 
 并满足以下性质：
 
@@ -828,7 +854,7 @@ closed.plot()
 
 例如，在{ref}`exp-tax-cut`中，序列 $\{D_t\}_{t=0}^{T}$ 和 $\{G_t\}_{t=0}^{T}$ 是外生的。
 
-此外，我们假设一次性税收与转移支付序列 $\{\delta_{yt}, \delta_{ot}\}_{t=0}^{T}$ 也是外生的，且每个个体都知晓。
+此外，我们假设一次性税收 $\{\delta_{yt}, \delta_{ot}\}_{t=0}^{T}$ 是给定的，且模型中的每个个体都知晓。
 
 我们可以按照以下步骤求解其他均衡序列
 
@@ -1077,7 +1103,7 @@ ak2.plot()
 ```
 接下来,我们引入一次性税收。
 
-让我们修改 {ref}`exp-tax-cut` 中的财政政策设定，假定政府同时对年轻人和老年人征收一次性税收 $\delta_{yt}=\delta_{ot}=0.005, t\geq0$。
+让我们修改 {ref}`exp-tax-cut` 中的财政政策设定，假定政府同时对年轻人和老年人提高一次性税收 $\delta_{yt}=\delta_{ot}=0.005, t\geq0$。
 
 ```{code-cell} ipython3
 δy_seq = np.ones(T+2) * 0.005
@@ -1143,7 +1169,7 @@ for i, name in enumerate(['τ', 'D', 'G']):
 
 我们可以使用代码来计算启动这个制度所引发的转型路径。
 
-最后，我们将其结果与 {ref}`exp-tax-cut` 进行比较。
+让我们将其结果与 {ref}`exp-tax-cut` 进行比较。
 
 ```{code-cell} ipython3
 δy_seq = np.ones(T+2) * Cy_hat * 0.1
@@ -1161,8 +1187,8 @@ fig, axs = plt.subplots(3, 3, figsize=(14, 10))
 # 数量
 for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
     ax = axs[i//3, i%3]
-    ax.plot(range(T+1), quant_seq3[:T+1, i], label=name+', 减税')
-    ax.plot(range(T+1), quant_seq5[:T+1, i], label=name+', 转移支付')
+    ax.plot(range(T+1), quant_seq3[:T+1, i], label=f'{name}, 减税')
+    ax.plot(range(T+1), quant_seq5[:T+1, i], label=f'{name}, 转移支付')
     ax.hlines(init_ss[i], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -1170,8 +1196,8 @@ for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
 # 价格
 for i, name in enumerate(['W', 'r']):
     ax = axs[(i+4)//3, (i+4)%3]
-    ax.plot(range(T+1), price_seq3[:T+1, i], label=name+', 减税')
-    ax.plot(range(T+1), price_seq5[:T+1, i], label=name+', 转移支付')
+    ax.plot(range(T+1), price_seq3[:T+1, i], label=f'{name}, 减税')
+    ax.plot(range(T+1), price_seq5[:T+1, i], label=f'{name}, 转移支付')
     ax.hlines(init_ss[i+4], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -1179,13 +1205,13 @@ for i, name in enumerate(['W', 'r']):
 # 政策
 for i, name in enumerate(['τ', 'D', 'G']):
     ax = axs[(i+6)//3, (i+6)%3]
-    ax.plot(range(T+1), policy_seq3[:T+1, i], label=name+', 减税')
-    ax.plot(range(T+1), policy_seq5[:T+1, i], label=name+', 转移支付')
+    ax.plot(range(T+1), policy_seq3[:T+1, i], label=f'{name}, 减税')
+    ax.plot(range(T+1), policy_seq5[:T+1, i], label=f'{name}, 转移支付')
     ax.hlines(init_ss[i+6], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
 ```
-在社会保障制度启动时，初始老年人尤其受益，因为他无需付出任何代价即可获得转移支付。
+在社会保障制度启动时，初始老年人尤其受益，因为他获得了转移支付却无需为此支付任何代价。
 
 然而，从长期来看，年轻人与老年人的消费率都会下降，因为社会保障制度削弱了储蓄动机。
 

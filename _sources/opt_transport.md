@@ -9,6 +9,20 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 最优传输
+  headings:
+    Overview: 概述
+    The Optimal Transport Problem: 最优运输问题
+    The Linear Programming Approach: 线性规划方法
+    The Linear Programming Approach::Vectorizing a Matrix of Decision Variables: 决策变量矩阵的向量化
+    The Linear Programming Approach::An Application: 应用实例
+    The Linear Programming Approach::Using a Just-in-Time Compiler: 使用即时编译器
+    The Dual Problem: 对偶问题
+    The Dual Problem::Interpretation of dual problem: 对偶问题的解释
+    The Python Optimal Transport Package: Python最优传输包
+    The Python Optimal Transport Package::Replicating Previous Results: 复现之前的结果
+    The Python Optimal Transport Package::A Larger Application: 更大的应用
 ---
 
 # 最优传输
@@ -32,7 +46,8 @@ kernelspec:
 ```{code-cell} ipython3
 :tags: [hide-output]
 
-!pip install --upgrade quantecon POT torch
+!pip install --upgrade quantecon
+!pip install --upgrade POT
 ```
 
 让我们从一些导入语句开始。
@@ -91,7 +106,7 @@ import networkx as nx
 $$
 \begin{aligned}
     \min_{x_{ij}} \ & \sum_{i=1}^m \sum_{j=1}^n c_{ij} x_{ij} \\
-    \text{使得 } \ & \sum_{j=1}^n x_{ij} = p_i, & i = 1, 2, \dots, m \\
+    \mbox{subject to } \ & \sum_{j=1}^n x_{ij} = p_i, & i = 1, 2, \dots, m \\
     & \sum_{i=1}^m x_{ij} = q_j, & j = 1, 2, \dots, n \\
     & x_{ij} \ge 0 \\
 \end{aligned}
@@ -144,8 +159,8 @@ SciPy 函数 `linprog` 需要接收决策变量的*向量*。
 
 $$
 \begin{aligned}
-\min_{X} \ & \operatorname{tr} (C' X) \\
-    \text{使得 } \ & X \ \mathbf{1}_n = p \\
+    \min_{X} \ & \operatorname{tr} (C' X) \\
+    \mbox{subject to } \ & X \ \mathbf{1}_n = p \\
     & X' \ \mathbf{1}_m = q \\
     & X \ge 0 \\
 \end{aligned}
@@ -171,12 +186,12 @@ $$
 
 $$
     A \otimes B =
-\begin{pmatrix}
+    \begin{bmatrix}
     a_{11}B & a_{12}B & \dots & a_{1s}B \\
     a_{21}B & a_{22}B & \dots & a_{2s}B \\
       &   & \vdots &   \\
     a_{m1}B & a_{m2}B & \dots & a_{ms}B \\
-    \end{pmatrix}.
+    \end{bmatrix}.
 $$
 
 $A \otimes B$ 是一个 $mn \times st$ 矩阵。
@@ -219,7 +234,7 @@ $$
 $$
     \begin{aligned}
         \min_{z} \ & \operatorname{vec}(C)' z \\
-        \text{使得 } \ & A z = b \\
+        \mbox{subject to } \ & A z = b \\
         & z \ge 0 \\
     \end{aligned}
 $$ (decisionvars)
@@ -228,15 +243,15 @@ $$ (decisionvars)
 
 $$
     A =
-    \begin{pmatrix}
+    \begin{bmatrix}
         \mathbf{1}_n' \otimes \mathbf{I}_m \\
         \mathbf{I}_n \otimes \mathbf{1}_m' \\
-    \end{pmatrix}
+    \end{bmatrix}
     \quad \text{和} \quad
-    b = \begin{pmatrix}
+    b = \begin{bmatrix}
             p \\
             q \\
-        \end{pmatrix}
+        \end{bmatrix}
 $$
 
 
@@ -281,27 +296,27 @@ $$
 上表中的数字告诉我们设定 $m = 3$，$n = 5$，并构造以下对象：
 
 $$
-p = \begin{pmatrix}
+p = \begin{bmatrix}
         50 \\
         100 \\
         150
-    \end{pmatrix},
+    \end{bmatrix},
     \quad
     q =
-    \begin{pmatrix}
+    \begin{bmatrix}
         25 \\
         115 \\
         60 \\
-30 \\
+        30 \\
         70
-    \end{pmatrix}
+    \end{bmatrix}
     \quad \text{和} \quad
     C =
-    \begin{pmatrix}
+    \begin{bmatrix}
         10 &15 &20 &20 &40 \\
         20 &40 &15 &30 &30 \\
         30 &35 &40 &55 &25
-    \end{pmatrix}.
+    \end{bmatrix}.
 $$
 
 让我们编写Python代码来设置问题并求解。
@@ -311,12 +326,12 @@ $$
 m = 3
 n = 5
 
-p = np.array([50, 100, 150])
-q = np.array([25, 115, 60, 30, 70])
+p = np.array([50.0, 100.0, 150.0])
+q = np.array([25.0, 115.0, 60.0, 30.0, 70.0])
 
-C = np.array([[10, 15, 20, 20, 40],
-              [20, 40, 15, 30, 30],
-              [30, 35, 40, 55, 25]])
+C = np.array([[10.0, 15.0, 20.0, 20.0, 40.0],
+              [20.0, 40.0, 15.0, 30.0, 30.0],
+              [30.0, 35.0, 40.0, 55.0, 25.0]])
 
 # 将矩阵C向量化
 C_vec = C.reshape((m*n, 1), order='F')
@@ -370,7 +385,9 @@ $A$ 的奇异性反映了前三个约束和后五个约束都要求{eq}`sumconst
 
 这里有一个冗余的等式约束。
 
-下面我们去掉一个等式约束，只使用其中的7个。
+幸运的是，SciPy的`linprog`函数会自动处理冗余约束，而不会明确警告存在秩亏问题。
+
+不过我们可以去掉一个等式约束，只使用其中的7个。
 
 这样做之后，我们得到了相同的最小成本。
 
@@ -407,11 +424,12 @@ arr = np.arange(m+n)
 ```{code-cell} ipython3
 sol_found = []
 cost = []
+rng = np.random.default_rng()
 
 # 模拟1000次
 for i in range(1000):
 
-    np.random.shuffle(arr)
+    rng.shuffle(arr)
     res_shuffle = linprog(C_vec, A_eq=A[arr], b_eq=b[arr])
 
     # 如果找到新解
@@ -454,9 +472,9 @@ res.x
 
 我们也可以使用 QuantEcon 中的一个强大工具来求解最优运输问题，即 `quantecon.optimize.linprog_simplex`。
 
-虽然这个程序使用的是与 `scipy.optimize.linprog` 相同的单纯形算法，但通过使用 `numba` 库中的即时编译器，代码运行速度得到了加速。
+虽然 `scipy.optimize.linprog` 默认使用 HiGHS 求解器，但 `quantecon.optimize.linprog_simplex` 实现的是单纯形算法，并通过使用 `numba` 库中的即时编译器进行了加速。
 
-如你很快就会看到，使用 `scipy.optimize.linprog` 可以显著减少求解最优运输问题所需的时间。
+如你很快就会看到，使用 `quantecon.optimize.linprog_simplex` 可以显著减少求解最优运输问题所需的时间。
 
 ```{code-cell} ipython3
 # 为 linprog_simplex 构造矩阵/向量
@@ -520,7 +538,7 @@ res.x.reshape((m, n), order='F')
 $$
 \begin{aligned}
 \max_{u_i, v_j} \ & \sum_{i=1}^m p_i u_i + \sum_{j=1}^n q_j v_j \\
-\text{使得 } \ & u_i + v_j \le c_{ij}, \ i = 1, 2, \dots, m;\ j = 1, 2, \dots, n \\
+\mbox{subject to } \ & u_i + v_j \le c_{ij}, \ i = 1, 2, \dots, m;\ j = 1, 2, \dots, n \\
 \end{aligned}
 $$ (dualproblem)
 
@@ -545,7 +563,7 @@ $$ (dualproblem)
 $$
 \begin{aligned}
 \max_{u_i, v_j} \ & p u + q v \\
-\text{使得 } \ & A' \begin{pmatrix} u \\ v \\ \end{pmatrix} = \operatorname{vec}(C) \\
+\mbox{subject to } \ & A' \begin{bmatrix} u \\ v \\ \end{bmatrix} = \operatorname{vec}(C) \\
 \end{aligned}
 $$ (dualproblem2)
 
@@ -632,9 +650,11 @@ X
 果然，我们得到了相同的解决方案和相同的成本
 
 ```{code-cell} ipython3
-total_cost = np.sum(X * C)
+total_cost = np.vdot(X, C)
 total_cost
 ```
+
+这里我们使用 [np.vdot](https://numpy.org/doc/stable/reference/generated/numpy.vdot.html) 来计算 X 和 C 的迹内积
 
 ### 更大的应用
 
@@ -670,18 +690,18 @@ class Node:
 def build_nodes_of_one_type(group='p', n=100, seed=123):
 
     nodes = []
-    np.random.seed(seed)
+    rng = np.random.default_rng(seed)
 
     for i in range(n):
 
         if group == 'p':
             m = 1/n
-            x = np.random.uniform(-2, 2)
-            y = np.random.uniform(-2, 2)
+            x = rng.uniform(-2, 2)
+            y = rng.uniform(-2, 2)
         else:
             m = betabinom.pmf(i, n-1, 2, 2)
-            x = 0.6 * np.random.uniform(-1.5, 1.5)
-            y = 0.6 * np.random.uniform(-1.5, 1.5)
+            x = 0.6 * rng.uniform(-1.5, 1.5)
+            y = 0.6 * rng.uniform(-1.5, 1.5)
 
         name = group + str(i)
         nodes.append(Node(x, y, m, group, name))
@@ -773,8 +793,6 @@ nx.draw_networkx_edges(g,
 plt.show()
 ```
 
-
 ```{code-cell} ipython3
 
 ```
-

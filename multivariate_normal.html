@@ -9,9 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>13. 多元正态分布 &#8212; Python中级数量经济学</title>
-    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
     
         <script>
             MathJax = {
@@ -70,13 +77,13 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=a459934d9fea1f60268e46d95e2569a33e1f6ec2" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
-    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=b4b7a797" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -94,8 +101,8 @@
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-    <script src="_static/scripts/quantecon-book-theme.js?digest=06ebc90d5139b434c2742937a4ef3b185cb93e2f"></script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
     <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
     <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
@@ -150,10 +157,31 @@
 <meta property="og:site_name" content="Python中级数量经济学" />
 <meta name="theme-color" content="#ffffff" />
 
+
+
+
   </head>
 <body>
 
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
 <!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
 
     <span id="top"></span>
 
@@ -165,7 +193,12 @@
 
                 <div class="qe-page__toc">
 
-                    <div class="inner">
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
 
                         
                         <div class="qe-page__toc-header">
@@ -201,6 +234,7 @@
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">13.13. 经典因子分析模型</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pca">13.14. PCA和因子分析</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">13.15. 练习</a></li>
 </ul>
                             <p class="logo">
                                 
@@ -211,17 +245,23 @@
                                 
                             </p>
 
-                            <p class="powered">Powered by <a href="https://jupyterbook.org/en/stable/">Jupyter Book</a></p>
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
 
                         </nav>
 
                         <div class="qe-page__toc-footer">
                             
                             
-                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                            
+                            
+                            
                         </div>
 
                     </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
 
                 </div>
 
@@ -231,10 +271,9 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">多元正态分布</p>
-
                     </div>
-                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+
+                    <!-- Authors section -->
                         <p class="qe-page__header-authors" font-size="18">
                             
                                 
@@ -247,6 +286,82 @@
                             
                         </p>
 
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 19, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/multivariate_normal.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/5ee3f6f" class="changelog-hash">5ee3f6f</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">[action-translation] resync: multivariate_normal.md (#138)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c2dd1b2" class="changelog-hash">c2dd1b2</a>
+                                
+                                <span class="changelog-author">nisha617</span>
+                                <span class="changelog-time">11 months ago</span>
+                                <span class="changelog-message">Add files via upload</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/f397e51" class="changelog-hash">f397e51</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">FIX: Fix Translation Errors</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c4c4b86" class="changelog-hash">c4c4b86</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update matplotlib</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/0f3e233" class="changelog-hash">0f3e233</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/ab0498b" class="changelog-hash">ab0498b</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update all translated lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/387e084" class="changelog-hash">387e084</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lecture series</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
 
                 </div> <!-- .page__header -->
 
@@ -258,32 +373,33 @@
                     <div>
                         
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1><a class="toc-backref" href="#id21" role="doc-backlink"><span class="section-number">13. </span>多元正态分布</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1><a class="toc-backref" href="#id22" role="doc-backlink"><span class="section-number">13. </span>多元正态分布</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
 <nav class="contents" id="id2">
 <p class="topic-title">目录</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#id1" id="id21">多元正态分布</a></p>
+<li><p><a class="reference internal" href="#id1" id="id22">多元正态分布</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id3" id="id22">概述</a></p></li>
-<li><p><a class="reference internal" href="#id4" id="id23">多元正态分布</a></p></li>
-<li><p><a class="reference internal" href="#id5" id="id24">二元示例</a></p></li>
-<li><p><a class="reference internal" href="#id6" id="id25">三变量示例</a></p></li>
-<li><p><a class="reference internal" href="#iq" id="id26">一维智力（IQ）</a></p></li>
-<li><p><a class="reference internal" href="#id7" id="id27">信息即惊奇</a></p></li>
-<li><p><a class="reference internal" href="#cholesky" id="id28">Cholesky因子魔法</a></p></li>
-<li><p><a class="reference internal" href="#id8" id="id29">数学和语言智力</a></p></li>
-<li><p><a class="reference internal" href="#id9" id="id30">单变量时间序列分析</a></p></li>
-<li><p><a class="reference internal" href="#id13" id="id31">随机差分方程</a></p></li>
-<li><p><a class="reference internal" href="#id14" id="id32">应用于股票价格模型</a></p></li>
-<li><p><a class="reference internal" href="#id15" id="id33">滤波基础</a></p></li>
-<li><p><a class="reference internal" href="#id20" id="id34">经典因子分析模型</a></p></li>
-<li><p><a class="reference internal" href="#pca" id="id35">PCA和因子分析</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id23">概述</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id24">多元正态分布</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id25">二元示例</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id26">三变量示例</a></p></li>
+<li><p><a class="reference internal" href="#iq" id="id27">一维智力（IQ）</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id28">信息即惊奇</a></p></li>
+<li><p><a class="reference internal" href="#cholesky" id="id29">Cholesky因子魔法</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id30">数学和语言智力</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id31">单变量时间序列分析</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id32">随机差分方程</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id33">应用于股票价格模型</a></p></li>
+<li><p><a class="reference internal" href="#id15" id="id34">滤波基础</a></p></li>
+<li><p><a class="reference internal" href="#id20" id="id35">经典因子分析模型</a></p></li>
+<li><p><a class="reference internal" href="#pca" id="id36">PCA和因子分析</a></p></li>
+<li><p><a class="reference internal" href="#id21" id="id37">练习</a></p></li>
 </ul>
 </li>
 </ul>
 </nav>
 <section id="id3">
-<h2><a class="toc-backref" href="#id22" role="doc-backlink"><span class="section-number">13.1. </span>概述</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id23" role="doc-backlink"><span class="section-number">13.1. </span>概述</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <p>本讲座介绍概率论、统计学和经济学中的一个重要工具，即<strong>多元正态分布</strong>。</p>
 <p>在本讲座中，你将学习以下公式：</p>
 <ul class="simple">
@@ -302,7 +418,7 @@
 </ul>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id23" role="doc-backlink"><span class="section-number">13.2. </span>多元正态分布</a><a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">13.2. </span>多元正态分布</a><a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p>本讲将定义一个Python类<code class="docutils literal notranslate"><span class="pre">MultivariateNormal</span></code>，用于生成与多元正态分布相关的<strong>边缘</strong>和<strong>条件</strong>分布。</p>
 <p>对于多元正态分布，非常方便的是：</p>
 <ul class="simple">
@@ -323,6 +439,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">statsmodels.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sm</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -331,9 +449,9 @@
 <p>这意味着概率密度的形式为</p>
 <div class="math notranslate nohighlight">
 \[
-f\left(z;\mu,\Sigma\right)=\left(2\pi\right)^{-\left(\frac{N}{2}\right)}\det\left(\Sigma\right)^{-\frac{1}{2}}\exp\left(-.5\left(z-\mu\right)^{\prime}\Sigma^{-1}\left(z-\mu\right)\right)
+f\left(z;\mu,\Sigma\right)=\left(2\pi\right)^{-\left(\frac{N}{2}\right)}\det\left(\Sigma\right)^{-\frac{1}{2}}\exp\left(-.5\left(z-\mu\right)^\top\Sigma^{-1}\left(z-\mu\right)\right)
 \]</div>
-<p>其中 <span class="math notranslate nohighlight">\(\mu=Ez\)</span> 是随机向量 <span class="math notranslate nohighlight">\(z\)</span> 的均值，<span class="math notranslate nohighlight">\(\Sigma=E\left(z-\mu\right)\left(z-\mu\right)^\prime\)</span> 是 <span class="math notranslate nohighlight">\(z\)</span> 的协方差矩阵。</p>
+<p>其中 <span class="math notranslate nohighlight">\(\mu=Ez\)</span> 是随机向量 <span class="math notranslate nohighlight">\(z\)</span> 的均值，<span class="math notranslate nohighlight">\(\Sigma=E\left(z-\mu\right)\left(z-\mu\right)^\top\)</span> 是 <span class="math notranslate nohighlight">\(z\)</span> 的协方差矩阵。</p>
 <p>协方差矩阵 <span class="math notranslate nohighlight">\(\Sigma\)</span> 是对称且正定的。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -345,11 +463,11 @@ f\left(z;\mu,\Sigma\right)=\left(2\pi\right)^{-\left(\frac{N}{2}\right)}\det\lef
 <span class="sd">    参数</span>
 <span class="sd">    ---------------</span>
 <span class="sd">    z: ndarray(float, dim=2)</span>
-<span class="sd">        随机向量，N x 1</span>
+<span class="sd">        随机向量，N by 1</span>
 <span class="sd">    μ: ndarray(float, dim=1 or 2)</span>
-<span class="sd">        z的均值，N x 1</span>
+<span class="sd">        z的均值，N by 1</span>
 <span class="sd">    Σ: ndarray(float, dim=2)</span>
-<span class="sd">        z的协方差矩阵，N x 1</span>
+<span class="sd">        z的协方差矩阵，N by N</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
@@ -403,11 +521,12 @@ z=\left[\begin{array}{c} z_{1}\\ z_{2} \end{array}\right],
 <p>协方差矩阵为</p>
 <div class="math notranslate nohighlight">
 \[
-\hat{\Sigma}_{11}=\Sigma_{11}-\Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}=\Sigma_{11}-\beta\Sigma_{22}\beta^{\prime}
+\hat{\Sigma}_{11}=\Sigma_{11}-\Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}=\Sigma_{11}-\beta\Sigma_{22}\beta^\top
 \]</div>
 <p>其中</p>
 <div class="math notranslate nohighlight">
-\[\beta = \Sigma_{12}\Sigma_{22}^{-1}
+\[
+\beta = \Sigma_{12}\Sigma_{22}^{-1}
 \]</div>
 <p>是一个 <span class="math notranslate nohighlight">\(\left(N-k\right) \times k\)</span> 的<strong>总体回归系数</strong>矩阵，表示 <span class="math notranslate nohighlight">\((N -k) \times 1\)</span> 随机向量 <span class="math notranslate nohighlight">\(z_1 - \mu_1\)</span> 对 <span class="math notranslate nohighlight">\(k \times 1\)</span> 随机向量 <span class="math notranslate nohighlight">\(z_2 - \mu_2\)</span> 的回归系数。</p>
 <p>以下类构造了一个多元正态分布实例，具有两个方法：</p>
@@ -424,9 +543,9 @@ z=\left[\begin{array}{c} z_{1}\\ z_{2} \end{array}\right],
 <span class="sd">    参数</span>
 <span class="sd">    ----------</span>
 <span class="sd">    μ: ndarray(float, dim=1)</span>
-<span class="sd">        z的均值，N乘1</span>
+<span class="sd">        z的均值，N by 1</span>
 <span class="sd">    Σ: ndarray(float, dim=2)</span>
-<span class="sd">        z的协方差矩阵，N乘1</span>
+<span class="sd">        z的协方差矩阵，N by N</span>
 
 <span class="sd">    属性</span>
 <span class="sd">    ---------</span>
@@ -492,7 +611,7 @@ z=\left[\begin{array}{c} z_{1}\\ z_{2} \end{array}\right],
 <p>我们将比较这些模拟数据的线性最小二乘回归与其总体对应值。</p>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">13.3. </span>二元示例</a><a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">13.3. </span>二元示例</a><a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <p>我们从由以下参数确定的二元正态分布开始</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -556,13 +675,13 @@ E \epsilon_2 z_1 = 0
 <p>让我们计算<span class="math notranslate nohighlight">\(a_1, a_2, b_1, b_2\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">beta</span> <span class="o">=</span> <span class="n">multi_normal</span><span class="o">.</span><span class="n">βs</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">β</span> <span class="o">=</span> <span class="n">multi_normal</span><span class="o">.</span><span class="n">βs</span>
 
-<span class="n">a1</span> <span class="o">=</span> <span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">μ</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">b1</span> <span class="o">=</span> <span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">a1</span> <span class="o">=</span> <span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">β</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">μ</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">b1</span> <span class="o">=</span> <span class="n">β</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-<span class="n">a2</span> <span class="o">=</span> <span class="n">μ</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">b2</span> <span class="o">=</span> <span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">a2</span> <span class="o">=</span> <span class="n">μ</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">β</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">b2</span> <span class="o">=</span> <span class="n">β</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -627,7 +746,6 @@ b2 =  [[0.5]]
 <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$z_1$&#39;</span><span class="p">,</span> <span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;top&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$z_2$,&#39;</span><span class="p">,</span> <span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;right&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;两条回归线&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z2</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;$z_1$ 对 $z_2$ 的回归&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z2</span><span class="p">,</span><span class="n">z1h</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;$z_2$ 对 $z_1$ 的回归&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
@@ -636,7 +754,16 @@ b2 =  [[0.5]]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/cbb1bcc566e4e4a3b8107c4467cfa7aef5743633651516c627cf509e5233eec8.png" src="_images/cbb1bcc566e4e4a3b8107c4467cfa7aef5743633651516c627cf509e5233eec8.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-two-regressions">
+<img alt="_images/58c44840a3df4f6811db1a12b80d11201deaae8a565b1cdeb825ea3bd33e682e.png" src="_images/58c44840a3df4f6811db1a12b80d11201deaae8a565b1cdeb825ea3bd33e682e.png" />
+<figcaption>
+<p><span class="caption-number">图 13.1 </span><span class="caption-text">两条回归线</span><a class="headerlink" href="#fig-two-regressions" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </div>
 </div>
 <p>红线是在给定 <span class="math notranslate nohighlight">\(z_2\)</span> 条件下 <span class="math notranslate nohighlight">\(z_1\)</span> 的期望值。</p>
@@ -694,7 +821,7 @@ b1 =  0.5
 <p>现在让我们计算在 <span class="math notranslate nohighlight">\(z_2=5\)</span> 的条件下 <span class="math notranslate nohighlight">\(z_1\)</span> 的分布的均值和方差。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 计算 z1 的条件分布</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># compute the cond. dist. of z1</span>
 <span class="n">ind</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">z2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.</span><span class="p">])</span> <span class="c1"># 给定 z2</span>
 
@@ -726,7 +853,7 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">1_000_000</span> <span class="c1"># 样本量</span>
 
 <span class="c1"># 模拟多元正态随机向量</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">Σ</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">Σ</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
 <span class="n">z1_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
 <span class="n">z2_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
 
@@ -745,7 +872,7 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[0.5]]), array([0.50022045]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[0.5]]), array([0.49918333]))
 </pre></div>
 </div>
 </div>
@@ -758,7 +885,7 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[0.75]]), np.float64(0.7484953153220685))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[0.75]]), np.float64(0.7489203195072767))
 </pre></div>
 </div>
 </div>
@@ -771,7 +898,7 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([2.5]), array([2.5008818]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([2.5]), array([2.49673331]))
 </pre></div>
 </div>
 </div>
@@ -780,13 +907,13 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 <p>大数定律解释了为什么样本类比会接近总体对象。</p>
 </section>
 <section id="id6">
-<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">13.4. </span>三变量示例</a><a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">13.4. </span>三变量示例</a><a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <p>让我们将代码应用到一个三变量示例中。</p>
 <p>我们将按如下方式指定均值向量和协方差矩阵。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">μ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">μ</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 <span class="n">Σ</span> <span class="o">=</span> <span class="n">C</span> <span class="o">@</span> <span class="n">C</span><span class="o">.</span><span class="n">T</span> <span class="c1"># positive semi-definite</span>
 
 <span class="n">multi_normal</span> <span class="o">=</span> <span class="n">MultivariateNormal</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">Σ</span><span class="p">)</span>
@@ -801,10 +928,10 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([0.40653751, 0.18563275, 0.83766714]),
- array([[2.37657072, 2.17536841, 1.51175486],
-        [2.17536841, 2.01767205, 1.37365633],
-        [1.51175486, 1.37365633, 0.96720665]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([0.4201905 , 0.04279279, 0.32149359]),
+ array([[0.95070417, 0.48194854, 0.38025012],
+        [0.48194854, 1.34029754, 0.43476327],
+        [0.38025012, 0.43476327, 0.20864566]]))
 </pre></div>
 </div>
 </div>
@@ -831,7 +958,7 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">1_000_000</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">Σ</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">Σ</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
 <span class="n">z1_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="p">:</span><span class="n">k</span><span class="p">]</span>
 <span class="n">z2_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">k</span><span class="p">:]</span>
 </pre></div>
@@ -854,7 +981,7 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[0.42430555, 0.96039958]]), array([0.42418598, 0.96060712]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[-0.71459379,  3.311496  ]]), array([-0.71383888,  3.31026328]))
 </pre></div>
 </div>
 </div>
@@ -866,7 +993,7 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[0.0016611]]), np.float64(0.001658403599760713))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[0.03590485]]), np.float64(0.03594793290662716))
 </pre></div>
 </div>
 </div>
@@ -878,7 +1005,7 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([5.17388634]), array([5.17453327]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([14.5144376]), array([14.51014783]))
 </pre></div>
 </div>
 </div>
@@ -886,7 +1013,7 @@ z_1 - \mu_1 = \beta \left( z_2 - \mu_2 \right) + \epsilon,
 <p>再一次，样本类比很好地近似了它们的总体对应值。</p>
 </section>
 <section id="iq">
-<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">13.5. </span>一维智力（IQ）</a><a class="headerlink" href="#iq" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id27" role="doc-backlink"><span class="section-number">13.5. </span>一维智力（IQ）</a><a class="headerlink" href="#iq" title="Link to this heading">#</a></h2>
 <p>让我们来看一个更接近现实生活的例子，即从一系列测试分数中推断出一个称为IQ的一维智力测量值。</p>
 <p>第 <span class="math notranslate nohighlight">\(i\)</span> 个测试分数 <span class="math notranslate nohighlight">\(y_i\)</span> 等于未知标量IQ <span class="math notranslate nohighlight">\(\theta\)</span> 和随机变量 <span class="math notranslate nohighlight">\(w_{i}\)</span> 的和。</p>
 <div class="math notranslate nohighlight">
@@ -913,7 +1040,8 @@ w_{n+1}
 \end{split}\]</div>
 <p>以下系统描述了我们感兴趣的 <span class="math notranslate nohighlight">\((n+1) \times 1\)</span> 随机向量 <span class="math notranslate nohighlight">\(X\)</span>：</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}X=\left[\begin{array}{c}
+\[\begin{split}
+X=\left[\begin{array}{c}
 y_{1}\\
 y_{2}\\
 \vdots\\
@@ -993,14 +1121,14 @@ X=\mu_{\theta}\boldsymbol{1}_{n+1}+D\boldsymbol{w}
         ...,
         [100., 100., 100., ..., 200., 100., 100.],
         [100., 100., 100., ..., 100., 200., 100.],
-        [100., 100., 100., ..., 100., 100., 100.]]),
+        [100., 100., 100., ..., 100., 100., 100.]], shape=(51, 51)),
  array([[10.,  0.,  0., ...,  0.,  0., 10.],
         [ 0., 10.,  0., ...,  0.,  0., 10.],
         [ 0.,  0., 10., ...,  0.,  0., 10.],
         ...,
         [ 0.,  0.,  0., ..., 10.,  0., 10.],
         [ 0.,  0.,  0., ...,  0., 10., 10.],
-        [ 0.,  0.,  0., ...,  0.,  0., 10.]]))
+        [ 0.,  0.,  0., ...,  0.,  0., 10.]], shape=(51, 51)))
 </pre></div>
 </div>
 </div>
@@ -1022,7 +1150,7 @@ X=\mu_{\theta}\boldsymbol{1}_{n+1}+D\boldsymbol{w}
 <p>让我们来做这个，然后打印出一些相关的数值。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ_IQ</span><span class="p">,</span> <span class="n">Σ_IQ</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ_IQ</span><span class="p">,</span> <span class="n">Σ_IQ</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># 测试分数</span>
 <span class="n">θ</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># 智商</span>
 </pre></div>
@@ -1037,7 +1165,7 @@ X=\mu_{\theta}\boldsymbol{1}_{n+1}+D\boldsymbol{w}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(104.53389406085986)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(96.19330891722953)
 </pre></div>
 </div>
 </div>
@@ -1053,7 +1181,7 @@ X=\mu_{\theta}\boldsymbol{1}_{n+1}+D\boldsymbol{w}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([104.0650503]), array([[1.96078431]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([97.24224022]), array([[1.96078431]]))
 </pre></div>
 </div>
 </div>
@@ -1102,7 +1230,7 @@ X=\mu_{\theta}\boldsymbol{1}_{n+1}+D\boldsymbol{w}
                  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;95%&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;测试分数数量&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$\hat</span><span class="si">{θ}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\hat</span><span class="si">{θ}</span><span class="s1">$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -1110,7 +1238,7 @@ X=\mu_{\theta}\boldsymbol{1}_{n+1}+D\boldsymbol{w}
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/fff4e2aa1a61c3dcb62496d2a46c4f529d0657920476ad03759ef756c901bf89.png" src="_images/fff4e2aa1a61c3dcb62496d2a46c4f529d0657920476ad03759ef756c901bf89.png" />
+<img alt="_images/86d9b12a1a24a3a4218b5e828ea137983049ee1b71ac8f8fd32ef0f2b432f3f5.png" src="_images/86d9b12a1a24a3a4218b5e828ea137983049ee1b71ac8f8fd32ef0f2b432f3f5.png" />
 </div>
 </div>
 <p>上图中的蓝色实线显示了 <span class="math notranslate nohighlight">\(\hat{\mu}_{\theta}\)</span> 作为我们已记录和条件化的测试分数数量的函数。</p>
@@ -1123,7 +1251,7 @@ X=\mu_{\theta}\boldsymbol{1}_{n+1}+D\boldsymbol{w}
 <p>如果我们让测试次数 <span class="math notranslate nohighlight">\(n \rightarrow + \infty\)</span>，条件标准差 <span class="math notranslate nohighlight">\(\hat{\sigma}_{\theta}\)</span> 将以 <span class="math notranslate nohighlight">\(\frac{1}{n^{.5}}\)</span> 的速率收敛到 <span class="math notranslate nohighlight">\(0\)</span>。</p>
 </section>
 <section id="id7">
-<h2><a class="toc-backref" href="#id27" role="doc-backlink"><span class="section-number">13.6. </span>信息即惊奇</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id28" role="doc-backlink"><span class="section-number">13.6. </span>信息即惊奇</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p>让我们通过使用不同的表示方法，从另一个角度来看这个问题。</p>
 <p>我们可以将上述随机向量 <span class="math notranslate nohighlight">\(X\)</span> 表示为</p>
 <div class="math notranslate nohighlight">
@@ -1133,12 +1261,12 @@ X = \mu_{\theta} \boldsymbol{1}_{n+1} + C \epsilon, \quad \epsilon \sim N\left(0
 <p>其中<span class="math notranslate nohighlight">\(C\)</span>是<span class="math notranslate nohighlight">\(\Sigma\)</span>的下三角<strong>Cholesky因子</strong>，使得</p>
 <div class="math notranslate nohighlight">
 \[
-\Sigma \equiv DD^{\prime} = C C^\prime
+\Sigma \equiv DD^\top = C C^\top
 \]</div>
 <p>且</p>
 <div class="math notranslate nohighlight">
 \[
-E \epsilon \epsilon' = I .
+E \epsilon \epsilon^\top = I .
 \]</div>
 <p>因此可得</p>
 <div class="math notranslate nohighlight">
@@ -1188,7 +1316,7 @@ Var\left(\theta \mid y_1, \dots, y_k\right) = c^2_{k+1} + c^2_{k+2} + \dots + c^
 
 <span class="c1"># 计算基于 y1, y2, ..., yk 的条件μθ和Σθ序列</span>
 <span class="n">μθ_hat_arr_C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cε</span><span class="p">[:</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)])</span> <span class="o">+</span> <span class="n">μθ</span>
-<span class="n">Σθ_hat_arr_C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)])</span>
+<span class="n">Σθ_hat_arr_C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">C</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">@</span> <span class="n">C</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)])</span>
 </pre></div>
 </div>
 </div>
@@ -1222,7 +1350,7 @@ Var\left(\theta \mid y_1, \dots, y_k\right) = c^2_{k+1} + c^2_{k+2} + \dots + c^
 </div>
 </section>
 <section id="cholesky">
-<h2><a class="toc-backref" href="#id28" role="doc-backlink"><span class="section-number">13.7. </span>Cholesky因子魔法</a><a class="headerlink" href="#cholesky" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id29" role="doc-backlink"><span class="section-number">13.7. </span>Cholesky因子魔法</a><a class="headerlink" href="#cholesky" title="Link to this heading">#</a></h2>
 <p>显然，Cholesky分解自动计算了我们的<code class="docutils literal notranslate"><span class="pre">MultivariateNormal</span></code>类所产生的总体<strong>回归系数</strong>和相关统计数据。</p>
 <p>Cholesky分解<strong>递归地</strong>计算这些内容。</p>
 <p>实际上，在公式<a class="reference internal" href="#equation-mnv-1">(13.1)</a>中，</p>
@@ -1232,7 +1360,7 @@ Var\left(\theta \mid y_1, \dots, y_k\right) = c^2_{k+1} + c^2_{k+2} + \dots + c^
 </ul>
 </section>
 <section id="id8">
-<h2><a class="toc-backref" href="#id29" role="doc-backlink"><span class="section-number">13.8. </span>数学和语言智力</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id30" role="doc-backlink"><span class="section-number">13.8. </span>数学和语言智力</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p>我们可以修改前面的例子使其更加贴近现实。</p>
 <p>有大量证据表明智商不是一个标量。</p>
 <p>有些人数学能力强但语言能力差。</p>
@@ -1275,7 +1403,7 @@ w_{6}
 \end{array}\right]
 \end{split}\]</div>
 <p>其中
-<span class="math notranslate nohighlight">\(w \begin{bmatrix} w_1 \cr w_2 \cr \vdots \cr w_6 \end{bmatrix}\)</span>
+<span class="math notranslate nohighlight">\(w = \begin{bmatrix} w_1 \cr w_2 \cr \vdots \cr w_6 \end{bmatrix}\)</span>
 是一个标准正态随机向量。</p>
 <p>我们构建一个Python函数<code class="docutils literal notranslate"><span class="pre">construct_moments_IQ2d</span></code>来构造联合正态分布的均值向量和协方差矩阵。</p>
 <div class="cell docutils container">
@@ -1336,7 +1464,7 @@ w_{6}
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 进行一次抽样</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ_IQ2d</span><span class="p">,</span> <span class="n">Σ_IQ2d</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ_IQ2d</span><span class="p">,</span> <span class="n">Σ_IQ2d</span><span class="p">)</span>
 <span class="n">y1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
 <span class="n">y2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">]</span>
 <span class="n">θ</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">]</span>
@@ -1348,7 +1476,7 @@ w_{6}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(95.84541184219867), np.float64(109.12503003062506))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(86.84580129140488), np.float64(98.5057398320253))
 </pre></div>
 </div>
 </div>
@@ -1366,14 +1494,14 @@ w_{6}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([106.68743472, 110.74995876]),
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([ 87.15090791, 104.56448792]),
  array([[33.33333333,  0.        ],
         [ 0.        , 33.33333333]]))
 </pre></div>
 </div>
 </div>
 </div>
-<p>现在让我们分别计算基于各种测试分数子集条件下的 <span class="math notranslate nohighlight">\(\theta\)</span> 和 <span class="math notranslate nohighlight">\(\mu\)</span> 的分布。</p>
+<p>现在让我们分别计算基于各种测试分数子集条件下的 <span class="math notranslate nohighlight">\(\theta\)</span> 和 <span class="math notranslate nohighlight">\(\eta\)</span> 的分布。</p>
 <p>通过构建一个辅助函数 <code class="docutils literal notranslate"><span class="pre">cond_dist_IQ2d</span></code>，我们可以有趣地比较各种结果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1407,27 +1535,27 @@ w_{6}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>在y1, y2, y3, y4 条件下，θ的均值和方差分别为106.69和33.33
-在y1, y2         条件下，θ的均值和方差分别为106.69和33.33
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>在y1, y2, y3, y4 条件下，θ的均值和方差分别为87.15和33.33
+在y1, y2         条件下，θ的均值和方差分别为87.15和33.33
 在y3, y4         条件下，θ的均值和方差分别为100.00和100.00
-在y1, y2, y3, y4 条件下，η的均值和方差分别为110.75和33.33
+在y1, y2, y3, y4 条件下，η的均值和方差分别为104.56和33.33
 在y1, y2         条件下，η的均值和方差分别为100.00和100.00
-在y3, y4         条件下，η的均值和方差分别为110.75和33.33
+在y3, y4         条件下，η的均值和方差分别为104.56和33.33
 </pre></div>
 </div>
 </div>
 </div>
-<p>显然，数学考试不能提供关于 <span class="math notranslate nohighlight">\(\mu\)</span> 的信息，语言考试不能提供关于 <span class="math notranslate nohighlight">\(\eta\)</span> 的信息。</p>
+<p>显然，数学考试不能提供关于 <span class="math notranslate nohighlight">\(\eta\)</span> 的信息，语言考试不能提供关于 <span class="math notranslate nohighlight">\(\theta\)</span> 的信息。</p>
 </section>
 <section id="id9">
-<h2><a class="toc-backref" href="#id30" role="doc-backlink"><span class="section-number">13.9. </span>单变量时间序列分析</a><a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id31" role="doc-backlink"><span class="section-number">13.9. </span>单变量时间序列分析</a><a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <p>我们可以使用多元正态分布和一些矩阵代数来介绍单变量线性时间序列分析的基础。</p>
 <p>设 <span class="math notranslate nohighlight">\(x_t, y_t, v_t, w_{t+1}\)</span> 对于 <span class="math notranslate nohighlight">\(t \geq 0\)</span> 均为标量。</p>
 <p>考虑以下模型：</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-x_0 &amp; \sim  N\left(0, \sigma_0^2\right) \\
+x_0 &amp; \sim N\left(0, \sigma_0^2\right) \\
 x_{t+1} &amp; = a x_{t} + b w_{t+1}, \quad w_{t+1} \sim N\left(0, 1\right), t \geq 0  \\
 y_{t} &amp; = c x_{t} + d v_{t}, \quad v_{t} \sim N\left(0, 1\right), t \geq 0
 \end{aligned}
@@ -1474,7 +1602,7 @@ Y = C X + D V
 <p>因此，<span class="math notranslate nohighlight">\(Y\)</span> 的协方差矩阵为</p>
 <div class="math notranslate nohighlight">
 \[
-\Sigma_{y} = E Y Y^{\prime} = C \Sigma_{x} C^{\prime} + D D^{\prime}
+\Sigma_{y} = E Y Y^\top = C \Sigma_{x} C^\top + D D^\top
 \]</div>
 <p>通过将 <span class="math notranslate nohighlight">\(X\)</span> 和 <span class="math notranslate nohighlight">\(Y\)</span> 堆叠，我们可以写成</p>
 <div class="math notranslate nohighlight">
@@ -1487,8 +1615,8 @@ Y
 <p>且</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
-\Sigma_{z} = EZZ^{\prime}=\left[\begin{array}{cc}
-\Sigma_{x} &amp; \Sigma_{x}C^{\prime}\\
+\Sigma_{z} = EZZ^\top=\left[\begin{array}{cc}
+\Sigma_{x} &amp; \Sigma_{x}C^\top\\
 C\Sigma_{x} &amp; \Sigma_{y}
 \end{array}\right]
 \end{split}\]</div>
@@ -1608,7 +1736,7 @@ C\Sigma_{x} &amp; \Sigma_{y}
 <p>这对于在下面有趣的练习中进行条件化处理将非常有用。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μz</span><span class="p">,</span> <span class="n">Σz</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μz</span><span class="p">,</span> <span class="n">Σz</span><span class="p">)</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
@@ -1655,16 +1783,16 @@ C\Sigma_{x} &amp; \Sigma_{y}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>X =  [-1.05658966 -0.89423666 -0.21642017 -0.52923678]
-Y =  [-1.07625436 -0.87850196 -0.18531493 -0.53035844]
- E [ X | Y] = 
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>X =  [ 0.241748   -0.48167052 -0.2751467   0.62696378]
+Y =  [ 0.2465054  -0.55890629 -0.28918582  0.57124943]
+ E [ X | Y] =
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-1.07337143, -0.87736912, -0.18763125, -0.52945697]),
- array([[2.48875094e-03, 5.57449314e-06, 1.24861718e-08, 2.80234724e-11],
-        [5.57449314e-06, 2.48876343e-03, 5.57452116e-06, 1.25113935e-08],
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([ 0.24414853, -0.55648653, -0.28785472,  0.56917881]),
+ array([[2.48875094e-03, 5.57449314e-06, 1.24861718e-08, 2.80236945e-11],
+        [5.57449314e-06, 2.48876343e-03, 5.57452116e-06, 1.25113937e-08],
         [1.24861718e-08, 5.57452116e-06, 2.48876346e-03, 5.58575339e-06],
-        [2.80233614e-11, 1.25113933e-08, 5.58575339e-06, 2.49377812e-03]]))
+        [2.80236945e-11, 1.25113935e-08, 5.58575339e-06, 2.49377812e-03]]))
 </pre></div>
 </div>
 </div>
@@ -1730,7 +1858,7 @@ Y =  [-1.07625436 -0.87850196 -0.18531493 -0.53035844]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-0.16813975]), array([[1.00201996]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-0.26074227]), array([[1.00201996]]))
 </pre></div>
 </div>
 </div>
@@ -1793,7 +1921,7 @@ Y =  [-1.07625436 -0.87850196 -0.18531493 -0.53035844]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-0.7117634]), array([[1.81413617]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-0.45114129]), array([[1.81413617]]))
 </pre></div>
 </div>
 </div>
@@ -1802,7 +1930,7 @@ Y =  [-1.07625436 -0.87850196 -0.18531493 -0.53035844]
 <section id="wold">
 <h3><span class="section-number">13.9.4. </span>构建Wold表示<a class="headerlink" href="#wold" title="Link to this heading">#</a></h3>
 <p>现在我们将应用Cholesky分解来分解
-<span class="math notranslate nohighlight">\(\Sigma_{y}=H H^{\prime}\)</span> 并形成</p>
+<span class="math notranslate nohighlight">\(\Sigma_{y}=H H^\top\)</span> 并形成</p>
 <div class="math notranslate nohighlight">
 \[
 \epsilon = H^{-1} Y.
@@ -1838,7 +1966,7 @@ y_{t} = h_{t,t} \epsilon_{t} + h_{t,t-1} \epsilon_{t-1} + \dots + h_{t,0} \epsil
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-1.07491156,  0.08751388,  0.60416942, -0.36140284])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0.24619784, -0.7784506 ,  0.2116046 ,  0.83011777])
 </pre></div>
 </div>
 </div>
@@ -1850,7 +1978,7 @@ y_{t} = h_{t,t} \epsilon_{t} + h_{t,t-1} \epsilon_{t-1} + \dots + h_{t,0} \epsil
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-1.07625436, -0.87850196, -0.18531493, -0.53035844])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0.2465054 , -0.55890629, -0.28918582,  0.57124943])
 </pre></div>
 </div>
 </div>
@@ -1859,11 +1987,11 @@ y_{t} = h_{t,t} \epsilon_{t} + h_{t,t-1} \epsilon_{t-1} + \dots + h_{t,0} \epsil
 </section>
 </section>
 <section id="id13">
-<h2><a class="toc-backref" href="#id31" role="doc-backlink"><span class="section-number">13.10. </span>随机差分方程</a><a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id32" role="doc-backlink"><span class="section-number">13.10. </span>随机差分方程</a><a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p>考虑二阶线性随机差分方程</p>
 <div class="math notranslate nohighlight">
 \[
-y_{t} = \alpha_{0} + \alpha_{1} y_{y-1} + \alpha_{2} y_{t-2} + u_{t}
+y_{t} = \alpha_{0} + \alpha_{1} y_{t-1} + \alpha_{2} y_{t-2} + u_{t}
 \]</div>
 <p>其中 <span class="math notranslate nohighlight">\(u_{t} \sim N \left(0, \sigma_{u}^{2}\right)\)</span> 且</p>
 <div class="math notranslate nohighlight">
@@ -1875,7 +2003,7 @@ y_{0}
 \end{split}\]</div>
 <p>它可以写成堆叠系统的形式</p>
 <div class="math notranslate nohighlight">
-\[ \begin{align}\begin{aligned}\begin{split}
+\[\begin{split}
 \underset{\equiv A}{\underbrace{\left[\begin{array}{cccccccc}
 1 &amp; 0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0\\
 -\alpha_{1} &amp; 1 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0\\
@@ -1889,7 +2017,8 @@ y_{2}\\
 y_{3}\\
 y_{4}\\
 \vdots\\
-y_{T}\end{split}\\\begin{split}\end{array}\right]=\underset{\equiv b}{\underbrace{\left[\begin{array}{c}
+y_{T}
+\end{array}\right]=\underset{\equiv b}{\underbrace{\left[\begin{array}{c}
 \alpha_{0}+\alpha_{1}y_{0}+\alpha_{2}y_{-1}\\
 \alpha_{0}+\alpha_{2}y_{0}\\
 \alpha_{0}\\
@@ -1904,7 +2033,7 @@ u_4\\
 \vdots\\
 u_T
 \end{array}\right]}}
-\end{split}\end{aligned}\end{align} \]</div>
+\end{split}\]</div>
 <p>我们可以通过求解以下系统来计算 <span class="math notranslate nohighlight">\(y\)</span></p>
 <div class="math notranslate nohighlight">
 \[
@@ -1915,8 +2044,8 @@ y = A^{-1} \left(b + u\right)
 \[\begin{split}
 \begin{aligned}
 \mu_{y} = A^{-1} \mu_{b} \\
-\Sigma_{y} &amp;= A^{-1} E \left[\left(b - \mu_{b} + u \right) \left(b - \mu_{b} + u \right)^{\prime}\right] \left(A^{-1}\right)^{\prime} \\
-           &amp;= A^{-1} \left(\Sigma_{b} + \Sigma_{u} \right) \left(A^{-1}\right)^{\prime}
+\Sigma_{y} &amp;= A^{-1} E \left[\left(b - \mu_{b} + u \right) \left(b - \mu_{b} + u \right)^\top\right] \left(A^{-1}\right)^\top \\
+           &amp;= A^{-1} \left(\Sigma_{b} + \Sigma_{u} \right) \left(A^{-1}\right)^\top
 \end{aligned}
 \end{split}\]</div>
 <p>其中</p>
@@ -1931,14 +2060,15 @@ y = A^{-1} \left(b + u\right)
 \end{array}\right]
 \end{split}\]</div>
 <div class="math notranslate nohighlight">
-\[ \begin{align}\begin{aligned}
-\Sigma_{b}=\left[\begin{array}{cc}\\\begin{split}C\Sigma_{\tilde{y}}C^{\prime} &amp; \boldsymbol{0}_{N-2\times N-2}\\
+\[\begin{split}
+\Sigma_{b}=\left[\begin{array}{cc}
+C\Sigma_{\tilde{y}}C^\top &amp; \boldsymbol{0}_{N-2\times N-2}\\
 \boldsymbol{0}_{N-2\times2} &amp; \boldsymbol{0}_{N-2\times N-2}
 \end{array}\right],\quad C=\left[\begin{array}{cc}
 \alpha_{2} &amp; \alpha_{1}\\
 0 &amp; \alpha_{2}
 \end{array}\right]
-\end{split}\end{aligned}\end{align} \]</div>
+\end{split}\]</div>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \Sigma_{u}=\left[\begin{array}{cccc}
@@ -1951,7 +2081,6 @@ y = A^{-1} \left(b + u\right)
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置参数</span>
-<span class="n">T</span> <span class="o">=</span> <span class="mi">80</span>
 <span class="n">T</span> <span class="o">=</span> <span class="mi">160</span>
 <span class="c1"># 二阶差分方程的系数</span>
 <span class="n">𝛼0</span> <span class="o">=</span> <span class="mi">10</span>
@@ -1959,7 +2088,6 @@ y = A^{-1} \left(b + u\right)
 <span class="n">𝛼2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">.9</span>
 
 <span class="c1"># u的方差</span>
-<span class="n">σu</span> <span class="o">=</span> <span class="mf">1.</span>
 <span class="n">σu</span> <span class="o">=</span> <span class="mf">10.</span>
 
 <span class="c1"># y_{-1}和y_{0}的分布</span>
@@ -1971,7 +2099,7 @@ y = A^{-1} \left(b + u\right)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 构建 A 和 A^{\prime}</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 构建 A 和 A^\top</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
@@ -2017,7 +2145,7 @@ y = A^{-1} \left(b + u\right)
 </div>
 </section>
 <section id="id14">
-<h2><a class="toc-backref" href="#id32" role="doc-backlink"><span class="section-number">13.11. </span>应用于股票价格模型</a><a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id33" role="doc-backlink"><span class="section-number">13.11. </span>应用于股票价格模型</a><a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
 <p>令</p>
 <div class="math notranslate nohighlight">
 \[
@@ -2051,7 +2179,7 @@ y_{T}
 \[\begin{split}
 \begin{aligned}
 \mu_{p} = B \mu_{y} \\
-\Sigma_{p} = B \Sigma_{y} B^{\prime}
+\Sigma_{p} = B \Sigma_{y} B^\top
 \end{aligned}
 \end{split}\]</div>
 <div class="cell docutils container">
@@ -2092,7 +2220,7 @@ B
 \]</div>
 <div class="math notranslate nohighlight">
 \[
-\Sigma_{z}=D\Sigma_{y}D^{\prime}
+\Sigma_{z}=D\Sigma_{y}D^\top
 \]</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2112,7 +2240,7 @@ B
 <p>我们可以使用 <code class="docutils literal notranslate"><span class="pre">MultivariateNormal</span></code> 类来模拟 <span class="math notranslate nohighlight">\(y_{t}\)</span> 和 <span class="math notranslate nohighlight">\(p_{t}\)</span> 的路径，并计算条件期望 <span class="math notranslate nohighlight">\(E \left[p_{t} \mid y_{t-1}, y_{t}\right]\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μz</span><span class="p">,</span> <span class="n">Σz</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μz</span><span class="p">,</span> <span class="n">Σz</span><span class="p">)</span>
 <span class="n">y</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:</span><span class="n">T</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="n">T</span><span class="p">:]</span>
 </pre></div>
 </div>
@@ -2150,13 +2278,13 @@ B
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/57af29195d1d12a87815985194aa2c614a015e6b8b4be3e7b151380017af5b5d.png" src="_images/57af29195d1d12a87815985194aa2c614a015e6b8b4be3e7b151380017af5b5d.png" />
+<img alt="_images/c67d161093608dc5d28a930838877c48e736e8c99036e3348136b6d4ec9a319b.png" src="_images/c67d161093608dc5d28a930838877c48e736e8c99036e3348136b6d4ec9a319b.png" />
 </div>
 </div>
-<p>在上图中，绿线表示如果人们对股息路径有完美预见时的股票价格，而绿线表示条件期望 <span class="math notranslate nohighlight">\(E p_t | y_t, y_{t-1}\)</span>，这是在人们没有完美预见但基于时间 <span class="math notranslate nohighlight">\(t\)</span> 的信息 <span class="math notranslate nohighlight">\(y_t, y_{t-1}\)</span> 对未来股息进行最优预测时的股票价格。</p>
+<p>在上图中，绿线表示如果人们对股息路径有完美预见时的股票价格，而红线表示条件期望 <span class="math notranslate nohighlight">\(E p_t | y_t, y_{t-1}\)</span>，这是在人们没有完美预见但基于时间 <span class="math notranslate nohighlight">\(t\)</span> 的信息 <span class="math notranslate nohighlight">\(y_t, y_{t-1}\)</span> 对未来股息进行最优预测时的股票价格。</p>
 </section>
 <section id="id15">
-<h2><a class="toc-backref" href="#id33" role="doc-backlink"><span class="section-number">13.12. </span>滤波基础</a><a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id34" role="doc-backlink"><span class="section-number">13.12. </span>滤波基础</a><a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
 <p>假设 <span class="math notranslate nohighlight">\(x_0\)</span> 是一个 <span class="math notranslate nohighlight">\(n \times 1\)</span> 随机向量，且 <span class="math notranslate nohighlight">\(y_0\)</span> 是一个由以下<em>观测方程</em>决定的 <span class="math notranslate nohighlight">\(p \times 1\)</span> 随机向量</p>
 <div class="math notranslate nohighlight">
 \[
@@ -2166,7 +2294,7 @@ y_0 = G x_0 + v_0  , \quad x_0 \sim {\mathcal N}(\hat x_0, \Sigma_0), \quad v_0 
 <p>我们考虑这样一个人的问题，他：</p>
 <ul class="simple">
 <li><p><em>观察到</em> <span class="math notranslate nohighlight">\(y_0\)</span></p></li>
-<li><p>没有观察到 <span class="math notranslate nohighlight">\(x_0\)</span></p></li>
+<li><p>没有观察到 <span class="math notranslate nohighlight">\(x_0\)</span>，</p></li>
 <li><p>已知 <span class="math notranslate nohighlight">\(\hat x_0, \Sigma_0, G, R\)</span> 以及向量 <span class="math notranslate nohighlight">\(\begin{bmatrix} x_0 \cr y_0 \end{bmatrix}\)</span> 的联合概率分布</p></li>
 <li><p>想要根据他所知道的联合概率分布，从 <span class="math notranslate nohighlight">\(y_0\)</span> 推断 <span class="math notranslate nohighlight">\(x_0\)</span>。</p></li>
 </ul>
@@ -2180,7 +2308,8 @@ y_0 = G x_0 + v_0  , \quad x_0 \sim {\mathcal N}(\hat x_0, \Sigma_0), \quad v_0 
 \]</div>
 <p>通过适当应用上述关于 <span class="math notranslate nohighlight">\(z_1\)</span> 在给定 <span class="math notranslate nohighlight">\(z_2\)</span> 条件下的均值向量 <span class="math notranslate nohighlight">\(\hat \mu_1\)</span> 和协方差矩阵 <span class="math notranslate nohighlight">\(\hat \Sigma_{11}\)</span> 的公式，我们发现 <span class="math notranslate nohighlight">\(x_0\)</span> 在给定 <span class="math notranslate nohighlight">\(y_0\)</span> 条件下的概率分布是 <span class="math notranslate nohighlight">\({\mathcal N}(\tilde x_0, \tilde \Sigma_0)\)</span>，其中</p>
 <div class="math notranslate nohighlight">
-\[\begin{aligned} \beta_0  &amp; = \Sigma_0 G' (G \Sigma_0 G' + R)^{-1} \cr
+\[
+\begin{aligned} \beta_0  &amp; = \Sigma_0 G' (G \Sigma_0 G' + R)^{-1} \cr
 \tilde x_0 &amp; = \hat x_0 + \beta_0 ( y_0 - G \hat x_0) \cr
  \tilde \Sigma_0 &amp; = \Sigma_0 - \Sigma_0 G' (G \Sigma_0 G' + R)^{-1} G \Sigma_0
   \end{aligned}
@@ -2201,12 +2330,12 @@ x_1 = A x_0 + C w_1 ,  \quad w_1 \sim {\mathcal N}(0, I )
 <p>其中 <span class="math notranslate nohighlight">\(A\)</span> 是一个 <span class="math notranslate nohighlight">\(n \times n\)</span> 矩阵，<span class="math notranslate nohighlight">\(C\)</span> 是一个 <span class="math notranslate nohighlight">\(n \times m\)</span> 矩阵。</p>
 <p>使用方程<a class="reference internal" href="#equation-eq-x0rep2">(13.2)</a>，我们也可以将 <span class="math notranslate nohighlight">\(x_1\)</span> 表示为</p>
 <div class="math notranslate nohighlight">
-\[ 
+\[
 x_1 = A (\tilde x_0 + \zeta_0) + C w_1
 \]</div>
 <p>由此可得</p>
 <div class="math notranslate nohighlight">
-\[ 
+\[
 E x_1 | y_0 = A \tilde x_0
 \]</div>
 <p>相应的条件协方差矩阵 <span class="math notranslate nohighlight">\(E (x_1 - E x_1| y_0)  (x_1 - E x_1| y_0)' \equiv \Sigma_1\)</span> 为</p>
@@ -2247,8 +2376,8 @@ y_t &amp; = G x_t + v_t
 \end{aligned}
 \]</div>
 <p>其中如前所述 <span class="math notranslate nohighlight">\(x_0 \sim {\mathcal N}(\hat x_0, \Sigma_0)\)</span>，
-<span class="math notranslate nohighlight">\(w_{t+1}\)</span> 是独立同分布随机过程的第 <span class="math notranslate nohighlight">\(t+1\)</span> 个分量</p>
-<p>过程 <span class="math notranslate nohighlight">\(w_{t+1}\)</span> 服从分布 <span class="math notranslate nohighlight">\(w_{t+1} \sim {\mathcal N}(0, I)\)</span>，而
+<span class="math notranslate nohighlight">\(w_{t+1}\)</span> 是独立同分布随机过程的第 <span class="math notranslate nohighlight">\(t+1\)</span> 个分量，
+该过程服从分布 <span class="math notranslate nohighlight">\(w_{t+1} \sim {\mathcal N}(0, I)\)</span>，而
 <span class="math notranslate nohighlight">\(v_t\)</span> 是独立同分布过程的第 <span class="math notranslate nohighlight">\(t\)</span> 个分量，
 服从分布 <span class="math notranslate nohighlight">\(v_t \sim {\mathcal N}(0, R)\)</span>，且
 <span class="math notranslate nohighlight">\(\{w_{t+1}\}_{t=0}^\infty\)</span> 和 <span class="math notranslate nohighlight">\(\{v_t\}_{t=0}^\infty\)</span>
@@ -2257,19 +2386,20 @@ y_t &amp; = G x_t + v_t
 <span class="math notranslate nohighlight">\(y_0, y_1, \ldots , y_{t-1} = y^{t-1}\)</span> 条件下，<span class="math notranslate nohighlight">\(x_t\)</span> 的概率分布为</p>
 <div class="math notranslate nohighlight">
 \[
-x_t | y^{t-1} \sim {\mathcal N}(A \tilde x_t , A \tilde \Sigma_t A' + C C' )
+x_t | y^{t-1} \sim {\mathcal N}(A \tilde x_{t-1} , A \tilde \Sigma_{t-1} A' + C C' )
 \]</div>
 <p>其中 <span class="math notranslate nohighlight">\(\{\tilde x_t, \tilde \Sigma_t\}_{t=1}^\infty\)</span> 可以
 通过从 <span class="math notranslate nohighlight">\(t=1\)</span> 开始迭代以下方程计算得到，
 初始条件 <span class="math notranslate nohighlight">\(\tilde x_0, \tilde \Sigma_0\)</span> 按照我们上面的方法计算：</p>
 <div class="math notranslate nohighlight">
-\[ \begin{align}\begin{aligned}
+\[
 \begin{aligned} \Sigma_t &amp; = A  \tilde \Sigma_{t-1} A' + C C' \cr
                \hat x_t &amp; = A \tilde x_{t-1} \cr
 \beta_t &amp; = \Sigma_t G' (G \Sigma_t G' + R)^{-1} \cr
-\tilde x_t &amp; = \hat x_t + \beta_t ( y_t - G \hat x_t) \cr\\\tilde \Sigma_t &amp; = \Sigma_t - \Sigma_t G' (G \Sigma_t G' + R)^{-1} G \Sigma_t
+\tilde x_t &amp; = \hat x_t + \beta_t ( y_t - G \hat x_t) \cr
+ \tilde \Sigma_t &amp; = \Sigma_t - \Sigma_t G' (G \Sigma_t G' + R)^{-1} G \Sigma_t
   \end{aligned}
-\end{aligned}\end{align} \]</div>
+\]</div>
 <p>如果我们将第一个方程向前移动一个周期，然后将第五个方程右侧的<span class="math notranslate nohighlight">\(\tilde \Sigma_t\)</span>表达式代入其中，我们得到</p>
 <div class="math notranslate nohighlight">
 \[
@@ -2300,7 +2430,7 @@ x_t | y^{t-1} \sim {\mathcal N}(A \tilde x_t , A \tilde \Sigma_t A' + C C' )
 <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">]])</span>
 
 <span class="n">x0_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
-<span class="n">Σ0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">.3</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]])</span>
+<span class="n">Σ0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]])</span>
 
 <span class="n">μ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">x0_hat</span><span class="p">,</span> <span class="n">G</span> <span class="o">@</span> <span class="n">x0_hat</span><span class="p">])</span>
 <span class="n">Σ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([[</span><span class="n">Σ0</span><span class="p">,</span> <span class="n">Σ0</span> <span class="o">@</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="p">[</span><span class="n">G</span> <span class="o">@</span> <span class="n">Σ0</span><span class="p">,</span> <span class="n">G</span> <span class="o">@</span> <span class="n">Σ0</span> <span class="o">@</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">R</span><span class="p">]])</span>
@@ -2335,9 +2465,9 @@ x_t | y^{t-1} \sim {\mathcal N}(A \tilde x_t , A \tilde \Sigma_t A' + C C' )
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-0.078125,  0.803125]),
- array([[ 0.72098214, -0.203125  ],
-        [-0.403125  ,  0.228125  ]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-0.07608696,  0.80217391]),
+ array([[ 0.72826087, -0.20652174],
+        [-0.20652174,  0.16304348]]))
 </pre></div>
 </div>
 </div>
@@ -2355,9 +2485,9 @@ x_t | y^{t-1} \sim {\mathcal N}(A \tilde x_t , A \tilde \Sigma_t A' + C C' )
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([0.1215625, 0.24875  ]),
- array([[4.12874554, 1.95523214],
-        [1.92123214, 1.04592857]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([0.1223913 , 0.24826087]),
+ array([[4.14728261, 1.94652174],
+        [1.94652174, 1.03434783]]))
 </pre></div>
 </div>
 </div>
@@ -2407,20 +2537,20 @@ x_t | y^{t-1} \sim {\mathcal N}(A \tilde x_t , A \tilde \Sigma_t A' + C C' )
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[0.        , 1.        ],
-        [0.1215625 , 0.24875   ],
-        [0.18680212, 0.06904689],
-        [0.75576875, 0.05558463]]),
+        [0.1223913 , 0.24826087],
+        [0.18729801, 0.06881254],
+        [0.75600369, 0.05547207]]),
  array([[[1.        , 0.5       ],
-         [0.3       , 2.        ]],
+         [0.5       , 2.        ]],
  
-        [[4.12874554, 1.95523214],
-         [1.92123214, 1.04592857]],
+        [[4.14728261, 1.94652174],
+         [1.94652174, 1.03434783]],
  
-        [[4.08198663, 1.99218488],
-         [1.98640488, 1.00886423]],
+        [[4.08853181, 1.98917687],
+         [1.98917687, 1.00757802]],
  
-        [[4.06457628, 2.00041999],
-         [1.99943739, 1.00275526]]]))
+        [[4.06650435, 1.99952946],
+         [1.99952946, 1.00271293]]]))
 </pre></div>
 </div>
 </div>
@@ -2430,8 +2560,8 @@ x_t | y^{t-1} \sim {\mathcal N}(A \tilde x_t , A \tilde \Sigma_t A' + C C' )
 </section>
 </section>
 <section id="id20">
-<h2><a class="toc-backref" href="#id34" role="doc-backlink"><span class="section-number">13.13. </span>经典因子分析模型</a><a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
-<p>在心理学和其他领域广泛使用的因子分析模型可以表示为：</p>
+<h2><a class="toc-backref" href="#id35" role="doc-backlink"><span class="section-number">13.13. </span>经典因子分析模型</a><a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
+<p>因子分析模型可以表示为：</p>
 <div class="math notranslate nohighlight">
 \[
 Y = \Lambda f + U
@@ -2439,11 +2569,11 @@ Y = \Lambda f + U
 <p>其中：</p>
 <ol class="arabic simple">
 <li><p><span class="math notranslate nohighlight">\(Y\)</span> 是 <span class="math notranslate nohighlight">\(n \times 1\)</span> 随机向量，
-<span class="math notranslate nohighlight">\(E U U^{\prime} = D\)</span> 是一个对角矩阵，</p></li>
+<span class="math notranslate nohighlight">\(E U U^\top = D\)</span> 是一个对角矩阵，</p></li>
 <li><p><span class="math notranslate nohighlight">\(\Lambda\)</span> 是 <span class="math notranslate nohighlight">\(n \times k\)</span> 系数矩阵，</p></li>
 <li><p><span class="math notranslate nohighlight">\(f\)</span> 是 <span class="math notranslate nohighlight">\(k \times 1\)</span> 随机向量，
-<span class="math notranslate nohighlight">\(E f f^{\prime} = I\)</span>，</p></li>
-<li><p><span class="math notranslate nohighlight">\(U\)</span> 是 <span class="math notranslate nohighlight">\(n \times 1\)</span> 随机向量，且 <span class="math notranslate nohighlight">\(U \perp f\)</span>（即 <span class="math notranslate nohighlight">\(E U f' = 0\)</span>）</p></li>
+<span class="math notranslate nohighlight">\(E f f^\top = I\)</span>，</p></li>
+<li><p><span class="math notranslate nohighlight">\(U\)</span> 是 <span class="math notranslate nohighlight">\(n \times 1\)</span> 随机向量，且 <span class="math notranslate nohighlight">\(U \perp f\)</span>（即 <span class="math notranslate nohighlight">\(E U f^\top = 0\)</span>）</p></li>
 <li><p>假设 <span class="math notranslate nohighlight">\(k\)</span> 相对于 <span class="math notranslate nohighlight">\(n\)</span> 较小；通常
 <span class="math notranslate nohighlight">\(k\)</span> 只有 <span class="math notranslate nohighlight">\(1\)</span> 或 <span class="math notranslate nohighlight">\(2\)</span>，就像我们的智商示例中那样。</p></li>
 </ol>
@@ -2451,13 +2581,13 @@ Y = \Lambda f + U
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-\Sigma_y = E Y Y^{\prime} = \Lambda \Lambda^{\prime} + D \\
-E Y f^{\prime} = \Lambda \\
-E f Y^{\prime} = \Lambda^{\prime}
+\Sigma_y = E Y Y^\top = \Lambda \Lambda^\top + D \\
+E Y f^\top = \Lambda \\
+E f Y^\top = \Lambda^\top
 \end{aligned}
 \end{split}\]</div>
-<p>因此，协方差矩阵 <span class="math notranslate nohighlight">\(\Sigma_Y\)</span> 是一个对角矩阵 <span class="math notranslate nohighlight">\(D\)</span> 和一个秩为 <span class="math notranslate nohighlight">\(k\)</span> 的半正定矩阵 <span class="math notranslate nohighlight">\(\Lambda \Lambda^{\prime}\)</span> 的和。</p>
-<p>这意味着 <span class="math notranslate nohighlight">\(Y\)</span> 向量的 <span class="math notranslate nohighlight">\(n\)</span> 个分量之间的所有协方差都是通过它们与 <span class="math notranslate nohighlight">\(k&lt;n\)</span> 个因子的共同依赖关系来中介的。</p>
+<p>因此，协方差矩阵 <span class="math notranslate nohighlight">\(\Sigma_Y\)</span> 是一个对角矩阵 <span class="math notranslate nohighlight">\(D\)</span> 和一个秩为 <span class="math notranslate nohighlight">\(k\)</span> 的半正定矩阵 <span class="math notranslate nohighlight">\(\Lambda \Lambda^\top\)</span> 的和。</p>
+<p>这意味着 <span class="math notranslate nohighlight">\(Y\)</span> 向量的 <span class="math notranslate nohighlight">\(n\)</span> 个分量之间的所有协方差都是通过它们与 <span class="math notranslate nohighlight">\(k\)</span> 个因子的共同依赖关系来中介的。</p>
 <p>构造</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -2469,9 +2599,9 @@ Y
 <p>扩展随机向量 <span class="math notranslate nohighlight">\(Z\)</span> 的协方差矩阵可以计算为</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
-\Sigma_{z} = EZZ^{\prime}=\left(\begin{array}{cc}
-I &amp; \Lambda^{\prime}\\
-\Lambda &amp; \Lambda\Lambda^{\prime}+D
+\Sigma_{z} = EZZ^\top=\left(\begin{array}{cc}
+I &amp; \Lambda^\top\\
+\Lambda &amp; \Lambda\Lambda^\top+D
 \end{array}\right)
 \end{split}\]</div>
 <p>接下来，我们首先构造 <span class="math notranslate nohighlight">\(N=10\)</span> 和 <span class="math notranslate nohighlight">\(k=2\)</span> 情况下的均值向量和协方差矩阵。</p>
@@ -2539,7 +2669,7 @@ I &amp; \Lambda^{\prime}\\
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μz</span><span class="p">,</span> <span class="n">Σz</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μz</span><span class="p">,</span> <span class="n">Σz</span><span class="p">)</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="n">k</span><span class="p">:]</span>
@@ -2563,7 +2693,7 @@ I &amp; \Lambda^{\prime}\\
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([1.3988848 , 1.95750545]),
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-1.91672689, -0.15755905]),
  array([[0.04761905, 0.        ],
         [0.        , 0.04761905]]))
 </pre></div>
@@ -2572,7 +2702,7 @@ I &amp; \Lambda^{\prime}\\
 </div>
 <p>我们可以验证条件期望
 <span class="math notranslate nohighlight">\(E \left[f \mid Y=y\right] = B Y\)</span>， 其中
-<span class="math notranslate nohighlight">\(B = \Lambda^{\prime} \Sigma_{y}^{-1}\)</span>。</p>
+<span class="math notranslate nohighlight">\(B = \Lambda^\top \Sigma_{y}^{-1}\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">B</span> <span class="o">=</span> <span class="n">Λ</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Σy</span><span class="p">)</span>
@@ -2582,7 +2712,7 @@ I &amp; \Lambda^{\prime}\\
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.3988848 , 1.95750545])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-1.91672689, -0.15755905])
 </pre></div>
 </div>
 </div>
@@ -2595,8 +2725,8 @@ I &amp; \Lambda^{\prime}\\
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([1.12746316, 1.12746316, 1.12746316, 1.12746316, 1.12746316,
-        1.9735181 , 1.9735181 , 1.9735181 , 1.9735181 , 1.9735181 ]),
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-1.6576293 , -1.6576293 , -1.6576293 , -1.6576293 , -1.6576293 ,
+        -0.34202845, -0.34202845, -0.34202845, -0.34202845, -0.34202845]),
  array([[0.25, 0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  ],
         [0.  , 0.25, 0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  ],
         [0.  , 0.  , 0.25, 0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  ],
@@ -2620,23 +2750,24 @@ I &amp; \Lambda^{\prime}\\
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.12746316, 1.12746316, 1.12746316, 1.12746316, 1.12746316,
-       1.9735181 , 1.9735181 , 1.9735181 , 1.9735181 , 1.9735181 ])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-1.6576293 , -1.6576293 , -1.6576293 , -1.6576293 , -1.6576293 ,
+       -0.34202845, -0.34202845, -0.34202845, -0.34202845, -0.34202845])
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="pca">
-<h2><a class="toc-backref" href="#id35" role="doc-backlink"><span class="section-number">13.14. </span>PCA和因子分析</a><a class="headerlink" href="#pca" title="Link to this heading">#</a></h2>
-<p>要了解主成分分析(PCA),请参阅本讲座<a class="reference internal" href="svd_intro.html"><span class="doc">奇异值分解</span></a>。</p>
+<h2><a class="toc-backref" href="#id36" role="doc-backlink"><span class="section-number">13.14. </span>PCA和因子分析</a><a class="headerlink" href="#pca" title="Link to this heading">#</a></h2>
+<p>要了解主成分分析(PCA)，请参阅本讲座<a class="reference internal" href="svd_intro.html"><span class="doc">奇异值分解</span></a>。</p>
 <p>让我们来做个有趣的练习，对实际上由我们的因子分析模型支配的协方差矩阵 <span class="math notranslate nohighlight">\(\Sigma_y\)</span> 进行PCA分解。</p>
-<p>从技术上讲，这意味着PCA模型是错误设定的。（你能解释为什么吗?）</p>
-<p>尽管如此,这个练习将让我们研究PCA的前两个主成分如何近似我们假设真实支配Y数据的因子分析模型中两个因子 <span class="math notranslate nohighlight">\(f_i\)</span> (<span class="math notranslate nohighlight">\(i=1,2\)</span>)的条件期望 <span class="math notranslate nohighlight">\(E f_i | Y\)</span>。</p>
+<p>从技术上讲，这意味着PCA模型是错误设定的。</p>
+<p>（你能解释为什么吗？）</p>
+<p>尽管如此，这个练习将让我们研究PCA的前两个主成分能在多大程度上近似我们两个因子 <span class="math notranslate nohighlight">\(f_i\)</span>（<span class="math notranslate nohighlight">\(i=1,2\)</span>）的条件期望 <span class="math notranslate nohighlight">\(E f_i | Y\)</span>，这里假设因子分析模型真正支配着我们生成的 <span class="math notranslate nohighlight">\(Y\)</span> 数据。</p>
 <p>因此我们计算PCA分解</p>
 <div class="math notranslate nohighlight">
 \[
-\Sigma_{y} = P \tilde{\Lambda} P^{\prime}
+\Sigma_{y} = P \tilde{\Lambda} P^\top
 \]</div>
 <p>其中 <span class="math notranslate nohighlight">\(\tilde{\Lambda}\)</span> 是一个对角矩阵。</p>
 <p>我们有</p>
@@ -2647,7 +2778,7 @@ Y = P \epsilon
 <p>和</p>
 <div class="math notranslate nohighlight">
 \[
-\epsilon = P^\prime Y
+\epsilon = P^\top Y
 \]</div>
 <p>注意，我们将按特征值<em>降序</em>排列 <span class="math notranslate nohighlight">\(P\)</span> 中的特征向量。</p>
 <div class="cell docutils container">
@@ -2715,8 +2846,8 @@ Y = P \epsilon
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ε =  [ 4.59597101  3.28440158 -0.48215927 -0.08783363  0.16894719 -0.77034464
-  0.44493959 -0.18817693 -0.09929539  0.58865147]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ε =  [-0.36992839 -4.50022821  0.65187474  0.43365272  0.19206504  0.2923582
+ -0.29012514 -0.30929203  0.44589142  0.48998782]
 </pre></div>
 </div>
 </div>
@@ -2730,7 +2861,7 @@ Y = P \epsilon
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>f =  [1.12746316 1.9735181 ]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>f =  [-1.6576293  -0.34202845]
 </pre></div>
 </div>
 </div>
@@ -2745,7 +2876,7 @@ Y = P \epsilon
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">ε</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$\epsilon$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">ε</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\epsilon$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$f_</span><span class="si">{1}</span><span class="s1">$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$f_</span><span class="si">{2}</span><span class="s1">$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
@@ -2755,7 +2886,7 @@ Y = P \epsilon
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/893d2f3621283a68342c06eaeab0d41d7cd6564a53e57d054dd6001046f7a664.png" src="_images/893d2f3621283a68342c06eaeab0d41d7cd6564a53e57d054dd6001046f7a664.png" />
+<img alt="_images/64046ba4e7f5dfdd731ffb1dbdf1034b2a39a573090939ef8dc677d676492bc0.png" src="_images/64046ba4e7f5dfdd731ffb1dbdf1034b2a39a573090939ef8dc677d676492bc0.png" />
 </div>
 </div>
 <p>因此，前两个 <span class="math notranslate nohighlight">\(\epsilon_{j}\)</span> 对应于最大的两个特征值。</p>
@@ -2767,7 +2898,7 @@ Y = P \epsilon
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([4.59597101, 3.28440158])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-0.36992839, -4.50022821])
 </pre></div>
 </div>
 </div>
@@ -2780,12 +2911,22 @@ Y = P \epsilon
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.3988848 , 1.95750545])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-1.91672689, -0.15755905])
 </pre></div>
 </div>
 </div>
 </div>
-<p><span class="math notranslate nohighlight">\(y_{t}\)</span> 中由前两个主成分解释的方差比例可以按如下方式计算。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>在这个例子中，最大的两个特征值都是 <span class="math notranslate nohighlight">\(5.25\)</span>。</p>
+<p>当一个特征值重复出现时，相关的主成分并不能被单独确定：同一个二维特征空间的任何标准正交基都是有效的。</p>
+<p>因此，将 <span class="math notranslate nohighlight">\(\epsilon_1\)</span> 和 <span class="math notranslate nohighlight">\(\epsilon_2\)</span> 逐个分量地与 <span class="math notranslate nohighlight">\(E[f \mid Y]\)</span> 进行比较是没有意义的。</p>
+<p>主成分得分存在于PCA坐标系中，而 <span class="math notranslate nohighlight">\(E[f \mid Y]\)</span> 存在于因子空间中。</p>
+<p>即使在共同的二维子空间内，PCA基也可以被旋转或符号翻转，其坐标不必使用与因子坐标相同的尺度。</p>
+<p>唯一确定的是由 <span class="math notranslate nohighlight">\(P\)</span> 的前两列所张成的二维子空间。</p>
+<p>在这个对称的例子中，该子空间恰好是 <span class="math notranslate nohighlight">\(\Lambda\)</span> 的列空间。</p>
+</div>
+<p><span class="math notranslate nohighlight">\(y_{t}\)</span> 中由前两个主成分解释的方差比例是</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">𝜆_tilde</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">𝜆_tilde</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -2798,12 +2939,12 @@ Y = P \epsilon
 </div>
 </div>
 </div>
-<p>计算</p>
+<p>为了在观测空间中比较PCA与因子模型，计算</p>
 <div class="math notranslate nohighlight">
 \[
 \hat{Y} = P_{j} \epsilon_{j} + P_{k} \epsilon_{k}
 \]</div>
-<p>其中 <span class="math notranslate nohighlight">\(P_{j}\)</span> 和 <span class="math notranslate nohighlight">\(P_{k}\)</span> 对应最大的两个特征值。</p>
+<p>其中 <span class="math notranslate nohighlight">\(P_j\)</span> 和 <span class="math notranslate nohighlight">\(P_k\)</span> 是与最大两个特征值相关联的特征向量。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y_hat</span> <span class="o">=</span> <span class="n">P</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">@</span> <span class="n">ε</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
@@ -2811,18 +2952,58 @@ Y = P \epsilon
 </div>
 </div>
 </div>
-<p>在这个例子中，<span class="math notranslate nohighlight">\(Y\)</span> 在前两个主成分上的投影 <span class="math notranslate nohighlight">\(\hat{Y}\)</span> 很好地近似了 <span class="math notranslate nohighlight">\(Ef \mid y\)</span>。</p>
-<p>我们通过下面的图来确认这一点，图中展示了 <span class="math notranslate nohighlight">\(f\)</span>、<span class="math notranslate nohighlight">\(E y \mid f\)</span>、<span class="math notranslate nohighlight">\(E f \mid y\)</span> 和 <span class="math notranslate nohighlight">\(\hat{y}\)</span>（在坐标轴上）与 <span class="math notranslate nohighlight">\(y\)</span>（在纵轴上）的关系。</p>
+<p><span class="math notranslate nohighlight">\(\hat{Y}\)</span> 是 <span class="math notranslate nohighlight">\(Y\)</span> 在观测空间中的秩-2 PCA近似，因此它是一个10维向量而不是2维向量。</p>
+<p>来自因子模型的自然的观测空间对应量是 <span class="math notranslate nohighlight">\(\Lambda E[f \mid Y]\)</span>，它同样是一个10维向量。</p>
+<p>在这个对称的例子中，两个向量都位于同一个二维子空间中，即 <span class="math notranslate nohighlight">\(\Lambda\)</span> 的列空间。因此它们很接近，但并不完全相同。</p>
+<p>PCA重构直接使用了分块均值，而 <span class="math notranslate nohighlight">\(\Lambda E[f \mid Y]\)</span> 通过因子 <span class="math notranslate nohighlight">\(5/(5+\sigma_u^2) \approx 0.952\)</span> 将这些分块均值向零收缩。</p>
+<p>下一张图将这一比较具体化。</p>
+<p>两个散点图，<span class="math notranslate nohighlight">\(E[Y \mid f] = \Lambda f\)</span> 和 <span class="math notranslate nohighlight">\(\hat{Y}\)</span>，都是观测空间中的10维向量，因此可以直接进行比较。</p>
+<p>水平线显示了因子值 <span class="math notranslate nohighlight">\(f_1\)</span> 和 <span class="math notranslate nohighlight">\(f_2\)</span>，以及它们的后验均值 <span class="math notranslate nohighlight">\(E[f_i \mid Y]\)</span>。</p>
+<p>这些是二维的因子空间量，绘制在与 <span class="math notranslate nohighlight">\(\Lambda\)</span> 的分块结构相匹配的相关索引集的一半上。</p>
+<p>这里使用了与前面公式 <span class="math notranslate nohighlight">\(E[Y \mid f] = \Lambda f\)</span> 相同的思路：矩阵 <span class="math notranslate nohighlight">\(\Lambda\)</span> 将因子空间中的一个2维向量映射为观测空间中的一个10维向量。</p>
+<p>在我们的例子中，</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\Lambda a
+=
+\begin{bmatrix}
+a_1 \\
+\vdots \\
+a_1 \\
+a_2 \\
+\vdots \\
+a_2
+\end{bmatrix}
+\quad \text{对于任意 } a = \begin{bmatrix} a_1 \\ a_2 \end{bmatrix},
+\end{split}\]</div>
+<p>因为 <span class="math notranslate nohighlight">\(\Lambda\)</span> 的前五行是 <span class="math notranslate nohighlight">\((1,0)\)</span>，后五行是 <span class="math notranslate nohighlight">\((0,1)\)</span>。</p>
+<p>因此，一旦我们观测到 <span class="math notranslate nohighlight">\(Y=y\)</span>，后验均值
+<span class="math notranslate nohighlight">\(E[f \mid Y=y] = \begin{bmatrix} E[f_1 \mid y] \\ E[f_2 \mid y] \end{bmatrix}\)</span>
+就被转换为观测空间向量</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\Lambda E[f \mid Y=y]
+=
+\begin{bmatrix}
+E[f_1 \mid y] \\
+\vdots \\
+E[f_1 \mid y] \\
+E[f_2 \mid y] \\
+\vdots \\
+E[f_2 \mid y]
+\end{bmatrix}.
+\end{split}\]</div>
+<p>所以在前五个索引上高度为 <span class="math notranslate nohighlight">\(E[f_1 \mid y]\)</span> 的水平线，与在后五个索引上高度为 <span class="math notranslate nohighlight">\(E[f_2 \mid y]\)</span> 的水平线一起，恰好就是 <span class="math notranslate nohighlight">\(\Lambda E[f \mid Y=y]\)</span> 的图像。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">Λ</span> <span class="o">@</span> <span class="n">f</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$Ey|f$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">y_hat</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\hat</span><span class="si">{y}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">Λ</span> <span class="o">@</span> <span class="n">f</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$E[Y \mid f]$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">y_hat</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\hat</span><span class="si">{Y}</span><span class="s1">$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$f_</span><span class="si">{1}</span><span class="s1">$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$f_</span><span class="si">{2}</span><span class="s1">$&#39;</span><span class="p">)</span>
 
 <span class="n">Efy</span> <span class="o">=</span> <span class="n">B</span> <span class="o">@</span> <span class="n">y</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">Efy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$Ef_</span><span class="si">{1}</span><span class="s1">|y$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">Efy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$Ef_</span><span class="si">{2}</span><span class="s1">|y$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">Efy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$E[f_1 \mid y]$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">Efy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$E[f_2 \mid y]$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -2830,10 +3011,10 @@ Y = P \epsilon
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/f0d053513b5e69b076bf9218595d43a010c59901a8935b8e17965d0503c9e287.png" src="_images/f0d053513b5e69b076bf9218595d43a010c59901a8935b8e17965d0503c9e287.png" />
+<img alt="_images/e63d6c6b58a04125901a96ff469d83db7af4f8ff8c81e3c5ea9a5970f5c542ec.png" src="_images/e63d6c6b58a04125901a96ff469d83db7af4f8ff8c81e3c5ea9a5970f5c542ec.png" />
 </div>
 </div>
-<p><span class="math notranslate nohighlight">\(\hat{Y}\)</span> 的协方差矩阵可以通过先构建 <span class="math notranslate nohighlight">\(\epsilon\)</span> 的协方差矩阵，然后使用 <span class="math notranslate nohighlight">\(\epsilon_{1}\)</span> 和 <span class="math notranslate nohighlight">\(\epsilon_{2}\)</span> 的左上角块来计算。</p>
+<p>要计算 <span class="math notranslate nohighlight">\(\hat{Y}\)</span> 的协方差矩阵，首先构建 <span class="math notranslate nohighlight">\(\epsilon\)</span> 的协方差矩阵，然后提取对应于 <span class="math notranslate nohighlight">\(\epsilon_1\)</span> 和 <span class="math notranslate nohighlight">\(\epsilon_2\)</span> 的左上角块。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Σεjk</span> <span class="o">=</span> <span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Σy</span> <span class="o">@</span> <span class="n">P</span><span class="p">)[:</span><span class="mi">2</span><span class="p">,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
@@ -2860,6 +3041,482 @@ Y = P \epsilon
 </pre></div>
 </div>
 </div>
+</div>
+</section>
+<section id="id21">
+<h2><a class="toc-backref" href="#id37" role="doc-backlink"><span class="section-number">13.15. </span>练习</a><a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="mv_normal_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 13.1 </span></p>
+<section id="exercise-content">
+<p><strong>通过模拟验证条件均值和方差</strong></p>
+<p>对于具有以下参数的二元正态分布</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mu = \begin{bmatrix} 0.5 \\ 1.0 \end{bmatrix}, \quad
+\Sigma = \begin{bmatrix} 1 &amp; 0.5 \\ 0.5 &amp; 1 \end{bmatrix}
+\end{split}\]</div>
+<p>固定 <span class="math notranslate nohighlight">\(z_2 = 2\)</span>。</p>
+<ol class="arabic">
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">MultivariateNormal</span></code> 计算 <span class="math notranslate nohighlight">\(z_1 \mid z_2 = 2\)</span> 的解析条件均值
+<span class="math notranslate nohighlight">\(\hat{\mu}_1\)</span> 和方差 <span class="math notranslate nohighlight">\(\hat{\Sigma}_{11}\)</span>。</p></li>
+<li><p>从联合分布中抽取 <span class="math notranslate nohighlight">\(10^6\)</span> 个样本。</p>
+<p>仅保留满足 <span class="math notranslate nohighlight">\(|z_2 - 2| &lt; 0.05\)</span> 的样本。</p>
+<p>计算保留的 <span class="math notranslate nohighlight">\(z_1\)</span> 值的样本均值和方差。</p>
+</li>
+<li><p>确认样本估计值接近解析值。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="multivariate_normal-solution-1">
+
+<p class="admonition-title">解答<a class="reference internal" href="#mv_normal_ex1"> 练习 13.1</a></p>
+<section id="solution-content">
+<p>以下是一种解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">μ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
+<span class="n">Σ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+
+<span class="n">mn</span> <span class="o">=</span> <span class="n">MultivariateNormal</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">Σ</span><span class="p">)</span>
+<span class="n">mn</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">μ1_hat</span><span class="p">,</span> <span class="n">Σ11_hat</span> <span class="o">=</span> <span class="n">mn</span><span class="o">.</span><span class="n">cond_dist</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;解析值  μ1_hat = </span><span class="si">{</span><span class="n">μ1_hat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">,  Σ11_hat = </span><span class="si">{</span><span class="n">Σ11_hat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1_000_000</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">Σ</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">z1_all</span><span class="p">,</span> <span class="n">z2_all</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z2_all</span> <span class="o">-</span> <span class="mf">2.</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.05</span>
+<span class="n">z1_cond</span> <span class="o">=</span> <span class="n">z1_all</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;区间内样本量: </span><span class="si">{</span><span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;样本值      μ1_hat = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">z1_cond</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">,  Σ11_hat = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">z1_cond</span><span class="p">,</span><span class="w"> </span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>解析值  μ1_hat = 1.0000,  Σ11_hat = 0.7500
+区间内样本量: 24314
+样本值      μ1_hat = 1.0050,  Σ11_hat = 0.7458
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="mv_normal_ex2">
+
+<p class="admonition-title"><span class="caption-number">练习 13.2 </span></p>
+<section id="exercise-content">
+<p><strong>回归斜率乘积等于相关系数的平方</strong></p>
+<p>对于标准差 <span class="math notranslate nohighlight">\(\sigma_1 = \sigma_2 = 1\)</span>、相关系数为 <span class="math notranslate nohighlight">\(\rho\)</span> 的二元正态分布，
+从解析角度证明 <span class="math notranslate nohighlight">\(b_1 b_2 = \rho^2\)</span>，其中
+<span class="math notranslate nohighlight">\(b_1\)</span> 是 <span class="math notranslate nohighlight">\(z_1\)</span> 对 <span class="math notranslate nohighlight">\(z_2\)</span> 回归的斜率，<span class="math notranslate nohighlight">\(b_2\)</span> 是 <span class="math notranslate nohighlight">\(z_2\)</span> 对 <span class="math notranslate nohighlight">\(z_1\)</span>
+回归的斜率。</p>
+<p>然后通过构造适当的 <code class="docutils literal notranslate"><span class="pre">MultivariateNormal</span></code> 实例，对
+<span class="math notranslate nohighlight">\(\rho \in \{0.2, 0.5, 0.9\}\)</span> 进行数值验证，确认
+<code class="docutils literal notranslate"><span class="pre">βs[0]</span> <span class="pre">*</span> <span class="pre">βs[1]</span></code> <span class="math notranslate nohighlight">\(= \rho^2\)</span>。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="multivariate_normal-solution-3">
+
+<p class="admonition-title">解答<a class="reference internal" href="#mv_normal_ex2"> 练习 13.2</a></p>
+<section id="solution-content">
+<p>回归斜率为</p>
+<div class="math notranslate nohighlight">
+\[
+b_1 = \frac{\Sigma_{12}}{\Sigma_{22}} = \frac{\rho \sigma_1 \sigma_2}{\sigma_2^2}
+= \rho \frac{\sigma_1}{\sigma_2}, \qquad
+b_2 = \frac{\Sigma_{21}}{\Sigma_{11}} = \rho \frac{\sigma_2}{\sigma_1}
+\]</div>
+<p>所以 <span class="math notranslate nohighlight">\(b_1 b_2 = \rho^2\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">ρ</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]:</span>
+    <span class="n">Σ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="n">ρ</span><span class="p">],</span> <span class="p">[</span><span class="n">ρ</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+    <span class="n">mn</span> <span class="o">=</span> <span class="n">MultivariateNormal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">Σ</span><span class="p">)</span>
+    <span class="n">mn</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">product</span> <span class="o">=</span> <span class="n">mn</span><span class="o">.</span><span class="n">βs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">*</span> <span class="n">mn</span><span class="o">.</span><span class="n">βs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ρ=</span><span class="si">{</span><span class="n">ρ</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">:  b1*b2 = </span><span class="si">{</span><span class="n">product</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ρ^2 = </span><span class="si">{</span><span class="n">ρ</span><span class="o">**</span><span class="mi">2</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">,  是否匹配: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">product</span><span class="p">,</span><span class="w"> </span><span class="n">ρ</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ρ=0.2:  b1*b2 = 0.0400
+ρ^2 = 0.0400,  是否匹配: True
+ρ=0.5:  b1*b2 = 0.2500
+ρ^2 = 0.2500,  是否匹配: True
+ρ=0.9:  b1*b2 = 0.8100
+ρ^2 = 0.8100,  是否匹配: True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="mv_normal_ex3">
+
+<p class="admonition-title"><span class="caption-number">练习 13.3 </span></p>
+<section id="exercise-content">
+<p><strong>智商推断：信噪比的影响</strong></p>
+<p>使用一维智商模型，其中包含 <span class="math notranslate nohighlight">\(n = 50\)</span> 个测试分数以及
+<span class="math notranslate nohighlight">\(\mu_\theta = 100\)</span>，<span class="math notranslate nohighlight">\(\sigma_\theta = 10\)</span>：</p>
+<ol class="arabic simple">
+<li><p>改变测试分数的噪声 <span class="math notranslate nohighlight">\(\sigma_y \in \{1, 5, 10, 20, 50\}\)</span>。</p></li>
+</ol>
+<ul class="simple">
+<li><p>对于每个值，绘制后验标准差
+<span class="math notranslate nohighlight">\(\hat{\sigma}_\theta\)</span> 作为纳入测试分数数量（从1到50）的函数，
+将所有曲线绘制在同一坐标轴上。</p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>直观地解释为什么更大的 <span class="math notranslate nohighlight">\(\sigma_y\)</span> 会导致后验不确定性下降得更慢。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="multivariate_normal-solution-5">
+
+<p class="admonition-title">解答<a class="reference internal" href="#mv_normal_ex3"> 练习 13.3</a></p>
+<section id="solution-content">
+<p>以下是一种解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_max</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">μθ_val</span><span class="p">,</span> <span class="n">σθ_val</span> <span class="o">=</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">10.</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">σy_val</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">]:</span>
+    <span class="n">σθ_hat_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_max</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">μ_i</span><span class="p">,</span> <span class="n">Σ_i</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">construct_moments_IQ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">μθ_val</span><span class="p">,</span> <span class="n">σθ_val</span><span class="p">,</span> <span class="n">σy_val</span><span class="p">)</span>
+        <span class="n">mn_i</span> <span class="o">=</span> <span class="n">MultivariateNormal</span><span class="p">(</span><span class="n">μ_i</span><span class="p">,</span> <span class="n">Σ_i</span><span class="p">)</span>
+        <span class="n">mn_i</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">Σθ_i</span> <span class="o">=</span> <span class="n">mn_i</span><span class="o">.</span><span class="n">cond_dist</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="n">σθ_hat_arr</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Σθ_i</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">σθ_hat_arr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;σy=</span><span class="si">{</span><span class="n">σy_val</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;测试分数数量&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;后验 $\hat{\sigma}_\theta$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/d143bb7cbce00abf15090949be67490054f64834a66814785a66376425bf6d2e.png" src="_images/d143bb7cbce00abf15090949be67490054f64834a66814785a66376425bf6d2e.png" />
+</div>
+</div>
+<p>当 <span class="math notranslate nohighlight">\(\sigma_y\)</span> 较大时，每个测试分数都是关于 <span class="math notranslate nohighlight">\(\theta\)</span> 的一个含噪信号，
+因此需要更多的观测值，后验方差才会明显下降。</p>
+<p>在 <span class="math notranslate nohighlight">\(\sigma_y \to 0\)</span> 的极限情况下，单个观测值就能精确确定
+<span class="math notranslate nohighlight">\(\theta\)</span>。</p>
+</section>
+</div>
+<div class="exercise admonition" id="mv_normal_ex4">
+
+<p class="admonition-title"><span class="caption-number">练习 13.4 </span></p>
+<section id="exercise-content">
+<p><strong>智商推断中的先验与似然</strong></p>
+<p>使用一维智商模型，其中包含 <span class="math notranslate nohighlight">\(n = 20\)</span> 个测试分数以及
+<span class="math notranslate nohighlight">\(\mu_\theta = 100\)</span>，<span class="math notranslate nohighlight">\(\sigma_y = 10\)</span>：</p>
+<ol class="arabic simple">
+<li><p>固定 <span class="math notranslate nohighlight">\(\sigma_y = 10\)</span>，改变先验分布的分散程度
+<span class="math notranslate nohighlight">\(\sigma_\theta \in \{1, 5, 10, 50, 500\}\)</span>。</p>
+<ul class="simple">
+<li><p>对于每个值，在给定相同的 <span class="math notranslate nohighlight">\(n = 20\)</span> 个测试
+分数的条件下计算后验均值 <span class="math notranslate nohighlight">\(\hat{\mu}_\theta\)</span>，并绘制 <span class="math notranslate nohighlight">\(\hat{\mu}_\theta\)</span>
+对 <span class="math notranslate nohighlight">\(\sigma_\theta\)</span> 的图像。</p></li>
+</ul>
+</li>
+<li><p>通过解析方法证明（或数值验证）</p>
+<ul class="simple">
+<li><p>当 <span class="math notranslate nohighlight">\(\sigma_\theta \to \infty\)</span> 时，后验均值收敛到
+样本均值 <span class="math notranslate nohighlight">\(\bar{y}\)</span>（数据主导先验），且</p></li>
+<li><p>当 <span class="math notranslate nohighlight">\(\sigma_\theta \to 0\)</span> 时，后验均值收敛到先验
+均值 <span class="math notranslate nohighlight">\(\mu_\theta\)</span>（先验主导数据）。</p></li>
+</ul>
+</li>
+</ol>
+<div class="admonition hint">
+<p class="admonition-title">提示</p>
+<p>后验均值公式为
+<span class="math notranslate nohighlight">\(\hat{\mu}_\theta = \bigl(\mu_\theta/\sigma_\theta^2 + n\bar{y}/\sigma_y^2\bigr)
+\big/ \bigl(1/\sigma_\theta^2 + n/\sigma_y^2\bigr)\)</span>。</p>
+</div>
+<p>通过让 <span class="math notranslate nohighlight">\(\sigma_\theta\)</span> 趋向于 <span class="math notranslate nohighlight">\(\infty\)</span> 或 <span class="math notranslate nohighlight">\(0\)</span> 来检验每种极限情况。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="multivariate_normal-solution-7">
+
+<p class="admonition-title">解答<a class="reference internal" href="#mv_normal_ex4"> 练习 13.4</a></p>
+<section id="solution-content">
+<p>以下是一种解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_scores</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">μθ_val</span><span class="p">,</span> <span class="n">σy_val</span> <span class="o">=</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">10.</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">true_θ</span> <span class="o">=</span> <span class="mf">108.</span>
+<span class="n">y_obs</span> <span class="o">=</span> <span class="n">true_θ</span> <span class="o">+</span> <span class="n">σy_val</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n_scores</span><span class="p">)</span>
+<span class="n">y_bar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_obs</span><span class="p">)</span>
+
+<span class="n">σθ_vals</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="mf">500.</span><span class="p">]</span>
+<span class="n">μθ_hat_vals</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">σθ_val</span> <span class="ow">in</span> <span class="n">σθ_vals</span><span class="p">:</span>
+    <span class="n">μ_i</span><span class="p">,</span> <span class="n">Σ_i</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">construct_moments_IQ</span><span class="p">(</span><span class="n">n_scores</span><span class="p">,</span> <span class="n">μθ_val</span><span class="p">,</span> <span class="n">σθ_val</span><span class="p">,</span> <span class="n">σy_val</span><span class="p">)</span>
+    <span class="n">mn_i</span> <span class="o">=</span> <span class="n">MultivariateNormal</span><span class="p">(</span><span class="n">μ_i</span><span class="p">,</span> <span class="n">Σ_i</span><span class="p">)</span>
+    <span class="n">mn_i</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">n_scores</span><span class="p">)</span>
+    <span class="n">μθ_hat</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">mn_i</span><span class="o">.</span><span class="n">cond_dist</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">y_obs</span><span class="p">)</span>
+    <span class="n">μθ_hat_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">μθ_hat</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">posterior_mean</span><span class="p">(</span><span class="n">σθ_val</span><span class="p">):</span>
+    <span class="n">μ_i</span><span class="p">,</span> <span class="n">Σ_i</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">construct_moments_IQ</span><span class="p">(</span><span class="n">n_scores</span><span class="p">,</span> <span class="n">μθ_val</span><span class="p">,</span> <span class="n">σθ_val</span><span class="p">,</span> <span class="n">σy_val</span><span class="p">)</span>
+    <span class="n">mn_i</span> <span class="o">=</span> <span class="n">MultivariateNormal</span><span class="p">(</span><span class="n">μ_i</span><span class="p">,</span> <span class="n">Σ_i</span><span class="p">)</span>
+    <span class="n">mn_i</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">n_scores</span><span class="p">)</span>
+    <span class="n">μθ_hat</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">mn_i</span><span class="o">.</span><span class="n">cond_dist</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">y_obs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">μθ_hat</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">σθ_vals</span><span class="p">,</span> <span class="n">μθ_hat_vals</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> 
+            <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\hat{\mu}_\theta$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y_bar</span><span class="p">,</span>  <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> 
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;样本均值 y_bar = </span><span class="si">{</span><span class="n">y_bar</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">μθ_val</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> 
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;先验均值 μθ = </span><span class="si">{</span><span class="n">μθ_val</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\sigma_\theta$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;后验均值 $\hat{\mu}_\theta$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">σθ_small</span> <span class="o">=</span> <span class="mf">1e-2</span>
+<span class="n">σθ_large</span> <span class="o">=</span> <span class="mf">1e4</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y_bar = </span><span class="si">{</span><span class="n">y_bar</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;当σθ=</span><span class="si">{</span><span class="n">σθ_large</span><span class="si">:</span><span class="s2">.0e</span><span class="si">}</span><span class="s2">时的后验均值: </span><span class="si">{</span><span class="n">posterior_mean</span><span class="p">(</span><span class="n">σθ_large</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;当σθ=</span><span class="si">{</span><span class="n">σθ_small</span><span class="si">:</span><span class="s2">.0e</span><span class="si">}</span><span class="s2">时的后验均值: </span><span class="si">{</span><span class="n">posterior_mean</span><span class="p">(</span><span class="n">σθ_small</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;先验均值 μθ = </span><span class="si">{</span><span class="n">μθ_val</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/f62f35edb029b14c933716b39660282ed8d821ffc4ec4df540b4af98cb2e61d4.png" src="_images/f62f35edb029b14c933716b39660282ed8d821ffc4ec4df540b4af98cb2e61d4.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>y_bar = 107.6707
+当σθ=1e+04时的后验均值: 107.6707
+当σθ=1e-02时的后验均值: 100.0002
+先验均值 μθ = 100.0000
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="mv_normal_ex5">
+
+<p class="admonition-title"><span class="caption-number">练习 13.5 </span></p>
+<section id="exercise-content">
+<p><strong>卡尔曼滤波器收敛性</strong></p>
+<p>使用滤波基础部分中的 <code class="docutils literal notranslate"><span class="pre">iterate</span></code> 函数，参数为</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+A = \begin{bmatrix} 0.9 &amp; 0 \\ 0 &amp; 0.5 \end{bmatrix}, \quad
+C = \begin{bmatrix} 1 \\ 1 \end{bmatrix}, \quad
+G = \begin{bmatrix} 1 &amp; 0 \end{bmatrix}, \quad
+R = \begin{bmatrix} 1 \end{bmatrix}
+\end{split}\]</div>
+<p>以及初始条件 <span class="math notranslate nohighlight">\(\hat{x}_0 = [0, 0]'\)</span>，<span class="math notranslate nohighlight">\(\Sigma_0 = I_2\)</span>：</p>
+<ol class="arabic">
+<li><p>模拟 <span class="math notranslate nohighlight">\(T = 60\)</span> 期的 <span class="math notranslate nohighlight">\(\{x_t, y_t\}\)</span> 并运行滤波器。</p></li>
+<li><p>绘制条件方差 <span class="math notranslate nohighlight">\(\Sigma_t[0,0]\)</span> 和
+<span class="math notranslate nohighlight">\(\Sigma_t[1,1]\)</span> 随时间变化的序列。</p>
+<p>验证它们收敛到一个稳态。</p>
+</li>
+<li><p>将滤波后的状态估计 <span class="math notranslate nohighlight">\(\tilde{x}_t[0]\)</span> 与真实
+的 <span class="math notranslate nohighlight">\(x_t[0]\)</span> 以及原始观测值 <span class="math notranslate nohighlight">\(y_t\)</span> 绘制在同一张图上。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="multivariate_normal-solution-9">
+
+<p class="admonition-title">解答<a class="reference internal" href="#mv_normal_ex5"> 练习 13.5</a></p>
+<section id="solution-content">
+<p>以下是一种解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]])</span>
+<span class="n">C_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.</span><span class="p">]])</span>
+<span class="n">G_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]])</span>
+<span class="n">R_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">]])</span>
+
+<span class="n">T_ex</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">x0_hat_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">Σ0_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">x_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">T_ex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">y_seq_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T_ex</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T_ex</span><span class="p">):</span>
+    <span class="n">x_true</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">A_ex</span> <span class="o">@</span> <span class="n">x_true</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="n">C_ex</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+    <span class="n">y_seq_ex</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">G_ex</span> <span class="o">@</span> <span class="n">x_true</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+
+<span class="n">x_hat_seq</span><span class="p">,</span> <span class="n">Σ_hat_seq</span> <span class="o">=</span> <span class="n">iterate</span><span class="p">(</span>
+    <span class="n">x0_hat_ex</span><span class="p">,</span> <span class="n">Σ0_ex</span><span class="p">,</span> <span class="n">A_ex</span><span class="p">,</span> <span class="n">C_ex</span><span class="p">,</span> <span class="n">G_ex</span><span class="p">,</span> <span class="n">R_ex</span><span class="p">,</span> <span class="n">y_seq_ex</span><span class="p">)</span>
+
+<span class="c1"># x_hat_seq[t] = E[x_t | y^{t-1}]（一步超前预测）</span>
+<span class="c1"># Σ_hat_seq[t] = 相应的预测误差协方差</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Σ_hat_seq</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\Sigma_t[0,0]$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Σ_hat_seq</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\Sigma_t[1,1]$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;预测误差方差&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># `iterate` 函数存储的是一步超前预测。</span>
+<span class="c1"># 我们通过在每个t重新应用测量更新步骤</span>
+<span class="c1"># 来恢复滤波估计 E[x_t | y^t]。</span>
+<span class="n">n_state</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">x_filt_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">T_ex</span><span class="p">,</span> <span class="n">n_state</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T_ex</span><span class="p">):</span>
+    <span class="n">xt_hat</span> <span class="o">=</span> <span class="n">x_hat_seq</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+    <span class="n">Σt</span>     <span class="o">=</span> <span class="n">Σ_hat_seq</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+    <span class="n">μ_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">xt_hat</span><span class="p">,</span> <span class="n">G_ex</span> <span class="o">@</span> <span class="n">xt_hat</span><span class="p">])</span>
+    <span class="n">Σ_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([[</span><span class="n">Σt</span><span class="p">,</span>          <span class="n">Σt</span>  <span class="o">@</span> <span class="n">G_ex</span><span class="o">.</span><span class="n">T</span>          <span class="p">],</span>
+                    <span class="p">[</span><span class="n">G_ex</span> <span class="o">@</span> <span class="n">Σt</span><span class="p">,</span>   <span class="n">G_ex</span> <span class="o">@</span> <span class="n">Σt</span> <span class="o">@</span> <span class="n">G_ex</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">R_ex</span><span class="p">]])</span>
+    <span class="n">mn_k</span> <span class="o">=</span> <span class="n">MultivariateNormal</span><span class="p">(</span><span class="n">μ_k</span><span class="p">,</span> <span class="n">Σ_k</span><span class="p">)</span>
+    <span class="n">mn_k</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">n_state</span><span class="p">)</span>
+    <span class="n">x_filt_seq</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">_</span> <span class="o">=</span> <span class="n">mn_k</span><span class="o">.</span><span class="n">cond_dist</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_seq_ex</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_true</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;真实 $x_t[0]$&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_filt_seq</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;滤波后 $\tilde</span><span class="si">{x}</span><span class="s1">_t[0]$&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_seq_ex</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;观测值 $y_t$&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/1f2c8c82fb1d2a0d8e5e1bfce269847967ffa43359dabdc20df2b9a43f812752.png" src="_images/1f2c8c82fb1d2a0d8e5e1bfce269847967ffa43359dabdc20df2b9a43f812752.png" />
+<img alt="_images/bb71ce5c3a51896afa2f64e23e7875c279fce30e87bd35e7a1b761c3c0e8e34d.png" src="_images/bb71ce5c3a51896afa2f64e23e7875c279fce30e87bd35e7a1b761c3c0e8e34d.png" />
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="mv_normal_ex6">
+
+<p class="admonition-title"><span class="caption-number">练习 13.6 </span></p>
+<section id="exercise-content">
+<p><strong>PCA与因子分析对比</strong></p>
+<p>在本讲座末尾的经典因子分析模型中，真实的
+协方差为 <span class="math notranslate nohighlight">\(\Sigma_y = \Lambda \Lambda' + D\)</span>。</p>
+<ol class="arabic">
+<li><p>设置 <span class="math notranslate nohighlight">\(\sigma_u = 2\)</span>（而不是 <span class="math notranslate nohighlight">\(0.5\)</span>）。</p>
+<ul class="simple">
+<li><p>重新计算前两个主成分所解释的
+方差比例，并与 <span class="math notranslate nohighlight">\(\sigma_u = 0.5\)</span> 的结果进行比较。</p></li>
+<li><p>解释这一变化。</p></li>
+</ul>
+</li>
+<li><p>证明观测空间中因子分析的后验
+<span class="math notranslate nohighlight">\(\Lambda E[f \mid Y] = \Lambda B Y\)</span>（一个 <span class="math notranslate nohighlight">\(N\)</span> 维向量）<strong>不等于</strong>
+两成分PCA重构
+<span class="math notranslate nohighlight">\(\hat{Y} = P_{:,1:2}\,\epsilon_{1:2}\)</span>（也是一个 <span class="math notranslate nohighlight">\(N\)</span> 维向量）。</p>
+<ul class="simple">
+<li><p>将两者绘制在同一坐标轴上。</p></li>
+</ul>
+<p><em>注意：</em> <span class="math notranslate nohighlight">\(E[f \mid Y] = BY\)</span> 是一个 <span class="math notranslate nohighlight">\(k\)</span> 维向量，而 <span class="math notranslate nohighlight">\(\hat{Y}\)</span> 是一个
+<span class="math notranslate nohighlight">\(N\)</span> 维向量，因此不能直接比较；必须通过 <span class="math notranslate nohighlight">\(\Lambda E[f \mid Y]\)</span>
+在观测空间中进行比较。</p>
+</li>
+<li><p>用一两句话解释为什么PCA对因子分析数据是错误设定的。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="multivariate_normal-solution-11">
+
+<p class="admonition-title">解答<a class="reference internal" href="#mv_normal_ex6"> 练习 13.6</a></p>
+<section id="solution-content">
+<p>以下是一种解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">N_fa</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">k_fa</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">Λ_fa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N_fa</span><span class="p">,</span> <span class="n">k_fa</span><span class="p">))</span>
+<span class="n">Λ_fa</span><span class="p">[:</span><span class="n">N_fa</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">Λ_fa</span><span class="p">[</span><span class="n">N_fa</span><span class="o">//</span><span class="mi">2</span><span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="k">for</span> <span class="n">σu_val</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]:</span>
+    <span class="n">D_fa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N_fa</span><span class="p">)</span> <span class="o">*</span> <span class="n">σu_val</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">Σy_fa</span> <span class="o">=</span> <span class="n">Λ_fa</span> <span class="o">@</span> <span class="n">Λ_fa</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">D_fa</span>
+
+    <span class="n">λ_fa</span><span class="p">,</span> <span class="n">P_fa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">Σy_fa</span><span class="p">)</span>
+    <span class="n">ind_fa</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N_fa</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">λ_fa</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">P_fa</span>   <span class="o">=</span> <span class="n">P_fa</span><span class="p">[:,</span> <span class="n">ind_fa</span><span class="p">]</span>
+    <span class="n">λ_fa</span>   <span class="o">=</span> <span class="n">λ_fa</span><span class="p">[</span><span class="n">ind_fa</span><span class="p">]</span>
+
+    <span class="n">frac</span> <span class="o">=</span> <span class="n">λ_fa</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">λ_fa</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;σu=</span><span class="si">{</span><span class="n">σu_val</span><span class="si">}</span><span class="s2">: 前2个主成分解释的比例 = </span><span class="si">{</span><span class="n">frac</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">σu_b</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">D_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N_fa</span><span class="p">)</span> <span class="o">*</span> <span class="n">σu_b</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">Σy_b</span> <span class="o">=</span> <span class="n">Λ_fa</span> <span class="o">@</span> <span class="n">Λ_fa</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">D_b</span>
+
+<span class="n">μz_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">k_fa</span> <span class="o">+</span> <span class="n">N_fa</span><span class="p">)</span>
+<span class="n">Σz_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k_fa</span><span class="p">),</span> <span class="n">Λ_fa</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="p">[</span><span class="n">Λ_fa</span><span class="p">,</span> <span class="n">Σy_b</span><span class="p">]])</span>
+<span class="n">z_b</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μz_b</span><span class="p">,</span> <span class="n">Σz_b</span><span class="p">)</span>
+<span class="n">f_b</span> <span class="o">=</span> <span class="n">z_b</span><span class="p">[:</span><span class="n">k_fa</span><span class="p">]</span>
+<span class="n">y_b</span> <span class="o">=</span> <span class="n">z_b</span><span class="p">[</span><span class="n">k_fa</span><span class="p">:]</span>
+
+<span class="n">B_b</span> <span class="o">=</span> <span class="n">Λ_fa</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Σy_b</span><span class="p">)</span>
+<span class="n">Efy_b</span>  <span class="o">=</span> <span class="n">B_b</span> <span class="o">@</span> <span class="n">y_b</span>
+
+<span class="n">λ_b</span><span class="p">,</span> <span class="n">P_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">Σy_b</span><span class="p">)</span>
+<span class="n">ind_b</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N_fa</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">λ_b</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">P_b</span> <span class="o">=</span> <span class="n">P_b</span><span class="p">[:,</span> <span class="n">ind_b</span><span class="p">]</span>
+<span class="n">ε_b</span> <span class="o">=</span> <span class="n">P_b</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y_b</span>
+<span class="n">y_hat_b</span> <span class="o">=</span> <span class="n">P_b</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">@</span> <span class="n">ε_b</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N_fa</span><span class="p">),</span> 
+        <span class="n">Λ_fa</span> <span class="o">@</span> <span class="n">Efy_b</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;因子分析 $\Lambda E[f\mid y]$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N_fa</span><span class="p">),</span> 
+        <span class="n">y_hat_b</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;PCA投影 $\hat</span><span class="si">{y}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N_fa</span><span class="p">),</span> 
+        <span class="n">Λ_fa</span> <span class="o">@</span> <span class="n">f_b</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;^&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;真实信号 $\Lambda f$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观测索引&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>σu=0.5: 前2个主成分解释的比例 = 0.8400
+σu=2.0: 前2个主成分解释的比例 = 0.3600
+</pre></div>
+</div>
+<img alt="_images/9a9bde03b9028e6b4e611289a669220770b764a90e32918bb56a1f025d2b66a4.png" src="_images/9a9bde03b9028e6b4e611289a669220770b764a90e32918bb56a1f025d2b66a4.png" />
+</div>
+</div>
+<p>在这个对称的例子中，PCA确实恢复了与因子模型相同的
+二维观测空间子空间，即 <span class="math notranslate nohighlight">\(\Lambda\)</span> 的列空间。但PCA
+对因子分析数据仍然是错误设定的，因为它将协方差矩阵
+视为一个需要近似的任意矩阵，而没有使用
+特殊分解 <span class="math notranslate nohighlight">\(\Sigma_y = \Lambda \Lambda^\top + D\)</span> 将其
+分解为公共部分和特异噪声部分。</p>
+<p>因此这两种方法解决的是不同的问题。PCA将
+<span class="math notranslate nohighlight">\(\hat{Y}\)</span> 构造为对观测数据向量 <span class="math notranslate nohighlight">\(Y\)</span> 的最佳秩-2近似，
+在这个例子中相当于使用分块均值。而因子
+模型计算的是 <span class="math notranslate nohighlight">\(\Lambda E[f \mid Y]\)</span>，即给定数据条件下潜在
+公共成分 <span class="math notranslate nohighlight">\(\Lambda f\)</span> 的条件均值，由于它考虑了噪声，因此
+会将这些分块均值向零收缩。</p>
+</section>
 </div>
 </section>
 </section>
@@ -2917,7 +3574,7 @@ Y = P \epsilon
                 <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
                     <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础工具
+  Tools and Techniques
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -2959,7 +3616,7 @@ Y = P \epsilon
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础统计学
+  Elementary Statistics
  </span>
 </p>
 <ul class="current nav bd-sidenav nav sidenav_l1">
@@ -3016,7 +3673,7 @@ Y = P \epsilon
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  贝叶斯定律
+  Bayes Law
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -3038,7 +3695,7 @@ Y = P \epsilon
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  统计与信息论
+  Statistics and Information
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -3088,358 +3745,648 @@ Y = P \epsilon
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mix_model.html">
-   30. 错误模型
+   32. 错误模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="navy_captain.html">
-   31. 贝叶斯与频率主义决策规则的比较
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  线性规划
+  Linear Programming
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="opt_transport.html">
-   32. 最优传输
+   36. 最优传输
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="von_neumann_model.html">
-   33. 冯·诺依曼增长模型（及其推广）
+   37. 冯·诺依曼增长模型（及其推广）
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  动态系统导论
+  Introduction to Dynamics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="finite_markov.html">
-   34. 有限马尔可夫链
+   38. 有限马尔可夫链
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="inventory_dynamics.html">
-   35. 库存动态
+   39. 库存动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="linear_models.html">
-   36. 线性状态空间模型
+   40. 线性状态空间模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="samuelson.html">
-   37. 萨缪尔森乘数-加速器模型
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kesten_processes.html">
-   38. Kesten过程与企业动态
+   43. Kesten过程与企业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="wealth_dynamics.html">
-   39. 财富分布动态
+   44. 财富分布动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman.html">
-   40. 初见卡尔曼滤波器
+   45. 初见卡尔曼滤波器
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman_2.html">
-   41. 卡尔曼滤波器进阶
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  搜索
+  Search
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model.html">
-   42. 工作搜寻 I: McCall搜寻模型
+   50. 工作搜寻 I: McCall搜寻模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model_with_separation.html">
-   43. 工作搜寻 II：搜寻与离职
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   44. 工作搜寻 III: 拟合值函数迭代
+   53. 工作搜寻 IV: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="mccall_correlated.html">
-   45. 工作搜寻 IV：相关工资报价
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   46. 工作搜寻 V：职业选择建模
+   55. 工作搜寻 VI：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   47. 工作搜寻 VI：在职搜索
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mccall_q.html">
-   48. 工作搜寻 VII：McCall劳动者的Q学习
+   56. 工作搜寻 VII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   49. 工作搜寻 VII: 带学习的搜索
+   57. 工作搜寻 VIII: 带学习的搜索
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  消费、储蓄与资本
+  Reinforcement Learning
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_1.html">
-   50. Cass-Koopmans模型
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_2.html">
-   51. Cass-Koopmans竞争均衡
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal.html">
-   52. 带扭曲性税收的Cass-Koopmans模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal_2.html">
-   53. 带扭曲性税收的双国模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ak2.html">
-   54. 代际交叠模型中的转型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_problem.html">
-   55. 吃蛋糕问题 I：最优储蓄导论
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_numerical.html">
-   56. 吃蛋糕问题 II：数值方法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth.html">
-   57. 最优增长 I：随机最优增长模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth_fast.html">
-   58. 最优增长 II：使用Numba加速代码
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="coleman_policy_iter.html">
-   59. 最优增长 III：时间迭代
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="egm_policy_iter.html">
-   60. 最优增长 IV：内生网格法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp.html">
-   61. 收入波动问题 I：基本模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp_advanced.html">
-   62. 收入波动问题 II：资产随机收益
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  LQ控制
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   63. LQ控制：基础
+   72. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   64. LQ控制的拉格朗日方法
+   73. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   65. 消除交叉项
+   74. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   66. 永久收入模型
+   75. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   67. 永久收入 II：线性二次方法
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   68. 通过库存实现生产平滑
+   83. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  多主体模型
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   69. 就业与失业的湖泊模型
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   70. 理性预期均衡
+   107. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   71. 线性理性预期模型中的稳定性
+   108. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   72. 马尔可夫完美均衡
+   109. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   73. 不确定性陷阱
+   110. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   74. 艾亚加里模型
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   75. 长寿、异质性个体、世代交叠模型
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  资产定价与金融
+  Asset Pricing and Finance
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   76. 资产定价：有限状态模型
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   77. 带有阿罗证券的竞争均衡
+   119. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   78. 异质信念与泡沫
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  数据与实证
+  Data and Empirics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="pandas_panel.html">
-   79. 用Pandas处理面板数据
+   128. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   80. Python线性回归
+   129. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   81. 最大似然估计
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  拍卖
+  Auctions
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   82. 一价和二价拍卖
+   133. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   83. 多种商品分配机制
+   134. 多种商品分配机制
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  其他
+  Other
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   84. 故障排除
+   135. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   85. 参考文献
+   136. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   86. 执行统计
+   137. 执行统计
   </a>
  </li>
 </ul>
@@ -3483,6 +4430,8 @@ Y = P \epsilon
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/multivariate_normal.md" download><i data-feather="github"></i></a></li>
                     -->
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
                 </ul>
 
             </div>

@@ -1,0 +1,2191 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>112. 使用内生网格法的Aiyagari模型 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'aiyagari_egm';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/aiyagari_egm.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="113. 代际交叠模型中的转型" href="ak2.html" />
+    <link rel="prev" title="111. 艾亚加里模型" href="aiyagari.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="使用内生网格法的Aiyagari模型"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="使用内生网格法的Aiyagari模型" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/aiyagari_egm.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=aiyagari_egm>
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">112.1. 概述</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">112.1.1. 参考文献</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">112.1.2. 预备知识</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">112.2. 经济</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">112.2.1. 家庭</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">112.2.2. 厂商</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">112.2.3. 均衡</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#egm">112.3. 使用 EGM 的实现</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">112.3.1. 家庭原语</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">112.3.2. EGM 算子</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">112.3.3. 求解家庭问题</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">112.4. 通过模拟计算总资本</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">112.5. 计算均衡</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">112.5.1. 均衡可视化</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">112.6. 财富分布</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">112.7. 总结与比较</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">112.7.1. 与标准方法的比较</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">112.7.2. 扩展</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">112.8. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 22, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/aiyagari_egm.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/be4a8b2" class="changelog-hash">be4a8b2</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">Seed the 37 missing lectures — full source-TOC coverage (#196)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="aiyagari">
+<h1><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">112. </span>使用内生网格法的Aiyagari模型</a><a class="headerlink" href="#aiyagari" title="Link to this heading">#</a></h1>
+<nav class="contents" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#aiyagari" id="id24">使用内生网格法的Aiyagari模型</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id25">概述</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id26">经济</a></p></li>
+<li><p><a class="reference internal" href="#egm" id="id27">使用 EGM 的实现</a></p></li>
+<li><p><a class="reference internal" href="#id16" id="id28">通过模拟计算总资本</a></p></li>
+<li><p><a class="reference internal" href="#id17" id="id29">计算均衡</a></p></li>
+<li><p><a class="reference internal" href="#id19" id="id30">财富分布</a></p></li>
+<li><p><a class="reference internal" href="#id20" id="id31">总结与比较</a></p></li>
+<li><p><a class="reference internal" href="#id23" id="id32">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>除了基础 Anaconda 中包含的内容外，我们还需要安装 QuantEcon 的 Python 库和 JAX。</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantecon<span class="w"> </span>jax
+</pre></div>
+</div>
+</div>
+<details class="admonition hide below-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell output</p>
+<p class="expanded admonition-title">Hide code cell output</p>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (0.11.4)
+Requirement already satisfied: jax in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (0.11.0)
+Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (0.65.1)
+Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (2.4.6)
+Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (2.34.2)
+Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (1.18.0)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (1.14.0)
+Requirement already satisfied: jaxlib&lt;=0.11.0,&gt;=0.11.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (0.11.0)
+Requirement already satisfied: ml_dtypes&gt;=0.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (0.5.4)
+Requirement already satisfied: opt_einsum in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (3.4.0)
+Requirement already satisfied: llvmlite&lt;0.48,&gt;=0.47.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.47.0)
+Requirement already satisfied: charset_normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (3.4.7)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (3.18)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.26 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (2.7.0)
+Requirement already satisfied: certifi&gt;=2023.5.7 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (2026.6.17)
+Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from sympy-&gt;quantecon) (1.3.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="id1">
+<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">112.1. </span>概述</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>本讲座结合了宏观经济学中两种重要的计算方法：</p>
+<ol class="arabic simple">
+<li><p><strong>Aiyagari模型</strong> <span class="bibtex-citation" id="id2">[<a class="reference internal" href="zreferences.html#id236" title="S Rao Aiyagari. Uninsured Idiosyncratic Risk and Aggregate Saving. The Quarterly Journal of Economics, 109(3):659–684, 1994.">Aiyagari, 1994</a>]</span> —— 一个具有不完全市场的异质性主体模型</p></li>
+<li><p><strong>内生网格法</strong>（EGM） <span class="bibtex-citation" id="id3">[<a class="reference internal" href="zreferences.html#id248" title="Christopher D Carroll. The method of endogenous gridpoints for solving dynamic stochastic optimization problems. Economics Letters, 91(3):312–320, 2006.">Carroll, 2006</a>]</span> —— 一种求解动态规划问题的高效算法</p></li>
+</ol>
+<p>在 <a class="reference internal" href="aiyagari.html"><span class="doc">标准 Aiyagari 讲座</span></a> 中，我们使用离散化和值函数迭代来求解家庭问题。</p>
+<p>然后我们使用有限马尔可夫链的平稳分布，在给定的一组价格下计算总资本。</p>
+<p>在本讲座中，我们采用不同的方法：</p>
+<ol class="arabic simple">
+<li><p>我们使用<strong>内生网格法</strong>，通过欧拉方程和线性插值来求解家庭问题。</p></li>
+<li><p>我们通过<strong>模拟</strong>来计算总资本，而不是使用代数技术（后者仅适用于有限情形）。</p></li>
+</ol>
+<p>这些修改使得求解方法更快、更灵活，尤其是在处理更复杂的模型时。</p>
+<p>我们在整个讲座中使用 <a class="reference external" href="https://jax.readthedocs.io">JAX</a>，这样 EGM 算子、求解器和模拟都是 JIT 编译且向量化的。</p>
+<section id="id4">
+<h3><span class="section-number">112.1.1. </span>参考文献<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<p>本讲座的主要参考文献是：</p>
+<ul class="simple">
+<li><p>我们的 <a class="reference internal" href="aiyagari.html"><span class="doc">前一个 Aiyagari 讲座</span></a>，介绍了关键思想</p></li>
+<li><p><span class="bibtex-citation" id="id5">[<a class="reference internal" href="zreferences.html#id236" title="S Rao Aiyagari. Uninsured Idiosyncratic Risk and Aggregate Saving. The Quarterly Journal of Economics, 109(3):659–684, 1994.">Aiyagari, 1994</a>]</span>，介绍了经济模型</p></li>
+<li><p><span class="bibtex-citation" id="id6">[<a class="reference internal" href="zreferences.html#id248" title="Christopher D Carroll. The method of endogenous gridpoints for solving dynamic stochastic optimization problems. Economics Letters, 91(3):312–320, 2006.">Carroll, 2006</a>]</span>，介绍了内生网格法</p></li>
+<li><p><span class="bibtex-citation" id="id7">[<a class="reference internal" href="zreferences.html#id283" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">Ljungqvist and Sargent, 2018</a>]</span> 的第 18 章，提供了教科书式的处理</p></li>
+</ul>
+</section>
+<section id="id8">
+<h3><span class="section-number">112.1.2. </span>预备知识<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>我们使用以下导入：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">quantecon</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qe</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">bisect</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们将在 JAX 中使用 64 位浮点数以提高精度。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">jax</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;jax_enable_x64&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id9">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">112.2. </span>经济</a><a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<p>该经济由家庭和一个代表性厂商组成。</p>
+<section id="id10">
+<h3><span class="section-number">112.2.1. </span>家庭<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<p>无限期生存的家庭面临特异性收入冲击和借贷约束。</p>
+<p>典型家庭面临的储蓄问题是</p>
+<div class="math notranslate nohighlight">
+\[
+    \max \mathbb E \sum_{t=0}^{\infty} \beta^t u(c_t)
+\]</div>
+<p>约束条件为</p>
+<div class="math notranslate nohighlight">
+\[
+    a_{t+1} + c_t \leq w z_t + (1 + r) a_t
+    \quad
+    c_t \geq 0,
+    \quad \text{and} \quad
+    a_t \geq -B
+\]</div>
+<p>其中</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(c_t\)</span> 是当期消费</p></li>
+<li><p><span class="math notranslate nohighlight">\(a_t\)</span> 是资产</p></li>
+<li><p><span class="math notranslate nohighlight">\(z_t\)</span> 是劳动收入的外生部分（随机就业状态）</p></li>
+<li><p><span class="math notranslate nohighlight">\(w\)</span> 是工资率</p></li>
+<li><p><span class="math notranslate nohighlight">\(r\)</span> 是利率</p></li>
+<li><p><span class="math notranslate nohighlight">\(B\)</span> 是主体被允许借入的最大金额</p></li>
+</ul>
+<p>外生过程 <span class="math notranslate nohighlight">\(\{z_t\}\)</span> 遵循一个具有随机矩阵 <span class="math notranslate nohighlight">\(\Pi\)</span> 的有限状态马尔可夫链。</p>
+<p>最优内部消费选择满足欧拉方程</p>
+<div class="math notranslate nohighlight">
+\[
+    u'(c) = \beta \mathbb{E_z} [(1 + r) u'(c')]
+\]</div>
+<p>（我们用 <span class="math notranslate nohighlight">\('\)</span> 符号同时表示导数和未来值，这并不理想，但方便且常见。）</p>
+<p>用资产来表示，即</p>
+<div class="math notranslate nohighlight">
+\[
+    u'(w z + (1 + r) a - a') 
+    = \beta (1 + r) \sum_{z'} u'(w z' + (1 + r) a' - s(a', z')) \Pi(z, z') 
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(s\)</span> 是最优储蓄策略函数。</p>
+</section>
+<section id="id11">
+<h3><span class="section-number">112.2.2. </span>厂商<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<p>厂商在规模报酬不变的条件下，通过雇用资本和劳动来生产产出。</p>
+<p>代表性厂商的产出为</p>
+<div class="math notranslate nohighlight">
+\[
+Y = A K^{\alpha} N^{1 - \alpha}
+\]</div>
+<p>其中</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(A\)</span> 和 <span class="math notranslate nohighlight">\(\alpha\)</span> 是参数，满足 <span class="math notranslate nohighlight">\(A &gt; 0\)</span> 和 <span class="math notranslate nohighlight">\(\alpha \in (0, 1)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(K\)</span> 是总资本</p></li>
+<li><p><span class="math notranslate nohighlight">\(N\)</span> 是总劳动供给（标准化为 1）</p></li>
+</ul>
+<p>这些参数存储在以下 namedtuple 中：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Firm</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">A</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>    <span class="c1"># 全要素生产率</span>
+    <span class="n">N</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>    <span class="c1"># 总劳动供给</span>
+    <span class="n">α</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.33</span>   <span class="c1"># 资本份额</span>
+    <span class="n">δ</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span>   <span class="c1"># 折旧率</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>根据厂商的一阶条件，资本的反需求为</p>
+<div class="math notranslate nohighlight" id="equation-aiy-egm-rgk">
+<span class="eqno">(112.1)<a class="headerlink" href="#equation-aiy-egm-rgk" title="Link to this equation">#</a></span>\[r = A \alpha  \left( \frac{N}{K} \right)^{1 - \alpha} - \delta\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">r_given_k</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">firm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    资本的反需求曲线。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">δ</span> <span class="o">=</span> <span class="n">firm</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">*</span> <span class="n">α</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">K</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">α</span><span class="p">)</span> <span class="o">-</span> <span class="n">δ</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>作为 <span class="math notranslate nohighlight">\(r\)</span> 的函数的均衡工资率为</p>
+<div class="math notranslate nohighlight" id="equation-aiy-egm-wgr">
+<span class="eqno">(112.2)<a class="headerlink" href="#equation-aiy-egm-wgr" title="Link to this equation">#</a></span>\[w(r) = A  (1 - \alpha)  (A \alpha / (r + \delta))^{\alpha / (1 - \alpha)}\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">r_to_w</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">firm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    与给定利率 r 相关的均衡工资。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">δ</span> <span class="o">=</span> <span class="n">firm</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">α</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">α</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">δ</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="n">α</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">α</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id12">
+<h3><span class="section-number">112.2.3. </span>均衡<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>一个**平稳理性预期均衡（SREE）**由价格和策略组成，满足：</p>
+<ul class="simple">
+<li><p>家庭在给定价格下进行优化</p></li>
+<li><p>厂商在给定价格下最大化利润</p></li>
+<li><p>市场出清：资本总供给等于资本总需求</p></li>
+<li><p>总量在时间上保持恒定</p></li>
+</ul>
+</section>
+</section>
+<section id="egm">
+<h2><a class="toc-backref" href="#id27" role="doc-backlink"><span class="section-number">112.3. </span>使用 EGM 的实现</a><a class="headerlink" href="#egm" title="Link to this heading">#</a></h2>
+<section id="id13">
+<h3><span class="section-number">112.3.1. </span>家庭原语<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<p>首先我们设置家庭参数和网格：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Household</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">β</span><span class="p">:</span> <span class="nb">float</span>            <span class="c1"># 贴现因子</span>
+    <span class="n">a_grid</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span> <span class="c1"># 资产网格</span>
+    <span class="n">z_grid</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span> <span class="c1"># 外生状态</span>
+    <span class="n">Π</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>      <span class="c1"># 转移矩阵</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_household</span><span class="p">(</span><span class="n">β</span><span class="o">=</span><span class="mf">0.96</span><span class="p">,</span>                      <span class="c1"># 贴现因子</span>
+                     <span class="n">Π</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]],</span>  <span class="c1"># 马尔可夫链</span>
+                     <span class="n">z_grid</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>           <span class="c1"># 外生状态</span>
+                     <span class="n">a_min</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>     <span class="c1"># 资产网格</span>
+                     <span class="n">a_size</span><span class="o">=</span><span class="mi">200</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    创建一个具有自定义网格的 Household namedtuple。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a_grid</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">a_min</span><span class="p">,</span> <span class="n">a_max</span><span class="p">,</span> <span class="n">a_size</span><span class="p">)</span>
+    <span class="n">z_grid</span><span class="p">,</span> <span class="n">Π</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="p">(</span><span class="n">z_grid</span><span class="p">,</span> <span class="n">Π</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Household</span><span class="p">(</span><span class="n">β</span><span class="o">=</span><span class="n">β</span><span class="p">,</span> <span class="n">a_grid</span><span class="o">=</span><span class="n">a_grid</span><span class="p">,</span> <span class="n">z_grid</span><span class="o">=</span><span class="n">z_grid</span><span class="p">,</span> <span class="n">Π</span><span class="o">=</span><span class="n">Π</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>对于效用，我们假设 <span class="math notranslate nohighlight">\(u(c) = \log(c)\)</span>，这给出 <span class="math notranslate nohighlight">\(u'(c) = 1/c\)</span> 和 <span class="math notranslate nohighlight">\((u')^{-1}(x) = 1/x\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">u_prime</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">c</span>
+
+<span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">u_prime_inv</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>这是价格的 namedtuple：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Prices</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># 利率</span>
+    <span class="n">w</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>   <span class="c1"># 工资</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id14">
+<h3><span class="section-number">112.3.2. </span>EGM 算子<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<p>EGM 的关键洞见是通过外生地选择资产网格并直接从欧拉方程计算消费值，来避免求根。</p>
+<p>使用 EGM 的 Coleman-Reffett 算子工作原理如下：</p>
+<ol class="arabic simple">
+<li><p>从表示在外生（下一期）资产网格 <span class="math notranslate nohighlight">\(\{a_i\}\)</span> 上的消费策略 <span class="math notranslate nohighlight">\(\sigma\)</span> 开始。</p></li>
+<li><p>对于每个资产水平 <span class="math notranslate nohighlight">\(a_i\)</span> 和当前就业状态 <span class="math notranslate nohighlight">\(z_j\)</span>：</p>
+<ul class="simple">
+<li><p>计算欧拉方程的右侧：
+$<span class="math notranslate nohighlight">\(\text{RHS} = \beta (1 + r) \sum_{z'} \Pi(z_j, z') \, u'(\sigma(a_i, z'))\)</span>$</p></li>
+<li><p>使用逆边际效用得到当期消费：
+$<span class="math notranslate nohighlight">\(c_{ij} = (u')^{-1}(\text{RHS})\)</span>$</p></li>
+<li><p>从预算约束恢复隐含的当期资产水平：
+$<span class="math notranslate nohighlight">\(a_{ij} = \frac{c_{ij} + a_i - w z_j}{1 + r}\)</span>$</p></li>
+</ul>
+</li>
+<li><p>通过插值 <span class="math notranslate nohighlight">\((a_{ij}, c_{ij})\)</span> 在原始资产网格上重构新策略 <span class="math notranslate nohighlight">\(K\sigma\)</span>，并处理借贷约束绑定的情形。</p></li>
+</ol>
+<p>整个操作可以很好地向量化，因此我们将其编写为一个 JIT 编译的函数，并在就业状态上使用 <code class="docutils literal notranslate"><span class="pre">vmap</span></code>：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">K_egm</span><span class="p">(</span><span class="n">σ</span><span class="p">,</span> <span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    使用 EGM 的 Coleman-Reffett 算子，用于 Aiyagari 模型。</span>
+
+<span class="sd">    这里 σ[i, j] 是当下一期资产为 a_grid[i]</span>
+<span class="sd">    且当前就业状态为 z_grid[j] 时的消费。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">β</span><span class="p">,</span> <span class="n">a_grid</span><span class="p">,</span> <span class="n">z_grid</span><span class="p">,</span> <span class="n">Π</span> <span class="o">=</span> <span class="n">household</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">prices</span>
+    <span class="n">z_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z_grid</span><span class="p">)</span>
+
+    <span class="c1"># 关于下一期冲击的期望 E[u&#39;(c(a&#39;, z&#39;)) | z]</span>
+    <span class="n">Eu_prime</span> <span class="o">=</span> <span class="p">(</span><span class="n">Π</span> <span class="o">@</span> <span class="n">u_prime</span><span class="p">(</span><span class="n">σ</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>                       <span class="c1"># (a_size, z_size)</span>
+
+    <span class="c1"># 欧拉方程 -&gt; 内生网格上的消费</span>
+    <span class="n">c_endo</span> <span class="o">=</span> <span class="n">u_prime_inv</span><span class="p">(</span><span class="n">β</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">Eu_prime</span><span class="p">)</span>          <span class="c1"># (a_size, z_size)</span>
+
+    <span class="c1"># 隐含的当期资产：a = (c + a&#39; - w z) / (1 + r)</span>
+    <span class="n">a_endo</span> <span class="o">=</span> <span class="p">(</span><span class="n">c_endo</span> <span class="o">+</span> <span class="n">a_grid</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">w</span> <span class="o">*</span> <span class="n">z_grid</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span>
+
+    <span class="c1"># 为每个就业状态插值回外生网格</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">interp_policy</span><span class="p">(</span><span class="n">j</span><span class="p">):</span>
+        <span class="c1"># 当今日资产低于内生网格时，借贷约束</span>
+        <span class="c1"># 绑定，因此家庭储蓄 a_grid[0] 并消费</span>
+        <span class="c1"># 当期收入的其余部分。</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">a_grid</span> <span class="o">&lt;</span> <span class="n">a_endo</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+            <span class="n">w</span> <span class="o">*</span> <span class="n">z_grid</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">a_grid</span> <span class="o">-</span> <span class="n">a_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">a_grid</span><span class="p">,</span> <span class="n">a_endo</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">c_endo</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="n">σ_new</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">interp_policy</span><span class="p">)(</span><span class="n">jnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">z_size</span><span class="p">))</span>    <span class="c1"># (z_size, a_size)</span>
+    <span class="k">return</span> <span class="n">σ_new</span><span class="o">.</span><span class="n">T</span>                                        <span class="c1"># (a_size, z_size)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id15">
+<h3><span class="section-number">112.3.3. </span>求解家庭问题<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<p>我们通过迭代 EGM 算子直至收敛来求解最优策略。</p>
+<p>求解器完全 JIT 编译，并使用 <code class="docutils literal notranslate"><span class="pre">jax.lax.while_loop</span></code> 进行迭代：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_household</span><span class="p">(</span><span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10_000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    通过迭代 EGM 算子求解家庭问题。</span>
+
+<span class="sd">    返回最优消费策略 σ[i, j]，其中 i 索引</span>
+<span class="sd">    下一期资产，j 索引就业状态。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">β</span><span class="p">,</span> <span class="n">a_grid</span><span class="p">,</span> <span class="n">z_grid</span><span class="p">,</span> <span class="n">Π</span> <span class="o">=</span> <span class="n">household</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">prices</span>
+
+    <span class="c1"># 初始猜测：消费当期收入的一半</span>
+    <span class="n">income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">z_grid</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">a_grid</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">σ_init</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">income</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">condition</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">error</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">max_iter</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">body</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="n">σ_new</span> <span class="o">=</span> <span class="n">K_egm</span><span class="p">(</span><span class="n">σ</span><span class="p">,</span> <span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">σ_new</span> <span class="o">-</span> <span class="n">σ</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">σ_new</span><span class="p">,</span> <span class="n">error</span>
+
+    <span class="n">i</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">while_loop</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">σ_init</span><span class="p">,</span> <span class="n">tol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">σ</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们在一个示例上测试它：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">household</span> <span class="o">=</span> <span class="n">create_household</span><span class="p">()</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="n">Prices</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">qe</span><span class="o">.</span><span class="n">Timer</span><span class="p">():</span>
+    <span class="n">σ_star</span> <span class="o">=</span> <span class="n">solve_household</span><span class="p">(</span><span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">)</span>
+    <span class="n">jax</span><span class="o">.</span><span class="n">block_until_ready</span><span class="p">(</span><span class="n">σ_star</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.4417 seconds elapsed
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们可以通过测量残差来检查该策略是否是 EGM 算子的不动点：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">residual</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">K_egm</span><span class="p">(</span><span class="n">σ_star</span><span class="p">,</span> <span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">)</span> <span class="o">-</span> <span class="n">σ_star</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final Euler residual: </span><span class="si">{</span><span class="n">residual</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Final Euler residual: 8.34e-07
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们绘制得到的策略函数：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">β</span><span class="p">,</span> <span class="n">a_grid</span><span class="p">,</span> <span class="n">z_grid</span><span class="p">,</span> <span class="n">Π</span> <span class="o">=</span> <span class="n">household</span>
+<span class="n">r</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">prices</span>
+
+<span class="c1"># 将消费策略转换为储蓄策略</span>
+<span class="n">income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">z_grid</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">a_grid</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">savings</span> <span class="o">=</span> <span class="n">income</span> <span class="o">-</span> <span class="n">σ_star</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># 绘制消费策略</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">z_grid</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_grid</span><span class="p">,</span> <span class="n">σ_star</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$z=</span><span class="si">{</span><span class="n">z</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;资产 $a$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;消费 $c$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;消费策略&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="c1"># 绘制储蓄策略</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_grid</span><span class="p">,</span> <span class="n">a_grid</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;45° 线&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">z_grid</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">a_grid</span><span class="p">,</span> <span class="n">savings</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$z=</span><span class="si">{</span><span class="n">z</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;当期资产 $a$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;下一期资产 $a&#39;$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;储蓄策略&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/a4945e697d353047d988d086d99ce33e3e9a47b4f91ec02bd7919bcebcf69dc4.png" src="_images/a4945e697d353047d988d086d99ce33e3e9a47b4f91ec02bd7919bcebcf69dc4.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="id16">
+<h2><a class="toc-backref" href="#id28" role="doc-backlink"><span class="section-number">112.4. </span>通过模拟计算总资本</a><a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<p>我们不解析地计算马尔可夫链的平稳分布，而是通过模拟一个大的家庭横截面来计算总资本。</p>
+<p>这种方法：</p>
+<ul class="simple">
+<li><p>更灵活（适用于连续冲击、非线性策略等）</p></li>
+<li><p>避免了存储和操作大型转移矩阵</p></li>
+<li><p>在概念上更简单</p></li>
+</ul>
+<p>模拟是完全向量化的：我们使用 <code class="docutils literal notranslate"><span class="pre">jax.lax.fori_loop</span></code> 同时推进所有家庭，通过逆 CDF 抽样绘制就业转移，并使用 <code class="docutils literal notranslate"><span class="pre">vmap</span></code> 化的插值来查找消费。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;num_households&#39;</span><span class="p">,</span> <span class="s1">&#39;num_periods&#39;</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_cross_section</span><span class="p">(</span><span class="n">σ</span><span class="p">,</span> <span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
+                           <span class="n">num_households</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">num_periods</span><span class="o">=</span><span class="mi">1_000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    向前模拟家庭面板，并返回资产和就业状态的</span>
+<span class="sd">    终端横截面。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">β</span><span class="p">,</span> <span class="n">a_grid</span><span class="p">,</span> <span class="n">z_grid</span><span class="p">,</span> <span class="n">Π</span> <span class="o">=</span> <span class="n">household</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">prices</span>
+
+    <span class="c1"># Π 每一行的 CDF，用于转移的逆 CDF 抽样</span>
+    <span class="n">Π_cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">Π</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># 向量化的消费查找：为每个 z 沿资产对 σ 进行插值</span>
+    <span class="nd">@jax</span><span class="o">.</span><span class="n">vmap</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">consume</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a_grid</span><span class="p">,</span> <span class="n">σ</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+
+    <span class="c1"># 初始条件：所有人都在网格中间，处于状态 0</span>
+    <span class="n">assets</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">num_households</span><span class="p">,</span> <span class="n">a_grid</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">a_grid</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">z_idx</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_households</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">assets</span><span class="p">,</span> <span class="n">z_idx</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">unif</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">subkey</span><span class="p">,</span> <span class="p">(</span><span class="n">num_households</span><span class="p">,))</span>
+        <span class="c1"># 通过逆 CDF 进行马尔可夫转移</span>
+        <span class="n">z_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">unif</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">Π_cdf</span><span class="p">[</span><span class="n">z_idx</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="c1"># 预算约束：消费，然后将资产带到下一期</span>
+        <span class="n">income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">z_grid</span><span class="p">[</span><span class="n">z_idx</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">assets</span>
+        <span class="n">assets</span> <span class="o">=</span> <span class="n">income</span> <span class="o">-</span> <span class="n">consume</span><span class="p">(</span><span class="n">assets</span><span class="p">,</span> <span class="n">z_idx</span><span class="p">)</span>
+        <span class="c1"># 强制执行资产网格边界</span>
+        <span class="n">assets</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">assets</span><span class="p">,</span> <span class="n">a_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a_grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">assets</span><span class="p">,</span> <span class="n">z_idx</span><span class="p">,</span> <span class="n">key</span>
+
+    <span class="n">assets</span><span class="p">,</span> <span class="n">z_idx</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">fori_loop</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">assets</span><span class="p">,</span> <span class="n">z_idx</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">assets</span><span class="p">,</span> <span class="n">z_idx</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在我们可以通过求解家庭问题并对模拟横截面上的资产取平均，来计算给定价格下的资本供给：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">capital_supply</span><span class="p">(</span><span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
+                   <span class="n">num_households</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">num_periods</span><span class="o">=</span><span class="mi">1_000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    通过模拟计算资本总供给。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">σ</span> <span class="o">=</span> <span class="n">solve_household</span><span class="p">(</span><span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">)</span>
+    <span class="n">assets</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">simulate_cross_section</span><span class="p">(</span>
+        <span class="n">σ</span><span class="p">,</span> <span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
+        <span class="n">num_households</span><span class="o">=</span><span class="n">num_households</span><span class="p">,</span> <span class="n">num_periods</span><span class="o">=</span><span class="n">num_periods</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">assets</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们测试它：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">household</span> <span class="o">=</span> <span class="n">create_household</span><span class="p">()</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="n">Prices</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">qe</span><span class="o">.</span><span class="n">Timer</span><span class="p">():</span>
+    <span class="n">K_supply</span> <span class="o">=</span> <span class="n">capital_supply</span><span class="p">(</span><span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Capital supply: </span><span class="si">{</span><span class="n">K_supply</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.5447 seconds elapsed
+Capital supply: 2.5863
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id17">
+<h2><a class="toc-backref" href="#id29" role="doc-backlink"><span class="section-number">112.5. </span>计算均衡</a><a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<p>现在我们可以通过找到使资本供给等于资本需求的资本存量来计算均衡。</p>
+<p>给定 <span class="math notranslate nohighlight">\(K\)</span>，均衡映射 <span class="math notranslate nohighlight">\(G\)</span> 计算：</p>
+<ol class="arabic simple">
+<li><p>从厂商的一阶条件得到价格 <span class="math notranslate nohighlight">\((r, w)\)</span>，</p></li>
+<li><p>给定这些价格下家庭的最优策略，</p></li>
+<li><p>通过模拟得到的资本总供给。</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">G</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">firm</span><span class="p">,</span> <span class="n">household</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
+      <span class="n">num_households</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">num_periods</span><span class="o">=</span><span class="mi">1_000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    均衡映射 K -&gt; 资本供给。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">r_given_k</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">firm</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">r_to_w</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">firm</span><span class="p">)</span>
+    <span class="n">prices</span> <span class="o">=</span> <span class="n">Prices</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">capital_supply</span><span class="p">(</span><span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
+                          <span class="n">num_households</span><span class="o">=</span><span class="n">num_households</span><span class="p">,</span>
+                          <span class="n">num_periods</span><span class="o">=</span><span class="n">num_periods</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们通过对超额需求 <span class="math notranslate nohighlight">\(K - G(K)\)</span> 应用二分法来计算均衡。</p>
+<p>我们向每次求值传递一个固定的随机 key，使得超额需求函数是确定性的，正如求根器所要求的那样。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_equilibrium</span><span class="p">(</span><span class="n">firm</span><span class="p">,</span> <span class="n">household</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
+                        <span class="n">K_min</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">K_max</span><span class="o">=</span><span class="mf">12.0</span><span class="p">,</span>
+                        <span class="n">num_households</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">num_periods</span><span class="o">=</span><span class="mi">1_000</span><span class="p">,</span>
+                        <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    使用二分法计算均衡资本存量。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">excess_demand</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">K</span> <span class="o">-</span> <span class="n">G</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">firm</span><span class="p">,</span> <span class="n">household</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
+                     <span class="n">num_households</span><span class="o">=</span><span class="n">num_households</span><span class="p">,</span>
+                     <span class="n">num_periods</span><span class="o">=</span><span class="n">num_periods</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bisect</span><span class="p">(</span><span class="n">excess_demand</span><span class="p">,</span> <span class="n">K_min</span><span class="p">,</span> <span class="n">K_max</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="n">xtol</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们计算均衡：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">firm</span> <span class="o">=</span> <span class="n">Firm</span><span class="p">()</span>
+<span class="n">household</span> <span class="o">=</span> <span class="n">create_household</span><span class="p">()</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">qe</span><span class="o">.</span><span class="n">Timer</span><span class="p">():</span>
+    <span class="n">K_star</span> <span class="o">=</span> <span class="n">compute_equilibrium</span><span class="p">(</span><span class="n">firm</span><span class="p">,</span> <span class="n">household</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+<span class="n">r_star</span> <span class="o">=</span> <span class="n">r_given_k</span><span class="p">(</span><span class="n">K_star</span><span class="p">,</span> <span class="n">firm</span><span class="p">)</span>
+<span class="n">w_star</span> <span class="o">=</span> <span class="n">r_to_w</span><span class="p">(</span><span class="n">r_star</span><span class="p">,</span> <span class="n">firm</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Equilibrium capital:       </span><span class="si">{</span><span class="n">K_star</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Equilibrium interest rate: </span><span class="si">{</span><span class="n">r_star</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Equilibrium wage:          </span><span class="si">{</span><span class="n">w_star</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>50.2386 seconds elapsed
+
+Equilibrium capital:       8.1484
+Equilibrium interest rate: 0.0309
+Equilibrium wage:          1.3388
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id18">
+<h3><span class="section-number">112.5.1. </span>均衡可视化<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<p>让我们绘制供给和需求曲线：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 供给曲线：作为 r 的函数的家庭供给资本</span>
+<span class="n">r_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">K_supply_vals</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">r_vals</span><span class="p">:</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">r_to_w</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">firm</span><span class="p">)</span>
+    <span class="n">prices</span> <span class="o">=</span> <span class="n">Prices</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+    <span class="n">K_supply_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">capital_supply</span><span class="p">(</span><span class="n">household</span><span class="p">,</span> <span class="n">prices</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
+
+<span class="c1"># 需求曲线：作为 r 的函数的厂商需求资本</span>
+<span class="n">K_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">r_demand_vals</span> <span class="o">=</span> <span class="n">r_given_k</span><span class="p">(</span><span class="n">K_vals</span><span class="p">,</span> <span class="n">firm</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">K_supply_vals</span><span class="p">,</span> <span class="n">r_vals</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">&#39;资本供给（家庭）&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">K_vals</span><span class="p">,</span> <span class="n">r_demand_vals</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">&#39;资本需求（厂商）&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">K_star</span><span class="p">,</span> <span class="n">r_star</span><span class="p">,</span> <span class="s1">&#39;r*&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;均衡 ($K=</span><span class="si">{</span><span class="n">K_star</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$)&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;资本 $K$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;利率 $r$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Aiyagari 模型均衡&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/54cdc39aa158c95735a9a9849ab7bec01f7a498b18a5b9b776a7f17575c6724f.png" src="_images/54cdc39aa158c95735a9a9849ab7bec01f7a498b18a5b9b776a7f17575c6724f.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="id19">
+<h2><a class="toc-backref" href="#id30" role="doc-backlink"><span class="section-number">112.6. </span>财富分布</a><a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
+<p>模拟方法的一个优势是我们可以轻松地检查财富分布。</p>
+<p>我们重用在均衡价格下模拟的横截面：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prices_star</span> <span class="o">=</span> <span class="n">Prices</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">r_star</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w_star</span><span class="p">)</span>
+<span class="n">σ_star</span> <span class="o">=</span> <span class="n">solve_household</span><span class="p">(</span><span class="n">household</span><span class="p">,</span> <span class="n">prices_star</span><span class="p">)</span>
+<span class="n">assets_dist</span><span class="p">,</span> <span class="n">z_dist</span> <span class="o">=</span> <span class="n">simulate_cross_section</span><span class="p">(</span><span class="n">σ_star</span><span class="p">,</span> <span class="n">household</span><span class="p">,</span> <span class="n">prices_star</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+<span class="n">assets_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">assets_dist</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们使用 QuantEcon 的 <code class="docutils literal notranslate"><span class="pre">lorenz_curve</span></code> 和 <code class="docutils literal notranslate"><span class="pre">gini_coefficient</span></code> 来概括不平等程度：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># 直方图</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">assets_dist</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">assets_dist</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;均值 = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">assets_dist</span><span class="p">)</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">assets_dist</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;中位数 = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">assets_dist</span><span class="p">)</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;资产&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;密度&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;财富分布&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="c1"># 洛伦兹曲线</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">cum_pop</span><span class="p">,</span> <span class="n">cum_wealth</span> <span class="o">=</span> <span class="n">qe</span><span class="o">.</span><span class="n">lorenz_curve</span><span class="p">(</span><span class="n">assets_dist</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cum_pop</span><span class="p">,</span> <span class="n">cum_wealth</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;洛伦兹曲线&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;完全平等&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;累积人口份额&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;累积财富份额&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;洛伦兹曲线&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">gini</span> <span class="o">=</span> <span class="n">qe</span><span class="o">.</span><span class="n">gini_coefficient</span><span class="p">(</span><span class="n">assets_dist</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Gini coefficient: </span><span class="si">{</span><span class="n">gini</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/67494d3e93accc717622cf2718f1bf7a4c4838819962f75638ce7cd4c35df931.png" src="_images/67494d3e93accc717622cf2718f1bf7a4c4838819962f75638ce7cd4c35df931.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Gini coefficient: 0.3645
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id20">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink"><span class="section-number">112.7. </span>总结与比较</a><a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
+<p>本讲座演示了如何使用以下方法求解 Aiyagari 模型：</p>
+<ol class="arabic simple">
+<li><p><strong>内生网格法（EGM）</strong> 用于家庭问题</p>
+<ul class="simple">
+<li><p>通过从欧拉方程向后推导，避免了昂贵的求根</p></li>
+<li><p>直接从边际效用计算消费</p></li>
+<li><p>比值函数迭代更高效</p></li>
+</ul>
+</li>
+<li><p><strong>模拟</strong> 用于计算总资本</p>
+<ul class="simple">
+<li><p>模拟一个大的家庭横截面</p></li>
+<li><p>比解析平稳分布更灵活</p></li>
+<li><p>允许轻松计算财富不平等度量</p></li>
+</ul>
+</li>
+</ol>
+<section id="id21">
+<h3><span class="section-number">112.7.1. </span>与标准方法的比较<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
+<p>与 <a class="reference internal" href="aiyagari.html"><span class="doc">标准 Aiyagari 讲座</span></a> 相比：</p>
+<p><strong>优势：</strong></p>
+<ul class="simple">
+<li><p>EGM 避免了值函数迭代所需的求根</p></li>
+<li><p>模拟更灵活（适用于连续冲击、非线性策略）</p></li>
+<li><p>易于计算分布统计量（基尼系数、百分位数等）</p></li>
+<li><p>该方法更容易扩展到更复杂的模型</p></li>
+</ul>
+<p><strong>劣势：</strong></p>
+<ul class="simple">
+<li><p>模拟需要大量家庭以保证准确性</p></li>
+<li><p>均衡计算受蒙特卡洛噪声影响</p></li>
+<li><p>它不如解析平稳分布精确</p></li>
+</ul>
+</section>
+<section id="id22">
+<h3><span class="section-number">112.7.2. </span>扩展<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
+<p>该框架可以轻松扩展到：</p>
+<ul class="simple">
+<li><p>连续收入冲击（例如，对数正态分布）</p></li>
+<li><p>更复杂的偏好设定</p></li>
+<li><p>总量冲击和异质性主体新凯恩斯主义（HANK）模型</p></li>
+<li><p>具有年龄相关策略的生命周期模型</p></li>
+</ul>
+</section>
+</section>
+<section id="id23">
+<h2><a class="toc-backref" href="#id32" role="doc-backlink"><span class="section-number">112.8. </span>练习</a><a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="aiyagari_egm_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 112.1 </span></p>
+<section id="exercise-content">
+<p>比较 EGM 与 <a class="reference internal" href="aiyagari.html"><span class="doc">标准 Aiyagari 讲座</span></a> 中使用的
+值函数迭代方法的速度和准确性。</p>
+<ol class="arabic simple">
+<li><p>在相同价格下用两种方法求解家庭问题。</p></li>
+<li><p>对两种方法计时并比较得到的策略。</p></li>
+<li><p>哪种方法更快？策略是否接近？</p></li>
+</ol>
+</section>
+</div>
+<div class="exercise admonition" id="aiyagari_egm_ex2">
+
+<p class="admonition-title"><span class="caption-number">练习 112.2 </span></p>
+<section id="exercise-content">
+<p>研究财富分布如何随贴现因子 <span class="math notranslate nohighlight">\(\beta\)</span> 变化。</p>
+<ol class="arabic simple">
+<li><p>计算 <span class="math notranslate nohighlight">\(\beta \in \{0.94, 0.95, 0.96, 0.97\}\)</span> 的均衡。</p></li>
+<li><p>对于每个 <span class="math notranslate nohighlight">\(\beta\)</span>，计算并绘制财富分布。</p></li>
+<li><p>基尼系数如何随 <span class="math notranslate nohighlight">\(\beta\)</span> 变化？</p></li>
+<li><p>解释其经济直觉。</p></li>
+</ol>
+</section>
+</div>
+<div class="exercise admonition" id="aiyagari_egm_ex3">
+
+<p class="admonition-title"><span class="caption-number">练习 112.3 </span></p>
+<section id="exercise-content">
+<p>本讲座介绍的模拟方法使用固定的期数。研究这一选择的影响：</p>
+<ol class="arabic simple">
+<li><p>将 <code class="docutils literal notranslate"><span class="pre">num_periods</span></code> 从 200 变化到 2000。</p></li>
+<li><p>对于每个值，用不同的随机 key 多次计算平均资产。</p></li>
+<li><p>绘制资本估计的标准差作为 <code class="docutils literal notranslate"><span class="pre">num_periods</span></code> 的函数。</p></li>
+<li><p>准确性与计算成本之间的权衡是什么？</p></li>
+</ol>
+</section>
+</div>
+<div class="exercise admonition" id="aiyagari_egm_ex4">
+
+<p class="admonition-title"><span class="caption-number">练习 112.4 </span></p>
+<section id="exercise-content">
+<p>扩展模型以包含第三种就业状态（例如，失业、兼职、全职）：</p>
+<ol class="arabic simple">
+<li><p>建立一个具有适当转移概率的 3 状态马尔可夫链。</p></li>
+<li><p>为每个状态定义收入水平。</p></li>
+<li><p>重新计算均衡。</p></li>
+<li><p>额外的异质性如何影响财富分布？</p></li>
+</ol>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Tools and Techniques
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Elementary Statistics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bayes Law
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Statistics and Information
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Linear Programming
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   36. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   37. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Dynamics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   38. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   39. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   40. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   43. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   44. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   45. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Search
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   50. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   53. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   55. 工作搜寻 VI：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   56. 工作搜寻 VII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   57. 工作搜寻 VIII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Reinforcement Learning
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   72. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   73. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   74. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   75. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   83. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   107. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   108. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   109. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   110. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Asset Pricing and Finance
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   119. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Data and Empirics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   128. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   129. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Auctions
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   133. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   134. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   135. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   136. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   137. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/aiyagari_egm.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/aiyagari_egm.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/aiyagari_egm.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/aiyagari_egm.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/aiyagari_egm.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "aiyagari_egm";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/aiyagari_egm.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

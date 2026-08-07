@@ -9,18 +9,52 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 人工神经网络简介
+  headings:
+    Overview: 概述
+    A Deep (but not Wide) Artificial Neural Network: 一个深度(但不宽)的人工神经网络
+    Calibrating  Parameters: 参数校准
+    Back Propagation and the Chain Rule: 反向传播和链式法则
+    Training Set: 训练集
+    Example 1: 示例 1
+    How Deep?: 深度多少？
+    Example 2: 示例2
 ---
 
 # 人工神经网络简介
 
+```{include} _admonition/gpu.md
+```
+
+除了基础Anaconda中包含的内容外，我们还需要安装以下包
+
 ```{code-cell} ipython3
 :tags: [hide-output]
 
-!pip install --upgrade jax jaxlib
-!conda install -y -c plotly plotly plotly-orca retrying
+!pip install -U kaleido plotly
+!conda install -y -c plotly plotly-orca
+
+# kaleido需要chrome来构建图像
+import kaleido
+kaleido.get_chrome_sync()
 ```
+
 ```{note}
 如果您在Google Colab上运行此代码，上述单元格将出现错误。这是因为Google Colab不使用Anaconda来管理Python包。但是本讲座仍然可以执行，因为Google Colab已安装了`plotly`。
+```
+
+我们还需要安装JAX来运行本讲座
+
+```{code-cell} ipython3
+:tags: [skip-execution]
+
+!pip install --upgrade jax
+```
+
+```{code-cell} ipython3
+import jax
+print(f"JAX backend: {jax.devices()[0].platform}") # 检查环境中是否启用了gpu
 ```
 
 ## 概述
@@ -112,7 +146,7 @@ $N$ 这个整数越大，神经网络就越"深"。
 显然，如果我们知道参数 $\{w_i, b_i\}_{i=1}^N$，那么对于给定的 $x = \tilde x$，我们可以通过迭代以下递归来计算 $\hat f(x)$：
 
 $$
-x_{i+1} = h_i \circ l_i(x_i) , \quad i = 1, \ldots N
+x_{i+1} = h_i \circ l_i(x_i) , \quad, i = 1, \ldots N
 $$ (eq:recursion)
 
 从 $x_1 = \tilde x$ 开始。
@@ -141,7 +175,7 @@ $$
 \min_{\left\{ \left(w_{i},b_{i}\right)\right\} _{i=1}^{N}} \int {\mathcal L}\left(x_{N+1},y\right)(x) d \mu(x)
 $$
 
-其中 $\mu(x)$ 是某个测度，用来衡量哪些点 $x \in \mathbb{R}$ 需要被良好逼近。
+其中 $\mu(x)$ 是某个测度，用来衡量哪些点 $x \in \mathbb{R}$ 需要被良好逼近$\hat f(x)$到$f(x)$。
 
 将权重和偏置堆叠成参数向量 $p$：
 
@@ -165,7 +199,7 @@ $$ (eq:sgd)
 
 其中 $\frac{d {\mathcal L}}{dx_{N+1}}=-\left(x_{N+1}-y\right)$ 且 $\alpha > 0$ 是步长。
 
-(参见[这里](https://baike.baidu.com/item/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/8641233)和[这里](https://baike.baidu.com/item/%E7%89%9B%E9%A1%BF%E8%BF%AD%E4%BB%A3%E6%B3%95/10887580)以了解随机梯度下降与牛顿法的关系。)
+(参见[这里](https://en.wikipedia.org/wiki/Gradient_descent#Description)和[这里](https://en.wikipedia.org/wiki/Newton's_method)以了解随机梯度下降与牛顿法的关系。)
 
 要实现这个参数更新规则的一个步骤，我们需要导数向量 $\frac{dx_{N+1}}{dp_k}$。
 
@@ -178,11 +212,16 @@ $$ (eq:sgd)
 * 微分演算中的链式法则和乘积法则的性质，以及
 * 下三角矩阵的性质
 
-反向传播实际上可以通过以下两步完成：
+反向传播实际上可以通过一步完成：
 
-* 求下三角矩阵的逆矩阵，以及
-* 矩阵乘法
+ * 求下三角矩阵的逆矩阵，以及
+ 
+ * 矩阵乘法
 
+（这个想法来自麻省理工学院Alan Edelman的这段精彩YouTube视频的最后7分钟）
+
+```{youtube} rZS2LGiurKY
+```
 
 下面开始。
 
@@ -264,6 +303,7 @@ $$
 选择训练集相当于在上述函数逼近问题的最小化问题表述中选择测度$\mu$。
 
 本着这个精神，我们将使用均匀网格，比如说50或200个点。
+
 对于上述最小化问题，有多种可能的解决方案：
 
 * 批量梯度下降，使用训练集上的平均梯度
@@ -282,6 +322,7 @@ from jax import random
 import jax
 import plotly.graph_objects as go
 ```
+
 ```{code-cell} ipython3
 # 一个辅助函数，用于随机初始化密集神经网络层的权重和偏置
 def random_layer_params(m, n, key, scale=1.):
@@ -293,6 +334,7 @@ def init_network_params(sizes, key):
     keys = random.split(key, len(sizes))
     return [random_layer_params(m, n, k) for m, n, k in zip(sizes[:-1], sizes[1:], keys)]
 ```
+
 ```{code-cell} ipython3
 def compute_xδw_seq(params, x):
     # 初始化数组
@@ -332,6 +374,7 @@ def loss(params, x, y):
     
     return 1 / 2 * (y - preds) ** 2
 ```
+
 ```{code-cell} ipython3
 # 参数
 N = 3  # 层数
@@ -340,18 +383,22 @@ param_scale = 0.1
 step_size = 0.01
 params = init_network_params(layer_sizes, random.PRNGKey(1))
 ```
+
 ```{code-cell} ipython3
 x = 5
 y = 3
 xs, δ, ws, bs = compute_xδw_seq(params, x)
 ```
+
 ```{code-cell} ipython3
 dxs_ad = jacfwd(lambda params, x: compute_xδw_seq(params, x)[0], argnums=0)(params, x)
 dxs_ad_mat = jnp.block([dx.reshape((-1, 1)) for dx_tuple in dxs_ad for dx in dx_tuple ])[1:]
 ```
+
 ```{code-cell} ipython3
 jnp.block([[δ * xs[:-1]], [δ]])
 ```
+
 ```{code-cell} ipython3
 L = jnp.diag(δ * ws, k=-1)
 L = L[1:, 1:]
@@ -360,18 +407,22 @@ D = jax.scipy.linalg.block_diag(*[row.reshape((1, 2)) for row in jnp.block([[δ 
 
 dxs_la = jax.scipy.linalg.solve_triangular(jnp.eye(N) - L, D, lower=True)
 ```
+
 ```{code-cell} ipython3
 # 检查由线性代数方法生成的`dx`
 # 是否与使用自动微分生成的结果相同
 jnp.max(jnp.abs(dxs_ad_mat - dxs_la))
 ```
+
 ```{code-cell} ipython3
 grad_loss_ad = jnp.block([dx.reshape((-1, 1)) for dx_tuple in grad(loss)(params, x, y) for dx in dx_tuple ])
 ```
+
 ```{code-cell} ipython3
 # 检查两种方法的损失梯度是否相同
 jnp.max(jnp.abs(-(y - xs[-1]) * dxs_la[-1] - grad_loss_ad))
 ```
+
 ```{code-cell} ipython3
 @jit
 def update_ad(params, x, y):
@@ -396,13 +447,16 @@ def update_la(params, x, y):
             for (w, b), (dw, db) in zip(params, grads.reshape((-1, 2)))]
     
 ```
+
 ```{code-cell} ipython3
 # 检查两次更新是否相同
 update_la(params, x, y)
 ```
+
 ```{code-cell} ipython3
 update_ad(params, x, y)
 ```
+
 ## 示例 1
 
 考虑在区间 $\left[0.5,3\right]$ 上的函数
@@ -425,6 +479,7 @@ M = 200
 grid = jnp.linspace(0.5, 3, num=M)
 f_val = f(grid)
 ```
+
 ```{code-cell} ipython3
 indices = jnp.arange(M)
 key = random.PRNGKey(0)
@@ -438,19 +493,23 @@ def train(params, grid, f_val, key, num_epochs=300):
             
     return params 
 ```
+
 ```{code-cell} ipython3
 # 参数
 N = 3  # 层数
 layer_sizes = [1, ] * (N + 1)
 params_ex1 = init_network_params(layer_sizes, key)
 ```
+
 ```{code-cell} ipython3
 %%time 
 params_ex1 = train(params_ex1, grid, f_val, key, num_epochs=500)
 ```
+
 ```{code-cell} ipython3
 predictions = vmap(compute_xδw_seq, in_axes=(None, 0))(params_ex1, grid)[0][:, -1]
 ```
+
 ```{code-cell} ipython3
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=grid, y=f_val, name=r'$-3x+2$'))
@@ -461,11 +520,12 @@ Image(fig.to_image(format="png"))
 # 在本地运行notebook时
 # fig.show()将提供交互式图表
 ```
+
 ## 深度多少？
 
 思考上述例子中加深神经网络如何影响近似质量是一件很有趣的事
 
-* 如果网络太深，你会遇到[梯度消失问题](https://www.zhihu.com/question/645999362/answer/3481844539)
+* 如果网络太深，你会遇到[梯度消失问题](https://en.wikipedia.org/wiki/Vanishing_gradient_problem)
 * 在本讲所考虑的情况下，步长和训练轮数等其他参数可能与网络层数一样重要或更重要
 * 实际上，由于 $f$ 是 $x$ 的线性函数，使用恒等映射作为激活函数的单层网络可能效果最好。
 
@@ -486,38 +546,46 @@ def f(x):
 grid = jnp.linspace(0.5, 3, num=M)
 f_val = f(grid)
 ```
+
 ```{code-cell} ipython3
 # 参数
 N = 1  # 层数
 layer_sizes = [1, ] * (N + 1)
 params_ex2_1 = init_network_params(layer_sizes, key)
 ```
+
 ```{code-cell} ipython3
 # 参数
 N = 2  # 层数
 layer_sizes = [1, ] * (N + 1)
 params_ex2_2 = init_network_params(layer_sizes, key)
 ```
+
 ```{code-cell} ipython3
 # 参数
 N = 3  # 层数
 layer_sizes = [1, ] * (N + 1)
 params_ex2_3 = init_network_params(layer_sizes, key)
 ```
+
 ```{code-cell} ipython3
 params_ex2_1 = train(params_ex2_1, grid, f_val, key, num_epochs=300)
 ```
+
 ```{code-cell} ipython3
 params_ex2_2 = train(params_ex2_2, grid, f_val, key, num_epochs=300)
 ```
+
 ```{code-cell} ipython3
 params_ex2_3 = train(params_ex2_3, grid, f_val, key, num_epochs=300)
 ```
+
 ```{code-cell} ipython3
 predictions_1 = vmap(compute_xδw_seq, in_axes=(None, 0))(params_ex2_1, grid)[0][:, -1]
 predictions_2 = vmap(compute_xδw_seq, in_axes=(None, 0))(params_ex2_2, grid)[0][:, -1]
 predictions_3 = vmap(compute_xδw_seq, in_axes=(None, 0))(params_ex2_3, grid)[0][:, -1]
 ```
+
 ```{code-cell} ipython3
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=grid, y=f_val, name=r'$\log{x}$'))
@@ -527,17 +595,6 @@ fig.add_trace(go.Scatter(x=grid, y=predictions_3, name='三层神经网络'))
 
 # 导出为PNG文件
 Image(fig.to_image(format="png"))
-# 在本地运行notebook时，fig.show()将提供交互式图表
-```
-
-```{code-cell} ipython3
-## 检查环境中是否启用了gpu
-
-from jax.lib import xla_bridge
-print(xla_bridge.get_backend().platform)
-```
-
-```{note}
-**云环境：** 此讲座网站是在无法访问`gpu`的服务器环境中构建的
-如果您在本地运行此讲座，这将让您知道代码是通过`cpu`还是`gpu`执行的
+# 在本地运行notebook时
+# fig.show()将提供交互式图表
 ```

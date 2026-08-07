@@ -7,6 +7,22 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 大数定律 和 中心极限定理
+  headings:
+    Overview: 概述
+    Relationships: 关系
+    LLN: 大数定律
+    LLN::The Classical LLN: 经典大数定律
+    LLN::Proof: 证明
+    LLN::Illustration: 示例说明
+    CLT: 中心极限定理
+    CLT::Statement of the Theorem: 定理陈述
+    CLT::Intuition: 直观理解
+    CLT::Simulation 1: 模拟1
+    CLT::Simulation 2: 模拟2
+    CLT::The Multivariate Case: 多元情况
+    Exercises: 练习
 ---
 
 (lln_clt)=
@@ -87,7 +103,7 @@ from scipy.linalg import inv, sqrtm
 
 经典大数定律涉及独立同分布（IID）随机变量。
 
-这里是经典大数定律的最强版本，被称为*柯尔莫戈洛夫强大数定律*。
+这里是经典大数定律的最强版本，被称为**柯尔莫戈洛夫强大数定律**。
 
 设 $X_1, \ldots, X_n$ 是独立同分布的标量随机变量，具有相同的分布 $F$。
 
@@ -218,7 +234,7 @@ $\mathbb E (X_i - \mu)(X_j - \mu)$ 不一定为零。
 
 在这三种情况下，$\bar X_n$ 都如预期般收敛到 $\mu$
 
-```{code-cell} ipython3
+```{code-cell} python3
 n = 100
 
 # 任意分布集合
@@ -256,7 +272,7 @@ for ax in axes:
 
     # 绘图
     ax.plot(list(range(n)), data, 'o', color='grey', alpha=0.5)
-    axlabel = '$\\bar{X}_n$ for $X_i \sim$' + name
+    axlabel = r'$\bar{X}_n$ for $X_i \sim$' + name
     ax.plot(list(range(n)), sample_mean, 'g-', lw=3, alpha=0.6, label=axlabel)
     m = distribution.mean()
     ax.plot(list(range(n)), [m] * n, 'k--', lw=1.5, label=r'$\mu$')
@@ -289,7 +305,7 @@ $\mu$ 和相同的方差 $\sigma^2 \in (0, \infty)$，那么
 :label: lln_clt
 
 \sqrt{n} ( \bar X_n - \mu ) \stackrel { d } {\to} N(0, \sigma^2)
-\quad \text{当} \quad
+\quad \text{as} \quad
 n \to \infty
 ```
 
@@ -297,7 +313,7 @@ n \to \infty
 
 ### 直观理解
 
-```{index} single: 中心极限定理; 直观理解
+```{index} single: Central Limit Theorem; Intuition
 ```
 
 中心极限定理最引人注目的含义是，对于**任何**具有有限二阶矩的分布，简单地将独立样本相加**总是**会导致高斯曲线。
@@ -318,7 +334,7 @@ n \to \infty
 
 下图展示了当 $n = 1, 2, 4, 8$ 时，$Y_n$ 的概率质量函数
 
-```{code-cell} ipython3
+```{code-cell} python3
 fig, axes = plt.subplots(2, 2, figsize=(10, 6))
 plt.subplots_adjust(hspace=0.4)
 axes = axes.flatten()
@@ -373,10 +389,10 @@ plt.show()
 (请尝试其他的$F$选择，但请记住，为了符合中心极限定理的条件，分布必须具有有限的二阶矩。)
 
 (sim_one)=
-```{code-cell} ipython3
+```{code-cell} python3
 # 设置参数
 n = 250                  # n的选择
-k = 100000              # Y_n的抽样次数
+k = 100000               # Y_n的抽样次数
 distribution = expon(2)  # 指数分布，λ = 1/2
 μ, s = distribution.mean(), distribution.std()
 
@@ -425,10 +441,10 @@ plt.show()
 
 在图中，最近的密度是 $Y_1$ 的密度，而最远的是 $Y_5$ 的密度。
 
-```{code-cell} ipython3
+```{code-cell} python3
 beta_dist = beta(2, 2)
 
-def gen_x_draws(k):
+def gen_x_draws(k, rng):
     """
     返回一个包含从底层随机变量 X 的分布中独立抽取 k 次的扁平数组。
     这个分布本身是三个贝塔分布的凸组合。
@@ -439,7 +455,7 @@ def gen_x_draws(k):
     bdraws[1, :] += 0.6
     bdraws[2, :] -= 1.1
     # 设置 X[i] = bdraws[j, i]，其中 j 是从 {0, 1, 2} 中随机抽取的
-    js = np.random.randint(0, 2, size=k)
+    js = rng.integers(0, 2, size=k)
     X = bdraws[js, np.arange(k)]
     # 重新缩放，使随机变量均值为零
     m, sigma = X.mean(), X.std()
@@ -448,11 +464,12 @@ def gen_x_draws(k):
 nmax = 5
 reps = 100000
 ns = list(range(1, nmax + 1))
+rng = np.random.default_rng()
 
 # 构建矩阵 Z，使每列都是 X 的 reps 个独立抽样
 Z = np.empty((reps, nmax))
 for i in range(nmax):
-    Z[:, i] = gen_x_draws(reps)
+    Z[:, i] = gen_x_draws(reps, rng)
 # 对列进行累积求和
 S = Z.cumsum(axis=1)
 # 将第 j 列乘以 sqrt j
@@ -545,10 +562,9 @@ $$
 \right) =: \boldsymbol \mu
 $$
 
-随机向量 $\mathbf X$ 的*方差-协方差矩阵*定义为
+随机向量 $\mathbf X$ 的**方差-协方差矩阵**定义为
 
 $$
-
 \mathop{\mathrm{Var}}[\mathbf X]
 := \mathbb E
 [ (\mathbf X - \boldsymbol \mu) (\mathbf X - \boldsymbol \mu)']
@@ -650,7 +666,7 @@ n \to \infty
 
 这是一个解决方案
 
-```{code-cell} ipython3
+```{code-cell} python3
 """
 演示delta方法，这是中心极限定理的一个推论。
 """
@@ -677,7 +693,7 @@ xmax = -xmin
 ax.set_xlim(xmin, xmax)
 ax.hist(error_obs, bins=60, alpha=0.5, density=True)
 xgrid = np.linspace(xmin, xmax, 200)
-lb = "$N(0, g'(\mu)^2  \sigma^2)$"
+lb = r"$N(0, g'(\mu)^2  \sigma^2)$"
 ax.plot(xgrid, norm.pdf(xgrid, scale=asymptotic_sd), 'k-', lw=2, label=lb)
 ax.legend()
 plt.show()
@@ -724,7 +740,7 @@ $$
 = \mathbf A \mathop{\mathrm{Var}}[\mathbf X] \mathbf A'
 $$
 
-其次，连续映射定理指出，如果$g(\cdot)$是一个连续函数，且随机变量序列$\{\mathbf{Z}_n\}$依分布收敛到随机变量$\mathbf{Z}$, 那么$\{g(\mathbf{Z}_n)\}$也依分布收敛到随机变量$g(\mathbf{Z})$。根据连续映射定理，如果$\mathbf Z_n \stackrel{d}{\to} \mathbf Z$在$\mathbb R^k$中成立，且$\mathbf A$是常数且为$k \times k$矩阵，那么
+其次，根据[连续映射定理](https://en.wikipedia.org/wiki/Continuous_mapping_theorem)，如果$\mathbf Z_n \stackrel{d}{\to} \mathbf Z$在$\mathbb R^k$中成立，且$\mathbf A$是常数且为$k \times k$矩阵，那么
 
 $$
 \mathbf A \mathbf Z_n
@@ -734,7 +750,6 @@ $$
 第三，如果$\mathbf S$是一个$k \times k$对称正定矩阵，那么存在一个对称正定矩阵$\mathbf Q$，称为$\mathbf S$的[平方根](https://en.wikipedia.org/wiki/Square_root_of_a_matrix)的逆，使得
 
 $$
-
 \mathbf Q \mathbf S\mathbf Q' = \mathbf I
 $$
 
@@ -777,7 +792,6 @@ n \| \mathbf Q ( \bar{\mathbf X}_n - \boldsymbol \mu ) \|^2
 $$
 \mathbf X_i :=
 \left(
-
 \begin{array}{c}
     W_i \\
     U_i + W_i
@@ -827,7 +841,6 @@ $$
 
 $$
 \mathbf Q \mathbf Y_n
-
 \stackrel{d}{\to}
 \mathbf Q \mathbf Y
 $$
@@ -851,7 +864,7 @@ $\mathbf Q \mathbf Y_n \stackrel{d}{\to} \mathbf Q \mathbf Y \sim N(\mathbf 0, \
 
 我们的解决方案如下
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 设置参数
 n = 250
 replications = 50000
@@ -896,4 +909,3 @@ plt.show()
 
 ```{solution-end}
 ```
-

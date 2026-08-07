@@ -7,6 +7,20 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 财富分布动态
+  headings:
+    Overview: 概述
+    Overview::A Note on Assumptions: 关于假设的说明
+    Lorenz Curves and the Gini Coefficient: 洛伦兹曲线和基尼系数
+    Lorenz Curves and the Gini Coefficient::Lorenz Curves: 洛伦兹曲线
+    Lorenz Curves and the Gini Coefficient::The Gini Coefficient: 基尼系数
+    A Model of Wealth Dynamics: 财富动态模型
+    Implementation: 实现
+    Applications: 应用
+    Applications::Time Series: 时间序列
+    Applications::Inequality Measures: 不平等度量
+    Exercises: 练习
 ---
 
 ```{raw} jupyter
@@ -24,7 +38,7 @@ kernelspec:
 ```
 
 ```{seealso}
-本讲座的`GPU`版本可在[这里](https://jax.quantecon.org/wealth_dynamics.html)找到
+本讲座使用[JAX](https://github.com/jax-ml/jax)的版本可在{doc}`这里 <jax:wealth_dynamics>`找到
 ```
 
 除了Anaconda中已有的库外，本讲座还需要以下库：
@@ -95,12 +109,15 @@ from numba.experimental import jitclass
 
 上面已经导入的[QuantEcon.py](https://github.com/QuantEcon/QuantEcon.py)包含了计算洛伦兹曲线的函数。
 
-举例说明，假设以下数据代表了10,000个家庭的财富分布
+举例说明，假设
 
 ```{code-cell} ipython3
+rng = np.random.default_rng()
 n = 10_000                      # 样本大小
-w = np.exp(np.random.randn(n))  # 生成对数正态分布的随机样本
+w = np.exp(rng.standard_normal(n))  # 生成对数正态分布的随机样本
 ```
+
+是代表10,000个家庭财富的数据。
 
 我们可以按如下方式计算并绘制洛伦兹曲线：
 
@@ -133,7 +150,7 @@ a_vals = (1, 2, 5)              # 帕累托分布的尾部指数
 n = 10_000                      # 每个样本的大小
 fig, ax = plt.subplots()
 for a in a_vals:
-    u = np.random.uniform(size=n)
+    u = rng.uniform(size=n)
     y = u**(-1/a)               # 服从尾部指数为a的帕累托分布
     f_vals, l_vals = qe.lorenz_curve(y)
     ax.plot(f_vals, l_vals, label=f'$a = {a}$')
@@ -170,7 +187,7 @@ n = 100
 
 fig, ax = plt.subplots()
 for a in a_vals:
-    y = np.random.weibull(a, size=n)
+    y = rng.weibull(a, size=n)
     ginis.append(qe.gini_coefficient(y))
     ginis_theoretical.append(1 - 2**(-1/a))
 ax.plot(a_vals, ginis, label='基尼系数估值')
@@ -198,7 +215,7 @@ w_{t+1} = (1 + r_{t+1}) s(w_t) + y_{t+1}
 其中
 
 - $w_t$ 是某个家庭在t时刻持有的财富，
-- $r_t$ 是金融资产t时刻的收益率，
+- $r_t$ 是金融资产的收益率，
 - $y_t$ 是当前非金融（如，劳动）收入，
 - $s(w_t)$ 是当前财富减去消费后的净值
 
@@ -265,7 +282,7 @@ wealth_dynamics_data = [
 ]
 ```
 
-下面是一个类，用于存储模型参数并实现更新总体状态和家庭财富的方法。
+下面是一个类，用于存储实例数据并实现更新总体状态和家庭财富的方法。
 
 ```{code-cell} ipython3
 
@@ -480,7 +497,7 @@ plt.show()
 
 我们再次看到，随着金融收入回报的增加，不平等程度也在上升。
 
-最后，让我们通过研究改变金融回报的波动率项$\sigma_r$时会发生什么。
+最后，让我们通过研究改变金融回报的波动率项$\sigma_r$时会发生什么来结束本节。
 
 ```{code-cell} ipython3
 %%time
@@ -529,13 +546,14 @@ plt.show()
 这是一个解法，它在理论和模拟之间产生了很好的匹配。
 
 ```{code-cell} ipython3
+rng = np.random.default_rng()
 a_vals = np.linspace(1, 10, 25)  # 帕累托尾部指数
 ginis = np.empty_like(a_vals)
 
 n = 1000                         # 每个样本的大小
 fig, ax = plt.subplots()
 for i, a in enumerate(a_vals):
-    y = np.random.uniform(size=n)**(-1/a)
+    y = rng.uniform(size=n)**(-1/a)
     ginis[i] = qe.gini_coefficient(y)
 ax.plot(a_vals, ginis, label='抽样值')
 ax.plot(a_vals, 1/(2*a_vals - 1), label='理论值')
@@ -617,4 +635,3 @@ plt.show()
 
 ```{solution-end}
 ```
-

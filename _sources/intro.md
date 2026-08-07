@@ -7,6 +7,8 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: Python中级定量经济学
 ---
 
 # Python中级定量经济学

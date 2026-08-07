@@ -9,6 +9,23 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: Cass-Koopmans模型
+  headings:
+    Overview: 概述
+    The Model: 模型
+    'The Model::Digression: Aggregation Theory': 插话：聚合理论
+    'The Model::Digression: Aggregation Theory::An  Economy': 一个经济体
+    Planning Problem: 规划问题
+    Planning Problem::Useful Properties of Linearly Homogeneous Production Function: 线性齐次生产函数的有用性质
+    Planning Problem::First-order necessary conditions: 一阶必要条件
+    Shooting Algorithm: 打靶算法
+    Setting Initial Capital to Steady State Capital: 将初始资本设定为稳态资本
+    A Turnpike Property: 收费公路性质（Turnpike property）
+    A Limiting Infinite Horizon Economy: 极限无限期经济
+    Stable Manifold and Phase Diagram: 稳定流形和相图
+    Concluding Remarks: 结论
+    Concluding Remarks::Exercise: 练习
 ---
 
 (cass_koopmans_1)=
@@ -570,8 +587,8 @@ plt.show()
 @jit
 def bisection(pp, c0, k0, T=10, tol=1e-4, max_iter=500, k_ter=0, verbose=True):
 
-    # 设置初始边界
-    c0_upper = pp.f(k0)
+    # 猜测c0的初始边界
+    c0_upper = pp.f(k0) + (1 - pp.δ) * k0  
     c0_lower = 0
 
     i = 0
@@ -659,7 +676,7 @@ $$
 1=\beta \frac{u'(\bar{C})}{u'(\bar{C})}[f'(\bar{K})+(1-\delta)]
 $$
 
-定义 $\beta = \frac{1}{1+\rho}$，得到
+定义 $\beta = \frac{1}{1+\rho}$，并化简得到
 
 $$
 1+\rho = 1[f'(\bar{K}) + (1-\delta)]
@@ -842,7 +859,7 @@ plot_saving_rate(pp, 0.3, k_ss/3, [250, 150, 75, 50], k_ss=k_ss)
 合适的做法是将终端条件{eq}`constraint4`替换为
 
 $$
-\lim_{T \rightarrow +\infty} \beta^T u'(C_T) K_{T+1} = 0
+\lim_{T \rightarrow +\infty} \beta^T u'(C_T) K_{T+1} = 0 ,
 $$
 
 收敛到最优稳态的路径将满足以上条件。
@@ -971,11 +988,11 @@ c_vec2, k_vec2 = bisection(pp, 1e-3, 1e-3, T=200, k_ter=Ks)
 
   * 蓝线表示方程 {eq}`eq:tildeC` 所描述的不动点 $C = \tilde C (K)$ 的图像。
   * 红线表示方程 {eq}`eq:tildeK` 所描述的不动点 $K = \tilde K(C)$ 的图像。
-  * 绿线表示从时间0时任意 $K_0$ 开始收敛到稳态的稳定流形。
+  * 绿线表示从时间0时任意 $K_0$ 开始收敛到稳态所描绘出的稳定路径。
      * 对于给定的 $K_0$，射击算法将 $C_0$ 设置为绿线上的坐标，以启动一条收敛到最优稳态的路径。
     * 绿线上的箭头显示了动态方程{eq}`eq:systemdynamics`推动连续对 $(K_{t+1}, C_t)$ 的方向。
 
-除了显示三条曲线外，图{numref}`stable_manifold`还绘制了箭头来指示当给定 $K_0$ 时，$C_0$不在绿线所示稳定流形上时，动态方程{eq}`eq:systemdynamics`驱动系统的方向。
+除了这三条曲线外，图{numref}`stable_manifold`还绘制了箭头，指示当给定 $K_0$ 时，若 $C_0$ 不在绿线所示的稳定流形上，动态方程{eq}`eq:systemdynamics`将把系统驱动向何处。
 
   * 如果对给定的$K_0$，$C_0$设置在绿线以下，则积累了过多的资本
   

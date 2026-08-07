@@ -9,6 +9,29 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 多种商品分配机制
+  headings:
+    Overview: 概述
+    Ascending Bids Auction for Multiple Goods: 多商品递增出价拍卖
+    A Benevolent Planner: 仁慈的规划者
+    Equivalence of Allocations: 分配的等价性
+    Ascending Bid Auction: 递增出价拍卖
+    Ascending Bid Auction::Basic Setting: 基本设置
+    Pseudocode: 伪代码
+    An Example: 示例
+    An Example::round 1: 第一轮
+    An Example::round 2: 第二轮
+    An Example::round 3: 第三轮
+    An Example::round 4: 第四轮
+    An Example::round 5: 第5轮
+    A Python Class: Python类
+    Robustness Checks: 稳健性检验
+    A Groves-Clarke Mechanism: Groves-Clarke 机制
+    An Example Solved by Hand: 手工解决的示例
+    Another Python Class: 另一个Python类
+    Another Python Class::Elaborations: 详细说明
+    Another Python Class::Social Cost: 社会成本
 ---
 
 # 多种商品分配机制
@@ -17,7 +40,7 @@ kernelspec:
 ---
 tags: [hide-output]
 ---
-!pip install prettytable
+!pip install "prettytable<3.18"
 ```
 
 ## 概述
@@ -537,7 +560,7 @@ def submit_bid(loser_list, p, ϵ, v, bid_info):
 ```
 
 ```{code-cell} ipython3
-p,bid_info = submit_bid(失败者列表, p, ϵ, v, bid_info)
+p,bid_info = submit_bid(loser_list, p, ϵ, v, bid_info)
 ```
 
 ```{code-cell} ipython3
@@ -1389,4 +1412,3 @@ gc_mechanism_exc_2.start()
 print("\n买家2的社会成本：",
      np.sum(gc_mechanism_exc_2.Q*gc_mechanism_exc_2.V_orig)-np.sum(np.delete(gc_mechanism.Q*gc_mechanism.V_orig, 2, axis=1)))
 ```
-

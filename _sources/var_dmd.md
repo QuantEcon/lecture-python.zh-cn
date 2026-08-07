@@ -9,6 +9,18 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 向量自回归和动态模态分解
+  headings:
+    First-Order Vector Autoregressions: 一阶向量自回归
+    Dynamic Mode Decomposition (DMD): 动态模态分解(DMD)
+    Representation 1: 表示法1
+    Representation 2: 表示法 2
+    Representation 3: 表示法3
+    Representation 3::Decoder of  $\check b$ as a linear projection: $\check b$ 的解码器作为线性投影
+    Representation 3::An Approximation: 一种近似方法
+    Representation 3::Using Fewer Modes: 使用更少的模态
+    Source for Some Python Code: Python代码来源
 ---
 
 # 向量自回归和动态模态分解
@@ -102,7 +114,7 @@ $$
 X^+ = X^\top  (X X^\top )^{-1} 
 $$
 
-这里$X^+$是一个满足$X X^+ = I_{m \times m}$的**右逆**，。
+这里$X^+$是一个满足$X X^+ = I_{m \times m}$的**右逆**。
 
 在这种情况下，我们用于估计总体回归系数矩阵$A$的最小二乘估计量的公式{eq}`eq:commonA`就变为
 
@@ -114,7 +126,7 @@ $$ (eq:Ahatform101)
 
 它也被用于估计向量自回归。
 
-公式{eq}`eq:Ahatform101`的右边，正比于$X_{t+1}$和$X_t$的经验交叉二阶矩矩，乘以$X_t$二阶矩阵的逆矩阵。
+公式{eq}`eq:Ahatform101`的右边，正比于$X_{t+1}$和$X_t$的经验交叉二阶矩矩阵，乘以$X_t$二阶矩阵的逆矩阵。
 
 **高瘦型情况：**
 
@@ -124,7 +136,7 @@ $$
 X^+ = (X^\top X)^{-1} X^\top 
 $$
 
-这里$X^+$是一个满足$X^+ X = I_{n \times n}$的**左逆**，。
+这里$X^+$是一个满足$X^+ X = I_{n \times n}$的**左逆**。
 
 在这种情况下，我们用于估计$A$的最小二乘估计公式{eq}`eq:commonA`变为
 
@@ -159,8 +171,7 @@ $$
 作为对$A$的估计量$\hat A$，我们想要形成一个$m \times m$的矩阵，来解决最小二乘最佳拟合问题
 
 $$ 
-\hat A = \textrm{argmin}_{\check A} || X' - \check  A X ||_F
-
+\hat A = \textrm{argmin}_{\check A} || X' - \check  A X ||_F   
 $$ (eq:ALSeqn)
 
 其中 $|| \cdot ||_F$ 表示矩阵的Frobenius（或欧几里得）范数。
@@ -227,19 +238,15 @@ $$ (eq:AhatSVDformula)
 
 ## 动态模态分解(DMD)
 
-接下来我们将研究一个特殊情况 -- 当变量数量$m >> n$时的情形。
+我们转向与**动态模态分解**相关的$m >>n$ **高瘦型**情况。
 
-**动态模态分解**可以用于处理这种"高瘦型"矩阵。
-
-假设有一个$m \times (n+1)$的数据矩阵$\tilde X$，它包含了比时间周期$n+1$多得多的属性（或变量）$m$。
+这里一个$ m \times n+1 $ 的数据矩阵 $ \tilde X $ 包含了比时间周期 $ n+1 $ 多得多的属性（或变量）$ m $。
 
 动态模态分解由{cite}`schmid2010`首次提出，
 
 你可以在 {cite}`DMD_book` 和 {cite}`Brunton_Kutz_2019`（第7.2节）中阅读有关动态模态分解的内容。
 
-**动态模态分解**（DMD）的目标是找到最小二乘回归系数矩阵$\hat A$的一个低秩近似，其中近似矩阵的秩$r$小于原始矩阵的秩$p$。
-
-这个近似可以通过公式{eq}`eq:AhatSVDformula`来构造。
+**动态模态分解**（DMD）计算公式{eq}`eq:AhatSVDformula`所描述的最小二乘回归系数$\hat A$的一个秩$r < p$的近似。
 
 我们将逐步构建一种适合应用的表示。
 
@@ -255,7 +262,7 @@ $$ (eq:AhatSVDformula)
 
 为此，我们需要使用与表示法3相关的**简化**SVD，而不是与表示法1和2相关的**完整**SVD。
 
-**快速指南：** 如果您想直接应用这些方法，可以直接跳到表示法3。
+**给不耐烦的读者的指南：** 在我们的应用中，我们将使用表示法3。
 
 第一次阅读时，您可以跳过铺垫性的表示法1和2。
 
@@ -321,19 +328,19 @@ $$
 
 这种表示方法与{cite}`schmid2010`最初提出的方法有关。
 
-它可以被视为推导表示3的一个中间步骤。
+它可以被视为推导后面将要介绍的表示3的一个中间步骤。
 
 与表示1一样，我们继续：
 
 * 使用**完整**SVD而**不是**简化SVD
 
-在{doc}`奇异值分解<svd_intro>`课程中我们学到:
+正如我们在{doc}`奇异值分解 <svd_intro>` 讲座中观察和阐释的那样
 
   * (a) 对于完整SVD，$U U^\top = I_{m \times m}$和$U^\top U = I_{p \times p}$都是单位矩阵
   
   * (b) 对于$X$的简化SVD，$U^\top U$不是单位矩阵。
 
-这个区别很重要，因为我们后面会使用简化SVD而不是完整SVD。这意味着我们需要处理$U^\top U$不是单位矩阵的情况。
+正如我们后面将会看到的，完整SVD对于我们最终想要做的事情来说过于局限，也就是说，我们需要应对由于使用$X$的简化SVD而导致$U^\top U$**不是**单位矩阵的情形。
 
 但现在，让我们假设我们使用的是完整SVD，这样条件(a)和(b)都得到满足。
 
@@ -361,7 +368,7 @@ $$
 
 将上述方程两边同时乘以$W^{-1} U^\top $，得到：
 
-$
+$$ 
 W^{-1} U^\top  X_{t+1} = \Lambda W^{-1} U^\top  X_t 
 $$
 
@@ -425,7 +432,7 @@ $$
 
 是 $m \times n$ 矩阵 $X$ 在 $m \times p$ 矩阵 $\Phi_s$ 上的回归系数矩阵。
 
-我们将在讨论由 Tu 等人 {cite}`tu_Rowley` 提出的表示法3时进一步讨论。
+在讨论表示法3时，我们将在相关背景下进一步讨论这个解释，表示法3是由 Tu 等人 {cite}`tu_Rowley` 提出的。
 
 当我们想要使用简化SVD时（这在实践中经常出现），使用表示法3更为合适。
 
@@ -446,7 +453,6 @@ $$
 我们的 $A$ 的最小范数最小二乘近似器现在的表示为
 
 $$
-
 \hat A = X' \tilde V \tilde \Sigma^{-1} \tilde U^\top 
 $$ (eq:Ahatwithtildes)
 
@@ -538,9 +544,14 @@ $$ (eq:Phiformula)
 这是Tu等人{cite}`tu_Rowley`证明的一个结果，我们下面来介绍。
 
 
-**命题** $\Phi$的$p$列是$\hat A$的特征向量。
+```{prf:proposition}
+:label: prop-dmd-eigenvectors
 
-**证明：** 根据公式{eq}`eq:Phiformula`，我们有
+$\Phi$的$p$列是$\hat A$的特征向量。
+```
+
+```{prf:proof}
+根据公式{eq}`eq:Phiformula`，我们有
 
 $$  
 \begin{aligned}
@@ -554,7 +565,7 @@ $$
 因此
 
 $$  
-\hat A \Phi = \Phi \Lambda 
+\hat A \Phi = \Phi \Lambda .
 $$ (eq:APhiLambda)
 
 令 $\phi_i$ 为 $\Phi$ 的第 $i$ 列，$\lambda_i$ 为分解式 {eq}`eq:tildeAeigenred` 中 $\tilde A$ 对应的第 $i$ 个特征值。
@@ -566,8 +577,7 @@ $$
 $$
 
 这个等式证实了 $\phi_i$ 是 $\hat A$ 的特征向量，对应于 $\tilde A$ 和 $\hat A$ 的特征值 $\lambda_i$。
-
-证明至此完成。
+```
 
 另见 {cite}`DDSE_book` (第238页)。
 
@@ -626,7 +636,6 @@ $$
 
 $$
 X = \Phi \check b + \epsilon
-
 $$ (eq:Xbcheck)
 
 其中 $\epsilon$ 是一个 $m \times n$ 的最小二乘误差矩阵，满足最小二乘正交条件 $\epsilon^\top \Phi =0$ 或
@@ -654,7 +663,7 @@ $$ (eq:X1proj)
 
 其中 $\check b_1$ 是一个 $p \times 1$ 的向量。
 
-回顾上面表示1中的 $X_1 = U \tilde b_1$,其中 $\tilde b_1$ 是表示1的时间1基向量,而 $U$ 来自完整SVD分解 $X = U \Sigma V^\top$。
+回顾上面表示法1中的 $X_1 = U \tilde b_1$，其中 $\tilde b_1$ 是表示法1的时间1基向量，而 $U$ 来自完整SVD分解 $X = U \Sigma V^\top$。
 
 从方程 {eq}`eq:Xbcheck` 可以得出:
 
@@ -670,7 +679,7 @@ $$
 \tilde b_1 = U^\top  X' V \tilde \Sigma^{-1} \tilde W \check b_1 + U^\top  \epsilon_1
 $$
 
-将误差项 $U^\top  \epsilon_1$ 替换为零,并将完整SVD中的 $U$ 替换为简化SVD中的 $\tilde U$,我们得到 $\tilde b_1$ 的近似值 $\hat b_1$:
+将误差项 $U^\top  \epsilon_1$ 替换为零，并将来自 $X$ 的**完整**SVD的 $U$ 替换为来自**简化**SVD的 $\tilde U$，我们得到 $\tilde b_1$ 的近似值 $\hat b_1$:
 
 $$ 
   \hat b_1 = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1} \tilde  W \check b_1
@@ -680,9 +689,8 @@ $$
 
 因此可得:
 
-$$
-
-\hat  b_1 = \tilde   A \tilde W \check b_1
+$$ 
+  \hat  b_1 = \tilde   A \tilde W \check b_1
 $$
 
 因此，根据 $\tilde A$ 的特征分解 {eq}`eq:tildeAeigenred`，我们有
@@ -715,7 +723,6 @@ $$ (eq:bphieqn)
 
 $$
 \check X_{t+j} = \Phi \Lambda^j \Phi^{+} X_t
-
 $$ (eq:checkXevoln)
 
 
@@ -743,4 +750,6 @@ $$ (eq:checkXevoln2)
 
 ## Python代码来源
 
-你可以在[这里](https://mathlab.sissa.it/pydmd)找到DMD的Python实现。
+你可以在这里找到DMD的Python实现：
+
+https://mathlab.sissa.it/pydmd

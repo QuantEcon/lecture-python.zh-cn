@@ -1,0 +1,2595 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>124. 资产价格的仿射模型 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'affine_risk_prices';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/affine_risk_prices.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="125. 恢复定理" href="ross_recovery.html" />
+    <link rel="prev" title="123. 自指模型中的最小二乘学习" href="ls_learning.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="资产价格的仿射模型"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="资产价格的仿射模型" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/affine_risk_prices.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=affine_risk_prices>
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">124.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">124.2. 模型</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">124.2.1. 状态动态与短期利率</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sdf">124.2.2. SDF 的性质</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">124.3. 对风险资产定价</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">124.3.1. 对数正态回报</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">124.3.2. 预期超额回报</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">124.4. 收益率的仿射期限结构</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">124.4.1. 债券价格</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">124.4.2. 指数仿射价格</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">124.4.3. 收益率</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">124.4.4. 单因子高斯示例</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">124.4.5. 收益率曲线形状</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">124.4.6. 双因子模型</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">124.5. 风险溢价</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">124.6. 风险中性概率</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">124.6.1. 测度变换</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">124.6.2. 资产定价简述</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">124.6.3. 通过风险中性定价进行验证</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">124.7. 扭曲信念</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">124.7.1. 主观测度</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">124.7.2. 扭曲信念下的定价</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">124.8. 结束语</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 24, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/affine_risk_prices.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/d0e0055" class="changelog-hash">d0e0055</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">1 week ago</span>
+                                <span class="changelog-message">Fix tofu in Chinese figure labels, and give font.family a fallback (#206)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/be4a8b2" class="changelog-hash">be4a8b2</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">Seed the 37 missing lectures — full source-TOC coverage (#196)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <div id="qe-notebook-header" align="right" style="text-align:right;">
+        <a href="https://quantecon.org/" title="quantecon.org">
+                <img style="width:250px;display:inline;" width="250px" src="https://assets.quantecon.org/img/qe-menubar-logo.svg" alt="QuantEcon">
+        </a>
+</div><section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><span class="section-number">124. </span>资产价格的仿射模型<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<section id="id2">
+<h2><span class="section-number">124.1. </span>概述<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>本讲座描述了一类随机贴现因子的<strong>仿射</strong>或<strong>指数二次型</strong>模型，这类模型在实证金融中已被广泛使用。</p>
+<p>这些模型在 <span class="bibtex-citation" id="id3">Ljungqvist and Sargent [<a class="reference internal" href="zreferences.html#id283" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">2018</a>]</span> 的第 15 章中有所介绍。</p>
+<p>这里讨论的模型采用了与 <span class="bibtex-citation" id="id4">Hansen and Singleton [<a class="reference internal" href="zreferences.html#id327" title="Lars Peter Hansen and Kenneth J Singleton. Stochastic consumption, risk aversion, and the temporal behavior of asset returns. Journal of political economy, 91(2):249–265, 1983.">1983</a>]</span> 中时间可分的 CRRA 随机贴现因子不同的方法，后者在我们的 <a class="reference internal" href="hansen_singleton_1983.html"><span class="doc">配套讲座</span></a> 中进行了研究。</p>
+<p>CRRA 随机贴现因子为</p>
+<div class="math notranslate nohighlight">
+\[
+m_{t+1} = \exp\left(-r_t - \frac{1}{2}\sigma_c^2 \gamma^2 - \gamma\sigma_c\varepsilon_{t+1}\right)
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(r_t = \rho + \gamma\mu - \frac{1}{2}\sigma_c^2\gamma^2\)</span>。</p>
+<p>该模型断言，对总消费增长的随机部分 <span class="math notranslate nohighlight">\(\sigma_c\varepsilon_{t+1}\)</span> 的暴露是<em>唯一</em>被定价的风险，是各资产预期回报之间差异的唯一来源。</p>
+<p>这一设定的实证困难（股权溢价之谜、无风险利率之谜，以及 <a class="reference external" href="https://python-advanced.quantecon.org/doubts_or_variability.html" title="（在 Project name not set）"><span>Doubts or Variability?</span></a> 中讨论的 Hansen-Jagannathan 边界）促使人们采用本讲座所描述的替代方法。</p>
+<p>直白地说，本讲座将研究的模型宣告了卢卡斯资产定价模型的随机贴现因子的失败。</p>
+<p><strong>仿射模型</strong>保持 <span class="math notranslate nohighlight">\(\mathbb{E}(m_{t+1}R_{j,t+1}) = 1\)</span>，但将随机贴现因子与消费风险<em>分离</em>，从而也在很大程度上与宏观经济学分离。</p>
+<p>相反，它</p>
+<ul class="simple">
+<li><p>为 <span class="math notranslate nohighlight">\(m_{t+1}\)</span> 指定了一个解析上易于处理的随机过程，并</p></li>
+<li><p>利用应用于 <span class="math notranslate nohighlight">\(N\)</span> 种资产的 <span class="math notranslate nohighlight">\(\mathbb{E}(m_{t+1}R_{j,t+1}) = 1\)</span> 的过度识别约束，让数据揭示风险及其价格。</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>包括 <span class="bibtex-citation" id="id5">[<a class="reference internal" href="zreferences.html#id314" title="Ravi Bansal and Amir Yaron. Risks for the long run: a potential resolution of asset pricing puzzles. Journal of Finance, 59(4):1481–1509, 2004. doi:10.1111/j.1540-6261.2004.00670.x.">Bansal and Yaron, 2004</a>]</span> 和 <span class="bibtex-citation" id="id6">[<a class="reference internal" href="zreferences.html#id315" title="Lars Peter Hansen, John C. Heaton, and Nan Li. Consumption strikes back? measuring long-run risk. Journal of Political Economy, 116(2):260–302, 2008. doi:10.1086/588200.">Hansen <em>et al.</em>, 2008</a>]</span> 在内的研究者一直不太愿意放弃基于消费的随机贴现因子模型。</p>
+</div>
+<p>我们研究的关键应用包括：</p>
+<ol class="arabic simple">
+<li><p><em>对风险资产定价</em>：风险价格和暴露如何决定超额回报。</p></li>
+<li><p><em>仿射期限结构模型</em>：债券收益率作为状态向量的仿射函数（<span class="bibtex-citation" id="id7">Ang and Piazzesi [<a class="reference internal" href="zreferences.html#id378" title="Andrew Ang and Monika Piazzesi. A no-arbitrage vector autoregression of term structure dynamics with macroeconomic and latent variables. Journal of Monetary Economics, 50(4):745–787, 2003.">2003</a>]</span>）。</p></li>
+<li><p><em>风险中性概率</em>：定价方程的一种测度变换表示。</p></li>
+<li><p><em>扭曲信念</em>：当行为主体持有系统性偏差的预测时，重新解释风险价格估计（<span class="bibtex-citation" id="id8">Piazzesi <em>et al.</em> [<a class="reference internal" href="zreferences.html#id376" title="Monika Piazzesi, Juliana Salomao, and Martin Schneider. Trend and Cycle in Bond Premia. Working Paper, Stanford University, 2015.">2015</a>]</span>）；另见 <a class="reference external" href="https://python-advanced.quantecon.org/risk_aversion_or_mistaken_beliefs.html" title="（在 Project name not set）"><span>Risk Aversion or Mistaken Beliefs?</span></a>。</p></li>
+</ol>
+<p>我们从以下导入开始：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">eigvals</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h2><span class="section-number">124.2. </span>模型<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h3><span class="section-number">124.2.1. </span>状态动态与短期利率<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<p>该模型有两个部分。</p>
+<p><em>第一部分</em>是一个向量自回归，描述了经济状态和短期利率的演变：</p>
+<div class="math notranslate nohighlight" id="equation-eq-var">
+<span class="eqno">(124.1)<a class="headerlink" href="#equation-eq-var" title="Link to this equation">#</a></span>\[z_{t+1} = \mu + \phi z_t + C\varepsilon_{t+1}\]</div>
+<div class="math notranslate nohighlight" id="equation-eq-shortrate">
+<span class="eqno">(124.2)<a class="headerlink" href="#equation-eq-shortrate" title="Link to this equation">#</a></span>\[r_t = \delta_0 + \delta_1^\top z_t\]</div>
+<p>这里</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\phi\)</span> 是一个稳定的 <span class="math notranslate nohighlight">\(m \times m\)</span> 矩阵，</p></li>
+<li><p><span class="math notranslate nohighlight">\(C\)</span> 是一个 <span class="math notranslate nohighlight">\(m \times m\)</span> 矩阵，</p></li>
+<li><p><span class="math notranslate nohighlight">\(\varepsilon_{t+1} \sim \mathcal{N}(0, I)\)</span> 是一个独立同分布的 <span class="math notranslate nohighlight">\(m \times 1\)</span> 随机向量，</p></li>
+<li><p><span class="math notranslate nohighlight">\(z_t\)</span> 是一个 <span class="math notranslate nohighlight">\(m \times 1\)</span> 状态向量。</p></li>
+</ul>
+<p>方程 <a class="reference internal" href="#equation-eq-shortrate">(124.2)</a> 表明，<strong>短期利率</strong> <span class="math notranslate nohighlight">\(r_t\)</span>，即单期无风险债权的净收益率，是状态 <span class="math notranslate nohighlight">\(z_t\)</span> 的仿射函数。</p>
+<p><em>第二部分</em>是一个<strong>风险价格</strong>向量 <span class="math notranslate nohighlight">\(\lambda_t\)</span> 及其相关的随机贴现因子 <span class="math notranslate nohighlight">\(m_{t+1}\)</span>：</p>
+<div class="math notranslate nohighlight" id="equation-eq-riskprices">
+<span class="eqno">(124.3)<a class="headerlink" href="#equation-eq-riskprices" title="Link to this equation">#</a></span>\[\lambda_t = \lambda_0 + \lambda_z z_t\]</div>
+<div class="math notranslate nohighlight" id="equation-eq-sdf">
+<span class="eqno">(124.4)<a class="headerlink" href="#equation-eq-sdf" title="Link to this equation">#</a></span>\[\log(m_{t+1}) = -r_t - \frac{1}{2}\lambda_t^\top\lambda_t - \lambda_t^\top\varepsilon_{t+1}\]</div>
+<p>这里 <span class="math notranslate nohighlight">\(\lambda_0\)</span> 是 <span class="math notranslate nohighlight">\(m \times 1\)</span>，<span class="math notranslate nohighlight">\(\lambda_z\)</span> 是 <span class="math notranslate nohighlight">\(m \times m\)</span>。</p>
+<p><span class="math notranslate nohighlight">\(\lambda_t\)</span> 中乘以风险 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 相应分量的各项被称为<strong>风险价格</strong>，因为它们决定了对每个风险分量的暴露如何影响预期回报（如我们下面所示）。</p>
+<p>由于 <span class="math notranslate nohighlight">\(\lambda_t\)</span> 是 <span class="math notranslate nohighlight">\(z_t\)</span> 的仿射函数，随机贴现因子 <span class="math notranslate nohighlight">\(m_{t+1}\)</span> 是状态 <span class="math notranslate nohighlight">\(z_t\)</span> 的<strong>指数二次型</strong>。</p>
+<p>我们按如下方式实现模型的各部分。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">AffineModel</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;AffineModel&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">&#39;μ&#39;</span><span class="p">,</span> <span class="s1">&#39;φ&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;δ_0&#39;</span><span class="p">,</span> <span class="s1">&#39;δ_1&#39;</span><span class="p">,</span> <span class="s1">&#39;λ_0&#39;</span><span class="p">,</span> <span class="s1">&#39;λ_z&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;φ_rn&#39;</span><span class="p">,</span> <span class="s1">&#39;μ_rn&#39;</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_affine_model</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">φ</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">δ_0</span><span class="p">,</span> <span class="n">δ_1</span><span class="p">,</span> <span class="n">λ_0</span><span class="p">,</span> <span class="n">λ_z</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;创建一个仿射期限结构模型。&quot;&quot;&quot;</span>
+    <span class="n">μ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">φ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">φ</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">δ_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">δ_1</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">λ_0</span><span class="p">,</span> <span class="n">λ_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">λ_0</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">λ_z</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">AffineModel</span><span class="p">(</span><span class="n">μ</span><span class="o">=</span><span class="n">μ</span><span class="p">,</span> <span class="n">φ</span><span class="o">=</span><span class="n">φ</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">δ_0</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">δ_0</span><span class="p">),</span> <span class="n">δ_1</span><span class="o">=</span><span class="n">δ_1</span><span class="p">,</span>
+                       <span class="n">λ_0</span><span class="o">=</span><span class="n">λ_0</span><span class="p">,</span> <span class="n">λ_z</span><span class="o">=</span><span class="n">λ_z</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">μ</span><span class="p">),</span>
+                       <span class="n">φ_rn</span><span class="o">=</span><span class="n">φ</span> <span class="o">-</span> <span class="n">C</span> <span class="o">@</span> <span class="n">λ_z</span><span class="p">,</span> <span class="n">μ_rn</span><span class="o">=</span><span class="n">μ</span> <span class="o">-</span> <span class="n">C</span> <span class="o">@</span> <span class="n">λ_0</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;在 T 期内模拟 z_{t+1} = μ + φ z_t + C ε_{t+1}。&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">m</span><span class="p">))</span>
+    <span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">z0</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">ε</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">Z</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">μ</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">φ</span> <span class="o">@</span> <span class="n">Z</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">C</span> <span class="o">@</span> <span class="n">ε</span>
+    <span class="k">return</span> <span class="n">Z</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">short_rate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算 r_t = δ_0 + δ_1^⊤ z_t。&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">δ_0</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">δ_1</span> <span class="o">@</span> <span class="n">z</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">risk_prices</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算 λ_t = λ_0 + λ_z z_t。&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">λ_0</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">λ_z</span> <span class="o">@</span> <span class="n">z</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="sdf">
+<h3><span class="section-number">124.2.2. </span>SDF 的性质<a class="headerlink" href="#sdf" title="Link to this heading">#</a></h3>
+<p>由于 <span class="math notranslate nohighlight">\(\lambda_t^\top\varepsilon_{t+1}\)</span> 是条件正态的，因此有</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_t(m_{t+1}) = \exp(-r_t)
+\]</div>
+<p>以及</p>
+<div class="math notranslate nohighlight">
+\[
+\text{std}_t(m_{t+1}) \approx \| \lambda_t \|.
+\]</div>
+<div class="exercise admonition" id="arp_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 124.1 </span></p>
+<section id="exercise-content">
+<p>证明 <a class="reference internal" href="#equation-eq-sdf">(124.4)</a> 中定义的 SDF 满足</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_t(m_{t+1}) = \exp(-r_t)
+\]</div>
+<p>以及</p>
+<div class="math notranslate nohighlight">
+\[
+\text{std}_t(m_{t+1}) \approx \| \lambda_t \|
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\| \lambda_t \| = \sqrt{\lambda_t^\top\lambda_t}\)</span> 表示风险价格向量的欧几里得范数。</p>
+<p>对于第二个结果，使用对数正态方差公式以及对小的 <span class="math notranslate nohighlight">\(x\)</span> 和 <span class="math notranslate nohighlight">\(r_t\)</span> 的近似 <span class="math notranslate nohighlight">\(\exp(x) \approx 1 + x\)</span> 和 <span class="math notranslate nohighlight">\(\exp(-r_t) \approx 1\)</span>。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="affine_risk_prices-solution-1">
+
+<p class="admonition-title">解答<a class="reference internal" href="#arp_ex1"> 练习 124.1</a></p>
+<section id="solution-content">
+<p>由 <a class="reference internal" href="#equation-eq-sdf">(124.4)</a>，我们有</p>
+<div class="math notranslate nohighlight">
+\[
+m_{t+1} = \exp\left(-r_t - \frac{1}{2}\lambda_t^\top\lambda_t - \lambda_t^\top\varepsilon_{t+1}\right)
+\]</div>
+<p>由于 <span class="math notranslate nohighlight">\(-\lambda_t^\top \varepsilon_{t+1} \sim \mathcal{N}(0, \lambda_t^\top \lambda_t)\)</span>，我们有
+<span class="math notranslate nohighlight">\(\mathbb{E}_t[\exp(-\lambda_t^\top \varepsilon_{t+1})] = \exp\left(\frac{1}{2}\lambda_t^\top \lambda_t\right)\)</span>。</p>
+<p>因此，</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_t(m_{t+1}) = \exp(-r_t - \frac{1}{2}\lambda_t^\top\lambda_t) \mathbb{E}_t[\exp(-\lambda_t^\top\varepsilon_{t+1})] = \exp(-r_t)
+\]</div>
+<p><span class="math notranslate nohighlight">\(m_{t+1}\)</span> 是条件对数正态的，其中 <span class="math notranslate nohighlight">\(\log m_{t+1} \sim \mathcal{N}(-r_t-\frac{1}{2}\lambda_t^\top\lambda_t, \lambda_t^\top \lambda_t)\)</span>。</p>
+<p>由对数正态方差公式
+<span class="math notranslate nohighlight">\(\text{Var}(\exp(X)) = (\exp(\sigma^2) - 1) \exp(2\mu + \sigma^2)\)</span>（对于 <span class="math notranslate nohighlight">\(X \sim \mathcal{N}(\mu, \sigma^2)\)</span>），我们有</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\text{Var}_t(m_{t+1}) &amp;= (\exp(\lambda_t^\top \lambda_t) - 1) \exp(-2r_t) \\
+&amp;\approx \lambda_t^\top \lambda_t \exp(-2r_t)
+\end{aligned}
+\end{split}\]</div>
+<p>这是根据对小的 <span class="math notranslate nohighlight">\(x\)</span> 的近似 <span class="math notranslate nohighlight">\(\exp(x) \approx 1 + x\)</span> 得到的。</p>
+<p>因此，</p>
+<div class="math notranslate nohighlight">
+\[
+\text{std}_t(m_{t+1}) \approx \| \lambda_t \| \exp(-r_t)
+\]</div>
+<p>对于小的 <span class="math notranslate nohighlight">\(r_t\)</span>，有 <span class="math notranslate nohighlight">\(\exp(-r_t) \approx 1\)</span>，我们得到</p>
+<div class="math notranslate nohighlight">
+\[
+\text{std}_t(m_{t+1}) \approx \| \lambda_t \|
+\]</div>
+</section>
+</div>
+<p>第一个方程确认 <span class="math notranslate nohighlight">\(r_t\)</span> 是无风险单期债券的净收益率。</p>
+<p>这就是为什么在指数二次型文献中 <span class="math notranslate nohighlight">\(r_t\)</span> 被称为<strong>短期利率</strong>。</p>
+<p>第二个方程表明，SDF 的条件标准差近似等于风险价格向量的大小，这是对整体<strong>市场风险价格</strong>的一种度量。</p>
+</section>
+</section>
+<section id="id11">
+<h2><span class="section-number">124.3. </span>对风险资产定价<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<section id="id12">
+<h3><span class="section-number">124.3.1. </span>对数正态回报<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>考虑一种风险资产 <span class="math notranslate nohighlight">\(j\)</span>，其总回报具有对数正态的条件分布：</p>
+<div class="math notranslate nohighlight" id="equation-eq-return">
+<span class="eqno">(124.5)<a class="headerlink" href="#equation-eq-return" title="Link to this equation">#</a></span>\[R_{j,t+1} = \exp\left(\nu_t(j) - \frac{1}{2}\alpha_t(j)^\top\alpha_t(j) + \alpha_t(j)^\top\varepsilon_{t+1}\right)\]</div>
+<p>其中<strong>暴露向量</strong></p>
+<div class="math notranslate nohighlight" id="equation-eq-exposure">
+<span class="eqno">(124.6)<a class="headerlink" href="#equation-eq-exposure" title="Link to this equation">#</a></span>\[\alpha_t(j) = \alpha_0(j) + \alpha_z(j)\, z_t\]</div>
+<p>这里 <span class="math notranslate nohighlight">\(\alpha_0(j)\)</span> 是 <span class="math notranslate nohighlight">\(m \times 1\)</span>，<span class="math notranslate nohighlight">\(\alpha_z(j)\)</span> 是 <span class="math notranslate nohighlight">\(m \times m\)</span>。</p>
+<p><span class="math notranslate nohighlight">\(\alpha_t(j)\)</span> 的各分量表示 <span class="math notranslate nohighlight">\(\log R_{j,t+1}\)</span> 对风险向量 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 相应分量的<strong>暴露</strong>。</p>
+<p>设定 <a class="reference internal" href="#equation-eq-return">(124.5)</a> 蕴含 <span class="math notranslate nohighlight">\(\mathbb{E}_t R_{j,t+1} = \exp(\nu_t(j))\)</span>，
+因此 <span class="math notranslate nohighlight">\(\nu_t(j)\)</span> 是预期总回报的对数。</p>
+</section>
+<section id="id13">
+<h3><span class="section-number">124.3.2. </span>预期超额回报<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<p>将定价方程 <span class="math notranslate nohighlight">\(\mathbb{E}_t(m_{t+1}R_{j,t+1}) = 1\)</span> 与对数正态随机变量的均值公式一起应用，得到</p>
+<div class="math notranslate nohighlight" id="equation-eq-excess">
+<span class="eqno">(124.7)<a class="headerlink" href="#equation-eq-excess" title="Link to this equation">#</a></span>\[\nu_t(j) = r_t + \alpha_t(j)^\top\lambda_t\]</div>
+<div class="exercise admonition" id="arp_ex2">
+
+<p class="admonition-title"><span class="caption-number">练习 124.2 </span></p>
+<section id="exercise-content">
+<p>使用 SDF <a class="reference internal" href="#equation-eq-sdf">(124.4)</a> 和回报设定 <a class="reference internal" href="#equation-eq-return">(124.5)</a>，推导预期超额回报公式 <a class="reference internal" href="#equation-eq-excess">(124.7)</a>：</p>
+<div class="math notranslate nohighlight">
+\[
+\nu_t(j) = r_t + \alpha_t(j)^\top\lambda_t
+\]</div>
+<p><em>提示：</em> 从计算 <span class="math notranslate nohighlight">\(\log(m_{t+1} R_{j,t+1})\)</span> 开始，识别其条件分布，并应用定价条件 <span class="math notranslate nohighlight">\(\mathbb{E}_t(m_{t+1}R_{j,t+1}) = 1\)</span>。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="affine_risk_prices-solution-3">
+
+<p class="admonition-title">解答<a class="reference internal" href="#arp_ex2"> 练习 124.2</a></p>
+<section id="solution-content">
+<p>结合 <a class="reference internal" href="#equation-eq-sdf">(124.4)</a> 和 <a class="reference internal" href="#equation-eq-return">(124.5)</a>，我们得到</p>
+<div class="math notranslate nohighlight">
+\[
+\log(m_{t+1} R_{j,t+1}) = -r_t + \nu_t(j) - \frac{1}{2}\lambda_t^\top\lambda_t - \frac{1}{2}\alpha_t(j)^\top\alpha_t(j) + (\alpha_t(j) - \lambda_t)^\top\varepsilon_{t+1}
+\]</div>
+<p>这是条件正态的，均值为 <span class="math notranslate nohighlight">\(\mu = -r_t + \nu_t(j) - \frac{1}{2}\lambda_t^\top\lambda_t - \frac{1}{2}\alpha_t(j)^\top\alpha_t(j)\)</span>，方差为 <span class="math notranslate nohighlight">\(\sigma^2 = (\alpha_t(j) - \lambda_t)^\top(\alpha_t(j) - \lambda_t)\)</span>。</p>
+<p>由于对于 <span class="math notranslate nohighlight">\(X \sim \mathcal{N}(\mu, \sigma^2)\)</span> 有 <span class="math notranslate nohighlight">\(\mathbb{E}_t[\exp(X)] = \exp(\mu + \frac{1}{2}\sigma^2)\)</span>，定价条件 <span class="math notranslate nohighlight">\(\mathbb{E}_t(m_{t+1}R_{j,t+1}) = 1\)</span> 要求 <span class="math notranslate nohighlight">\(\mu + \frac{1}{2}\sigma^2 = 0\)</span>。</p>
+<p>展开 <span class="math notranslate nohighlight">\(\frac{1}{2}\sigma^2 = \frac{1}{2}\alpha_t(j)^\top\alpha_t(j) - \alpha_t(j)^\top\lambda_t + \frac{1}{2}\lambda_t^\top\lambda_t\)</span> 并加到 <span class="math notranslate nohighlight">\(\mu\)</span> 上，<span class="math notranslate nohighlight">\(\frac{1}{2}\lambda_t^\top\lambda_t\)</span> 和 <span class="math notranslate nohighlight">\(\frac{1}{2}\alpha_t(j)^\top\alpha_t(j)\)</span> 项相互抵消，剩下</p>
+<div class="math notranslate nohighlight">
+\[
+-r_t + \nu_t(j) - \alpha_t(j)^\top\lambda_t = 0
+\]</div>
+<p>这给出了 <a class="reference internal" href="#equation-eq-excess">(124.7)</a>。</p>
+</section>
+</div>
+<p>这是一个核心结果。</p>
+<p>它表明：</p>
+<blockquote>
+<div><p>资产 <span class="math notranslate nohighlight">\(j\)</span> 上的对数预期总回报等于短期利率加上资产暴露向量 <span class="math notranslate nohighlight">\(\alpha_t(j)\)</span> 与风险价格向量 <span class="math notranslate nohighlight">\(\lambda_t\)</span> 的内积。</p>
+</div></blockquote>
+<p><span class="math notranslate nohighlight">\(\lambda_t\)</span> 的每个分量对 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 的相应分量进行定价。</p>
+<p>对具有较大风险价格的风险分量有大量载荷的资产会获得相应较高的预期回报。</p>
+</section>
+</section>
+<section id="id14">
+<h2><span class="section-number">124.4. </span>收益率的仿射期限结构<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<p>最重要的应用之一是 <span class="bibtex-citation" id="id15">Ang and Piazzesi [<a class="reference internal" href="zreferences.html#id378" title="Andrew Ang and Monika Piazzesi. A no-arbitrage vector autoregression of term structure dynamics with macroeconomic and latent variables. Journal of Monetary Economics, 50(4):745–787, 2003.">2003</a>]</span> 研究的<strong>仿射期限结构模型</strong>。</p>
+<section id="id16">
+<h3><span class="section-number">124.4.1. </span>债券价格<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<p>设 <span class="math notranslate nohighlight">\(p_t(n)\)</span> 为在时刻 <span class="math notranslate nohighlight">\(t\)</span> 到期于 <span class="math notranslate nohighlight">\(t + n\)</span> 的无风险纯贴现债券（支付一单位消费）的价格。</p>
+<p>从 <span class="math notranslate nohighlight">\(t\)</span> 到 <span class="math notranslate nohighlight">\(t+1\)</span> 持有一个 <span class="math notranslate nohighlight">\((n+1)\)</span> 期债券的单期总回报为</p>
+<div class="math notranslate nohighlight">
+\[
+R_{t+1} = \frac{p_{t+1}(n)}{p_t(n+1)}
+\]</div>
+<p>定价方程 <span class="math notranslate nohighlight">\(\mathbb{E}_t(m_{t+1}R_{t+1}) = 1\)</span> 蕴含</p>
+<div class="math notranslate nohighlight" id="equation-eq-bondrecur">
+<span class="eqno">(124.8)<a class="headerlink" href="#equation-eq-bondrecur" title="Link to this equation">#</a></span>\[p_t(n+1) = \mathbb{E}_t\bigl(m_{t+1}\,p_{t+1}(n)\bigr)\]</div>
+<p>初始条件为</p>
+<div class="math notranslate nohighlight">
+\[
+p_t(1) = \mathbb{E}_t(m_{t+1}) = \exp(-r_t) = \exp(-\delta_0 - \delta_1^\top z_t).
+\]</div>
+</section>
+<section id="id17">
+<h3><span class="section-number">124.4.2. </span>指数仿射价格<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<p>递归 <a class="reference internal" href="#equation-eq-bondrecur">(124.8)</a> 有一个<strong>指数仿射</strong>解：</p>
+<div class="math notranslate nohighlight" id="equation-eq-bondprice">
+<span class="eqno">(124.9)<a class="headerlink" href="#equation-eq-bondprice" title="Link to this equation">#</a></span>\[p_t(n) = \exp \bigl(\bar A_n + \bar B_n^\top z_t\bigr)\]</div>
+<p>其中标量 <span class="math notranslate nohighlight">\(\bar A_n\)</span> 和 <span class="math notranslate nohighlight">\(m \times 1\)</span> 向量 <span class="math notranslate nohighlight">\(\bar B_n\)</span> 满足<strong>黎卡提差分方程</strong></p>
+<div class="math notranslate nohighlight" id="equation-eq-riccati-a">
+<span class="eqno">(124.10)<a class="headerlink" href="#equation-eq-riccati-a" title="Link to this equation">#</a></span>\[\bar A_{n+1} = \bar A_n + \bar B_n^\top(\mu - C\lambda_0) + \frac{1}{2}\bar B_n^\top CC^\top\bar B_n - \delta_0\]</div>
+<div class="math notranslate nohighlight" id="equation-eq-riccati-b">
+<span class="eqno">(124.11)<a class="headerlink" href="#equation-eq-riccati-b" title="Link to this equation">#</a></span>\[\bar B_{n+1}^\top = \bar B_n^\top(\phi - C\lambda_z) - \delta_1^\top\]</div>
+<p>初始条件为 <span class="math notranslate nohighlight">\(\bar A_1 = -\delta_0\)</span> 和 <span class="math notranslate nohighlight">\(\bar B_1 = -\delta_1\)</span>。</p>
+<div class="exercise admonition" id="arp_ex3">
+
+<p class="admonition-title"><span class="caption-number">练习 124.3 </span></p>
+<section id="exercise-content">
+<p>通过将猜想的债券价格 <a class="reference internal" href="#equation-eq-bondprice">(124.9)</a> 代入定价递归 <a class="reference internal" href="#equation-eq-bondrecur">(124.8)</a> 并匹配系数，推导黎卡提差分方程 <a class="reference internal" href="#equation-eq-riccati-a">(124.10)</a> 和 <a class="reference internal" href="#equation-eq-riccati-b">(124.11)</a>。</p>
+<p><em>提示：</em> 将 <span class="math notranslate nohighlight">\(p_{t+1}(n) = \exp(\bar A_n + \bar B_n^\top z_{t+1})\)</span> 和
+<a class="reference internal" href="#equation-eq-sdf">(124.4)</a> 中的 <span class="math notranslate nohighlight">\(\log m_{t+1}\)</span> 代入 <a class="reference internal" href="#equation-eq-bondrecur">(124.8)</a>。</p>
+<p>使用状态动态 <a class="reference internal" href="#equation-eq-var">(124.1)</a> 将 <span class="math notranslate nohighlight">\(z_{t+1}\)</span> 用 <span class="math notranslate nohighlight">\(z_t\)</span> 和
+<span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 表示，然后使用对数正态矩生成函数求条件期望。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="affine_risk_prices-solution-5">
+
+<p class="admonition-title">解答<a class="reference internal" href="#arp_ex3"> 练习 124.3</a></p>
+<section id="solution-content">
+<p>我们要证明，如果 <span class="math notranslate nohighlight">\(p_t(n) = \exp(\bar A_n + \bar B_n^\top z_t)\)</span>，
+那么递归 <span class="math notranslate nohighlight">\(p_t(n+1) = \mathbb{E}_t(m_{t+1}\, p_{t+1}(n))\)</span> 得到
+<span class="math notranslate nohighlight">\(p_t(n+1) = \exp(\bar A_{n+1} + \bar B_{n+1}^\top z_t)\)</span>，其中
+<span class="math notranslate nohighlight">\(\bar A_{n+1}\)</span> 和 <span class="math notranslate nohighlight">\(\bar B_{n+1}\)</span> 由 <a class="reference internal" href="#equation-eq-riccati-a">(124.10)</a> 和
+<a class="reference internal" href="#equation-eq-riccati-b">(124.11)</a> 给出。</p>
+<p>由 <a class="reference internal" href="#equation-eq-sdf">(124.4)</a> 和 <a class="reference internal" href="#equation-eq-bondprice">(124.9)</a>，</p>
+<div class="math notranslate nohighlight">
+\[
+\log(m_{t+1}\, p_{t+1}(n)) = -r_t - \frac{1}{2}\lambda_t^\top\lambda_t - \lambda_t^\top\varepsilon_{t+1} + \bar A_n + \bar B_n^\top z_{t+1}
+\]</div>
+<p>代入 <a class="reference internal" href="#equation-eq-var">(124.1)</a> 中的 <span class="math notranslate nohighlight">\(z_{t+1} = \mu + \phi z_t + C\varepsilon_{t+1}\)</span>
+和 <a class="reference internal" href="#equation-eq-shortrate">(124.2)</a> 中的 <span class="math notranslate nohighlight">\(r_t = \delta_0 + \delta_1^\top z_t\)</span>，得到</p>
+<div class="math notranslate nohighlight">
+\[
+\log(m_{t+1}\, p_{t+1}(n)) = \bar A_n + \bar B_n^\top\mu - \delta_0 + (\bar B_n^\top\phi - \delta_1^\top) z_t - \frac{1}{2}\lambda_t^\top\lambda_t + (\bar B_n^\top C - \lambda_t^\top)\varepsilon_{t+1}
+\]</div>
+<p>由于 <span class="math notranslate nohighlight">\(\varepsilon_{t+1} \sim \mathcal{N}(0, I)\)</span>，将指数写成 <span class="math notranslate nohighlight">\(a + b^\top\varepsilon_{t+1}\)</span> 的形式，其中
+<span class="math notranslate nohighlight">\(b = C^\top \bar B_n - \lambda_t\)</span>，我们有</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_t[\exp(a + b^\top\varepsilon_{t+1})] = \exp\left(a + \frac{1}{2}b^\top b\right)
+\]</div>
+<p>计算 <span class="math notranslate nohighlight">\(\frac{1}{2}b^\top b\)</span>：</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{2}(\bar B_n^\top C - \lambda_t^\top)(\bar B_n^\top C - \lambda_t^\top)^\top = \frac{1}{2}\bar B_n^\top CC^\top \bar B_n - \bar B_n^\top C\lambda_t + \frac{1}{2}\lambda_t^\top\lambda_t
+\]</div>
+<p><span class="math notranslate nohighlight">\(\frac{1}{2}\lambda_t^\top\lambda_t\)</span> 与已经在 <span class="math notranslate nohighlight">\(a\)</span> 中的 <span class="math notranslate nohighlight">\(-\frac{1}{2}\lambda_t^\top\lambda_t\)</span> 相互抵消，并且 <span class="math notranslate nohighlight">\(-\bar B_n^\top C\lambda_t = -\bar B_n^\top C(\lambda_0 + \lambda_z z_t)\)</span>。</p>
+<div class="math notranslate nohighlight">
+\[
+\log p_t(n+1) = \underbrace{\bar A_n + \bar B_n^\top(\mu - C\lambda_0) + \frac{1}{2}\bar B_n^\top CC^\top \bar B_n - \delta_0}_{\bar A_{n+1}} + \underbrace{(\bar B_n^\top(\phi - C\lambda_z) - \delta_1^\top)}_{\bar B_{n+1}^\top} z_t
+\]</div>
+<p>匹配常数项和 <span class="math notranslate nohighlight">\(z_t\)</span> 上的系数，得到黎卡提
+方程 <a class="reference internal" href="#equation-eq-riccati-a">(124.10)</a> 和 <a class="reference internal" href="#equation-eq-riccati-b">(124.11)</a>。</p>
+<p>令 <span class="math notranslate nohighlight">\(n = 0\)</span>，其中 <span class="math notranslate nohighlight">\(p_t(1) = \exp(-r_t) = \exp(-\delta_0 - \delta_1^\top z_t)\)</span>，得到 <span class="math notranslate nohighlight">\(\bar A_1 = -\delta_0\)</span> 和 <span class="math notranslate nohighlight">\(\bar B_1 = -\delta_1\)</span>。</p>
+</section>
+</div>
+</section>
+<section id="id18">
+<h3><span class="section-number">124.4.3. </span>收益率<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<p><span class="math notranslate nohighlight">\(n\)</span> 期债券的<strong>到期收益率</strong>是一个常数利率 <span class="math notranslate nohighlight">\(y\)</span>，
+以该利率将面值贴现可得到观察到的价格，
+即 <span class="math notranslate nohighlight">\(p_t(n) = e^{-n\,y}\)</span>。</p>
+<p>对 <span class="math notranslate nohighlight">\(y\)</span> 求解得到</p>
+<div class="math notranslate nohighlight">
+\[
+y_t(n) = -\frac{\log p_t(n)}{n}
+\]</div>
+<p>代入 <a class="reference internal" href="#equation-eq-bondprice">(124.9)</a> 得到</p>
+<div class="math notranslate nohighlight" id="equation-eq-yield">
+<span class="eqno">(124.12)<a class="headerlink" href="#equation-eq-yield" title="Link to this equation">#</a></span>\[y_t(n) = A_n + B_n^\top z_t\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(A_n = -\bar A_n / n\)</span>，<span class="math notranslate nohighlight">\(B_n = -\bar B_n / n\)</span>。</p>
+<p><em>收益率是状态向量 <span class="math notranslate nohighlight">\(z_t\)</span> 的仿射函数。</em></p>
+<p>这是仿射期限结构模型的定义性质。</p>
+<p>现在我们实现债券定价公式 <a class="reference internal" href="#equation-eq-riccati-a">(124.10)</a>、<a class="reference internal" href="#equation-eq-riccati-b">(124.11)</a>
+和 <a class="reference internal" href="#equation-eq-yield">(124.12)</a>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bond_coefficients</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n_max</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算 n = 1, ..., n_max 的 (A_bar_n, B_bar_n)。&quot;&quot;&quot;</span>
+    <span class="n">A_bar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">B_bar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">m</span><span class="p">))</span>
+    <span class="n">A_bar</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">B_bar</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">δ_0</span><span class="p">,</span> <span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">δ_1</span>
+    <span class="n">CC</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">C</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max</span><span class="p">):</span>
+        <span class="n">Bn</span> <span class="o">=</span> <span class="n">B_bar</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="n">A_bar</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">A_bar</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">Bn</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">μ_rn</span>
+                       <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">Bn</span> <span class="o">@</span> <span class="n">CC</span> <span class="o">@</span> <span class="n">Bn</span>
+                       <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">δ_0</span><span class="p">)</span>
+        <span class="n">B_bar</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">φ_rn</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Bn</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">δ_1</span>
+    <span class="k">return</span> <span class="n">A_bar</span><span class="p">,</span> <span class="n">B_bar</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_yields</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n_max</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算 n = 1, ..., n_max 的收益率曲线 y_t(n)。&quot;&quot;&quot;</span>
+    <span class="n">A_bar</span><span class="p">,</span> <span class="n">B_bar</span> <span class="o">=</span> <span class="n">bond_coefficients</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n_max</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="o">-</span><span class="n">A_bar</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="n">B_bar</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">@</span> <span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span>
+                     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">bond_prices</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n_max</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算 n = 1, ..., n_max 的债券价格 p_t(n)。&quot;&quot;&quot;</span>
+    <span class="n">A_bar</span><span class="p">,</span> <span class="n">B_bar</span> <span class="o">=</span> <span class="n">bond_coefficients</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n_max</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">A_bar</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">B_bar</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">@</span> <span class="n">z</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id19">
+<h3><span class="section-number">124.4.4. </span>单因子高斯示例<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<p>为了建立直觉，我们从单因子（<span class="math notranslate nohighlight">\(m=1\)</span>）高斯模型开始。</p>
+<p>当 <span class="math notranslate nohighlight">\(m = 1\)</span> 时，状态 <span class="math notranslate nohighlight">\(z_t\)</span> 遵循 AR(1) 过程
+<span class="math notranslate nohighlight">\(z_{t+1} = \mu + \phi z_t + C\varepsilon_{t+1}\)</span>。</p>
+<p><span class="math notranslate nohighlight">\(z_t\)</span> 的无条件标准差
+为 <span class="math notranslate nohighlight">\(\sigma_z = C / \sqrt{1 - \phi^2}\)</span>，它通过 <span class="math notranslate nohighlight">\(r_t = \delta_0 + \delta_1 z_t\)</span> 决定
+模型所生成的短期利率的范围。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 单因子高斯模型（季度）</span>
+<span class="n">μ</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+<span class="n">φ</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.95</span><span class="p">]])</span>
+<span class="n">C</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">]])</span>
+<span class="n">δ_0</span>    <span class="o">=</span> <span class="mf">0.01</span>                  <span class="c1"># 1%/季度 ≈ 4% 年化</span>
+<span class="n">δ_1</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.001</span><span class="p">])</span>
+<span class="n">λ_0</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.05</span><span class="p">])</span>
+<span class="n">λ_z</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.01</span><span class="p">]])</span>
+
+<span class="n">model_1f</span> <span class="o">=</span> <span class="n">create_affine_model</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">φ</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">δ_0</span><span class="p">,</span> <span class="n">δ_1</span><span class="p">,</span> <span class="n">λ_0</span><span class="p">,</span> <span class="n">λ_z</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id20">
+<h3><span class="section-number">124.4.5. </span>收益率曲线形状<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<p>我们计算在一系列短期利率状态 <span class="math notranslate nohighlight">\(z_t\)</span> 下的收益率曲线 <span class="math notranslate nohighlight">\(y_t(n)\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>  <span class="c1"># i18n</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">,</span> <span class="s1">&#39;DejaVu Sans&#39;</span><span class="p">]</span>  <span class="c1"># i18n</span>
+<span class="n">n_max_1f</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">maturities_1f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_1f</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">z_low</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">5.0</span><span class="p">])</span>
+<span class="n">z_mid</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+<span class="n">z_high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+
+<span class="n">r_low</span> <span class="o">=</span> <span class="n">short_rate</span><span class="p">(</span><span class="n">model_1f</span><span class="p">,</span> <span class="n">z_low</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">r_mid</span> <span class="o">=</span> <span class="n">short_rate</span><span class="p">(</span><span class="n">model_1f</span><span class="p">,</span> <span class="n">z_mid</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">r_high</span> <span class="o">=</span> <span class="n">short_rate</span><span class="p">(</span><span class="n">model_1f</span><span class="p">,</span> <span class="n">z_high</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+
+<span class="k">for</span> <span class="n">z</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">z_low</span><span class="p">,</span>  <span class="sa">f</span><span class="s2">&quot;低状态  ($y_t(1) = $</span><span class="si">{</span><span class="n">r_low</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">z_mid</span><span class="p">,</span>  <span class="sa">f</span><span class="s2">&quot;中位状态 ($y_t(1) = $</span><span class="si">{</span><span class="n">r_mid</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">z_high</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;高状态 ($y_t(1) = $</span><span class="si">{</span><span class="n">r_high</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">),</span>
+<span class="p">]:</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">compute_yields</span><span class="p">(</span><span class="n">model_1f</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n_max_1f</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">maturities_1f</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span> <span class="n">ms</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">r_bar</span> <span class="o">=</span> <span class="n">short_rate</span><span class="p">(</span><span class="n">model_1f</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">r_bar</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;平均短期利率 (</span><span class="si">{</span><span class="n">r_bar</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+
+<span class="c1"># 长期收益率：B_bar_n 收敛，因此 y_inf = lim -A_bar_n / n</span>
+<span class="n">φ_Cλ</span> <span class="o">=</span> <span class="p">(</span><span class="n">model_1f</span><span class="o">.</span><span class="n">φ_rn</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>          <span class="c1"># φ - Cλ_z（标量）</span>
+<span class="n">B_inf</span> <span class="o">=</span> <span class="o">-</span><span class="n">model_1f</span><span class="o">.</span><span class="n">δ_1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">φ_Cλ</span><span class="p">)</span> <span class="c1"># B 递归的不动点</span>
+<span class="n">A_increment</span> <span class="o">=</span> <span class="p">(</span><span class="n">B_inf</span> <span class="o">*</span> <span class="n">model_1f</span><span class="o">.</span><span class="n">μ_rn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+               <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">B_inf</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">model_1f</span><span class="o">.</span><span class="n">C</span> <span class="o">@</span> <span class="n">model_1f</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">T</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+               <span class="o">-</span> <span class="n">model_1f</span><span class="o">.</span><span class="n">δ_0</span><span class="p">)</span>
+<span class="n">y_inf</span> <span class="o">=</span> <span class="o">-</span><span class="n">A_increment</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>         <span class="c1"># 年化 %</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y_inf</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;长期收益率 (</span><span class="si">{</span><span class="n">y_inf</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;期限（季度）&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;收益率（每年 %）&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_1f</span><span class="p">)</span>
+
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">twiny</span><span class="p">()</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">())</span>
+<span class="n">year_ticks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">60</span><span class="p">]</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">year_ticks</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="o">/</span><span class="mi">4</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">y&quot;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">year_ticks</span><span class="p">])</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;期限（年）&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-yield-curves-1f">
+<img alt="_images/37981b9249924799dd06fef7128a88625f47f12b0f27fdc7f0f68ee363711ff7.png" src="_images/37981b9249924799dd06fef7128a88625f47f12b0f27fdc7f0f68ee363711ff7.png" />
+<figcaption>
+<p><span class="caption-number">图 124.1 </span><span class="caption-text">单因子仿射模型下的收益率曲线</span><a class="headerlink" href="#fig-yield-curves-1f" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>当短期利率较低时，收益率曲线是
+向上倾斜的，而当短期利率较高时，它是向下倾斜的。</p>
+<p>所有三条曲线在长期限处收敛到同一个长期收益率 <span class="math notranslate nohighlight">\(y_\infty\)</span>，
+并且长期收益率位于平均短期利率
+<span class="math notranslate nohighlight">\(\delta_0\)</span> 之上。</p>
+<div class="exercise admonition" id="arp_ex4">
+
+<p class="admonition-title"><span class="caption-number">练习 124.4 </span></p>
+<section id="exercise-content">
+<p>证明长期收益率满足</p>
+<div class="math notranslate nohighlight" id="equation-eq-y-inf">
+<span class="eqno">(124.13)<a class="headerlink" href="#equation-eq-y-inf" title="Link to this equation">#</a></span>\[y_\infty
+  = \delta_0
+  - \bar B_\infty^\top(\mu - C\lambda_0)
+  - \tfrac{1}{2}\bar B_\infty^\top CC^\top \bar B_\infty\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\bar B_\infty = -(I - (\phi - C\lambda_z)^\top)^{-1} \delta_1\)</span>
+是递归 <a class="reference internal" href="#equation-eq-riccati-b">(124.11)</a> 的不动点。</p>
+<p>然后解释为什么在这种参数化下 <span class="math notranslate nohighlight">\(y_\infty &gt; \delta_0\)</span>。</p>
+<p><em>提示：</em> 使用 <a class="reference internal" href="#equation-eq-yield">(124.12)</a> 和黎卡提方程
+<a class="reference internal" href="#equation-eq-riccati-a">(124.10)</a>–<a class="reference internal" href="#equation-eq-riccati-b">(124.11)</a>。对于不等式，分别考虑
+每个被减去的项。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="affine_risk_prices-solution-7">
+
+<p class="admonition-title">解答<a class="reference internal" href="#arp_ex4"> 练习 124.4</a></p>
+<section id="solution-content">
+<p>递归 <a class="reference internal" href="#equation-eq-riccati-b">(124.11)</a> 是一个线性差分方程 <span class="math notranslate nohighlight">\(\bar B_{n+1} = (\phi - C\lambda_z)^\top \bar B_n - \delta_1\)</span>。</p>
+<p>当 <span class="math notranslate nohighlight">\(\phi - C\lambda_z\)</span> 的特征值在单位圆内时，<span class="math notranslate nohighlight">\(\bar B_n\)</span> 收敛到 <span class="math notranslate nohighlight">\(\bar B_\infty = -(I - (\phi - C\lambda_z)^\top)^{-1} \delta_1\)</span>。</p>
+<p>由于 <span class="math notranslate nohighlight">\(\bar B_\infty\)</span> 是有限的，在 <a class="reference internal" href="#equation-eq-yield">(124.12)</a> 中 <span class="math notranslate nohighlight">\(\bar B_n^\top z_t / n \to 0\)</span>，因此无论 <span class="math notranslate nohighlight">\(z_t\)</span> 为何，<span class="math notranslate nohighlight">\(y_t(n) \to \lim_{n\to\infty} -\bar A_n / n\)</span>。</p>
+<p>要找到这个极限，写 <span class="math notranslate nohighlight">\(\bar A_n = \bar A_1 + \sum_{k=1}^{n-1}(\bar A_{k+1} - \bar A_k)\)</span>。</p>
+<p>根据 <a class="reference internal" href="#equation-eq-riccati-a">(124.10)</a>，每个增量取决于 <span class="math notranslate nohighlight">\(\bar B_k\)</span>，它收敛到 <span class="math notranslate nohighlight">\(\bar B_\infty\)</span>，因此增量收敛到 <span class="math notranslate nohighlight">\(L \equiv \bar B_\infty^\top(\mu - C\lambda_0) + \tfrac{1}{2}\bar B_\infty^\top CC^\top \bar B_\infty - \delta_0\)</span>。</p>
+<p>因此 <span class="math notranslate nohighlight">\(\bar A_n / n \to L\)</span>，<span class="math notranslate nohighlight">\(y_\infty = -L\)</span>，得到 <a class="reference internal" href="#equation-eq-y-inf">(124.13)</a>。</p>
+<p>要理解为什么 <span class="math notranslate nohighlight">\(y_\infty &gt; \delta_0\)</span>，注意在这种参数化下 <a class="reference internal" href="#equation-eq-y-inf">(124.13)</a> 中的两个被减去的项符号相反。</p>
+<p>二次项 <span class="math notranslate nohighlight">\(\tfrac{1}{2}\bar B_\infty^\top CC^\top \bar B_\infty = \tfrac{1}{2}\|C^\top \bar B_\infty\|^2 \geq 0\)</span> 总是成立。</p>
+<p>这是来自詹森不等式的<strong>凸性效应</strong>，它将 <span class="math notranslate nohighlight">\(y_\infty\)</span> 推低到 <span class="math notranslate nohighlight">\(\delta_0\)</span> 以下。</p>
+<p>线性项 <span class="math notranslate nohighlight">\(\bar B_\infty^\top(\mu - C\lambda_0)\)</span> 是负的，因为 <span class="math notranslate nohighlight">\(\bar B_\infty &lt; 0\)</span>（由于 <span class="math notranslate nohighlight">\(\delta_1 &gt; 0\)</span>）而 <span class="math notranslate nohighlight">\(\mu - C\lambda_0 &gt; 0\)</span>（由于 <span class="math notranslate nohighlight">\(\lambda_0 &lt; 0\)</span>）。减去这个负量将 <span class="math notranslate nohighlight">\(y_\infty\)</span> 提升到 <span class="math notranslate nohighlight">\(\delta_0\)</span> 之上。</p>
+<p>这是<strong>风险溢价效应</strong>：正的期限溢价将平均收益率曲线向上倾斜。</p>
+<p>在这种参数化下，风险溢价效应主导了凸性效应，因此 <span class="math notranslate nohighlight">\(y_\infty &gt; \delta_0\)</span>。</p>
+</section>
+</div>
+<p>让我们也模拟一下短期利率路径：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">model_1f</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span> <span class="n">T</span><span class="p">)</span>
+<span class="n">short_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">short_rate</span><span class="p">(</span><span class="n">model_1f</span><span class="p">,</span> <span class="n">Z</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+                        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="n">r_bar_pct</span> <span class="o">=</span> <span class="n">short_rate</span><span class="p">(</span><span class="n">model_1f</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">quarters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">quarters</span><span class="p">,</span> <span class="n">short_rates</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">r_bar_pct</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;无条件均值 (</span><span class="si">{</span><span class="n">r_bar_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">quarters</span><span class="p">,</span> <span class="n">short_rates</span><span class="p">,</span> <span class="n">r_bar_pct</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">get_color</span><span class="p">())</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;季度&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;短期利率（年化 %）&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-simulated-short-rate">
+<img alt="_images/0547b1666ceed36e4725b97676b76e3682203a29849cf55ef6880cbafc7e5cb3.png" src="_images/0547b1666ceed36e4725b97676b76e3682203a29849cf55ef6880cbafc7e5cb3.png" />
+<figcaption>
+<p><span class="caption-number">图 124.2 </span><span class="caption-text">模拟的短期利率路径</span><a class="headerlink" href="#fig-simulated-short-rate" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="id21">
+<h3><span class="section-number">124.4.6. </span>双因子模型<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
+<p>为了匹配更丰富的收益率曲线动态，从业者通常使用 <span class="math notranslate nohighlight">\(m \geq 2\)</span>
+个因子。</p>
+<p>现在我们引入一个双因子设定，状态为
+<span class="math notranslate nohighlight">\(z_t = (z_{1t},\, z_{2t})^\top\)</span>，其中</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+z_{t+1} = \mu + \phi\, z_t + C\,\varepsilon_{t+1},
+\qquad
+\phi = \begin{pmatrix} 0.97 &amp; -0.03 \\ 0 &amp; 0.90 \end{pmatrix},
+\qquad
+C = I_2
+\end{split}\]</div>
+<p>第一个因子 <span class="math notranslate nohighlight">\(z_{1t}\)</span> 高度持续（<span class="math notranslate nohighlight">\(\phi_{11} = 0.97\)</span>），并
+通过 <span class="math notranslate nohighlight">\(\delta_1\)</span> 驱动短期利率的大部分变化，因此我们
+将其解释为<strong>水平</strong>因子。</p>
+<p>第二个因子 <span class="math notranslate nohighlight">\(z_{2t}\)</span> 更快地均值回归（<span class="math notranslate nohighlight">\(\phi_{22} = 0.90\)</span>），并
+以较小的载荷影响短期利率，捕捉收益率曲线的<strong>斜率</strong>。</p>
+<p>非对角元素 <span class="math notranslate nohighlight">\(\phi_{12} = -0.03\)</span> 允许水平因子
+对当前斜率状态 <span class="math notranslate nohighlight">\(z_{2t}\)</span> 做出响应。</p>
+<p>短期利率为 <span class="math notranslate nohighlight">\(r_t = \delta_0 + \delta_1^\top z_t\)</span>，其中
+<span class="math notranslate nohighlight">\(\delta_1 = (0.002,\; 0.001)^\top\)</span>，因此当两个因子为正时都会提高短期
+利率，但水平因子的影响是斜率因子的两倍。</p>
+<p>风险价格为 <span class="math notranslate nohighlight">\(\lambda_t = \lambda_0 + \lambda_z z_t\)</span>，其中
+<span class="math notranslate nohighlight">\(\lambda_0 = (-0.01,\; -0.005)^\top\)</span>，
+<span class="math notranslate nohighlight">\(\lambda_z = \text{diag}(-0.005,\, -0.003)\)</span>。</p>
+<p><span class="math notranslate nohighlight">\(\lambda_z\)</span> 的负对角元素使得 <span class="math notranslate nohighlight">\(\phi - C\lambda_z\)</span> 的特征值比 <span class="math notranslate nohighlight">\(\phi\)</span>
+更大，因此在风险中性测度下状态更持续，收益率曲线在长期限处
+对当前状态更敏感。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 双因子模型：z = [水平, 斜率]</span>
+<span class="n">μ_2</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span>  <span class="mf">0.0</span><span class="p">])</span>
+<span class="n">φ_2</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.97</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.03</span><span class="p">],</span>
+                  <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span>  <span class="mf">0.90</span><span class="p">]])</span>
+<span class="n">C_2</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">δ_0_2</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">δ_1_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.002</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">])</span>
+<span class="n">λ_0_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.01</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.005</span><span class="p">])</span>
+<span class="n">λ_z_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                   <span class="p">[</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.003</span><span class="p">]])</span>
+
+<span class="n">model_2f</span> <span class="o">=</span> <span class="n">create_affine_model</span><span class="p">(</span><span class="n">μ_2</span><span class="p">,</span> <span class="n">φ_2</span><span class="p">,</span> <span class="n">C_2</span><span class="p">,</span> <span class="n">δ_0_2</span><span class="p">,</span> <span class="n">δ_1_2</span><span class="p">,</span> <span class="n">λ_0_2</span><span class="p">,</span> <span class="n">λ_z_2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;φ 的特征值:       </span><span class="si">{</span><span class="n">eigvals</span><span class="p">(</span><span class="n">φ_2</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;φ - Cλ_z 的特征值: </span><span class="si">{</span><span class="n">eigvals</span><span class="p">(</span><span class="n">model_2f</span><span class="o">.</span><span class="n">φ_rn</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>φ 的特征值:       [0.97 0.9 ]
+φ - Cλ_z 的特征值: [0.975 0.903]
+</pre></div>
+</div>
+</div>
+</div>
+<p>这确认了 <span class="math notranslate nohighlight">\(\phi - C\lambda_z\)</span> 的特征值比 <span class="math notranslate nohighlight">\(\phi\)</span> 的特征值更大，因此在风险中性测度下状态更持续。</p>
+<p>下图显示了世界不同状态下的收益率曲线，以及决定收益率在每个期限如何载荷于水平和斜率因子的因子载荷 <span class="math notranslate nohighlight">\(B_{n,1}\)</span> 和 <span class="math notranslate nohighlight">\(B_{n,2}\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_max_2f</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">maturities_2f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_2f</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">states</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;正常&quot;</span><span class="p">:</span>              <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span>   <span class="mf">0.0</span><span class="p">]),</span>
+    <span class="s2">&quot;低短期利率&quot;</span><span class="p">:</span>      <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span>  <span class="mf">3.0</span><span class="p">]),</span>
+    <span class="s2">&quot;高短期利率&quot;</span><span class="p">:</span>     <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.0</span><span class="p">,</span>  <span class="o">-</span><span class="mf">3.0</span><span class="p">]),</span>
+<span class="p">}</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">states</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">r_now</span> <span class="o">=</span> <span class="n">short_rate</span><span class="p">(</span><span class="n">model_2f</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">compute_yields</span><span class="p">(</span><span class="n">model_2f</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n_max_2f</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">maturities_2f</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span>
+                     <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> (r₁ = </span><span class="si">{</span><span class="n">r_now</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span> <span class="n">ms</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;期限（季度）&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;收益率（年化 %）&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_2f</span><span class="p">)</span>
+
+<span class="n">A_bar</span><span class="p">,</span> <span class="n">B_bar</span> <span class="o">=</span> <span class="n">bond_coefficients</span><span class="p">(</span><span class="n">model_2f</span><span class="p">,</span> <span class="n">n_max_2f</span><span class="p">)</span>
+<span class="n">ns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_2f</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">B_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">B_bar</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">/</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ns</span><span class="p">])</span>
+
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">B_n</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;水平载荷 $B_{n,1}$&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">B_n</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;斜率载荷 $B_{n,2}$&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;期限（季度）&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;收益率载荷 $B_{n,k}$&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_2f</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">):</span>
+    <span class="n">ax_top</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">twiny</span><span class="p">()</span>
+    <span class="n">ax_top</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">())</span>
+    <span class="n">year_ticks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">60</span><span class="p">]</span>
+    <span class="n">ax_top</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">year_ticks</span><span class="p">)</span>
+    <span class="n">ax_top</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="o">/</span><span class="mi">4</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">y&quot;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">year_ticks</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-yield-curves-2f">
+<img alt="_images/8c0835002cf000cd03ec298d1c94a2a66f511662347ebbdc7871e68e42fd45b5.png" src="_images/8c0835002cf000cd03ec298d1c94a2a66f511662347ebbdc7871e68e42fd45b5.png" />
+<figcaption>
+<p><span class="caption-number">图 124.3 </span><span class="caption-text">双因子模型下的收益率曲线和因子载荷</span><a class="headerlink" href="#fig-yield-curves-2f" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>我们可以看到，水平因子在长期限处占主导地位。</p>
+</section>
+</section>
+<section id="id22">
+<h2><span class="section-number">124.5. </span>风险溢价<a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
+<p>仿射期限结构模型中的一个关键对象是<strong>期限溢价</strong>，即
+长期债券相对于滚动短期债券的预期超额回报。</p>
+<p>对于持有一期的 <span class="math notranslate nohighlight">\((n+1)\)</span> 期债券，冲击载荷为
+<span class="math notranslate nohighlight">\(\alpha_n = C^\top \bar B_n\)</span>，因此 <a class="reference internal" href="#equation-eq-excess">(124.7)</a> 给出</p>
+<div class="math notranslate nohighlight">
+\[
+\log \mathbb{E}_t R_{t+1}^{(n+1)} - r_t \;=\; \bar B_n^\top C \lambda_t
+\]</div>
+<p>期限溢价等于债券冲击暴露 <span class="math notranslate nohighlight">\(\bar B_n^\top C\)</span>
+与风险价格向量 <span class="math notranslate nohighlight">\(\lambda_t\)</span> 的内积。</p>
+<p>由于期限溢价等于 <span class="math notranslate nohighlight">\(\bar B_n^\top C \lambda_t\)</span>，其符号
+取决于<em>当前</em>风险价格向量 <span class="math notranslate nohighlight">\(\lambda_t\)</span>，只要 <span class="math notranslate nohighlight">\(\lambda_z \neq 0\)</span>，
+它就是状态依赖的。</p>
+<p>为了更具体地看到这一点，考虑一个 <span class="math notranslate nohighlight">\(C\lambda_t\)</span> 逐分量为负的状态
+（例如，我们下面校准中的 <span class="math notranslate nohighlight">\(z_t = 0\)</span>）。</p>
+<p>当 <span class="math notranslate nohighlight">\(\delta_1 &gt; 0\)</span> 时，正的冲击 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 会提高
+短期利率并降低长期债券价格，因此债券冲击载荷
+<span class="math notranslate nohighlight">\(\alpha_n = C^\top \bar B_n\)</span> 为负。</p>
+<p>那么负的 <span class="math notranslate nohighlight">\(C\lambda_t\)</span> 意味着随机贴现因子
+<span class="math notranslate nohighlight">\(m_{t+1}\)</span> 对 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 正向载荷，即在利率上升
+和债券价格下跌的状态下 SDF 较高。</p>
+<p>这使得 <span class="math notranslate nohighlight">\(\text{Cov}_t(m_{t+1}, R_{t+1}^{(n+1)}) &lt; 0\)</span>，因此长期债券
+是有风险的，并带有正的期限溢价。</p>
+<p>从代数上看，<span class="math notranslate nohighlight">\(\bar B_n &lt; 0\)</span> 和 <span class="math notranslate nohighlight">\(C\lambda_t &lt; 0\)</span> 结合
+得到 <span class="math notranslate nohighlight">\(\bar B_n^\top C \lambda_t &gt; 0\)</span>。</p>
+<p>然而，在其他状态下，<span class="math notranslate nohighlight">\(\lambda_t\)</span> 可能会改变符号（例如，在我们的双状态
+校准的低利率状态下，第一个分量翻转），长期债券期限溢价
+在较长期限处可能变为负值。</p>
+<div class="exercise admonition" id="arp_ex5">
+
+<p class="admonition-title"><span class="caption-number">练习 124.5 </span></p>
+<section id="exercise-content">
+<p>通过计算 <span class="math notranslate nohighlight">\((n+1)\)</span> 期债券的单期持有回报并识别其冲击载荷，推导上面的期限溢价公式。</p>
+<p><em>提示：</em> 使用 <span class="math notranslate nohighlight">\(R_{t+1}^{(n+1)} = p_{t+1}(n)/p_t(n+1)\)</span> 以及
+<span class="math notranslate nohighlight">\(\log p_t(n) = \bar A_n + \bar B_n^\top z_t\)</span>，代入状态
+动态 <a class="reference internal" href="#equation-eq-var">(124.1)</a>，并应用黎卡提方程
+<a class="reference internal" href="#equation-eq-riccati-a">(124.10)</a>–<a class="reference internal" href="#equation-eq-riccati-b">(124.11)</a> 进行简化。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="affine_risk_prices-solution-9">
+
+<p class="admonition-title">解答<a class="reference internal" href="#arp_ex5"> 练习 124.5</a></p>
+<section id="solution-content">
+<p><span class="math notranslate nohighlight">\((n+1)\)</span> 期债券的单期持有回报为
+<span class="math notranslate nohighlight">\(R_{t+1}^{(n+1)} = p_{t+1}(n)/p_t(n+1)\)</span>，因此</p>
+<div class="math notranslate nohighlight">
+\[
+\log R_{t+1}^{(n+1)} = \bar A_n + \bar B_n^\top z_{t+1} - \bar A_{n+1} - \bar B_{n+1}^\top z_t
+\]</div>
+<p>代入 <a class="reference internal" href="#equation-eq-var">(124.1)</a> 中的 <span class="math notranslate nohighlight">\(z_{t+1} = \mu + \phi z_t + C\varepsilon_{t+1}\)</span>：</p>
+<div class="math notranslate nohighlight">
+\[
+= \underbrace{(\bar A_n + \bar B_n^\top \mu - \bar A_{n+1})}_{\text{常数}}
+  + \underbrace{(\bar B_n^\top \phi - \bar B_{n+1}^\top)}_{z_t \text{ 上的载荷}} z_t
+  + \underbrace{\bar B_n^\top C}_{\text{冲击载荷}}\, \varepsilon_{t+1}
+\]</div>
+<p>现在我们使用黎卡提方程简化每一部分。</p>
+<p>对于常数部分，<a class="reference internal" href="#equation-eq-riccati-a">(124.10)</a> 给出
+<span class="math notranslate nohighlight">\(\bar A_{n+1} = \bar A_n + \bar B_n^\top(\mu - C\lambda_0) + \tfrac{1}{2}\bar B_n^\top CC^\top \bar B_n - \delta_0\)</span>，因此</p>
+<div class="math notranslate nohighlight">
+\[
+\bar A_n + \bar B_n^\top \mu - \bar A_{n+1}
+  = \bar B_n^\top C\lambda_0 - \tfrac{1}{2}\bar B_n^\top CC^\top \bar B_n + \delta_0
+\]</div>
+<p>对于 <span class="math notranslate nohighlight">\(z_t\)</span> 系数，<a class="reference internal" href="#equation-eq-riccati-b">(124.11)</a> 给出
+<span class="math notranslate nohighlight">\(\bar B_{n+1}^\top = \bar B_n^\top(\phi - C\lambda_z) - \delta_1^\top\)</span>，因此</p>
+<div class="math notranslate nohighlight">
+\[
+\bar B_n^\top \phi - \bar B_{n+1}^\top = \bar B_n^\top C\lambda_z + \delta_1^\top
+\]</div>
+<p>结合各部分：</p>
+<div class="math notranslate nohighlight">
+\[
+\log R_{t+1}^{(n+1)}
+  = \underbrace{(\delta_0 + \delta_1^\top z_t)}_{r_t}
+  + \bar B_n^\top C\underbrace{(\lambda_0 + \lambda_z z_t)}_{\lambda_t}
+  - \tfrac{1}{2}\bar B_n^\top CC^\top \bar B_n
+  + \bar B_n^\top C\,\varepsilon_{t+1}
+\]</div>
+<p>写 <span class="math notranslate nohighlight">\(\alpha_n = C^\top \bar B_n\)</span>，这就取了通用回报形式 <a class="reference internal" href="#equation-eq-return">(124.5)</a>：</p>
+<div class="math notranslate nohighlight">
+\[
+\log R_{t+1}^{(n+1)}
+  = \underbrace{(r_t + \alpha_n^\top \lambda_t)}_{\nu_t}
+  - \tfrac{1}{2}\alpha_n^\top \alpha_n
+  + \alpha_n^\top \varepsilon_{t+1}
+\]</div>
+<p>由于 <span class="math notranslate nohighlight">\(\mathbb{E}_t R_{t+1}^{(n+1)} = \exp(\nu_t)\)</span>，我们得到</p>
+<div class="math notranslate nohighlight">
+\[
+\log \mathbb{E}_t R_{t+1}^{(n+1)} - r_t = \alpha_n^\top \lambda_t = \bar B_n^\top C \lambda_t
+\]</div>
+</section>
+</div>
+<p>下图绘制了世界不同状态下跨期限的期限溢价，以及正常状态下水平因子和斜率因子对期限溢价的贡献</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">term_premiums</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n_max</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算期限 1 到 n_max 的期限溢价。&quot;&quot;&quot;</span>
+    <span class="n">A_bar</span><span class="p">,</span> <span class="n">B_bar</span> <span class="o">=</span> <span class="n">bond_coefficients</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">λ_t</span> <span class="o">=</span> <span class="n">risk_prices</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">B_bar</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">C</span> <span class="o">@</span> <span class="n">λ_t</span>
+                     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span>
+
+<span class="n">n_max_tp</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">maturities_tp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_tp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">z_states_tp</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;低利率 ($z_1 &lt; 0$)&quot;</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]),</span>
+    <span class="s2">&quot;高利率 ($z_1 &gt; 0$)&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">]),</span>
+<span class="p">}</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">z_states_tp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">tp</span> <span class="o">=</span> <span class="n">term_premiums</span><span class="p">(</span><span class="n">model_2f</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n_max_tp</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">r_now</span> <span class="o">=</span> <span class="n">short_rate</span><span class="p">(</span><span class="n">model_2f</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">lam</span> <span class="o">=</span> <span class="n">risk_prices</span><span class="p">(</span><span class="n">model_2f</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">maturities_tp</span><span class="p">,</span> <span class="n">tp</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span>
+             <span class="n">label</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="se">\n</span><span class="s2">  r=</span><span class="si">{</span><span class="n">r_now</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%,&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; λ=[</span><span class="si">{</span><span class="n">lam</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">lam</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">))</span>
+
+<span class="n">ax1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;期限（季度）&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;期限溢价（年化 %）&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_tp</span><span class="p">)</span>
+
+<span class="n">z_decomp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="n">A_bar_d</span><span class="p">,</span> <span class="n">B_bar_d</span> <span class="o">=</span> <span class="n">bond_coefficients</span><span class="p">(</span><span class="n">model_2f</span><span class="p">,</span> <span class="n">n_max_tp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">λ_t</span> <span class="o">=</span> <span class="n">risk_prices</span><span class="p">(</span><span class="n">model_2f</span><span class="p">,</span> <span class="n">z_decomp</span><span class="p">)</span>
+<span class="n">C_lam</span> <span class="o">=</span> <span class="n">model_2f</span><span class="o">.</span><span class="n">C</span> <span class="o">@</span> <span class="n">λ_t</span>
+
+<span class="n">tp_level</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">B_bar_d</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">C_lam</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                      <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_tp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">tp_slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">B_bar_d</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">C_lam</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                      <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_tp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">tp_total</span> <span class="o">=</span> <span class="n">tp_level</span> <span class="o">+</span> <span class="n">tp_slope</span>
+
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">maturities_tp</span><span class="p">,</span> <span class="n">tp_total</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;总计&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">maturities_tp</span><span class="p">,</span> <span class="n">tp_level</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;水平因子&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">maturities_tp</span><span class="p">,</span> <span class="n">tp_slope</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;斜率因子&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;期限（季度）&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;期限溢价（年化 %）&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_tp</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">):</span>
+    <span class="n">ax_top</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">twiny</span><span class="p">()</span>
+    <span class="n">ax_top</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">())</span>
+    <span class="n">year_ticks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">60</span><span class="p">]</span>
+    <span class="n">ax_top</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">year_ticks</span><span class="p">)</span>
+    <span class="n">ax_top</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="o">/</span><span class="mi">4</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">y&quot;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">year_ticks</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-term-premiums-2f">
+<img alt="_images/8d9c6de59d0daeb829755716e4b333c10fb809481a8222cc560d4a108e868131.png" src="_images/8d9c6de59d0daeb829755716e4b333c10fb809481a8222cc560d4a108e868131.png" />
+<figcaption>
+<p><span class="caption-number">图 124.4 </span><span class="caption-text">双因子模型下的期限溢价和因子分解</span><a class="headerlink" href="#fig-term-premiums-2f" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>我们看到，在低利率状态下期限溢价在所有期限都为正，但在高利率状态下的较长期限处变为负值。</p>
+</section>
+<section id="id23">
+<h2><span class="section-number">124.6. </span>风险中性概率<a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
+<p>我们回到 VAR 和短期利率方程
+<a class="reference internal" href="#equation-eq-var">(124.1)</a>–<a class="reference internal" href="#equation-eq-shortrate">(124.2)</a>，为方便起见在此重复：</p>
+<div class="math notranslate nohighlight">
+\[
+z_{t+1} = \mu + \phi z_t + C\varepsilon_{t+1}, \qquad
+r_t = \delta_0 + \delta_1^\top z_t
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\varepsilon_{t+1} \sim \mathcal{N}(0, I)\)</span>。</p>
+<p>我们假设这一结构描述了数据生成机制。</p>
+<p>金融经济学家称之为<strong>物理测度</strong> <span class="math notranslate nohighlight">\(P\)</span>，以区别于
+我们现在描述的<strong>风险中性测度</strong> <span class="math notranslate nohighlight">\(Q\)</span>。</p>
+<p>在物理测度下，给定 <span class="math notranslate nohighlight">\(z_t\)</span> 的 <span class="math notranslate nohighlight">\(z_{t+1}\)</span> 的条件分布
+为 <span class="math notranslate nohighlight">\(\mathcal{N}(\mu + \phi z_t,\; CC^\top)\)</span>。</p>
+<section id="id24">
+<h3><span class="section-number">124.6.1. </span>测度变换<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
+<p>利用 <a class="reference internal" href="#equation-eq-riskprices">(124.3)</a> 中的风险价格向量 <span class="math notranslate nohighlight">\(\lambda_t = \lambda_0 + \lambda_z z_t\)</span>，定义非负随机变量</p>
+<div class="math notranslate nohighlight" id="equation-eq-rn-ratio">
+<span class="eqno">(124.14)<a class="headerlink" href="#equation-eq-rn-ratio" title="Link to this equation">#</a></span>\[\frac{\xi^Q_{t+1}}{\xi^Q_t}
+  = \exp\!\left(-\tfrac{1}{2}\lambda_t^\top\lambda_t
+                - \lambda_t^\top\varepsilon_{t+1}\right)\]</div>
+<p>这是一个均值为 1 的对数正态随机变量，因此它是一个有效的
+似然比，可用于扭曲 <span class="math notranslate nohighlight">\(z_{t+1}\)</span> 的条件分布。</p>
+<p>将物理条件分布乘以这个似然比
+将其转换为<strong>风险中性条件分布</strong></p>
+<div class="math notranslate nohighlight">
+\[
+z_{t+1} \mid z_t \;\overset{Q}{\sim}\;
+  \mathcal{N}\!\bigl(\mu - C\lambda_0 + (\phi - C\lambda_z)z_t,\; CC^\top\bigr)
+\]</div>
+<p>换句话说，在 <span class="math notranslate nohighlight">\(Q\)</span> 下状态遵循</p>
+<div class="math notranslate nohighlight">
+\[
+z_{t+1} = (\mu - C\lambda_0) + (\phi - C\lambda_z)\,z_t
+         + C\varepsilon^Q_{t+1}
+\]</div>
+<p>其中在 <span class="math notranslate nohighlight">\(Q\)</span> 下 <span class="math notranslate nohighlight">\(\varepsilon^Q_{t+1} \sim \mathcal{N}(0, I)\)</span>。</p>
+<p>风险中性分布将条件均值从
+<span class="math notranslate nohighlight">\(\mu + \phi z_t\)</span> 扭曲为 <span class="math notranslate nohighlight">\(\mu - C\lambda_0 + (\phi - C\lambda_z)z_t\)</span>。</p>
+<p>调整项 <span class="math notranslate nohighlight">\(-C\lambda_0\)</span>（常数）和 <span class="math notranslate nohighlight">\(-C\lambda_z\)</span>
+（状态依赖）编码了定价方程
+<span class="math notranslate nohighlight">\(\mathbb{E}^P_t m_{t+1} R_{j,t+1} = 1\)</span> 如何针对
+对风险 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 的暴露调整预期回报。</p>
+</section>
+<section id="id25">
+<h3><span class="section-number">124.6.2. </span>资产定价简述<a class="headerlink" href="#id25" title="Link to this heading">#</a></h3>
+<p>设 <span class="math notranslate nohighlight">\(\mathbb{E}^P\)</span> 表示在自然用于生成数据的物理测度下的期望。</p>
+<p>我们的关键资产定价方程是
+<span class="math notranslate nohighlight">\(\mathbb{E}^P_t m_{t+1} R_{j,t+1} = 1\)</span> 对所有回报 <span class="math notranslate nohighlight">\(R_{j,t+1}\)</span> 成立。</p>
+<p>利用 <a class="reference internal" href="#equation-eq-rn-ratio">(124.14)</a>，我们可以将 SDF <a class="reference internal" href="#equation-eq-sdf">(124.4)</a> 表示为</p>
+<div class="math notranslate nohighlight">
+\[
+m_{t+1} = \frac{\xi^Q_{t+1}}{\xi^Q_t}\,\exp(-r_t)
+\]</div>
+<p>那么条件
+<span class="math notranslate nohighlight">\(\mathbb{E}^P_t\bigl(\exp(-r_t)\,
+\tfrac{\xi^Q_{t+1}}{\xi^Q_t}\, R_{j,t+1}\bigr) = 1\)</span>
+等价于</p>
+<div class="math notranslate nohighlight" id="equation-eq-qpricing">
+<span class="eqno">(124.15)<a class="headerlink" href="#equation-eq-qpricing" title="Link to this equation">#</a></span>\[\mathbb{E}^Q_t R_{j,t+1} = \exp(r_t)\]</div>
+<p><em>在风险中性测度下，所有资产的预期回报等于
+无风险回报。</em></p>
+</section>
+<section id="id26">
+<h3><span class="section-number">124.6.3. </span>通过风险中性定价进行验证<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
+<p>债券价格可以通过在 <span class="math notranslate nohighlight">\(Q\)</span> 下以 <span class="math notranslate nohighlight">\(r_t\)</span> 贴现来计算：</p>
+<div class="math notranslate nohighlight">
+\[
+p_t(n) = \mathbb{E}^Q_t  \left[\exp \left(-\sum_{s=0}^{n-1}r_{t+s}\right)\right]
+\]</div>
+<p>我们可以通过在风险中性 VAR 下迭代仿射
+递归来验证这与 <a class="reference internal" href="#equation-eq-bondprice">(124.9)</a> 一致。</p>
+<p>下面我们通过数值方法确认这一点</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bond_price_mc_Q</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_sims</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;通过 Q 下的蒙特卡洛估计 p_t(n)。&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="p">(</span><span class="n">n_sims</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">disc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_sims</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">disc</span> <span class="o">+=</span> <span class="n">model</span><span class="o">.</span><span class="n">δ_0</span> <span class="o">+</span> <span class="n">Z</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">δ_1</span>
+        <span class="n">ε</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="n">n_sims</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">μ_rn</span> <span class="o">+</span> <span class="n">Z</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">φ_rn</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">ε</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">disc</span><span class="p">))</span>
+
+<span class="n">z_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">])</span>
+<span class="n">p_analytic</span> <span class="o">=</span> <span class="n">bond_prices</span><span class="p">(</span><span class="n">model_2f</span><span class="p">,</span> <span class="n">z_test</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">maturities_check</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">40</span><span class="p">]</span>
+<span class="n">mc_prices</span> <span class="o">=</span> <span class="p">[</span><span class="n">bond_price_mc_Q</span><span class="p">(</span><span class="n">model_2f</span><span class="p">,</span> <span class="n">z_test</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_sims</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+             <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">maturities_check</span><span class="p">]</span>
+
+<span class="n">header</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;期限&#39;</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;解析解&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}</span><span class="s2">&quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="s1">&#39;蒙特卡洛&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;误差 (bps)&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">52</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">mc</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">maturities_check</span><span class="p">,</span> <span class="n">mc_prices</span><span class="p">):</span>
+    <span class="n">analytic</span> <span class="o">=</span> <span class="n">p_analytic</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">error_bp</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">analytic</span> <span class="o">-</span> <span class="n">mc</span><span class="p">)</span> <span class="o">/</span> <span class="n">analytic</span> <span class="o">*</span> <span class="mi">10_000</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">analytic</span><span class="si">:</span><span class="s2">&gt;12.6f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">mc</span><span class="si">:</span><span class="s2">&gt;12.6f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">error_bp</span><span class="si">:</span><span class="s2">&gt;12.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>        期限           解析解          蒙特卡洛      误差 (bps)
+----------------------------------------------------
+         4      0.960592      0.960571          0.23
+        12      0.886276      0.886200          0.86
+        24      0.787066      0.787580          6.53
+        40      0.676314      0.676398          1.24
+</pre></div>
+</div>
+</div>
+</div>
+<p>解析债券价格和蒙特卡洛债券价格紧密一致，验证了
+黎卡提递归 <a class="reference internal" href="#equation-eq-riccati-a">(124.10)</a>–<a class="reference internal" href="#equation-eq-riccati-b">(124.11)</a>。</p>
+</section>
+</section>
+<section id="id27">
+<h2><span class="section-number">124.7. </span>扭曲信念<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
+<p><span class="bibtex-citation" id="id28">Piazzesi <em>et al.</em> [<a class="reference internal" href="zreferences.html#id376" title="Monika Piazzesi, Juliana Salomao, and Martin Schneider. Trend and Cycle in Bond Premia. Working Paper, Stanford University, 2015.">2015</a>]</span> 汇集了调查证据，表明经济
+专家的预测相对于物理测度存在系统性偏差。</p>
+<section id="id29">
+<h3><span class="section-number">124.7.1. </span>主观测度<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
+<p>设 <span class="math notranslate nohighlight">\(\{z_t\}_{t=1}^T\)</span> 为关于状态的观测记录，设
+<span class="math notranslate nohighlight">\(\{\check z_{t+1}\}_{t=1}^T\)</span> 为向前一期专家预测的记录。</p>
+<p>设 <span class="math notranslate nohighlight">\(\check\mu, \check\phi\)</span> 为以下回归中的回归系数</p>
+<div class="math notranslate nohighlight">
+\[
+\check z_{t+1} = \check\mu + \check\phi\, z_t + e_{t+1}
+\]</div>
+<p>其中残差 <span class="math notranslate nohighlight">\(e_{t+1}\)</span> 均值为零，与 <span class="math notranslate nohighlight">\(z_t\)</span> 正交，并
+满足 <span class="math notranslate nohighlight">\(\mathbb{E}\,e_{t+1} e_{t+1}^\top = CC^\top\)</span>。</p>
+<p>通过将 <a class="reference internal" href="#equation-eq-var">(124.1)</a> 中 <span class="math notranslate nohighlight">\(\mu, \phi\)</span> 的估计与专家预测中
+<span class="math notranslate nohighlight">\(\check\mu, \check\phi\)</span> 的估计进行比较，<span class="bibtex-citation" id="id30">Piazzesi <em>et al.</em> [<a class="reference internal" href="zreferences.html#id376" title="Monika Piazzesi, Juliana Salomao, and Martin Schneider. Trend and Cycle in Bond Premia. Working Paper, Stanford University, 2015.">2015</a>]</span>
+推断出专家的信念存在系统性扭曲。</p>
+<p>为了组织这一证据，设 <span class="math notranslate nohighlight">\(\kappa_t = \kappa_0 + \kappa_z z_t\)</span> 并定义
+似然比</p>
+<div class="math notranslate nohighlight" id="equation-eq-srat">
+<span class="eqno">(124.16)<a class="headerlink" href="#equation-eq-srat" title="Link to this equation">#</a></span>\[\frac{\xi^S_{t+1}}{\xi^S_t}
+  = \exp\!\left(-\tfrac{1}{2}\kappa_t^\top\kappa_t
+                - \kappa_t^\top\varepsilon_{t+1}\right)\]</div>
+<p>这是均值为 1 的对数正态，因此它是一个有效的似然比。</p>
+<p>将 <span class="math notranslate nohighlight">\(z_{t+1}\)</span> 的物理条件分布乘以这个
+似然比，将其转换为专家的<strong>主观条件
+分布</strong></p>
+<div class="math notranslate nohighlight">
+\[
+z_{t+1} \mid z_t \;\overset{S}{\sim}\;
+  \mathcal{N}\!\bigl(\mu - C\kappa_0 + (\phi - C\kappa_z)\,z_t,\; CC^\top\bigr)
+\]</div>
+<p>在专家的预测回归中，<span class="math notranslate nohighlight">\(\check\mu\)</span> 估计
+<span class="math notranslate nohighlight">\(\mu - C\kappa_0\)</span>，<span class="math notranslate nohighlight">\(\check\phi\)</span> 估计 <span class="math notranslate nohighlight">\(\phi - C\kappa_z\)</span>。</p>
+<p><span class="bibtex-citation" id="id31">Piazzesi <em>et al.</em> [<a class="reference internal" href="zreferences.html#id376" title="Monika Piazzesi, Juliana Salomao, and Martin Schneider. Trend and Cycle in Bond Premia. Working Paper, Stanford University, 2015.">2015</a>]</span> 发现，专家的行为就好像收益率曲线的水平和
+斜率比物理测度下更持续：
+<span class="math notranslate nohighlight">\(\check\phi\)</span> 的特征值比 <span class="math notranslate nohighlight">\(\phi\)</span> 更大。</p>
+</section>
+<section id="id32">
+<h3><span class="section-number">124.7.2. </span>扭曲信念下的定价<a class="headerlink" href="#id32" title="Link to this heading">#</a></h3>
+<p><span class="bibtex-citation" id="id33">Piazzesi <em>et al.</em> [<a class="reference internal" href="zreferences.html#id376" title="Monika Piazzesi, Juliana Salomao, and Martin Schneider. Trend and Cycle in Bond Premia. Working Paper, Stanford University, 2015.">2015</a>]</span> 探讨了这样一个假设：一个持有这些扭曲信念的代表性
+行为主体对资产定价，并使回报满足</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}^S_t\bigl(m^\star_{t+1}\, R_{j,t+1}\bigr) = 1
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\mathbb{E}^S_t\)</span> 是在主观
+<span class="math notranslate nohighlight">\(S\)</span> 测度下的条件期望，<span class="math notranslate nohighlight">\(m^\star_{t+1}\)</span> 是持有这些信念的
+行为主体的 SDF。</p>
+<p>具体来说，行为主体的 SDF 为</p>
+<div class="math notranslate nohighlight">
+\[
+m^\star_{t+1} = \exp\!\left(-r^\star_t
+  - \tfrac{1}{2}\lambda_t^{\star\top}\lambda^\star_t
+  - \lambda_t^{\star\top}\varepsilon_{t+1}\right)
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(r^\star_t\)</span> 是短期利率，<span class="math notranslate nohighlight">\(\lambda^\star_t\)</span> 是行为主体的
+风险价格向量。</p>
+<p>使用 <a class="reference internal" href="#equation-eq-srat">(124.16)</a> 转换到物理测度，主观
+定价方程变为</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}^P_t\!\left[
+  \exp\!\left(-r^\star_t
+    - \tfrac{1}{2}\lambda_t^{\star\top}\lambda^\star_t
+    - \lambda_t^{\star\top}\varepsilon_{t+1}
+  \right)
+  \exp\!\left(
+    - \tfrac{1}{2}\kappa_t^\top\kappa_t
+    - \kappa_t^\top\varepsilon_{t+1}
+  \right)
+  R_{j,t+1}
+\right] = 1
+\]</div>
+<p>合并两个指数得到</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}^P_t\!\left[
+  \exp\!\left(-r_t
+    - \tfrac{1}{2}(\lambda^\star_t + \kappa_t)^\top(\lambda^\star_t + \kappa_t)
+    - (\lambda^\star_t + \kappa_t)^\top\varepsilon_{t+1}
+  \right) R_{j,t+1}
+\right] = 1
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(r_t = r^\star_t - \lambda_t^{\star\top}\kappa_t\)</span>。</p>
+<p>将其与理性预期计量经济学家的定价
+方程进行比较</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}^P_t\!\left[
+  \exp\!\left(-r_t
+    - \tfrac{1}{2}\lambda_t^\top\lambda_t
+    - \lambda_t^\top\varepsilon_{t+1}
+  \right) R_{j,t+1}
+\right] = 1
+\]</div>
+<p>我们看到，计量经济学家解释为 <span class="math notranslate nohighlight">\(\lambda_t\)</span> 的实际上是
+<span class="math notranslate nohighlight">\(\lambda^\star_t + \kappa_t\)</span>。</p>
+<p>因为计量经济学家的估计部分反映了主观信念中的
+系统性扭曲，在这种校准中它们可能高估了代表性
+行为主体真实的风险价格 <span class="math notranslate nohighlight">\(\lambda^\star_t\)</span>。</p>
+<p>下面我们构造一个数值例子来说明这一点。</p>
+<p>我们保持与上面相同的物理状态动态和短期利率设定，但选择一个单独的真实风险价格过程 <span class="math notranslate nohighlight">\((\lambda_t^\star)\)</span> 和一个扭曲信念计量经济学家过程 <span class="math notranslate nohighlight">\((\hat\lambda_t)\)</span> 来说明这一分解。</p>
+<p>然后我们设定主观参数 <span class="math notranslate nohighlight">\(\check\mu, \check\phi\)</span> 以匹配
+<span class="bibtex-citation" id="id34">Piazzesi <em>et al.</em> [<a class="reference internal" href="zreferences.html#id376" title="Monika Piazzesi, Juliana Salomao, and Martin Schneider. Trend and Cycle in Bond Premia. Working Paper, Stanford University, 2015.">2015</a>]</span> 中的证据，即专家的行为就好像收益率曲线的水平和斜率比物理测度下更持续。</p>
+<p>具体来说，我们使用</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\check\phi = \begin{pmatrix} 0.985 &amp; -0.025 \\ 0.00 &amp; 0.94 \end{pmatrix}
+\end{split}\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">φ_P</span> <span class="o">=</span> <span class="n">φ_2</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">μ_P</span> <span class="o">=</span> <span class="n">μ_2</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># 主观参数：专家认为因子更持续</span>
+<span class="n">φ_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.985</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.025</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.94</span><span class="p">]])</span>
+<span class="n">μ_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+
+<span class="n">κ_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">C_2</span><span class="p">,</span> <span class="n">φ_P</span> <span class="o">-</span> <span class="n">φ_S</span><span class="p">)</span>
+<span class="n">κ_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">C_2</span><span class="p">,</span> <span class="n">μ_P</span> <span class="o">-</span> <span class="n">μ_S</span><span class="p">)</span>
+
+<span class="n">λ_star_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.03</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.015</span><span class="p">])</span>
+<span class="n">λ_star_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.006</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.004</span><span class="p">]])</span>
+
+<span class="n">λ_hat_0</span> <span class="o">=</span> <span class="n">λ_star_0</span> <span class="o">+</span> <span class="n">κ_0</span>
+<span class="n">λ_hat_z</span> <span class="o">=</span> <span class="n">λ_star_z</span> <span class="o">+</span> <span class="n">κ_z</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_true</span> <span class="o">=</span> <span class="n">create_affine_model</span><span class="p">(</span>
+    <span class="n">μ_2</span><span class="p">,</span> <span class="n">φ_2</span><span class="p">,</span> <span class="n">C_2</span><span class="p">,</span> <span class="n">δ_0_2</span><span class="p">,</span> <span class="n">δ_1_2</span><span class="p">,</span> <span class="n">λ_star_0</span><span class="p">,</span> <span class="n">λ_star_z</span><span class="p">)</span>
+<span class="n">model_econ</span> <span class="o">=</span> <span class="n">create_affine_model</span><span class="p">(</span>
+    <span class="n">μ_2</span><span class="p">,</span> <span class="n">φ_2</span><span class="p">,</span> <span class="n">C_2</span><span class="p">,</span> <span class="n">δ_0_2</span><span class="p">,</span> <span class="n">δ_1_2</span><span class="p">,</span> <span class="n">λ_hat_0</span><span class="p">,</span> <span class="n">λ_hat_z</span><span class="p">)</span>
+
+<span class="n">z_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="n">n_max_db</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">maturities_db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_db</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">tp_true</span> <span class="o">=</span> <span class="n">term_premiums</span><span class="p">(</span><span class="n">model_true</span><span class="p">,</span> <span class="n">z_ref</span><span class="p">,</span> <span class="n">n_max_db</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">tp_econ</span> <span class="o">=</span> <span class="n">term_premiums</span><span class="p">(</span><span class="n">model_econ</span><span class="p">,</span> <span class="n">z_ref</span><span class="p">,</span> <span class="n">n_max_db</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">100</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">maturities_db</span><span class="p">,</span> <span class="n">tp_true</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;真实风险价格 $\lambda^\star_t$&quot;</span><span class="p">)</span>
+<span class="n">line_econ</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">maturities_db</span><span class="p">,</span> <span class="n">tp_econ</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;RE 计量经济学家&quot;</span>
+                <span class="sa">r</span><span class="s2">&quot; $\hat\lambda_t = \lambda^\star_t + \kappa_t$&quot;</span><span class="p">))</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">maturities_db</span><span class="p">,</span> <span class="n">tp_true</span><span class="p">,</span> <span class="n">tp_econ</span><span class="p">,</span>
+                 <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line_econ</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span>
+                 <span class="n">label</span><span class="o">=</span><span class="s2">&quot;信念扭曲成分&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;期限（季度）&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;期限溢价（年化 %）&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mf">9.5</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_db</span><span class="p">)</span>
+
+<span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tp_true</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-8</span>
+<span class="n">ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">tp_true</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+<span class="n">ratio</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">tp_econ</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">/</span> <span class="n">tp_true</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">maturities_db</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">ratio</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;无扭曲（比率 = 1）&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;期限（季度）&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\hat</span><span class="si">{tp}</span><span class="s2">\, /\, tp^\star$&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max_db</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">):</span>
+    <span class="n">ax_top</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">twiny</span><span class="p">()</span>
+    <span class="n">ax_top</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">())</span>
+    <span class="n">year_ticks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">60</span><span class="p">]</span>
+    <span class="n">ax_top</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">year_ticks</span><span class="p">)</span>
+    <span class="n">ax_top</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="o">/</span><span class="mi">4</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">y&quot;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">year_ticks</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-distorted-beliefs">
+<img alt="_images/af8c76d3ee387fbcb2fed7399f4384192035499026c98aec250aa137e11115e2.png" src="_images/af8c76d3ee387fbcb2fed7399f4384192035499026c98aec250aa137e11115e2.png" />
+<figcaption>
+<p><span class="caption-number">图 124.5 </span><span class="caption-text">真实与扭曲信念期限溢价及高估比率</span><a class="headerlink" href="#fig-distorted-beliefs" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>当专家信念过度持续（<span class="math notranslate nohighlight">\(\check\phi\)</span> 的特征值比 <span class="math notranslate nohighlight">\(\phi\)</span>
+更大）时，理性预期计量经济学家将过多的
+观测到的风险溢价归因于风险厌恶。</p>
+<p>将信念扭曲与真正的风险价格区分开来需要额外的
+数据，例如 <span class="bibtex-citation" id="id35">Piazzesi <em>et al.</em> [<a class="reference internal" href="zreferences.html#id376" title="Monika Piazzesi, Juliana Salomao, and Martin Schneider. Trend and Cycle in Bond Premia. Working Paper, Stanford University, 2015.">2015</a>]</span> 使用的调查预测。</p>
+<p>我们的 <a class="reference external" href="https://python-advanced.quantecon.org/risk_aversion_or_mistaken_beliefs.html" title="（在 Project name not set）"><span>Risk Aversion or Mistaken Beliefs?</span></a> 讲座
+更深入地探讨了这种混淆。</p>
+</section>
+</section>
+<section id="id36">
+<h2><span class="section-number">124.8. </span>结束语<a class="headerlink" href="#id36" title="Link to this heading">#</a></h2>
+<p>随机贴现因子的仿射模型为研究资产价格提供了一个灵活且易于处理的
+框架。</p>
+<p>关键特征是：</p>
+<ol class="arabic simple">
+<li><p><strong>解析易处理性：</strong> 债券价格是 <span class="math notranslate nohighlight">\(z_t\)</span> 的指数仿射；
+预期回报可清晰地分解为短期利率加上一个风险价格×暴露内积。</p></li>
+<li><p><strong>实证灵活性：</strong> 自由参数 <span class="math notranslate nohighlight">\((\mu, \phi, C, \delta_0, \delta_1, \lambda_0, \lambda_z)\)</span>
+可以通过最大似然估计（<a class="reference internal" href="kalman.html"><span class="doc">卡尔曼滤波</span></a> 章节描述了
+相关方法），而无需施加来自完整一般均衡模型的约束。</p></li>
+<li><p><strong>多重风险：</strong> 向量结构可容纳许多风险来源（货币
+政策、实际活动、波动率等）。</p></li>
+<li><p><strong>信念扭曲：</strong> 该框架通过对物理测度的似然比扭曲，自然地容纳
+非理性信念，如 <span class="bibtex-citation" id="id37">Piazzesi <em>et al.</em> [<a class="reference internal" href="zreferences.html#id376" title="Monika Piazzesi, Juliana Salomao, and Martin Schneider. Trend and Cycle in Bond Premia. Working Paper, Stanford University, 2015.">2015</a>]</span> 所示。</p></li>
+</ol>
+<p>该模型还直接连接到 <a class="reference external" href="https://python-advanced.quantecon.org/doubts_or_variability.html" title="（在 Project name not set）"><span>Doubts or Variability?</span></a> 中研究的
+Hansen–Jagannathan 边界，以及 <span class="bibtex-citation" id="id38">Ljungqvist and Sargent [<a class="reference internal" href="zreferences.html#id283" title="L Ljungqvist and T J Sargent. Recursive Macroeconomic Theory. MIT Press, 4 edition, 2018.">2018</a>]</span> 其他章节中描述的
+随机贴现因子的稳健控制解释。</p>
+<p>关于对本处连续状态框架进行补充的资产定价有限状态方法，
+参见 <a class="reference internal" href="markov_asset.html"><span class="doc">资产定价：有限状态模型</span></a>。</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Tools and Techniques
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Elementary Statistics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bayes Law
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Statistics and Information
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Linear Programming
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   36. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   37. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Dynamics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   38. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   39. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   40. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   43. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   44. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   45. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Search
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   50. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   53. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   55. 工作搜寻 VI：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   56. 工作搜寻 VII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   57. 工作搜寻 VIII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Reinforcement Learning
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   72. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   73. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   74. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   75. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   83. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   107. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   108. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   109. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   110. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Asset Pricing and Finance
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   119. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Data and Empirics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   128. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   129. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Auctions
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   133. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   134. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   135. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   136. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   137. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/affine_risk_prices.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/affine_risk_prices.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/affine_risk_prices.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/affine_risk_prices.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/affine_risk_prices.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "affine_risk_prices";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/affine_risk_prices.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

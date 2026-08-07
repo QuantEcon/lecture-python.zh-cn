@@ -9,9 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>8. 基础概率论与矩阵 &#8212; Python中级数量经济学</title>
-    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
     
         <script>
             MathJax = {
@@ -70,13 +77,13 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=a459934d9fea1f60268e46d95e2569a33e1f6ec2" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
-    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=b4b7a797" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -94,8 +101,8 @@
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-    <script src="_static/scripts/quantecon-book-theme.js?digest=06ebc90d5139b434c2742937a4ef3b185cb93e2f"></script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
     <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
     <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
@@ -150,10 +157,31 @@
 <meta property="og:site_name" content="Python中级数量经济学" />
 <meta name="theme-color" content="#ffffff" />
 
+
+
+
   </head>
 <body>
 
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
 <!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
 
     <span id="top"></span>
 
@@ -165,7 +193,12 @@
 
                 <div class="qe-page__toc">
 
-                    <div class="inner">
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
 
                         
                         <div class="qe-page__toc-header">
@@ -176,25 +209,55 @@
                         <nav id="bd-toc-nav" class="qe-page__toc-nav">
                             <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">8.1. 基本概念概述</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">8.2. 概率是什么意思？</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">8.3. 表示概率分布</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">8.4. 单变量概率分布</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">8.4.1. 离散随机变量</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">8.4.2. 连续随机变量</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">8.2. 概率是什么意思？</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">8.2.1. 离散随机变量示例</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">8.2.1.1. 标量示例</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">8.5. 二元概率分布</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">8.6. 边缘概率分布</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">8.7. 条件概率分布</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">8.8. 转移概率矩阵</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">8.9. 应用：时间序列的预测</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">8.10. 统计独立性</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">8.11. 均值和方差</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">8.12. 一些二元分布的矩阵表示</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">8.13. 二维连续随机向量</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">8.14. 两个独立分布随机变量的和</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">8.15. 耦合</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copula">8.16. Copula函数</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vs">8.2.2. 理解概率：频率学派 vs. 贝叶斯学派</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">8.3. 表示概率分布</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">8.4. 单变量概率分布</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">8.4.1. 离散随机变量</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">8.4.2. 连续随机变量</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">8.5. 二元概率分布</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">8.6. 边缘概率分布</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">8.7. 条件概率分布</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">8.8. 转移概率矩阵</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">8.9. 应用：时间序列的预测</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">8.10. 统计独立性</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">8.11. 均值和方差</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">8.12. 一些二元分布的矩阵表示</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">8.12.1. 数值示例</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">8.12.1.1. 示例 1</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">8.12.1.2. 示例 2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">8.13. 二维连续随机向量</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">8.13.1. 联合分布、边缘分布和条件分布</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">8.13.1.1. 联合分布</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">8.13.1.2. 边缘分布</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">8.13.1.3. 条件分布</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">8.14. 两个独立分布随机变量的和</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">8.15. 耦合</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copula">8.16. Copula函数</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">8.16.1. 离散和连续分布的二元示例</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">8.16.1.1. 离散边际分布</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">8.16.2. 高斯Copula示例</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">8.17. 练习</a></li>
 </ul>
                             <p class="logo">
                                 
@@ -205,17 +268,23 @@
                                 
                             </p>
 
-                            <p class="powered">Powered by <a href="https://jupyterbook.org/en/stable/">Jupyter Book</a></p>
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
 
                         </nav>
 
                         <div class="qe-page__toc-footer">
                             
                             
-                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                            
+                            
+                            
                         </div>
 
                     </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
 
                 </div>
 
@@ -225,10 +294,9 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">基础概率论与矩阵</p>
-
                     </div>
-                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+
+                    <!-- Authors section -->
                         <p class="qe-page__header-authors" font-size="18">
                             
                                 
@@ -241,6 +309,73 @@
                             
                         </p>
 
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 19, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/prob_matrix.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/00c2fac" class="changelog-hash">00c2fac</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">[action-translation] resync: prob_matrix.md (#146)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/a664481" class="changelog-hash">a664481</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">10 months ago</span>
+                                <span class="changelog-message">update new lectures with updated toc and translations</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/28292b8" class="changelog-hash">28292b8</a>
+                                
+                                <span class="changelog-author">nisha617</span>
+                                <span class="changelog-time">11 months ago</span>
+                                <span class="changelog-message">update</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c4c4b86" class="changelog-hash">c4c4b86</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update matplotlib</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/ab0498b" class="changelog-hash">ab0498b</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update all translated lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/387e084" class="changelog-hash">387e084</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lecture series</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
 
                 </div> <!-- .page__header -->
 
@@ -275,7 +410,8 @@
 <li><p>定义概率分布的参数</p></li>
 <li><p>作为数据摘要的充分统计量</p></li>
 </ul>
-<p>我们将使用矩阵来表示二元概率分布，使用向量来表示一元概率分布</p>
+<p>我们将使用矩阵来表示二元或多元概率分布，使用向量来表示一元概率分布</p>
+<p>这篇<a class="reference internal" href="stats_examples.html"><span class="doc">配套讲座</span></a>介绍了一些常见的概率分布，并说明了如何用Python从中抽样。</p>
 <p>除了Anaconda中已有的库外，本讲还需要以下库：</p>
 <div class="cell tag_hide-output docutils container">
 <div class="cell_input above-output-prompt docutils container">
@@ -289,8 +425,8 @@
 <p class="expanded admonition-title">Hide code cell output</p>
 </summary>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: prettytable in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (3.16.0)
-Requirement already satisfied: wcwidth in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from prettytable) (0.2.5)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: prettytable in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (3.17.0)
+Requirement already satisfied: wcwidth in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from prettytable) (0.8.2)
 </pre></div>
 </div>
 </div>
@@ -307,9 +443,13 @@ Requirement already satisfied: wcwidth in /home/runner/miniconda3/envs/quantecon
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">prettytable</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">comb</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mpl_toolkits.mplot3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes3D</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib_inline.backend_inline</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_matplotlib_formats</span>
 <span class="n">set_matplotlib_formats</span><span class="p">(</span><span class="s1">&#39;retina&#39;</span><span class="p">)</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -317,30 +457,42 @@ Requirement already satisfied: wcwidth in /home/runner/miniconda3/envs/quantecon
 <section id="id2">
 <h2><span class="section-number">8.1. </span>基本概念概述<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
 <p>我们将简要定义<strong>概率空间</strong>、<strong>概率测度</strong>和<strong>随机变量</strong>。</p>
-<p>在本讲座的大部分内容中，这些概念将不会被反复提及，但它们构成我们所讨论其他主题的基础。</p>
+<p>在本讲座的大部分内容中，我们将把这些概念放到背景之中。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>尽管如此，我们在这里关注的随机变量的<strong>诱导分布</strong>背后，仍然潜藏着这些对象。</p>
+<p>这些更深层次的对象对于定义和分析支撑大数定律的平稳性和遍历性概念而言是不可或缺的。</p>
+<p>关于其中一些结果相对通俗的介绍，可参见 Lars Peter Hansen 和 Thomas J. Sargent 的在线专著<a class="reference external" href="https://lphansen.github.io/QuantMFR/book/1_stochastic_processes.html"><em>Risk, Uncertainty, and Values</em></a>中的这一章。</p>
+</div>
 <p>设 <span class="math notranslate nohighlight">\(\Omega\)</span> 为可能的基本结果集，设 <span class="math notranslate nohighlight">\(\omega \in \Omega\)</span> 为一个特定的基本结果。</p>
-<p>设 <span class="math notranslate nohighlight">\(\mathcal{G} \subset \Omega\)</span> 为 <span class="math notranslate nohighlight">\(\Omega\)</span> 的一个子集。</p>
-<p>设 <span class="math notranslate nohighlight">\(\mathcal{F}\)</span> 为这些子集 <span class="math notranslate nohighlight">\(\mathcal{G} \subset \Omega\)</span> 的集合。</p>
-<p>对 <span class="math notranslate nohighlight">\(\Omega,\mathcal{F}\)</span> 这一配对就是我们想要赋予概率测度的<strong>概率空间</strong>。</p>
-<p><strong>概率测度</strong> <span class="math notranslate nohighlight">\(\mu\)</span> 将可能的基本结果集 <span class="math notranslate nohighlight">\(\mathcal{G} \in \mathcal{F}\)</span> 映射到0和1之间的实数</p>
-<ul class="simple">
-<li><p>即 <span class="math notranslate nohighlight">\(X\)</span> 属于 <span class="math notranslate nohighlight">\(A\)</span> 的”概率”，记为 <span class="math notranslate nohighlight">\( \textrm{Prob}\{X\in A\}\)</span>。</p></li>
-</ul>
-<p><strong>随机变量</strong> <span class="math notranslate nohighlight">\(X(\omega)\)</span> 是基本结果 <span class="math notranslate nohighlight">\(\omega \in \Omega\)</span> 的一个函数。</p>
-<p>随机变量 <span class="math notranslate nohighlight">\(X(\omega)\)</span> 具有由基础概率测度 <span class="math notranslate nohighlight">\(\mu\)</span> 和函数 <span class="math notranslate nohighlight">\(X(\omega)\)</span> 诱导的<strong>概率分布</strong>：</p>
+<p>设 <span class="math notranslate nohighlight">\(\mathcal{F}\)</span> 为 <span class="math notranslate nohighlight">\(\Omega\)</span> 的子集组成的集合，我们称之为<strong>事件</strong>。</p>
+<p>（严格来说，<span class="math notranslate nohighlight">\(\mathcal{F}\)</span> 是一个 <a class="reference external" href="https://en.wikipedia.org/wiki/Sigma-algebra"><span class="math notranslate nohighlight">\(\sigma\)</span>-代数</a>。）</p>
+<p><strong>概率测度</strong> <span class="math notranslate nohighlight">\(\mu\)</span> 将每个事件 <span class="math notranslate nohighlight">\(\mathcal{G} \in \mathcal{F}\)</span> 映射到0和1之间的一个标量数值 <span class="math notranslate nohighlight">\(\mu(\mathcal{G})\)</span>，且满足 <span class="math notranslate nohighlight">\(\mu(\Omega)=1\)</span>。</p>
+<p>三元组 <span class="math notranslate nohighlight">\(\Omega,\mathcal{F},\mu\)</span> 构成了我们的<strong>概率空间</strong>。</p>
+<p><strong>随机变量</strong> <span class="math notranslate nohighlight">\(X(\omega)\)</span> 是基本结果 <span class="math notranslate nohighlight">\(\omega \in \Omega\)</span> 的一个函数，它将 <span class="math notranslate nohighlight">\(\omega\)</span> 映射到某个可能取值集合中的一个值。</p>
+<p>如果 <span class="math notranslate nohighlight">\(A\)</span> 是 <span class="math notranslate nohighlight">\(X\)</span> 的一组可能取值，那么 <span class="math notranslate nohighlight">\(X\)</span> 落在 <span class="math notranslate nohighlight">\(A\)</span> 中这一事件为</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{G} = \{\omega \in \Omega : X(\omega) \in A\}.
+\]</div>
+<p>随机变量 <span class="math notranslate nohighlight">\(X(\omega)\)</span> 具有由概率测度 <span class="math notranslate nohighlight">\(\mu\)</span> 诱导的<strong>概率分布</strong>：</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{Prob}(X \in A) = \mu(\mathcal{G}).
+\]</div>
+<p>如果 <span class="math notranslate nohighlight">\(\mu\)</span> 具有密度 <span class="math notranslate nohighlight">\(p(\omega)\)</span>，那么我们也可以写成</p>
 <div class="math notranslate nohighlight" id="equation-eq-cdffromdensity">
 <span class="eqno">(8.1)<a class="headerlink" href="#equation-eq-cdffromdensity" title="Link to this equation">#</a></span>\[
-\textrm{Prob} (X \in A ) = \int_{\mathcal{G}} \mu(\omega) d \omega
+\textrm{Prob}(X \in A) = \int_{\mathcal{G}} p(\omega)\, d \omega
 \]</div>
-<p>其中 <span class="math notranslate nohighlight">\({\mathcal G}\)</span> 是 <span class="math notranslate nohighlight">\(\Omega\)</span> 的子集，满足 <span class="math notranslate nohighlight">\(X(\omega) \in A\)</span>。</p>
 <p>我们称这为随机变量 <span class="math notranslate nohighlight">\(X\)</span> 的诱导概率分布。</p>
-<p>在实际工作中，应用统计学家往往不从底层的概率空间 <span class="math notranslate nohighlight">\(\Omega,\mathcal{F}\)</span> 和概率测度 <span class="math notranslate nohighlight">\(\mu\)</span> 出发进行显式推导，而是直接为某个随机变量给定其诱导分布的函数形式。</p>
+<p>在实际工作中，应用统计学家往往不从底层的概率空间 <span class="math notranslate nohighlight">\(\Omega,\mathcal{F}\)</span> 和概率测度 <span class="math notranslate nohighlight">\(\mu\)</span> 出发进行显式推导，而是直接为某个随机变量 <span class="math notranslate nohighlight">\(X\)</span> 给定其诱导分布的函数形式。</p>
 <p>本讲以及此后的多篇讲座都将采用这种做法。</p>
 </section>
 <section id="id3">
 <h2><span class="section-number">8.2. </span>概率是什么意思？<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
-<p>在深入讨论之前，我们先简单谈谈概率的含义，以及概率论与统计学的关系。</p>
-<p>我们在 quantecon 讲座 <a class="reference external" href="https://python.quantecon.org/prob_meaning.html">https://python.quantecon.org/prob_meaning.html</a> 和 <a class="reference external" href="https://python.quantecon.org/navy_captain.html">https://python.quantecon.org/navy_captain.html</a> 中也涉及了这些主题。</p>
+<p>在深入讨论之前，我们先简单谈谈概率论的含义，以及它与统计学的关系。</p>
+<p>我们在 <a class="reference internal" href="prob_meaning.html"><span class="doc">概率的两种含义</span></a> 和 <a class="reference internal" href="navy_captain.html"><span class="doc">贝叶斯与频率主义决策规则的比较</span></a> 中也涉及了这些主题。</p>
 <p>在本讲座的大部分内容中，我们讨论的都是固定的”总体”概率分布。</p>
 <p>这些概率分布是纯粹的数学对象。</p>
 <p>要理解统计学家如何将概率与数据联系起来，关键是理解以下概念：</p>
@@ -356,7 +508,10 @@ Requirement already satisfied: wcwidth in /home/runner/miniconda3/envs/quantecon
 </ul>
 </li>
 </ul>
-<p><strong>标量示例</strong></p>
+<section id="id4">
+<h3><span class="section-number">8.2.1. </span>离散随机变量示例<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<section id="id5">
+<h4><span class="section-number">8.2.1.1. </span>标量示例<a class="headerlink" href="#id5" title="Link to this heading">#</a></h4>
 <p>设<span class="math notranslate nohighlight">\(X\)</span>是一个标量随机变量，它可以取<span class="math notranslate nohighlight">\(I\)</span>个可能的值<span class="math notranslate nohighlight">\(0, 1, 2, \ldots, I-1\)</span>，其概率为</p>
 <div class="math notranslate nohighlight">
 \[
@@ -365,7 +520,7 @@ Requirement already satisfied: wcwidth in /home/runner/miniconda3/envs/quantecon
 <p>其中</p>
 <div class="math notranslate nohighlight">
 \[
-f_i \geqslant 0, \quad \sum_i f_i = 1 .
+ f_i \geqslant 0, \quad \sum_i f_i = 1 .
 \]</div>
 <p>我们有时写作</p>
 <div class="math notranslate nohighlight">
@@ -374,7 +529,7 @@ X  \sim \{{f_i}\}_{i=0}^{I-1}
 \]</div>
 <p>这是一种简写方式，表示随机变量<span class="math notranslate nohighlight">\(X\)</span>由概率分布<span class="math notranslate nohighlight">\( \{{f_i}\}_{i=0}^{I-1}\)</span>描述。</p>
 <p>考虑从<span class="math notranslate nohighlight">\(X\)</span>中抽取<span class="math notranslate nohighlight">\(N\)</span>个独立同分布的样本<span class="math notranslate nohighlight">\(x_0, x_1, \dots , x_{N-1}\)</span>。</p>
-<p>“独立同分布”（i.i.d.）这个术语中，”同分布”和”独立”各自意味着什么？</p>
+<p>“独立同分布”（IID 或 iid，“identically and independently distributed”）这个术语中，”同分布”和”独立”各自意味着什么？</p>
 <ul class="simple">
 <li><p>“同分布”意味着每次抽样都来自相同的分布。</p></li>
 <li><p>“独立”意味着联合分布等于边缘分布的乘积，即：</p></li>
@@ -382,7 +537,7 @@ X  \sim \{{f_i}\}_{i=0}^{I-1}
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-\textrm{Prob}\{x_0 = i_0, x_1 = i_1, \dots , x_{N-1} = i_{N-1}\} &amp;= \textrm{Prob}\{x_0 = i_0\} \cdot \dots \cdot \textrm{Prob}\{x_{I-1} = i_{I-1}\}\\
+\textrm{Prob}\{x_0 = i_0, x_1 = i_1, \dots , x_{N-1} = i_{N-1}\} &amp;= \textrm{Prob}\{x_0 = i_0\} \cdot \dots \cdot \textrm{Prob}\{x_{N-1} = i_{N-1}\}\\
 &amp;= f_{i_0} f_{i_1} \cdot \dots \cdot f_{i_{N-1}}\\
 \end{aligned}
 \end{split}\]</div>
@@ -396,33 +551,27 @@ N &amp; = \sum^{I-1}_{i=0} N_i \quad \text{抽样总次数},\\
 \tilde {f_i} &amp;  = \frac{N_i}{N} \sim \ \text{事件} \ X=i \ \text{出现的频率}
 \end{aligned}
 \end{split}\]</div>
-<p>将概率论与统计学联系起来的关键思想是大数定律和中心极限定理</p>
-<p><strong>大数定律：</strong></p>
-<ul class="simple">
-<li><p>大数定律(LLN)表明 <span class="math notranslate nohighlight">\(\tilde {f_i} \to f_i \text{ 当 } N \to \infty\)</span></p></li>
-</ul>
-<p><strong>中心极限定理：</strong></p>
-<ul class="simple">
-<li><p>中心极限定理(CLT)描述了 <span class="math notranslate nohighlight">\(\tilde {f_i} \to f_i\)</span> 的<strong>收敛速率</strong></p></li>
-</ul>
-<p><strong>备注</strong></p>
-<ul class="simple">
-<li><p>对于”频率学派”统计学家来说，<strong>预期相对频率</strong>就是概率分布的<strong>全部</strong>含义。</p></li>
-<li><p>但对贝叶斯学派来说，概率的含义有所不同——在一定程度上是主观且带有个人色彩的。</p>
-<ul>
-<li><p>之所以说”在一定程度上”，是因为贝叶斯学派同样会关注相对频率。</p></li>
-</ul>
-</li>
-</ul>
+<p>将概率论与统计学联系起来的关键概念是大数定律和中心极限定理。</p>
+<p>大数定律(LLN)表明当 <span class="math notranslate nohighlight">\(N \to \infty\)</span> 时 <span class="math notranslate nohighlight">\(\tilde {f_i} \to f_i\)</span>。</p>
+<p>中心极限定理(CLT)描述了 <span class="math notranslate nohighlight">\(\tilde {f_i} \to f_i\)</span> 的<strong>收敛速率</strong>。</p>
+<p>关于这两个结果的详细讨论，请参见 <a class="reference internal" href="lln_clt.html"><span class="doc">大数定律 和 中心极限定理</span></a>。</p>
 </section>
-<section id="id4">
-<h2><span class="section-number">8.3. </span>表示概率分布<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+</section>
+<section id="vs">
+<h3><span class="section-number">8.2.2. </span>理解概率：频率学派 vs. 贝叶斯学派<a class="headerlink" href="#vs" title="Link to this heading">#</a></h3>
+<p>对于”频率学派”统计学家来说，<strong>预期相对频率</strong>就是概率分布的<strong>全部</strong>含义。</p>
+<p>但对贝叶斯学派来说，概率的含义有所不同——在一定程度上是主观且带有个人色彩的。</p>
+<p>之所以说”在一定程度上”，是因为贝叶斯学派同样会关注相对频率。</p>
+</section>
+</section>
+<section id="id6">
+<h2><span class="section-number">8.3. </span>表示概率分布<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <p>概率分布 <span class="math notranslate nohighlight">\(\textrm{Prob} (X \in A)\)</span> 可以用其**累积分布函数(CDF)**来描述</p>
 <div class="math notranslate nohighlight">
 \[
 F_{X}(x) = \textrm{Prob}\{X\leq x\}.
 \]</div>
-<p>有时候（但不总是如此），随机变量也可以用与其累积分布函数相对应的<strong>密度函数</strong> <span class="math notranslate nohighlight">\(f(x)\)</span> 来描述：</p>
+<p>有时候（但不总是如此），随机变量也可以用<strong>密度函数</strong> <span class="math notranslate nohighlight">\(f(x)\)</span> 来描述，它与累积分布函数的关系为</p>
 <div class="math notranslate nohighlight">
 \[
 \textrm{Prob} \{X\in B\} = \int_{t\in B}f(t)dt
@@ -431,25 +580,25 @@ F_{X}(x) = \textrm{Prob}\{X\leq x\}.
 \[
 F(x) = \int_{-\infty}^{x}f(t)dt
 \]</div>
-<p>这里 <span class="math notranslate nohighlight">\(B\)</span> 表示我们要求 <span class="math notranslate nohighlight">\(X\)</span> 落在其中的值的集合。</p>
+<p>这里 <span class="math notranslate nohighlight">\(B\)</span> 表示我们要求 <span class="math notranslate nohighlight">\(X\)</span> 落在其中、并想计算其发生概率的值的集合。</p>
 <p>在概率密度存在的情况下，一个概率分布可以通过其累积分布函数或概率密度函数来表征。</p>
 <p>对于<strong>离散型</strong>随机变量：</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(X\)</span> 的可能值的数量是有限的或可数无限的</p></li>
 <li><p>我们用<strong>概率质量函数</strong>（一个非负且和为1的序列）代替<strong>密度</strong></p></li>
-<li><p>在类似 <a class="reference internal" href="#equation-eq-cdffromdensity">(8.1)</a> 这样的关联累积分布函数和概率质量函数的公式中，我们用求和代替积分</p></li>
+<li><p>在密度存在的情况下，我们用求和代替像 <a class="reference internal" href="#equation-eq-cdffromdensity">(8.1)</a> 这样公式中的积分</p></li>
 </ul>
 <p>在本讲中，我们主要讨论离散随机变量。</p>
 <p>这样做使我们能够基本上把所用工具限定在线性代数范围内。</p>
 <p>稍后我们将简要讨论如何用离散型随机变量来近似连续型随机变量。</p>
 </section>
-<section id="id5">
-<h2><span class="section-number">8.4. </span>单变量概率分布<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2><span class="section-number">8.4. </span>单变量概率分布<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p>在本讲中，我们将主要讨论离散型随机变量，但也会简单介绍一下连续型随机变量。</p>
-<section id="id6">
-<h3><span class="section-number">8.4.1. </span>离散随机变量<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<section id="id8">
+<h3><span class="section-number">8.4.1. </span>离散随机变量<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <p>设 <span class="math notranslate nohighlight">\(X\)</span> 是一个离散随机变量，其可能取值为：<span class="math notranslate nohighlight">\(i=0,1,\ldots,I-1 = \bar{X}\)</span>。</p>
-<p>这里，我们将最大索引设定为 <span class="math notranslate nohighlight">\(I-1\)</span>，是因为这与Python的索引约定（从0开始）很好地对应。</p>
+<p>这里，我们将最大索引设定为 <span class="math notranslate nohighlight">\(I-1\)</span>，是因为这与Python的索引约定很好地对应。</p>
 <p>定义 <span class="math notranslate nohighlight">\(f_i \equiv \textrm{Prob}\{X=i\}\)</span> 并构造非负向量</p>
 <div class="math notranslate nohighlight" id="equation-eq-discretedist">
 <span class="eqno">(8.2)<a class="headerlink" href="#equation-eq-discretedist" title="Link to this equation">#</a></span>\[\begin{split}
@@ -474,24 +623,18 @@ f_{I-1}
 f_i = g(i; \theta)
 \]</div>
 <p>其中 <span class="math notranslate nohighlight">\(\theta\)</span> 是一个参数向量，其维度远小于 <span class="math notranslate nohighlight">\(I\)</span>。</p>
-<p><strong>注意：</strong></p>
-<ul class="simple">
-<li><p><strong>统计模型</strong>是由一组<strong>参数</strong>刻画的联合概率分布。</p></li>
-<li><p><strong>参数</strong>的概念与<strong>充分统计量</strong>的概念密切相关。</p></li>
-<li><p>统计量是数据集的非线性函数。</p></li>
-<li><p>充分统计量旨在总结数据集中包含的关于参数的所有<strong>信息</strong>。</p>
-<ul>
-<li><p>充分统计量始终是相对于某一特定的统计模型而言的。</p></li>
-<li><p>充分统计量是人工智能用来概括或压缩<strong>大数据集</strong>的关键工具</p></li>
-</ul>
-</li>
-<li><p>R. A. Fisher 提供了<strong>信息</strong>的严格定义 – 参见 <a class="reference external" href="https://baike.baidu.com/item/%E8%B4%B9%E5%B8%8C%E5%B0%94%E4%BF%A1%E6%81%AF/22742376">https://baike.baidu.com/item/费希尔信息/22742376</a></p></li>
-</ul>
+<p><strong>统计模型</strong>是由一组<strong>参数</strong>刻画的联合概率分布。</p>
+<p><strong>参数</strong>的概念与<strong>充分统计量</strong>的概念密切相关。</p>
+<p><strong>统计量</strong>是数据集的非线性函数。</p>
+<p><strong>充分统计量</strong>总结了数据集中包含的关于统计模型参数的所有<strong>信息</strong>。</p>
+<p>注意，充分统计量始终是相对于某一特定的统计模型而言的。</p>
+<p>充分统计量是人工智能用来概括或压缩<strong>大数据集</strong>的关键工具。</p>
+<p>R. A. Fisher 提供了<strong>信息</strong>的严格定义 – 参见 <a class="reference external" href="https://en.wikipedia.org/wiki/Fisher_information">Fisher信息</a>。</p>
 <p><strong>几何分布</strong>是参数概率分布的一个例子。</p>
 <p>它的描述如下：</p>
 <div class="math notranslate nohighlight">
 \[
-f_{i} = \textrm{Prob}\{X=i\} = (1-\lambda)\lambda^{i},\quad \lambda \in [0,1], \quad i = 0, 1, 2, \ldots
+f_{i} = \textrm{Prob}\{X=i\} = (1-\lambda)\lambda^{i},\quad \lambda \in [0,1), \quad i = 0, 1, 2, \ldots
 \]</div>
 <p>显然，<span class="math notranslate nohighlight">\(\sum_{i=0}^{\infty}f_i=1\)</span>。</p>
 <p>设<span class="math notranslate nohighlight">\(\theta\)</span>是由<span class="math notranslate nohighlight">\(f\)</span>描述的分布的参数向量，则：</p>
@@ -500,9 +643,9 @@ f_{i} = \textrm{Prob}\{X=i\} = (1-\lambda)\lambda^{i},\quad \lambda \in [0,1], \
 f_i( \theta)\ge0, \sum_{i=0}^{\infty}f_i(\theta)=1
 \]</div>
 </section>
-<section id="id7">
-<h3><span class="section-number">8.4.2. </span>连续随机变量<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
-<p>设<span class="math notranslate nohighlight">\(X\)</span>是一个取值为<span class="math notranslate nohighlight">\(X \in \tilde{X}\equiv[X_U,X_L]\)</span>的连续随机变量，其分布具有参数<span class="math notranslate nohighlight">\(\theta\)</span>。</p>
+<section id="id9">
+<h3><span class="section-number">8.4.2. </span>连续随机变量<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p>设 <span class="math notranslate nohighlight">\(X\)</span> 是一个取值于集合 <span class="math notranslate nohighlight">\(\tilde{X} \subseteq \mathbb{R}\)</span> 的连续随机变量，其分布具有参数 <span class="math notranslate nohighlight">\(\theta\)</span>。</p>
 <div class="math notranslate nohighlight">
 \[
 \textrm{Prob}\{X\in A\} = \int_{x\in A} f(x;\theta)\,dx;  \quad f(x;\theta)\ge0
@@ -514,8 +657,8 @@ f_i( \theta)\ge0, \sum_{i=0}^{\infty}f_i(\theta)=1
 \]</div>
 </section>
 </section>
-<section id="id8">
-<h2><span class="section-number">8.5. </span>二元概率分布<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h2><span class="section-number">8.5. </span>二元概率分布<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <p>现在我们将讨论二元<strong>联合分布</strong>。</p>
 <p>首先，我们将关注两个离散随机变量的情况。</p>
 <p>设<span class="math notranslate nohighlight">\(X,Y\)</span>是两个离散随机变量，它们的取值为：</p>
@@ -543,8 +686,8 @@ f_{ij}=\textrm{Prob}\{X=i,Y=j\} \geq 0
 \sum_{i}\sum_{j}f_{ij}=1
 \]</div>
 </section>
-<section id="id9">
-<h2><span class="section-number">8.6. </span>边缘概率分布<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id11">
+<h2><span class="section-number">8.6. </span>边缘概率分布<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
 <p>由联合分布可以推出边缘分布：</p>
 <div class="math notranslate nohighlight">
 \[
@@ -574,7 +717,7 @@ F = \left[
 \textrm{Prob}\{Y=1\}&amp;=.1+.5=.6
 \end{aligned}
 \end{split}\]</div>
-<p><strong>题外话：</strong> 如果两个随机变量 <span class="math notranslate nohighlight">\(X,Y\)</span> 是连续的且具有联合密度 <span class="math notranslate nohighlight">\(f(x,y)\)</span>，则边缘分布可以通过以下方式计算：</p>
+<p>顺带一提，如果两个随机变量 <span class="math notranslate nohighlight">\(X,Y\)</span> 是连续的且具有联合密度 <span class="math notranslate nohighlight">\(f(x,y)\)</span>，则边缘分布可以通过以下方式计算：</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
@@ -583,8 +726,8 @@ f(y)&amp; = \int_{\mathbb{R}} f(x,y) dx
 \end{aligned}
 \end{split}\]</div>
 </section>
-<section id="id10">
-<h2><span class="section-number">8.7. </span>条件概率分布<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<section id="id12">
+<h2><span class="section-number">8.7. </span>条件概率分布<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <p>条件概率的定义如下：</p>
 <div class="math notranslate nohighlight">
 \[
@@ -601,60 +744,69 @@ f(y)&amp; = \int_{\mathbb{R}} f(x,y) dx
 <p>注意：</p>
 <div class="math notranslate nohighlight">
 \[
-\sum_{i}\textrm{Prob}\{X_i=i|Y_j=j\}
+\sum_{i}\textrm{Prob}\{X=i|Y=j\}
 =\frac{ \sum_{i}f_{ij} }{ \sum_{i}f_{ij}}=1
 \]</div>
-<p><strong>注：</strong> 条件概率的定义实际上蕴含了<strong>贝叶斯定理</strong>：</p>
-<div class="math notranslate nohighlight">
-\[\textrm{Prob}\{X=i|Y=j\}	=\frac{\textrm{Prob}\{X=i,Y=j\}}{\textrm{Prob}\{Y=j\}}=\frac{\textrm{Prob}\{Y=j|X=i\}\textrm{Prob}\{X=i\}}{\textrm{Prob}\{Y=j\}}
+<p>条件概率的数学定义蕴含了：</p>
+<div class="math notranslate nohighlight" id="equation-eq-condprobbayes">
+<span class="eqno">(8.4)<a class="headerlink" href="#equation-eq-condprobbayes" title="Link to this equation">#</a></span>\[
+\textrm{Prob}\{X=i|Y=j\}	=\frac{\textrm{Prob}\{X=i,Y=j\}}{\textrm{Prob}\{Y=j\}}=\frac{\textrm{Prob}\{Y=j|X=i\}\textrm{Prob}\{X=i\}}{\textrm{Prob}\{Y=j\}}
 \]</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>公式 <a class="reference internal" href="#equation-eq-condprobbayes">(8.4)</a> 也就是贝叶斯学派所称的<strong>贝叶斯定理</strong>。</p>
+<p>贝叶斯统计学家将边缘概率分布 <span class="math notranslate nohighlight">\(\textrm{Prob}({X=i}), i = 0,  \ldots, I-1\)</span> 视为描述其对 <span class="math notranslate nohighlight">\(X\)</span> 个人主观信念的<strong>先验</strong>分布。</p>
+<p>然后他将公式 <a class="reference internal" href="#equation-eq-condprobbayes">(8.4)</a> 解释为一种构造<strong>后验</strong>分布的方法，用以说明在观察到 <span class="math notranslate nohighlight">\(Y\)</span> 等于 <span class="math notranslate nohighlight">\(j\)</span> 之后，他将如何修正自己的主观信念。</p>
+</div>
 <p>对于上述联合分布 <a class="reference internal" href="#equation-eq-example101discrete">(8.3)</a></p>
 <div class="math notranslate nohighlight">
 \[
 \textrm{Prob}\{X=0|Y=1\} =\frac{ .1}{.1+.5}=\frac{.1}{.6}
 \]</div>
 </section>
-<section id="id11">
-<h2><span class="section-number">8.8. </span>转移概率矩阵<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
-<p>8.8 转移概率矩阵</p>
+<section id="id13">
+<h2><span class="section-number">8.8. </span>转移概率矩阵<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p>考虑两个随机变量的如下联合概率分布。</p>
 <p>设 <span class="math notranslate nohighlight">\(X, Y\)</span> 为离散随机变量，其联合分布为</p>
 <div class="math notranslate nohighlight">
 \[
-\textrm{Prob}\{X=i, Y=j\}=\rho_{ij},
+\textrm{Prob}\{X=i,Y=j\} = \rho_{ij}
 \]</div>
-<p>其中 <span class="math notranslate nohighlight">\(i=0,\ldots,I-1;\; j=0,\ldots,J-1\)</span>，并且</p>
+<p>其中 <span class="math notranslate nohighlight">\(i = 0,\dots,I-1; j = 0,\dots,J-1\)</span> 且</p>
 <div class="math notranslate nohighlight">
 \[
-\sum_i \sum_j \rho_{ij}=1,\qquad \rho_{ij}\geqslant 0.
+\sum_i\sum_j \rho_{ij} = 1, \quad \rho_{ij} \geqslant 0.
 \]</div>
-<p>相应的条件分布为</p>
+<p>相关的条件分布为</p>
 <div class="math notranslate nohighlight">
 \[
-\textrm{Prob}\{Y=i \mid X=j\}=\frac{\rho_{ij}}{\sum_j \rho_{ij}}
-=\frac{\textrm{Prob}\{Y=j, X=i\}}{\textrm{Prob}\{X=i\}}.
+\textrm{Prob}\{Y=j\vert X=i\} = \frac{\rho_{ij}}{ \sum_{j}\rho_{ij}}
+= \frac{\textrm{Prob}\{Y=j, X=i\}}{\textrm{Prob}\{ X=i\}}
 \]</div>
-<p>我们可以定义一个转移概率矩阵 <span class="math notranslate nohighlight">\(P\)</span>，其第 <span class="math notranslate nohighlight">\(i,j\)</span> 个元素为</p>
+<p>我们可以定义一个转移概率矩阵 <span class="math notranslate nohighlight">\(P\)</span>，其 <span class="math notranslate nohighlight">\(i,j\)</span> 分量为</p>
 <div class="math notranslate nohighlight">
 \[
-p_{ij}=\textrm{Prob}\{Y=j \mid X=i\}=\frac{\rho_{ij}}{\sum_j \rho_{ij}},
+p_{ij}=\textrm{Prob}\{Y=j|X=i\}= \frac{\rho_{ij}}{ \sum_{j}\rho_{ij}}
 \]</div>
 <p>其中</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
-\begin{bmatrix}
-p_{11} &amp; p_{12}\\
-p_{21} &amp; p_{22}
-\end{bmatrix}.
+\left[
+   \begin{matrix}
+  p_{00} &amp; p_{01}\\
+  p_{10} &amp; p_{11}
+  \end{matrix}
+\right]
 \end{split}\]</div>
-<p>第一行给出在 <span class="math notranslate nohighlight">\(X=0\)</span> 条件下 <span class="math notranslate nohighlight">\(Y=j\)</span>（<span class="math notranslate nohighlight">\(j=0,1\)</span>）的概率；第二行给出在 <span class="math notranslate nohighlight">\(X=1\)</span> 条件下 <span class="math notranslate nohighlight">\(Y=j\)</span>（<span class="math notranslate nohighlight">\(j=0,1\)</span>）的概率。</p>
-<p>注意：</p>
+<p>第一行是在 <span class="math notranslate nohighlight">\(X=0\)</span> 条件下 <span class="math notranslate nohighlight">\(Y=j, j=0,1\)</span> 的概率。</p>
+<p>第二行是在 <span class="math notranslate nohighlight">\(X=1\)</span> 条件下 <span class="math notranslate nohighlight">\(Y=j, j=0,1\)</span> 的概率。</p>
+<p>注意</p>
 <ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(\sum_j \rho_{ij}=\dfrac{\sum_j \rho_{ij}}{\sum_j \rho_{ij}}=1\)</span>，因此转移矩阵 <span class="math notranslate nohighlight">\(P\)</span> 的每一行都是一个概率分布（列一般不是）。</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sum_{j}p_{ij}= \frac{ \sum_{j}\rho_{ij}}{ \sum_{j}\rho_{ij}}=1\)</span>，所以转移矩阵 <span class="math notranslate nohighlight">\(P\)</span> 的每一行都是一个概率分布（列一般不是）。</p></li>
 </ul>
 </section>
-<section id="id12">
-<h2><span class="section-number">8.9. </span>应用：时间序列的预测<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<section id="id14">
+<h2><span class="section-number">8.9. </span>应用：时间序列的预测<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
 <p>假设只有两个时期：</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(t=0\)</span> 表示”今天”</p></li>
@@ -664,33 +816,30 @@ p_{21} &amp; p_{22}
 <p>假设</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
-\begin{gathered}
-\textrm{Prob}\{X(0)=i, X(1)=j\}=f_{ij}\ge 0,\quad i=0,\ldots,I-1,\\
-\sum_i\sum_j f_{ij}=1.
-\end{gathered}
+\begin{aligned}
+\text{Prob} \{X(0)=i,X(1)=j\} &amp;=f_{ij}\geq 0, \quad i=0,\cdots,I-1, \quad j=0,\cdots,J-1\\
+\sum_{i}\sum_{j}f_{ij}&amp;=1
+\end{aligned}
 \end{split}\]</div>
-<p>则 <span class="math notranslate nohighlight">\(f_{ij}\)</span> 是 <span class="math notranslate nohighlight">\([X(0), X(1)]\)</span> 的联合分布。其对应的条件分布为</p>
+<p><span class="math notranslate nohighlight">\(f_{ij}\)</span> 是 <span class="math notranslate nohighlight">\([X(0), X(1)]\)</span> 的联合分布。</p>
+<p>条件分布为</p>
 <div class="math notranslate nohighlight">
-\[
-\textrm{Prob}\{X(1)=j \mid X(0)=i\}=\frac{f_{ij}}{\sum_j f_{ij}}\,.
-\]</div>
-<p>备注：</p>
-<ul class="simple">
-<li><p>该公式是应用经济学中进行时间序列预测的<strong>常用工具</strong>。</p></li>
-</ul>
+\[\text{Prob} \{X(1)=j|X(0)=i\}= \frac{f_{ij}}{ \sum_{j}f_{ij}}\]</div>
+<p>这个公式是应用经济学预测者的常用工具。</p>
 </section>
-<section id="id13">
-<h2><span class="section-number">8.10. </span>统计独立性<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<section id="id15">
+<h2><span class="section-number">8.10. </span>统计独立性<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
 <p>如果随机变量 X 和 Y 满足以下条件，则称它们是统计<strong>独立</strong>的：</p>
 <div class="math notranslate nohighlight">
-\[\textrm{Prob}\{X=i,Y=j\}={f_ig_j}
+\[
+\textrm{Prob}\{X=i,Y=j\}={f_ig_j}
 \]</div>
 <p>其中</p>
 <div class="math notranslate nohighlight">
 \[
 \begin{aligned}
-\textrm{Prob}\{X=i\} &amp;=f_i\ge0， \sum{f_i}=1 \cr
-\textrm{Prob}\{Y=j\} &amp; =g_j\ge0， \sum{g_j}=1
+\textrm{Prob}\{X=i\} &amp;=f_i\ge 0, \quad \sum_{i}{f_i}=1 \cr
+\textrm{Prob}\{Y=j\} &amp; =g_j\ge 0, \quad \sum_{j}{g_j}=1
 \end{aligned}
 \]</div>
 <p>条件分布为：</p>
@@ -702,16 +851,17 @@ p_{21} &amp; p_{22}
 \end{aligned}
 \end{split}\]</div>
 </section>
-<section id="id14">
-<h2><span class="section-number">8.11. </span>均值和方差<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<section id="id16">
+<h2><span class="section-number">8.11. </span>均值和方差<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
 <p>离散随机变量 <span class="math notranslate nohighlight">\(X\)</span> 的均值和方差为：</p>
 <div class="math notranslate nohighlight">
-\[ \begin{align}\begin{aligned}\begin{split}
+\[\begin{split}
 \begin{aligned}
 \mu_{X} &amp; \equiv\mathbb{E}\left[X\right]
-=\sum_{k}k \textrm{Prob}\{X=k\} \\\end{split}\\\sigma_{X}^{2} &amp; \equiv\mathbb{D}\left[X\right]=\sum_{k}\left(k-\mathbb{E}\left[X\right]\right)^{2}\textrm{Prob}\{X=k\}
+=\sum_{k}k \textrm{Prob}\{X=k\} \\
+\sigma_{X}^{2} &amp; \equiv\mathbb{D}\left[X\right]=\sum_{k}\left(k-\mathbb{E}\left[X\right]\right)^{2}\textrm{Prob}\{X=k\}
 \end{aligned}
-\end{aligned}\end{align} \]</div>
+\end{split}\]</div>
 <p>具有密度<span class="math notranslate nohighlight">\(f_{X}(x)\)</span>的连续随机变量的均值和方差为</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -720,80 +870,9 @@ p_{21} &amp; p_{22}
 \sigma_{X}^{2}\equiv\mathbb{D}\left[X\right] &amp; =\mathrm{E}\left[\left(X-\mu_{X}\right)^{2}\right]=\int_{-\infty}^{\infty}\left(x-\mu_{X}\right)^{2}f_{X}(x)dx
 \end{aligned}
 \end{split}\]</div>
-<p>让我们用一个小故事来说明这个例子。</p>
-<p>假设你去参加一个工作面试，你要么通过要么失败。</p>
-<p>你有5%的机会通过面试，而且你知道如果通过的话，你的日薪会在300~400之间均匀分布。</p>
-<p>我们可以用以下概率来描述你的日薪这个离散-连续变量:</p>
-<div class="math notranslate nohighlight">
-\[
-P(X=0)=0.95
-\]</div>
-<div class="math notranslate nohighlight">
-\[
-P(300\le X \le 400)=\int_{300}^{400} f(x)\, dx=0.05
-\]</div>
-<div class="math notranslate nohighlight">
-\[
-f(x) = 0.0005
-\]</div>
-<p>让我们先生成一个随机样本并计算样本矩。</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">)</span>
-<span class="c1"># x[x &gt; 0.95] = 100*x[x &gt; 0.95]+300</span>
-<span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.95</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.95</span><span class="p">]))</span><span class="o">+</span><span class="mi">300</span>
-<span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mf">0.95</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-
-<span class="n">μ_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="n">σ2_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;样本均值是: &quot;</span><span class="p">,</span> <span class="n">μ_hat</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">样本方差是: &quot;</span><span class="p">,</span> <span class="n">σ2_hat</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>样本均值是:  17.521480687448843 
-样本方差是:  5865.45517436778
-</pre></div>
-</div>
-</div>
-</div>
-<p>可以计算解析均值和方差：</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
-\begin{aligned}
-\mu &amp;= \int_{300}^{400}xf(x)dx \\
-&amp;= 0.0005\int_{300}^{400}xdx \\
-&amp;= 0.0005 \times \frac{1}{2}x^2\bigg|_{300}^{400}
-\end{aligned}
-\end{split}\]</div>
-<div class="math notranslate nohighlight">
-\[\begin{split}
-\begin{aligned}
-\sigma^2 &amp;= 0.95\times(0-17.5)^2+\int_{300}^{400}(x-17.5)^2f(x)dx \\
-&amp;= 0.95\times17.5^2+0.0005\int_{300}^{400}(x-17.5)^2dx \\
-&amp;= 0.95\times17.5^2+0.0005 \times \frac{1}{3}(x-17.5)^3 \bigg|_{300}^{400}
-\end{aligned}
-\end{split}\]</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mean</span> <span class="o">=</span> <span class="mf">0.0005</span><span class="o">*</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">400</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">300</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">var</span> <span class="o">=</span> <span class="mf">0.95</span><span class="o">*</span><span class="mf">17.5</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mf">0.0005</span><span class="o">/</span><span class="mi">3</span><span class="o">*</span><span class="p">((</span><span class="mi">400</span><span class="o">-</span><span class="mf">17.5</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="o">-</span><span class="p">(</span><span class="mi">300</span><span class="o">-</span><span class="mf">17.5</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mean: &quot;</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;variance: &quot;</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mean:  17.5
-variance:  5860.416666666666
-</pre></div>
-</div>
-</div>
-</div>
 </section>
-<section id="id15">
-<h2><span class="section-number">8.12. </span>一些二元分布的矩阵表示<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<section id="id17">
+<h2><span class="section-number">8.12. </span>一些二元分布的矩阵表示<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
 <p>让我们用矩阵来表示联合分布、条件分布、边缘分布以及二元随机变量的均值和方差。</p>
 <p>下表展示了一个二元随机变量的概率分布。</p>
 <div class="math notranslate nohighlight">
@@ -808,10 +887,8 @@ F=[f_{ij}]=\left[\begin{array}{cc}
 \[ \textrm{Prob}(X=i)=\sum_j{f_{ij}}=u_i  \]</div>
 <div class="math notranslate nohighlight">
 \[ \textrm{Prob}(Y=j)=\sum_i{f_{ij}}=v_j \]</div>
-<p><strong>抽样：</strong></p>
 <p>让我们写一段 Python 代码，用来生成大样本并计算相对频率。</p>
-<p>这段代码将帮助我们检验”抽样”分布是否与”总体”分布一致——从而确认总体分布确实给出了在大样本中应当期望
-的相对频率。</p>
+<p>这段代码将帮助我们检验”抽样”分布是否与”总体”分布一致——从而确认总体分布确实给出了在大样本中应当期望的相对频率。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 指定参数</span>
@@ -821,7 +898,7 @@ F=[f_{ij}]=\left[\begin{array}{cc}
 <span class="n">f_cum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
 <span class="c1"># 生成随机数</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">ys</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">)])</span>
 <span class="c1"># 映射到二元分布</span>
 
@@ -838,13 +915,16 @@ F=[f_{ij}]=\left[\begin{array}{cc}
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.  1.  0. ...  1.  0.  0.]
- [10. 20. 10. ... 20. 10. 10.]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 1.  0.  0. ...  0.  0.  0.]
+ [20. 10. 10. ... 10. 10. 20.]]
 </pre></div>
 </div>
 </div>
 </div>
-<p>在这里，我们使用逆CDF技术来从联合分布<span class="math notranslate nohighlight">\(F\)</span>中生成样本。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>为了从联合分布 <span class="math notranslate nohighlight">\(F\)</span> 中生成随机抽样，我们使用了<a class="reference internal" href="stats_examples.html"><span class="doc">这篇配套讲座</span></a>中介绍的逆CDF技术。</p>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 边缘分布</span>
@@ -870,20 +950,20 @@ F=[f_{ij}]=\left[\begin{array}{cc}
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>x的边缘分布
-+-----+---------------------+
-| x值 |        x概率        |
-+-----+---------------------+
-|  0  |       0.500597      |
-|  1  | 0.49940300000000004 |
-+-----+---------------------+
++-----+----------+
+| x值 |  x概率   |
++-----+----------+
+|  0  | 0.500194 |
+|  1  | 0.499806 |
++-----+----------+
 
 y的边缘分布
-+-----+--------------------+
-| y值 |       y概率        |
-+-----+--------------------+
-|  10 |      0.400105      |
-|  20 | 0.5998950000000001 |
-+-----+--------------------+
++-----+----------+
+| y值 |  y概率   |
++-----+----------+
+|  10 | 0.399741 |
+|  20 | 0.600259 |
++-----+----------+
 </pre></div>
 </div>
 </div>
@@ -920,20 +1000,20 @@ y的边缘分布
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>x的条件分布
-+-----+---------------------+---------------------+
-| y值 |      x=0的概率      |      x=1的概率      |
-+-----+---------------------+---------------------+
-|  10 |  0.7504480073980581 | 0.24955199260194194 |
-|  20 | 0.33395677576909294 |  0.6660432242309071 |
-+-----+---------------------+---------------------+
++-----+--------------------+---------------------+
+| y值 |     x=0的概率      |      x=1的概率      |
++-----+--------------------+---------------------+
+|  10 | 0.7504634250677313 | 0.24953657493226866 |
+|  20 | 0.333527693878809  |  0.666472306121191  |
++-----+--------------------+---------------------+
 
 y的条件分布
-+-----+---------------------+--------------------+
-| x值 |      y=10的概率     |     y=20的概率     |
-+-----+---------------------+--------------------+
-|  0  |  0.5997998389922432 | 0.4002001610077568 |
-|  1  | 0.19993271966728274 | 0.8000672803327172 |
-+-----+---------------------+--------------------+
++-----+---------------------+---------------------+
+| x值 |      y=10的概率     |      y=20的概率     |
++-----+---------------------+---------------------+
+|  0  |  0.5997492972726582 | 0.40025070272734176 |
+|  1  | 0.19957743604518552 |  0.8004225639548145 |
++-----+---------------------+---------------------+
 </pre></div>
 </div>
 </div>
@@ -984,7 +1064,7 @@ x=x_2 &amp; \vdots &amp; \frac{0.1}{0.5}=0.2 &amp; \frac{0.4}{0.5}=0.8 \\
 \end{array}\right]
 \end{split}\]</div>
 <p>可以看出，总体的计算结果与我们上面得到的样本结果非常接近。</p>
-<p>接下来，我们将把之前用到的一些功能封装到一个Python类中，以便对任意给定的离散二元联合分布进行类似的分析。</p>
+<p>接下来，我们将把之前用到的一些功能封装到一个Python类中，以便对任意给定的离散二元联合分布进行生成和抽样。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">discrete_bijoint</span><span class="p">:</span>
@@ -1021,7 +1101,7 @@ x=x_2 &amp; \vdots &amp; \frac{0.1}{0.5}=0.2 &amp; \frac{0.4}{0.5}=0.8 \\
         <span class="n">xs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xs</span>
         <span class="n">ys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ys</span>
         <span class="n">f_cum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">)</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
         <span class="n">lf</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">f_cum</span><span class="p">)</span>
         <span class="n">lx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
@@ -1102,7 +1182,10 @@ x=x_2 &amp; \vdots &amp; \frac{0.1}{0.5}=0.2 &amp; \frac{0.4}{0.5}=0.8 \\
 </div>
 </div>
 <p>让我们将代码应用到一些示例中。</p>
-<p><strong>示例 1</strong></p>
+<section id="id18">
+<h3><span class="section-number">8.12.1. </span>数值示例<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<section id="id19">
+<h4><span class="section-number">8.12.1.1. </span>示例 1<a class="headerlink" href="#id19" title="Link to this heading">#</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 联合分布</span>
@@ -1137,8 +1220,8 @@ x=x_2 &amp; \vdots &amp; \frac{0.1}{0.5}=0.2 &amp; \frac{0.4}{0.5}=0.8 \\
  +------+----------+
 | x值  |  x概率   |
 +------+----------+
-|  0   | 0.499362 |
-|  1   | 0.500638 |
+|  0   | 0.499395 |
+|  1   | 0.500605 |
 | 总和 |   1.0    |
 +------+----------+
 
@@ -1146,8 +1229,8 @@ y的边缘分布
  +------+----------+
 | y值  |  y概率   |
 +------+----------+
-|  10  | 0.400677 |
-|  20  | 0.599323 |
+|  10  | 0.400501 |
+|  20  | 0.599499 |
 | 总和 |   1.0    |
 +------+----------+
 </pre></div>
@@ -1156,32 +1239,34 @@ y的边缘分布
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 条件示例</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 样本条件分布</span>
 <span class="n">d</span><span class="o">.</span><span class="n">cond_dist</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>x的条件分布
- +-----+---------------------+---------------------+------+
-| x值 |          0          |          1          | 总和 |
-+-----+---------------------+---------------------+------+
-|  10 |  0.749159547465914  | 0.25084045253408604 | 1.0  |
-|  20 | 0.33236001288120093 |  0.667639987118799  | 1.0  |
-+-----+---------------------+---------------------+------+
+ +-----+--------------------+---------------------+------+
+| x值 |         0          |          1          | 总和 |
++-----+--------------------+---------------------+------+
+|  10 | 0.7491766562380618 | 0.25082334376193816 | 1.0  |
+|  20 | 0.3325259925371018 |  0.6674740074628982 | 1.0  |
++-----+--------------------+---------------------+------+
 
 y的条件分布
- +-----+--------------------+---------------------+------+
-| y值 |         10         |          20         | 总和 |
-+-----+--------------------+---------------------+------+
-|  0  | 0.6011090151032717 | 0.39889098489672825 | 1.0  |
-|  1  | 0.2007558355538333 |  0.7992441644461666 | 1.0  |
-+-----+--------------------+---------------------+------+
+ +-----+---------------------+--------------------+------+
+| y值 |          10         |         20         | 总和 |
++-----+---------------------+--------------------+------+
+|  0  |  0.6008189909790846 | 0.3991810090209153 | 1.0  |
+|  1  | 0.20066719269683683 | 0.7993328073031631 | 1.0  |
++-----+---------------------+--------------------+------+
 </pre></div>
 </div>
 </div>
 </div>
-<p><strong>示例 2</strong></p>
+</section>
+<section id="id20">
+<h4><span class="section-number">8.12.1.2. </span>示例 2<a class="headerlink" href="#id20" title="Link to this heading">#</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xs_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
@@ -1218,9 +1303,9 @@ y的条件分布
  +------+----------+
 | x值  |  x概率   |
 +------+----------+
-|  10  | 0.299478 |
-|  20  | 0.399841 |
-|  30  | 0.300681 |
+|  10  | 0.299848 |
+|  20  | 0.401015 |
+|  30  | 0.299137 |
 | 总和 |   1.0    |
 +------+----------+
 
@@ -1228,8 +1313,8 @@ y的边缘分布
  +------+----------+
 | y值  |  y概率   |
 +------+----------+
-|  1   | 0.450599 |
-|  2   | 0.549401 |
+|  1   | 0.449195 |
+|  2   | 0.550805 |
 | 总和 |   1.0    |
 +------+----------+
 </pre></div>
@@ -1244,36 +1329,34 @@ y的边缘分布
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>x的条件分布
- +-----+---------------------+---------------------+--------------------+--------------------+
-| x值 |          10         |          20         |         30         |        总和        |
-+-----+---------------------+---------------------+--------------------+--------------------+
-|  1  | 0.44386472229188256 | 0.22134536472562077 | 0.3347899129824966 | 0.9999999999999999 |
-|  2  | 0.18105718773719015 |  0.546236719627376  | 0.2727060926354339 |        1.0         |
-+-----+---------------------+---------------------+--------------------+--------------------+
+ +-----+---------------------+---------------------+--------------------+------+
+| x值 |          10         |          20         |         30         | 总和 |
++-----+---------------------+---------------------+--------------------+------+
+|  1  |  0.4445886530348735 | 0.22256258417836353 | 0.332848762786763  | 1.0  |
+|  2  | 0.18180844400468404 |  0.5465473261862184 | 0.2716442298090976 | 1.0  |
++-----+---------------------+---------------------+--------------------+------+
 
 y的条件分布
- +-----+---------------------+---------------------+------+
-| y值 |          1          |          2          | 总和 |
-+-----+---------------------+---------------------+------+
-|  10 |  0.6678453843020189 | 0.33215461569798116 | 1.0  |
-|  20 | 0.24944415405123538 |  0.7505558459487647 | 1.0  |
-|  30 |  0.5017144415510125 |  0.4982855584489875 | 1.0  |
-+-----+---------------------+---------------------+------+
+ +-----+---------------------+--------------------+------+
+| y值 |          1          |         2          | 总和 |
++-----+---------------------+--------------------+------+
+|  10 |  0.6660274539099811 | 0.3339725460900189 | 1.0  |
+|  20 | 0.24930239517225042 | 0.7506976048277496 | 1.0  |
+|  30 |  0.4998178092312218 | 0.5001821907687782 | 1.0  |
++-----+---------------------+--------------------+------+
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="id16">
-<h2><span class="section-number">8.13. </span>二维连续随机向量<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+</section>
+</section>
+<section id="id21">
+<h2><span class="section-number">8.13. </span>二维连续随机向量<a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
 <p>二维高斯分布具有联合密度函数</p>
 <div class="math notranslate nohighlight">
 \[
 f(x,y) =(2\pi\sigma_1\sigma_2\sqrt{1-\rho^2})^{-1}\exp\left[-\frac{1}{2(1-\rho^2)}\left(\frac{(x-\mu_1)^2}{\sigma_1^2}-\frac{2\rho(x-\mu_1)(y-\mu_2)}{\sigma_1\sigma_2}+\frac{(y-\mu_2)^2}{\sigma_2^2}\right)\right]
-\]</div>
-<div class="math notranslate nohighlight">
-\[
-\frac{1}{2\pi\sigma_1\sigma_2\sqrt{1-\rho^2}}\exp\left[-\frac{1}{2(1-\rho^2)}\left(\frac{(x-\mu_1)^2}{\sigma_1^2}-\frac{2\rho(x-\mu_1)(y-\mu_2)}{\sigma_1\sigma_2}+\frac{(y-\mu_2)^2}{\sigma_2^2}\right)\right]
 \]</div>
 <p>我们从一个由以下参数确定的二维正态分布开始</p>
 <div class="math notranslate nohighlight">
@@ -1320,7 +1403,10 @@ f(x,y) =(2\pi\sigma_1\sigma_2\sqrt{1-\rho^2})^{-1}\exp\left[-\frac{1}{2(1-\rho^2
 </div>
 </div>
 </div>
-<p><strong>联合分布</strong></p>
+<section id="id22">
+<h3><span class="section-number">8.13.1. </span>联合分布、边缘分布和条件分布<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
+<section id="id23">
+<h4><span class="section-number">8.13.1.1. </span>联合分布<a class="headerlink" href="#id23" title="Link to this heading">#</a></h4>
 <p>让我们绘制<strong>总体</strong>联合密度。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1335,7 +1421,10 @@ f(x,y) =(2\pi\sigma_1\sigma_2\sqrt{1-\rho^2})^{-1}\exp\left[-\frac{1}{2(1-\rho^2
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="_images/add7cb6fe06c878251e4b9934b15bf82158f52a8776f4186b97444347bfed157.png"><img alt="_images/add7cb6fe06c878251e4b9934b15bf82158f52a8776f4186b97444347bfed157.png" src="_images/add7cb6fe06c878251e4b9934b15bf82158f52a8776f4186b97444347bfed157.png" style="width: 413px; height: 399px;" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/31092631efd61fc3a21f14b76856b8b1846450dc16ef5ac842bb51f725044e10.png"><img alt="_images/31092631efd61fc3a21f14b76856b8b1846450dc16ef5ac842bb51f725044e10.png" src="_images/31092631efd61fc3a21f14b76856b8b1846450dc16ef5ac842bb51f725044e10.png" style="width: 413px; height: 398px;" />
 </a>
 </div>
 </div>
@@ -1355,40 +1444,42 @@ f(x,y) =(2\pi\sigma_1\sigma_2\sqrt{1-\rho^2})^{-1}\exp\left[-\frac{1}{2(1-\rho^2
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="_images/b13226e8fc2b58b57d4f52cd4dae4a4501365ec603565b23cae946760cf38950.png"><img alt="_images/b13226e8fc2b58b57d4f52cd4dae4a4501365ec603565b23cae946760cf38950.png" src="_images/b13226e8fc2b58b57d4f52cd4dae4a4501365ec603565b23cae946760cf38950.png" style="width: 413px; height: 391px;" />
+<a class="reference internal image-reference" href="_images/4364264cd9a106015b9c8d4b435669fc9e0fa7d7bc26cd4eb85628926c975880.png"><img alt="_images/4364264cd9a106015b9c8d4b435669fc9e0fa7d7bc26cd4eb85628926c975880.png" src="_images/4364264cd9a106015b9c8d4b435669fc9e0fa7d7bc26cd4eb85628926c975880.png" style="width: 413px; height: 390px;" />
 </a>
 </div>
 </div>
-<p>然后我们可以使用内置的<code class="docutils literal notranslate"><span class="pre">numpy</span></code>函数来进行模拟，并从样本均值和方差计算<strong>样本</strong>边际分布。</p>
+<p>然后我们可以使用内置的<code class="docutils literal notranslate"><span class="pre">numpy</span></code>函数来抽取随机样本，并从样本均值和方差计算<strong>样本</strong>边际分布。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">μ</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="n">σ</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">5</span><span class="p">,</span> <span class="mf">.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">.2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">1_000_000</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p><strong>边缘分布</strong></p>
+</section>
+<section id="id24">
+<h4><span class="section-number">8.13.1.2. </span>边缘分布<a class="headerlink" href="#id24" title="Link to this heading">#</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">1_000</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
 <span class="n">μx_hat</span><span class="p">,</span> <span class="n">σx_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">μx_hat</span><span class="p">,</span> <span class="n">σx_hat</span><span class="p">)</span>
-<span class="n">x_sim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">μx_hat</span><span class="p">,</span> <span class="n">σx_hat</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
+<span class="n">x_sim</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">μx_hat</span><span class="p">,</span> <span class="n">σx_hat</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">x_sim</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">1_000</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">histtype</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.00365252096577061 2.2402077440761747
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.002835018476282638 2.237281153907461
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/363d7f2f2ed3bf859c7801040b80360031a23ea600e06f1051c7a497692fbda9.png"><img alt="_images/363d7f2f2ed3bf859c7801040b80360031a23ea600e06f1051c7a497692fbda9.png" src="_images/363d7f2f2ed3bf859c7801040b80360031a23ea600e06f1051c7a497692fbda9.png" style="width: 557px; height: 413px;" />
+<a class="reference internal image-reference" href="_images/7fd5ec25e8a9879f8517fda41ac73e7b75a4c3f000dc77c7d87f37567c6d3978.png"><img alt="_images/7fd5ec25e8a9879f8517fda41ac73e7b75a4c3f000dc77c7d87f37567c6d3978.png" src="_images/7fd5ec25e8a9879f8517fda41ac73e7b75a4c3f000dc77c7d87f37567c6d3978.png" style="width: 557px; height: 413px;" />
 </a>
 </div>
 </div>
@@ -1397,39 +1488,47 @@ f(x,y) =(2\pi\sigma_1\sigma_2\sqrt{1-\rho^2})^{-1}\exp\left[-\frac{1}{2(1-\rho^2
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">1_000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
 <span class="n">μy_hat</span><span class="p">,</span> <span class="n">σy_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">μy_hat</span><span class="p">,</span> <span class="n">σy_hat</span><span class="p">)</span>
-<span class="n">y_sim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">μy_hat</span><span class="p">,</span> <span class="n">σy_hat</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
+<span class="n">y_sim</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">μy_hat</span><span class="p">,</span> <span class="n">σy_hat</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">y_sim</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">1_000</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">histtype</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.999108836027072 0.9996132907308383
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.998242637632656 0.9993565018250069
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/a02e37883a4be3c3400b91ad92014976757499261ce1285ef60fd1204d86831e.png"><img alt="_images/a02e37883a4be3c3400b91ad92014976757499261ce1285ef60fd1204d86831e.png" src="_images/a02e37883a4be3c3400b91ad92014976757499261ce1285ef60fd1204d86831e.png" style="width: 554px; height: 413px;" />
+<a class="reference internal image-reference" href="_images/6405deb5a7da0ff3fc9b1db2ffff26ca9f22b710790bc7a0067e168101c6a0f2.png"><img alt="_images/6405deb5a7da0ff3fc9b1db2ffff26ca9f22b710790bc7a0067e168101c6a0f2.png" src="_images/6405deb5a7da0ff3fc9b1db2ffff26ca9f22b710790bc7a0067e168101c6a0f2.png" style="width: 554px; height: 413px;" />
 </a>
 </div>
 </div>
-<p><strong>条件分布</strong></p>
+</section>
+<section id="id25">
+<h4><span class="section-number">8.13.1.3. </span>条件分布<a class="headerlink" href="#id25" title="Link to this heading">#</a></h4>
 <p>对于二维正态（高斯）总体分布，其条件分布也服从正态分布：</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
-\begin{aligned} \\
-[X|Y &amp;= y ]\sim \mathbb{N}\bigg[\mu_X+\rho\sigma_X\frac{y-\mu_Y}{\sigma_Y},\sigma_X^2(1-\rho^2)\bigg] \\
-[Y|X &amp;= x ]\sim \mathbb{N}\bigg[\mu_Y+\rho\sigma_Y\frac{x-\mu_X}{\sigma_X},\sigma_Y^2(1-\rho^2)\bigg]
+\begin{aligned}
+X \mid Y = y &amp;\sim \mathbb{N}\bigg[\mu_X+\rho\sigma_X\frac{y-\mu_Y}{\sigma_Y},\sigma_X^2(1-\rho^2)\bigg] \\
+Y \mid X = x &amp;\sim \mathbb{N}\bigg[\mu_Y+\rho\sigma_Y\frac{x-\mu_X}{\sigma_X},\sigma_Y^2(1-\rho^2)\bigg]
 \end{aligned}
 \end{split}\]</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>更多细节请参见这篇<a class="reference internal" href="multivariate_normal.html"><span class="doc">quantecon讲座</span></a>。</p>
+</div>
 <p>让我们通过离散化并将近似联合密度映射到矩阵中来近似联合密度。</p>
-<p>我们可以通过使用矩阵代数并注意到以下关系来计算离散化边际密度：</p>
+<p>在均匀分布的网格上，我们可以通过为联合密度的一个切片赋予与之成比例的概率权重来近似条件分布。</p>
+<p>对固定的 <span class="math notranslate nohighlight">\(y\)</span>，这意味着</p>
 <div class="math notranslate nohighlight">
 \[
-\textrm{Prob}\{X=i|Y=j\}=\frac{f_{ij}}{\sum_{i}f_{ij}}
+z_i
+\equiv \frac{f(x_i,y)}{\sum_k f(x_k,y)}
 \]</div>
 <p>固定 <span class="math notranslate nohighlight">\(y=0\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 离散化边际密度</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 给定 Y = 0 时 X 的离散化条件分布</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
 <span class="n">z</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
@@ -1438,16 +1537,16 @@ f(x,y) =(2\pi\sigma_1\sigma_2\sqrt{1-\rho^2})^{-1}\exp\left[-\frac{1}{2(1-\rho^2
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="_images/01d371564ef2c89f2bd9d795478c9f3394e13c1169026348063c396820217ec6.png"><img alt="_images/01d371564ef2c89f2bd9d795478c9f3394e13c1169026348063c396820217ec6.png" src="_images/01d371564ef2c89f2bd9d795478c9f3394e13c1169026348063c396820217ec6.png" style="width: 546px; height: 429px;" />
+<a class="reference internal image-reference" href="_images/c04cda4a60b2b071d66778f0a10bbc9afa3be0867725e2749341deb17297b3ee.png"><img alt="_images/c04cda4a60b2b071d66778f0a10bbc9afa3be0867725e2749341deb17297b3ee.png" src="_images/c04cda4a60b2b071d66778f0a10bbc9afa3be0867725e2749341deb17297b3ee.png" style="width: 546px; height: 429px;" />
 </a>
 </div>
 </div>
-<p>均值和方差的计算公式为</p>
+<p>条件均值和方差可以近似为</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-\mathbb{E}\left[X\vert Y=j\right] &amp; =\sum_{i}iProb\{X=i\vert Y=j\}=\sum_{i}i\frac{f_{ij}}{\sum_{i}f_{ij}} \\
-\mathbb{D}\left[X\vert Y=j\right] &amp;=\sum_{i}\left(i-\mu_{X\vert Y=j}\right)^{2}\frac{f_{ij}}{\sum_{i}f_{ij}}
+\mathbb{E}\left[X\vert Y=y\right] &amp; \approx \sum_i x_i z_i \\
+\mathbb{D}\left[X\vert Y=y\right] &amp; \approx \sum_i\left(x_i-\mu_{X\vert Y=y}\right)^{2} z_i
 \end{aligned}
 \end{split}\]</div>
 <p>让我们从具有上述均值和方差的正态分布中采样，检验我们的近似值有多准确。</p>
@@ -1460,21 +1559,21 @@ f(x,y) =(2\pi\sigma_1\sigma_2\sqrt{1-\rho^2})^{-1}\exp\left[-\frac{1}{2(1-\rho^2
 <span class="n">σx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">μx</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
 
 <span class="c1"># 采样</span>
-<span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">μx</span><span class="p">,</span> <span class="n">σx</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
+<span class="n">zz</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">μx</span><span class="p">,</span> <span class="n">σx</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">zz</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="_images/3c208cde9000d5ca651e9334282492193430c1462913b6034db563a280f25385.png"><img alt="_images/3c208cde9000d5ca651e9334282492193430c1462913b6034db563a280f25385.png" src="_images/3c208cde9000d5ca651e9334282492193430c1462913b6034db563a280f25385.png" style="width: 562px; height: 413px;" />
+<a class="reference internal image-reference" href="_images/2f130cf0976b5174db363828293dce17bf78f9c668d52431fc3eed6bc32b08c2.png"><img alt="_images/2f130cf0976b5174db363828293dce17bf78f9c668d52431fc3eed6bc32b08c2.png" src="_images/2f130cf0976b5174db363828293dce17bf78f9c668d52431fc3eed6bc32b08c2.png" style="width: 562px; height: 413px;" />
 </a>
 </div>
 </div>
 <p>固定 <span class="math notranslate nohighlight">\(x=1\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
 <span class="n">z</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -1482,25 +1581,25 @@ f(x,y) =(2\pi\sigma_1\sigma_2\sqrt{1-\rho^2})^{-1}\exp\left[-\frac{1}{2(1-\rho^2
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="_images/908262d85181e94be2007d3d51e748a93a74883ef0cabd38191b2bac25805038.png"><img alt="_images/908262d85181e94be2007d3d51e748a93a74883ef0cabd38191b2bac25805038.png" src="_images/908262d85181e94be2007d3d51e748a93a74883ef0cabd38191b2bac25805038.png" style="width: 546px; height: 429px;" />
+<a class="reference internal image-reference" href="_images/a61eeda6733113f3d64792e50930d4a946cd6c5c0e0cee30cfb1564aa6a7b1da.png"><img alt="_images/a61eeda6733113f3d64792e50930d4a946cd6c5c0e0cee30cfb1564aa6a7b1da.png" src="_images/a61eeda6733113f3d64792e50930d4a946cd6c5c0e0cee30cfb1564aa6a7b1da.png" style="width: 533px; height: 429px;" />
 </a>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 离散化的均值和标准差</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 离散化的条件均值和标准差</span>
 <span class="n">μy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
 <span class="n">σy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">μy</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
 
 <span class="c1"># 采样</span>
-<span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">μy</span><span class="p">,</span><span class="n">σy</span><span class="p">,</span><span class="mi">1_000_000</span><span class="p">)</span>
+<span class="n">zz</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">μy</span><span class="p">,</span> <span class="n">σy</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">zz</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="_images/a532c52dcad2c4e0af04421d719bd7718be3ac3968843edff527f188110c0434.png"><img alt="_images/a532c52dcad2c4e0af04421d719bd7718be3ac3968843edff527f188110c0434.png" src="_images/a532c52dcad2c4e0af04421d719bd7718be3ac3968843edff527f188110c0434.png" style="width: 554px; height: 413px;" />
+<a class="reference internal image-reference" href="_images/d39b7328f12a8fb852404e3a44967765608d27ef97db7b3302d793e1df57125f.png"><img alt="_images/d39b7328f12a8fb852404e3a44967765608d27ef97db7b3302d793e1df57125f.png" src="_images/d39b7328f12a8fb852404e3a44967765608d27ef97db7b3302d793e1df57125f.png" style="width: 554px; height: 413px;" />
 </a>
 </div>
 </div>
@@ -1516,17 +1615,19 @@ f(x,y) =(2\pi\sigma_1\sigma_2\sqrt{1-\rho^2})^{-1}\exp\left[-\frac{1}{2(1-\rho^2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.9997518414498469 2.226584133169768
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.9997518414498467 2.2265841331697676
 -1.0 2.227105745132009
-5.039999456960766 0.9959851265795594
+5.0399983635876335 0.9959878931873044
 5.04 0.9959919678390986
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="id17">
-<h2><span class="section-number">8.14. </span>两个独立分布随机变量的和<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+</section>
+</section>
+<section id="id26">
+<h2><span class="section-number">8.14. </span>两个独立分布随机变量的和<a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
 <p>设 <span class="math notranslate nohighlight">\(X, Y\)</span> 是两个独立的离散随机变量，分别取值于 <span class="math notranslate nohighlight">\(\bar{X}, \bar{Y}\)</span>。</p>
 <p>定义一个新的随机变量 <span class="math notranslate nohighlight">\(Z=X+Y\)</span>。</p>
 <p>显然，<span class="math notranslate nohighlight">\(Z\)</span> 取值于 <span class="math notranslate nohighlight">\(\bar{Z}\)</span>，定义如下：</p>
@@ -1558,55 +1659,18 @@ h_k=\sum_{i=0}^{k} f_ig_{k-i} \equiv f*g
 f_{Z}(z)=\int_{-\infty}^{\infty} f_{X}(x) f_{Y}(z-x) dx \equiv f_{X}*g_{Y}
 \]</div>
 <p>其中 <span class="math notranslate nohighlight">\( f_{X}*g_{Y} \)</span> 表示函数 <span class="math notranslate nohighlight">\(f_X\)</span> 和 <span class="math notranslate nohighlight">\(g_Y\)</span> 的<strong>卷积</strong>。</p>
-<p>考虑以下两个随机变量的联合概率分布。</p>
-<p>设 <span class="math notranslate nohighlight">\(X,Y\)</span> 为离散随机变量，其联合分布为</p>
-<div class="math notranslate nohighlight">
-\[
-\textrm{Prob}\{X=i,Y=j\} = \rho_{ij}
-\]</div>
-<p>其中 <span class="math notranslate nohighlight">\(i = 0,\dots,I-1; j = 0,\dots,J-1\)</span> 且</p>
-<div class="math notranslate nohighlight">
-\[
-\sum_i\sum_j \rho_{ij} = 1, \quad \rho_{ij} \geqslant 0.
-\]</div>
-<p>相关的条件分布为</p>
-<div class="math notranslate nohighlight">
-\[
-\textrm{Prob}\{Y=i\vert X=j\} = \frac{\rho_{ij}}{ \sum_{i}\rho_{ij}}
-= \frac{\textrm{Prob}\{Y=j, X=i\}}{\textrm{Prob}\{ X=i\}}
-\]</div>
-<p>我们可以定义转移概率矩阵</p>
-<div class="math notranslate nohighlight">
-\[
-p_{ij}=\textrm{Prob}\{Y=j|X=i\}= \frac{\rho_{ij}}{ \sum_{j}\rho_{ij}}
-\]</div>
-<p>其中</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
-\left[
-   \begin{matrix}
-  p_{11} &amp; p_{12}\\
-  p_{21} &amp; p_{22}
-  \end{matrix}
-\right]\end{split}\]</div>
-<p>第一行是在 <span class="math notranslate nohighlight">\(X=0\)</span> 条件下 <span class="math notranslate nohighlight">\(Y=j, j=0,1\)</span> 的概率。</p>
-<p>第二行是在 <span class="math notranslate nohighlight">\(X=1\)</span> 条件下 <span class="math notranslate nohighlight">\(Y=j, j=0,1\)</span> 的概率。</p>
-<p>注意</p>
-<ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(\sum_{j}\rho_{ij}= \frac{ \sum_{j}\rho_{ij}}{ \sum_{j}\rho_{ij}}=1\)</span>，所以 <span class="math notranslate nohighlight">\(\rho\)</span> 的每一行都是一个概率分布（每一列则不是）。</p></li>
-</ul>
 </section>
-<section id="id18">
-<h2><span class="section-number">8.15. </span>耦合<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
+<section id="id27">
+<h2><span class="section-number">8.15. </span>耦合<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
 <p>从联合分布开始</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
 f_{ij} &amp; =\textrm{Prob}\{X=i,Y=j\}\\
-i&amp; =0, \cdots，I-1\\
-j&amp; =0, \cdots，J-1\\
-&amp; \text{堆叠成一个 }I×J\text{ 矩阵}\\
-&amp; e.g. \quad I=1, J=1
+i&amp; =0, \cdots, I-1\\
+j&amp; =0, \cdots, J-1\\
+&amp; \text{堆叠成一个 }I\times J\text{ 矩阵}\\
+&amp; e.g. \quad I=2, J=2
 \end{aligned}
 \end{split}\]</div>
 <p>其中</p>
@@ -1614,8 +1678,8 @@ j&amp; =0, \cdots，J-1\\
 \[\begin{split}
 \left[
    \begin{matrix}
-  f_{11} &amp; f_{12}\\
-  f_{21} &amp; f_{22}
+  f_{00} &amp; f_{01}\\
+  f_{10} &amp; f_{11}
   \end{matrix}
 \right]
 \end{split}\]</div>
@@ -1628,11 +1692,10 @@ j&amp; =0, \cdots，J-1\\
 \[\begin{split}
 \begin{aligned}
 \text{Prob} \{X=i\} &amp;=  \sum_{j}f_{ij}=\mu_{i}, i=0, \cdots, I-1\\
-\text{Prob} \{Y=j\}&amp;=  \sum_{j}f_{ij}=\nu_{j}, j=0, \cdots, J-1
+\text{Prob} \{Y=j\}&amp;=  \sum_{i}f_{ij}=\nu_{j}, j=0, \cdots, J-1
 \end{aligned}
 \end{split}\]</div>
 <p>给定两个边缘分布，<span class="math notranslate nohighlight">\(X\)</span>的分布<span class="math notranslate nohighlight">\(\mu\)</span>和<span class="math notranslate nohighlight">\(Y\)</span>的分布<span class="math notranslate nohighlight">\(\nu\)</span>，联合分布<span class="math notranslate nohighlight">\(f_{ij}\)</span>被称为<span class="math notranslate nohighlight">\(\mu\)</span>和<span class="math notranslate nohighlight">\(\nu\)</span>的一个<strong>耦合</strong>。</p>
-<p><strong>例子：</strong></p>
 <p>考虑以下二元示例。</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -1641,7 +1704,7 @@ j&amp; =0, \cdots，J-1\\
 \text{Prob} \{X=1\}=&amp; q  =\mu_{1}\\
 \text{Prob} \{Y=0\}=&amp; 1-r  =\nu_{0}\\
 \text{Prob} \{Y=1\}= &amp; r  =\nu_{1}\\
-\text{where } 0 \leq q &lt; r \leq 1
+\text{where } 0 \leq q \leq r \leq 1
 \end{aligned}
 \end{split}\]</div>
 <p>我们构造两个耦合。</p>
@@ -1663,7 +1726,7 @@ j&amp; =0, \cdots，J-1\\
 \mu_{0}= (1-q)(1-r)+(1-q)r &amp; =1-q\\
 \mu_{1}= q(1-r)+qr &amp; =q\\
 \nu_{0}= (1-q)(1-r)+(1-r)q&amp; =1-r\\
-\mu_{1}= r(1-q)+qr&amp; =r
+\nu_{1}= r(1-q)+qr&amp; =r
 \end{aligned}
 \end{split}\]</div>
 <p>这两个边缘分布的第二个耦合是以下联合分布：</p>
@@ -1679,25 +1742,23 @@ f_{ij}=
 \end{split}\]</div>
 <p>要验证这是一个耦合，注意到</p>
 <div class="math notranslate nohighlight">
-\[ \begin{align}\begin{aligned}\begin{split}
+\[\begin{split}
 \begin{aligned}
-1-r+r-q+q &amp;=1\\\end{split}\\\begin{split}\mu_{0}&amp; = 1-q\\
+1-r+r-q+q &amp;=1\\
+\mu_{0}&amp; = 1-q\\
 \mu_{1}&amp; = q\\
 \nu_{0}&amp; = 1-r\\
 \nu_{1}&amp; = r
 \end{aligned}
-\end{split}\end{aligned}\end{align} \]</div>
+\end{split}\]</div>
 <p>因此，我们提出的两个联合分布具有相同的边际分布。</p>
 <p>但是联合分布本身不同。</p>
 <p>因此，多个联合分布 <span class="math notranslate nohighlight">\([f_{ij}]\)</span> 可以具有相同的边际分布。</p>
-<p><strong>注释：</strong></p>
-<ul class="simple">
-<li><p>耦合在最优传输问题和马尔可夫过程中很重要。</p></li>
-</ul>
+<p>耦合在最优传输问题和马尔可夫过程中很重要。请参见这篇<a class="reference internal" href="opt_transport.html"><span class="doc">关于最优传输的讲座</span></a>。</p>
 </section>
 <section id="copula">
 <h2><span class="section-number">8.16. </span>Copula函数<a class="headerlink" href="#copula" title="Link to this heading">#</a></h2>
-<p>假设 <span class="math notranslate nohighlight">\(X_1, X_2, \dots, X_n\)</span> 是 <span class="math notranslate nohighlight">\(N\)</span> 个随机变量，并且</p>
+<p>假设 <span class="math notranslate nohighlight">\(X_1, X_2, \dots, X_N\)</span> 是 <span class="math notranslate nohighlight">\(N\)</span> 个随机变量，并且</p>
 <ul class="simple">
 <li><p>它们的边际分布是 <span class="math notranslate nohighlight">\(F_1(x_1), F_2(x_2),\dots, F_N(x_N)\)</span>，并且</p></li>
 <li><p>它们的联合分布是<span class="math notranslate nohighlight">\(H(x_1,x_2,\dots,x_N)\)</span></p></li>
@@ -1707,15 +1768,20 @@ f_{ij}=
 \[
 H(x_1,x_2,\dots,x_N) = C(F_1(x_1), F_2(x_2),\dots,F_N(x_N)).
 \]</div>
-<p>我们可以得到</p>
+<p>如果边际分布是连续的，那么Copula函数是唯一的。</p>
+<p>在这种情况下，我们可以从边际分布的逆函数中恢复它：</p>
 <div class="math notranslate nohighlight">
 \[
-C(u_1,u_2,\dots,u_n) = H[F^{-1}_1(u_1),F^{-1}_2(u_2),\dots,F^{-1}_N(u_N)]
+C(u_1,u_2,\dots,u_N) = H(F^{-1}_1(u_1),F^{-1}_2(u_2),\dots,F^{-1}_N(u_N))
 \]</div>
+<p>当边际分布不连续时，需要使用广义逆函数，此时Copula函数仅在 <span class="math notranslate nohighlight">\(\textrm{Ran}(F_1)\times \cdots \times \textrm{Ran}(F_N)\)</span> 上唯一确定。</p>
 <p>反过来，给定单变量<strong>边际分布</strong><span class="math notranslate nohighlight">\(F_1(x_1), F_2(x_2),\dots,F_N(x_N)\)</span>和一个Copula函数<span class="math notranslate nohighlight">\(C(\cdot)\)</span>，函数<span class="math notranslate nohighlight">\(H(x_1,x_2,\dots,x_N) = C(F_1(x_1), F_2(x_2),\dots,F_N(x_N))\)</span>是<span class="math notranslate nohighlight">\(F_1(x_1), F_2(x_2),\dots,F_N(x_N)\)</span>的一个<strong>耦合</strong>。</p>
 <p>因此，对于给定的边际分布，当相关的单变量随机变量不独立时，我们可以使用Copula函数来确定联合分布。</p>
 <p>Copula函数常被用来描述随机变量之间的<strong>相依性</strong>。</p>
-<p><strong>离散边际分布</strong></p>
+<section id="id28">
+<h3><span class="section-number">8.16.1. </span>离散和连续分布的二元示例<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
+<section id="id29">
+<h4><span class="section-number">8.16.1.1. </span>离散边际分布<a class="headerlink" href="#id29" title="Link to this heading">#</a></h4>
 <p>如上所述，对于两个给定的边际分布，可能存在多个耦合。</p>
 <p>例如，考虑两个随机变量 <span class="math notranslate nohighlight">\(X, Y\)</span> 的分布为</p>
 <div class="math notranslate nohighlight">
@@ -1731,23 +1797,23 @@ C(u_1,u_2,\dots,u_n) = H[F^{-1}_1(u_1),F^{-1}_2(u_2),\dots,F^{-1}_N(u_N)]
 <p>让我们首先生成 X 和 Y。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 定义参数</span>
-<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span>
-<span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">μ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span>
+<span class="n">ν</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
 
 <span class="c1"># 抽样次数</span>
 <span class="n">draws</span> <span class="o">=</span> <span class="mi">1_000_000</span>
 
-<span class="c1"># 从均匀分布生成抽样</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span>
+<span class="c1"># 从均匀分布中为 X 和 Y 生成独立抽样</span>
+<span class="n">p_x</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span>
+<span class="n">p_y</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span>
 
-<span class="c1"># 通过均匀分布生成 X 和 Y 的抽样</span>
+<span class="c1"># 通过独立的均匀分布抽样生成 X 和 Y 的抽样</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span>
-<span class="n">x</span><span class="p">[</span><span class="n">p</span> <span class="o">&lt;=</span> <span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">x</span><span class="p">[</span><span class="n">p</span> <span class="o">&gt;</span> <span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">y</span><span class="p">[</span><span class="n">p</span> <span class="o">&lt;=</span> <span class="n">nu</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">y</span><span class="p">[</span><span class="n">p</span> <span class="o">&gt;</span> <span class="n">nu</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">x</span><span class="p">[</span><span class="n">p_x</span> <span class="o">&lt;=</span> <span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">x</span><span class="p">[</span><span class="n">p_x</span> <span class="o">&gt;</span> <span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">y</span><span class="p">[</span><span class="n">p_y</span> <span class="o">&lt;=</span> <span class="n">ν</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">y</span><span class="p">[</span><span class="n">p_y</span> <span class="o">&gt;</span> <span class="n">ν</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
 </div>
 </div>
@@ -1766,7 +1832,7 @@ C(u_1,u_2,\dots,u_n) = H[F^{-1}_1(u_1),F^{-1}_2(u_2),\dots,F^{-1}_N(u_N)]
 <span class="n">xmtb</span><span class="o">.</span><span class="n">add_row</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="n">q_hat</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">xmtb</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y的分布&quot;</span><span class="p">)</span> 
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y的分布&quot;</span><span class="p">)</span>
 <span class="n">ymtb</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">PrettyTable</span><span class="p">()</span>
 <span class="n">ymtb</span><span class="o">.</span><span class="n">field_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;y值&#39;</span><span class="p">,</span> <span class="s1">&#39;y概率&#39;</span><span class="p">]</span>
 <span class="n">ymtb</span><span class="o">.</span><span class="n">add_row</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">r_hat</span><span class="p">])</span>
@@ -1780,15 +1846,15 @@ C(u_1,u_2,\dots,u_n) = H[F^{-1}_1(u_1),F^{-1}_2(u_2),\dots,F^{-1}_N(u_N)]
 +-----+----------+
 | x值 |  x概率   |
 +-----+----------+
-|  0  | 0.599683 |
-|  1  | 0.400317 |
+|  0  | 0.599645 |
+|  1  | 0.400355 |
 +-----+----------+
 y的分布
 +-----+---------------------+
 | y值 |        y概率        |
 +-----+---------------------+
-|  0  | 0.30013599999999996 |
-|  1  |       0.699864      |
+|  0  | 0.30042599999999997 |
+|  1  |       0.699574      |
 +-----+---------------------+
 </pre></div>
 </div>
@@ -1819,7 +1885,7 @@ y的分布
 <span class="n">draws1</span> <span class="o">=</span> <span class="mi">1_000_000</span>
 
 <span class="c1"># 从均匀分布生成抽样</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">draws1</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">draws1</span><span class="p">)</span>
 
 <span class="c1"># 通过均匀分布生成第一个耦合的抽样</span>
 <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">draws1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">draws1</span><span class="p">)])</span>
@@ -1864,10 +1930,10 @@ y的分布
 +--------+--------+----------+
 | c1_x值 | c1_y值 |  c1概率  |
 +--------+--------+----------+
-|   0    |   0    | 0.179637 |
-|   0    |   1    | 0.420967 |
-|   1    |   0    | 0.11977  |
-|   1    |   1    | 0.279626 |
+|   0    |   0    | 0.18002  |
+|   0    |   1    | 0.419939 |
+|   1    |   0    | 0.120069 |
+|   1    |   1    | 0.279972 |
 +--------+--------+----------+
 </pre></div>
 </div>
@@ -1882,7 +1948,7 @@ y的分布
 <span class="c1"># 打印输出</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x的边缘分布&quot;</span><span class="p">)</span>
 <span class="n">c1_x_mtb</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">PrettyTable</span><span class="p">()</span>
-<span class="n">c1_x_mtb</span><span class="o">.</span><span class="n">field_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;c1_x_值&#39;</span><span class="p">,</span> <span class="s1">&#39;c1_x_概率&#39;</span><span class="p">]</span> 
+<span class="n">c1_x_mtb</span><span class="o">.</span><span class="n">field_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;c1_x_值&#39;</span><span class="p">,</span> <span class="s1">&#39;c1_x_概率&#39;</span><span class="p">]</span>
 <span class="n">c1_x_mtb</span><span class="o">.</span><span class="n">add_row</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">c1_q_hat</span><span class="p">])</span>
 <span class="n">c1_x_mtb</span><span class="o">.</span><span class="n">add_row</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="n">c1_q_hat</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">c1_x_mtb</span><span class="p">)</span>
@@ -1901,16 +1967,16 @@ y的分布
 +---------+-----------+
 | c1_x_值 | c1_x_概率 |
 +---------+-----------+
-|    0    |  0.600604 |
-|    1    |  0.399396 |
+|    0    |  0.599959 |
+|    1    |  0.400041 |
 +---------+-----------+
 y的边缘分布
-+---------+-----------+
-| c1_y_值 | c1_y_概率 |
-+---------+-----------+
-|    0    |  0.299407 |
-|    1    |  0.700593 |
-+---------+-----------+
++---------+---------------------+
+| c1_y_值 |      c1_y_概率      |
++---------+---------------------+
+|    0    | 0.30008900000000005 |
+|    1    |       0.699911      |
++---------+---------------------+
 </pre></div>
 </div>
 </div>
@@ -1933,9 +1999,9 @@ y的边缘分布
 <span class="n">draws2</span> <span class="o">=</span> <span class="mi">1_000_000</span>
 
 <span class="c1"># 从均匀分布生成抽样</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">draws2</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">draws2</span><span class="p">)</span>
 
-<span class="c1"># 通过均匀分布生成第一个耦合的抽样</span>
+<span class="c1"># 通过均匀分布生成第二个耦合的抽样</span>
 <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">draws2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">draws2</span><span class="p">)])</span>
 <span class="c1"># X=0, Y=0</span>
 <span class="n">c2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">f2_cum</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1962,7 +2028,7 @@ y的边缘分布
 <span class="n">f2_11</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">c2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">c2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="n">draws2</span>
 
 <span class="c1"># 打印第二个联合分布的输出</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;c2的第一个联合分布&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;c2的第二个联合分布&quot;</span><span class="p">)</span>
 <span class="n">c2_mtb</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">PrettyTable</span><span class="p">()</span>
 <span class="n">c2_mtb</span><span class="o">.</span><span class="n">field_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;c2_x值&#39;</span><span class="p">,</span> <span class="s1">&#39;c2_y值&#39;</span><span class="p">,</span> <span class="s1">&#39;c2_概率&#39;</span><span class="p">]</span>
 <span class="n">c2_mtb</span><span class="o">.</span><span class="n">add_row</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">f2_00</span><span class="p">])</span>
@@ -1974,14 +2040,14 @@ y的边缘分布
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c2的第一个联合分布
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c2的第二个联合分布
 +--------+--------+----------+
 | c2_x值 | c2_y值 | c2_概率  |
 +--------+--------+----------+
-|   0    |   0    | 0.300442 |
-|   0    |   1    | 0.300024 |
+|   0    |   0    | 0.300568 |
+|   0    |   1    | 0.299249 |
 |   1    |   0    |   0.0    |
-|   1    |   1    | 0.399534 |
+|   1    |   1    | 0.400183 |
 +--------+--------+----------+
 </pre></div>
 </div>
@@ -2012,25 +2078,419 @@ y的边缘分布
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>x的边缘分布
-+-----------+--------------------+
-| c2_x_取值 |     c2_x_概率      |
-+-----------+--------------------+
-|     0     | 0.6004659999999999 |
-|     1     |      0.399534      |
-+-----------+--------------------+
++-----------+-----------+
+| c2_x_取值 | c2_x_概率 |
++-----------+-----------+
+|     0     |  0.599817 |
+|     1     |  0.400183 |
++-----------+-----------+
 y的边缘分布
-+-----------+-----------+
-| c2_y_取值 | c2_y_概率 |
-+-----------+-----------+
-|     0     |  0.300442 |
-|     1     |  0.699558 |
-+-----------+-----------+
++-----------+---------------------+
+| c2_y_取值 |      c2_y_概率      |
++-----------+---------------------+
+|     0     | 0.30056799999999995 |
+|     1     |       0.699432      |
++-----------+---------------------+
 </pre></div>
 </div>
 </div>
 </div>
 <p>经过验证，联合分布 <span class="math notranslate nohighlight">\(c_1\)</span> 和 <span class="math notranslate nohighlight">\(c_2\)</span> 具有相同的 <span class="math notranslate nohighlight">\(X\)</span> 和 <span class="math notranslate nohighlight">\(Y\)</span> 的边际分布。</p>
 <p>因此它们都是 <span class="math notranslate nohighlight">\(X\)</span> 和 <span class="math notranslate nohighlight">\(Y\)</span> 的耦合。</p>
+</section>
+</section>
+<section id="id30">
+<h3><span class="section-number">8.16.2. </span>高斯Copula示例<a class="headerlink" href="#id30" title="Link to this heading">#</a></h3>
+<p><strong>高斯Copula</strong>利用二维正态分布在任意边际分布之间引入依赖关系。</p>
+<p>其构造过程分为三步：</p>
+<ol class="arabic simple">
+<li><p>从相关系数为 <span class="math notranslate nohighlight">\(\rho\)</span> 的二元标准正态分布中抽取 <span class="math notranslate nohighlight">\((Z_1, Z_2)\)</span>。</p></li>
+<li><p>应用标准正态累积分布函数：<span class="math notranslate nohighlight">\(U_k = \Phi(Z_k)\)</span>。</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\((U_1, U_2)\)</span> 具有均匀边际分布，但保留了 <span class="math notranslate nohighlight">\((Z_1, Z_2)\)</span> 的依赖结构——这就是Copula本身。</p></li>
+</ul>
+</li>
+<li><p>应用所需边际分布的逆累积分布函数：<span class="math notranslate nohighlight">\(X_k = F_k^{-1}(U_k)\)</span>。</p></li>
+</ol>
+<p>以下代码用指数分布作为边际分布来说明这一过程。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 高斯Copula参数</span>
+<span class="n">ρ_cop</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">n_cop</span> <span class="o">=</span> <span class="mi">100_000</span>
+
+<span class="c1"># 从相关系数为 ρ_cop 的二元标准正态分布中抽样</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ρ_cop</span><span class="p">],</span> <span class="p">[</span><span class="n">ρ_cop</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">n_cop</span>
+<span class="p">)</span>
+
+<span class="c1"># 应用正态CDF -&gt; 得到均匀边际分布（Copula本身）</span>
+<span class="n">u1</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">z</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">u2</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">z</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="c1"># 应用所需边际分布的逆CDF（此处为指数分布）</span>
+<span class="n">x1</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>   <span class="c1"># 均值为1的指数分布</span>
+<span class="n">x2</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">u2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>   <span class="c1"># 均值为0.5的指数分布</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">u1</span><span class="p">[:</span><span class="mi">3000</span><span class="p">],</span> <span class="n">u2</span><span class="p">[:</span><span class="mi">3000</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$u_1$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$u_2$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x1</span><span class="p">[:</span><span class="mi">3000</span><span class="p">],</span> <span class="n">x2</span><span class="p">[:</span><span class="mi">3000</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$ (指数分布，均值=1)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$ (指数分布，均值=0.5)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(x1, x2) 的样本相关系数: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(u1, u2) 的样本相关系数: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span><span class="w"> </span><span class="n">u2</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-gaussian-copula">
+<a class="reference internal image-reference" href="_images/9a92a18ccaa832c084d6f4560ce4eebaf010e3c190a40e8083cc14af9a4ccb98.png"><img alt="_images/9a92a18ccaa832c084d6f4560ce4eebaf010e3c190a40e8083cc14af9a4ccb98.png" src="_images/9a92a18ccaa832c084d6f4560ce4eebaf010e3c190a40e8083cc14af9a4ccb98.png" style="width: 845px; height: 372px;" />
+</a>
+<figcaption>
+<p><span class="caption-number">图 8.1 </span><span class="caption-text">具有指数边际分布的高斯Copula</span><a class="headerlink" href="#fig-gaussian-copula" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(x1, x2) 的样本相关系数: 0.768
+(u1, u2) 的样本相关系数: 0.786
+</pre></div>
+</div>
+</div>
+</div>
+<p>左图展示了Copula本身——即用均匀坐标表示的依赖结构，它取自相关系数 <span class="math notranslate nohighlight">\(\rho = 0.8\)</span> 的二元正态分布。</p>
+<p>右图展示了将同样的依赖关系转换到指数边际分布后的情形。</p>
+<p>改变 <span class="math notranslate nohighlight">\(\rho\)</span> 可以控制依赖关系的强弱，而边际分布保持不变。</p>
+</section>
+</section>
+<section id="id31">
+<h2><span class="section-number">8.17. </span>练习<a class="headerlink" href="#id31" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="prob_matrix_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 8.1 </span></p>
+<section id="exercise-content">
+<p><strong>独立性检验</strong></p>
+<p>考虑联合分布</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+F = \begin{bmatrix} 0.3 &amp; 0.2 \\ 0.1 &amp; 0.4 \end{bmatrix}
+\end{split}\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(X \in \{0,1\}\)</span>，<span class="math notranslate nohighlight">\(Y \in \{10, 20\}\)</span>。</p>
+<ol class="arabic simple">
+<li><p>计算边缘分布 <span class="math notranslate nohighlight">\(\mu_i = \text{Prob}\{X=i\}\)</span> 和 <span class="math notranslate nohighlight">\(\nu_j = \text{Prob}\{Y=j\}\)</span>。</p></li>
+<li><p>构造独立性矩阵 <span class="math notranslate nohighlight">\(f^{\perp}_{ij} = \mu_i \nu_j\)</span>（两个边缘分布向量的外积）。</p></li>
+<li><p>比较 <span class="math notranslate nohighlight">\(F\)</span> 与 <span class="math notranslate nohighlight">\(f^{\perp}\)</span>，判断 <span class="math notranslate nohighlight">\(X\)</span> 和 <span class="math notranslate nohighlight">\(Y\)</span> 是否独立。</p></li>
+<li><p>通过计算 <span class="math notranslate nohighlight">\(\text{Prob}\{X=0|Y=10\}\)</span> 并检验它是否等于 <span class="math notranslate nohighlight">\(\text{Prob}\{X=0\}\)</span> 来验证你的结论。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="prob_matrix-solution-1">
+
+<p class="admonition-title">解答<a class="reference internal" href="#prob_matrix_ex1"> 练习 8.1</a></p>
+<section id="solution-content">
+<p>以下是一种解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]])</span>
+
+<span class="n">μ</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ν</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;μ（X的边缘分布）:&quot;</span><span class="p">,</span> <span class="n">μ</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ν（Y的边缘分布）:&quot;</span><span class="p">,</span> <span class="n">ν</span><span class="p">)</span>
+
+<span class="n">F_indep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">ν</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">独立性矩阵（外积）:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">F_indep</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">实际联合分布 F:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">是否独立 (F == μ 与 ν 的外积)？&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">F_indep</span><span class="p">))</span>
+
+<span class="n">prob_X0_given_Y10</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">ν</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Prob(X=0 | Y=10) = </span><span class="si">{</span><span class="n">prob_X0_given_Y10</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Prob(X=0)         = </span><span class="si">{</span><span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>μ（X的边缘分布）: [0.5 0.5]
+ν（Y的边缘分布）: [0.4 0.6]
+
+独立性矩阵（外积）:
+ [[0.2 0.3]
+ [0.2 0.3]]
+
+实际联合分布 F:
+ [[0.3 0.2]
+ [0.1 0.4]]
+
+是否独立 (F == μ 与 ν 的外积)？ False
+
+Prob(X=0 | Y=10) = 0.7500
+Prob(X=0)         = 0.5000
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="prob_matrix_ex2">
+
+<p class="admonition-title"><span class="caption-number">练习 8.2 </span></p>
+<section id="exercise-content">
+<p><strong>协方差与相关系数</strong></p>
+<p>使用与练习1相同的联合分布 <span class="math notranslate nohighlight">\(F\)</span> 及取值 <span class="math notranslate nohighlight">\(X \in \{0,1\}\)</span>，<span class="math notranslate nohighlight">\(Y \in \{10, 20\}\)</span>：</p>
+<ol class="arabic simple">
+<li><p>计算 <span class="math notranslate nohighlight">\(\mathbb{E}[X]\)</span>、<span class="math notranslate nohighlight">\(\mathbb{E}[Y]\)</span> 以及 <span class="math notranslate nohighlight">\(\mathbb{E}[XY] = \sum_i \sum_j x_i y_j f_{ij}\)</span>。</p></li>
+<li><p>计算 <span class="math notranslate nohighlight">\(\text{Cov}(X,Y) = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y]\)</span>。</p></li>
+<li><p>计算 <span class="math notranslate nohighlight">\(\text{Cor}(X,Y) = \text{Cov}(X,Y) / (\sigma_X \sigma_Y)\)</span>。</p></li>
+<li><p>从解析角度证明 <span class="math notranslate nohighlight">\(X \perp Y\)</span> 蕴含 <span class="math notranslate nohighlight">\(\text{Cov}(X,Y) = 0\)</span>。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="prob_matrix-solution-3">
+
+<p class="admonition-title">解答<a class="reference internal" href="#prob_matrix_ex2"> 练习 8.2</a></p>
+<section id="solution-content">
+<p>以下是一种解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+<span class="n">F</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+               <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]])</span>
+
+<span class="n">μ</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ν</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">E_X</span>  <span class="o">=</span> <span class="n">xs</span> <span class="o">@</span> <span class="n">μ</span>
+<span class="n">E_Y</span>  <span class="o">=</span> <span class="n">ys</span> <span class="o">@</span> <span class="n">ν</span>
+<span class="n">E_XY</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">ys</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;E[X] = </span><span class="si">{</span><span class="n">E_X</span><span class="si">}</span><span class="s2">, E[Y] = </span><span class="si">{</span><span class="n">E_Y</span><span class="si">}</span><span class="s2">, E[XY] = </span><span class="si">{</span><span class="n">E_XY</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">cov_XY</span> <span class="o">=</span> <span class="n">E_XY</span> <span class="o">-</span> <span class="n">E_X</span> <span class="o">*</span> <span class="n">E_Y</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cov(X,Y) = </span><span class="si">{</span><span class="n">cov_XY</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">var_X</span>  <span class="o">=</span> <span class="p">((</span><span class="n">xs</span> <span class="o">-</span> <span class="n">E_X</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">@</span> <span class="n">μ</span>
+<span class="n">var_Y</span>  <span class="o">=</span> <span class="p">((</span><span class="n">ys</span> <span class="o">-</span> <span class="n">E_Y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">@</span> <span class="n">ν</span>
+<span class="n">cor_XY</span> <span class="o">=</span> <span class="n">cov_XY</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var_X</span> <span class="o">*</span> <span class="n">var_Y</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cor(X,Y) = </span><span class="si">{</span><span class="n">cor_XY</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>E[X] = 0.5, E[Y] = 16.0, E[XY] = 9.0
+Cov(X,Y) = 1.0000
+Cor(X,Y) = 0.4082
+</pre></div>
+</div>
+</div>
+</div>
+<p>对于第4部分：如果 <span class="math notranslate nohighlight">\(X \perp Y\)</span>，则 <span class="math notranslate nohighlight">\(f_{ij} = \mu_i \nu_j\)</span>，因此</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}[XY] = \sum_i \sum_j x_i y_j \mu_i \nu_j
+= \left(\sum_i x_i \mu_i\right)\!\left(\sum_j y_j \nu_j\right)
+= \mathbb{E}[X]\,\mathbb{E}[Y]
+\]</div>
+<p>因此 <span class="math notranslate nohighlight">\(\text{Cov}(X,Y) = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y] = 0\)</span>。</p>
+</section>
+</div>
+<div class="exercise admonition" id="prob_matrix_ex3">
+
+<p class="admonition-title"><span class="caption-number">练习 8.3 </span></p>
+<section id="exercise-content">
+<p><strong>两个骰子之和</strong></p>
+<p>设 <span class="math notranslate nohighlight">\(X\)</span> 和 <span class="math notranslate nohighlight">\(Y\)</span> 是<strong>独立</strong>随机变量，各自均匀分布在 <span class="math notranslate nohighlight">\(\{1,2,3,4,5,6\}\)</span> 上，令 <span class="math notranslate nohighlight">\(Z = X + Y\)</span>。</p>
+<ol class="arabic simple">
+<li><p>使用卷积公式 <span class="math notranslate nohighlight">\(h_k = \sum_i f_i g_{k-i}\)</span> 计算 <span class="math notranslate nohighlight">\(Z\)</span> 的分布。</p></li>
+<li><p>绘制由该公式生成的结果。</p></li>
+<li><p>模拟 <span class="math notranslate nohighlight">\(10^6\)</span> 次投掷，并将经验直方图叠加到图上。</p></li>
+<li><p>从两种计算方式中分别计算 <span class="math notranslate nohighlight">\(\mathbb{E}[Z]\)</span> 和 <span class="math notranslate nohighlight">\(\text{Var}(Z)\)</span></p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="prob_matrix-solution-5">
+
+<p class="admonition-title">解答<a class="reference internal" href="#prob_matrix_ex3"> 练习 8.3</a></p>
+<section id="solution-content">
+<p>以下是一种解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>
+<span class="n">h</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nb">sum</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">g</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+        <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="c1"># f_i 存在</span>
+        <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>   <span class="c1"># g_{k-i} 存在</span>
+        <span class="p">)</span> 
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">z_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1_000_000</span>
+<span class="n">z_sim</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">z_sim</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="mi">13</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">z_vals</span> <span class="o">-</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span>          <span class="mf">0.4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;理论值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">z_vals</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">counts</span> <span class="o">/</span> <span class="n">n</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;经验值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Z = X + Y&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;概率&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">E_Z</span>   <span class="o">=</span> <span class="n">z_vals</span> <span class="o">@</span> <span class="n">h</span>
+<span class="n">Var_Z</span> <span class="o">=</span> <span class="p">((</span><span class="n">z_vals</span> <span class="o">-</span> <span class="n">E_Z</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">@</span> <span class="n">h</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;理论值：     E[Z] = </span><span class="si">{</span><span class="n">E_Z</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, Var(Z) = </span><span class="si">{</span><span class="n">Var_Z</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;模拟结果：   E[Z] = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">z_sim</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, Var(Z) = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">z_sim</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="_images/657144f7fabffc22d234d42bc4330f6eba690b1f8b551035d401b8f322a05b16.png"><img alt="_images/657144f7fabffc22d234d42bc4330f6eba690b1f8b551035d401b8f322a05b16.png" src="_images/657144f7fabffc22d234d42bc4330f6eba690b1f8b551035d401b8f322a05b16.png" style="width: 573px; height: 432px;" />
+</a>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>理论值：     E[Z] = 7.00, Var(Z) = 5.8333
+模拟结果：   E[Z] = 7.00, Var(Z) = 5.8271
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="prob_matrix_ex4">
+
+<p class="admonition-title"><span class="caption-number">练习 8.4 </span></p>
+<section id="exercise-content">
+<p><strong>多步转移概率</strong></p>
+<p>考虑一个具有转移矩阵的两状态马尔可夫链</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+P = \begin{bmatrix} 0.9 &amp; 0.1 \\ 0.2 &amp; 0.8 \end{bmatrix}
+\end{split}\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(p_{ij} = \text{Prob}\{X(t+1)=j \mid X(t)=i\}\)</span>。</p>
+<ol class="arabic simple">
+<li><p>从 <span class="math notranslate nohighlight">\(\psi_0 = [1, 0]\)</span> 出发，计算 <span class="math notranslate nohighlight">\(\psi_n = \psi_0 P^n\)</span>，其中 <span class="math notranslate nohighlight">\(n = 1, 5, 20, 100\)</span>。</p></li>
+<li><p>求满足 <span class="math notranslate nohighlight">\(\psi^* P = \psi^*\)</span> 且 <span class="math notranslate nohighlight">\(\sum_i \psi^*_i = 1\)</span> 的平稳分布 <span class="math notranslate nohighlight">\(\psi^*\)</span>。</p></li>
+<li><p>通过数值方法验证当 <span class="math notranslate nohighlight">\(n\)</span> 增大时 <span class="math notranslate nohighlight">\(\psi_n \to \psi^*\)</span>。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="prob_matrix-solution-7">
+
+<p class="admonition-title">解答<a class="reference internal" href="#prob_matrix_ex4"> 练习 8.4</a></p>
+<section id="solution-content">
+<p>以下是一种解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]])</span>
+<span class="n">ψ0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ψ_</span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s2">3d</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">ψ0</span><span class="w"> </span><span class="o">@</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">(</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">P</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+<span class="n">ψ_star</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">平稳分布: </span><span class="si">{</span><span class="n">ψ_star</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">ψ_100</span> <span class="o">=</span> <span class="n">ψ0</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ψ_100 是否接近平稳分布？</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">ψ_100</span><span class="p">,</span><span class="w"> </span><span class="n">ψ_star</span><span class="p">,</span><span class="w"> </span><span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ψ_  1 = [0.9 0.1]
+ψ_  5 = [0.72269 0.27731]
+ψ_ 20 = [0.66693264 0.33306736]
+ψ_100 = [0.66666667 0.33333333]
+
+平稳分布: [0.66666667 0.33333333]
+ψ_100 是否接近平稳分布？True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="prob_matrix_ex5">
+
+<p class="admonition-title"><span class="caption-number">练习 8.5 </span></p>
+<section id="exercise-content">
+<p><strong>离散先验下的贝叶斯定理</strong></p>
+<p>一枚硬币具有未知偏差 <span class="math notranslate nohighlight">\(\theta \in \{0.2,\, 0.5,\, 0.8\}\)</span>，先验为 <span class="math notranslate nohighlight">\(\pi = [0.25,\, 0.50,\, 0.25]\)</span>。</p>
+<p>假设在给定 <span class="math notranslate nohighlight">\(\theta\)</span> 的条件下，掷硬币结果是独立同分布的伯努利(<span class="math notranslate nohighlight">\(\theta\)</span>)随机变量。</p>
+<ol class="arabic">
+<li><p>在 <span class="math notranslate nohighlight">\(n = 10\)</span> 次投掷中观察到 <span class="math notranslate nohighlight">\(k = 7\)</span> 次正面后，计算似然</p>
+<div class="math notranslate nohighlight">
+\[
+   \mathcal{L}(\theta \mid \text{数据}) = \binom{10}{7}\,\theta^7\,(1-\theta)^3
+   \]</div>
+<p>对每个 <span class="math notranslate nohighlight">\(\theta\)</span> 都进行计算。</p>
+</li>
+<li><p>运用公式 <a class="reference internal" href="#equation-eq-condprobbayes">(8.4)</a> 计算后验 <span class="math notranslate nohighlight">\(\pi(\theta \mid \text{数据})\)</span>。</p></li>
+<li><p>并排绘制先验和后验分布。</p></li>
+<li><p>对 <span class="math notranslate nohighlight">\(k = 3\)</span> 次正面重复上述过程，并描述后验如何发生变化。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="prob_matrix-solution-9">
+
+<p class="admonition-title">解答<a class="reference internal" href="#prob_matrix_ex5"> 练习 8.5</a></p>
+<section id="solution-content">
+<p>以下是一种解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">θ_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+<span class="n">π</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">])</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_posterior</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">θ_vals</span><span class="p">,</span> <span class="n">π</span><span class="p">):</span>
+    <span class="n">likelihood</span> <span class="o">=</span> <span class="n">comb</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">θ_vals</span><span class="o">**</span><span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">θ_vals</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">unnorm</span> <span class="o">=</span> <span class="n">likelihood</span> <span class="o">*</span> <span class="n">π</span>
+    <span class="k">return</span> <span class="n">unnorm</span> <span class="o">/</span> <span class="n">unnorm</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">likelihood</span>
+
+<span class="n">post7</span><span class="p">,</span> <span class="n">lik7</span> <span class="o">=</span> <span class="n">compute_posterior</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">θ_vals</span><span class="p">,</span> <span class="n">π</span><span class="p">)</span>
+<span class="n">post3</span><span class="p">,</span> <span class="n">lik3</span> <span class="o">=</span> <span class="n">compute_posterior</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">θ_vals</span><span class="p">,</span> <span class="n">π</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;k=7:  似然 =&quot;</span><span class="p">,</span> <span class="n">lik7</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> 
+      <span class="s2">&quot; 后验 =&quot;</span><span class="p">,</span> <span class="n">post7</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;k=3:  似然 =&quot;</span><span class="p">,</span> <span class="n">lik3</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> 
+      <span class="s2">&quot; 后验 =&quot;</span><span class="p">,</span> <span class="n">post3</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">θ_vals</span><span class="p">))</span>
+<span class="n">w</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">title</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+    <span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="n">post7</span><span class="p">,</span> <span class="n">post3</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;k=7 次正面&#39;</span><span class="p">,</span> <span class="s1">&#39;k=3 次正面&#39;</span><span class="p">]):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">π</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;先验&#39;</span><span class="p">,</span>     <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span>  <span class="n">w</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;后验&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;θ=</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">θ_vals</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;概率&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>k=7:  似然 = [0.0008 0.1172 0.2013]  后验 = [0.0018 0.537  0.4612]
+k=3:  似然 = [0.2013 0.1172 0.0008]  后验 = [0.4612 0.537  0.0018]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/e9070d8bbd755533415ace72eee6cee2372a4b5ca6e3e766d440fbbed5c83723.png"><img alt="_images/e9070d8bbd755533415ace72eee6cee2372a4b5ca6e3e766d440fbbed5c83723.png" src="_images/e9070d8bbd755533415ace72eee6cee2372a4b5ca6e3e766d440fbbed5c83723.png" style="width: 844px; height: 374px;" />
+</a>
+</div>
+</div>
+</section>
+</div>
 </section>
 </section>
 
@@ -2087,7 +2547,7 @@ y的边缘分布
                 <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
                     <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础工具
+  Tools and Techniques
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -2129,7 +2589,7 @@ y的边缘分布
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础统计学
+  Elementary Statistics
  </span>
 </p>
 <ul class="current nav bd-sidenav nav sidenav_l1">
@@ -2186,7 +2646,7 @@ y的边缘分布
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  贝叶斯定律
+  Bayes Law
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -2208,7 +2668,7 @@ y的边缘分布
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  统计与信息论
+  Statistics and Information
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -2258,358 +2718,648 @@ y的边缘分布
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mix_model.html">
-   30. 错误模型
+   32. 错误模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="navy_captain.html">
-   31. 贝叶斯与频率主义决策规则的比较
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  线性规划
+  Linear Programming
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="opt_transport.html">
-   32. 最优传输
+   36. 最优传输
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="von_neumann_model.html">
-   33. 冯·诺依曼增长模型（及其推广）
+   37. 冯·诺依曼增长模型（及其推广）
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  动态系统导论
+  Introduction to Dynamics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="finite_markov.html">
-   34. 有限马尔可夫链
+   38. 有限马尔可夫链
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="inventory_dynamics.html">
-   35. 库存动态
+   39. 库存动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="linear_models.html">
-   36. 线性状态空间模型
+   40. 线性状态空间模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="samuelson.html">
-   37. 萨缪尔森乘数-加速器模型
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kesten_processes.html">
-   38. Kesten过程与企业动态
+   43. Kesten过程与企业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="wealth_dynamics.html">
-   39. 财富分布动态
+   44. 财富分布动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman.html">
-   40. 初见卡尔曼滤波器
+   45. 初见卡尔曼滤波器
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman_2.html">
-   41. 卡尔曼滤波器进阶
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  搜索
+  Search
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model.html">
-   42. 工作搜寻 I: McCall搜寻模型
+   50. 工作搜寻 I: McCall搜寻模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model_with_separation.html">
-   43. 工作搜寻 II：搜寻与离职
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   44. 工作搜寻 III: 拟合值函数迭代
+   53. 工作搜寻 IV: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="mccall_correlated.html">
-   45. 工作搜寻 IV：相关工资报价
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   46. 工作搜寻 V：职业选择建模
+   55. 工作搜寻 VI：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   47. 工作搜寻 VI：在职搜索
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mccall_q.html">
-   48. 工作搜寻 VII：McCall劳动者的Q学习
+   56. 工作搜寻 VII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   49. 工作搜寻 VII: 带学习的搜索
+   57. 工作搜寻 VIII: 带学习的搜索
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  消费、储蓄与资本
+  Reinforcement Learning
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_1.html">
-   50. Cass-Koopmans模型
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_2.html">
-   51. Cass-Koopmans竞争均衡
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal.html">
-   52. 带扭曲性税收的Cass-Koopmans模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal_2.html">
-   53. 带扭曲性税收的双国模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ak2.html">
-   54. 代际交叠模型中的转型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_problem.html">
-   55. 吃蛋糕问题 I：最优储蓄导论
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_numerical.html">
-   56. 吃蛋糕问题 II：数值方法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth.html">
-   57. 最优增长 I：随机最优增长模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth_fast.html">
-   58. 最优增长 II：使用Numba加速代码
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="coleman_policy_iter.html">
-   59. 最优增长 III：时间迭代
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="egm_policy_iter.html">
-   60. 最优增长 IV：内生网格法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp.html">
-   61. 收入波动问题 I：基本模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp_advanced.html">
-   62. 收入波动问题 II：资产随机收益
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  LQ控制
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   63. LQ控制：基础
+   72. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   64. LQ控制的拉格朗日方法
+   73. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   65. 消除交叉项
+   74. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   66. 永久收入模型
+   75. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   67. 永久收入 II：线性二次方法
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   68. 通过库存实现生产平滑
+   83. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  多主体模型
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   69. 就业与失业的湖泊模型
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   70. 理性预期均衡
+   107. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   71. 线性理性预期模型中的稳定性
+   108. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   72. 马尔可夫完美均衡
+   109. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   73. 不确定性陷阱
+   110. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   74. 艾亚加里模型
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   75. 长寿、异质性个体、世代交叠模型
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  资产定价与金融
+  Asset Pricing and Finance
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   76. 资产定价：有限状态模型
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   77. 带有阿罗证券的竞争均衡
+   119. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   78. 异质信念与泡沫
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  数据与实证
+  Data and Empirics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="pandas_panel.html">
-   79. 用Pandas处理面板数据
+   128. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   80. Python线性回归
+   129. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   81. 最大似然估计
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  拍卖
+  Auctions
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   82. 一价和二价拍卖
+   133. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   83. 多种商品分配机制
+   134. 多种商品分配机制
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  其他
+  Other
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   84. 故障排除
+   135. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   85. 参考文献
+   136. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   86. 执行统计
+   137. 执行统计
   </a>
  </li>
 </ul>
@@ -2653,6 +3403,8 @@ y的边缘分布
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/prob_matrix.md" download><i data-feather="github"></i></a></li>
                     -->
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
                 </ul>
 
             </div>

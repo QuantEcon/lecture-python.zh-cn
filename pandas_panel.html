@@ -8,10 +8,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>79. 用Pandas处理面板数据 &#8212; Python中级数量经济学</title>
-    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <title>128. 用Pandas处理面板数据 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
     
         <script>
             MathJax = {
@@ -70,13 +77,13 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=a459934d9fea1f60268e46d95e2569a33e1f6ec2" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
-    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=b4b7a797" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -94,8 +101,8 @@
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-    <script src="_static/scripts/quantecon-book-theme.js?digest=06ebc90d5139b434c2742937a4ef3b185cb93e2f"></script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
     <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
     <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
@@ -123,8 +130,8 @@
     <link rel="icon" href="_static/lectures-favicon.ico"/>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
-    <link rel="next" title="80. Python线性回归" href="ols.html" />
-    <link rel="prev" title="78. 异质信念与泡沫" href="harrison_kreps.html" />
+    <link rel="next" title="129. Python线性回归" href="ols.html" />
+    <link rel="prev" title="127. 误设定下的恢复" href="misspecified_recovery.html" />
 
 <!-- Normal Meta Tags -->
 <meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
@@ -148,10 +155,31 @@
 <meta property="og:site_name" content="Python中级数量经济学" />
 <meta name="theme-color" content="#ffffff" />
 
+
+
+
   </head>
 <body>
 
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
 <!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
 
     <span id="top"></span>
 
@@ -163,7 +191,12 @@
 
                 <div class="qe-page__toc">
 
-                    <div class="inner">
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
 
                         
                         <div class="qe-page__toc-header">
@@ -173,12 +206,12 @@
 
                         <nav id="bd-toc-nav" class="qe-page__toc-nav">
                             <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">79.1. 概述</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">79.2. 切片和重塑数据</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nan">79.3. 合并数据框和填充空值（NaN 值）</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">79.4. 数据分组和汇总</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">79.5. 总结</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">79.6. 练习</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">128.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">128.2. 切片和重塑数据</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nan">128.3. 合并数据框和填充空值（NaN 值）</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">128.4. 数据分组和汇总</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">128.5. 总结</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">128.6. 练习</a></li>
 </ul>
                             <p class="logo">
                                 
@@ -189,17 +222,23 @@
                                 
                             </p>
 
-                            <p class="powered">Powered by <a href="https://jupyterbook.org/en/stable/">Jupyter Book</a></p>
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
 
                         </nav>
 
                         <div class="qe-page__toc-footer">
                             
                             
-                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                            
+                            
+                            
                         </div>
 
                     </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
 
                 </div>
 
@@ -209,10 +248,9 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">用Pandas处理面板数据</p>
-
                     </div>
-                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+
+                    <!-- Authors section -->
                         <p class="qe-page__header-authors" font-size="18">
                             
                                 
@@ -225,6 +263,109 @@
                             
                         </p>
 
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 19, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/pandas_panel.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/3c9a6d3" class="changelog-hash">3c9a6d3</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">🔄 resync pandas_panel.md (#144)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c1f869f" class="changelog-hash">c1f869f</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">fix a minor bug</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/39e72db" class="changelog-hash">39e72db</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">updates</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/9c8f9b0" class="changelog-hash">9c8f9b0</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update last figure</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/6596087" class="changelog-hash">6596087</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">updates</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/7b98558" class="changelog-hash">7b98558</a>
+                                
+                                <span class="changelog-author">XYshi725</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message"> [pandas_panel] Translation Update</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c4c4b86" class="changelog-hash">c4c4b86</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update matplotlib</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/0f3e233" class="changelog-hash">0f3e233</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/ab0498b" class="changelog-hash">ab0498b</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update all translated lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/387e084" class="changelog-hash">387e084</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lecture series</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
 
                 </div> <!-- .page__header -->
 
@@ -236,7 +377,7 @@
                     <div>
                         
   <section class="tex2jax_ignore mathjax_ignore" id="pandas">
-<h1><a class="toc-backref" href="#id7" role="doc-backlink"><span class="section-number">79. </span><span class="target" id="index-0"></span>用Pandas处理面板数据</a><a class="headerlink" href="#pandas" title="Link to this heading">#</a></h1>
+<h1><a class="toc-backref" href="#id7" role="doc-backlink"><span class="section-number">128. </span><span class="target" id="index-0"></span>用Pandas处理面板数据</a><a class="headerlink" href="#pandas" title="Link to this heading">#</a></h1>
 <nav class="contents" id="id1">
 <span id="index-1"></span><p class="topic-title">目录</p>
 <ul class="simple">
@@ -253,7 +394,7 @@
 </ul>
 </nav>
 <section id="id2">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink"><span class="section-number">79.1. </span>概述</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink"><span class="section-number">128.1. </span>概述</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
 <p>在<a class="reference external" href="https://python-programming.quantecon.org/pandas.html">之前关于pandas的讲座</a>中，我们学习了如何处理简单的数据集。</p>
 <p>计量经济学家经常需要处理更复杂的数据集，比如面板数据。</p>
 <p>常见的任务包括：</p>
@@ -273,12 +414,12 @@
 <p>使用pandas的<code class="docutils literal notranslate"><span class="pre">merge</span></code>函数将为我们的<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>添加额外的详细信息，并使用<code class="docutils literal notranslate"><span class="pre">groupby</span></code>函数对数据进行汇总。</p>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id9" role="doc-backlink"><span class="section-number">79.2. </span>切片和重塑数据</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id9" role="doc-backlink"><span class="section-number">128.2. </span>切片和重塑数据</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <p>我们将读取来自OECD的32个国家的实际最低工资数据集，并将其赋值给<code class="docutils literal notranslate"><span class="pre">realwage</span></code>。</p>
 <p>数据集可通过以下链接访问：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">url1</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/realwage.csv&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">url1</span> <span class="o">=</span> <span class="s1">&#39;https://github.com/QuantEcon/data-lectures/raw/main/lectures/realwage.csv&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -516,7 +657,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pandas.core.indexes.datetimes.DatetimeIndex
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pandas.DatetimeIndex
 </pre></div>
 </div>
 </div>
@@ -530,7 +671,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pandas.core.indexes.multi.MultiIndex
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pandas.MultiIndex
 </pre></div>
 </div>
 </div>
@@ -639,15 +780,11 @@
 <p><code class="docutils literal notranslate"><span class="pre">.stack()</span></code>将列<code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code>的最低层级旋转到行索引（<code class="docutils literal notranslate"><span class="pre">.unstack()</span></code>执行反向操作 - 你可以试试看）</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">realwage</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">realwage</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">future_stack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_11348/743219372.py:1: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What&#39;s New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
-  realwage.stack().head()
-</pre></div>
-</div>
 <div class="output text_html"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -762,15 +899,11 @@
 <p>我们也可以传入一个参数来选择我们想要堆叠的层级</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">realwage</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;Country&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">realwage</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;Country&#39;</span><span class="p">,</span> <span class="n">future_stack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_11348/1205496966.py:1: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What&#39;s New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
-  realwage.stack(level=&#39;Country&#39;).head()
-</pre></div>
-</div>
 <div class="output text_html"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -859,15 +992,11 @@
 <p>选择一年并堆叠<code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code>的两个较低层级，可以创建我们面板数据的横截面。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">realwage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;2015&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">realwage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;2015&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">future_stack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_11348/1065142626.py:1: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What&#39;s New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
-  realwage.loc[&#39;2015&#39;].stack(level=(1, 2)).transpose().head()
-</pre></div>
-</div>
 <div class="output text_html"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -1058,13 +1187,13 @@
 </div>
 </section>
 <section id="nan">
-<h2><a class="toc-backref" href="#id10" role="doc-backlink"><span class="section-number">79.3. </span>合并数据框和填充空值（NaN 值）</a><a class="headerlink" href="#nan" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id10" role="doc-backlink"><span class="section-number">128.3. </span>合并数据框和填充空值（NaN 值）</a><a class="headerlink" href="#nan" title="Link to this heading">#</a></h2>
 <p>与SQL等关系型数据库类似，pandas内置了合并数据集的方法。</p>
 <p>使用来自<a class="reference external" href="https://www.worlddata.info/downloads/">WorldData.info</a>的国家信息，我们将使用<code class="docutils literal notranslate"><span class="pre">merge</span></code>函数将每个国家所属的大洲添加到<code class="docutils literal notranslate"><span class="pre">realwage_f</span></code>中。</p>
 <p>可以通过以下链接访问数据集：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">url2</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/countries.csv&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">url2</span> <span class="o">=</span> <span class="s1">&#39;https://github.com/QuantEcon/data-lectures/raw/main/lectures/countries.csv&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -1329,8 +1458,8 @@
 <ul class="simple">
 <li><p>左连接（left）只包含左侧数据集中的国家</p></li>
 <li><p>右连接（right）只包含右侧数据集中的国家</p></li>
+<li><p>外连接（outer）包含左侧或右侧数据集中的任一国家</p></li>
 <li><p>内连接（inner）只包含左右数据集共有的国家</p></li>
-<li><p>外连接（outer）包含左侧和右侧数据集中的任一国家</p></li>
 </ul>
 <p>默认情况下，<code class="docutils literal notranslate"><span class="pre">merge</span></code>将使用内连接（inner）。</p>
 <p>在这个案例中，我们将传入<code class="docutils literal notranslate"><span class="pre">how='left'</span></code>以保留<code class="docutils literal notranslate"><span class="pre">realwage_f</span></code>中的所有国家，但丢弃<code class="docutils literal notranslate"><span class="pre">worlddata</span></code>中不能和<code class="docutils literal notranslate"><span class="pre">realwage_f</span></code>相匹配的国家。</p>
@@ -1552,7 +1681,7 @@ NaN       Europe
 227.00       NaN
 241.00       NaN
 240.00       NaN
-Name: Country, dtype: object
+Name: Country, dtype: str
 </pre></div>
 </div>
 </div>
@@ -1619,8 +1748,8 @@ Name: Country, dtype: object
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">replace</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Central America&#39;</span><span class="p">,</span> <span class="s1">&#39;North America&#39;</span><span class="p">,</span> <span class="s1">&#39;South America&#39;</span><span class="p">]</span>
 
 <span class="k">for</span> <span class="n">country</span> <span class="ow">in</span> <span class="n">replace</span><span class="p">:</span>
-    <span class="n">merged</span><span class="p">[</span><span class="s1">&#39;Continent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged</span><span class="p">[</span><span class="s1">&#39;Continent&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                                <span class="p">{</span><span class="n">country</span><span class="p">:</span><span class="s1">&#39;America&#39;</span><span class="p">})</span>
+    <span class="n">merged</span><span class="o">.</span><span class="n">Continent</span> <span class="o">=</span> <span class="n">merged</span><span class="o">.</span><span class="n">Continent</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">to_replace</span><span class="o">=</span><span class="n">country</span><span class="p">,</span>
+                                <span class="n">value</span><span class="o">=</span><span class="s1">&#39;America&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1655,13 +1784,13 @@ Name: Country, dtype: object
     <tr style="text-align: right;">
       <th></th>
       <th></th>
-      <th>2006-01-01</th>
-      <th>2007-01-01</th>
-      <th>2008-01-01</th>
+      <th>2006-01-01 00:00:00</th>
+      <th>2007-01-01 00:00:00</th>
+      <th>2008-01-01 00:00:00</th>
       <th>...</th>
-      <th>2014-01-01</th>
-      <th>2015-01-01</th>
-      <th>2016-01-01</th>
+      <th>2014-01-01 00:00:00</th>
+      <th>2015-01-01 00:00:00</th>
+      <th>2016-01-01 00:00:00</th>
     </tr>
     <tr>
       <th>Continent</th>
@@ -1762,7 +1891,7 @@ Name: Country, dtype: object
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>DatetimeIndex([&#39;2006-01-01&#39;, &#39;2007-01-01&#39;, &#39;2008-01-01&#39;, &#39;2009-01-01&#39;,
                &#39;2010-01-01&#39;, &#39;2011-01-01&#39;, &#39;2012-01-01&#39;, &#39;2013-01-01&#39;,
                &#39;2014-01-01&#39;, &#39;2015-01-01&#39;, &#39;2016-01-01&#39;],
-              dtype=&#39;datetime64[ns]&#39;, name=&#39;Time&#39;, freq=None)
+              dtype=&#39;datetime64[us]&#39;, name=&#39;Time&#39;, freq=None)
 </pre></div>
 </div>
 </div>
@@ -1881,7 +2010,7 @@ Name: Country, dtype: object
 </div>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id11" role="doc-backlink"><span class="section-number">79.4. </span>数据分组和汇总</a><a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id11" role="doc-backlink"><span class="section-number">128.4. </span>数据分组和汇总</a><a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p>对于理解大型面板数据集来说，数据分组和汇总特别有用。</p>
 <p>一种简单的数据汇总方法是在数据框上调用<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/getting_started/intro_tutorials/06_calculate_statistics.html">聚合方法</a>，比如<code class="docutils literal notranslate"><span class="pre">.mean()</span></code>或<code class="docutils literal notranslate"><span class="pre">.max()</span></code>。</p>
 <p>例如，我们可以计算2006年至2016年期间每个国家的平均实际最低工资（默认是按行聚合）</p>
@@ -1930,96 +2059,6 @@ dtype: float64
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;Continent&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th>Time</th>
-      <th>2006-01-01</th>
-      <th>2007-01-01</th>
-      <th>2008-01-01</th>
-      <th>...</th>
-      <th>2014-01-01</th>
-      <th>2015-01-01</th>
-      <th>2016-01-01</th>
-    </tr>
-    <tr>
-      <th>Continent</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>America</th>
-      <td>2.80</td>
-      <td>2.85</td>
-      <td>2.99</td>
-      <td>...</td>
-      <td>3.22</td>
-      <td>3.26</td>
-      <td>3.30</td>
-    </tr>
-    <tr>
-      <th>Asia</th>
-      <td>4.29</td>
-      <td>4.44</td>
-      <td>4.45</td>
-      <td>...</td>
-      <td>4.86</td>
-      <td>5.10</td>
-      <td>5.44</td>
-    </tr>
-    <tr>
-      <th>Australia</th>
-      <td>10.25</td>
-      <td>10.73</td>
-      <td>10.76</td>
-      <td>...</td>
-      <td>11.25</td>
-      <td>11.52</td>
-      <td>11.73</td>
-    </tr>
-    <tr>
-      <th>Europe</th>
-      <td>4.80</td>
-      <td>4.94</td>
-      <td>4.99</td>
-      <td>...</td>
-      <td>5.17</td>
-      <td>5.48</td>
-      <td>5.57</td>
-    </tr>
-  </tbody>
-</table>
-<p>4 rows × 11 columns</p>
-</div></div></div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
           <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span>
           <span class="n">title</span><span class="o">=</span><span class="s2">&quot;2006-2016年平均实际最低工资&quot;</span><span class="p">)</span>
@@ -2039,7 +2078,11 @@ dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c237a728a98e652bcffd5a12b4ca9513deba835988d2353d56b54baf5e280515.png" src="_images/c237a728a98e652bcffd5a12b4ca9513deba835988d2353d56b54baf5e280515.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/321a650a14280a5111d8316b2d80e7e2958a4485126433ab8695dd99b9d5fa47.png" src="_images/321a650a14280a5111d8316b2d80e7e2958a4485126433ab8695dd99b9d5fa47.png" />
 </div>
 </div>
 <p>通过向<code class="docutils literal notranslate"><span class="pre">.mean()</span></code>传入<code class="docutils literal notranslate"><span class="pre">axis=1</span></code>参数可以对列进行聚合（得到所有国家随时间变化的平均最低工资）</p>
@@ -2073,13 +2116,13 @@ dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/79fc87e41cb17e5fd36201214c27f6ccb02bdd0227ce4c11d87b7e1252a3431d.png" src="_images/79fc87e41cb17e5fd36201214c27f6ccb02bdd0227ce4c11d87b7e1252a3431d.png" />
+<img alt="_images/4c369a6c2bd75fa7760a3b184cacf814905d8558df44fc6d4999ed819facb539.png" src="_images/4c369a6c2bd75fa7760a3b184cacf814905d8558df44fc6d4999ed819facb539.png" />
 </div>
 </div>
 <p>我们也可以指定<code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code>的一个层级（在列轴上）来进行聚合</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;Continent&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;Continent&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -2101,20 +2144,14 @@ dtype: float64
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
-      <th>Time</th>
-      <th>2006-01-01</th>
-      <th>2007-01-01</th>
-      <th>2008-01-01</th>
-      <th>...</th>
-      <th>2014-01-01</th>
-      <th>2015-01-01</th>
-      <th>2016-01-01</th>
+      <th>Continent</th>
+      <th>America</th>
+      <th>Asia</th>
+      <th>Australia</th>
+      <th>Europe</th>
     </tr>
     <tr>
-      <th>Continent</th>
-      <th></th>
-      <th></th>
-      <th></th>
+      <th>Time</th>
       <th></th>
       <th></th>
       <th></th>
@@ -2123,48 +2160,42 @@ dtype: float64
   </thead>
   <tbody>
     <tr>
-      <th>America</th>
+      <th>2006-01-01</th>
       <td>2.80</td>
-      <td>2.85</td>
-      <td>2.99</td>
-      <td>...</td>
-      <td>3.22</td>
-      <td>3.26</td>
-      <td>3.30</td>
-    </tr>
-    <tr>
-      <th>Asia</th>
       <td>4.29</td>
-      <td>4.44</td>
-      <td>4.45</td>
-      <td>...</td>
-      <td>4.86</td>
-      <td>5.10</td>
-      <td>5.44</td>
-    </tr>
-    <tr>
-      <th>Australia</th>
       <td>10.25</td>
-      <td>10.73</td>
-      <td>10.76</td>
-      <td>...</td>
-      <td>11.25</td>
-      <td>11.52</td>
-      <td>11.73</td>
+      <td>4.80</td>
     </tr>
     <tr>
-      <th>Europe</th>
-      <td>4.80</td>
+      <th>2007-01-01</th>
+      <td>2.85</td>
+      <td>4.44</td>
+      <td>10.73</td>
       <td>4.94</td>
+    </tr>
+    <tr>
+      <th>2008-01-01</th>
+      <td>2.99</td>
+      <td>4.45</td>
+      <td>10.76</td>
       <td>4.99</td>
-      <td>...</td>
+    </tr>
+    <tr>
+      <th>2009-01-01</th>
+      <td>3.23</td>
+      <td>4.53</td>
+      <td>10.97</td>
+      <td>5.16</td>
+    </tr>
+    <tr>
+      <th>2010-01-01</th>
+      <td>3.34</td>
+      <td>4.53</td>
+      <td>10.95</td>
       <td>5.17</td>
-      <td>5.48</td>
-      <td>5.57</td>
     </tr>
   </tbody>
 </table>
-<p>4 rows × 11 columns</p>
 </div></div></div>
 </div>
 <p>我们可以将每个大洲的平均最低工资绘制成时间序列图</p>
@@ -2189,7 +2220,7 @@ dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/6892024da3dd62be985756e88efbd100f3051290f363c7e5015897bb5d53285e.png" src="_images/6892024da3dd62be985756e88efbd100f3051290f363c7e5015897bb5d53285e.png" />
+<img alt="_images/5f84247116f38a3bd410426ba637a001f073853badb4af7e387fc29287cd9295.png" src="_images/5f84247116f38a3bd410426ba637a001f073853badb4af7e387fc29287cd9295.png" />
 </div>
 </div>
 <p>出于绘图目的，我们将去掉澳大利亚这个大洲</p>
@@ -2210,21 +2241,17 @@ dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/efee172cbaee14b97a6ead7d4d34f2100c97142de6d27ffb789da2b1f958e408.png" src="_images/efee172cbaee14b97a6ead7d4d34f2100c97142de6d27ffb789da2b1f958e408.png" />
+<img alt="_images/bd80bda23b8106712dd8dbac38a3cf90ae9537b9bf57724f514ae9d95d68286f.png" src="_images/bd80bda23b8106712dd8dbac38a3cf90ae9537b9bf57724f514ae9d95d68286f.png" />
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">.describe()</span></code> 可以快速获取一些常见的描述性统计量的汇总结果</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">future_stack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_11348/4288984536.py:1: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What&#39;s New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
-  merged.stack().describe()
-</pre></div>
-</div>
 <div class="output text_html"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -2301,25 +2328,29 @@ dtype: float64
 </table>
 </div></div></div>
 </div>
-<p>让我们更深入地了解 <code class="docutils literal notranslate"><span class="pre">groupby</span></code> 的工作原理。</p>
-<p><code class="docutils literal notranslate"><span class="pre">groupby</span></code> 操作遵循一个称为”拆分-应用-合并”的模式:</p>
-<ol class="arabic simple">
-<li><p>首先，数据会按照指定的一个或多个键被拆分成多个组</p></li>
-<li><p>然后，对每个组分别执行相同的操作或计算</p></li>
-<li><p>最后，将所有组的结果合并成一个新的数据结构</p></li>
-</ol>
-<p>这种模式使我们能够对数据子集进行灵活的分组分析。</p>
+<p>这是使用 <code class="docutils literal notranslate"><span class="pre">groupby</span></code> 的一种简化方式。</p>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">groupby</span></code> 通常遵循”拆分-应用-合并”的过程：</p>
+<ul class="simple">
+<li><p>拆分：数据根据一个或多个键被分组</p></li>
+<li><p>应用：函数被独立地应用于每个组</p></li>
+<li><p>合并：函数调用的结果被合并成一个新的数据结构</p></li>
+</ul>
 <p><code class="docutils literal notranslate"><span class="pre">groupby</span></code> 方法实现了这个过程的第一步，创建一个新的 <code class="docutils literal notranslate"><span class="pre">DataFrameGroupBy</span></code> 对象，将数据拆分成组。</p>
 <p>让我们再次按大洲拆分 <code class="docutils literal notranslate"><span class="pre">merged</span></code>，这次使用 <code class="docutils literal notranslate"><span class="pre">groupby</span></code> 函数，并将生成的对象命名为 <code class="docutils literal notranslate"><span class="pre">grouped</span></code></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grouped</span> <span class="o">=</span> <span class="n">merged</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;Continent&#39;</span><span class="p">)</span>
-<span class="n">grouped</span><span class="o">.</span><span class="n">keys</span>
+<span class="n">grouped</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;pandas.api.typing.DataFrameGroupBy object at 0x7f9ac94bc830&gt;
 </pre></div>
 </div>
 </div>
 </div>
-<p>在对象上调用<code class="docutils literal notranslate"><span class="pre">groupby</span></code>方法时，该函数会被应用于每个组，运算结果会被合并到一个新的数据结构中。</p>
+<p>在对象上调用聚合方法时，该函数会被应用于每个组，运算结果会被合并到一个新的数据结构中。</p>
 <p>例如，我们可以使用<code class="docutils literal notranslate"><span class="pre">.size()</span></code>返回数据集中每个大洲的国家数量。</p>
 <p>在这种情况下，我们的新数据结构是一个<code class="docutils literal notranslate"><span class="pre">Series</span></code></p>
 <div class="cell docutils container">
@@ -2350,33 +2381,32 @@ dtype: int64
 
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;2015年实际最低工资&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;美元&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;密度&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/6fd8a90d32d9fc5abca3efc871215c1972168cf30a1a2221926cc1a5e7bf6213.png" src="_images/6fd8a90d32d9fc5abca3efc871215c1972168cf30a1a2221926cc1a5e7bf6213.png" />
+<img alt="_images/1e12c142d853b7e8404386a9763407429540a655aa793c2436c3a988d136eedb.png" src="_images/1e12c142d853b7e8404386a9763407429540a655aa793c2436c3a988d136eedb.png" />
 </div>
 </div>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id12" role="doc-backlink"><span class="section-number">79.5. </span>总结</a><a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id12" role="doc-backlink"><span class="section-number">128.5. </span>总结</a><a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <p>本讲座介绍了pandas的一些高级特性，包括多级索引、合并、分组和绘图。</p>
 <p>在面板数据分析中，其他可能有用的工具包括<a class="reference external" href="https://docs.xarray.dev/en/stable/">xarray</a>，这是一个将pandas扩展到N维数据结构的Python包。</p>
 </section>
 <section id="id6">
-<h2><a class="toc-backref" href="#id13" role="doc-backlink"><span class="section-number">79.6. </span>练习</a><a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id13" role="doc-backlink"><span class="section-number">128.6. </span>练习</a><a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <div class="exercise admonition" id="pp_ex1">
 
-<p class="admonition-title"><span class="caption-number">练习 79.1 </span></p>
+<p class="admonition-title"><span class="caption-number">练习 128.1 </span></p>
 <section id="exercise-content">
 <p>在这些练习中，你将使用来自<a class="reference external" href="https://ec.europa.eu/eurostat/data/database">Eurostat</a>的按年龄和性别划分的欧洲就业率数据集。</p>
 <p>可以通过以下链接访问数据集：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">url3</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/QuantEcon/lecture-python/master/source/_static/lecture_specific/pandas_panel/employ.csv&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">url3</span> <span class="o">=</span> <span class="s1">&#39;https://github.com/QuantEcon/data-lectures/raw/main/lectures/employ.csv&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -2388,7 +2418,7 @@ dtype: int64
 </div>
 <div class="solution dropdown admonition" id="pandas_panel-solution-1">
 
-<p class="admonition-title">解答<a class="reference internal" href="#pp_ex1"> 练习 79.1</a></p>
+<p class="admonition-title">解答<a class="reference internal" href="#pp_ex1"> 练习 128.1</a></p>
 <section id="solution-content">
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2545,10 +2575,10 @@ dtype: int64
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>UNIT Index([&#39;Percentage of total population&#39;, &#39;Thousand persons&#39;], dtype=&#39;object&#39;, name=&#39;UNIT&#39;)
-AGE Index([&#39;From 15 to 24 years&#39;, &#39;From 25 to 54 years&#39;, &#39;From 55 to 64 years&#39;], dtype=&#39;object&#39;, name=&#39;AGE&#39;)
-SEX Index([&#39;Females&#39;, &#39;Males&#39;, &#39;Total&#39;], dtype=&#39;object&#39;, name=&#39;SEX&#39;)
-INDIC_EM Index([&#39;Active population&#39;, &#39;Total employment (resident population concept - LFS)&#39;], dtype=&#39;object&#39;, name=&#39;INDIC_EM&#39;)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>UNIT Index([&#39;Percentage of total population&#39;, &#39;Thousand persons&#39;], dtype=&#39;str&#39;, name=&#39;UNIT&#39;)
+AGE Index([&#39;From 15 to 24 years&#39;, &#39;From 25 to 54 years&#39;, &#39;From 55 to 64 years&#39;], dtype=&#39;str&#39;, name=&#39;AGE&#39;)
+SEX Index([&#39;Females&#39;, &#39;Males&#39;, &#39;Total&#39;], dtype=&#39;str&#39;, name=&#39;SEX&#39;)
+INDIC_EM Index([&#39;Active population&#39;, &#39;Total employment (resident population concept - LFS)&#39;], dtype=&#39;str&#39;, name=&#39;INDIC_EM&#39;)
 GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croatia&#39;, &#39;Cyprus&#39;, &#39;Czech Republic&#39;,
        &#39;Denmark&#39;, &#39;Estonia&#39;, &#39;Euro area (17 countries)&#39;,
        &#39;Euro area (18 countries)&#39;, &#39;Euro area (19 countries)&#39;,
@@ -2561,7 +2591,7 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
        &#39;Malta&#39;, &#39;Netherlands&#39;, &#39;Norway&#39;, &#39;Poland&#39;, &#39;Portugal&#39;, &#39;Romania&#39;,
        &#39;Slovakia&#39;, &#39;Slovenia&#39;, &#39;Spain&#39;, &#39;Sweden&#39;, &#39;Switzerland&#39;, &#39;Turkey&#39;,
        &#39;United Kingdom&#39;],
-      dtype=&#39;object&#39;, name=&#39;GEO&#39;)
+      dtype=&#39;str&#39;, name=&#39;GEO&#39;)
 </pre></div>
 </div>
 </div>
@@ -2570,7 +2600,7 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
 </div>
 <div class="exercise admonition" id="pp_ex2">
 
-<p class="admonition-title"><span class="caption-number">练习 79.2 </span></p>
+<p class="admonition-title"><span class="caption-number">练习 128.2 </span></p>
 <section id="exercise-content">
 <p>筛选上述数据框，仅保留以’活动人口’百分比表示的就业数据。</p>
 <p>使用<code class="docutils literal notranslate"><span class="pre">seaborn</span></code>绘制一个按年龄和性别分组的2015年就业率箱线图。</p>
@@ -2582,7 +2612,7 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
 </div>
 <div class="solution dropdown admonition" id="pandas_panel-solution-3">
 
-<p class="admonition-title">解答<a class="reference internal" href="#pp_ex2"> 练习 79.2</a></p>
+<p class="admonition-title">解答<a class="reference internal" href="#pp_ex2"> 练习 128.2</a></p>
 <section id="solution-content">
 <p>为了更方便地按国家筛选，将<code class="docutils literal notranslate"><span class="pre">GEO</span></code>调整到最上层并对<code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code>进行排序</p>
 <div class="cell docutils container">
@@ -2614,7 +2644,7 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
        &#39;Malta&#39;, &#39;Netherlands&#39;, &#39;Norway&#39;, &#39;Poland&#39;, &#39;Portugal&#39;, &#39;Romania&#39;,
        &#39;Slovakia&#39;, &#39;Slovenia&#39;, &#39;Spain&#39;, &#39;Sweden&#39;, &#39;Switzerland&#39;, &#39;Turkey&#39;,
        &#39;United Kingdom&#39;],
-      dtype=&#39;object&#39;, name=&#39;GEO&#39;)
+      dtype=&#39;str&#39;, name=&#39;GEO&#39;)
 </pre></div>
 </div>
 </div>
@@ -2778,7 +2808,7 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/90fd2c66d5d5ce78f039f80b1fd2bfaa3012c0a25dde1b3bd01e0c755637282a.png" src="_images/90fd2c66d5d5ce78f039f80b1fd2bfaa3012c0a25dde1b3bd01e0c755637282a.png" />
+<img alt="_images/9ad4f15d5c87e52d86620ea9757dab13333106e9583d70d8ac47a7313abf090d.png" src="_images/9ad4f15d5c87e52d86620ea9757dab13333106e9583d70d8ac47a7313abf090d.png" />
 </div>
 </div>
 </section>
@@ -2839,7 +2869,7 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
                 <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
                     <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础工具
+  Tools and Techniques
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -2881,7 +2911,7 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础统计学
+  Elementary Statistics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -2938,7 +2968,7 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  贝叶斯定律
+  Bayes Law
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -2960,7 +2990,7 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  统计与信息论
+  Statistics and Information
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -3010,358 +3040,648 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mix_model.html">
-   30. 错误模型
+   32. 错误模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="navy_captain.html">
-   31. 贝叶斯与频率主义决策规则的比较
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  线性规划
+  Linear Programming
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="opt_transport.html">
-   32. 最优传输
+   36. 最优传输
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="von_neumann_model.html">
-   33. 冯·诺依曼增长模型（及其推广）
+   37. 冯·诺依曼增长模型（及其推广）
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  动态系统导论
+  Introduction to Dynamics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="finite_markov.html">
-   34. 有限马尔可夫链
+   38. 有限马尔可夫链
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="inventory_dynamics.html">
-   35. 库存动态
+   39. 库存动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="linear_models.html">
-   36. 线性状态空间模型
+   40. 线性状态空间模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="samuelson.html">
-   37. 萨缪尔森乘数-加速器模型
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kesten_processes.html">
-   38. Kesten过程与企业动态
+   43. Kesten过程与企业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="wealth_dynamics.html">
-   39. 财富分布动态
+   44. 财富分布动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman.html">
-   40. 初见卡尔曼滤波器
+   45. 初见卡尔曼滤波器
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman_2.html">
-   41. 卡尔曼滤波器进阶
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  搜索
+  Search
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model.html">
-   42. 工作搜寻 I: McCall搜寻模型
+   50. 工作搜寻 I: McCall搜寻模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model_with_separation.html">
-   43. 工作搜寻 II：搜寻与离职
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   44. 工作搜寻 III: 拟合值函数迭代
+   53. 工作搜寻 IV: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="mccall_correlated.html">
-   45. 工作搜寻 IV：相关工资报价
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   46. 工作搜寻 V：职业选择建模
+   55. 工作搜寻 VI：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   47. 工作搜寻 VI：在职搜索
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mccall_q.html">
-   48. 工作搜寻 VII：McCall劳动者的Q学习
+   56. 工作搜寻 VII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   49. 工作搜寻 VII: 带学习的搜索
+   57. 工作搜寻 VIII: 带学习的搜索
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  消费、储蓄与资本
+  Reinforcement Learning
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_1.html">
-   50. Cass-Koopmans模型
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_2.html">
-   51. Cass-Koopmans竞争均衡
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal.html">
-   52. 带扭曲性税收的Cass-Koopmans模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal_2.html">
-   53. 带扭曲性税收的双国模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ak2.html">
-   54. 代际交叠模型中的转型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_problem.html">
-   55. 吃蛋糕问题 I：最优储蓄导论
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_numerical.html">
-   56. 吃蛋糕问题 II：数值方法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth.html">
-   57. 最优增长 I：随机最优增长模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth_fast.html">
-   58. 最优增长 II：使用Numba加速代码
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="coleman_policy_iter.html">
-   59. 最优增长 III：时间迭代
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="egm_policy_iter.html">
-   60. 最优增长 IV：内生网格法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp.html">
-   61. 收入波动问题 I：基本模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp_advanced.html">
-   62. 收入波动问题 II：资产随机收益
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  LQ控制
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   63. LQ控制：基础
+   72. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   64. LQ控制的拉格朗日方法
+   73. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   65. 消除交叉项
+   74. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   66. 永久收入模型
+   75. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   67. 永久收入 II：线性二次方法
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   68. 通过库存实现生产平滑
+   83. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  多主体模型
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   69. 就业与失业的湖泊模型
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   70. 理性预期均衡
+   107. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   71. 线性理性预期模型中的稳定性
+   108. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   72. 马尔可夫完美均衡
+   109. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   73. 不确定性陷阱
+   110. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   74. 艾亚加里模型
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   75. 长寿、异质性个体、世代交叠模型
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  资产定价与金融
+  Asset Pricing and Finance
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   76. 资产定价：有限状态模型
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   77. 带有阿罗证券的竞争均衡
+   119. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   78. 异质信念与泡沫
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  数据与实证
+  Data and Empirics
  </span>
 </p>
 <ul class="current nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1 current active active">
   <a class="current reference internal" href="#">
-   79. 用Pandas处理面板数据
+   128. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   80. Python线性回归
+   129. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   81. 最大似然估计
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  拍卖
+  Auctions
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   82. 一价和二价拍卖
+   133. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   83. 多种商品分配机制
+   134. 多种商品分配机制
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  其他
+  Other
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   84. 故障排除
+   135. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   85. 参考文献
+   136. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   86. 执行统计
+   137. 执行统计
   </a>
  </li>
 </ul>
@@ -3405,6 +3725,8 @@ GEO Index([&#39;Austria&#39;, &#39;Belgium&#39;, &#39;Bulgaria&#39;, &#39;Croati
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/pandas_panel.md" download><i data-feather="github"></i></a></li>
                     -->
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
                 </ul>
 
             </div>

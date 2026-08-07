@@ -7,6 +7,22 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 可交换性和贝叶斯更新
+  headings:
+    Overview: 概述
+    Independently and Identically Distributed: 独立同分布
+    Independently and Identically Distributed::IID Means Past Observations Don't Tell Us Anything About Future Observations: IID意味着过去的观测不能告诉我们任何关于未来观测的信息
+    A Setting in Which Past Observations Are Informative: 过去观测具有信息性的情况
+    Relationship Between IID and Exchangeable: IID和可交换之间的关系
+    Exchangeability: 可交换性
+    Bayes' Law: 贝叶斯定律
+    More Details about Bayesian Updating: 关于贝叶斯更新的更多细节
+    Appendix: 附录
+    Appendix::Sample Paths of $\pi_t$: $\pi_t$ 的样本路径
+    Appendix::Rates of convergence: 收敛速率
+    Appendix::Graph of Ensemble Dynamics of $\pi_t$: $\pi_t$ 的集合动态图
+    Sequels: 后续内容
 ---
 
 (odu_v3)=
@@ -136,7 +152,7 @@ $$
 但在特殊的独立同分布(IID)情况下，
 
 $$
-p(W_t | W_{t-1}, \ldots, W_0)   =  p(W_t)
+p(W_t | W_{t-1}, \ldots, W_0)   =  p(W_t) ,
 $$
 
 且部分历史$W_{t-1}, \ldots, W_0$不包含关于$W_t$概率的任何信息。
@@ -163,15 +179,15 @@ $$
 
 我们可以说*客观上*，即在自然选择了$F$或$G$*之后*，数据是从$F$中生成的概率要么是$0$要么是$1$。
 
-现在我们在这个设定中引入一个部分知情的决策者，他知道：
+现在我们在这个设定中引入一个部分知情的决策者，他
 
-- $F$和$G$两者，但是
+- 知道$F$和$G$两者，但是
 
 - 不知道自然在$t=-1$时一次性选择的是$F$还是$G$
 
-所以我们的决策者不知道自然选择了这两个分布中的哪一个。
+因此，尽管我们的决策者知道$F$也知道$G$，他却不知道自然选择从这两个已知分布中的哪一个进行抽样。
 
-决策者用**主观概率**$\tilde \pi$来描述他的不确定性，并假设自然以概率$\tilde \pi \in (0,1)$选择了$F$，以概率$1 - \tilde \pi$选择了$G$。
+决策者用**主观概率**$\tilde \pi$来描述他的不确定性，并推理时就好像自然以概率$\tilde \pi \in (0,1)$选择了$F$，以概率$1 - \tilde \pi$选择了$G$。
 
 因此，我们假设决策者：
 
@@ -190,7 +206,6 @@ $$
 
 $$
 f(W_0) f(W_1) \cdots
-
 $$
 
 在自然选择$G$的条件下，序列$W_0, W_1, \ldots$的联合密度为
@@ -219,8 +234,7 @@ h(W_0, W_1, \ldots ) \equiv \tilde \pi [f(W_0) f(W_1) \cdots \ ] + ( 1- \tilde \
 
 $$
 h(W_0, W_1) = \tilde \pi f(W_0)f (W_1) + (1 - \tilde \pi) g(W_0)g(W_1) \neq
-
-(\tilde \pi f(W_0) + (1-\tilde \pi) g(W_0))(
+              (\tilde \pi f(W_0) + (1-\tilde \pi) g(W_0))(
                \tilde \pi f(W_1) + (1-\tilde \pi) g(W_1))
 $$
 
@@ -235,7 +249,6 @@ $$
 
 所以过去确实包含了可以用来了解未来的信息。
 
-但是什么信息？如何了解？
 
 ## 可交换性
 
@@ -249,11 +262,13 @@ $$
 
 更一般地说，如果一个随机变量序列的联合概率分布在有限个随机变量的位置发生改变时保持不变，则称该序列是**可交换的**。
 
-方程 {eq}`eq_definetti` 表示了一个可交换的联合密度函数，它是由两个独立同分布(IID)的随机变量序列的联合密度函数构成的**混合**。
+方程 {eq}`eq_definetti` 表示了我们这个例子中的可交换联合密度，它是由两个针对随机变量序列的独立同分布(IID)联合密度构成的**混合**。
 
-对贝叶斯统计学家来说，混合参数 $\tilde \pi \in (0,1)$ 具有特殊的解释，即自然选择概率分布 $F$ 的主观**先验概率**。
+贝叶斯统计学家将混合参数 $\tilde \pi \in (0,1)$ 解释为决策者的主观信念——决策者的**先验概率**——即自然选择了概率分布 $F$ 的概率。
 
-DeFinetti {cite}`definetti` 建立了一个相关的可交换过程表示，该过程是通过混合参数为 $\theta \in (0,1)$ 的独立同分布伯努利随机变量序列，以及混合概率密度 $\pi(\theta)$ 得到的。贝叶斯统计学家会将这个混合概率密度解释为未知伯努利参数 $\theta$ 的先验分布。
+```{note}
+DeFinetti {cite}`definetti` 建立了一个相关的可交换过程表示，该过程是通过混合参数为 $\theta \in (0,1)$ 的独立同分布伯努利随机变量序列，以及混合概率密度 $\pi(\theta)$ 得到的，贝叶斯统计学家会将这个混合概率密度解释为未知伯努利参数 $\theta$ 的先验分布。
+```
 
 ## 贝叶斯定律
 
@@ -306,6 +321,7 @@ $$
 \pi_{t+1} = \frac{\pi_t f(w_{t+1})}{\pi_t f(w_{t+1}) + (1 - \pi_t) g(w_{t+1})}
 $$ (eq_Bayes102)
 
+
 等式{eq}`eq_Bayes102`源自贝叶斯法则，该法则告诉我们
 
 $$
@@ -333,8 +349,7 @@ $$
 $$
 \pi_{t+1}   =\frac{\pi_{t}f\left(w_{t+1}\right)}{\pi_{t}f\left(w_{t+1}\right)+\left(1-\pi_{t}\right)g\left(w_{t+1}\right)}
     =\frac{\pi_{t}\frac{f\left(w_{t+1}\right)}{g\left(w_{t+1}\right)}}{\pi_{t}\frac{f\left(w_{t+1}\right)}{g\left(w_{t+1}\right)}+\left(1-\pi_{t}\right)}
-
-=\frac{\pi_{t}l\left(w_{t+1}\right)}{\pi_{t}l\left(w_{t+1}\right)+\left(1-\pi_{t}\right)}
+    =\frac{\pi_{t}l\left(w_{t+1}\right)}{\pi_{t}l\left(w_{t+1}\right)+\left(1-\pi_{t}\right)}
 $$
 
 这意味着
@@ -352,15 +367,13 @@ $$
 
 当似然比$l(w_{t+1})$大于1时，观测值$w_{t+1}$会将分布$F$的概率$\pi$向上推动，当似然比$l(w_{t+1})$小于1时，观测值$w_{t+1}$会将$\pi$向下推动。
 
-表达式{eq}`eq_Bayes103`是我们将用来显示由以下因素引起的$\{\pi_t\}_{t=0}^\infty$动态的一些图表的基础
-
-贝叶斯定律。
+表达式{eq}`eq_Bayes103`是我们将用来显示由贝叶斯定律引起的$\{\pi_t\}_{t=0}^\infty$动态的一些图表的基础。
 
 我们将绘制 $l\left(w\right)$ 来帮助我们理解学习过程是如何进行的——即，如何通过贝叶斯更新来更新自然选择分布 $f$ 的概率 $\pi$。
 
 为了创建完成工作所需的 Python 基础设施，我们构建一个包装函数，该函数可以根据 $f$ 和 $g$ 的参数显示信息丰富的图表。
 
-```{code-cell} ipython3
+```{code-cell} python3
 @vectorize
 def p(x, a, b):
     "通用贝塔分布函数。"
@@ -438,7 +451,7 @@ def learning_example(F_a=1, F_b=1, G_a=3, G_b=1.2):
     ax3.fill_between(π_grid, roots[0], roots[1], color='green', alpha=0.15)
     ax3.fill_between(π_grid, roots[1], w_max, color='blue', alpha=0.15)
     ax3.hlines(roots, 0., 1., linestyle="--")
-    ax3.set(xlabel='$\pi$', ylabel='$w$')
+    ax3.set(xlabel=r'$\pi$', ylabel='$w$')
     ax3.grid()
 
     plt.show()
@@ -448,7 +461,7 @@ def learning_example(F_a=1, F_b=1, G_a=3, G_b=1.2):
 
 我们将从Python函数的各种对象的默认值开始，然后在后续示例中对其进行修改。
 
-```{code-cell} ipython3
+```{code-cell} python3
 learning_example()
 ```
 
@@ -476,7 +489,7 @@ learning_example()
 
 我们保持$F$与前一个实例相同，即均匀分布，但现在假设$G$是一个参数为$G_a=2, G_b=1.6$的Beta分布。
 
-```{code-cell} ipython3
+```{code-cell} python3
 learning_example(G_a=2, G_b=1.6)
 ```
 
@@ -495,7 +508,7 @@ learning_example(G_a=2, G_b=1.6)
 
 让我们编写一些Python代码。
 
-```{code-cell} ipython3
+```{code-cell} python3
 def function_factory(F_a=1, F_b=1, G_a=3, G_b=1.2):
 
     # 定义 f 和 g
@@ -548,17 +561,17 @@ def function_factory(F_a=1, F_b=1, G_a=3, G_b=1.2):
     return simulate
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 simulate = function_factory()
 ```
 
 我们首先生成 $N$ 条模拟的 $\{\pi_t\}$ 路径，每条路径包含 $T$ 个时期，其中序列是真实的从分布 $F$ 中独立同分布抽取的。我们设定初始先验 $\pi_{-1} = .5$。
 
-```{code-cell} ipython3
+```{code-cell} python3
 T = 50
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 当自然选择F时
 π_paths_F = simulate(a=1, b=1, T=T, N=1000)
 ```
@@ -569,8 +582,8 @@ T = 50
 
 接下来，当序列确实是来自 $G$ 的独立同分布抽样时，我们生成 $T$ 期的路径。同样，我们设定初始先验 $\pi_{-1} = .5$。
 
-```{code-cell} ipython3
-# when nature selects G
+```{code-cell} python3
+# 当自然选择G时
 π_paths_G = simulate(a=3, b=1.2, T=T, N=1000)
 ```
 
@@ -584,7 +597,7 @@ T = 50
 
 使用 $N$ 条模拟的 $\pi_t$ 路径，当数据是从 $F$ 中抽样生成时，我们在每个 $t$ 时刻计算 $1 - \sum_{i=1}^{N}\pi_{i,t}$，当数据是从 $G$ 中抽样生成时，我们计算 $\sum_{i=1}^{N}\pi_{i,t}$。
 
-```{code-cell} ipython3
+```{code-cell} python3
 plt.plot(range(T+1), 1 - np.mean(π_paths_F, 0), label='F生成')
 plt.plot(range(T+1), np.mean(π_paths_G, 0), label='G生成')
 plt.legend()
@@ -608,7 +621,7 @@ $$
 
 以下代码近似计算上述积分：
 
-```{code-cell} ipython3
+```{code-cell} python3
 def expected_ratio(F_a=1, F_b=1, G_a=3, G_b=1.2):
 
     # define f and g
@@ -628,8 +641,8 @@ def expected_ratio(F_a=1, F_b=1, G_a=3, G_b=1.2):
         plt.plot(π_grid, expected_rario, label=f"{q} generates")
 
     plt.hlines(1, 0, 1, linestyle="--")
-    plt.xlabel("$π_t$")
-    plt.ylabel("$E[\pi_{t+1}/\pi_t]$")
+    plt.xlabel(r"$\pi_t$")
+    plt.ylabel(r"$E[\pi_{t+1}/\pi_t]$")
     plt.legend()
 
     plt.show()
@@ -637,7 +650,7 @@ def expected_ratio(F_a=1, F_b=1, G_a=3, G_b=1.2):
 
 首先，考虑 $F_a=F_b=1$ 且 $G_a=3, G_b=1.2$ 的情况。
 
-```{code-cell} ipython3
+```{code-cell} python3
 expected_ratio()
 ```
 
@@ -647,16 +660,15 @@ expected_ratio()
 
 从某种意义上说，这里没有什么可学习的。
 
-```{code-cell} ipython3
+```{code-cell} python3
 expected_ratio(F_a=3, F_b=1.2)
 ```
-
 
 上图表明 $\pi_t$ 是惰性的，保持在其初始值。
 
 最后，让我们看一个 $f$ 和 $g$ 既不是非常不同也不完全相同的情况，特别是当 $F_a=2, F_b=1$ 且 $G_a=3, G_b=1.2$ 时。
 
-```{code-cell} ipython3
+```{code-cell} python3
 expected_ratio(F_a=2, F_b=1, G_a=3, G_b=1.2)
 ```
 
@@ -666,4 +678,3 @@ expected_ratio(F_a=2, F_b=1, G_a=3, G_b=1.2)
 
 * {doc}`本讲座 <likelihood_ratio_process>` 描述了**似然比过程**及其在频率派和贝叶斯统计理论中的作用
 * {doc}`本讲座 <navy_captain>` 研究了二战时期一位美国海军上尉的直觉，即海军要求他使用的（频率派）决策规则不如亚伯拉罕·瓦尔德尚未设计的序贯规则。
-

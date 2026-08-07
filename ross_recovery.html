@@ -1,0 +1,2508 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>125. 恢复定理 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ross_recovery';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/ross_recovery.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="126. 长期风险：一种算子方法" href="long_run_risk_operator.html" />
+    <link rel="prev" title="124. 资产价格的仿射模型" href="affine_risk_prices.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="恢复定理"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="恢复定理" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/ross_recovery.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=ross_recovery>
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">125.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">125.2. 模型设置</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">125.2.1. 阿罗-德布鲁状态价格</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">125.2.2. 定价核</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">125.2.3. 识别挑战</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">125.2.4. 转移独立性</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">125.3. 恢复定理</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">125.3.1. 化归为特征值问题</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">125.3.2. 罗斯的恢复定理</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">125.3.3. 从特征向量得到定价核</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ross-recovery-single-crossing">125.3.4. 单交叉与风险溢价</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">125.4. 数值示例</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">125.4.1. 构建一个有限状态示例</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">125.4.2. 应用恢复定理</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">125.5. 自然分布与风险中性分布</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">125.6. 风险厌恶的影响</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">125.7. 恢复贴现率</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">125.8. 尾部风险：灾难的自然概率与风险中性概率</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">125.9. 从期权价格到转移价格</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">125.10. 检验有效市场</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">125.11. 局限性与扩展</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">125.12. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 22, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/ross_recovery.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/be4a8b2" class="changelog-hash">be4a8b2</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">Seed the 37 missing lectures — full source-TOC coverage (#196)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="toc-backref" href="#id35" role="doc-backlink"><span class="section-number">125. </span>恢复定理</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<nav class="contents" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id35">恢复定理</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id36">概述</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id37">模型设置</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id38">恢复定理</a></p></li>
+<li><p><a class="reference internal" href="#id15" id="id39">数值示例</a></p></li>
+<li><p><a class="reference internal" href="#id18" id="id40">自然分布与风险中性分布</a></p></li>
+<li><p><a class="reference internal" href="#id20" id="id41">风险厌恶的影响</a></p></li>
+<li><p><a class="reference internal" href="#id21" id="id42">恢复贴现率</a></p></li>
+<li><p><a class="reference internal" href="#id23" id="id43">尾部风险：灾难的自然概率与风险中性概率</a></p></li>
+<li><p><a class="reference internal" href="#id26" id="id44">从期权价格到转移价格</a></p></li>
+<li><p><a class="reference internal" href="#id28" id="id45">检验有效市场</a></p></li>
+<li><p><a class="reference internal" href="#id30" id="id46">局限性与扩展</a></p></li>
+<li><p><a class="reference internal" href="#id34" id="id47">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="id2">
+<h2><a class="toc-backref" href="#id36" role="doc-backlink"><span class="section-number">125.1. </span>概述</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>资产价格具有前瞻性：它们编码了投资者对未来经济状态的预期以及他们对不同风险的估值。</p>
+<p>金融领域一个长期存在的问题是：能否仅从观察到的资产价格中<em>恢复</em>出投资者所使用的概率分布——即他们的主观信念。</p>
+<p>期权价格揭示了<strong>状态价格</strong>；一旦这些价格被无风险贴现因子标准化，所得到的概率就是资产价格在纳入风险调整后所隐含的<strong>风险中性概率</strong>。</p>
+<p>这些并不是投资者实际赋予未来世界状态的<strong>自然概率</strong>。</p>
+<p>两者之所以不同，是因为风险中性概率将两个不同的对象混合在了一起：市场对未来的真实信念，以及投资者对风险的厌恶。</p>
+<p>它们之间的联系是<strong>定价核</strong>，它对自然概率进行重新加权以得出状态价格。</p>
+<p>将信念与风险厌恶分离，传统上需要对代表性投资者的偏好做出参数化假设。</p>
+<p><span class="bibtex-citation" id="id3">Ross [<a class="reference internal" href="zreferences.html#id11" title="Stephen A. Ross. The recovery theorem. Journal of Finance, 70(2):615–648, 2015. doi:10.1111/jofi.12092.">2015</a>]</span> 表明情况并非如此。</p>
+<p>罗斯的定理指出，在一个有限状态马尔可夫经济中，状态价格就足够了。</p>
+<p>假设阿罗-德布鲁状态价格转移矩阵是无套利且不可约的。</p>
+<p>如果定价核还满足一个称为<strong>转移独立性</strong>的结构性约束，那么状态价格就能唯一确定自然概率转移矩阵和转移定价核。</p>
+<p>如果关于定价核结构的某些假设成立，那么就不需要历史收益数据或假设的效用函数。</p>
+<p>这就是<strong>恢复定理</strong>。</p>
+<p>它有几个重要的含义：</p>
+<ul class="simple">
+<li><p>它展示了当假设成立时，状态价格转移数据如何能够识别市场的前瞻性自然分布</p></li>
+<li><p>它提供了对有效市场假说的检验。</p></li>
+<li><p>它揭示了金融领域的”暗物质”：市场价格中所蕴含的罕见灾难性事件的概率。</p></li>
+</ul>
+<p>本讲座涵盖</p>
+<ul class="simple">
+<li><p>将状态价格、风险中性概率、定价核和自然概率联系起来的阿罗-德布鲁框架，</p></li>
+<li><p>罗斯的恢复定理及其通过佩龙-弗罗贝尼乌斯定理的证明，</p></li>
+<li><p>一个从模拟的状态价格矩阵中恢复自然分布的实现，以及</p></li>
+<li><p>如何利用期权价格和前向方程来估计转移状态价格，</p></li>
+<li><p>风险中性密度与恢复的自然密度之间的比较。</p></li>
+</ul>
+<p>让我们导入所需的包。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">eig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.cm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>  <span class="c1"># i18n</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>  <span class="c1"># i18n</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id37" role="doc-backlink"><span class="section-number">125.2. </span>模型设置</a><a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h3><span class="section-number">125.2.1. </span>阿罗-德布鲁状态价格<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>考虑一个离散时间、离散状态的经济。</p>
+<p>在每个日期，经济处于 <span class="math notranslate nohighlight">\(m\)</span> 个状态 <span class="math notranslate nohighlight">\(\theta_1, \ldots, \theta_m\)</span> 中的某一个。</p>
+<p>一个<strong>阿罗-德布鲁证券</strong>在经济下一期处于状态 <span class="math notranslate nohighlight">\(\theta_j\)</span> 时支付 $1，否则不支付。</p>
+<p>用 <span class="math notranslate nohighlight">\(p(\theta_i, \theta_j)\)</span> 表示当当前状态为 <span class="math notranslate nohighlight">\(\theta_i\)</span> 时，下一期在状态 <span class="math notranslate nohighlight">\(\theta_j\)</span> 支付的阿罗-德布鲁证券今天的价格。</p>
+<p>将这些价格收集到一个 <span class="math notranslate nohighlight">\(m \times m\)</span> 的<strong>状态价格转移矩阵</strong>中</p>
+<div class="math notranslate nohighlight">
+\[
+P = [p(\theta_i, \theta_j)]_{i,j=1}^m.
+\]</div>
+<p>正如在 <a class="reference internal" href="ge_arrow.html"><span class="doc">带有阿罗证券的竞争均衡</span></a> 中所述，行和给出了状态相关的无风险贴现因子：<span class="math notranslate nohighlight">\(\sum_j p(\theta_i, \theta_j) = e^{-r(\theta_i)}\)</span>。</p>
+<p>这里 <span class="math notranslate nohighlight">\(r(\theta_i)\)</span> 是当前状态 <span class="math notranslate nohighlight">\(\theta_i\)</span> 中的单期连续复利无风险利率。</p>
+<p>更一般地，如果某资产下一期支付 <span class="math notranslate nohighlight">\(g(\theta_j)\)</span>，那么它在状态 <span class="math notranslate nohighlight">\(\theta_i\)</span> 中的价格为</p>
+<div class="math notranslate nohighlight">
+\[
+p_g(\theta_i)
+    = \sum_j p(\theta_i, \theta_j) g(\theta_j).
+\]</div>
+<p>令</p>
+<div class="math notranslate nohighlight">
+\[
+b(\theta_i) \equiv \sum_j p(\theta_i, \theta_j) = e^{-r(\theta_i)}
+\]</div>
+<p>为状态 <span class="math notranslate nohighlight">\(\theta_i\)</span> 中单期无风险债券的价格。</p>
+<p>用这个债券价格标准化阿罗价格，得到<strong>风险中性转移概率</strong></p>
+<div class="math notranslate nohighlight">
+\[
+q^*(\theta_i, \theta_j)
+    = \frac{p(\theta_i, \theta_j)}{b(\theta_i)}
+    = e^{r(\theta_i)} p(\theta_i, \theta_j).
+\]</div>
+<p>因此，同样的资产价格可以写成</p>
+<div class="math notranslate nohighlight">
+\[
+p_g(\theta_i)
+    = b(\theta_i) \sum_j q^*(\theta_i, \theta_j) g(\theta_j)
+    = e^{-r(\theta_i)} E_i^*[g(\theta_{t+1})].
+\]</div>
+<p>这里 <span class="math notranslate nohighlight">\(E_i^*\)</span> 表示在 <span class="math notranslate nohighlight">\(q^*(\theta_i,\cdot)\)</span> 下的条件期望。</p>
+<p>星号标记风险中性测度，或称鞅测度。</p>
+<p>将这个单期标准化与动态转移结构分开是有用的。</p>
+<p>如果 <span class="math notranslate nohighlight">\(Q(\theta_i,\theta_j,T)\)</span> 表示在 <span class="math notranslate nohighlight">\(T\)</span> 期内从 <span class="math notranslate nohighlight">\(\theta_i\)</span> 转移到 <span class="math notranslate nohighlight">\(\theta_j\)</span> 的风险中性概率，且 <span class="math notranslate nohighlight">\(0&lt;t&lt;T\)</span> 是一个中间视界，那么马尔可夫前向方程为</p>
+<div class="math notranslate nohighlight">
+\[
+Q(\theta_i,\theta_j,T)
+    = \sum_k Q(\theta_i,\theta_k,t) Q(\theta_k,\theta_j,T-t).
+\]</div>
+<p>用矩阵表示，多期风险中性转移矩阵通过矩阵乘法进行复合。</p>
+</section>
+<section id="id6">
+<h3><span class="section-number">125.2.2. </span>定价核<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<p>使用在 <a class="reference internal" href="markov_asset.html"><span class="doc">资产定价：有限状态模型</span></a> 中研究的随机贴现因子记号以及在 <a class="reference internal" href="ge_arrow.html"><span class="doc">带有阿罗证券的竞争均衡</span></a> 中使用的阿罗证券记号，定价核 <span class="math notranslate nohighlight">\(\phi(\theta_i, \theta_j)\)</span> 通过以下方式将状态价格与自然概率联系起来</p>
+<div class="math notranslate nohighlight">
+\[
+p(\theta_i, \theta_j) = \phi(\theta_i, \theta_j) \, f(\theta_i, \theta_j),
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(f(\theta_i, \theta_j)\)</span> 是从状态 <span class="math notranslate nohighlight">\(\theta_i\)</span> 转移到 <span class="math notranslate nohighlight">\(\theta_j\)</span> 的自然（条件）概率。</p>
+<p>正如在 <a class="reference internal" href="ge_arrow.html"><span class="doc">带有阿罗证券的竞争均衡</span></a> 中的代表性主体均衡计算所示，带有贴现因子 <span class="math notranslate nohighlight">\(\beta\)</span> 的规范可加分离模型给出</p>
+<div class="math notranslate nohighlight" id="equation-eq-canon-ge">
+<span class="eqno">(125.1)<a class="headerlink" href="#equation-eq-canon-ge" title="Link to this equation">#</a></span>\[
+\phi(\theta_i, \theta_j) = \frac{p(\theta_i, \theta_j)}{f(\theta_i, \theta_j)}
+    = \frac{\beta U'(c(\theta_j))}{U'(c(\theta_i))}.
+\]</div>
+<p>这个公式有一个特殊结构：核可以写成两个状态特定项之比。</p>
+<p>罗斯称这个性质为<strong>转移独立性</strong>。</p>
+<p>我们很快会对此进行更多说明。</p>
+</section>
+<section id="id7">
+<h3><span class="section-number">125.2.3. </span>识别挑战<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p>在陈述这个约束之前，看看为什么根本需要它是有帮助的。</p>
+<p>给定 <span class="math notranslate nohighlight">\(P\)</span>，任何满足对每个 <span class="math notranslate nohighlight">\((i,j)\)</span> 都有 <span class="math notranslate nohighlight">\(p_{ij} = \phi_{ij} f_{ij}\)</span> 的对 <span class="math notranslate nohighlight">\((\phi, f)\)</span> 都与观察到的状态价格一致。</p>
+<p>状态价格矩阵 <span class="math notranslate nohighlight">\(P\)</span> 提供了 <span class="math notranslate nohighlight">\(m^2\)</span> 个方程。</p>
+<p>一个自然转移矩阵 <span class="math notranslate nohighlight">\(F\)</span> 贡献了 <span class="math notranslate nohighlight">\(m(m-1)\)</span> 个自由项（行和为一），而任意核 <span class="math notranslate nohighlight">\(\phi\)</span> 又贡献了另外 <span class="math notranslate nohighlight">\(m^2\)</span> 个——总共 <span class="math notranslate nohighlight">\(2m^2 - m\)</span> 个未知数，而只有 <span class="math notranslate nohighlight">\(m^2\)</span> 个方程。</p>
+<p>该系统欠识别 <span class="math notranslate nohighlight">\(m^2 - m\)</span> 个参数，因此需要对核施加某种结构性约束，以便分别确定 <span class="math notranslate nohighlight">\(\phi\)</span> 和 <span class="math notranslate nohighlight">\(f\)</span>。</p>
+<p>转移独立性约束能够完成这个任务，我们将在下一节看到。</p>
+</section>
+<section id="id8">
+<h3><span class="section-number">125.2.4. </span>转移独立性<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<div class="proof definition admonition" id="def-transition-independence">
+<p class="admonition-title"><span class="caption-number">定义 125.1 </span> (转移独立性)</p>
+<section class="definition-content" id="proof-content">
+<p>一个定价核是<strong>转移独立的</strong>，如果在状态空间上存在一个正函数 <span class="math notranslate nohighlight">\(h\)</span> 和一个正标量 <span class="math notranslate nohighlight">\(\beta\)</span>，使得对于从状态 <span class="math notranslate nohighlight">\(\theta_i\)</span> 到 <span class="math notranslate nohighlight">\(\theta_j\)</span> 的每次转移，</p>
+<div class="math notranslate nohighlight">
+\[
+\phi(\theta_i, \theta_j) = \beta \, \frac{h(\theta_j)}{h(\theta_i)}.
+\]</div>
+</section>
+</div><p>转移独立性表明核依赖于<em>终止</em>状态并按<em>起始</em>状态标准化。</p>
+<p>在上述代表性主体的完全市场环境中，它在跨期可加分离效用（其中 <span class="math notranslate nohighlight">\(h = U'\)</span>）下成立。</p>
+<p>特别是，这对 <a class="reference internal" href="#equation-eq-canon-ge">(125.1)</a> 成立。</p>
+<p>转移独立性之所以有帮助，是因为它把 <span class="math notranslate nohighlight">\(\phi\)</span> 的所有 <span class="math notranslate nohighlight">\(m^2\)</span> 个项绑定在一起：一旦知道了 <span class="math notranslate nohighlight">\(m\)</span> 个状态特定值，整个核就被确定了。</p>
+<p>因此它将 <span class="math notranslate nohighlight">\(\phi\)</span> 从 <span class="math notranslate nohighlight">\(m^2\)</span> 个自由项减少到 <span class="math notranslate nohighlight">\(m\)</span> 个，从而系统变得恰好可识别。</p>
+<p>在转移独立性下，状态价格方程变为</p>
+<div class="math notranslate nohighlight">
+\[
+p(\theta_i, \theta_j) = \beta \, \frac{h(\theta_j)}{h(\theta_i)} \,
+    f(\theta_i, \theta_j).
+\]</div>
+<p>用矩阵表示，定义对角矩阵 <span class="math notranslate nohighlight">\(D\)</span>，其中 <span class="math notranslate nohighlight">\(D_{ii} = h(\theta_i)/\beta\)</span>，</p>
+<div class="math notranslate nohighlight">
+\[
+DP = \beta F D,
+\]</div>
+<p>或等价地，</p>
+<div class="math notranslate nohighlight">
+\[
+F = \frac{1}{\beta} D P D^{-1}.
+\]</div>
+</section>
+</section>
+<section id="id9">
+<h2><a class="toc-backref" href="#id38" role="doc-backlink"><span class="section-number">125.3. </span>恢复定理</a><a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h3><span class="section-number">125.3.1. </span>化归为特征值问题<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<p>由于 <span class="math notranslate nohighlight">\(F\)</span> 是随机矩阵，其行和为一：<span class="math notranslate nohighlight">\(F e = e\)</span>，其中 <span class="math notranslate nohighlight">\(e\)</span> 是全为一的向量。</p>
+<p>代入 <span class="math notranslate nohighlight">\(F\)</span> 的表达式：</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{\beta} D P D^{-1} e = e
+\quad \Longrightarrow \quad
+P z = \beta z, \quad z \equiv D^{-1} e.
+\]</div>
+<p>这是一个<strong>特征值问题</strong>，我们寻求满足 <span class="math notranslate nohighlight">\(Pz = \beta z\)</span> 的正向量 <span class="math notranslate nohighlight">\(z\)</span> 和标量 <span class="math notranslate nohighlight">\(\beta\)</span>。</p>
+<p>原则上 <span class="math notranslate nohighlight">\(P\)</span> 的每一个特征值-特征向量对都是一个形式解，但只有具有严格正特征向量的那个在经济上是有效的：<span class="math notranslate nohighlight">\(D_{ii} = 1/z_i\)</span> 必须为正（因此 <span class="math notranslate nohighlight">\(z_i &gt; 0\)</span>），并且 <span class="math notranslate nohighlight">\(F\)</span> 必须具有非负项。</p>
+<p>佩龙-弗罗贝尼乌斯定理保证恰好存在一个这样的对。</p>
+<div class="proof theorem admonition" id="thm-perron-frobenius">
+<p class="admonition-title"><span class="caption-number">定理 125.1 </span> (佩龙-弗罗贝尼乌斯)</p>
+<section class="theorem-content" id="proof-content">
+<p>如果 <span class="math notranslate nohighlight">\(A\)</span> 是一个非负不可约矩阵，那么</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(A\)</span> 有一个等于其谱半径的正实特征值 <span class="math notranslate nohighlight">\(r\)</span>（佩龙根）。</p></li>
+<li><p>存在一个严格正的特征向量 <span class="math notranslate nohighlight">\(z \gg 0\)</span>，满足 <span class="math notranslate nohighlight">\(Az = rz\)</span>，在缩放意义下唯一。</p></li>
+<li><p>没有其他特征向量是严格正的。</p></li>
+</ol>
+</section>
+</div><p>当矩阵是非本原的时，其他特征值可以具有相同的模，但严格正的特征向量在缩放意义下是唯一的。</p>
+<p>详见 <span class="bibtex-citation" id="id11">Sargent and Stachurski [<a class="reference internal" href="zreferences.html#id77" title="Thomas J. Sargent and John Stachurski. Economic Networks: Theory and Computation. Structural Analysis in the Social Sciences. Cambridge University Press, 2024.">2024</a>]</span> 的第1.2.3节。</p>
+<p>另见 <a class="reference external" href="https://quantecon.github.io/lecture-intro.zh-cn/eigen_II.html" title="（在 Project name not set）"><span>佩龙-弗罗贝尼乌斯定理</span></a> 中的完整陈述。</p>
+<p>应用于恢复问题：佩龙根是 <span class="math notranslate nohighlight">\(\beta\)</span>（主观贴现因子），而佩龙向量 <span class="math notranslate nohighlight">\(z\)</span> 通过 <span class="math notranslate nohighlight">\(D_{ii} = 1/z_i\)</span> 确定 <span class="math notranslate nohighlight">\(D\)</span>。</p>
+</section>
+<section id="id12">
+<h3><span class="section-number">125.3.2. </span>罗斯的恢复定理<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>定理中的三个假设各自承担着特定的角色。</p>
+<p>假设阿罗-德布鲁状态价格已被识别，无套利保证 <span class="math notranslate nohighlight">\(P\)</span> 具有非负项，并且状态价格编码了一个明确定义的定价测度。</p>
+<p>不可约性确保经济没有被分割成互不相连的子经济——如果没有它，佩龙-弗罗贝尼乌斯定理会给出多个候选特征向量，恢复就会失效。</p>
+<p>转移独立性是关键的经济约束。</p>
+<p>它表明定价核可以分解为 <span class="math notranslate nohighlight">\(\beta h(\theta_j)/h(\theta_i)\)</span>，因此整个核由一个单一向量 <span class="math notranslate nohighlight">\(h\)</span>（或等价地 <span class="math notranslate nohighlight">\(z\)</span>）确定。</p>
+<p>考虑到这些，恢复定理便由佩龙-弗罗贝尼乌斯定理得出。</p>
+<div class="proof theorem admonition" id="thm-ross-recovery">
+<p class="admonition-title"><span class="caption-number">定理 125.2 </span> (恢复定理)</p>
+<section class="theorem-content" id="proof-content">
+<p>假设价格不提供套利机会，状态价格转移矩阵 <span class="math notranslate nohighlight">\(P\)</span> 是不可约的，并且定价核是转移独立的。</p>
+<p>那么恢复问题存在一个正解 <span class="math notranslate nohighlight">\((\beta, z, F)\)</span>，其中 <span class="math notranslate nohighlight">\(z\)</span> 在标准化意义下唯一，并且所隐含的自然概率转移矩阵 <span class="math notranslate nohighlight">\(F\)</span> 和转移定价核是唯一的。</p>
+</section>
+</div><div class="proof admonition" id="proof">
+<p>Proof. 因为 <span class="math notranslate nohighlight">\(P\)</span> 是非负且不可约的，佩龙-弗罗贝尼乌斯定理给出一个唯一的正特征向量 <span class="math notranslate nohighlight">\(z \gg 0\)</span>，其正特征值 <span class="math notranslate nohighlight">\(\lambda &gt; 0\)</span> 满足 <span class="math notranslate nohighlight">\(Pz = \lambda z\)</span>。</p>
+<p>设</p>
+<div class="math notranslate nohighlight">
+\[
+\beta = \lambda, \qquad D_{ii} = \frac{1}{z_i},
+\]</div>
+<p>自然概率转移矩阵唯一地恢复为</p>
+<div class="math notranslate nohighlight">
+\[
+f_{ij} = \frac{1}{\beta} \frac{z_j}{z_i} \, p_{ij}.
+\]</div>
+<p>为确认 <span class="math notranslate nohighlight">\(F\)</span> 是随机矩阵，注意所有项都是非负的（因为 <span class="math notranslate nohighlight">\(p_{ij} \geq 0\)</span> 且 <span class="math notranslate nohighlight">\(z_i, z_j &gt; 0\)</span>），并且</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_j f_{ij}
+= \frac{1}{\beta z_i} \sum_j z_j \, p_{ij}
+= \frac{[Pz]_i}{\beta z_i}
+= \frac{\beta z_i}{\beta z_i} = 1.
+\]</div>
+<p>唯一性由佩龙-弗罗贝尼乌斯特征向量的唯一性得出。</p>
+</div>
+</section>
+<section id="id13">
+<h3><span class="section-number">125.3.3. </span>从特征向量得到定价核<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<p>恢复的转移核值为</p>
+<div class="math notranslate nohighlight">
+\[
+\phi(\theta_i, \theta_j) = \beta \frac{z_i}{z_j},
+\qquad h(\theta_i) = \frac{\beta}{z_i},
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(h(\theta_i) = \beta/z_i\)</span> 由 <span class="math notranslate nohighlight">\(D_{ii} = h(\theta_i)/\beta = 1/z_i\)</span> 得出。</p>
+<p>区分<strong>完整转移核</strong> <span class="math notranslate nohighlight">\(\phi_{ij} = \beta z_i/z_j\)</span>（它依赖于起始状态和目标状态）和<strong>相对核成分</strong> <span class="math notranslate nohighlight">\(1/z_j\)</span>（它仅依赖于目标状态）是有用的。</p>
+<p>罗斯的表I报告了目标状态形状 <span class="math notranslate nohighlight">\(1/z_j\)</span>，经标准化使得中间状态等于一。</p>
+<p>具有高 <span class="math notranslate nohighlight">\(z_j\)</span> 的目标状态具有<em>低</em>核值：对于固定的起始状态 <span class="math notranslate nohighlight">\(i\)</span>，核 <span class="math notranslate nohighlight">\(\beta z_i/z_j\)</span> 随 <span class="math notranslate nohighlight">\(z_j\)</span> 递减。</p>
+<p>当 <span class="math notranslate nohighlight">\(h\)</span> 表示边际效用且状态按消费或收益排序时，较大的 <span class="math notranslate nohighlight">\(z_j\)</span> 对应较低的边际效用——即”好时光”，它们需要较少的保险，因此每单位自然概率获得较少的定价权重。</p>
+<p>同样的特征向量论证还给出一个有用的极限情形。</p>
+<p>如果单期债券价格在每个当前状态中都相同，那么全一向量已经是佩龙向量，因此恢复没有需要执行的状态相关的测度变换。</p>
+<div class="proof corollary admonition" id="cor-risk-neutral-recovery">
+<p class="admonition-title"><span class="caption-number">推论 125.1 </span></p>
+<section class="corollary-content" id="proof-content">
+<p>如果无风险利率在所有状态中都相同（对某个标量 <span class="math notranslate nohighlight">\(b\)</span> 有 <span class="math notranslate nohighlight">\(Pe = b e\)</span>），那么与恢复一致的唯一自然分布就是风险中性（鞅）分布本身：<span class="math notranslate nohighlight">\(F = (1/b) P\)</span>。</p>
+</section>
+</div><div class="proof admonition" id="proof">
+<p>Proof. 当 <span class="math notranslate nohighlight">\(Pe = b e\)</span> 时，全一向量 <span class="math notranslate nohighlight">\(e\)</span> 是特征值为 <span class="math notranslate nohighlight">\(b\)</span> 的佩龙特征向量。</p>
+<p>由佩龙-弗罗贝尼乌斯定理的唯一性部分，<span class="math notranslate nohighlight">\(z = e\)</span>（在缩放意义下）且 <span class="math notranslate nohighlight">\(\beta = b\)</span>。</p>
+<p>设 <span class="math notranslate nohighlight">\(z = e\)</span> 得 <span class="math notranslate nohighlight">\(D = I\)</span>，因此</p>
+<div class="math notranslate nohighlight">
+\[
+F = \frac{1}{\beta} D P D^{-1} = \frac{1}{b} P. \qquad \square
+\]</div>
+</div>
+</section>
+<section id="ross-recovery-single-crossing">
+<span id="id14"></span><h3><span class="section-number">125.3.4. </span>单交叉与风险溢价<a class="headerlink" href="#ross-recovery-single-crossing" title="Link to this heading">#</a></h3>
+<p>罗斯还使用代表性主体公式直接比较自然密度和风险中性密度。</p>
+<p>对于固定的当前状态 <span class="math notranslate nohighlight">\(\theta_i\)</span>，</p>
+<div class="math notranslate nohighlight" id="equation-eq-rn-natural-ratio">
+<span class="eqno">(125.2)<a class="headerlink" href="#equation-eq-rn-natural-ratio" title="Link to this equation">#</a></span>\[
+\frac{q^*(\theta_i,\theta_j)}{f(\theta_i,\theta_j)}
+    = e^{r(\theta_i)} \phi(\theta_i,\theta_j)
+    = e^{r(\theta_i)} \beta
+      \frac{U'(c(\theta_j))}{U'(c(\theta_i))}.
+\]</div>
+<p>如果 <span class="math notranslate nohighlight">\(U'\)</span> 随消费递减，那么 <a class="reference internal" href="#equation-eq-rn-natural-ratio">(125.2)</a> 中的比率随下一期消费 <span class="math notranslate nohighlight">\(c(\theta_j)\)</span> 递减。</p>
+<p>由于 <span class="math notranslate nohighlight">\(q^*(\theta_i,\cdot)\)</span> 和 <span class="math notranslate nohighlight">\(f(\theta_i,\cdot)\)</span> 的积分都为一，存在一个由以下方程定义的交叉点 <span class="math notranslate nohighlight">\(v\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+e^{r(\theta_i)} \beta U'(v) = U'(c(\theta_i)).
+\]</div>
+<p>在 <span class="math notranslate nohighlight">\(v\)</span> 以下，风险中性概率超过自然概率；在 <span class="math notranslate nohighlight">\(v\)</span> 以上，自然概率超过风险中性概率。</p>
+<p>因此自然消费分布一阶随机占优于风险中性分布。</p>
+<p>在一个终端消费即市场收益的单期模型中，这也给出了正的市场风险溢价。</p>
+<p>设 <span class="math notranslate nohighlight">\(R\)</span> 表示自然律下的市场收益，设 <span class="math notranslate nohighlight">\(R^*\)</span> 表示风险中性律下的同一收益，设 <span class="math notranslate nohighlight">\(R_f\)</span> 表示同一单期单位下的无风险收益。</p>
+<p>随机占优结果可以表示为</p>
+<div class="math notranslate nohighlight">
+\[
+R^* \sim R - Z + \epsilon,
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(Z \geq 0\)</span> 捕获风险调整所引起的向下移动，<span class="math notranslate nohighlight">\(\epsilon\)</span> 是满足 <span class="math notranslate nohighlight">\(E[\epsilon \mid R-Z]=0\)</span> 的残差。</p>
+<p>取期望得</p>
+<div class="math notranslate nohighlight">
+\[
+E[R] = R_f + E[Z] &gt; R_f.
+\]</div>
+</section>
+</section>
+<section id="id15">
+<h2><a class="toc-backref" href="#id39" role="doc-backlink"><span class="section-number">125.4. </span>数值示例</a><a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<p>我们现在从数值上演示恢复定理。</p>
+<section id="id16">
+<h3><span class="section-number">125.4.1. </span>构建一个有限状态示例<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<p>我们直接在一个有限的对数收益状态网格 <span class="math notranslate nohighlight">\(s_1, \ldots, s_m\)</span> 上构建经济。</p>
+<p>在这个网格上，我们选择三个基本要素：</p>
+<ol class="arabic simple">
+<li><p>一个行随机的不可约自然转移矩阵 <span class="math notranslate nohighlight">\(F\)</span>，</p></li>
+<li><p>一个主观贴现因子 <span class="math notranslate nohighlight">\(\beta = e^{-\rho T}\)</span>，以及</p></li>
+<li><p>一个 CRRA 转移定价核 <span class="math notranslate nohighlight">\(\phi_{ij} = \beta e^{-\gamma(s_j-s_i)}\)</span>。</p></li>
+</ol>
+<p>状态价格矩阵然后由以下构造</p>
+<div class="math notranslate nohighlight">
+\[
+p_{ij} = \phi_{ij} f_{ij}.
+\]</div>
+<p>这意味着恢复定理的假设在构造上成立：<span class="math notranslate nohighlight">\(P\)</span> 是非负的，<span class="math notranslate nohighlight">\(F\)</span> 是一个马尔可夫转移矩阵，并且核是转移独立的，<span class="math notranslate nohighlight">\(z_i \propto e^{\gamma s_i}\)</span>。</p>
+<p>为使示例接近罗斯的第IV节，我们选择 <span class="math notranslate nohighlight">\(F\)</span> 具有对数正态形状的行。</p>
+<p>连续基准是带有 CRRA 效用的对数正态收益：</p>
+<div class="math notranslate nohighlight">
+\[
+U(S_T) = \frac{S_T^{1-\gamma}}{1-\gamma},
+\qquad
+S_T = S_0
+      \exp\!\left((\mu-\tfrac{1}{2}\sigma^2)T
+                 + \sigma \sqrt{T} \xi\right),
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\xi \sim N(0,1)\)</span>，<span class="math notranslate nohighlight">\(\mu\)</span> 是预期增长率参数，<span class="math notranslate nohighlight">\(\sigma\)</span> 是波动率，<span class="math notranslate nohighlight">\(T\)</span> 是视界，<span class="math notranslate nohighlight">\(\gamma\)</span> 是 CRRA 系数，<span class="math notranslate nohighlight">\(\rho\)</span> 是连续复利主观贴现率。</p>
+<p><span class="math notranslate nohighlight">\(T\)</span> 期定价核为</p>
+<div class="math notranslate nohighlight">
+\[
+\phi_T
+    = e^{-\rho T}\left(\frac{S_T}{S_0}\right)^{-\gamma}.
+\]</div>
+<p>等价地，如果 <span class="math notranslate nohighlight">\(s=\log S_0\)</span> 且 <span class="math notranslate nohighlight">\(s_T=\log S_T\)</span>，那么关于未来对数状态 <span class="math notranslate nohighlight">\(s_T\)</span> 的状态价格密度为</p>
+<div class="math notranslate nohighlight">
+\[
+p_T(s,s_T)
+    = e^{-\rho T} e^{-\gamma(s_T-s)}
+      \frac{1}{\sigma \sqrt{T}}
+      n\!\left(
+        \frac{s_T-s-(\mu-\frac{1}{2}\sigma^2)T}
+             {\sigma \sqrt{T}}
+      \right),
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(n\)</span> 是标准正态密度。</p>
+<p>因此自然对数收益满足</p>
+<div class="math notranslate nohighlight">
+\[
+\log(S_T/S_0) \sim \mathcal{N}\!\left((\mu - \tfrac{1}{2}\sigma^2)T, \sigma^2 T\right).
+\]</div>
+<p>遵循罗斯的表I，我们在一个有限的状态网格上表示分布。</p>
+<p>这个示例受罗斯启发，而非罗斯表I的精确重现。</p>
+<p>罗斯的表I使用固定的未来收益分布，因此其 <span class="math notranslate nohighlight">\(F\)</span> 的行是相同的。</p>
+<p>这里同样的 CRRA/对数正态定价逻辑被嵌入到一个有限马尔可夫转移矩阵中，其行随当前状态而移动。</p>
+<p>罗斯使用从 <span class="math notranslate nohighlight">\(-5\)</span> 到 <span class="math notranslate nohighlight">\(+5\)</span> 个标准差的状态；我们在下面使用相同的范围。</p>
+<p>截断是有限状态模型的一个基本组成部分：正是它将示例带入佩龙-弗罗贝尼乌斯设定中。</p>
+<p>在无界连续对数正态增长模型中，罗斯表明恢复不是唯一的。</p>
+<p>在有限网格上，自然转移概率和状态价格为</p>
+<div class="math notranslate nohighlight">
+\[
+f_{ij} \propto
+    n\!\left(\frac{s_j - s_i - (\mu - \frac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}\right)
+    \Delta s,
+\qquad
+p_{ij} = e^{-\rho T} e^{-\gamma(s_j - s_i)} f_{ij},
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(s_i = \ln S_i\)</span>，<span class="math notranslate nohighlight">\(s_j = \ln S_j\)</span>，<span class="math notranslate nohighlight">\(n(\cdot)\)</span> 是标准正态密度，离散化概率 <span class="math notranslate nohighlight">\(f_{ij}\)</span> 按行标准化。</p>
+<p>下一个代码单元构造这个有限网格并构建 <span class="math notranslate nohighlight">\(P\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">build_state_price_matrix</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">γ</span><span class="p">,</span> <span class="n">ρ</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">n_states</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">n_σ</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;构建一个离散化的对数正态/CRRA状态价格矩阵。&quot;&quot;&quot;</span>
+    <span class="n">states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">n_σ</span> <span class="o">*</span> <span class="n">σ</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="p">),</span>
+                          <span class="n">n_σ</span> <span class="o">*</span> <span class="n">σ</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="p">),</span>
+                          <span class="n">n_states</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">states</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">states</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">n_states</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+
+    <span class="n">drift</span> <span class="o">=</span> <span class="p">(</span><span class="n">μ</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">σ</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">T</span>
+
+    <span class="c1"># 首先在有界网格上构建一个行随机的自然转移矩阵</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="n">s_i</span> <span class="o">=</span> <span class="n">states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="n">s_j</span> <span class="o">=</span> <span class="n">states</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">log_return</span> <span class="o">=</span> <span class="n">s_j</span> <span class="o">-</span> <span class="n">s_i</span>
+            <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">log_return</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">drift</span><span class="p">,</span>
+                               <span class="n">scale</span><span class="o">=</span><span class="n">σ</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="p">))</span> <span class="o">*</span> <span class="n">ds</span>
+
+        <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># 将每个阿罗债权定价为自然概率乘以CRRA核</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="n">log_return</span> <span class="o">=</span> <span class="n">states</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">s_i</span>
+            <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">ρ</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">γ</span> <span class="o">*</span> <span class="n">log_return</span><span class="p">)</span>
+            <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">kernel</span> <span class="o">*</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">P</span><span class="p">,</span> <span class="n">states</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在选择一个校准并构建状态价格矩阵。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">μ</span> <span class="o">=</span> <span class="mf">0.08</span>    <span class="c1"># 8%年预期收益</span>
+<span class="n">σ</span> <span class="o">=</span> <span class="mf">0.20</span>    <span class="c1"># 20%年波动率</span>
+<span class="n">γ</span> <span class="o">=</span> <span class="mf">3.0</span>     <span class="c1"># CRRA系数</span>
+<span class="n">ρ</span> <span class="o">=</span> <span class="mf">0.02</span>    <span class="c1"># 2%年连续贴现率</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span>     <span class="c1"># 一年视界</span>
+
+<span class="n">P</span><span class="p">,</span> <span class="n">states</span> <span class="o">=</span> <span class="n">build_state_price_matrix</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">γ</span><span class="p">,</span> <span class="n">ρ</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span>
+                                     <span class="n">n_states</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">n_σ</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State-price row sums:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">4</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Middle-state risk-free rate: </span><span class="si">{</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>State-price row sums:
+[0.7154 0.9046 0.9713 0.9798 0.9802 0.9802 0.9802 0.9806 0.9892 1.0621
+ 1.3429]
+Middle-state risk-free rate: 0.0200
+</pre></div>
+</div>
+</div>
+</div>
+<p>行和是每个当前状态下模型隐含的单期债券价格。</p>
+<p>它们在边界附近变化，因为有限网格截断并重新标准化了条件转移概率。</p>
+</section>
+<section id="id17">
+<h3><span class="section-number">125.4.2. </span>应用恢复定理<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<p>恢复定理要求计算 <span class="math notranslate nohighlight">\(P\)</span> 的<strong>佩龙特征向量</strong>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">recover_natural_distribution</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    从状态价格中恢复自然概率和相对定价核。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eig</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+    <span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real_if_close</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real_if_close</span><span class="p">(</span><span class="n">eigenvectors</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+    <span class="c1"># 罗斯恢复使用佩龙根及其严格正的特征向量</span>
+    <span class="n">real_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isreal</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+    <span class="n">real_eigenvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">eigenvalues</span><span class="p">[</span><span class="n">real_mask</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">real_eigenvectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">real_mask</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">real_eigenvalues</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+        <span class="n">β_candidate</span> <span class="o">=</span> <span class="n">real_eigenvalues</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">z_candidate</span> <span class="o">=</span> <span class="n">real_eigenvectors</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">z_candidate</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">z_candidate</span> <span class="o">=</span> <span class="o">-</span><span class="n">z_candidate</span>
+
+        <span class="k">if</span> <span class="n">β_candidate</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">z_candidate</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">):</span>
+            <span class="n">β_recovered</span> <span class="o">=</span> <span class="n">β_candidate</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">z_candidate</span>
+            <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No strictly positive real eigenvector found&quot;</span><span class="p">)</span>
+
+    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span> <span class="o">/</span> <span class="n">z</span><span class="p">[</span><span class="n">m</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">D_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+    <span class="c1"># 将状态价格转换为概率</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">β_recovered</span><span class="p">)</span> <span class="o">*</span> <span class="n">D</span> <span class="o">@</span> <span class="n">P</span> <span class="o">@</span> <span class="n">D_inv</span>
+
+    <span class="n">min_entry</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">row_sum_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">min_entry</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">tol</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recovered F has negative entries: min=</span><span class="si">{</span><span class="n">min_entry</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">row_sum_error</span> <span class="o">&gt;</span> <span class="mf">1e-8</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Recovered F row sums are not one: max error=</span><span class="si">{</span><span class="n">row_sum_error</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># 相对于中间状态标准化的核</span>
+    <span class="n">φ_relative</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">z</span>
+
+    <span class="k">return</span> <span class="n">F</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">β_recovered</span><span class="p">,</span> <span class="n">φ_relative</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>佩龙向量还恢复了定价核的形状。</p>
+<p>罗斯的表I以中间状态标准化为一的方式报告这个形状，在我们的标准化 <span class="math notranslate nohighlight">\(z_{\text{mid}}=1\)</span> 下即为 <span class="math notranslate nohighlight">\(1/z_j\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">β_rec</span><span class="p">,</span> <span class="n">φ_relative</span> <span class="o">=</span> <span class="n">recover_natural_distribution</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ross-normalized kernel 1/z (middle state = 1):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">φ_relative</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ross-normalized kernel 1/z (middle state = 1):
+[20.0855 11.0232  6.0496  3.3201  1.8221  1.      0.5488  0.3012  0.1653
+  0.0907  0.0498]
+</pre></div>
+</div>
+</div>
+</div>
+<p>因为我们知道用于构造 <span class="math notranslate nohighlight">\(P\)</span> 的数据生成自然转移矩阵，所以我们可以验证恢复在此模拟中有效。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">true_lognormal_transition_matrix</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    构造模拟中使用的有界网格自然转移矩阵。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">states</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">states</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">drift</span> <span class="o">=</span> <span class="p">(</span><span class="n">μ</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">σ</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">T</span>
+    <span class="n">F_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="n">log_returns</span> <span class="o">=</span> <span class="n">states</span> <span class="o">-</span> <span class="n">states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">F_true</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">log_returns</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">drift</span><span class="p">,</span>
+                             <span class="n">scale</span><span class="o">=</span><span class="n">σ</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="p">))</span> <span class="o">*</span> <span class="n">ds</span>
+        <span class="n">F_true</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">F_true</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">F_true</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">F_true</span>
+
+
+<span class="n">F_true</span> <span class="o">=</span> <span class="n">true_lognormal_transition_matrix</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+<span class="n">P_reconstructed</span> <span class="o">=</span> <span class="n">β_rec</span> <span class="o">*</span> <span class="p">(</span><span class="n">z</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">/</span> <span class="n">z</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">*</span> <span class="n">F</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovery numerical checks&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max |F - true F| = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">F_true</span><span class="p">))</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max |P - recovered kernel times F| = &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">P_reconstructed</span><span class="p">))</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Recovery numerical checks
+max |F - true F| = 2.57e-14
+max |P - recovered kernel times F| = 1.11e-16
+</pre></div>
+</div>
+</div>
+</div>
+<p>确实，差异处于数值舍入误差的水平。</p>
+</section>
+</section>
+<section id="id18">
+<h2><a class="toc-backref" href="#id40" role="doc-backlink"><span class="section-number">125.5. </span>自然分布与风险中性分布</a><a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
+<p><span class="bibtex-citation" id="id19">Ross [<a class="reference internal" href="zreferences.html#id11" title="Stephen A. Ross. The recovery theorem. Journal of Finance, 70(2):615–648, 2015. doi:10.1111/jofi.12092.">2015</a>]</span> 的一个关键洞见是，自然分布可以系统性地不同于风险中性分布。</p>
+<p>在这个 CRRA 示例中，状态从低收益到高收益排序，<a class="reference internal" href="#ross-recovery-single-crossing"><span class="std std-ref">单交叉与风险溢价</span></a> 中的单交叉论证意味着自然边缘密度<strong>一阶随机占优</strong>于风险中性密度：自然分布的累积分布函数位于风险中性分布累积分布函数的<em>下方</em>。</p>
+<p>因为定价核是递减的（投资者害怕不好的结果），风险中性概率相对于自然测度过度加权坏状态而低估好状态。</p>
+<p>我们首先绘制自然分布与风险中性分布以及恢复的相对定价核</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+<span class="n">row_sums</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># 用每个状态下的单期无风险债券价格标准化阿罗价格</span>
+<span class="n">Q_rn</span> <span class="o">=</span> <span class="n">P</span> <span class="o">/</span> <span class="n">row_sums</span>
+
+<span class="n">f_nat</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">mid</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">f_rn</span> <span class="o">=</span> <span class="n">Q_rn</span><span class="p">[</span><span class="n">mid</span><span class="p">,</span> <span class="p">:]</span>
+
+<span class="n">gross_returns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gross_returns</span><span class="p">,</span> <span class="n">f_nat</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;自然（恢复）&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gross_returns</span><span class="p">,</span> <span class="n">f_rn</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;风险中性&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;总回报率 $S_T / S_0$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;概率&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;单期边缘分布&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gross_returns</span><span class="p">,</span> <span class="n">φ_relative</span><span class="p">,</span> <span class="s1">&#39;g-^&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;总回报率 $S_T / S_0$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;相对核 $1/z$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;恢复的相对定价核&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/2a5ee4f477676e3833e253631e930347ed80f0e75d53405ec39d9679f4f08b96.png" src="_images/2a5ee4f477676e3833e253631e930347ed80f0e75d53405ec39d9679f4f08b96.png" />
+</div>
+</div>
+<p>累积分布函数清楚地显示了一阶随机占优</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cdf_nat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">f_nat</span><span class="p">)</span>
+<span class="n">cdf_rn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">f_rn</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gross_returns</span><span class="p">,</span> <span class="n">cdf_nat</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;自然累积分布函数&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gross_returns</span><span class="p">,</span> <span class="n">cdf_rn</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;风险中性累积分布函数&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;总回报率 $S_T / S_0$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;累积概率&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Natural CDF &lt;= Risk-neutral CDF at all states: &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">cdf_nat</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">cdf_rn</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1e-10</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/d3db0b93aa8c3c542f69a250f32f91b12e53617b34be3ba36fc08c867feec7d9.png" src="_images/d3db0b93aa8c3c542f69a250f32f91b12e53617b34be3ba36fc08c867feec7d9.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Natural CDF &lt;= Risk-neutral CDF at all states: True
+</pre></div>
+</div>
+</div>
+</div>
+<p>两个累积分布函数之间的差距是由定价核的斜率产生的。</p>
+<p>在 CRRA 基准中，这个斜率由风险厌恶系数 <span class="math notranslate nohighlight">\(\gamma\)</span> 控制。</p>
+<p>接下来我们变化 <span class="math notranslate nohighlight">\(\gamma\)</span> 以观察恢复的核和自然/风险中性楔子如何变化。</p>
+</section>
+<section id="id20">
+<h2><a class="toc-backref" href="#id41" role="doc-backlink"><span class="section-number">125.6. </span>风险厌恶的影响</a><a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
+<p>定价核的形状，以及由此产生的自然概率与风险中性概率之间的差距，取决于风险厌恶系数 <span class="math notranslate nohighlight">\(\gamma\)</span>。</p>
+<p>我们通过绘制相对定价核 <span class="math notranslate nohighlight">\(1/z\)</span> 以及自然密度和风险中性密度之间的差距（对于一系列 <span class="math notranslate nohighlight">\(\gamma\)</span> 值）来说明这一点。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">γs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">]</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">γs</span><span class="p">)))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">γ_val</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">γs</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+    <span class="n">P_g</span><span class="p">,</span> <span class="n">states_g</span> <span class="o">=</span> <span class="n">build_state_price_matrix</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">γ_val</span><span class="p">,</span> <span class="n">ρ</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+    <span class="n">F_g</span><span class="p">,</span> <span class="n">z_g</span><span class="p">,</span> <span class="n">β_g</span><span class="p">,</span> <span class="n">φ_relative_g</span> <span class="o">=</span> <span class="n">recover_natural_distribution</span><span class="p">(</span><span class="n">P_g</span><span class="p">)</span>
+    <span class="n">mid_g</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">states_g</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="n">f_nat_g</span> <span class="o">=</span> <span class="n">F_g</span><span class="p">[</span><span class="n">mid_g</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">row_sum</span> <span class="o">=</span> <span class="n">P_g</span><span class="p">[</span><span class="n">mid_g</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">f_rn_g</span> <span class="o">=</span> <span class="n">P_g</span><span class="p">[</span><span class="n">mid_g</span><span class="p">]</span> <span class="o">/</span> <span class="n">row_sum</span>
+
+    <span class="n">gross</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">states_g</span><span class="p">)</span>
+
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gross</span><span class="p">,</span> <span class="n">φ_relative_g</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">gamma=</span><span class="si">{</span><span class="n">γ_val</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gross</span><span class="p">,</span> <span class="n">f_nat_g</span> <span class="o">-</span> <span class="n">f_rn_g</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">gamma=</span><span class="si">{</span><span class="n">γ_val</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;总回报率&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;相对核 $1/z$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;相对定价核与风险厌恶&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;总回报率&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;自然减风险中性概率&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;自然减风险中性密度&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/0d05ce5564207d817f09e4e4c8439ff1089870333894e2e3ccd41d67616dc13c.png" src="_images/0d05ce5564207d817f09e4e4c8439ff1089870333894e2e3ccd41d67616dc13c.png" />
+</div>
+</div>
+<p>因为状态从低收益到高收益排序，这些图显示了 <a class="reference internal" href="#ross-recovery-single-crossing"><span class="std std-ref">单交叉与风险溢价</span></a> 中讨论的单交叉性质：对于低于某个阈值 <span class="math notranslate nohighlight">\(v\)</span> 的收益，风险中性概率超过自然概率；在 <span class="math notranslate nohighlight">\(v\)</span> 以上，自然概率占优。</p>
+<p>较高的 <span class="math notranslate nohighlight">\(\gamma\)</span> 放大了这个楔子。</p>
+</section>
+<section id="id21">
+<h2><a class="toc-backref" href="#id42" role="doc-backlink"><span class="section-number">125.7. </span>恢复贴现率</a><a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
+<p>恢复定理的一个有用副产品是<em>恢复的主观贴现因子</em> <span class="math notranslate nohighlight">\(\beta\)</span>，它等于 <span class="math notranslate nohighlight">\(P\)</span> 的佩龙-弗罗贝尼乌斯特征值。</p>
+<p>如果视界为 <span class="math notranslate nohighlight">\(T\)</span>，则对应的连续复利主观贴现率为</p>
+<div class="math notranslate nohighlight">
+\[
+\rho = -\frac{\log \beta}{T}.
+\]</div>
+<p>在下面的数值示例中，<span class="math notranslate nohighlight">\(T=1\)</span>，因此这简化为 <span class="math notranslate nohighlight">\(\rho = -\log \beta\)</span>。</p>
+<p><span class="bibtex-citation" id="id22">Ross [<a class="reference internal" href="zreferences.html#id11" title="Stephen A. Ross. The recovery theorem. Journal of Finance, 70(2):615–648, 2015. doi:10.1111/jofi.12092.">2015</a>]</span> 的推论1指出，<span class="math notranslate nohighlight">\(\beta\)</span> 的上界是最大的状态相关单期贴现因子——等价地，是 <span class="math notranslate nohighlight">\(P\)</span> 的最大行和：</p>
+<div class="math notranslate nohighlight">
+\[
+\beta \leq \max_i \sum_j p(\theta_i, \theta_j).
+\]</div>
+<p>在网格上扫描真实的 <span class="math notranslate nohighlight">\(\rho\)</span> 并报告恢复值以及恢复误差，确认了特征值计算准确地确定了 <span class="math notranslate nohighlight">\(\beta\)</span>：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">true_ρs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.06</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+<span class="n">recovered_ρs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">true_ρs</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">rho</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">true_ρs</span><span class="p">):</span>
+    <span class="n">P_d</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">build_state_price_matrix</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">γ</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">ρ</span><span class="o">=</span><span class="n">rho</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">β_d</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">recover_natural_distribution</span><span class="p">(</span><span class="n">P_d</span><span class="p">)</span>
+    <span class="n">recovered_ρs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">β_d</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;max |true ρ - recovered ρ| = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">true_ρs</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">recovered_ρs</span><span class="p">))</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">true_ρs</span><span class="p">,</span> <span class="n">recovered_ρs</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>max |true ρ - recovered ρ| = 2.23e-15
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0.00000000e+00, -2.22044605e-16],
+       [ 5.00000000e-03,  5.00000000e-03],
+       [ 1.00000000e-02,  1.00000000e-02],
+       [ 1.50000000e-02,  1.50000000e-02],
+       [ 2.00000000e-02,  2.00000000e-02],
+       [ 2.50000000e-02,  2.50000000e-02],
+       [ 3.00000000e-02,  3.00000000e-02],
+       [ 3.50000000e-02,  3.50000000e-02],
+       [ 4.00000000e-02,  4.00000000e-02],
+       [ 4.50000000e-02,  4.50000000e-02],
+       [ 5.00000000e-02,  5.00000000e-02],
+       [ 5.50000000e-02,  5.50000000e-02],
+       [ 6.00000000e-02,  6.00000000e-02]])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id23">
+<h2><a class="toc-backref" href="#id43" role="doc-backlink"><span class="section-number">125.8. </span>尾部风险：灾难的自然概率与风险中性概率</a><a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
+<p>恢复定理最引人注目的应用之一是它能够将市场恢复的灾难自然概率与附加于这些灾难的风险溢价分离开来。</p>
+<p><span class="bibtex-citation" id="id24">Barro [<a class="reference internal" href="zreferences.html#id331" title="Robert J Barro. Rare disasters and asset markets in the twentieth century. The Quarterly Journal of Economics, 121(3):823–866, 2006.">2006</a>]</span> 和 <span class="bibtex-citation" id="id25">Mehra and Prescott [<a class="reference internal" href="zreferences.html#id295" title="Rajnish Mehra and Edward C Prescott. The equity premium: A puzzle. Journal of Monetary Economics, 15(2):145–161, 1985.">1985</a>]</span> 讨论了罕见灾难如何可能解释股权溢价之谜。</p>
+<p>大幅下跌的风险中性概率之所以升高，既是因为（a）市场对此类事件赋予了高的自然概率，也是因为（b）定价核上调了坏结果的权重。</p>
+<p>罗斯的恢复机制让我们能够分解这两种力量。</p>
+<p>下一个代码单元绘制从中间状态出发，在恢复的自然测度和风险中性测度下的左尾概率，因此曲线之间的差距分离出了定价核对崩盘概率的贡献。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.40</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">tail_prob</span><span class="p">(</span><span class="n">f_dist</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;对数收益的左尾概率。&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">f_dist</span><span class="p">[</span><span class="n">states</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">]))</span>
+
+<span class="n">P_base</span><span class="p">,</span> <span class="n">states_base</span> <span class="o">=</span> <span class="n">build_state_price_matrix</span><span class="p">(</span>
+    <span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">γ</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">ρ</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">n_states</span><span class="o">=</span><span class="mi">41</span><span class="p">,</span> <span class="n">n_σ</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">F_base</span><span class="p">,</span> <span class="n">z_base</span><span class="p">,</span> <span class="n">β_base</span><span class="p">,</span> <span class="n">φ_relative_base</span> <span class="o">=</span> <span class="n">recover_natural_distribution</span><span class="p">(</span><span class="n">P_base</span><span class="p">)</span>
+
+<span class="n">mid_b</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">states_base</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+<span class="n">f_nat_base</span> <span class="o">=</span> <span class="n">F_base</span><span class="p">[</span><span class="n">mid_b</span><span class="p">]</span>
+<span class="n">f_rn_base</span> <span class="o">=</span> <span class="n">P_base</span><span class="p">[</span><span class="n">mid_b</span><span class="p">]</span> <span class="o">/</span> <span class="n">P_base</span><span class="p">[</span><span class="n">mid_b</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="n">prob_nat</span> <span class="o">=</span> <span class="p">[</span><span class="n">tail_prob</span><span class="p">(</span><span class="n">f_nat_base</span><span class="p">,</span> <span class="n">states_base</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="p">]</span>
+<span class="n">prob_rn</span> <span class="o">=</span> <span class="p">[</span><span class="n">tail_prob</span><span class="p">(</span><span class="n">f_rn_base</span><span class="p">,</span> <span class="n">states_base</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">thresholds</span><span class="p">),</span> <span class="n">prob_nat</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;自然（恢复）&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">thresholds</span><span class="p">),</span> <span class="n">prob_rn</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;风险中性&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;总回报率阈值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;低于阈值下跌的概率&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;25%下跌&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">0.70</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;silver&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;30%下跌&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-tail-probs">
+<img alt="_images/11a01501b867f6f9e42c5d0f420c95eda131d5dec8b20e466c04fa4d2b91c85f.png" src="_images/11a01501b867f6f9e42c5d0f420c95eda131d5dec8b20e466c04fa4d2b91c85f.png" />
+<figcaption>
+<p><span class="caption-number">图 125.1 </span><span class="caption-text">恢复的自然测度和风险中性测度下的尾部概率</span><a class="headerlink" href="#fig-tail-probs" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>这是一个说明罗斯分解的模拟。</p>
+<p>风险中性密度对大幅下跌赋予的概率高于恢复的自然密度。</p>
+<p>在这个 CRRA 模拟中，增加风险厌恶会使风险中性崩盘概率比恢复的自然崩盘概率上升得更快。</p>
+<p>我们将在 <a class="reference internal" href="#rt_ex3"><span class="std std-numref">练习 125.3</span></a> 中进行更多说明。</p>
+</section>
+<section id="id26">
+<h2><a class="toc-backref" href="#id44" role="doc-backlink"><span class="section-number">125.9. </span>从期权价格到转移价格</a><a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
+<p>上面的数值示例从一个已知的状态价格转移矩阵 <span class="math notranslate nohighlight">\(P\)</span> 开始。</p>
+<p>在经验上，罗斯从更早一步开始：期权价格揭示了从当前状态出发在不同到期日的状态价格密度，而转移矩阵必须从这些逐个到期日的状态价格中推断出来。</p>
+<p>设 <span class="math notranslate nohighlight">\(C(K,T)\)</span> 为行权价为 <span class="math notranslate nohighlight">\(K\)</span>、到期日为 <span class="math notranslate nohighlight">\(T\)</span> 的看涨期权的价格。</p>
+<p>如果 <span class="math notranslate nohighlight">\(p(S,T)\)</span> 是终端指数水平 <span class="math notranslate nohighlight">\(S\)</span> 的状态价格密度，那么</p>
+<div class="math notranslate nohighlight">
+\[
+C(K,T)
+    = \int_K^\infty (S-K) p(S,T) \, dS.
+\]</div>
+<p>对行权价求两次微分给出 <span class="bibtex-citation" id="id27">Breeden and Litzenberger [<a class="reference internal" href="zreferences.html#id3" title="Douglas T. Breeden and Robert H. Litzenberger. Prices of state-contingent claims implicit in option prices. Journal of Business, 51(4):621–651, 1978. doi:10.1086/296025.">1978</a>]</span> 公式</p>
+<div class="math notranslate nohighlight">
+\[
+p(K,T) = \frac{\partial^2 C(K,T)}{\partial K^2}.
+\]</div>
+<p>在对行权价和到期日进行离散化后，设</p>
+<div class="math notranslate nohighlight">
+\[
+p_t(c) = \big(p_t(c,1), \ldots, p_t(c,m)\big)
+\]</div>
+<p>为从今天状态 <span class="math notranslate nohighlight">\(c\)</span> 观察到的视界 <span class="math notranslate nohighlight">\(t\)</span> 处的状态价格向量。</p>
+<p>这里 <span class="math notranslate nohighlight">\(c\)</span> 索引当前状态，<span class="math notranslate nohighlight">\(t\)</span> 计数离散到期步数。</p>
+<p>第一个单期向量 <span class="math notranslate nohighlight">\(p_1(c)\)</span> 识别对应于当前状态 <span class="math notranslate nohighlight">\(c\)</span> 的 <span class="math notranslate nohighlight">\(P\)</span> 的行，提供 <span class="math notranslate nohighlight">\(m\)</span> 个方程。</p>
+<p>如果单期状态价格转移矩阵 <span class="math notranslate nohighlight">\(P\)</span> 是时间齐次的，那么这些向量满足前向递归</p>
+<div class="math notranslate nohighlight">
+\[
+p_{t+1}(c) = p_t(c) P,
+\qquad t=1,\ldots,m-1.
+\]</div>
+<p>按分量表示，</p>
+<div class="math notranslate nohighlight">
+\[
+p_{t+1}(c,j) = \sum_k p_t(c,k) p(k,j).
+\]</div>
+<p>其余 <span class="math notranslate nohighlight">\(m-1\)</span> 个前向方程 <span class="math notranslate nohighlight">\(p_{t+1}(c)=p_t(c)P\)</span>，每个有 <span class="math notranslate nohighlight">\(m\)</span> 个分量，提供其余的 <span class="math notranslate nohighlight">\(m(m-1)\)</span> 个方程。</p>
+<p>这些方程合在一起为 <span class="math notranslate nohighlight">\(m^2\)</span> 个转移价格 <span class="math notranslate nohighlight">\(p(k,j)\)</span> 给出 <span class="math notranslate nohighlight">\(m^2\)</span> 个方程。</p>
+<p>在实践中，这一步在数值上很微妙，因为期权价格公式中的二阶导数会放大测量误差，并且可能需要正性或单峰性等额外的形状约束来获得一个合理的转移矩阵。</p>
+</section>
+<section id="id28">
+<h2><a class="toc-backref" href="#id45" role="doc-backlink"><span class="section-number">125.10. </span>检验有效市场</a><a class="headerlink" href="#id28" title="Link to this heading">#</a></h2>
+<p>在恢复定理的假设下，恢复的定价核也可以用来检验市场有效性。</p>
+<p>如果一个交易策略有非常高的夏普比率，那么某个定价核必须足够波动才能对该收益定价。</p>
+<p>汉森-贾格纳坦界 <span class="bibtex-citation" id="id29">[<a class="reference internal" href="zreferences.html#id208" title="Lars Peter Hansen and Ravi Jagannathan. Implications of security market data for models of dynamic economies. Journal of Political Economy, 99(2):225–262, 1991. doi:10.1086/261750.">Hansen and Jagannathan, 1991</a>]</span> 指出，对于任何均值为 <span class="math notranslate nohighlight">\(\mu_\text{excess}\)</span>、标准差为 <span class="math notranslate nohighlight">\(\sigma_\text{asset}\)</span> 的超额收益，</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{|\mu_\text{excess}|}{\sigma_\text{asset}} \leq e^{rT}\, \sigma(M),
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(M\)</span> 是单期随机贴现因子，<span class="math notranslate nohighlight">\(r\)</span> 是视界 <span class="math notranslate nohighlight">\(T\)</span> 上的连续复利无风险利率。</p>
+<p>罗斯的观点是，恢复给出了相关波动率 <span class="math notranslate nohighlight">\(\sigma(M)\)</span> 的估计。</p>
+<p>因此它给出了基于恢复中使用的相同股市信息的任何策略的夏普比率的上界。</p>
+<p>如果这样的策略的夏普比率高于该界限，那么在恢复定理的假设下，它就过于盈利而无法与有效性一致。</p>
+<p>同样的逻辑给出了收益可预测性的界限。</p>
+<p>假设超额收益分解为</p>
+<div class="math notranslate nohighlight">
+\[
+x_{t+1} = \mu(I_t) + \epsilon_{t+1},
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(I_t\)</span> 是股市信息集，<span class="math notranslate nohighlight">\(\epsilon_{t+1}\)</span> 从 <span class="math notranslate nohighlight">\(I_t\)</span> 无法预测。</p>
+<p>那么基于 <span class="math notranslate nohighlight">\(I_t\)</span> 的预测回归的 <span class="math notranslate nohighlight">\(R^2\)</span> 上界为恢复核的方差：</p>
+<div class="math notranslate nohighlight">
+\[
+R^2 \leq e^{2rT} \, \sigma^2(M).
+\]</div>
+<p>只有投影到这个信息集上的核成分是相关的。</p>
+<p>向候选定价核添加不相关的噪声会提高其方差，但不会为来自股市信息的更强收益可预测性提供依据。</p>
+</section>
+<section id="id30">
+<h2><a class="toc-backref" href="#id46" role="doc-backlink"><span class="section-number">125.11. </span>局限性与扩展</a><a class="headerlink" href="#id30" title="Link to this heading">#</a></h2>
+<p>恢复定理是一个了不起的理论结果，但在实践中有几个需要注意的地方。</p>
+<p><em>有限状态空间：</em></p>
+<p>罗斯的定理是针对有限状态不可约马尔可夫链证明的；有界连续状态恢复需要 <a class="reference internal" href="misspecified_recovery.html"><span class="doc">误设定下的恢复</span></a> 中的额外结果。</p>
+<p>在连续、无界的状态空间中（例如对数正态扩散），唯一性失效，因为任何指数 <span class="math notranslate nohighlight">\(e^{\alpha x}\)</span> 都满足特征方程。</p>
+<p>为看清这个问题，考虑上面的连续对数正态增长状态价格密度。</p>
+<p>佩龙-弗罗贝尼乌斯问题的自然连续空间类比是</p>
+<div class="math notranslate nohighlight">
+\[
+\int p_T(s,y) v(y) \, dy = \lambda v(s).
+\]</div>
+<p>这里 <span class="math notranslate nohighlight">\(y\)</span> 是一个可能的未来对数状态，<span class="math notranslate nohighlight">\(v\)</span> 是一个候选正特征函数，<span class="math notranslate nohighlight">\(\lambda\)</span> 是它的特征值。</p>
+<p>对于每个实数 <span class="math notranslate nohighlight">\(\alpha\)</span>，指数函数 <span class="math notranslate nohighlight">\(v_\alpha(s)=e^{\alpha s}\)</span> 求解这个方程，特征值为</p>
+<div class="math notranslate nohighlight">
+\[
+\lambda(\alpha)
+    =
+    \exp\!\left(
+        -\rho T
+        +(\alpha-\gamma)(\mu-\tfrac{1}{2}\sigma^2)T
+        +\tfrac{1}{2}\sigma^2T(\alpha-\gamma)^2
+    \right).
+\]</div>
+<p>因此正特征函数不是唯一的。</p>
+<p>这就是为什么截断或有界性假设很重要：它们把连续算子问题重新变回一个具有唯一正特征向量的佩龙-弗罗贝尼乌斯问题。</p>
+<p><span class="bibtex-citation" id="id31">Carr and Yu [<a class="reference internal" href="zreferences.html#id4" title="Peter Carr and Jiming Yu. Risk, return, and Ross recovery. Journal of Derivatives, 20(1):38–59, 2012. doi:10.3905/jod.2012.20.1.038.">2012</a>]</span> 用有界扩散建立了恢复。</p>
+<p><em>转移独立性：</em></p>
+<p>如果核不是转移独立的，恢复不能保证。</p>
+<p><span class="bibtex-citation" id="id32">Borovička <em>et al.</em> [<a class="reference internal" href="zreferences.html#id10" title="Jaroslav Borovička, Lars Peter Hansen, and José A. Scheinkman. Misspecified recovery. Journal of Finance, 71(6):2493–2544, 2016. doi:10.1111/jofi.12404.">2016</a>]</span> 表明罗斯恢复可能将核的长期风险成分与自然概率分布混淆，从而产生错误的分解。</p>
+<p>我们在后续讲座 <a class="reference internal" href="misspecified_recovery.html"><span class="doc">误设定下的恢复</span></a> 中讨论这一点。</p>
+<p><em>经验估计：</em></p>
+<p>从观察到的期权价格中提取可靠的状态价格需要仔细的插值和外推。</p>
+<p>通过 <span class="bibtex-citation" id="id33">Breeden and Litzenberger [<a class="reference internal" href="zreferences.html#id3" title="Douglas T. Breeden and Robert H. Litzenberger. Prices of state-contingent claims implicit in option prices. Journal of Business, 51(4):621–651, 1978. doi:10.1086/296025.">1978</a>]</span> 公式从隐含波动率到状态价格的映射涉及二阶导数，这会放大测量误差。</p>
+</section>
+<section id="id34">
+<h2><a class="toc-backref" href="#id47" role="doc-backlink"><span class="section-number">125.12. </span>练习</a><a class="headerlink" href="#id34" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="rt_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 125.1 </span></p>
+<section id="exercise-content">
+<p><strong>佩龙-弗罗贝尼乌斯向量与定价核。</strong></p>
+<p>考虑 <span class="math notranslate nohighlight">\(3 \times 3\)</span> 状态价格矩阵</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+P = \begin{pmatrix}
+0.5950 &amp; 0.1700 &amp; 0.0272 \\
+0.159375 &amp; 0.5525 &amp; 0.1360 \\
+0.06640625 &amp; 0.31875 &amp; 0.5525
+\end{pmatrix}.
+\end{split}\]</div>
+<ol class="arabic simple">
+<li><p>计算 <span class="math notranslate nohighlight">\(P\)</span> 的佩龙特征值 <span class="math notranslate nohighlight">\(\beta\)</span> 和对应的特征向量 <span class="math notranslate nohighlight">\(z\)</span>。</p></li>
+<li><p>使用 <span class="math notranslate nohighlight">\(z\)</span> 通过以下方式恢复自然概率转移矩阵 <span class="math notranslate nohighlight">\(F\)</span></p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+f_{ij} = \frac{1}{\beta} \frac{z_j}{z_i} p_{ij}.
+\]</div>
+<ol class="arabic simple" start="3">
+<li><p>验证 <span class="math notranslate nohighlight">\(F\)</span> 的每一行和为一且所有项均为正。</p></li>
+<li><p>对于目标状态 <span class="math notranslate nohighlight">\(j\)</span>，相对核成分为 <span class="math notranslate nohighlight">\(1/z_j\)</span>；对于从状态 <span class="math notranslate nohighlight">\(i\)</span> 到状态 <span class="math notranslate nohighlight">\(j\)</span> 的转移，完整定价核为 <span class="math notranslate nohighlight">\(\beta z_i/z_j\)</span>。计算每个状态的 <span class="math notranslate nohighlight">\(1/z_j\)</span>。</p></li>
+</ol>
+<p>当我们从状态1移动到状态3（即从坏状态到好状态）时，核是否递减？</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="ross_recovery-solution-5">
+
+<p class="admonition-title">解答<a class="reference internal" href="#rt_ex1"> 练习 125.1</a></p>
+<section id="solution-content">
+<p>这是一个解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.5950</span><span class="p">,</span> <span class="mf">0.1700</span><span class="p">,</span> <span class="mf">0.0272</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.159375</span><span class="p">,</span> <span class="mf">0.5525</span><span class="p">,</span> <span class="mf">0.1360</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.06640625</span><span class="p">,</span> <span class="mf">0.31875</span><span class="p">,</span> <span class="mf">0.5525</span><span class="p">]</span>
+<span class="p">])</span>
+
+<span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eig</span><span class="p">(</span><span class="n">P_ex</span><span class="p">)</span>
+<span class="n">real_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isreal</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+<span class="n">real_ev</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="n">real_mask</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>
+<span class="n">real_evec</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">real_mask</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>
+
+<span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">real_ev</span><span class="p">)</span>
+<span class="n">β_ex</span> <span class="o">=</span> <span class="n">real_ev</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="n">z_ex</span> <span class="o">=</span> <span class="n">real_evec</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">z_ex</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">z_ex</span> <span class="o">=</span> <span class="o">-</span><span class="n">z_ex</span>
+<span class="n">z_ex</span> <span class="o">=</span> <span class="n">z_ex</span> <span class="o">/</span> <span class="n">z_ex</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;β = </span><span class="si">{</span><span class="n">β_ex</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;z = </span><span class="si">{</span><span class="n">z_ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">D_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">z_ex</span><span class="p">)</span>
+<span class="n">D_inv_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">z_ex</span><span class="p">)</span>
+<span class="n">F_ex</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">β_ex</span><span class="p">)</span> <span class="o">*</span> <span class="n">D_ex</span> <span class="o">@</span> <span class="n">P_ex</span> <span class="o">@</span> <span class="n">D_inv_ex</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Recovered F:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">F_ex</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Row sums: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">F_ex</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nonnegative: </span><span class="si">{</span><span class="p">(</span><span class="n">F_ex</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="o">-</span><span class="mf">1e-10</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">φ_relative_ex</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">z_ex</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">relative kernel 1/z = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">φ_relative_ex</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Decreasing: </span><span class="si">{</span><span class="n">φ_relative_ex</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">φ_relative_ex</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">φ_relative_ex</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>β = 0.850000
+z = [0.8  1.   1.25]
+
+Recovered F:
+[[0.7  0.25 0.05]
+ [0.15 0.65 0.2 ]
+ [0.05 0.3  0.65]]
+
+Row sums: [1. 1. 1.]
+Nonnegative: True
+
+relative kernel 1/z = [1.25 1.   0.8 ]
+Decreasing: True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="rt_ex2">
+
+<p class="admonition-title"><span class="caption-number">练习 125.2 </span></p>
+<section id="exercise-content">
+<p><strong>随机占优。</strong></p>
+<p>使用上面练习中恢复的 <span class="math notranslate nohighlight">\(F\)</span> 和标准化的风险中性矩阵 <span class="math notranslate nohighlight">\(Q = P / \text{行和}\)</span>：</p>
+<ol class="arabic simple">
+<li><p>从状态2（Python 中索引1）出发，计算单步边缘分布 <span class="math notranslate nohighlight">\(f_j = F_{2,j}\)</span> 和 <span class="math notranslate nohighlight">\(q_j = Q_{2,j}\)</span>。</p></li>
+<li><p>为每个状态计算累积分布函数 <span class="math notranslate nohighlight">\(\hat F_k = \sum_{j \leq k} f_j\)</span> 和 <span class="math notranslate nohighlight">\(\hat Q_k = \sum_{j \leq k} q_j\)</span>。</p></li>
+<li><p>数值验证对于每个 <span class="math notranslate nohighlight">\(k\)</span> 都有 <span class="math notranslate nohighlight">\(\hat F_k \leq \hat Q_k\)</span>，确认这个有序三状态示例中的随机占优。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="ross_recovery-solution-7">
+
+<p class="admonition-title">解答<a class="reference internal" href="#rt_ex2"> 练习 125.2</a></p>
+<section id="solution-content">
+<p>这是一个解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eig</span><span class="p">(</span><span class="n">P_ex</span><span class="p">)</span>
+<span class="n">real_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isreal</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+<span class="n">real_ev</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="n">real_mask</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>
+<span class="n">real_evec</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">real_mask</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">real_ev</span><span class="p">)</span>
+<span class="n">β_ex</span> <span class="o">=</span> <span class="n">real_ev</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="n">z_ex</span> <span class="o">=</span> <span class="n">real_evec</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">z_ex</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">z_ex</span> <span class="o">=</span> <span class="o">-</span><span class="n">z_ex</span>
+<span class="n">z_ex</span> <span class="o">=</span> <span class="n">z_ex</span> <span class="o">/</span> <span class="n">z_ex</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">D_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">z_ex</span><span class="p">)</span>
+<span class="n">D_inv_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">z_ex</span><span class="p">)</span>
+<span class="n">F_ex</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">β_ex</span><span class="p">)</span> <span class="o">*</span> <span class="n">D_ex</span> <span class="o">@</span> <span class="n">P_ex</span> <span class="o">@</span> <span class="n">D_inv_ex</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">f_marg</span> <span class="o">=</span> <span class="n">F_ex</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
+<span class="n">q_marg</span> <span class="o">=</span> <span class="n">P_ex</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">/</span> <span class="n">P_ex</span><span class="p">[</span><span class="n">start</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One-step marginals from state 2:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;natural     = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">f_marg</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;risk-neutral = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">q_marg</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">cdf_nat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">f_marg</span><span class="p">)</span>
+<span class="n">cdf_rn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">q_marg</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">CDFs:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;state </span><span class="si">{</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: natural = </span><span class="si">{</span><span class="n">cdf_nat</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, risk-neutral = </span><span class="si">{</span><span class="n">cdf_rn</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">dominates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">cdf_nat</span> <span class="o">&lt;=</span> <span class="n">cdf_rn</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Natural CDF &lt;= risk-neutral CDF: </span><span class="si">{</span><span class="n">dominates</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>One-step marginals from state 2:
+natural     = [0.15 0.65 0.2 ]
+risk-neutral = [0.188  0.6516 0.1604]
+
+CDFs:
+state 1: natural = 0.1500, risk-neutral = 0.1880
+state 2: natural = 0.8000, risk-neutral = 0.8396
+state 3: natural = 1.0000, risk-neutral = 1.0000
+
+Natural CDF &lt;= risk-neutral CDF: True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="rt_ex3">
+
+<p class="admonition-title"><span class="caption-number">练习 125.3 </span></p>
+<section id="exercise-content">
+<p><strong>风险厌恶与尾部风险。</strong></p>
+<p>编写一个函数 <code class="docutils literal notranslate"><span class="pre">tail_risk_ratio(γ,</span> <span class="pre">threshold,</span> <span class="pre">μ,</span> <span class="pre">σ,</span> <span class="pre">ρ,</span> <span class="pre">T)</span></code>，它：</p>
+<ol class="arabic simple">
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">build_state_price_matrix</span></code> 以给定参数和 <code class="docutils literal notranslate"><span class="pre">n_states=41</span></code> 构造状态价格矩阵 <span class="math notranslate nohighlight">\(P\)</span>。</p></li>
+<li><p>应用 <code class="docutils literal notranslate"><span class="pre">recover_natural_distribution</span></code> 以获得 <span class="math notranslate nohighlight">\(F\)</span>。</p></li>
+<li><p>从中间状态出发，计算在自然分布和风险中性分布下的 <span class="math notranslate nohighlight">\(P(\text{对数收益} \leq \text{阈值})\)</span>。</p></li>
+<li><p>返回比率 <span class="math notranslate nohighlight">\(p_\text{risk-neutral} / p_\text{natural}\)</span>。</p></li>
+</ol>
+<p>使用这个函数，对于30%的简单下跌，即 <code class="docutils literal notranslate"><span class="pre">threshold</span> <span class="pre">=</span> <span class="pre">np.log(0.70)</span></code>，绘制比率作为 <span class="math notranslate nohighlight">\(\gamma \in [1, 10]\)</span> 的函数。</p>
+<p>解释经济含义：为什么较高的 <span class="math notranslate nohighlight">\(\gamma\)</span> 会提高这个比率？</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="ross_recovery-solution-9">
+
+<p class="admonition-title">解答<a class="reference internal" href="#rt_ex3"> 练习 125.3</a></p>
+<section id="solution-content">
+<p>这是一个解法：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">tail_risk_ratio</span><span class="p">(</span><span class="n">γ</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">μ</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span> <span class="n">σ</span><span class="o">=</span><span class="mf">0.20</span><span class="p">,</span> <span class="n">ρ</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;风险中性/自然左尾概率。&quot;&quot;&quot;</span>
+    <span class="n">P_g</span><span class="p">,</span> <span class="n">states_g</span> <span class="o">=</span> <span class="n">build_state_price_matrix</span><span class="p">(</span>
+        <span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">γ</span><span class="p">,</span> <span class="n">ρ</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">n_states</span><span class="o">=</span><span class="mi">41</span><span class="p">,</span> <span class="n">n_σ</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="n">F_g</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">recover_natural_distribution</span><span class="p">(</span><span class="n">P_g</span><span class="p">)</span>
+
+    <span class="n">mid_g</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">states_g</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="n">f_nat_g</span> <span class="o">=</span> <span class="n">F_g</span><span class="p">[</span><span class="n">mid_g</span><span class="p">]</span>
+    <span class="n">f_rn_g</span> <span class="o">=</span> <span class="n">P_g</span><span class="p">[</span><span class="n">mid_g</span><span class="p">]</span> <span class="o">/</span> <span class="n">P_g</span><span class="p">[</span><span class="n">mid_g</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">p_nat</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">f_nat_g</span><span class="p">[</span><span class="n">states_g</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">]))</span>
+    <span class="n">p_rn</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">f_rn_g</span><span class="p">[</span><span class="n">states_g</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="n">p_nat</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">return</span> <span class="n">p_rn</span> <span class="o">/</span> <span class="n">p_nat</span>
+
+
+<span class="n">γs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">threshold_30</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">0.70</span><span class="p">)</span>
+<span class="n">ratios</span> <span class="o">=</span> <span class="p">[</span><span class="n">tail_risk_ratio</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">threshold_30</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">γs</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">γs</span><span class="p">,</span> <span class="n">ratios</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;风险厌恶系数 $</span><span class="se">\\</span><span class="s1">gamma$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;风险中性/自然尾部概率&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;30%下跌的尾部风险比率与风险厌恶&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/54f3a9c5a0272409b387891f640858308fb8264111b77e72ee4f57a85a7ce707.png" src="_images/54f3a9c5a0272409b387891f640858308fb8264111b77e72ee4f57a85a7ce707.png" />
+</div>
+</div>
+<p>较高的风险厌恶系数 <span class="math notranslate nohighlight">\(\gamma\)</span> 使定价核更陡峭：市场对坏状态收益每单位概率赋予更大的溢价。</p>
+<p>风险中性概率纳入了这个溢价，因此在这个 CRRA 模拟中，风险中性崩盘概率随 <span class="math notranslate nohighlight">\(\gamma\)</span> 上升得比恢复的自然崩盘概率更快。</p>
+<p>恢复将市场估计的自然崩盘概率与附加于崩盘状态的定价核溢价分离开来。</p>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Tools and Techniques
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Elementary Statistics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bayes Law
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Statistics and Information
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Linear Programming
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   36. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   37. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Dynamics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   38. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   39. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   40. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   43. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   44. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   45. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Search
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   50. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   53. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   55. 工作搜寻 VI：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   56. 工作搜寻 VII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   57. 工作搜寻 VIII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Reinforcement Learning
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   72. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   73. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   74. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   75. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   83. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   107. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   108. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   109. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   110. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Asset Pricing and Finance
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   119. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Data and Empirics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   128. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   129. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Auctions
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   133. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   134. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   135. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   136. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   137. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/ross_recovery.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/ross_recovery.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/ross_recovery.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/ross_recovery.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/ross_recovery.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "ross_recovery";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/ross_recovery.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

@@ -1,0 +1,2591 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>34. 观点的融合：布莱克韦尔-杜宾斯定理 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'merging_of_opinions';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/merging_of_opinions.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="35. 递归偏好下的生存与长期动态" href="survival_recursive_preferences.html" />
+    <link rel="prev" title="33. 贝叶斯与频率主义决策规则的比较" href="navy_captain.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="观点的融合：布莱克韦尔-杜宾斯定理"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="观点的融合：布莱克韦尔-杜宾斯定理" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/merging_of_opinions.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=merging_of_opinions>
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">34.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">34.2. 序列空间上的概率测度</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">34.2.1. 序列空间及其滤流</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">34.2.2. 绝对连续性</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">34.2.3. 全变差距离</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">34.2.4. 融合问题</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">34.3. 似然比鞅</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">34.3.1. 似然比</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">34.3.2. 将条件测度与似然比联系起来</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">34.4. 布莱克韦尔-杜宾斯定理</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">34.5. 贝塔-伯努利模型</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">34.5.1. 模型</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">34.5.2. 边缘似然与似然比</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">34.5.3. 精确的布莱克韦尔-杜宾斯距离</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">34.5.4. 模拟</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">34.5.5. 跨多条路径的几乎必然收敛</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d-n">34.5.6. <span class="math notranslate nohighlight">\(d_n\)</span> 的上鞅性质</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">34.6. 融合的失败：相互奇异</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">34.6.1. 点质量先验</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">34.7. 角谷定理：融合何时成立？</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">34.7.1. 海林格亲和度</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">34.7.2. 角谷二分法</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">34.7.3. 对融合的蕴含</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">34.7.4. 一个高斯乘积测度例子</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">34.8. 推广到连续时间</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">34.8.1. 吉尔萨诺夫定理与似然比过程</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">34.8.2. 无穷远处的二分法</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">34.9. 应用</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">34.9.1. 贝叶斯学习</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id37">34.9.2. 理性预期与异质先验</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id39">34.9.3. 遍历马尔可夫链</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id40">34.10. 融合的速率</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id41">34.11. 总结与推广</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id42">34.11.1. 经济学中的应用</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id56">34.11.2. 一个来自概率论的配套结果</a></li>
+</ul>
+</li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 22, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/merging_of_opinions.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/be4a8b2" class="changelog-hash">be4a8b2</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">Seed the 37 missing lectures — full source-TOC coverage (#196)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="toc-backref" href="#id58" role="doc-backlink"><span class="section-number">34. </span>观点的融合：布莱克韦尔-杜宾斯定理</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<nav class="contents" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id58">观点的融合：布莱克韦尔-杜宾斯定理</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id59">概述</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id60">序列空间上的概率测度</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id61">似然比鞅</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id62">布莱克韦尔-杜宾斯定理</a></p></li>
+<li><p><a class="reference internal" href="#id15" id="id63">贝塔-伯努利模型</a></p></li>
+<li><p><a class="reference internal" href="#id21" id="id64">融合的失败：相互奇异</a></p></li>
+<li><p><a class="reference internal" href="#id23" id="id65">角谷定理：融合何时成立？</a></p></li>
+<li><p><a class="reference internal" href="#id29" id="id66">推广到连续时间</a></p></li>
+<li><p><a class="reference internal" href="#id34" id="id67">应用</a></p></li>
+<li><p><a class="reference internal" href="#id40" id="id68">融合的速率</a></p></li>
+<li><p><a class="reference internal" href="#id41" id="id69">总结与推广</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="id2">
+<h2><a class="toc-backref" href="#id59" role="doc-backlink"><span class="section-number">34.1. </span>概述</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>本讲座研究 <span class="bibtex-citation" id="id3">Blackwell and Dubins [<a class="reference internal" href="zreferences.html#id61" title="David Blackwell and Lester E. Dubins. Merging of opinions with increasing information. Annals of Mathematical Statistics, 33(3):882–886, 1962.">1962</a>]</span> 的观点融合定理。</p>
+<p>该定理提出了一个简单的问题：</p>
+<blockquote>
+<div><p>如果两个主体对某个随机过程持有不同的先验信念，但无限期地观察相同的数据流，他们的概率评估最终会收敛吗？</p>
+</div></blockquote>
+<p>在绝对连续性条件下，答案是肯定的。</p>
+<p>如果 <span class="math notranslate nohighlight">\(Q \ll P\)</span>（即 <span class="math notranslate nohighlight">\(P\)</span> 支配 <span class="math notranslate nohighlight">\(Q\)</span>），那么在 <span class="math notranslate nohighlight">\(P\)</span> 和 <span class="math notranslate nohighlight">\(Q\)</span> 下关于整个未来路径的条件分布会在全变差意义下融合，<span class="math notranslate nohighlight">\(Q\)</span>-几乎必然。</p>
+<p>如果此外还有 <span class="math notranslate nohighlight">\(P \ll Q\)</span>（因而 <span class="math notranslate nohighlight">\(P \sim Q\)</span>），那么同样的结论在两个主体的概率下都成立。</p>
+<p>这个结果与其他若干思想相关联：</p>
+<ul class="simple">
+<li><p>贝叶斯一致性：当先验位于正确的绝对连续性类中时，后验预测趋近于真值（<a class="reference internal" href="likelihood_bayes.html"><span class="doc">似然比过程和贝叶斯学习</span></a>）。</p></li>
+<li><p>一致性结果：即使主体从不同的先验出发，共同的数据也能消除分歧（<span class="bibtex-citation" id="id4">Aumann [<a class="reference internal" href="zreferences.html#id62" title="Robert J. Aumann. Agreeing to disagree. Annals of Statistics, 4(6):1236–1239, 1976.">1976</a>]</span>）。</p></li>
+<li><p>角谷二分法：对于乘积测度，等价性与奇异性可以从一个海林格准则中读出。</p></li>
+</ul>
+<p>我们在离散时间中展开理论，然后勾勒连续时间的类比。</p>
+<p>在整个讨论中，我们使用贝塔-伯努利模型作为贯穿始终的例子。</p>
+<p>两个主体观察相同的抛硬币结果流，但从关于硬币偏差的不同先验出发。</p>
+<p>让我们从一些导入开始。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">beta</span> <span class="k">as</span> <span class="n">beta_dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">betaln</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>  <span class="c1"># i18n</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>  <span class="c1"># i18n</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h2><a class="toc-backref" href="#id60" role="doc-backlink"><span class="section-number">34.2. </span>序列空间上的概率测度</a><a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h3><span class="section-number">34.2.1. </span>序列空间及其滤流<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<p>设 <span class="math notranslate nohighlight">\((S, \mathscr{S})\)</span> 是一个标准博雷尔空间（即与完备可分度量空间的一个博雷尔子集同构的可测空间），称为信号空间。</p>
+<p>标准博雷尔假设保证了正则条件分布的存在性，这正是该定理所要求的。</p>
+<p>令 <span class="math notranslate nohighlight">\(\Omega = S^{\mathbb{N}}\)</span>，即所有无限序列
+<span class="math notranslate nohighlight">\(\omega = (x_1, x_2, \ldots)\)</span>（其中 <span class="math notranslate nohighlight">\(x_n \in S\)</span>）的集合，配备乘积
+<span class="math notranslate nohighlight">\(\sigma\)</span>-代数 <span class="math notranslate nohighlight">\(\mathscr{F} = \mathscr{S}^{\otimes \mathbb{N}}\)</span>。</p>
+<p>对于每个 <span class="math notranslate nohighlight">\(n \geq 1\)</span>，定义<strong>有限视界</strong> <span class="math notranslate nohighlight">\(\sigma\)</span>-代数</p>
+<div class="math notranslate nohighlight">
+\[
+\mathscr{F}_n = \sigma(x_1, \ldots, x_n),
+\]</div>
+<p>因此 <span class="math notranslate nohighlight">\(\mathscr{F}_1 \subseteq \mathscr{F}_2 \subseteq \cdots \subseteq \mathscr{F}\)</span>。</p>
+<p>定义<strong>尾 <span class="math notranslate nohighlight">\(\sigma\)</span>-代数</strong> <span class="math notranslate nohighlight">\(\mathscr{F}_\infty = \sigma\!\left(\bigcup_{n \geq 1} \mathscr{F}_n\right)\)</span>，它编码了最终能够学到的一切。</p>
+<p>集合 <span class="math notranslate nohighlight">\(\{\mathscr{F}_n\}_{n \geq 1}\)</span> 是由观察过程生成的<strong>自然滤流</strong>；<span class="math notranslate nohighlight">\(\mathscr{F}_n\)</span> 编码了从前 <span class="math notranslate nohighlight">\(n\)</span> 个数据点能够学到的一切。</p>
+<p>设 <span class="math notranslate nohighlight">\(P\)</span> 和 <span class="math notranslate nohighlight">\(Q\)</span> 表示 <span class="math notranslate nohighlight">\((\Omega, \mathscr{F})\)</span> 上的两个概率测度。</p>
+<p>记 <span class="math notranslate nohighlight">\(P_n = P|_{\mathscr{F}_n}\)</span> 和 <span class="math notranslate nohighlight">\(Q_n = Q|_{\mathscr{F}_n}\)</span> 表示它们
+限制到时刻 <span class="math notranslate nohighlight">\(n\)</span> 之前的历史。</p>
+</section>
+<section id="id7">
+<h3><span class="section-number">34.2.2. </span>绝对连续性<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<div class="proof definition admonition" id="absolute_continuity">
+<p class="admonition-title"><span class="caption-number">定义 34.1 </span> (绝对连续性)</p>
+<section class="definition-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(P\)</span> 关于 <span class="math notranslate nohighlight">\(Q\)</span> <strong>绝对连续</strong>，记为 <span class="math notranslate nohighlight">\(P \ll Q\)</span>，如果对于每个 <span class="math notranslate nohighlight">\(A \in \mathscr{F}\)</span>，
+<span class="math notranslate nohighlight">\(Q(A) = 0\)</span> 蕴含 <span class="math notranslate nohighlight">\(P(A) = 0\)</span>。</p>
+<p>它们<strong>相互绝对连续</strong>，或<strong>等价</strong>，记为 <span class="math notranslate nohighlight">\(P \sim Q\)</span>，
+如果 <span class="math notranslate nohighlight">\(P \ll Q\)</span> 和 <span class="math notranslate nohighlight">\(Q \ll P\)</span> 都成立。</p>
+<p><span class="math notranslate nohighlight">\(P\)</span> 关于 <span class="math notranslate nohighlight">\(Q\)</span> <strong>局部绝对连续</strong>，如果对于每个 <span class="math notranslate nohighlight">\(n \geq 1\)</span>，<span class="math notranslate nohighlight">\(P_n \ll Q_n\)</span>。</p>
+</section>
+</div><p>全局绝对连续性 <span class="math notranslate nohighlight">\(P \ll Q\)</span> 蕴含局部绝对连续性，但
+反之不然。</p>
+<p>相互绝对连续意味着两个主体在哪些事件是<em>可能的</em>这一点上意见一致。</p>
+<p>他们可以对概率有不同看法，但都不会排除对方认为可能的事件。</p>
+</section>
+<section id="id8">
+<h3><span class="section-number">34.2.3. </span>全变差距离<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<div class="proof definition admonition" id="total_variation_distance">
+<p class="admonition-title"><span class="caption-number">定义 34.2 </span> (全变差距离)</p>
+<section class="definition-content" id="proof-content">
+<p>对于 <span class="math notranslate nohighlight">\((E, \mathscr{E})\)</span> 上的两个概率测度 <span class="math notranslate nohighlight">\(\mu\)</span> 和 <span class="math notranslate nohighlight">\(\nu\)</span>，</p>
+<div class="math notranslate nohighlight">
+\[
+\|\mu - \nu\|_{\mathrm{TV}}
+= \sup_{A \in \mathscr{E}} |\mu(A) - \nu(A)|
+= \frac{1}{2} \int_E \left|\frac{d\mu}{d\lambda} - \frac{d\nu}{d\lambda}\right| d\lambda,
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\lambda\)</span> 是任意<strong>支配测度</strong>，即 <span class="math notranslate nohighlight">\(\mu \ll \lambda\)</span> 且 <span class="math notranslate nohighlight">\(\nu \ll \lambda\)</span>（例如 <span class="math notranslate nohighlight">\(\lambda = \mu + \nu\)</span>）。</p>
+<p>等价地，<span class="math notranslate nohighlight">\(\|\mu - \nu\|_{\mathrm{TV}} \in [0,1]\)</span>，其中 0 表示 <span class="math notranslate nohighlight">\(\mu = \nu\)</span>，1 表示 <span class="math notranslate nohighlight">\(\mu \perp \nu\)</span>（相互奇异）。</p>
+</section>
+</div><p>当 <span class="math notranslate nohighlight">\(\mu \ll \nu\)</span> 且 <span class="math notranslate nohighlight">\(f = d\mu/d\nu\)</span> 时，</p>
+<div class="math notranslate nohighlight">
+\[
+\|\mu - \nu\|_{\mathrm{TV}} = \mathbb{E}_\nu[(f-1)^+] = 1 - \mathbb{E}_\nu[\min(f,1)].
+\]</div>
+<div class="exercise admonition" id="tv_derivation">
+
+<p class="admonition-title"><span class="caption-number">练习 34.1 </span></p>
+<section id="exercise-content">
+<p>证明上述恒等式。</p>
+<p>*提示：*从 <span class="math notranslate nohighlight">\(\|\mu - \nu\|_{\mathrm{TV}} = \tfrac{1}{2}\,\mathbb{E}_\nu[|f - 1|]\)</span>（这由取 <span class="math notranslate nohighlight">\(\nu\)</span> 作为支配测度得出）出发，并利用 <span class="math notranslate nohighlight">\(\mathbb{E}_\nu[f] = 1\)</span> 这一事实。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="merging_of_opinions-solution-3">
+
+<p class="admonition-title">解答<a class="reference internal" href="#tv_derivation"> 练习 34.1</a></p>
+<section id="solution-content">
+<p>由于 <span class="math notranslate nohighlight">\(\mu \ll \nu\)</span>，我们可以取 <span class="math notranslate nohighlight">\(\nu\)</span> 作为支配测度，因此 <span class="math notranslate nohighlight">\(d\mu/d\nu = f\)</span> 且 <span class="math notranslate nohighlight">\(d\nu/d\nu = 1\)</span>，给出</p>
+<div class="math notranslate nohighlight">
+\[
+\|\mu - \nu\|_{\mathrm{TV}} = \tfrac{1}{2}\,\mathbb{E}_\nu[|f - 1|].
+\]</div>
+<p>写出 <span class="math notranslate nohighlight">\(|f-1| = (f-1)^+ + (1-f)^+\)</span>。</p>
+<p>由于 <span class="math notranslate nohighlight">\(\mu\)</span> 是概率测度，<span class="math notranslate nohighlight">\(\mathbb{E}_\nu[f] = 1\)</span>，因此两部分贡献相等：<span class="math notranslate nohighlight">\(\mathbb{E}_\nu[(f-1)^+] = \mathbb{E}_\nu[(1-f)^+]\)</span>。</p>
+<p>因此 <span class="math notranslate nohighlight">\(\tfrac{1}{2}\,\mathbb{E}_\nu[|f-1|] = \mathbb{E}_\nu[(f-1)^+]\)</span>。</p>
+<p>接下来，注意 <span class="math notranslate nohighlight">\((f-1)^+ = f - \min(f,1)\)</span>，所以 <span class="math notranslate nohighlight">\(\mathbb{E}_\nu[(f-1)^+] = \mathbb{E}_\nu[f] - \mathbb{E}_\nu[\min(f,1)] = 1 - \mathbb{E}_\nu[\min(f,1)]\)</span>。</p>
+</section>
+</div>
+<p>全变差是概率测度之间距离的最强的标准概念之一。</p>
+<p>如果两个测度在全变差意义下接近，那么它们对每个事件的概率都接近。</p>
+</section>
+<section id="id9">
+<h3><span class="section-number">34.2.4. </span>融合问题<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p>布莱克韦尔-杜宾斯定理研究给定<em>过去</em>时<em>未来</em>的条件分布。</p>
+<p>在时刻 <span class="math notranslate nohighlight">\(n\)</span>，观察到 <span class="math notranslate nohighlight">\((x_1,\ldots,x_n)\)</span> 之后，每个主体对所有未来事件形成一个条件分布：</p>
+<div class="math notranslate nohighlight">
+\[
+P(\,\cdot\,|\,\mathscr{F}_n)(\omega), \qquad
+Q(\,\cdot\,|\,\mathscr{F}_n)(\omega).
+\]</div>
+<p>这些是关于整个未来路径的概率测度，而不仅仅是下一个观察。</p>
+<p>融合问题询问是否</p>
+<div class="math notranslate nohighlight">
+\[
+d_n \;:=\; \bigl\|P(\,\cdot\,|\,\mathscr{F}_n) - Q(\,\cdot\,|\,\mathscr{F}_n)\bigr\|_{\mathrm{TV}}
+\;\longrightarrow\; 0
+\]</div>
+<p>当 <span class="math notranslate nohighlight">\(n \to \infty\)</span> 时几乎必然成立。</p>
+</section>
+</section>
+<section id="id10">
+<h2><a class="toc-backref" href="#id61" role="doc-backlink"><span class="section-number">34.3. </span>似然比鞅</a><a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>我们的主要工具是拉东-尼科迪姆导数过程。</p>
+<section id="id11">
+<h3><span class="section-number">34.3.1. </span>似然比<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<p>由于对于每个 <span class="math notranslate nohighlight">\(n\)</span>，<span class="math notranslate nohighlight">\(Q \ll P\)</span> 蕴含 <span class="math notranslate nohighlight">\(Q_n \ll P_n\)</span>，拉东-尼科迪姆
+定理保证了似然比的存在性</p>
+<div class="math notranslate nohighlight">
+\[
+Z_n = \frac{dQ_n}{dP_n}, \qquad Z_n \geq 0 \;\; P\text{-a.s.},
+\qquad \mathbb{E}_P[Z_n] = 1.
+\]</div>
+<p>关键的结构性质是，全局绝对连续性 <span class="math notranslate nohighlight">\(Q \ll P\)</span>
+蕴含在整个 <span class="math notranslate nohighlight">\((\Omega, \mathscr{F})\)</span> 上存在总体拉东-尼科迪姆导数 <span class="math notranslate nohighlight">\(Z = dQ/dP\)</span>，
+并且</p>
+<div class="math notranslate nohighlight">
+\[
+Z_n = \mathbb{E}_P[Z \,|\, \mathscr{F}_n] \qquad P\text{-a.s.}
+\]</div>
+<p>也就是说，<span class="math notranslate nohighlight">\(\{Z_n, \mathscr{F}_n\}_{n \geq 1}\)</span> 是一个非负、一致
+可积的 <span class="math notranslate nohighlight">\(P\)</span>-鞅。</p>
+<div class="proof lemma admonition" id="martingale_convergence">
+<p class="admonition-title"><span class="caption-number">引理 34.1 </span> (鞅收敛)</p>
+<section class="lemma-content" id="proof-content">
+<p>似然比过程 <span class="math notranslate nohighlight">\(\{Z_n\}\)</span> 满足：</p>
+<ol class="arabic simple">
+<li><p>当 <span class="math notranslate nohighlight">\(n \to \infty\)</span> 时，<span class="math notranslate nohighlight">\(Z_n \to Z_\infty\)</span> <span class="math notranslate nohighlight">\(P\)</span>-几乎必然。</p></li>
+<li><p><span class="math notranslate nohighlight">\(Z_\infty = \mathbb{E}_P[Z \,|\, \mathscr{F}_\infty]\)</span> <span class="math notranslate nohighlight">\(P\)</span>-a.s.</p></li>
+<li><p><span class="math notranslate nohighlight">\(Z_n \to Z_\infty\)</span> 在 <span class="math notranslate nohighlight">\(L^1(P)\)</span> 中：<span class="math notranslate nohighlight">\(\;\mathbb{E}_P[|Z_n - Z_\infty|] \to 0\)</span>。</p></li>
+</ol>
+<p>*证明概要。*非负性和鞅性质给出了在 <span class="math notranslate nohighlight">\(L^1(P)\)</span> 中的
+有界性。</p>
+<p>然后几乎必然收敛由杜布鞅
+收敛定理 <span class="bibtex-citation" id="id12">Doob [<a class="reference internal" href="zreferences.html#id63" title="Joseph L. Doob. Stochastic Processes. Wiley, New York, 1953.">1953</a>]</span> 得出。</p>
+<p>一致可积性（它通过条件延森不等式
+由 <span class="math notranslate nohighlight">\(Z \in L^1(P)\)</span> 得出）将其提升到
+<span class="math notranslate nohighlight">\(L^1(P)\)</span> 收敛。<span class="math notranslate nohighlight">\(\square\)</span></p>
+</section>
+</div></section>
+<section id="id13">
+<h3><span class="section-number">34.3.2. </span>将条件测度与似然比联系起来<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<p>下面的恒等式将似然比与条件分布联系起来。</p>
+<p>在集合 <span class="math notranslate nohighlight">\(\{Z_n &gt; 0\}\)</span> 上，<span class="math notranslate nohighlight">\(Q(\,\cdot\,|\,\mathscr{F}_n)\)</span> 关于 <span class="math notranslate nohighlight">\(P(\,\cdot\,|\,\mathscr{F}_n)\)</span> 的
+拉东-尼科迪姆导数为</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{d\,Q(\,\cdot\,|\,\mathscr{F}_n)}{d\,P(\,\cdot\,|\,\mathscr{F}_n)}
+= \frac{Z_\infty}{Z_n}
+\qquad P\text{-a.s. on } \{Z_n &gt; 0\}.
+\]</div>
+<p>于是应用带 <span class="math notranslate nohighlight">\(f = Z_\infty / Z_n\)</span> 的全变差公式给出</p>
+<div class="math notranslate nohighlight">
+\[
+d_n
+= \mathbb{E}_{P(\cdot|\mathscr{F}_n)}\!\left[\left(\frac{Z_\infty}{Z_n} - 1\right)^{\!+}\right]
+= 1 - \mathbb{E}_{P(\cdot|\mathscr{F}_n)}\!\left[\min\!\left(\frac{Z_\infty}{Z_n},\,1\right)\right].
+\]</div>
+<p>两边乘以 <span class="math notranslate nohighlight">\(Z_n\)</span> 并取 <span class="math notranslate nohighlight">\(P\)</span>-期望（然后对 <span class="math notranslate nohighlight">\(\mathscr{F}_n\)</span>-可测的 <span class="math notranslate nohighlight">\(g\)</span> 使用 <span class="math notranslate nohighlight">\(\mathbb{E}_P[Z_n \, g(\mathscr{F}_n)] = \mathbb{E}_Q[g(\mathscr{F}_n)]\)</span>）：</p>
+<div class="math notranslate nohighlight">
+\[
+2\,\mathbb{E}_Q[d_n] \;=\; \mathbb{E}_P[|Z_\infty - Z_n|],
+\]</div>
+<p>因此鞅的 <span class="math notranslate nohighlight">\(L^1(P)\)</span> 收敛控制了全变差距离趋于零的速度。</p>
+</section>
+</section>
+<section id="id14">
+<h2><a class="toc-backref" href="#id62" role="doc-backlink"><span class="section-number">34.4. </span>布莱克韦尔-杜宾斯定理</a><a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<div class="proof theorem admonition" id="blackwell_dubins">
+<p class="admonition-title"><span class="caption-number">定理 34.1 </span> (布莱克韦尔-杜宾斯（1962）)</p>
+<section class="theorem-content" id="proof-content">
+<p>设 <span class="math notranslate nohighlight">\(P\)</span> 和 <span class="math notranslate nohighlight">\(Q\)</span> 是 <span class="math notranslate nohighlight">\((\Omega, \mathscr{F})\)</span> 上的概率测度，满足
+<span class="math notranslate nohighlight">\(Q \ll P\)</span>。</p>
+<p>定义</p>
+<div class="math notranslate nohighlight">
+\[
+d_n = \bigl\|P(\,\cdot\,|\,\mathscr{F}_n) - Q(\,\cdot\,|\,\mathscr{F}_n)\bigr\|_{\mathrm{TV}}.
+\]</div>
+<p>那么 <span class="math notranslate nohighlight">\(d_n \to 0\)</span> <span class="math notranslate nohighlight">\(Q\)</span>-几乎必然。</p>
+</section>
+</div><p>证明有三个步骤。</p>
+<p>步骤 1. 通过 <span class="math notranslate nohighlight">\(Z_n\)</span> 表示 <span class="math notranslate nohighlight">\(d_n\)</span>。</p>
+<p>如上所示，<span class="math notranslate nohighlight">\(d_n\)</span> 可以用 <span class="math notranslate nohighlight">\(Z_\infty / Z_n\)</span> 表示，其中 <span class="math notranslate nohighlight">\(Z_n = \mathbb{E}_P[Z \,|\, \mathscr{F}_n]\)</span> 且 <span class="math notranslate nohighlight">\(Z = dQ/dP\)</span>。</p>
+<p>这将问题化归为关于 <span class="math notranslate nohighlight">\(P\)</span> 下一个鞅的陈述。</p>
+<p>步骤 2. <span class="math notranslate nohighlight">\(\{d_n\}\)</span> 是一个非负上鞅。</p>
+<p>对更多信息取条件平均地降低了可区分性。</p>
+<p>形式上，因为
+<span class="math notranslate nohighlight">\(P(\,\cdot\,|\,\mathscr{F}_n) = \mathbb{E}[P(\,\cdot\,|\,\mathscr{F}_{n+1})\,|\,\mathscr{F}_n]\)</span>
+且全变差是凸的，</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_Q[d_{n+1}\,|\,\mathscr{F}_n] \leq d_n \qquad Q\text{-a.s.}
+\]</div>
+<p>因此 <span class="math notranslate nohighlight">\(\{d_n, \mathscr{F}_n\}\)</span> 是 <span class="math notranslate nohighlight">\([0,1]\)</span> 中的非负 <span class="math notranslate nohighlight">\(Q\)</span>-上鞅。</p>
+<p>由杜布定理，<span class="math notranslate nohighlight">\(d_n \to d_\infty\)</span> <span class="math notranslate nohighlight">\(Q\)</span>-几乎必然，其中 <span class="math notranslate nohighlight">\(d_\infty\)</span> 是某个取值于 <span class="math notranslate nohighlight">\([0,1]\)</span> 的随机变量。</p>
+<p>步骤 3. 几乎必然的极限为零。</p>
+<p>由步骤 1 和 <span class="math notranslate nohighlight">\(L^1\)</span> 界：</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_Q[d_n] = \tfrac{1}{2}\,\mathbb{E}_P[|Z_\infty - Z_n|] \to 0.
+\]</div>
+<p>右边由鞅的 <span class="math notranslate nohighlight">\(L^1(P)\)</span> 收敛而消失。</p>
+<p>因此 <span class="math notranslate nohighlight">\(d_n \to 0\)</span> 在 <span class="math notranslate nohighlight">\(L^1(Q)\)</span> 中，从而在 <span class="math notranslate nohighlight">\(Q\)</span>-概率意义下成立。</p>
+<p>由于 <span class="math notranslate nohighlight">\(d_n\)</span> 已经 <span class="math notranslate nohighlight">\(Q\)</span>-几乎必然收敛，其极限必须满足 <span class="math notranslate nohighlight">\(d_\infty = 0\)</span> <span class="math notranslate nohighlight">\(Q\)</span>-a.s. <span class="math notranslate nohighlight">\(\square\)</span></p>
+<div class="proof remark admonition" id="one_sided_vs_mutual">
+<p class="admonition-title"><span class="caption-number">注记 34.1 </span> (单边绝对连续性 vs. 相互绝对连续性)</p>
+<section class="remark-content" id="proof-content">
+<p>该定理只要求 <span class="math notranslate nohighlight">\(Q \ll P\)</span>，而不要求 <span class="math notranslate nohighlight">\(P \ll Q\)</span>。</p>
+<p>单边绝对连续性 <span class="math notranslate nohighlight">\(Q \ll P\)</span> 给出 <span class="math notranslate nohighlight">\(Q\)</span>-几乎必然的融合。</p>
+<p>由于 <span class="math notranslate nohighlight">\(Q \ll P\)</span> 意味着每个 <span class="math notranslate nohighlight">\(P\)</span>-零集也是 <span class="math notranslate nohighlight">\(Q\)</span>-零集，<span class="math notranslate nohighlight">\(Q\)</span>-a.s. 收敛并不<em>自动</em>蕴含 <span class="math notranslate nohighlight">\(P\)</span>-a.s. 收敛。</p>
+<p>要得出在<em>两个</em>主体的测度下 <span class="math notranslate nohighlight">\(d_n \to 0\)</span>，需要相互绝对连续性 <span class="math notranslate nohighlight">\(P \sim Q\)</span>。</p>
+<p>在加上 <span class="math notranslate nohighlight">\(P \ll Q\)</span> 之后，可以将 <span class="math notranslate nohighlight">\(P\)</span> 和 <span class="math notranslate nohighlight">\(Q\)</span> 的角色互换运行该证明，从而也得到 <span class="math notranslate nohighlight">\(d_n \to 0\)</span> <span class="math notranslate nohighlight">\(P\)</span>-a.s.。</p>
+</section>
+</div><div class="proof remark admonition" id="sharpness">
+<p class="admonition-title"><span class="caption-number">注记 34.2 </span> (尖锐性)</p>
+<section class="remark-content" id="proof-content">
+<p>绝对连续性很重要。</p>
+<p>当 <span class="math notranslate nohighlight">\(P\)</span> 和 <span class="math notranslate nohighlight">\(Q\)</span> 奇异时，融合可能完全失败。</p>
+<p>下面的点质量例子对每个 <span class="math notranslate nohighlight">\(n\)</span> 都有 <span class="math notranslate nohighlight">\(d_n = 1\)</span>。</p>
+<p>对于乘积测度，后面的角谷定理给出了一个尖锐的等价性与奇异性二分法。</p>
+</section>
+</div></section>
+<section id="id15">
+<h2><a class="toc-backref" href="#id63" role="doc-backlink"><span class="section-number">34.5. </span>贝塔-伯努利模型</a><a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<p>在转向 Python 之前，我们介绍贯穿所有
+模拟的主要例子。</p>
+<section id="id16">
+<h3><span class="section-number">34.5.1. </span>模型<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<p>假设数据流 <span class="math notranslate nohighlight">\((x_1, x_2, \ldots)\)</span> 由独立同分布的伯努利
+抽样构成，未知概率为 <span class="math notranslate nohighlight">\(p^* \in (0,1)\)</span>。</p>
+<p>主体 <span class="math notranslate nohighlight">\(i\)</span> 有一个贝塔先验：</p>
+<div class="math notranslate nohighlight">
+\[
+p \sim \mathrm{Beta}(\alpha_i, \beta_i), \qquad i = 1, 2.
+\]</div>
+<p>在观察到 <span class="math notranslate nohighlight">\(n\)</span> 次抽样中有 <span class="math notranslate nohighlight">\(k\)</span> 次成功之后，贝叶斯法则给出
+后验</p>
+<div class="math notranslate nohighlight">
+\[
+p \,|\, x^n \;\sim\; \mathrm{Beta}(\alpha_i + k,\; \beta_i + n - k),
+\]</div>
+<p>而单步向前预测概率为</p>
+<div class="math notranslate nohighlight">
+\[
+\hat{p}_i^n = \mathbb{E}[p\,|\,x^n] = \frac{\alpha_i + k}{\alpha_i + \beta_i + n}.
+\]</div>
+<p>由强大数定律，<span class="math notranslate nohighlight">\(k/n \to p^*\)</span> 几乎必然，因此无论
+主体的初始先验 <span class="math notranslate nohighlight">\((\alpha_i, \beta_i)\)</span> 如何，<span class="math notranslate nohighlight">\(\hat{p}_1^n\)</span> 和 <span class="math notranslate nohighlight">\(\hat{p}_2^n\)</span> 都收敛到 <span class="math notranslate nohighlight">\(p^*\)</span>。</p>
+</section>
+<section id="id17">
+<h3><span class="section-number">34.5.2. </span>边缘似然与似然比<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<p>对于每个固定的值 <span class="math notranslate nohighlight">\(p \in (0,1)\)</span>，令 <span class="math notranslate nohighlight">\(P_p\)</span> 表示无限序列上的独立同分布伯努利<span class="math notranslate nohighlight">\((p)\)</span>
+概率律。</p>
+<p>主体 <span class="math notranslate nohighlight">\(i\)</span> 不知道 <span class="math notranslate nohighlight">\(p\)</span>。</p>
+<p>相反，主体 <span class="math notranslate nohighlight">\(i\)</span> 对 <span class="math notranslate nohighlight">\(p\)</span> 放置先验密度 <span class="math notranslate nohighlight">\(\pi_i\)</span>，这通过下式在数据序列上诱导出
+一个概率测度 <span class="math notranslate nohighlight">\(P_i\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+P_i(A) = \int_0^1 P_p(A)\,\pi_i(p)\,dp
+\qquad \text{对于每个事件 } A.
+\]</div>
+<p>因此 <span class="math notranslate nohighlight">\(P_i\)</span> 是主体在对 <span class="math notranslate nohighlight">\(p\)</span> 的不确定性取平均之后关于
+历史的边缘概率测度。</p>
+<p>特别地，如果 <span class="math notranslate nohighlight">\(x^n\)</span> 是一个精确的观察历史，有 <span class="math notranslate nohighlight">\(k\)</span> 次成功，那么
+<span class="math notranslate nohighlight">\(P_i(x^n)\)</span> 表示主体 <span class="math notranslate nohighlight">\(i\)</span> 在这个混合测度下赋予该历史的概率。</p>
+<p>要计算它，从贝塔密度出发</p>
+<div class="math notranslate nohighlight">
+\[
+\pi_i(p)
+= \frac{p^{\alpha_i - 1} (1-p)^{\beta_i - 1}}{B(\alpha_i, \beta_i)},
+\qquad 0 &lt; p &lt; 1.
+\]</div>
+<p>给定 <span class="math notranslate nohighlight">\(p\)</span>，该有序历史的概率为 <span class="math notranslate nohighlight">\(p^k (1-p)^{n-k}\)</span>。</p>
+<p>因此</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+P_i(x^n)
+&amp;= \int_0^1 p^k (1-p)^{n-k} \pi_i(p)\, dp \\
+&amp;= \frac{1}{B(\alpha_i, \beta_i)}
+\int_0^1 p^{\alpha_i + k - 1} (1-p)^{\beta_i + n - k - 1}\, dp \\
+&amp;= \frac{B(\alpha_i + k,\; \beta_i + n - k)}{B(\alpha_i,\, \beta_i)}.
+\end{aligned}
+\end{split}\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(B(a,b) = \Gamma(a)\Gamma(b)/\Gamma(a+b)\)</span> 是贝塔函数。</p>
+<p>这个表达式是有序历史 <span class="math notranslate nohighlight">\(x^n\)</span> 的概率。</p>
+<p>它仅通过计数 <span class="math notranslate nohighlight">\(k\)</span> 依赖于数据，因此成功次数相同的历史获得相同的概率。</p>
+<p>因此时刻 <span class="math notranslate nohighlight">\(n\)</span> 处的似然比为</p>
+<div class="math notranslate nohighlight">
+\[
+Z_n = \frac{P_{1,n}(x^n)}{P_{2,n}(x^n)}
+= \frac{B(\alpha_2,\, \beta_2)}{B(\alpha_1,\, \beta_1)}
+\cdot
+\frac{B(\alpha_1 + k,\, \beta_1 + n - k)}{B(\alpha_2 + k,\, \beta_2 + n - k)}.
+\]</div>
+<p>这是 <span class="math notranslate nohighlight">\(P_2\)</span>（主体 2 的概率）下的一个鞅，它几乎必然
+收敛到一个有限正极限 <span class="math notranslate nohighlight">\(Z_\infty\)</span>，反映了对于任何具有正参数的贝塔先验，
+<span class="math notranslate nohighlight">\(P_1 \sim P_2\)</span> 这一事实。</p>
+</section>
+<section id="id18">
+<h3><span class="section-number">34.5.3. </span>精确的布莱克韦尔-杜宾斯距离<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<p>对于贝塔-伯努利模型，存在一个 <span class="math notranslate nohighlight">\(d_n\)</span> 的简洁公式。</p>
+<p>由德菲内蒂定理，给定过去时每个主体对<em>未来无限序列</em>的条件分布
+是独立同分布伯努利<span class="math notranslate nohighlight">\((p)\)</span>
+过程的混合，其中 <span class="math notranslate nohighlight">\(p\)</span> 从后验贝塔分布抽取。</p>
+<p>由于不同 <span class="math notranslate nohighlight">\(p\)</span> 的伯努利<span class="math notranslate nohighlight">\((p)^{\infty}\)</span> 测度相互
+奇异（经验频率精确地识别出 <span class="math notranslate nohighlight">\(p\)</span>），关于未来的两个条件分布之间的全变差距离
+等于关于参数 <span class="math notranslate nohighlight">\(p\)</span> 的两个后验分布之间的全变差
+距离。</p>
+<p>全变差距离为</p>
+<div class="math notranslate nohighlight">
+\[
+d_n
+= \bigl\|\mathrm{Beta}(\alpha_1 + k_n,\,\beta_1 + n - k_n)
+- \mathrm{Beta}(\alpha_2 + k_n,\,\beta_2 + n - k_n)\bigr\|_{\mathrm{TV}}.
+\]</div>
+<p>当 <span class="math notranslate nohighlight">\(k_n/n \to p^*\)</span> 且 <span class="math notranslate nohighlight">\(n \to \infty\)</span> 时，两个后验贝塔都集中于 <span class="math notranslate nohighlight">\(p^*\)</span> 附近，方差为 <span class="math notranslate nohighlight">\(1/n\)</span> 阶，因此 <span class="math notranslate nohighlight">\(d_n \to 0\)</span>。</p>
+<p>下面的代码实现了上述贝塔-伯努利更新、预测概率、全变差距离和似然比的计算。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">beta_bernoulli_update</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    序贯贝塔-伯努利贝叶斯更新。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">cum_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">data</span><span class="p">)])</span>   <span class="c1"># 累积成功次数</span>
+    <span class="n">ns</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>                          <span class="c1"># 0, 1, ..., n</span>
+    <span class="n">a_post</span> <span class="o">=</span> <span class="n">a0</span> <span class="o">+</span> <span class="n">cum_k</span>
+    <span class="n">b_post</span> <span class="o">=</span> <span class="n">b0</span> <span class="o">+</span> <span class="p">(</span><span class="n">ns</span> <span class="o">-</span> <span class="n">cum_k</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a_post</span><span class="p">,</span> <span class="n">b_post</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">predictive_prob</span><span class="p">(</span><span class="n">a_post</span><span class="p">,</span> <span class="n">b_post</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;单步向前预测概率 P(X=1 | data)。&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">a_post</span> <span class="o">/</span> <span class="p">(</span><span class="n">a_post</span> <span class="o">+</span> <span class="n">b_post</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">tv_distance_beta</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">n_grid</span><span class="o">=</span><span class="mi">2000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    通过网格求积计算 Beta(a1,b1) 和 Beta(a2,b2) 之间的全变差距离。</span>
+<span class="sd">    在 (0,1) 上使用精细网格。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-8</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">n_grid</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">beta_dist</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">)</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">beta_dist</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">p1</span> <span class="o">-</span> <span class="n">p2</span><span class="p">))</span> <span class="o">*</span> <span class="n">dx</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">log_likelihood_ratio</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算对数似然比 log Z_n = log P1_n(data) - log P2_n(data)</span>
+<span class="sd">    对 `data` 的每个前缀。</span>
+
+<span class="sd">    返回一个长度为 len(data) + 1 的数组，从 0 开始（数据之前）。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a1p</span><span class="p">,</span> <span class="n">b1p</span> <span class="o">=</span> <span class="n">beta_bernoulli_update</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">)</span>
+    <span class="n">a2p</span><span class="p">,</span> <span class="n">b2p</span> <span class="o">=</span> <span class="n">beta_bernoulli_update</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">)</span>
+    <span class="n">log_P1</span> <span class="o">=</span> <span class="n">betaln</span><span class="p">(</span><span class="n">a1p</span><span class="p">,</span> <span class="n">b1p</span><span class="p">)</span> <span class="o">-</span> <span class="n">betaln</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">)</span>
+    <span class="n">log_P2</span> <span class="o">=</span> <span class="n">betaln</span><span class="p">(</span><span class="n">a2p</span><span class="p">,</span> <span class="n">b2p</span><span class="p">)</span> <span class="o">-</span> <span class="n">betaln</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">log_P1</span> <span class="o">-</span> <span class="n">log_P2</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">run_simulation</span><span class="p">(</span><span class="n">p_true</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    模拟融合实验的一次实现。</span>
+
+<span class="sd">    返回一个字典，包含长度为 n_steps + 1 的数组（索引 0 = 先验）。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rng</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p_true</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">)</span>
+
+    <span class="n">a1p</span><span class="p">,</span> <span class="n">b1p</span> <span class="o">=</span> <span class="n">beta_bernoulli_update</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">)</span>
+    <span class="n">a2p</span><span class="p">,</span> <span class="n">b2p</span> <span class="o">=</span> <span class="n">beta_bernoulli_update</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">)</span>
+
+    <span class="n">pred1</span>    <span class="o">=</span> <span class="n">predictive_prob</span><span class="p">(</span><span class="n">a1p</span><span class="p">,</span> <span class="n">b1p</span><span class="p">)</span>
+    <span class="n">pred2</span>    <span class="o">=</span> <span class="n">predictive_prob</span><span class="p">(</span><span class="n">a2p</span><span class="p">,</span> <span class="n">b2p</span><span class="p">)</span>
+    <span class="n">tv_1step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pred1</span> <span class="o">-</span> <span class="n">pred2</span><span class="p">)</span>
+
+    <span class="c1"># 后验贝塔之间的全变差；在此模型中它等于 d_n</span>
+    <span class="n">tv_beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">tv_distance_beta</span><span class="p">(</span><span class="n">a1p</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">b1p</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">a2p</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">b2p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">])</span>
+
+    <span class="n">log_Z</span> <span class="o">=</span> <span class="n">log_likelihood_ratio</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">pred1</span><span class="o">=</span><span class="n">pred1</span><span class="p">,</span> <span class="n">pred2</span><span class="o">=</span><span class="n">pred2</span><span class="p">,</span>
+                <span class="n">tv_1step</span><span class="o">=</span><span class="n">tv_1step</span><span class="p">,</span> <span class="n">tv_beta</span><span class="o">=</span><span class="n">tv_beta</span><span class="p">,</span> <span class="n">log_Z</span><span class="o">=</span><span class="n">log_Z</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id19">
+<h3><span class="section-number">34.5.4. </span>模拟<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<p>我们选择两个对一枚硬币偏差持有非常不同信念的主体，这枚硬币正面朝上的真实概率为 <span class="math notranslate nohighlight">\(p^* = 0.65\)</span>。</p>
+<ul class="simple">
+<li><p>主体 1（怀疑者）：先验 <span class="math notranslate nohighlight">\(\mathrm{Beta}(1, 8)\)</span>，因此
+<span class="math notranslate nohighlight">\(\hat{p}_1^0 = 1/9 \approx 0.11\)</span>。</p></li>
+<li><p>主体 2（乐观者）：先验 <span class="math notranslate nohighlight">\(\mathrm{Beta}(8, 1)\)</span>，因此
+<span class="math notranslate nohighlight">\(\hat{p}_2^0 = 8/9 \approx 0.89\)</span>。</p></li>
+</ul>
+<p>两个先验都支撑在整个 <span class="math notranslate nohighlight">\((0,1)\)</span> 上，因此 <span class="math notranslate nohighlight">\(P_1 \sim P_2\)</span>。</p>
+<p>布莱克韦尔-杜宾斯保证融合。</p>
+<p>下图展示了这种融合的样子。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p_true</span> <span class="o">=</span> <span class="mf">0.65</span>
+<span class="n">a1</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">8.0</span>    <span class="c1"># 怀疑者</span>
+<span class="n">a2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">1.0</span>    <span class="c1"># 乐观者</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="mi">600</span>
+
+<span class="n">sim</span> <span class="o">=</span> <span class="n">run_simulation</span><span class="p">(</span><span class="n">p_true</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">sim</span><span class="p">[</span><span class="s1">&#39;pred1&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;steelblue&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;主体 1 $\hat p_1^n$（先验：怀疑者）&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">sim</span><span class="p">[</span><span class="s1">&#39;pred2&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;主体 2 $\hat p_2^n$（先验：乐观者）&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">p_true</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;真值 $p^*=</span><span class="si">{</span><span class="n">p_true</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观察数 $n$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;预测概率&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;(a) 后验预测均值&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">sim</span><span class="p">[</span><span class="s1">&#39;tv_beta&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;mediumpurple&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观察数 $n$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s1">&#39;$d_n = \|P(\cdot|\mathscr</span><span class="si">{F}</span><span class="s1">_n)&#39;</span>
+    <span class="sa">r</span><span class="s1">&#39; - Q(\cdot|\mathscr</span><span class="si">{F}</span><span class="s1">_n)\|_{\mathrm</span><span class="si">{TV}</span><span class="s1">}$&#39;</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(b) 全变差距离 $d_n$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">sim</span><span class="p">[</span><span class="s1">&#39;log_Z&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkorange&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观察数 $n$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log Z_n$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(c) 对数似然比&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">]</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">epochs</span><span class="p">)))</span>
+
+<span class="k">for</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+    <span class="n">k_e</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sim</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][:</span><span class="n">epoch</span><span class="p">]))</span>
+    <span class="n">pdf1</span> <span class="o">=</span> <span class="n">beta_dist</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">a1</span> <span class="o">+</span> <span class="n">k_e</span><span class="p">,</span> <span class="n">b1</span> <span class="o">+</span> <span class="n">epoch</span> <span class="o">-</span> <span class="n">k_e</span><span class="p">)</span>
+    <span class="n">pdf2</span> <span class="o">=</span> <span class="n">beta_dist</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">a2</span> <span class="o">+</span> <span class="n">k_e</span><span class="p">,</span> <span class="n">b2</span> <span class="o">+</span> <span class="n">epoch</span> <span class="o">-</span> <span class="n">k_e</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">pdf1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">pdf2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">p_true</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$p^*=</span><span class="si">{</span><span class="n">p_true</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$p$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;后验密度&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;(d) 后验密度&#39;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line2D</span>
+<span class="n">handles</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Line2D</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;主体 1&#39;</span><span class="p">),</span>
+    <span class="n">Line2D</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;主体 2&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+    <span class="n">handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Line2D</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$n=</span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">))</span>
+<span class="n">handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <span class="n">Line2D</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$p^*=</span><span class="si">{</span><span class="n">p_true</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-merging-of-opinions-beta-bernoulli">
+<img alt="_images/947d11d28be842b43c6917e35a83d2625b42365c17171fe04ce2b190d8299293.png" src="_images/947d11d28be842b43c6917e35a83d2625b42365c17171fe04ce2b190d8299293.png" />
+<figcaption>
+<p><span class="caption-number">图 34.1 </span><span class="caption-text">贝塔-伯努利例子中的融合。
+四个面板显示后验预测均值、全变差距离 <span class="math notranslate nohighlight">\(d_n\)</span>、对数似然比 <span class="math notranslate nohighlight">\(\log Z_n\)</span>，以及选定视界处的后验密度。</span><a class="headerlink" href="#fig-merging-of-opinions-beta-bernoulli" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>四个面板显示：</p>
+<ul class="simple">
+<li><p>面板 (a)：从 <span class="math notranslate nohighlight">\(\hat{p}_1^0 \approx 0.11\)</span> 和
+<span class="math notranslate nohighlight">\(\hat{p}_2^0 \approx 0.89\)</span> 出发，两个主体的预测概率都
+收敛到 <span class="math notranslate nohighlight">\(p^* = 0.65\)</span>。</p></li>
+<li><p>面板 (b)：全变差距离 <span class="math notranslate nohighlight">\(d_n\)</span> 在
+对数刻度上衰减到零，与定理一致。</p></li>
+<li><p>面板 ©：对数似然比 <span class="math notranslate nohighlight">\(\log Z_n\)</span> 收敛到一个有限
+值，这与本例中的相互绝对连续性一致。</p></li>
+<li><p>面板 (d)：两个主体的后验贝塔密度起初相距
+甚远（一个接近 0，一个接近 1），并逐渐集中到以真值为中心的相同
+分布。</p></li>
+</ul>
+</section>
+<section id="id20">
+<h3><span class="section-number">34.5.5. </span>跨多条路径的几乎必然收敛<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<p>为了说明该定理的几乎必然特性，我们运行许多独立重复。</p>
+<p>该定理关注参考测度下的几乎每条路径，而不仅仅是跨路径的平均。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N_paths</span> <span class="o">=</span> <span class="mi">80</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">ax_tv</span>  <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">ax_log</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">tv_all</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">N_paths</span><span class="p">,</span> <span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">logZ_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">N_paths</span><span class="p">,</span> <span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">steps</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_paths</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">run_simulation</span><span class="p">(</span><span class="n">p_true</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">tv_all</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>   <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s1">&#39;tv_beta&#39;</span><span class="p">]</span>
+    <span class="n">logZ_all</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s1">&#39;log_Z&#39;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_paths</span><span class="p">):</span>
+    <span class="n">ax_tv</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">tv_all</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;steelblue&#39;</span><span class="p">,</span>
+                   <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax_tv</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">tv_all</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">,</span>
+               <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;跨路径均值&#39;</span><span class="p">)</span>
+<span class="n">ax_tv</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观察数 $n$&#39;</span><span class="p">)</span>
+<span class="n">ax_tv</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$d_n$（对数刻度）&#39;</span><span class="p">)</span>
+<span class="n">ax_tv</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_paths</span><span class="p">):</span>
+    <span class="n">ax_log</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">logZ_all</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span>
+                <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax_log</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">logZ_all</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;跨路径均值&#39;</span><span class="p">)</span>
+<span class="n">ax_log</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+<span class="n">ax_log</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观察数 $n$&#39;</span><span class="p">)</span>
+<span class="n">ax_log</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log Z_n$&#39;</span><span class="p">)</span>
+<span class="n">ax_log</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># 有限视界摘要</span>
+<span class="n">frac_below</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">tv_all</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.30</span><span class="p">)</span>
+<span class="n">mean_final</span> <span class="o">=</span> <span class="n">tv_all</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n = </span><span class="si">{</span><span class="n">n_steps</span><span class="si">}</span><span class="s2"> 时 d_n &lt; 0.30 的路径比例: </span><span class="si">{</span><span class="n">frac_below</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n = </span><span class="si">{</span><span class="n">n_steps</span><span class="si">}</span><span class="s2"> 时的平均距离: </span><span class="si">{</span><span class="n">mean_final</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-merging-of-opinions-many-paths">
+<img alt="_images/e65600eacba0fa21e4e783869a6273a5acdd699080b72fcbaa8681908ba6da2d.png" src="_images/e65600eacba0fa21e4e783869a6273a5acdd699080b72fcbaa8681908ba6da2d.png" />
+<figcaption>
+<p><span class="caption-number">图 34.2 </span><span class="caption-text">跨多条样本路径的几乎必然融合。
+左面板绘制全变差距离，右面板绘制对数似然比 <span class="math notranslate nohighlight">\(\log Z_n\)</span>。</span><a class="headerlink" href="#fig-merging-of-opinions-many-paths" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>n = 500 时 d_n &lt; 0.30 的路径比例: 1.00
+n = 500 时的平均距离: 0.255
+</pre></div>
+</div>
+</div>
+</div>
+<p>在这个有限视界处，距离已从初始水平大幅下降，但尚未接近零。</p>
+<p>这仍然与定理一致，因为几乎必然收敛是一个渐近陈述。</p>
+</section>
+<section id="d-n">
+<h3><span class="section-number">34.5.6. </span><span class="math notranslate nohighlight">\(d_n\)</span> 的上鞅性质<a class="headerlink" href="#d-n" title="Link to this heading">#</a></h3>
+<p>证明依赖于 <span class="math notranslate nohighlight">\(\{d_n\}\)</span> 是一个非负上鞅。</p>
+<p>我们可以通过观察跨多条路径的平均增量来数值地说明这一点。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tv_all</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>          <span class="c1"># 形状 (N_paths, n_steps)</span>
+<span class="n">mean_diffs</span> <span class="o">=</span> <span class="n">diffs</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>          <span class="c1"># 每步的平均增量</span>
+<span class="n">cum_sum</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">mean_diffs</span><span class="p">)</span>        <span class="c1"># 累积平均变化</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_diffs</span><span class="p">[:</span><span class="mi">200</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span> <span class="n">mean_diffs</span><span class="p">[:</span><span class="mi">200</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="p">(</span><span class="n">mean_diffs</span><span class="p">[:</span><span class="mi">200</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;负增量&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span> <span class="n">mean_diffs</span><span class="p">[:</span><span class="mi">200</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="p">(</span><span class="n">mean_diffs</span><span class="p">[:</span><span class="mi">200</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;正增量&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观察数 $n$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\mathbb</span><span class="si">{E}</span><span class="s1">[d_{n+1} - d_n]$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cum_sum</span><span class="p">[:</span><span class="mi">200</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkorange&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观察数 $n$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$d_n$ 的累积平均变化&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">frac_decrease</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">mean_diffs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;平均减量的步骤比例: </span><span class="si">{</span><span class="n">frac_decrease</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-merging-of-opinions-supermartingale">
+<img alt="_images/cee5bff09222c5aacd086fe5175d5b74ffe68ff0d4a95913afe32287293f50af.png" src="_images/cee5bff09222c5aacd086fe5175d5b74ffe68ff0d4a95913afe32287293f50af.png" />
+<figcaption>
+<p><span class="caption-number">图 34.3 </span><span class="caption-text">上鞅性质的一个说明。
+图中显示 <span class="math notranslate nohighlight">\(d_n\)</span> 的平均增量及其跨多条模拟路径的累积和。</span><a class="headerlink" href="#fig-merging-of-opinions-supermartingale" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>平均减量的步骤比例: 100.00%
+</pre></div>
+</div>
+</div>
+</div>
+<p>平均增量在大多数步骤为负，累积漂移向下。</p>
+<p>这只是一个说明，而不是证明，因为它使用的是无条件平均，而不是定理中完整的条件期望。</p>
+</section>
+</section>
+<section id="id21">
+<h2><a class="toc-backref" href="#id64" role="doc-backlink"><span class="section-number">34.6. </span>融合的失败：相互奇异</a><a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
+<p>当假设 <span class="math notranslate nohighlight">\(Q \ll P\)</span> 失败时会发生什么？</p>
+<p>奇异情形是最简洁的反例。</p>
+<section id="id22">
+<h3><span class="section-number">34.6.1. </span>点质量先验<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
+<p>假设两个主体都持有退化（点质量）先验：</p>
+<ul class="simple">
+<li><p>主体 P：确信 <span class="math notranslate nohighlight">\(p = p_P = 0.30\)</span>。</p></li>
+<li><p>主体 Q：确信 <span class="math notranslate nohighlight">\(p = p_Q = 0.75\)</span>。</p></li>
+</ul>
+<p>由于 <span class="math notranslate nohighlight">\(P\)</span> 仅对经验频率收敛到 <span class="math notranslate nohighlight">\(0.30\)</span> 的序列赋值，而 <span class="math notranslate nohighlight">\(Q\)</span> 仅对经验频率收敛到 <span class="math notranslate nohighlight">\(0.75\)</span> 的序列赋值，这两个测度相互奇异：<span class="math notranslate nohighlight">\(P \perp Q\)</span>。</p>
+<p>条件分布不更新，因为两个主体都已经确信各自的模型。</p>
+<p>对于定理的对象，即整个未来路径的条件律，</p>
+<div class="math notranslate nohighlight">
+\[
+\|P(\,\cdot\,|\,\mathscr{F}_n) - Q(\,\cdot\,|\,\mathscr{F}_n)\|_{\mathrm{TV}}
+= \|P - Q\|_{\mathrm{TV}} = 1
+\quad \text{对所有 } n.
+\]</div>
+<p>这个等式成立是因为具有不同成功概率的无限乘积伯努利测度是奇异的。</p>
+<p>如果我们只向前看一步，预测距离为 <span class="math notranslate nohighlight">\(|p_P - p_Q| = 0.45\)</span>。</p>
+<p>这小于一，但它不是出现在布莱克韦尔-杜宾斯中的量。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p_P</span> <span class="o">=</span> <span class="mf">0.30</span>
+<span class="n">p_Q</span> <span class="o">=</span> <span class="mf">0.75</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="n">tv_singular_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">tv_singular_1step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">p_P</span> <span class="o">-</span> <span class="n">p_Q</span><span class="p">))</span>
+
+<span class="n">sim_abs_cont</span> <span class="o">=</span> <span class="n">run_simulation</span><span class="p">(</span>
+    <span class="n">p_Q</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">tv_singular_full</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;奇异：整路径 $d_n = 1$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">tv_singular_1step</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;单步差距 $= |p_P - p_Q|$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">sim_abs_cont</span><span class="p">[</span><span class="s1">&#39;tv_beta&#39;</span><span class="p">],</span>
+        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;steelblue&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\mathrm</span><span class="si">{Beta}</span><span class="s1">(1,8)$ vs&#39;</span>
+               <span class="sa">r</span><span class="s1">&#39; $\mathrm</span><span class="si">{Beta}</span><span class="s1">(8,1)$&#39;</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;观察数 $n$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$d_n$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-merging-of-opinions-singular-priors">
+<img alt="_images/a365daa7c09148d708a7ce66e09b9769d5d7603888fc05a4a5f1e927e0fdfcc6.png" src="_images/a365daa7c09148d708a7ce66e09b9769d5d7603888fc05a4a5f1e927e0fdfcc6.png" />
+<figcaption>
+<p><span class="caption-number">图 34.4 </span><span class="caption-text">奇异先验下融合的失败。
+整个未来路径距离保持在一，
+而单步预测差距保持
+在 <span class="math notranslate nohighlight">\(|p_P - p_Q|\)</span>。</span><a class="headerlink" href="#fig-merging-of-opinions-singular-priors" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>对比是鲜明的。</p>
+<p>对于相互绝对连续的先验，<span class="math notranslate nohighlight">\(d_n\)</span> 衰减到零。</p>
+<p>对于奇异的点质量先验，整个未来路径距离永远保持在一。</p>
+<p>更多的数据无法调和这两个主体，因为每个主体都排除了对方赋予正概率的路径。</p>
+</section>
+</section>
+<section id="id23">
+<h2><a class="toc-backref" href="#id65" role="doc-backlink"><span class="section-number">34.7. </span>角谷定理：融合何时成立？</a><a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
+<p>一个自然的问题是：对于哪些乘积测度，布莱克韦尔-杜宾斯
+假设 <span class="math notranslate nohighlight">\(Q \ll P\)</span> 成立？</p>
+<p>对于无限乘积测度，答案由
+<span class="bibtex-citation" id="id24">Kakutani [<a class="reference internal" href="zreferences.html#id64" title="Shizuo Kakutani. On equivalence of infinite product measures. Annals of Mathematics, 49(1):214–224, 1948.">1948</a>]</span> 的经典结果给出。</p>
+<section id="id25">
+<h3><span class="section-number">34.7.1. </span>海林格亲和度<a class="headerlink" href="#id25" title="Link to this heading">#</a></h3>
+<div class="proof definition admonition" id="hellinger_affinity">
+<p class="admonition-title"><span class="caption-number">定义 34.3 </span> (海林格亲和度)</p>
+<section class="definition-content" id="proof-content">
+<p>对于 <span class="math notranslate nohighlight">\((S, \mathscr{S})\)</span> 上具有共同
+支配测度 <span class="math notranslate nohighlight">\(\lambda\)</span> 的概率测度 <span class="math notranslate nohighlight">\(P_n\)</span> 和 <span class="math notranslate nohighlight">\(Q_n\)</span>，<strong>海林格亲和度</strong>为</p>
+<div class="math notranslate nohighlight">
+\[
+\rho_n = \int_S \sqrt{\frac{dP_n}{d\lambda} \cdot \frac{dQ_n}{d\lambda}}\,d\lambda
+\;\in\; [0, 1].
+\]</div>
+<p><span class="math notranslate nohighlight">\(\rho_n = 1\)</span> 当且仅当 <span class="math notranslate nohighlight">\(P_n = Q_n\)</span>；<span class="math notranslate nohighlight">\(\rho_n = 0\)</span> 当且仅当 <span class="math notranslate nohighlight">\(P_n \perp Q_n\)</span>。</p>
+</section>
+</div><p>对于两个特定的一维族：</p>
+<ul class="simple">
+<li><p>高斯：<span class="math notranslate nohighlight">\(P_n = \mathcal{N}(\mu_n, 1)\)</span> vs <span class="math notranslate nohighlight">\(Q_n = \mathcal{N}(0,1)\)</span>：</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
+\rho_n^{\text{Gauss}} = \exp\!\left(-\frac{\mu_n^2}{8}\right).
+\]</div>
+<ul class="simple">
+<li><p>伯努利：<span class="math notranslate nohighlight">\(P_n = \mathrm{Bernoulli}(p)\)</span> vs <span class="math notranslate nohighlight">\(Q_n = \mathrm{Bernoulli}(q)\)</span>：</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
+\rho_n^{\text{Bern}} = \sqrt{pq} + \sqrt{(1-p)(1-q)}.
+\]</div>
+</section>
+<section id="id26">
+<h3><span class="section-number">34.7.2. </span>角谷二分法<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
+<div class="proof theorem admonition" id="kakutani_dichotomy">
+<p class="admonition-title"><span class="caption-number">定理 34.2 </span> (角谷（1948）)</p>
+<section class="theorem-content" id="proof-content">
+<p>设 <span class="math notranslate nohighlight">\(P = \bigotimes_{n=1}^\infty P_n\)</span> 和 <span class="math notranslate nohighlight">\(Q = \bigotimes_{n=1}^\infty Q_n\)</span>
+是无限乘积测度，其因子逐对等价：对于每个 <span class="math notranslate nohighlight">\(n\)</span>，<span class="math notranslate nohighlight">\(P_n \sim Q_n\)</span>。</p>
+<p>那么要么 <span class="math notranslate nohighlight">\(P \sim Q\)</span>，要么 <span class="math notranslate nohighlight">\(P \perp Q\)</span>；不存在
+中间情形。</p>
+<p>具体地，</p>
+<div class="math notranslate nohighlight">
+\[
+P \sim Q
+\quad \iff \quad
+\prod_{n=1}^\infty \rho_n &gt; 0
+\quad \iff \quad
+\sum_{n=1}^\infty (1 - \rho_n) &lt; \infty.
+\]</div>
+<p>如果 <span class="math notranslate nohighlight">\(\prod_{n=1}^\infty \rho_n = 0\)</span>，那么 <span class="math notranslate nohighlight">\(P \perp Q\)</span>。</p>
+<p><em>证明思路。</em>
+一个标准证明研究似然比鞅
+<span class="math notranslate nohighlight">\(Z_N = \prod_{n=1}^N (dP_n/dQ_n)\)</span> 连同恒等式
+<span class="math notranslate nohighlight">\(\mathbb{E}_Q[\sqrt{Z_N}] = \prod_{n=1}^N \rho_n\)</span>。</p>
+<p>乘积保持正对应于等价性，而乘积坍缩到零对应于奇异性。</p>
+<p><span class="math notranslate nohighlight">\(\square\)</span></p>
+</section>
+</div></section>
+<section id="id27">
+<h3><span class="section-number">34.7.3. </span>对融合的蕴含<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
+<p>对于独立同分布类型的序列，角谷定理给出以下图景：</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>情形</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\sum_n (1-\rho_n)\)</span></p></th>
+<th class="head"><p>结论</p></th>
+<th class="head"><p>融合？</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>对所有 <span class="math notranslate nohighlight">\(n\)</span>，<span class="math notranslate nohighlight">\(P_n = Q_n\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(0\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(P = Q\)</span></p></td>
+<td><p>平凡地是</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(P_n \ne Q_n\)</span> 且 <span class="math notranslate nohighlight">\(\sum_n (1-\rho_n) &lt; \infty\)</span></p></td>
+<td><p>有限</p></td>
+<td><p><span class="math notranslate nohighlight">\(P \sim Q\)</span></p></td>
+<td><p>是；布莱克韦尔-杜宾斯适用</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(P_n = P \ne Q = Q_n\)</span> 固定，<span class="math notranslate nohighlight">\(n \ge 1\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\infty\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(P \perp Q\)</span></p></td>
+<td><p>否</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>具有不同固定边缘分布的独立同分布情形是标准的不融合例子。</p>
+<p>如果两个主体对每个观察永久地赋予不同的分布，他们最终处于互不相交的概率世界中。</p>
+</section>
+<section id="id28">
+<h3><span class="section-number">34.7.4. </span>一个高斯乘积测度例子<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
+<p>我们用高斯乘积测度来说明角谷二分法。</p>
+<p>取 <span class="math notranslate nohighlight">\(Q = \mathcal{N}(0,1)^{\otimes\mathbb{N}}\)</span> 作为参考测度，取 <span class="math notranslate nohighlight">\(P = \bigotimes_n \mathcal{N}(\mu_n,1)\)</span> 作为备择。</p>
+<p><span class="math notranslate nohighlight">\(\mu_n\)</span> 的三种选择：</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(\mu_n = \mu &gt; 0\)</span> 常数（<span class="math notranslate nohighlight">\(\sum (1-\rho_n) = \infty\)</span>）<span class="math notranslate nohighlight">\(\Rightarrow P \perp Q\)</span>。</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mu_n = c/\!\sqrt{n}\)</span>（<span class="math notranslate nohighlight">\(\sum (1-\rho_n) \approx \sum c^2/(8n) = \infty\)</span>）<span class="math notranslate nohighlight">\(\Rightarrow P \perp Q\)</span>。</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mu_n = c/n\)</span>（<span class="math notranslate nohighlight">\(\sum (1-\rho_n) \approx \sum c^2/(8n^2) &lt; \infty\)</span>）<span class="math notranslate nohighlight">\(\Rightarrow P \sim Q\)</span>。</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N_max</span>  <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">ns</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">c</span>      <span class="o">=</span> <span class="mf">2.0</span>
+<span class="n">N_plot</span> <span class="o">=</span> <span class="mi">400</span>
+<span class="n">rng</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">cases</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\mu_n = c$（常数）&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">N_max</span><span class="p">,</span> <span class="n">c</span><span class="p">)),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\mu_n = c/\sqrt</span><span class="si">{n}</span><span class="s1">$&#39;</span><span class="p">,</span> <span class="n">c</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ns</span><span class="p">)),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\mu_n = c/n$&#39;</span><span class="p">,</span> <span class="n">c</span> <span class="o">/</span> <span class="n">ns</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>在常数漂移下，<span class="math notranslate nohighlight">\(\log Z_N\)</span> 在 <span class="math notranslate nohighlight">\(Q\)</span> 下漂移到 <span class="math notranslate nohighlight">\(-\infty\)</span>，因此 <span class="math notranslate nohighlight">\(Z_N \to 0\)</span> <span class="math notranslate nohighlight">\(Q\)</span>-a.s. 且 <span class="math notranslate nohighlight">\(P \perp Q\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">label</span><span class="p">,</span> <span class="n">μ_seq</span> <span class="o">=</span> <span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">N_plot</span><span class="p">)</span>
+<span class="n">log_Z_inc</span> <span class="o">=</span> <span class="n">μ_seq</span><span class="p">[:</span><span class="n">N_plot</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">μ_seq</span><span class="p">[:</span><span class="n">N_plot</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">log_Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">log_Z_inc</span><span class="p">)])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N_plot</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">log_Z</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkorange&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;视界 $N$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$Q$ 下的 $\log Z_N$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-kakutani-constant">
+<img alt="_images/af75c29d5647a2f171d5d86690d156637c2f0302ba06c823deefa8673fb817f6.png" src="_images/af75c29d5647a2f171d5d86690d156637c2f0302ba06c823deefa8673fb817f6.png" />
+<figcaption>
+<p><span class="caption-number">图 34.5 </span><span class="caption-text">常数漂移 <span class="math notranslate nohighlight">\(\mu_n = c\)</span>：
+似然比坍缩（<span class="math notranslate nohighlight">\(P \perp Q\)</span>）。</span><a class="headerlink" href="#fig-kakutani-constant" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p><span class="math notranslate nohighlight">\(\mu_n = c/\sqrt{n}\)</span> 的情形显示出相同的定性图景：尽管漂移消失，但消失得太慢。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">label</span><span class="p">,</span> <span class="n">μ_seq</span> <span class="o">=</span> <span class="n">cases</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">N_plot</span><span class="p">)</span>
+<span class="n">log_Z_inc</span> <span class="o">=</span> <span class="n">μ_seq</span><span class="p">[:</span><span class="n">N_plot</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">μ_seq</span><span class="p">[:</span><span class="n">N_plot</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">log_Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">log_Z_inc</span><span class="p">)])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N_plot</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">log_Z</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;视界 $N$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$Q$ 下的 $\log Z_N$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-kakutani-sqrt">
+<img alt="_images/571aec32b029401212c98d5b78c3e7be255d8c7e4aa1610bd424fde3bd1af184.png" src="_images/571aec32b029401212c98d5b78c3e7be255d8c7e4aa1610bd424fde3bd1af184.png" />
+<figcaption>
+<p><span class="caption-number">图 34.6 </span><span class="caption-text">漂移 <span class="math notranslate nohighlight">\(\mu_n = c/\sqrt{n}\)</span>：仍然
+奇异（<span class="math notranslate nohighlight">\(P \perp Q\)</span>）。</span><a class="headerlink" href="#fig-kakutani-sqrt" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>只有在 <span class="math notranslate nohighlight">\(\mu_n = c/n\)</span> 时 <span class="math notranslate nohighlight">\(\sum (1-\rho_n) &lt; \infty\)</span> 才成立，因此似然比保持非退化且 <span class="math notranslate nohighlight">\(P \sim Q\)</span>。</p>
+<p>布莱克韦尔-杜宾斯仅在此情形下适用。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">label</span><span class="p">,</span> <span class="n">μ_seq</span> <span class="o">=</span> <span class="n">cases</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">N_plot</span><span class="p">)</span>
+<span class="n">log_Z_inc</span> <span class="o">=</span> <span class="n">μ_seq</span><span class="p">[:</span><span class="n">N_plot</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">μ_seq</span><span class="p">[:</span><span class="n">N_plot</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">log_Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">log_Z_inc</span><span class="p">)])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N_plot</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">log_Z</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;steelblue&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;视界 $N$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$Q$ 下的 $\log Z_N$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-kakutani-inv-n">
+<img alt="_images/d1fc2f81f2d787f17a81ffca8859b9ad7d7c1002513e54ccb774757c35c630ab.png" src="_images/d1fc2f81f2d787f17a81ffca8859b9ad7d7c1002513e54ccb774757c35c630ab.png" />
+<figcaption>
+<p><span class="caption-number">图 34.7 </span><span class="caption-text">漂移 <span class="math notranslate nohighlight">\(\mu_n = c/n\)</span>：似然
+比稳定（<span class="math notranslate nohighlight">\(P \sim Q\)</span>）。</span><a class="headerlink" href="#fig-kakutani-inv-n" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+</section>
+<section id="id29">
+<h2><a class="toc-backref" href="#id66" role="doc-backlink"><span class="section-number">34.8. </span>推广到连续时间</a><a class="headerlink" href="#id29" title="Link to this heading">#</a></h2>
+<p>同样的逻辑推广到连续时间。</p>
+<section id="id30">
+<h3><span class="section-number">34.8.1. </span>吉尔萨诺夫定理与似然比过程<a class="headerlink" href="#id30" title="Link to this heading">#</a></h3>
+<p>在典范维纳空间上，<span class="math notranslate nohighlight">\(Q\)</span> 为维纳测度（标准
+布朗运动 <span class="math notranslate nohighlight">\(W\)</span>），假设主体 <span class="math notranslate nohighlight">\(P\)</span> 相信该过程有一个
+额外漂移 <span class="math notranslate nohighlight">\(\theta = \{\theta_s\}_{s \geq 0}\)</span>：</p>
+<div class="math notranslate nohighlight">
+\[
+W_t = \widetilde{W}_t + \int_0^t \theta_s\, ds,
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\widetilde{W}\)</span> 是一个 <span class="math notranslate nohighlight">\(P\)</span>-布朗运动。</p>
+<p>吉尔萨诺夫-卡梅隆-马丁定理 <span class="bibtex-citation" id="id31">[<a class="reference internal" href="zreferences.html#id65" title="Igor V. Girsanov. On transforming a certain class of stochastic processes by absolutely continuous substitution of measures. Theory of Probability and Its Applications, 5(3):285–301, 1960.">Girsanov, 1960</a>]</span> 将
+似然比过程给出为随机指数</p>
+<div class="math notranslate nohighlight">
+\[
+Z_t
+= \exp\!\left(\int_0^t \theta_s\, dW_s - \frac{1}{2}\int_0^t \theta_s^2\, ds\right).
+\]</div>
+<p><span class="math notranslate nohighlight">\(Z_t\)</span> 始终是一个非负的 <span class="math notranslate nohighlight">\(Q\)</span>-局部鞅；它是一个真鞅
+当且仅当对所有 <span class="math notranslate nohighlight">\(t\)</span>，<span class="math notranslate nohighlight">\(\mathbb{E}_Q[Z_t] = 1\)</span>。</p>
+<p>诺维科夫条件 <span class="bibtex-citation" id="id32">[<a class="reference internal" href="zreferences.html#id66" title="Alexander A. Novikov. On an identity for stochastic integrals. Theory of Probability and Its Applications, 17(4):717–720, 1972.">Novikov, 1972</a>]</span>，
+对所有 <span class="math notranslate nohighlight">\(T\)</span>，<span class="math notranslate nohighlight">\(\mathbb{E}_Q\!\left[\exp\!\left(\tfrac{1}{2}\int_0^T \theta_s^2\,ds\right)\right] &lt; \infty\)</span>，
+是充分的。</p>
+</section>
+<section id="id33">
+<h3><span class="section-number">34.8.2. </span>无穷远处的二分法<a class="headerlink" href="#id33" title="Link to this heading">#</a></h3>
+<p><span class="math notranslate nohighlight">\([0,+\infty)\)</span> 上的一个关键微妙之处是局部绝对连续性<em>不</em>蕴含 <span class="math notranslate nohighlight">\(\mathscr{F}_\infty\)</span> 上的全局绝对连续性。</p>
+<div class="proof remark admonition" id="dichotomy_at_infinity">
+<p class="admonition-title"><span class="caption-number">注记 34.3 </span> (无限视界的微妙之处)</p>
+<section class="remark-content" id="proof-content">
+<p>假设 <span class="math notranslate nohighlight">\(Z_t\)</span> 对每个有限视界都是一个真 <span class="math notranslate nohighlight">\(Q\)</span>-鞅，并令 <span class="math notranslate nohighlight">\(Z_t \to Z_\infty\)</span> <span class="math notranslate nohighlight">\(Q\)</span>-a.s.</p>
+<p>如果 <span class="math notranslate nohighlight">\(\{Z_t\}\)</span> 在 <span class="math notranslate nohighlight">\([0,\infty)\)</span> 上一致可积，那么在 <span class="math notranslate nohighlight">\(\mathscr{F}_\infty\)</span> 上 <span class="math notranslate nohighlight">\(P \ll Q\)</span>，且 <span class="math notranslate nohighlight">\(dP/dQ = Z_\infty\)</span>。</p>
+<p>对于布莱克韦尔-杜宾斯结论，我们需要在 <span class="math notranslate nohighlight">\(\mathscr{F}_\infty\)</span> 上 <span class="math notranslate nohighlight">\(Q \ll P\)</span>（反方向）。</p>
+<p>在许多标准设定中，包括满足下面能量条件的确定性漂移，这些测度实际上在 <span class="math notranslate nohighlight">\(\mathscr{F}_\infty\)</span> 上是<em>等价的</em>（<span class="math notranslate nohighlight">\(P \sim Q\)</span>），因此两个方向都成立。</p>
+<p>如果一致可积性失败，那么 <span class="math notranslate nohighlight">\(\mathscr{F}_\infty\)</span> 上的全局绝对连续性可能失败。</p>
+<p>在许多标准例子中，包括一个非零常数漂移，这些测度实际上在 <span class="math notranslate nohighlight">\(\mathscr{F}_\infty\)</span> 上是奇异的。</p>
+</section>
+</div><p>确定性漂移例子中的一个方便的充分条件是<strong>能量条件</strong></p>
+<div class="math notranslate nohighlight">
+\[
+\int_0^\infty \theta_s^2\,ds &lt; \infty \quad Q\text{-a.s.}
+\]</div>
+<p>非形式地说，这表示在无限视界上区分两个测度的信息总量是有限的。</p>
+<p>在能量条件下，<span class="math notranslate nohighlight">\(\mathscr{F}_\infty\)</span> 上 <span class="math notranslate nohighlight">\(P \sim Q\)</span>，因此布莱克韦尔-杜宾斯适用，融合在两个测度下都成立。</p>
+<p>当 <span class="math notranslate nohighlight">\(\theta\)</span> 是非零常数时，该条件失败，这些测度在 <span class="math notranslate nohighlight">\(\mathscr{F}_\infty\)</span> 上奇异，融合不会发生。</p>
+<p>一旦在 <span class="math notranslate nohighlight">\(\mathscr{F}_\infty\)</span> 上建立了 <span class="math notranslate nohighlight">\(Q \ll P\)</span>，连续时间布莱克韦尔-杜宾斯结果的证明
+就与离散时间证明完全相同。</p>
+<p><span class="math notranslate nohighlight">\(\{d_t, \mathscr{F}_t\}\)</span> 是 <span class="math notranslate nohighlight">\([0,1]\)</span> 中的非负 <span class="math notranslate nohighlight">\(Q\)</span>-上鞅，因此 <span class="math notranslate nohighlight">\(d_t \to d_\infty\)</span> <span class="math notranslate nohighlight">\(Q\)</span>-a.s.</p>
+<p><span class="math notranslate nohighlight">\(L^1\)</span> 界
+<span class="math notranslate nohighlight">\(\mathbb{E}_Q[d_t] = \tfrac{1}{2}\mathbb{E}_P[|Z_t - Z_\infty|] \to 0\)</span>
+迫使 <span class="math notranslate nohighlight">\(d_\infty = 0\)</span>。</p>
+</section>
+</section>
+<section id="id34">
+<h2><a class="toc-backref" href="#id67" role="doc-backlink"><span class="section-number">34.9. </span>应用</a><a class="headerlink" href="#id34" title="Link to this heading">#</a></h2>
+<section id="id35">
+<h3><span class="section-number">34.9.1. </span>贝叶斯学习<a class="headerlink" href="#id35" title="Link to this heading">#</a></h3>
+<p>最直接的应用是贝叶斯推断。</p>
+<p>假设数据 <span class="math notranslate nohighlight">\((x_1, x_2, \ldots)\)</span> 从真实测度 <span class="math notranslate nohighlight">\(Q^*\)</span> 抽取。</p>
+<p>一个主体在族 <span class="math notranslate nohighlight">\(\{Q_\theta : \theta \in \Theta\}\)</span> 上持有先验 <span class="math notranslate nohighlight">\(\pi\)</span>，诱导出边缘 <span class="math notranslate nohighlight">\(P = \int Q_\theta\,\pi(d\theta)\)</span>。</p>
+<p>如果 <span class="math notranslate nohighlight">\(Q^* \ll P\)</span>（即主体的边缘模型支配真值），那么布莱克韦尔-杜宾斯给出</p>
+<div class="math notranslate nohighlight">
+\[
+\bigl\|P(\,\cdot\,|\,x_1,\ldots,x_n) - Q^*(\,\cdot\,|\,x_1,\ldots,x_n)\bigr\|_{\mathrm{TV}}
+\to 0 \quad Q^*\text{-a.s.}
+\]</div>
+<p>这是贝叶斯一致性的一种强形式：主体的预测在真实测度下与真值融合。</p>
+<p>对真实参数邻域赋予正质量的先验通常保证对每个有限视界 <span class="math notranslate nohighlight">\(n\)</span> 的<em>局部</em>绝对连续性 <span class="math notranslate nohighlight">\(Q^*_n \ll P_n\)</span>，但不保证布莱克韦尔-杜宾斯所要求的 <span class="math notranslate nohighlight">\(\mathscr{F}_\infty\)</span> 上的全局条件 <span class="math notranslate nohighlight">\(Q^* \ll P\)</span>。</p>
+<p>例如，在具有非原子先验 <span class="math notranslate nohighlight">\(\pi\)</span> 的贝塔-伯努利模型中，混合 <span class="math notranslate nohighlight">\(P = \int \mathrm{Bernoulli}(p)^{\infty}\,\pi(dp)\)</span> 对每个 <span class="math notranslate nohighlight">\(n\)</span> 满足 <span class="math notranslate nohighlight">\(Q^*_n \ll P_n\)</span>，但全局上 <span class="math notranslate nohighlight">\(Q^* \not\ll P\)</span>，因为集合 <span class="math notranslate nohighlight">\(\{\lim k_n/n = p^*\}\)</span> 的 <span class="math notranslate nohighlight">\(Q^*\)</span>-测度为一，但 <span class="math notranslate nohighlight">\(P\)</span>-测度为零（不同的伯努利乘积测度相互奇异）。</p>
+<p>在额外结构下，全局绝对连续性确实成立，例如当参数空间有限或模型足够正则以允许杜布一致性论证时。</p>
+<p><span class="bibtex-citation" id="id36">Diaconis and Freedman [<a class="reference internal" href="zreferences.html#id51" title="Persi Diaconis and David Freedman. On the consistency of Bayes estimates. The Annals of Statistics, 14(1):1–26, 1986. doi:10.1214/aos/1176349830.">1986</a>]</span> 研究贝叶斯估计的一致性，并在其他结果中表明，局部与全局绝对连续性之间的相互作用在确保后验收敛中起着核心作用。</p>
+<p>当 <span class="math notranslate nohighlight">\(P \perp Q^*\)</span> 时，存在在 <span class="math notranslate nohighlight">\(Q^*\)</span> 下概率为一但在 <span class="math notranslate nohighlight">\(P\)</span> 下概率为零的事件，因此主体的信念仍然从根本上被错误设定。</p>
+</section>
+<section id="id37">
+<h3><span class="section-number">34.9.2. </span>理性预期与异质先验<a class="headerlink" href="#id37" title="Link to this heading">#</a></h3>
+<p>在宏观经济学中，理性预期模型通常施加共同先验。</p>
+<p>布莱克韦尔-杜宾斯为较弱的初始一致性提供了动态论证。</p>
+<p>如果两个主体从等价先验出发并观察相同的历史，他们的条件预测最终在每个事件上达成一致。</p>
+<p><span class="bibtex-citation" id="id38">Aumann [<a class="reference internal" href="zreferences.html#id62" title="Robert J. Aumann. Agreeing to disagree. Annals of Statistics, 4(6):1236–1239, 1976.">1976</a>]</span> 的一致性定理强化了这一点：具有
+共同先验的主体不能对后验概率”同意不一致”。</p>
+<p>布莱克韦尔-杜宾斯补充了奥曼，表明等价先验足以实现最终一致。</p>
+</section>
+<section id="id39">
+<h3><span class="section-number">34.9.3. </span>遍历马尔可夫链<a class="headerlink" href="#id39" title="Link to this heading">#</a></h3>
+<p>对于具有转移核 <span class="math notranslate nohighlight">\(\Pi\)</span> 和两个初始
+分布 <span class="math notranslate nohighlight">\(\mu\)</span> 和 <span class="math notranslate nohighlight">\(\nu\)</span> 的马尔可夫链，<span class="math notranslate nohighlight">\(n\)</span>-步分布为 <span class="math notranslate nohighlight">\(\mu\Pi^n\)</span>
+和 <span class="math notranslate nohighlight">\(\nu\Pi^n\)</span>。</p>
+<p>如果 <span class="math notranslate nohighlight">\(\Pi\)</span> 是遍历的，具有唯一平稳分布
+<span class="math notranslate nohighlight">\(\pi\)</span>，两者都收敛到 <span class="math notranslate nohighlight">\(\pi\)</span>，因此</p>
+<div class="math notranslate nohighlight">
+\[
+\|\mu\Pi^n - \nu\Pi^n\|_{\mathrm{TV}}
+\leq \|\mu\Pi^n - \pi\|_{\mathrm{TV}} + \|\nu\Pi^n - \pi\|_{\mathrm{TV}}
+\to 0.
+\]</div>
+<p>这是融合的一种特殊形式，它<em>不</em>要求绝对连续性，因为遍历性已经迫使两个分布趋于相同的极限。</p>
+<p>布莱克韦尔-杜宾斯是非遍历或非马尔可夫环境的正确类比，在这些环境中不必存在单一的不变分布。</p>
+</section>
+</section>
+<section id="id40">
+<h2><a class="toc-backref" href="#id68" role="doc-backlink"><span class="section-number">34.10. </span>融合的速率</a><a class="headerlink" href="#id40" title="Link to this heading">#</a></h2>
+<p>布莱克韦尔-杜宾斯是定性的。</p>
+<p>它告诉我们 <span class="math notranslate nohighlight">\(d_n \to 0\)</span>，但没有告诉我们速度有多快。</p>
+<p>界</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_Q[d_n] = \tfrac{1}{2}\,\mathbb{E}_P[|Z_n - Z_\infty|]
+\]</div>
+<p>表明融合的速率由似然比鞅的 <span class="math notranslate nohighlight">\(L^1(P)\)</span> 收敛速率控制。</p>
+<p>在正则参数例子中，人们常常看到 <span class="math notranslate nohighlight">\(n^{-1/2}\)</span> 型的行为。</p>
+<p>下图在贝塔-伯努利模型中检验了这个启发式。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N_paths_rate</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">n_steps_rate</span> <span class="o">=</span> <span class="mi">800</span>
+
+<span class="n">tv_rate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">N_paths_rate</span><span class="p">,</span> <span class="n">n_steps_rate</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_paths_rate</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">run_simulation</span><span class="p">(</span><span class="n">p_true</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">n_steps_rate</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">100</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">tv_rate</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s1">&#39;tv_beta&#39;</span><span class="p">]</span>
+
+<span class="n">ns_rate</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_steps_rate</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">mean_tv</span>  <span class="o">=</span> <span class="n">tv_rate</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>    <span class="c1"># 平均 d_n, n = 1, ..., n_steps_rate</span>
+
+<span class="c1"># 使用样本的后半部分拟合参考线 d_n ~ C / sqrt(n)</span>
+<span class="n">fit_start</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">log_ns</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ns_rate</span><span class="p">[</span><span class="n">fit_start</span><span class="p">:])</span>
+<span class="n">log_tv</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mean_tv</span><span class="p">[</span><span class="n">fit_start</span><span class="p">:]</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+<span class="n">coeffs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">log_ns</span><span class="p">,</span> <span class="n">log_tv</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">slope</span>   <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># 参考曲线 C/sqrt(n)</span>
+<span class="n">C_ref</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ref_curve</span> <span class="o">=</span> <span class="n">C_ref</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ns_rate</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">ns_rate</span><span class="p">,</span> <span class="n">mean_tv</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;steelblue&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+          <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mathbb</span><span class="si">{E}</span><span class="s1">_Q[d_n]$（蒙特卡洛）&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">ns_rate</span><span class="p">,</span> <span class="n">ref_curve</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
+          <span class="n">label</span><span class="o">=</span><span class="p">(</span><span class="sa">rf</span><span class="s1">&#39;参考 $C/\sqrt</span><span class="se">{{</span><span class="s1">n</span><span class="se">}}</span><span class="s1">$&#39;</span>
+                 <span class="sa">rf</span><span class="s1">&#39;（拟合斜率 $\approx </span><span class="si">{</span><span class="n">slope</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">$）&#39;</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;样本大小 $n$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\mathbb</span><span class="si">{E}</span><span class="s1">_Q[d_n]$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;拟合的对数-对数斜率: </span><span class="si">{</span><span class="n">slope</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">  (预测: -0.50)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-merging-of-opinions-rate">
+<img alt="_images/bc8029f83700430b53d4db4c7e69b8b921bf431b2e1bc322a30f2b4edac580d9.png" src="_images/bc8029f83700430b53d4db4c7e69b8b921bf431b2e1bc322a30f2b4edac580d9.png" />
+<figcaption>
+<p><span class="caption-number">图 34.8 </span><span class="caption-text">贝塔-伯努利模型中平均融合距离的对数-对数图。
+拟合斜率接近 <span class="math notranslate nohighlight">\(-1/2\)</span>，这与本实验中的平方根衰减一致。</span><a class="headerlink" href="#fig-merging-of-opinions-rate" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>拟合的对数-对数斜率: -0.469  (预测: -0.50)
+</pre></div>
+</div>
+</div>
+</div>
+<p>拟合样本的后半部分给出接近 <span class="math notranslate nohighlight">\(-0.5\)</span> 的斜率。</p>
+<p>这与本模拟中的 <span class="math notranslate nohighlight">\(n^{-1/2}\)</span> 标度一致。</p>
+</section>
+<section id="id41">
+<h2><a class="toc-backref" href="#id69" role="doc-backlink"><span class="section-number">34.11. </span>总结与推广</a><a class="headerlink" href="#id41" title="Link to this heading">#</a></h2>
+<p>布莱克韦尔-杜宾斯定理背后的逻辑流程是：</p>
+<div class="math notranslate nohighlight">
+\[
+Q \ll P
+\;\Longrightarrow\;
+Z = \frac{dQ}{dP} \in L^1(P)
+\;\Longrightarrow\;
+Z_n = \mathbb{E}_P[Z \,|\, \mathscr{F}_n]
+\xrightarrow{L^1(P)}
+Z_\infty
+\;\Longrightarrow\;
+d_n \xrightarrow{Q\text{-a.s.}} 0.
+\]</div>
+<p>要点：</p>
+<ol class="arabic simple">
+<li><p>单边绝对连续性 <span class="math notranslate nohighlight">\(Q \ll P\)</span> 给出 <span class="math notranslate nohighlight">\(Q\)</span>-几乎必然的融合。对于在<em>两个</em>测度下的融合，需要相互绝对连续性 <span class="math notranslate nohighlight">\(P \sim Q\)</span>。</p></li>
+<li><p>似然比鞅 <span class="math notranslate nohighlight">\(Z_n = \mathbb{E}_P[Z|\mathscr{F}_n]\)</span> 及其 <span class="math notranslate nohighlight">\(L^1(P)\)</span> 收敛驱动了这个结果。</p></li>
+<li><p>更多的数据只能（在期望上）降低区分两个假设的难度。</p></li>
+<li><p>对于无限乘积测度，角谷定理给出一个尖锐的等价性与奇异性二分法：要么 <span class="math notranslate nohighlight">\(P \sim Q\)</span>（当 <span class="math notranslate nohighlight">\(\sum_n (1 - \rho_n) &lt; \infty\)</span> 时），要么 <span class="math notranslate nohighlight">\(P \perp Q\)</span>（当该和发散时），不存在中间情形。</p></li>
+<li><p>当 <span class="math notranslate nohighlight">\(P \sim Q\)</span> 时，布莱克韦尔-杜宾斯适用，融合在两个测度下都发生；当 <span class="math notranslate nohighlight">\(P \perp Q\)</span> 时，分歧永远持续。</p></li>
+</ol>
+<section id="id42">
+<h3><span class="section-number">34.11.1. </span>经济学中的应用<a class="headerlink" href="#id42" title="Link to this heading">#</a></h3>
+<p>一些有影响力的应用和推广是：</p>
+<ul class="simple">
+<li><p><span class="bibtex-citation" id="id43">[<a class="reference internal" href="zreferences.html#id40" title="Ehud Kalai and Ehud Lehrer. Rational learning leads to Nash equilibrium. Econometrica, 61(5):1019–1045, 1993. doi:10.2307/2951492.">Kalai and Lehrer, 1993</a>]</span>：当先验关于真值绝对连续时，重复博弈学习驱动策略趋向纳什行为。</p></li>
+<li><p><span class="bibtex-citation" id="id44">[<a class="reference internal" href="zreferences.html#id41" title="Ehud Kalai and Ehud Lehrer. Subjective equilibrium in repeated games. Econometrica, 61(5):1231–1240, 1993. doi:10.2307/2951500.">Kalai and Lehrer, 1993</a>]</span>：在相同条件下，主观均衡和客观均衡渐近地重合。</p></li>
+<li><p><span class="bibtex-citation" id="id45">[<a class="reference internal" href="zreferences.html#id42" title="Ehud Kalai and Ehud Lehrer. Weak and strong merging of opinions. Journal of Mathematical Economics, 23(1):73–86, 1994. doi:10.1016/0304-4068(94)90037-X.">Kalai and Lehrer, 1994</a>]</span>：为完全全变差收敛过强的环境引入了弱和强融合概念。</p></li>
+<li><p><span class="bibtex-citation" id="id46">[<a class="reference internal" href="zreferences.html#id43" title="Ehud Kalai, Ehud Lehrer, and Rann Smorodinsky. Calibrated forecasting and merging. Games and Economic Behavior, 29(1–2):151–169, 1999. doi:10.1006/game.1998.0608.">Kalai <em>et al.</em>, 1999</a>]</span>：将融合与校准预测联系起来。</p></li>
+<li><p><span class="bibtex-citation" id="id47">[<a class="reference internal" href="zreferences.html#id39" title="Matthew O. Jackson, Ehud Kalai, and Rann Smorodinsky. Bayesian representation of stochastic processes under learning: de Finetti revisited. Econometrica, 67(4):875–893, 1999. doi:10.1111/1468-0262.00055.">Jackson <em>et al.</em>, 1999</a>]</span>：将德菲内蒂式的表示与贝叶斯学习和后验收敛联系起来。</p></li>
+<li><p><span class="bibtex-citation" id="id48">[<a class="reference internal" href="zreferences.html#id49" title="Matthew O. Jackson and Ehud Kalai. Reputation versus social learning. Journal of Economic Theory, 88(1):40–59, 1999. doi:10.1006/jeth.1999.2538.">Jackson and Kalai, 1999</a>]</span>：社会学习削弱了依赖于跨群体持续分歧的声誉效应。</p></li>
+<li><p><span class="bibtex-citation" id="id49">[<a class="reference internal" href="zreferences.html#id44" title="Alvaro Sandroni. Necessary and sufficient conditions for convergence to Nash equilibrium: the almost absolute continuity hypothesis. Games and Economic Behavior, 22(1):121–147, 1998. doi:10.1006/game.1997.0572.">Sandroni, 1998</a>]</span>：表明近似绝对连续性条件足以在重复博弈中实现纳什型收敛。</p></li>
+<li><p><span class="bibtex-citation" id="id50">[<a class="reference internal" href="zreferences.html#id38" title="Ronald I. Miller and Chris William Sanchirico. The role of absolute continuity in “Merging of Opinions” and “Rational Learning”. Games and Economic Behavior, 29(1–2):170–190, 1999. doi:10.1006/game.1999.0752.">Miller and Sanchirico, 1999</a>]</span>：给出了一个替代证明，并从相互有利的赌注角度对持续分歧作出了经济学解释。</p></li>
+<li><p><span class="bibtex-citation" id="id51">[<a class="reference internal" href="zreferences.html#id46" title="Ehud Lehrer and Rann Smorodinsky. Compatible measures and merging. Mathematics of Operations Research, 21(3):697–706, 1996. doi:10.1287/moor.21.3.697.">Lehrer and Smorodinsky, 1996</a>]</span>：研究超越布莱克韦尔-杜宾斯绝对连续性的更广泛的兼容性概念。</p></li>
+<li><p><span class="bibtex-citation" id="id52">[<a class="reference internal" href="zreferences.html#id47" title="Ehud Lehrer and Rann Smorodinsky. Merging and learning. In Thomas S. Ferguson, Lloyd S. Shapley, and James B. MacQueen, editors, Statistics, Probability and Game Theory: Papers in Honor of David Blackwell, volume 30 of IMS Lecture Notes – Monograph Series, pages 147–168. Institute of Mathematical Statistics, Hayward, CA, 1996. doi:10.1214/lnms/1215453571.">Lehrer and Smorodinsky, 1996</a>]</span>：综述重复策略环境中的融合与学习。</p></li>
+<li><p><span class="bibtex-citation" id="id53">[<a class="reference internal" href="zreferences.html#id48" title="Yaw Nyarko. Bayesian learning leads to correlated equilibria in normal form games. Economic Theory, 4(6):821–841, 1994. doi:10.1007/BF01213814.">Nyarko, 1994</a>]</span>：将绝对连续性下的贝叶斯学习与趋向相关均衡的收敛联系起来。</p></li>
+<li><p><span class="bibtex-citation" id="id54">[<a class="reference internal" href="zreferences.html#id45" title="Luciano Pomatto, Nabil I. Al-Najjar, and Alvaro Sandroni. Merging and testing opinions. The Annals of Statistics, 42(3):1003–1028, 2014. doi:10.1214/14-AOS1212.">Pomatto <em>et al.</em>, 2014</a>]</span>：将定理推广到有限可加概率，并将融合与检验可操纵性联系起来。</p></li>
+<li><p><span class="bibtex-citation" id="id55">[<a class="reference internal" href="zreferences.html#id50" title="Daron Acemoglu, Victor Chernozhukov, and Muhamet Yildiz. Fragility of asymptotic agreement under Bayesian learning. Theoretical Economics, 11(1):187–225, 2016. doi:10.3982/TE436.">Acemoglu <em>et al.</em>, 2016</a>]</span>：表明当主体对信号结构本身不确定时分歧如何持续。</p></li>
+</ul>
+</section>
+<section id="id56">
+<h3><span class="section-number">34.11.2. </span>一个来自概率论的配套结果<a class="headerlink" href="#id56" title="Link to this heading">#</a></h3>
+<p><span class="bibtex-citation" id="id57">[<a class="reference internal" href="zreferences.html#id51" title="Persi Diaconis and David Freedman. On the consistency of Bayes estimates. The Annals of Statistics, 14(1):1–26, 1986. doi:10.1214/aos/1176349830.">Diaconis and Freedman, 1986</a>]</span> 研究贝叶斯估计的一致性，证明了涉及后验收敛的等价性，并提供了突出先验作用的反例。</p>
+<p>他们的工作与布莱克韦尔-杜宾斯处于相同的思想传统中，在经济学学习文献中通常与融合定理一起被引用。</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Tools and Techniques
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Elementary Statistics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bayes Law
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Statistics and Information
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Linear Programming
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   36. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   37. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Dynamics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   38. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   39. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   40. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   43. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   44. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   45. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Search
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   50. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   53. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   55. 工作搜寻 VI：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   56. 工作搜寻 VII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   57. 工作搜寻 VIII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Reinforcement Learning
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   72. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   73. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   74. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   75. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   83. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   107. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   108. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   109. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   110. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Asset Pricing and Finance
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   119. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Data and Empirics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   128. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   129. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Auctions
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   133. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   134. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   135. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   136. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   137. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/merging_of_opinions.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/merging_of_opinions.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/merging_of_opinions.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/merging_of_opinions.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/merging_of_opinions.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "merging_of_opinions";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/merging_of_opinions.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

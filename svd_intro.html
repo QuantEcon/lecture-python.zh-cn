@@ -9,9 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>5. 奇异值分解 &#8212; Python中级数量经济学</title>
-    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
     
         <script>
             MathJax = {
@@ -70,13 +77,13 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=a459934d9fea1f60268e46d95e2569a33e1f6ec2" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
-    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=b4b7a797" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -94,8 +101,8 @@
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-    <script src="_static/scripts/quantecon-book-theme.js?digest=06ebc90d5139b434c2742937a4ef3b185cb93e2f"></script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
     <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
     <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
@@ -150,10 +157,31 @@
 <meta property="og:site_name" content="Python中级数量经济学" />
 <meta name="theme-color" content="#ffffff" />
 
+
+
+
   </head>
 <body>
 
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
 <!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
 
     <span id="top"></span>
 
@@ -165,7 +193,12 @@
 
                 <div class="qe-page__toc">
 
-                    <div class="inner">
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
 
                         
                         <div class="qe-page__toc-header">
@@ -184,8 +217,8 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">5.7. 极分解</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pca">5.8. 应用：主成分分析(PCA)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pcasvd">5.9. PCA与SVD的关系</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">5.10. 基于特征值分解的PCA</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">5.11. 联系与总结</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">5.10. 基于特征值和特征向量的PCA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">5.11. 联系</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">5.12. 练习</a></li>
 </ul>
                             <p class="logo">
@@ -197,17 +230,23 @@
                                 
                             </p>
 
-                            <p class="powered">Powered by <a href="https://jupyterbook.org/en/stable/">Jupyter Book</a></p>
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
 
                         </nav>
 
                         <div class="qe-page__toc-footer">
                             
                             
-                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                            
+                            
+                            
                         </div>
 
                     </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
 
                 </div>
 
@@ -217,10 +256,9 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">奇异值分解</p>
-
                     </div>
-                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+
+                    <!-- Authors section -->
                         <p class="qe-page__header-authors" font-size="18">
                             
                                 
@@ -233,6 +271,73 @@
                             
                         </p>
 
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 19, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/svd_intro.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/f5525bf" class="changelog-hash">f5525bf</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">[action-translation] resync: svd_intro.md (#154)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/21b4d81" class="changelog-hash">21b4d81</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/54ccb64" class="changelog-hash">54ccb64</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">updates</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c4c4b86" class="changelog-hash">c4c4b86</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update matplotlib</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/ab0498b" class="changelog-hash">ab0498b</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update all translated lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/387e084" class="changelog-hash">387e084</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lecture series</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
 
                 </div> <!-- .page__header -->
 
@@ -254,6 +359,7 @@
 <li><p><strong>最小二乘回归</strong>（包括欠定和超定情况）</p></li>
 <li><p><strong>主成分分析</strong>（PCA）</p></li>
 </ul>
+<p>与主成分分析（PCA）类似，动态模态分解（DMD）也可以被看作是一种数据降维方法，它通过将数据投影到一组有限的因子上来表示数据中的显著模式。</p>
 <p>在后续的<a class="reference internal" href="var_dmd.html"><span class="doc">动态模式分解</span></a>讲座中，我们会看到如何利用SVD来高效地计算向量自回归（VAR）模型的简化形式。</p>
 </section>
 <section id="id3">
@@ -405,7 +511,8 @@ X^\top  U_R &amp; = 0
 \begin{aligned}
 X^\top  u_i &amp; = \sigma_i v_i, \quad i=1, \ldots, p \cr
 X^\top  u_i &amp; = 0 \quad i= p+1, \ldots, m
-\end{aligned}\]</div>
+\end{aligned}
+\]</div>
 <p>注意方程 <a class="reference internal" href="#equation-eq-orthoortho2">(5.6)</a> 表明变换 <span class="math notranslate nohighlight">\(X^\top\)</span> 将一对不同的正交单位向量 <span class="math notranslate nohighlight">\(u_i, u_j\)</span>（其中 <span class="math notranslate nohighlight">\(i\)</span> 和 <span class="math notranslate nohighlight">\(j\)</span> 都小于或等于 <span class="math notranslate nohighlight">\(X\)</span> 的秩 <span class="math notranslate nohighlight">\(p\)</span>）映射到一对不同的正交单位向量 <span class="math notranslate nohighlight">\(v_i, v_j\)</span>。</p>
 <p>方程 <a class="reference internal" href="#equation-eq-xfour1b">(5.5)</a> 表明：</p>
 <div class="math notranslate nohighlight">
@@ -559,7 +666,7 @@ V.T:
 <p>这是一个非常强大的定理，它表明我们可以将一个非满秩的 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span> 通过SVD分解，用一个满秩的 <span class="math notranslate nohighlight">\(p \times p\)</span> 矩阵来最佳近似。</p>
 <p>此外，如果这些 <span class="math notranslate nohighlight">\(p\)</span> 个奇异值中有些携带的信息比其他的更多，而我们想用最少的数据获得最多的信息，我们可以取按大小排序的 <span class="math notranslate nohighlight">\(r\)</span> 个主要奇异值。</p>
 <p>在介绍主成分分析时，我们会对此进行更详细的讨论。</p>
-<p>你可以在<a class="reference external" href="https://zhuanlan.zhihu.com/p/606447321">这里</a>阅读关于Eckart-Young定理及其应用的内容。</p>
+<p>你可以在<a class="reference external" href="https://en.wikipedia.org/wiki/Low-rank_approximation">这里</a>阅读关于Eckart-Young定理及其应用的内容。</p>
 <p>在讨论主成分分析(PCA)和动态模态分解(DMD)时，我们将会用到这个定理。</p>
 </section>
 <section id="svdsvd">
@@ -584,13 +691,14 @@ VV^\top  &amp; = I &amp; \quad V^\top  V = I
 <li><p>在<strong>高瘦型</strong>情况下，即 <span class="math notranslate nohighlight">\(m &gt; &gt; n\)</span>，对于<strong>简化型</strong> SVD</p></li>
 </ul>
 <div class="math notranslate nohighlight">
-\[ \begin{align}\begin{aligned}
-\begin{aligned}\\UU^\top  &amp;  \neq I  &amp;  \quad U^\top  U = I \cr
+\[
+\begin{aligned}
+UU^\top  &amp;  \neq I  &amp;  \quad U^\top  U = I \cr
 VV^\top  &amp; = I &amp; \quad V^\top  V = I
 \end{aligned}
-\end{aligned}\end{align} \]</div>
+\]</div>
 <ul class="simple">
-<li><p>在<strong>短胖</strong>情况下(即 <span class="math notranslate nohighlight">\(m &lt; &lt; n\)</span>),对于<strong>简化</strong>SVD</p></li>
+<li><p>在<strong>矮胖</strong>情况下(即 <span class="math notranslate nohighlight">\(m &lt; &lt; n\)</span>),对于<strong>简化</strong>SVD</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[
@@ -635,14 +743,14 @@ VV^\top  &amp; = I &amp; \quad V^\top  V \neq I
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>U, S, V =
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[-0.22,  0.67,  0.26, -0.6 ,  0.27],
-        [-0.63, -0.1 , -0.46, -0.32, -0.53],
-        [-0.24, -0.45,  0.81, -0.18, -0.22],
-        [-0.65,  0.26,  0.15,  0.68,  0.17],
-        [-0.29, -0.51, -0.21, -0.22,  0.75]]),
- array([1.85, 0.38]),
- array([[-0.63, -0.78],
-        [-0.78,  0.63]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[-0.5 ,  0.49, -0.65, -0.29,  0.07],
+        [-0.35, -0.76, -0.23, -0.23, -0.44],
+        [-0.69,  0.13,  0.7 , -0.14,  0.04],
+        [-0.36, -0.05, -0.17,  0.91, -0.01],
+        [-0.11, -0.41, -0.1 , -0.07,  0.9 ]]),
+ array([1.48, 0.22]),
+ array([[-0.49, -0.87],
+        [-0.87,  0.49]]))
 </pre></div>
 </div>
 </div>
@@ -655,17 +763,17 @@ VV^\top  &amp; = I &amp; \quad V^\top  V \neq I
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Uhat, Shat, Vhat = 
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Uhat, Shat, Vhat =
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[-0.22,  0.67],
-        [-0.63, -0.1 ],
-        [-0.24, -0.45],
-        [-0.65,  0.26],
-        [-0.29, -0.51]]),
- array([1.85, 0.38]),
- array([[-0.63, -0.78],
-        [-0.78,  0.63]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[-0.5 ,  0.49],
+        [-0.35, -0.76],
+        [-0.69,  0.13],
+        [-0.36, -0.05],
+        [-0.11, -0.41]]),
+ array([1.48, 0.22]),
+ array([[-0.49, -0.87],
+        [-0.87,  0.49]]))
 </pre></div>
 </div>
 </div>
@@ -699,19 +807,19 @@ VV^\top  &amp; = I &amp; \quad V^\top  V \neq I
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>UUT, UTU = 
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>UUT, UTU =
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 1.00e+00, -1.39e-16, -1.67e-16, -2.08e-16, -2.50e-16],
-        [-1.39e-16,  1.00e+00, -5.55e-17, -6.94e-17,  0.00e+00],
-        [-1.67e-16, -5.55e-17,  1.00e+00, -9.02e-17,  0.00e+00],
-        [-2.08e-16, -6.94e-17, -9.02e-17,  1.00e+00, -8.33e-17],
-        [-2.50e-16,  0.00e+00,  0.00e+00, -8.33e-17,  1.00e+00]]),
- array([[ 1.00e+00,  1.94e-16,  1.73e-16, -1.11e-16,  8.33e-17],
-        [ 1.94e-16,  1.00e+00,  0.00e+00,  8.33e-17, -5.55e-17],
-        [ 1.73e-16,  0.00e+00,  1.00e+00,  6.25e-17, -2.78e-17],
-        [-1.11e-16,  8.33e-17,  6.25e-17,  1.00e+00,  5.55e-17],
-        [ 8.33e-17, -5.55e-17, -2.78e-17,  5.55e-17,  1.00e+00]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 1.00e+00, -1.25e-16,  2.79e-16,  1.40e-16, -6.25e-17],
+        [-1.25e-16,  1.00e+00,  9.02e-17,  1.05e-16,  1.67e-16],
+        [ 2.79e-16,  9.02e-17,  1.00e+00,  1.18e-16, -1.39e-17],
+        [ 1.40e-16,  1.05e-16,  1.18e-16,  1.00e+00,  1.73e-17],
+        [-6.25e-17,  1.67e-16, -1.39e-17,  1.73e-17,  1.00e+00]]),
+ array([[ 1.00e+00, -4.86e-17,  1.49e-16, -1.04e-17,  0.00e+00],
+        [-4.86e-17,  1.00e+00, -3.47e-17, -3.12e-17,  5.55e-17],
+        [ 1.49e-16, -3.47e-17,  1.00e+00, -2.69e-17, -2.78e-17],
+        [-1.04e-17, -3.12e-17, -2.69e-17,  1.00e+00, -1.39e-17],
+        [ 0.00e+00,  5.55e-17, -2.78e-17, -1.39e-17,  1.00e+00]]))
 </pre></div>
 </div>
 </div>
@@ -726,26 +834,22 @@ VV^\top  &amp; = I &amp; \quad V^\top  V \neq I
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>UhatUhatT, UhatTUhat= 
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>UhatUhatT, UhatTUhat=
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.5 ,  0.07, -0.25,  0.32, -0.28],
-        [ 0.07,  0.4 ,  0.19,  0.38,  0.23],
-        [-0.25,  0.19,  0.26,  0.03,  0.3 ],
-        [ 0.32,  0.38,  0.03,  0.49,  0.05],
-        [-0.28,  0.23,  0.3 ,  0.05,  0.35]]),
- array([[1.00e+00, 1.94e-16],
-        [1.94e-16, 1.00e+00]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.49, -0.19,  0.41,  0.16, -0.14],
+        [-0.19,  0.7 ,  0.15,  0.17,  0.35],
+        [ 0.41,  0.15,  0.49,  0.24,  0.03],
+        [ 0.16,  0.17,  0.24,  0.13,  0.06],
+        [-0.14,  0.35,  0.03,  0.06,  0.18]]),
+ array([[ 1.00e+00, -4.86e-17],
+        [-4.86e-17,  1.00e+00]]))
 </pre></div>
 </div>
 </div>
 </div>
 <p><strong>注释：</strong></p>
-<p>上述代码展示了两种不同的SVD计算方式:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">full_matrices=True</span></code> 计算完整的SVD分解</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">full_matrices=False</span></code> 计算简化的SVD分解,只保留非零奇异值对应的部分</p></li>
-</ul>
+<p>上述代码展示了 <code class="docutils literal notranslate"><span class="pre">full_matrices=True</span></code> 和 <code class="docutils literal notranslate"><span class="pre">full_matrices=False</span></code> 选项的应用。使用 <code class="docutils literal notranslate"><span class="pre">full_matrices=False</span></code> 会返回简化的奇异值分解。</p>
 <p><strong>完整</strong>和<strong>简化</strong>的奇异值分解都能准确地分解一个 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span></p>
 <p>当我们在后面学习动态模态分解时，记住在这种高瘦矩阵情况下完整和简化奇异值分解的上述性质将很重要。</p>
 <p>现在让我们来看一个矮胖矩阵的情况。</p>
@@ -762,17 +866,17 @@ VV^\top  &amp; = I &amp; \quad V^\top  V \neq I
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>U, S, V = 
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>U, S, V =
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.53, -0.85],
-        [ 0.85,  0.53]]),
- array([1.44, 0.66]),
- array([[ 0.61,  0.31,  0.09,  0.36,  0.63],
-        [-0.11,  0.31,  0.07, -0.84,  0.43],
-        [-0.05, -0.11,  0.99,  0.02, -0.06],
-        [-0.7 ,  0.58,  0.03,  0.39,  0.17],
-        [-0.35, -0.68, -0.06,  0.11,  0.63]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.56, -0.83],
+        [ 0.83,  0.56]]),
+ array([1.66, 0.54]),
+ array([[ 0.51,  0.19,  0.22,  0.69,  0.42],
+        [ 0.53,  0.39, -0.5 ,  0.01, -0.56],
+        [-0.13,  0.59,  0.71, -0.08, -0.35],
+        [-0.6 ,  0.04, -0.22,  0.7 , -0.32],
+        [-0.29,  0.68, -0.38, -0.17,  0.53]]))
 </pre></div>
 </div>
 </div>
@@ -785,14 +889,14 @@ VV^\top  &amp; = I &amp; \quad V^\top  V \neq I
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Uhat, Shat, Vhat = 
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Uhat, Shat, Vhat =
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.53, -0.85],
-        [ 0.85,  0.53]]),
- array([1.44, 0.66]),
- array([[ 0.61,  0.31,  0.09,  0.36,  0.63],
-        [-0.11,  0.31,  0.07, -0.84,  0.43]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[ 0.56, -0.83],
+        [ 0.83,  0.56]]),
+ array([1.66, 0.54]),
+ array([[ 0.51,  0.19,  0.22,  0.69,  0.42],
+        [ 0.53,  0.39, -0.5 ,  0.01, -0.56]]))
 </pre></div>
 </div>
 </div>
@@ -851,10 +955,10 @@ X = \begin{bmatrix} X_1 \mid X_2 \mid \cdots \mid X_n\end{bmatrix}
 <p>其中对于 <span class="math notranslate nohighlight">\(j = 1, \ldots, n\)</span>，列向量 <span class="math notranslate nohighlight">\(X_j = \begin{bmatrix}x_{1j}\\x_{2j}\\\vdots\\x_{mj}\end{bmatrix}\)</span> 是变量 <span class="math notranslate nohighlight">\(\begin{bmatrix}X_1\\X_2\\\vdots\\X_m\end{bmatrix}\)</span> 的观测值向量。</p>
 <p>在<strong>时间序列</strong>分析中，列索引 <span class="math notranslate nohighlight">\(j\)</span> 代表不同的时间点，而行索引代表不同的随机变量。</p>
 <p>在<strong>横截面</strong>分析中，列索引 <span class="math notranslate nohighlight">\(j\)</span> 代表不同的个体，而行索引代表它们的不同属性。</p>
-<p>SVD 是一种将矩阵分解为有用组件的方法，类似于极分解、特征分解等。而 PCA 则是一种基于 SVD 的数据分析方法，它通过一系列统计步骤来捕捉数据中最重要的模式，帮助我们更好地理解和可视化数据。</p>
-<p>让我们来看看 PCA 的具体步骤：</p>
+<p>正如我们之前所见，SVD是一种将矩阵分解为有用组件的方法，就像极分解、特征分解等其他方法一样。</p>
+<p>而PCA则是一种基于SVD进行数据分析的方法。其目标是应用一定的步骤，借助统计工具来捕捉数据中最重要的模式，从而更好地可视化数据中的规律。</p>
 <p><strong>第1步：数据标准化</strong></p>
-<p>由于数据可能包含不同单位和尺度的变量，我们首先需要标准化数据：</p>
+<p>由于数据矩阵可能包含不同单位和尺度的变量，我们首先需要对数据进行标准化。</p>
 <p>首先计算 <span class="math notranslate nohighlight">\(X\)</span> 的每一行的平均值。</p>
 <div class="math notranslate nohighlight">
 \[
@@ -865,20 +969,20 @@ X = \begin{bmatrix} X_1 \mid X_2 \mid \cdots \mid X_n\end{bmatrix}
 \[\begin{split}
 \bar{X} =  \begin{bmatrix} \bar{X_1} \\ \bar{X_2} \\ \ldots \\ \bar{X_m}\end{bmatrix}\begin{bmatrix}1 \mid 1 \mid \cdots \mid 1 \end{bmatrix}
 \end{split}\]</div>
-<p>从原始矩阵中减去平均值矩阵以创建一个均值中心化矩阵：</p>
+<p>从原始矩阵中减去平均值矩阵，得到一个均值中心化矩阵：</p>
 <div class="math notranslate nohighlight">
 \[
 B = X - \bar{X}
 \]</div>
 <p><strong>第2步：计算协方差矩阵</strong></p>
-<p>为了研究变量之间的关系，我们计算中心化数据的协方差矩阵：</p>
+<p>由于我们希望提取变量之间的关系，而不仅仅是它们的大小——换句话说，我们想知道它们能在多大程度上相互解释——因此我们计算<span class="math notranslate nohighlight">\(B\)</span>的协方差矩阵。</p>
 <div class="math notranslate nohighlight">
 \[
 C = \frac{1}{n} BB^{\top}
 \]</div>
-<p><strong>第3步：分解协方差矩阵</strong></p>
-<p>由于矩阵<span class="math notranslate nohighlight">\(C\)</span>是正定的，我们可以对其进行特征值分解，找出其特征值，并按降序重新排列特征值和特征向量矩阵。</p>
-<p><span class="math notranslate nohighlight">\(C\)</span>的特征值分解可以通过分解<span class="math notranslate nohighlight">\(B\)</span>来得到。由于<span class="math notranslate nohighlight">\(B\)</span>不是方阵，我们对<span class="math notranslate nohighlight">\(B\)</span>进行SVD分解：</p>
+<p><strong>第3步：分解协方差矩阵并排列奇异值：</strong></p>
+<p>由于矩阵<span class="math notranslate nohighlight">\(C\)</span>是正定的，我们可以对其进行特征分解，找出其特征值，并将特征值和特征向量矩阵按降序重新排列。</p>
+<p><span class="math notranslate nohighlight">\(C\)</span>的特征分解可以通过分解<span class="math notranslate nohighlight">\(B\)</span>来求得。由于<span class="math notranslate nohighlight">\(B\)</span>不是方阵，我们对<span class="math notranslate nohighlight">\(B\)</span>进行SVD分解：</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
@@ -892,14 +996,14 @@ B B^\top &amp;= U \Sigma V^\top (U \Sigma V^{\top})^{\top}\\
 C = \frac{1}{n} U \Sigma \Sigma^\top U^\top
 \]</div>
 <p>然后我们可以重新排列矩阵<span class="math notranslate nohighlight">\(U\)</span>和<span class="math notranslate nohighlight">\(\Sigma\)</span>中的列，使奇异值按降序排列。</p>
-<p><strong>第4步：选择主成分</strong></p>
+<p><strong>第4步：选择奇异值，（可选）截断其余部分：</strong></p>
 <p>我们现在可以根据想要保留的方差量来决定选择多少个奇异值（例如，保留95%的总方差）。</p>
-<p>我们可以通过计算前<span class="math notranslate nohighlight">\(r\)</span>个因子包含的方差除以总方差来获得百分比：</p>
+<p>我们可以通过计算前<span class="math notranslate nohighlight">\(r\)</span>个主要因子所包含的方差除以总方差来获得这个百分比：</p>
 <div class="math notranslate nohighlight">
 \[
 \frac{\sum_{i = 1}^{r} \sigma^2_{i}}{\sum_{i = 1}^{p} \sigma^2_{i}}
 \]</div>
-<p><strong>第5步：创建主成分得分矩阵：</strong></p>
+<p><strong>第5步：创建得分矩阵：</strong></p>
 <div class="math notranslate nohighlight">
 \[
 \begin{aligned}
@@ -908,17 +1012,16 @@ T&amp;= BV \cr
 &amp;= U\Sigma
 \end{aligned}
 \]</div>
-<p>这个矩阵的每一列代表一个主成分，其中包含了原始数据在新坐标系下的投影。</p>
 </section>
 <section id="pcasvd">
 <h2><span class="section-number">5.9. </span>PCA与SVD的关系<a class="headerlink" href="#pcasvd" title="Link to this heading">#</a></h2>
-<p>让我们来探讨SVD与PCA之间的关系。假设我们有一个数据矩阵<span class="math notranslate nohighlight">\(X\)</span>，其中所有变量的样本均值都为零。</p>
-<p><span class="math notranslate nohighlight">\(X\)</span>的SVD分解可以写成:</p>
+<p>为了将SVD与数据集<span class="math notranslate nohighlight">\(X\)</span>的PCA联系起来，首先构造数据矩阵<span class="math notranslate nohighlight">\(X\)</span>的SVD：</p>
+<p>让我们假设所有变量的样本均值都为零，这样我们就不需要对矩阵进行标准化了。</p>
 <div class="math notranslate nohighlight" id="equation-eq-pca1">
 <span class="eqno">(5.9)<a class="headerlink" href="#equation-eq-pca1" title="Link to this equation">#</a></span>\[
 X = U \Sigma V^\top  = \sigma_1 U_1 V_1^\top  + \sigma_2 U_2 V_2^\top  + \cdots + \sigma_p U_p V_p^\top
 \]</div>
-<p>其中矩阵<span class="math notranslate nohighlight">\(U\)</span>和<span class="math notranslate nohighlight">\(V\)</span>分别由列向量组成:</p>
+<p>其中</p>
 <div class="math notranslate nohighlight">
 \[
 U=\begin{bmatrix}U_1|U_2|\ldots|U_m\end{bmatrix}
@@ -931,9 +1034,9 @@ V^\top  = \begin{bmatrix}V_1^\top \\V_2^\top \\\ldots\\V_n^\top \end{bmatrix}
 <p>因此，我们有</p>
 <div class="math notranslate nohighlight" id="equation-eq-pca2">
 <span class="eqno">(5.10)<a class="headerlink" href="#equation-eq-pca2" title="Link to this equation">#</a></span>\[\begin{split}
-X = \sigma_1 \begin{pmatrix}U_{11}V_{1}^\top \\U_{21}V_{1}^\top \\\cdots\\U_{m1}V_{1}^\top \\\end{pmatrix} + \sigma_2\begin{pmatrix}U_{12}V_{2}^\top \\U_{22}V_{2}^\top \\\cdots\\U_{m2}V_{2}^\top \\\end{pmatrix}+\ldots + \sigma_p\begin{pmatrix}U_{1p}V_{p}^\top \\U_{2p}V_{p}^\top \\\cdots\\U_{mp}V_{p}^\top \\\end{pmatrix}
+X = \sigma_1 \begin{bmatrix}U_{11}V_{1}^\top \\U_{21}V_{1}^\top \\\cdots\\U_{m1}V_{1}^\top \\\end{bmatrix} + \sigma_2\begin{bmatrix}U_{12}V_{2}^\top \\U_{22}V_{2}^\top \\\cdots\\U_{m2}V_{2}^\top \\\end{bmatrix}+\ldots + \sigma_p\begin{bmatrix}U_{1p}V_{p}^\top \\U_{2p}V_{p}^\top \\\cdots\\U_{mp}V_{p}^\top \\\end{bmatrix}
 \end{split}\]</div>
-<p>在时间序列分析的背景下，这个分解有着重要的含义:</p>
+<p>在时间序列分析的背景下，我们可以这样解释方程<a class="reference internal" href="#equation-eq-pca2">(5.10)</a>中的对象：</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\( \textrm{对于每个} \ k=1, \ldots, n \)</span>，对象 <span class="math notranslate nohighlight">\(\lbrace V_{kj} \rbrace_{j=1}^n\)</span> 是第<span class="math notranslate nohighlight">\(k\)</span>个<strong>主成分</strong>的时间序列</p></li>
 <li><p><span class="math notranslate nohighlight">\(U_j = \begin{bmatrix}U_{1k}\\U_{2k}\\\ldots\\U_{mk}\end{bmatrix} \ k=1, \ldots, m\)</span>
@@ -942,7 +1045,7 @@ X = \sigma_1 \begin{pmatrix}U_{11}V_{1}^\top \\U_{21}V_{1}^\top \\\cdots\\U_{m1}
 </ul>
 </section>
 <section id="id7">
-<h2><span class="section-number">5.10. </span>基于特征值分解的PCA<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<h2><span class="section-number">5.10. </span>基于特征值和特征向量的PCA<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p>现在我们使用样本协方差矩阵的特征分解来进行PCA。</p>
 <p>设<span class="math notranslate nohighlight">\(X_{m \times n}\)</span>为我们的<span class="math notranslate nohighlight">\(m \times n\)</span>数据矩阵。</p>
 <p>假设所有变量的样本均值都为零。</p>
@@ -952,12 +1055,16 @@ X = \sigma_1 \begin{pmatrix}U_{11}V_{1}^\top \\U_{21}V_{1}^\top \\\cdots\\U_{m1}
 \[
 \Omega = XX^\top
 \]</div>
-<p>其特征值分解为:</p>
+<p>然后使用特征分解将<span class="math notranslate nohighlight">\(\Omega\)</span>表示为：</p>
 <div class="math notranslate nohighlight">
 \[
 \Omega =P\Lambda P^\top
 \]</div>
-<p>这里<span class="math notranslate nohighlight">\(P\)</span>是<span class="math notranslate nohighlight">\(m \times m\)</span>特征向量矩阵,而<span class="math notranslate nohighlight">\(\Lambda\)</span>是特征值对角矩阵。</p>
+<p>这里</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P\)</span>是<span class="math notranslate nohighlight">\(\Omega\)</span>的<span class="math notranslate nohighlight">\(m×m\)</span>特征向量矩阵</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Lambda\)</span>是<span class="math notranslate nohighlight">\(\Omega\)</span>的特征值对角矩阵</p></li>
+</ul>
 <p>我们可以将<span class="math notranslate nohighlight">\(X\)</span>表示为:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -1014,14 +1121,14 @@ X=\sigma_1U_1{V_1}^{T}+\sigma_2 U_2{V_2}^{T}+\ldots+\sigma_{r} U_{r}{V_{r}}^{T}
 </ol>
 </section>
 <section id="id8">
-<h2><span class="section-number">5.11. </span>联系与总结<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
-<p>为了更好地理解前面的内容，让我们把这些公式联系起来，看看它们之间的关系。</p>
-<p>首先，对于一个<span class="math notranslate nohighlight">\(m \times n\)</span>矩阵的奇异值分解（SVD）：</p>
+<h2><span class="section-number">5.11. </span>联系<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>为了把这些内容整合起来，有必要把上面给出的一些公式汇总并加以比较。</p>
+<p>首先，考虑一个<span class="math notranslate nohighlight">\(m \times n\)</span>矩阵的SVD：</p>
 <div class="math notranslate nohighlight">
 \[
 X = U\Sigma V^\top
 \]</div>
-<p>我们可以计算：</p>
+<p>计算：</p>
 <div class="math notranslate nohighlight" id="equation-eq-xxcompare">
 <span class="eqno">(5.12)<a class="headerlink" href="#equation-eq-xxcompare" title="Link to this equation">#</a></span>\[
 \begin{aligned}
@@ -1030,8 +1137,9 @@ XX^\top &amp;=U\Sigma V^\top V\Sigma^\top  U^\top \cr
 &amp;\equiv U\Lambda U^\top
 \end{aligned}
 \]</div>
-<p>将这个表达式<a class="reference internal" href="#equation-eq-xxcompare">(5.12)</a>与前面的方程<a class="reference internal" href="#equation-eq-xxo">(5.11)</a>对比，我们可以发现SVD分解中的<span class="math notranslate nohighlight">\(U\)</span>矩阵实际上就是<span class="math notranslate nohighlight">\(XX^\top\)</span>的特征向量矩阵<span class="math notranslate nohighlight">\(P\)</span>，而<span class="math notranslate nohighlight">\(\Sigma \Sigma^\top\)</span>就对应着特征值矩阵<span class="math notranslate nohighlight">\(\Lambda\)</span>。</p>
-<p>类似地，我们再来看：</p>
+<p>将表示式<a class="reference internal" href="#equation-eq-xxcompare">(5.12)</a>与上面的方程<a class="reference internal" href="#equation-eq-xxo">(5.11)</a>进行比较。</p>
+<p>显然，SVD中的<span class="math notranslate nohighlight">\(U\)</span>就是<span class="math notranslate nohighlight">\(XX^\top\)</span>的特征向量矩阵<span class="math notranslate nohighlight">\(P\)</span>，而<span class="math notranslate nohighlight">\(\Sigma \Sigma^\top\)</span>就是特征值矩阵<span class="math notranslate nohighlight">\(\Lambda\)</span>。</p>
+<p>其次，让我们计算</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
@@ -1039,34 +1147,35 @@ X^\top X &amp;=V\Sigma^\top  U^\top U\Sigma V^\top \\
 &amp;=V\Sigma^\top {\Sigma}V^\top
 \end{aligned}
 \end{split}\]</div>
-<p>这个结果告诉我们，SVD中的<span class="math notranslate nohighlight">\(V\)</span>矩阵其实就是<span class="math notranslate nohighlight">\(X^\top X\)</span>的特征向量矩阵。</p>
-<p>把这些发现整理一下，我们可以得到样本协方差矩阵的特征分解：</p>
+<p>因此，SVD中的矩阵<span class="math notranslate nohighlight">\(V\)</span>是<span class="math notranslate nohighlight">\(X^\top X\)</span>的特征向量矩阵</p>
+<p>总结并整合这些内容，我们得到样本协方差矩阵的特征分解</p>
 <div class="math notranslate nohighlight">
 \[
 X X^\top  = P \Lambda P^\top
 \]</div>
-<p>这里的<span class="math notranslate nohighlight">\(P\)</span>是一个正交矩阵。而从<span class="math notranslate nohighlight">\(X\)</span>的SVD分解，我们也知道：</p>
+<p>其中<span class="math notranslate nohighlight">\(P\)</span>是一个正交矩阵。</p>
+<p>此外，从<span class="math notranslate nohighlight">\(X\)</span>的SVD分解中，我们知道</p>
 <div class="math notranslate nohighlight">
 \[
 X X^\top  = U \Sigma \Sigma^\top  U^\top
 \]</div>
-<p>其中<span class="math notranslate nohighlight">\(U\)</span>同样是一个正交矩阵。</p>
-<p>这两个表达式告诉我们<span class="math notranslate nohighlight">\(P = U\)</span>，因此<span class="math notranslate nohighlight">\(X\)</span>可以表示为：</p>
+<p>其中<span class="math notranslate nohighlight">\(U\)</span>是一个正交矩阵。</p>
+<p>因此，<span class="math notranslate nohighlight">\(P = U\)</span>，我们得到<span class="math notranslate nohighlight">\(X\)</span>的表示</p>
 <div class="math notranslate nohighlight">
 \[
 X = P \epsilon = U \Sigma V^\top
 \]</div>
-<p>进一步推导可得：</p>
+<p>由此可得</p>
 <div class="math notranslate nohighlight">
 \[
 U^\top  X = \Sigma V^\top  = \epsilon
 \]</div>
-<p>注意上述推导意味着</p>
+<p>注意，上述结果意味着</p>
 <div class="math notranslate nohighlight">
 \[
-\epsilon \epsilon^\top  = \Sigma V^\top  V \Sigma^\top  = \Sigma \Sigma^\top  = \Lambda
+\epsilon \epsilon^\top  = \Sigma V^\top  V \Sigma^\top  = \Sigma \Sigma^\top  = \Lambda ,
 \]</div>
-<p>这样所有部分都完美契合。</p>
+<p>因此所有内容都能够互相吻合。</p>
 <p>下面我们定义一个<code class="docutils literal notranslate"><span class="pre">DecomAnalysis</span></code>类，用于对给定的数据矩阵<code class="docutils literal notranslate"><span class="pre">X</span></code>进行PCA和SVD分析。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1220,9 +1329,9 @@ U^\top  X = \Sigma V^\top  = \epsilon
 
 <p class="admonition-title"><span class="caption-number">练习 5.1 </span></p>
 <section id="exercise-content">
-<p>在普通最小二乘法(OLS)中，我们学会计算 <span class="math notranslate nohighlight">\( \hat{\beta} = (X^\top X)^{-1} X^\top y \)</span>，但在某些情况下，比如当我们遇到共线性或欠定系统时：即<strong>短而宽</strong>的矩阵。</p>
+<p>在普通最小二乘法(OLS)中，我们学会计算 <span class="math notranslate nohighlight">\( \hat{\beta} = (X^\top X)^{-1} X^\top y \)</span>，但在某些情况下，比如当我们遇到共线性或欠定系统时：即<strong>矮胖</strong>矩阵。</p>
 <p>在这些情况下，<span class="math notranslate nohighlight">\( (X^\top X) \)</span>矩阵不可逆（其行列式为零）或病态（其行列式非常接近零）。</p>
-<p>我们可以改用所谓的<a class="reference external" href="https://baike.baidu.com/item/%E4%BC%AA%E9%80%86%E7%9F%A9%E9%98%B5/7397859">伪逆</a>，即创建一个满秩的逆矩阵近似，以此来计算 <span class="math notranslate nohighlight">\( \hat{\beta} \)</span>。</p>
+<p>我们可以改用所谓的<a class="reference external" href="https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse">伪逆</a>，即创建一个满秩的逆矩阵近似，以此来计算 <span class="math notranslate nohighlight">\( \hat{\beta} \)</span>。</p>
 <p>根据Eckart-Young定理，构建伪逆矩阵 <span class="math notranslate nohighlight">\( X^{+} \)</span> 并用它来计算 <span class="math notranslate nohighlight">\( \hat{\beta} \)</span>。</p>
 </section>
 </div>
@@ -1242,14 +1351,15 @@ X^{+}  = V \Sigma^{+} U^\top
 \]</div>
 <p>其中：</p>
 <div class="math notranslate nohighlight">
-\[ \begin{align}\begin{aligned}
-\Sigma^{+} = \begin{bmatrix}\\\begin{split}\frac{1}{\sigma_1} &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\
+\[\begin{split}
+\Sigma^{+} = \begin{bmatrix}
+\frac{1}{\sigma_1} &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\
 0 &amp; \frac{1}{\sigma_2} &amp; \cdots &amp; 0 &amp; 0 \\
 \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots \\
 0 &amp; 0 &amp; \cdots &amp; \frac{1}{\sigma_p} &amp; 0 \\
 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\
 \end{bmatrix}
-\end{split}\end{aligned}\end{align} \]</div>
+\end{split}\]</div>
 <p>最后：</p>
 <div class="math notranslate nohighlight">
 \[
@@ -1316,7 +1426,7 @@ X^{+}  = V \Sigma^{+} U^\top
                 <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
                     <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础工具
+  Tools and Techniques
  </span>
 </p>
 <ul class="current nav bd-sidenav nav sidenav_l1">
@@ -1358,7 +1468,7 @@ X^{+}  = V \Sigma^{+} U^\top
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础统计学
+  Elementary Statistics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -1415,7 +1525,7 @@ X^{+}  = V \Sigma^{+} U^\top
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  贝叶斯定律
+  Bayes Law
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -1437,7 +1547,7 @@ X^{+}  = V \Sigma^{+} U^\top
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  统计与信息论
+  Statistics and Information
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -1487,358 +1597,648 @@ X^{+}  = V \Sigma^{+} U^\top
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mix_model.html">
-   30. 错误模型
+   32. 错误模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="navy_captain.html">
-   31. 贝叶斯与频率主义决策规则的比较
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  线性规划
+  Linear Programming
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="opt_transport.html">
-   32. 最优传输
+   36. 最优传输
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="von_neumann_model.html">
-   33. 冯·诺依曼增长模型（及其推广）
+   37. 冯·诺依曼增长模型（及其推广）
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  动态系统导论
+  Introduction to Dynamics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="finite_markov.html">
-   34. 有限马尔可夫链
+   38. 有限马尔可夫链
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="inventory_dynamics.html">
-   35. 库存动态
+   39. 库存动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="linear_models.html">
-   36. 线性状态空间模型
+   40. 线性状态空间模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="samuelson.html">
-   37. 萨缪尔森乘数-加速器模型
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kesten_processes.html">
-   38. Kesten过程与企业动态
+   43. Kesten过程与企业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="wealth_dynamics.html">
-   39. 财富分布动态
+   44. 财富分布动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman.html">
-   40. 初见卡尔曼滤波器
+   45. 初见卡尔曼滤波器
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman_2.html">
-   41. 卡尔曼滤波器进阶
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  搜索
+  Search
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model.html">
-   42. 工作搜寻 I: McCall搜寻模型
+   50. 工作搜寻 I: McCall搜寻模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model_with_separation.html">
-   43. 工作搜寻 II：搜寻与离职
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   44. 工作搜寻 III: 拟合值函数迭代
+   53. 工作搜寻 IV: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="mccall_correlated.html">
-   45. 工作搜寻 IV：相关工资报价
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   46. 工作搜寻 V：职业选择建模
+   55. 工作搜寻 VI：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   47. 工作搜寻 VI：在职搜索
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mccall_q.html">
-   48. 工作搜寻 VII：McCall劳动者的Q学习
+   56. 工作搜寻 VII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   49. 工作搜寻 VII: 带学习的搜索
+   57. 工作搜寻 VIII: 带学习的搜索
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  消费、储蓄与资本
+  Reinforcement Learning
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_1.html">
-   50. Cass-Koopmans模型
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_2.html">
-   51. Cass-Koopmans竞争均衡
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal.html">
-   52. 带扭曲性税收的Cass-Koopmans模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal_2.html">
-   53. 带扭曲性税收的双国模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ak2.html">
-   54. 代际交叠模型中的转型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_problem.html">
-   55. 吃蛋糕问题 I：最优储蓄导论
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_numerical.html">
-   56. 吃蛋糕问题 II：数值方法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth.html">
-   57. 最优增长 I：随机最优增长模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth_fast.html">
-   58. 最优增长 II：使用Numba加速代码
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="coleman_policy_iter.html">
-   59. 最优增长 III：时间迭代
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="egm_policy_iter.html">
-   60. 最优增长 IV：内生网格法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp.html">
-   61. 收入波动问题 I：基本模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp_advanced.html">
-   62. 收入波动问题 II：资产随机收益
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  LQ控制
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   63. LQ控制：基础
+   72. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   64. LQ控制的拉格朗日方法
+   73. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   65. 消除交叉项
+   74. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   66. 永久收入模型
+   75. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   67. 永久收入 II：线性二次方法
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   68. 通过库存实现生产平滑
+   83. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  多主体模型
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   69. 就业与失业的湖泊模型
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   70. 理性预期均衡
+   107. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   71. 线性理性预期模型中的稳定性
+   108. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   72. 马尔可夫完美均衡
+   109. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   73. 不确定性陷阱
+   110. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   74. 艾亚加里模型
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   75. 长寿、异质性个体、世代交叠模型
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  资产定价与金融
+  Asset Pricing and Finance
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   76. 资产定价：有限状态模型
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   77. 带有阿罗证券的竞争均衡
+   119. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   78. 异质信念与泡沫
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  数据与实证
+  Data and Empirics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="pandas_panel.html">
-   79. 用Pandas处理面板数据
+   128. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   80. Python线性回归
+   129. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   81. 最大似然估计
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  拍卖
+  Auctions
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   82. 一价和二价拍卖
+   133. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   83. 多种商品分配机制
+   134. 多种商品分配机制
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  其他
+  Other
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   84. 故障排除
+   135. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   85. 参考文献
+   136. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   86. 执行统计
+   137. 执行统计
   </a>
  </li>
 </ul>
@@ -1882,6 +2282,8 @@ X^{+}  = V \Sigma^{+} U^\top
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/svd_intro.md" download><i data-feather="github"></i></a></li>
                     -->
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
                 </ul>
 
             </div>

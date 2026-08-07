@@ -1,0 +1,2207 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>87. 遗传算法与分类器系统 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genetic_classifier';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/genetic_classifier.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="88. 人工智能主体中作为交换媒介的货币" href="marimon_mcgrattan_sargent.html" />
+    <link rel="prev" title="86. 汇率不确定性、学习与实验" href="exchange_rate_learning.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="遗传算法与分类器系统"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="遗传算法与分类器系统" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/genetic_classifier.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=genetic_classifier>
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">87.1. 概览</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">87.2. 感知机：作为判别函数的主体</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">87.3. 联想记忆：霍普菲尔德网络</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">87.4. 遗传算法</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">87.4.1. 阿克塞尔罗德的重复囚徒困境</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">87.5. 分类器系统</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">87.5.1. 双臂老虎机</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">87.6. 演化编程</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">87.7. 结束语</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">87.8. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Aug 06, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/genetic_classifier.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/862d767" class="changelog-hash">862d767</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">39 minutes ago</span>
+                                <span class="changelog-message">Point the learning_approximation references at the English edition (#209)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/bf8200a" class="changelog-hash">bf8200a</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">1 week ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] Tom's July 25 edits of two suites of new lectures (#207)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="toc-backref" href="#id18" role="doc-backlink"><span class="section-number">87. </span>遗传算法与分类器系统</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<nav class="contents" id="contents">
+<span id="index-0"></span><p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id18">遗传算法与分类器系统</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id19">概览</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id20">感知机：作为判别函数的主体</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id21">联想记忆：霍普菲尔德网络</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id22">遗传算法</a></p></li>
+<li><p><a class="reference internal" href="#id11" id="id23">分类器系统</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id24">演化编程</a></p></li>
+<li><p><a class="reference internal" href="#id16" id="id25">结束语</a></p></li>
+<li><p><a class="reference internal" href="#id17" id="id26">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="id2">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink"><span class="section-number">87.1. </span>概览</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>到目前为止的讲座给适应性主体赋予了相当计量经济学化的大脑。</p>
+<p>在 <a class="reference internal" href="olg_adaptive_money.html"><span class="doc">世代交叠货币经济中的适应性主体</span></a> 和 <a class="reference external" href="https://python.quantecon.org/learning_approximation.html" title="（在 Project name not set）"><span>Learning, Approximation, and Equilibrium Computation</span></a>（英文版）中，它们运行递归最小二乘法；在 <a class="reference internal" href="exchange_rate_learning.html"><span class="doc">汇率不确定性、学习与实验</span></a> 中，它们针对实现效用采取了牛顿步骤。</p>
+<p>在每种情况下，主体都持有一个<em>参数化</em>规则并调整其系数。</p>
+<p>本讲座考察一套不同的工具箱，即 <span class="bibtex-citation" id="id3">Sargent [<a class="reference internal" href="zreferences.html#id490" title="Thomas J. Sargent. Bounded Rationality in Macroeconomics. The Arne Ryde Memorial Lectures. Oxford University Press, Oxford, 1993.">1993</a>]</span> 从约翰·霍兰德（John Holland）关于人工智能的研究以及神经网络的连接主义文献中汲取的工具箱。</p>
+<p>这些装置并不调整固定规则的系数。</p>
+<p>它们<strong>从经验中发现规则本身</strong>，从一个庞大的可能性空间中挖掘出来。</p>
+<p>萨金特的论述框架是，有限理性研究纲领要求我们让模型中充满”表现得像计量经济学家”的主体，而人工智能文献则是这些主体候选大脑的目录：</p>
+<blockquote>
+<div><p>正是从这些文献所积累的方法储备中，我们将挑选出赋予有限理性主体的”大脑”。</p>
+</div></blockquote>
+<p>我们将巡览其中四种：</p>
+<ol class="arabic simple">
+<li><p><strong>感知机</strong>（perceptron），最简单的神经网络，它其实是一个线性判别函数，与”主体作为计量经济学家”这一解读直接相关；</p></li>
+<li><p><strong>霍普菲尔德网络</strong>（Hopfield network），一种联想记忆机制，通过在能量函数上向下滚动，从受损输入中恢复存储的模式；</p></li>
+<li><p><strong>遗传算法</strong>（genetic algorithm），霍兰德基于种群的搜索方法，我们将其应用于阿克塞尔罗德的重复囚徒困境博弈，观察其发现合作行为；</p></li>
+<li><p><strong>分类器系统</strong>（classifier system），霍兰德提出的”大脑即竞争性经济体”的if-then规则集合，其最简单的实例——一个双臂老虎机——已经暴露出一个微妙的局限性。</p></li>
+</ol>
+<p>我们以<strong>演化编程</strong>（evolutionary programming）作为结尾：即一个适应性主体种群，在缓慢趋向均衡的过程中，可被用来<em>计算</em>我们无法直接求解的均衡。</p>
+<p>这正是 <a class="reference internal" href="marimon_mcgrattan_sargent.html"><span class="doc">人工智能主体中作为交换媒介的货币</span></a> 完整实现的思路，因此本讲座是构建下一讲的机制基础。</p>
+<p>让我们从一些导入开始。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink"><span class="section-number">87.2. </span>感知机：作为判别函数的主体</a><a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>最简单的神经网络是单个<strong>感知机</strong>：<span class="math notranslate nohighlight">\(k\)</span> 个输入 <span class="math notranslate nohighlight">\(x_i\)</span>、权重 <span class="math notranslate nohighlight">\(w_i\)</span>，以及一个输出</p>
+<div class="math notranslate nohighlight">
+\[
+y = S\!\left(\sum_{i=1}^k w_i x_i\right) = S(w^\top x),
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(S\)</span> 是一个将 <span class="math notranslate nohighlight">\(\mathbb{R}\)</span> 映射到 <span class="math notranslate nohighlight">\([0, 1]\)</span> 的”压缩函数”：可以是阶跃函数，也可以是S型函数
+<span class="math notranslate nohighlight">\(S(z) = 1/(1 + e^{-z})\)</span>，或任何累积分布函数。</p>
+<p>对于固定的权重，感知机是一个<strong>分类器</strong>：当 <span class="math notranslate nohighlight">\(w^\top x &gt; 0\)</span> 时它被激活（<span class="math notranslate nohighlight">\(y = 1\)</span>），否则保持静默，因此边界 <span class="math notranslate nohighlight">\(w^\top x = 0\)</span> 是一个分隔两个类别的超平面。</p>
+<p>训练感知机——选择 <span class="math notranslate nohighlight">\(w\)</span> 以最小化 <span class="math notranslate nohighlight">\(\sum_t (y_t - S(w^\top x_t))^2\)</span>——是一个非线性最小二乘问题，通过我们熟悉的随机梯度递归求解：</p>
+<div class="math notranslate nohighlight">
+\[
+w_t = w_{t-1} + \gamma_t \nabla S(w_{t-1}, x_t)\,(y_t - S(w_{t-1}^\top x_t)),
+\]</div>
+<p>这与之前几讲学习模型中运行的 <span class="math notranslate nohighlight">\(1/t\)</span> 型更新方式相同。</p>
+<p>以书中的例子为例：根据两个标准化特征区分足球运动员和经济学家。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">economists</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">([</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">],</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]],</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">players</span>    <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">([</span><span class="mf">1.2</span><span class="p">,</span>  <span class="mf">0.8</span><span class="p">],</span> <span class="p">[[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]],</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">economists</span><span class="p">,</span> <span class="n">players</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+<span class="n">X_aug</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)),</span> <span class="n">X</span><span class="p">])</span>          <span class="c1"># prepend an intercept</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>                                    <span class="c1"># train by stochastic gradient</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">rng</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)):</span>
+        <span class="n">w</span> <span class="o">+=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">X_aug</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">@</span> <span class="n">w</span><span class="p">))</span> <span class="o">*</span> <span class="n">X_aug</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;training accuracy: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">X_aug</span><span class="w"> </span><span class="o">@</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>training accuracy: 0.930
+</pre></div>
+</div>
+</div>
+</div>
+<p><span class="bibtex-citation" id="id5">Sargent [<a class="reference internal" href="zreferences.html#id490" title="Thomas J. Sargent. Bounded Rationality in Macroeconomics. The Arne Ryde Memorial Lectures. Oxford University Press, Oxford, 1993.">1993</a>]</span> 强调的要点是，这对计量经济学家来说并非什么异类事物：感知机的决策边界本质上是一个<strong>线性判别函数</strong>。</p>
+<p>将感知机的边界法向量与费舍尔线性判别方向进行比较。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m0</span><span class="p">,</span> <span class="n">m1</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">S_within</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span>
+<span class="n">lda_direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">S_within</span><span class="p">,</span> <span class="n">m1</span> <span class="o">-</span> <span class="n">m0</span><span class="p">)</span>
+<span class="n">lda_direction</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">lda_direction</span><span class="p">)</span>
+<span class="n">perceptron_direction</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;perceptron boundary normal : </span><span class="si">{</span><span class="n">perceptron_direction</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fisher discriminant direction: </span><span class="si">{</span><span class="n">lda_direction</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cosine similarity: </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">perceptron_direction</span><span class="w"> </span><span class="o">@</span><span class="w"> </span><span class="n">lda_direction</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>perceptron boundary normal : [0.946 0.324]
+Fisher discriminant direction: [0.925 0.38 ]
+cosine similarity: 0.9982
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">economists</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;economists ($y=0$)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">players</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;football players ($y=1$)&quot;</span><span class="p">)</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;perceptron boundary&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;weight (standardized)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;salary (standardized)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-gc-perceptron">
+<img alt="_images/52728532b7f7d488d46fcc15567c709105b693ff663749f631fdfec95f9f46dc.png" src="_images/52728532b7f7d488d46fcc15567c709105b693ff663749f631fdfec95f9f46dc.png" />
+<figcaption>
+<p><span class="caption-number">图 87.1 </span><span class="caption-text">Perceptron boundary separating the two groups</span><a class="headerlink" href="#fig-gc-perceptron" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>这两个方向几乎完全一致。</p>
+<p>明斯基和帕佩特著名的批评 <span class="bibtex-citation" id="id6">[<a class="reference internal" href="zreferences.html#id502" title="Marvin Minsky and Seymour Papert. Perceptrons: An Introduction to Computational Geometry. MIT Press, Cambridge, MA, 1969.">Minsky and Papert, 1969</a>]</span> 恰恰指出，单个感知机<em>只能</em>表示线性判别函数，因此无法分离一条直线无法分开的类别。</p>
+<p>该领域的复兴源于人们认识到，<strong>分层</strong>感知机——将其输出馈送到进一步的感知机中——可以逼近任意非线性判别函数，这正是 <a class="reference internal" href="back_prop.html"><span class="doc">人工神经网络简介</span></a> 所讨论的主题。</p>
+<p>就我们的目的而言，感知机是这个目录中与前几讲已经做过的事情最接近的条目：一个参数化规则，通过梯度下降训练，计量经济学家一眼就能认出来。</p>
+<p>其余三种大脑则更为陌生。</p>
+</section>
+<section id="id7">
+<h2><a class="toc-backref" href="#id21" role="doc-backlink"><span class="section-number">87.3. </span>联想记忆：霍普菲尔德网络</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>第二种装置存储模式并从受损碎片中回忆它们。</p>
+<p>将一个模式表示为长度为 <span class="math notranslate nohighlight">\(N\)</span> 的 <span class="math notranslate nohighlight">\(\pm 1\)</span> 向量。</p>
+<p>我们希望存储 <span class="math notranslate nohighlight">\(p\)</span> 个模式 <span class="math notranslate nohighlight">\(\sigma^1, \ldots, \sigma^p\)</span>，使每个模式都是某个动态系统的不动点，从而输入一个受损版本能迅速收敛到最近的存储模式。</p>
+<p><strong>霍普菲尔德网络</strong>（Hopfield network）通过以下动态实现这一点：</p>
+<div class="math notranslate nohighlight">
+\[
+s(t+1) = \operatorname{sgn}(w\, s(t)),
+\]</div>
+<p>以及一个由模式本身构建的权重矩阵。</p>
+<p>当模式正交时，赫布规则（Hebb’s rule）<span class="math notranslate nohighlight">\(w = \tfrac{1}{N}\sigma\sigma^\top\)</span> 就足够了；对于仅仅线性独立（相关的）模式，则使用投影规则 <span class="math notranslate nohighlight">\(w = \tfrac{1}{N}\sigma V^{-1}\sigma^\top\)</span>，其中 <span class="math notranslate nohighlight">\(V = \tfrac{1}{N}\sigma^\top \sigma\)</span>。</p>
+<p>两者都能使每个存储的模式成为精确的不动点。</p>
+<p>我们在 <span class="math notranslate nohighlight">\(5\times5\)</span> 像素网格上存储五个字母，由于字母共享许多像素，它们是相关的，因此投影规则才是正确的选择。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PATTERNS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;01110&quot;</span><span class="p">,</span> <span class="s2">&quot;10001&quot;</span><span class="p">,</span> <span class="s2">&quot;11111&quot;</span><span class="p">,</span> <span class="s2">&quot;10001&quot;</span><span class="p">,</span> <span class="s2">&quot;10001&quot;</span><span class="p">],</span>
+    <span class="s1">&#39;E&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;11111&quot;</span><span class="p">,</span> <span class="s2">&quot;10000&quot;</span><span class="p">,</span> <span class="s2">&quot;11110&quot;</span><span class="p">,</span> <span class="s2">&quot;10000&quot;</span><span class="p">,</span> <span class="s2">&quot;11111&quot;</span><span class="p">],</span>
+    <span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;11111&quot;</span><span class="p">,</span> <span class="s2">&quot;00100&quot;</span><span class="p">,</span> <span class="s2">&quot;00100&quot;</span><span class="p">,</span> <span class="s2">&quot;00100&quot;</span><span class="p">,</span> <span class="s2">&quot;11111&quot;</span><span class="p">],</span>
+    <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;01110&quot;</span><span class="p">,</span> <span class="s2">&quot;10001&quot;</span><span class="p">,</span> <span class="s2">&quot;10001&quot;</span><span class="p">,</span> <span class="s2">&quot;10001&quot;</span><span class="p">,</span> <span class="s2">&quot;01110&quot;</span><span class="p">],</span>
+    <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;11111&quot;</span><span class="p">,</span> <span class="s2">&quot;00100&quot;</span><span class="p">,</span> <span class="s2">&quot;00100&quot;</span><span class="p">,</span> <span class="s2">&quot;00100&quot;</span><span class="p">,</span> <span class="s2">&quot;00100&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">to_vector</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">r</span><span class="p">])</span>
+
+<span class="n">letters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">PATTERNS</span><span class="p">)</span>
+<span class="n">σ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">to_vector</span><span class="p">(</span><span class="n">PATTERNS</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">letters</span><span class="p">])</span>      <span class="c1"># (p, N)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">projection_rule</span><span class="p">(</span><span class="n">patterns</span><span class="p">):</span>
+    <span class="s2">&quot;Weight matrix making each (correlated) pattern an exact fixed point.&quot;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">patterns</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">Σ</span> <span class="o">=</span> <span class="n">patterns</span><span class="o">.</span><span class="n">T</span>                                          <span class="c1"># (N, p)</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">Σ</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Σ</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="k">return</span> <span class="n">Σ</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">V</span><span class="p">)</span> <span class="o">@</span> <span class="n">Σ</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">N</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">energy</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+    <span class="s2">&quot;Hopfield energy; stored patterns are local minima.&quot;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">s</span> <span class="o">@</span> <span class="n">w</span> <span class="o">@</span> <span class="n">s</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">recall</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+    <span class="s2">&quot;Iterate sgn(w s) to a fixed point.&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">s0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+        <span class="n">s_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">w</span> <span class="o">@</span> <span class="n">s</span><span class="p">)</span>
+        <span class="n">s_new</span><span class="p">[</span><span class="n">s_new</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">s_new</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s_new</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+<span class="n">w_hop</span> <span class="o">=</span> <span class="n">projection_rule</span><span class="p">(</span><span class="n">σ</span><span class="p">)</span>
+<span class="n">fixed</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">w_hop</span> <span class="o">@</span> <span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">letters</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;all stored letters are fixed points: </span><span class="si">{</span><span class="n">fixed</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;energy of each stored letter: </span><span class="si">{</span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">energy</span><span class="p">(</span><span class="n">w_hop</span><span class="p">,</span><span class="w"> </span><span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">letters</span><span class="p">))]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>all stored letters are fixed points: True
+energy of each stored letter: [np.float64(-12.5), np.float64(-12.5), np.float64(-12.5), np.float64(-12.5), np.float64(-12.5)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>每个存储的字母都处于相同的能量 <span class="math notranslate nohighlight">\(-N/2\)</span> 处，且都是不动点。</p>
+<p>现在破坏几个像素，让网络回落到最近的记忆。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">show</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">show</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">letter</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">show</span><span class="p">):</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">letters</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
+    <span class="n">corrupt</span> <span class="o">=</span> <span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">corrupt</span><span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>             <span class="c1"># flip 4 pixels</span>
+    <span class="n">recovered</span> <span class="o">=</span> <span class="n">recall</span><span class="p">(</span><span class="n">w_hop</span><span class="p">,</span> <span class="n">corrupt</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([(</span><span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;stored&quot;</span><span class="p">),</span>
+                                        <span class="p">(</span><span class="n">corrupt</span><span class="p">,</span> <span class="s2">&quot;corrupted&quot;</span><span class="p">),</span>
+                                        <span class="p">(</span><span class="n">recovered</span><span class="p">,</span> <span class="s2">&quot;recovered&quot;</span><span class="p">)]):</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+        <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-gc-hopfield">
+<img alt="_images/8ce0bb70ae56c93448717d431850529e2f061dc8e68579713066b5aa25b31b82.png" src="_images/8ce0bb70ae56c93448717d431850529e2f061dc8e68579713066b5aa25b31b82.png" />
+<figcaption>
+<p><span class="caption-number">图 87.2 </span><span class="caption-text">Hopfield recall of letters from corrupted inputs</span><a class="headerlink" href="#fig-gc-hopfield" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>受损的字母恢复到了它们的原始状态。</p>
+<p>恢复的可靠程度取决于损坏了多少内容以及模式之间的相关程度。</p>
+<p>一个受损的字母偶尔会落入<em>另一个</em>字母的吸引域，或落入设计者从未存储过的虚假混合状态中。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">n_flip</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+    <span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">letters</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">):</span>
+            <span class="n">corrupt</span> <span class="o">=</span> <span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">corrupt</span><span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="n">n_flip</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">recall</span><span class="p">(</span><span class="n">w_hop</span><span class="p">,</span> <span class="n">corrupt</span><span class="p">),</span> <span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">correct</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_flip</span><span class="si">}</span><span class="s2"> pixels flipped: recovered exactly </span><span class="si">{</span><span class="n">correct</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">letters</span><span class="p">)</span><span class="o">*</span><span class="mi">40</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3 pixels flipped: recovered exactly 179/200
+5 pixels flipped: recovered exactly 138/200
+7 pixels flipped: recovered exactly 77/200
+</pre></div>
+</div>
+</div>
+</div>
+<p>这个机制值得点名，因为它在整个研究方案中反复出现。</p>
+<p>回忆是<strong>在能量函数上的下降</strong>，其局部最小值就是存储的模式。</p>
+<p>输入一个受损的模式会将系统置于能量表面上靠近正确最小值的位置，而动态过程会将其滚动下降。</p>
+<p>这正是<strong>模拟退火</strong>（simulated annealing）背后的几何原理，书中提到这一方法用于逃离<em>不需要的</em>局部最小值：加入一定量可控的随机”扰动”，一开始较大，随时间递减，从而使系统能够跳出浅层虚假吸引域，最终落入一个深层吸引域。</p>
+<p>这是牛顿法的随机对应版本，它在分类器系统的”遗传”实验中再次出现。</p>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink"><span class="section-number">87.4. </span>遗传算法</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>第三种大脑根本不在光滑表面上下降。</p>
+<p>霍兰德的<strong>遗传算法</strong>（genetic algorithm）通过演化一个编码为二进制字符串的候选解<strong>种群</strong>（population），在缺乏牛顿法所需光滑性的”崎岖景观”中进行搜索。</p>
+<p>给定一个待最大化的适应度函数 <span class="math notranslate nohighlight">\(f\)</span> 以及一个由 <span class="math notranslate nohighlight">\(N\)</span> 个长度为 <span class="math notranslate nohighlight">\(S\)</span> 的字符串组成的种群，每一代应用四个算子：</p>
+<ol class="arabic simple">
+<li><p><strong>评估</strong>：计算每个字符串的适应度 <span class="math notranslate nohighlight">\(f(x_i)\)</span>。</p></li>
+<li><p><strong>繁殖</strong>：以与适应度成正比的概率将字符串复制到下一代（“有偏轮盘赌”）。</p></li>
+<li><p><strong>交叉</strong>：将字符串配对，并在随机切割点交换它们的尾部，形成重组了父代片段的子代。</p></li>
+<li><p><strong>变异</strong>：以较小的概率 <span class="math notranslate nohighlight">\(p_m\)</span> 独立地翻转每个位。</p></li>
+</ol>
+<p>繁殖将种群集中于已经奏效的方案；交叉和变异注入新的候选方案。</p>
+<p>交叉是主力算子：它”保留了遗传结构的长片段”——霍兰德所称的<em>模式</em>（schemata）——同时仍进行探索，前提是种群足够多样化以供重组。</p>
+<p>关键的是，个体字符串本身不学习：每个只存活一代便消亡。</p>
+<p>只有<em>社会</em>，即种群的序列，才在学习。</p>
+<p>这使得遗传算法作为单个大脑的模型显得别扭，而更适合作为种群或市场的模型——这一点在我们讨论到 <a class="reference internal" href="marimon_mcgrattan_sargent.html"><span class="doc">人工智能主体中作为交换媒介的货币</span></a> 时至关重要。</p>
+<section id="id9">
+<h3><span class="section-number">87.4.1. </span>阿克塞尔罗德的重复囚徒困境<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p><span class="bibtex-citation" id="id10">Axelrod [<a class="reference internal" href="zreferences.html#id503" title="Robert Axelrod. The evolution of strategies in the iterated prisoner's dilemma. In Lawrence Davis, editor, Genetic Algorithms and Simulated Annealing, pages 32–41. Morgan Kaufmann, Los Altos, CA, 1987.">1987</a>]</span> 使用遗传算法演化<strong>重复囚徒困境</strong>（iterated prisoner’s dilemma）博弈的策略，该博弈的循环赛著名地由针锋相对（tit-for-tat）策略获胜。</p>
+<p>两个玩家各自选择合作（Cooperate）或背叛（Defect）；收益结构奖励对合作者的背叛，但惩罚双方互相背叛。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1 = Cooperate, 0 = Defect;  T &gt; R &gt; P &gt; S is the prisoner&#39;s dilemma ranking</span>
+<span class="n">T_pay</span><span class="p">,</span> <span class="n">R_pay</span><span class="p">,</span> <span class="n">P_pay</span><span class="p">,</span> <span class="n">S_pay</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">payoff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="s2">&quot;My payoff when I play a against opponent&#39;s b.&quot;</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="ow">and</span> <span class="n">b</span><span class="p">:</span>       <span class="k">return</span> <span class="n">R_pay</span>        <span class="c1"># both cooperate</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">b</span><span class="p">:</span> <span class="k">return</span> <span class="n">P_pay</span>      <span class="c1"># both defect</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span> <span class="ow">and</span> <span class="n">b</span><span class="p">:</span>   <span class="k">return</span> <span class="n">T_pay</span>        <span class="c1"># I defect, they cooperate</span>
+    <span class="k">return</span> <span class="n">S_pay</span>                          <span class="c1"># I cooperate, they defect</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>按照阿克塞尔罗德的方法，策略是一个<strong>70位字符串</strong>：一个策略基于最后三轮的结果作出条件反应。</p>
+<p>每轮都是四种结果之一（我的行动、对手的行动），因此三轮会产生 <span class="math notranslate nohighlight">\(4^3 = 64\)</span> 种可能的历史，64位指定了每种历史下的行动。</p>
+<p>剩余的6位编码了一个假定的博弈前历史，以启动最初的行动。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">play</span><span class="p">(</span><span class="n">gene</span><span class="p">,</span> <span class="n">opponent</span><span class="p">,</span> <span class="n">n_rounds</span><span class="o">=</span><span class="mi">150</span><span class="p">):</span>
+    <span class="s2">&quot;Play a 70-bit genetic strategy against an opponent; return average payoffs.&quot;</span>
+    <span class="n">action</span><span class="p">,</span> <span class="n">premise</span> <span class="o">=</span> <span class="n">gene</span><span class="p">[:</span><span class="mi">64</span><span class="p">],</span> <span class="n">gene</span><span class="p">[</span><span class="mi">64</span><span class="p">:]</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">premise</span><span class="p">)</span>                     <span class="c1"># last 3 rounds as [my, opp] pairs</span>
+    <span class="n">my_moves</span><span class="p">,</span> <span class="n">opp_moves</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">my_total</span> <span class="o">=</span> <span class="n">opp_total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rounds</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="n">hist</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="n">bit</span>           <span class="c1"># 6 history bits -&gt; index 0..63</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>                      <span class="c1"># my move from the lookup table</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">opponent</span><span class="p">(</span><span class="n">my_moves</span><span class="p">,</span> <span class="n">opp_moves</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="n">my_total</span> <span class="o">+=</span> <span class="n">payoff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="n">opp_total</span> <span class="o">+=</span> <span class="n">payoff</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+        <span class="n">my_moves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">opp_moves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">hist</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="o">+</span> <span class="n">hist</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>             <span class="c1"># roll the 3-round window</span>
+    <span class="k">return</span> <span class="n">my_total</span> <span class="o">/</span> <span class="n">n_rounds</span><span class="p">,</span> <span class="n">opp_total</span> <span class="o">/</span> <span class="n">n_rounds</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>该策略经过培育以便在固定的对手小组中表现出色。</p>
+<p>每个小组成员都是历史<em>就该成员所见</em>的函数：其第一个参数是对手所打的历史，第二个参数是自己所打的历史。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panel_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">2024</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">all_cooperate</span><span class="p">(</span><span class="n">opp_moves</span><span class="p">,</span> <span class="n">own_moves</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span> <span class="k">return</span> <span class="mi">1</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">all_defect</span><span class="p">(</span><span class="n">opp_moves</span><span class="p">,</span> <span class="n">own_moves</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>    <span class="k">return</span> <span class="mi">0</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tit_for_tat</span><span class="p">(</span><span class="n">opp_moves</span><span class="p">,</span> <span class="n">own_moves</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>   <span class="k">return</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">opp_moves</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">grudger</span><span class="p">(</span><span class="n">opp_moves</span><span class="p">,</span> <span class="n">own_moves</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>       <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">opp_moves</span> <span class="k">else</span> <span class="mi">1</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">random_play</span><span class="p">(</span><span class="n">opp_moves</span><span class="p">,</span> <span class="n">own_moves</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>   <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">panel_rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">PANEL</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;AllC&#39;</span><span class="p">:</span> <span class="n">all_cooperate</span><span class="p">,</span> <span class="s1">&#39;AllD&#39;</span><span class="p">:</span> <span class="n">all_defect</span><span class="p">,</span> <span class="s1">&#39;TFT&#39;</span><span class="p">:</span> <span class="n">tit_for_tat</span><span class="p">,</span>
+         <span class="s1">&#39;Grudger&#39;</span><span class="p">:</span> <span class="n">grudger</span><span class="p">,</span> <span class="s1">&#39;Random&#39;</span><span class="p">:</span> <span class="n">random_play</span><span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fitness</span><span class="p">(</span><span class="n">gene</span><span class="p">):</span>
+    <span class="s2">&quot;Average payoff against the whole panel.&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">play</span><span class="p">(</span><span class="n">gene</span><span class="p">,</span> <span class="n">opp</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">opp</span> <span class="ow">in</span> <span class="n">PANEL</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>针锋相对策略复制其对手最后一次的行动，而”记仇者”（grudger）一旦对手曾经背叛过一次，便永远背叛下去。</p>
+<p>现在开始演化。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">evolve</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">generations</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">p_mut</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">pop</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">70</span><span class="p">))</span>
+    <span class="n">best_hist</span><span class="p">,</span> <span class="n">mean_hist</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">generations</span><span class="p">):</span>
+        <span class="n">fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fitness</span><span class="p">(</span><span class="n">pop</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)])</span>
+        <span class="n">best_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">mean_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">fit</span> <span class="o">-</span> <span class="n">fit</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">+</span> <span class="mf">1e-6</span>                    <span class="c1"># shift positive for roulette</span>
+        <span class="n">nxt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">weight</span><span class="p">),</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">weight</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+            <span class="n">cut</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>                      <span class="c1"># single-point crossover</span>
+            <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">pop</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">cut</span><span class="p">],</span> <span class="n">pop</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">cut</span><span class="p">:]])</span>
+            <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">pop</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="p">:</span><span class="n">cut</span><span class="p">],</span> <span class="n">pop</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">cut</span><span class="p">:]])</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span>
+                <span class="n">c</span><span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">p_mut</span><span class="p">]</span> <span class="o">^=</span> <span class="mi">1</span>             <span class="c1"># mutation</span>
+            <span class="n">nxt</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">nxt</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="n">nxt</span>
+    <span class="n">fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fitness</span><span class="p">(</span><span class="n">pop</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="n">pop</span><span class="p">[</span><span class="n">fit</span><span class="o">.</span><span class="n">argmax</span><span class="p">()],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">best_hist</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mean_hist</span><span class="p">)</span>
+
+
+<span class="n">panel_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>     <span class="c1"># reset the panel&#39;s randomizer</span>
+<span class="n">champion</span><span class="p">,</span> <span class="n">best_hist</span><span class="p">,</span> <span class="n">mean_hist</span> <span class="o">=</span> <span class="n">evolve</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;generation 0: best fitness </span><span class="si">{</span><span class="n">best_hist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;generation </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">best_hist</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2">: best fitness </span><span class="si">{</span><span class="n">best_hist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generation 0: best fitness 2.504
+generation 79: best fitness 2.672
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">best_hist</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;best in population&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_hist</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;population mean&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;generation&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;panel fitness&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-gc-fitness">
+<img alt="_images/437fa8a42a85315914abd1abb353606b5cdf0bbca9ad8d5be868c0e502c07983.png" src="_images/437fa8a42a85315914abd1abb353606b5cdf0bbca9ad8d5be868c0e502c07983.png" />
+<figcaption>
+<p><span class="caption-number">图 87.3 </span><span class="caption-text">Population fitness across generations</span><a class="headerlink" href="#fig-gc-fitness" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>适应度攀升，然后保持稳定。</p>
+<p>演化究竟发现了什么样的策略？</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;evolved champion&#39;s average payoff against each opponent:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">opp</span> <span class="ow">in</span> <span class="n">PANEL</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">me</span><span class="p">,</span> <span class="n">them</span> <span class="o">=</span> <span class="n">play</span><span class="p">(</span><span class="n">champion</span><span class="p">,</span> <span class="n">opp</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  vs </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">8s</span><span class="si">}</span><span class="s2">:  me = </span><span class="si">{</span><span class="n">me</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">,  opponent = </span><span class="si">{</span><span class="n">them</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>evolved champion&#39;s average payoff against each opponent:
+  vs AllC    :  me = 5.00,  opponent = 0.00
+  vs AllD    :  me = 1.00,  opponent = 1.00
+  vs TFT     :  me = 2.98,  opponent = 2.98
+  vs Grudger :  me = 1.01,  opponent = 1.07
+  vs Random  :  me = 2.80,  opponent = 1.33
+</pre></div>
+</div>
+</div>
+</div>
+<p>用阿克塞尔罗德的话说，演化得到的策略是<em>友善且报复性</em>的。</p>
+<p>它与友善的对手（AllC、TFT、Grudger）达成互相合作，拒绝被AllD（全背叛者）欺骗（沦为接近惩罚收益的相互背叛），并且利用了Random（随机策略）。</p>
+<p>没有人告诉它要合作；合作行为之所以出现，是因为在包含合作者的小组中，合作是有利可图的。</p>
+<p>而且，它在同一小组面前的表现<em>甚至比针锋相对策略本身还要好</em>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">play_function</span><span class="p">(</span><span class="n">strategy</span><span class="p">,</span> <span class="n">opponent</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">150</span><span class="p">):</span>
+    <span class="s2">&quot;Average payoff of a stateful strategy function against an opponent.&quot;</span>
+    <span class="n">mine</span><span class="p">,</span> <span class="n">theirs</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="c1"># each side is passed its opponent&#39;s history first, then its own</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">strategy</span><span class="p">(</span><span class="n">theirs</span><span class="p">,</span> <span class="n">mine</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">opponent</span><span class="p">(</span><span class="n">mine</span><span class="p">,</span> <span class="n">theirs</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">payoff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="n">mine</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">theirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">total</span> <span class="o">/</span> <span class="n">n</span>
+
+<span class="n">panel_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">tft_fitness</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">play_function</span><span class="p">(</span><span class="n">tit_for_tat</span><span class="p">,</span> <span class="n">opp</span><span class="p">)</span> <span class="k">for</span> <span class="n">opp</span> <span class="ow">in</span> <span class="n">PANEL</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;tit-for-tat&#39;s own panel fitness:  </span><span class="si">{</span><span class="n">tft_fitness</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;evolved champion&#39;s panel fitness: </span><span class="si">{</span><span class="n">best_hist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tit-for-tat&#39;s own panel fitness:  2.432
+evolved champion&#39;s panel fitness: 2.672
+</pre></div>
+</div>
+</div>
+</div>
+<p>这重现了阿克塞尔罗德的核心发现：遗传算法”产生了一个能够赢得该锦标赛的策略，尤其是能够胜过赢得该锦标赛的’针锋相对’策略”。</p>
+<p>它在对付合作者时的表现与针锋相对策略非常相似，但其额外的记忆能力使它能从针锋相对策略放过的可利用对手身上榨取更多收益。</p>
+<p>差距并不大，也不应该大。</p>
+<p>针锋相对策略在这个对手小组面前是一个强有力的策略；额外的记忆所能带来的，是针对那些针锋相对策略能应对但并非最优应对的对手所获得的适度优势。</p>
+</section>
+</section>
+<section id="id11">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink"><span class="section-number">87.5. </span>分类器系统</a><a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>遗传算法演化的是一个其中没有个体学习的种群。</p>
+<p>霍兰德的<strong>分类器系统</strong>（classifier system）将同样的演化机制置于<em>单个主体内部</em>，作为单一大脑的模型。</p>
+<p>萨金特将其描述为霍兰德关于心智作为<strong>竞争性经济体</strong>（competitive economy）的构想：</p>
+<blockquote>
+<div><p>各条语句相互竞争决策的机会。分类器系统以霍兰德称之为竞争性经济体的方式，将遗传算法的要素与其他方面结合起来代表一个大脑。</p>
+</div></blockquote>
+<p>分类器系统包括：</p>
+<ul class="simple">
+<li><p><strong>分类器</strong>（classifiers），即以三元字母表 <span class="math notranslate nohighlight">\(\{0, 1, \#\}\)</span> 编码的if-then规则，其条件部分与状态匹配，动作部分规定一个行动，其中 <span class="math notranslate nohighlight">\(\#\)</span> 是通配符（“我不在乎”），使得通用规则能够与特定规则共存。</p></li>
+<li><p><strong>解码器</strong>（decoder），给定当前状态，找出哪些分类器的条件是匹配的。</p></li>
+<li><p><strong>拍卖</strong>（auction），选择一个匹配的分类器来执行行动：可以是最强的一个，或以与强度成比例的概率选出的一个。</p></li>
+<li><p><strong>计账系统</strong>（accounting system），更新每个分类器的<strong>强度</strong>（strength）——即其决策所赚取的净奖励的移动平均值——并在序贯问题中，将奖励从获得报酬的规则<em>反向</em>传递给设立这些规则的规则。</p></li>
+<li><p><strong>遗传算子</strong>（genetic operators），创造新的分类器，进行泛化（添加 <span class="math notranslate nohighlight">\(\#\)</span>）和特化（移除 <span class="math notranslate nohighlight">\(\#\)</span>），从而使系统的词汇本身也在演化。</p></li>
+</ul>
+<section id="id12">
+<h3><span class="section-number">87.5.1. </span>双臂老虎机<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>由布莱恩·亚瑟（Brian Arthur）和卡尔·西蒙（Carl Simon）提出的最简单的分类器系统，玩的是一个<strong>双臂老虎机</strong>（two-armed bandit）。</p>
+<p>臂 <span class="math notranslate nohighlight">\(i\)</span> 支付一个均值为 <span class="math notranslate nohighlight">\(\mu_i\)</span> 的随机奖励，且 <span class="math notranslate nohighlight">\(\mu_1 &gt; \mu_2\)</span>，但玩家对任何一个分布都一无所知。</p>
+<p>该分类器系统持有两条规则——“拉动臂1”和”拉动臂2”——它们的条件总是被满足。</p>
+<p>每条规则的强度是该臂所提供收益的移动平均值，选择拉动哪个臂的概率与强度成正比。</p>
+<p>这两条规则一开始拥有<strong>相等</strong>的强度：系统对任何一个臂都一无所知，必须从其所经历的奖励中建立自己的估计。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">two_armed_bandit</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">σ</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">20_000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="s2">&quot;Strength = running average of an arm&#39;s payoff; pull ∝ strength.&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>                             <span class="c1"># equal strengths: no prior knowledge</span>
+    <span class="n">τ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>                     <span class="c1"># pull counters</span>
+    <span class="n">pulls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">)</span>                <span class="c1"># strengths can dip below zero early on</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">w</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="n">μ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">σ</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+        <span class="n">τ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">reward</span> <span class="o">-</span> <span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="n">τ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>       <span class="c1"># running average</span>
+        <span class="n">pulls</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="n">pulls</span>
+
+<span class="n">pulls</span> <span class="o">=</span> <span class="n">two_armed_bandit</span><span class="p">([</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+<span class="n">frac_best</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">pulls</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pulls</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">frac_best</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;probability match  $</span><span class="se">\\</span><span class="s2">mu_1/(</span><span class="se">\\</span><span class="s2">mu_1+</span><span class="se">\\</span><span class="s2">mu_2)$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;optimal (always best arm)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$t$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;fraction of pulls on the best arm&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-gc-bandit">
+<img alt="_images/983e314767ac30707c25f8423016961ad61e33f90db458f9b20b86fc3b72329b.png" src="_images/983e314767ac30707c25f8423016961ad61e33f90db458f9b20b86fc3b72329b.png" />
+<figcaption>
+<p><span class="caption-number">图 87.4 </span><span class="caption-text">The classifier bandit converges to probability matching</span><a class="headerlink" href="#fig-gc-bandit" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>拉动较好那个臂的比例会收敛，但<strong>不会收敛到一</strong>。</p>
+<p>它收敛到 <span class="math notranslate nohighlight">\(\mu_1/(\mu_1 + \mu_2)\)</span>，即该臂占总预期奖励的份额。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">μ</span> <span class="ow">in</span> <span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]):</span>
+    <span class="n">frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">two_armed_bandit</span><span class="p">(</span><span class="n">μ</span><span class="p">)[</span><span class="o">-</span><span class="mi">5000</span><span class="p">:]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;μ = </span><span class="si">{</span><span class="n">μ</span><span class="si">}</span><span class="s2">: fraction on best arm = </span><span class="si">{</span><span class="n">frac</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;probability match = </span><span class="si">{</span><span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">μ</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">  (optimal = 1.0)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>μ = [1.0, 0.5]: fraction on best arm = 0.655, probability match = 0.667  (optimal = 1.0)
+μ = [2.0, 1.0]: fraction on best arm = 0.659, probability match = 0.667  (optimal = 1.0)
+μ = [3.0, 1.0]: fraction on best arm = 0.750, probability match = 0.750  (optimal = 1.0)
+</pre></div>
+</div>
+</div>
+</div>
+<p>亚瑟和西蒙证明了这一点：强度比例分类器进行<strong>概率匹配</strong>（probability-matches）。</p>
+<p>它按照各臂预期奖励的比例来拉动，而不是专注于最好的那个，因此它永远都在把奖励留在桌面上。</p>
+<p>这不是一个需要掩盖的错误；而是关于计账方式的一个教训。</p>
+<p>一个分类器系统的好坏，取决于强度分配和传递的方案。</p>
+<p>这里使用的朴素规则得到的是概率匹配；更好的规则可以做得更好。</p>
+<p>而在<em>序贯</em>问题中——一条规则的收益要经过一连串中间决策，才在很久以后才实现——计账必须做一件更困难的事情：为仅仅<em>建立起</em>一个未来有利可图的决策的规则给予奖励。</p>
+<p>霍兰德为此设计的装置是<strong>桶链</strong>（bucket brigade）：每个采取行动的分类器都将其部分强度支付给在它之前刚刚采取行动的那个分类器，即将系统带入当前规则得以行动的状态的那个分类器。</p>
+<p>在一条链末端支付的奖励会向后渗透，一条规则接着一条规则，直到从未直接获得报酬的早期设立规则，也因促成了这一结果而获得了强度。</p>
+<p>设计这种反向流动是构建分类器系统的核心技艺，也正是 <a class="reference internal" href="marimon_mcgrattan_sargent.html"><span class="doc">人工智能主体中作为交换媒介的货币</span></a> 必须做对的地方，以使主体学会今天为了明天的交易而接受货币。</p>
+</section>
+</section>
+<section id="id13">
+<h2><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">87.6. </span>演化编程</a><a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<p>我们已经巡览了四种大脑。</p>
+<p>最后一个想法关乎如何<em>运用</em>它们。</p>
+<p>贯穿整个这部分内容的一个反复出现的发现是：适应性主体系统，无论多么迟缓，都倾向于收敛到理性预期均衡。</p>
+<p><a class="reference internal" href="olg_adaptive_money.html"><span class="doc">世代交叠货币经济中的适应性主体</span></a> 和 <a class="reference external" href="https://python.quantecon.org/learning_approximation.html" title="（在 Project name not set）"><span>Learning, Approximation, and Equilibrium Computation</span></a>（英文版）展示了最小二乘学习者找到一个均衡；<a class="reference internal" href="exchange_rate_learning.html"><span class="doc">汇率不确定性、学习与实验</span></a> 展示了牛顿学习者稳定在（众多均衡中的）一个均衡上。</p>
+<p><strong>演化编程</strong>（evolutionary programming）将这一倾向转化为一种工具。</p>
+<p>如果一个适应性主体种群能够可靠地收敛到某个均衡，我们就可以将该种群作为<em>计算</em>该均衡的<em>方法</em>来运行，尤其是在模型过于复杂以至于无法手工求解的情况下。</p>
+<p>萨金特谨慎地说明了这里正在发生和没有发生的事情：</p>
+<blockquote>
+<div><p>适应性主体在”教导”经济学家，正如任何用于求解非线性方程的数值算法都在”教导”数学家一样。当这些主体能够”教导”我们某些东西时，那是因为我们设计它们如此。</p>
+</div></blockquote>
+<p>这与贯穿 <a class="reference external" href="https://python.quantecon.org/learning_approximation.html" title="（在 Project name not set）"><span>Learning, Approximation, and Equilibrium Computation</span></a>（英文版）的对偶性相同：一个学习型经济体是一个去中心化的均衡计算过程，而一个均衡计算过程是一个中心化的学习算法。</p>
+<p>遗传算法和分类器系统只是比递归最小二乘更丰富的计算引擎，能够搜索崎岖的景观，发现一个好规则的结构，而不仅仅是调整固定规则的系数。</p>
+<p>其代表性应用是 <span class="bibtex-citation" id="id14">Kiyotaki and Wright [<a class="reference internal" href="zreferences.html#id485" title="Nobuhiro Kiyotaki and Randall Wright. On money as a medium of exchange. Journal of Political Economy, 97(4):927–954, 1989. doi:10.1086/261634.">1989</a>]</span> 的货币搜索理论模型，其中交换媒介并非被假定，而必须从主体选择如何交易的过程中<strong>涌现</strong>出来。</p>
+<p>均衡是一组交易策略和匹配概率，而对于该模型的丰富版本，很难通过解析方法进行刻画。</p>
+<p><span class="bibtex-citation" id="id15">Marimon <em>et al.</em> [<a class="reference internal" href="zreferences.html#id486" title="Ramon Marimon, Ellen McGrattan, and Thomas J. Sargent. Money as a medium of exchange in an economy with artificially intelligent agents. Journal of Economic Dynamics and Control, 14(2):329–373, 1990. doi:10.1016/0165-1889(90)90025-C.">1990</a>]</span> 将霍兰德分类器系统的种群放入该环境中，观察它们收敛到均衡，然后构建了一个没有已知解析解的五种商品版本，让分类器系统提示该均衡的样貌。</p>
+</section>
+<section id="id16">
+<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">87.7. </span>结束语</a><a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<p>这份目录中的四种大脑在其所假设的既定条件上有所不同。</p>
+<p>感知机被赋予了一个函数形式，只被要求提供其系数，这就是为什么计量经济学家一眼就能认出它。</p>
+<p>霍普菲尔德网络被赋予了模式本身，只被要求回忆它们。</p>
+<p>遗传算法只被赋予了一个适应度函数，必须在一个无法计算梯度的空间中进行搜索。</p>
+<p>分类器系统被赋予了一套可以书写规则的词汇，必须发现哪些规则值得保留。</p>
+<p>沿着这份清单往下走，我们赋予主体的东西越来越少，而要求它发现的东西越来越多，这正是有限理性研究纲领推动我们前进的方向。</p>
+<p>在此过程中出现了两个警示，两者都会在下一讲中再次出现。</p>
+<p>遗传算法的个体不学习：只有种群在学习，这使得它更像是一个社会的模型，而非一个心智的模型。</p>
+<p>而老虎机的例子表明，一个分类器系统的表现是由其<em>计账方式</em>——即强度如何分配、竞价和传递——决定的，而不是仅仅因为拥有分类器这一事实本身。</p>
+<p><a class="reference internal" href="marimon_mcgrattan_sargent.html"><span class="doc">人工智能主体中作为交换媒介的货币</span></a> 将这套机制组装成从零开始学习使用货币的主体，而这两个警示都直接关系到这些主体最终能够学到什么。</p>
+</section>
+<section id="id17">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">87.8. </span>练习</a><a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="gc_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 87.1 </span></p>
+<section id="exercise-content">
+<p>霍普菲尔德网络的回忆过程是在能量 <span class="math notranslate nohighlight">\(E(s) = -\tfrac{1}{2}s^\top ws\)</span> 上的下降过程。</p>
+<p>直接验证这一下降过程。</p>
+<p>取一个存储的字母，破坏若干像素，并在回忆动态的每一步记录能量。</p>
+<p>确认能量从不增加，并且回忆过程会停止在（或低于）存储模式的能量水平。</p>
+<p>然后更严重地破坏模式，并对失败情况进行分类：回忆是落在一个<em>不同</em>的存储字母上，还是落在一个从未被存储过的<em>虚假</em>状态上？</p>
+<p>比较各种情况下的能量，并用它来解释为什么会出现错误。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="genetic_classifier-solution-1">
+
+<p class="admonition-title">解答<a class="reference internal" href="#gc_ex1"> 练习 87.1</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">recall_with_energy</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">s0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">trace</span> <span class="o">=</span> <span class="p">[</span><span class="n">energy</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">s</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+        <span class="n">s_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">w</span> <span class="o">@</span> <span class="n">s</span><span class="p">)</span>
+        <span class="n">s_new</span><span class="p">[</span><span class="n">s_new</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">s_new</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">s_new</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s_new</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="n">trace</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">i</span> <span class="o">=</span> <span class="n">letters</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">)</span>
+<span class="n">corrupt</span> <span class="o">=</span> <span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">corrupt</span><span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">final</span><span class="p">,</span> <span class="n">trace</span> <span class="o">=</span> <span class="n">recall_with_energy</span><span class="p">(</span><span class="n">w_hop</span><span class="p">,</span> <span class="n">corrupt</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;energy along the recall path: </span><span class="si">{</span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">trace</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;monotonically non-increasing: </span><span class="si">{</span><span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">1e-9</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;recovered the intended letter &#39;E&#39;: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">final</span><span class="p">,</span><span class="w"> </span><span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>energy along the recall path: [np.float64(-6.38), np.float64(-12.5), np.float64(-12.5)]
+monotonically non-increasing: True
+recovered the intended letter &#39;E&#39;: True
+</pre></div>
+</div>
+</div>
+</div>
+<p>能量在每一条回忆路径上都单调下降：动态过程只能向下移动，这就是为什么网络总是停止在一个局部最小值处。</p>
+<p>现在更严重地破坏模式，并将结果分为三类：预期的字母、一个<em>不同的</em>存储字母，以及一个虽是不动点但从未被教授过的虚假状态。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">classify_outcome</span><span class="p">(</span><span class="n">final</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">final</span><span class="p">,</span> <span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="s2">&quot;intended&quot;</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">final</span><span class="p">,</span> <span class="n">σ</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">letters</span><span class="p">))):</span>
+        <span class="k">return</span> <span class="s2">&quot;wrong letter&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;spurious&quot;</span>
+
+<span class="n">counts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;intended&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;wrong letter&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;spurious&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="n">wrong_energy</span><span class="p">,</span> <span class="n">spurious_energy</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">letters</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">seed</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="n">seed</span><span class="p">)</span>
+        <span class="n">corrupt</span> <span class="o">=</span> <span class="n">σ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">corrupt</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="n">recall</span><span class="p">(</span><span class="n">w_hop</span><span class="p">,</span> <span class="n">corrupt</span><span class="p">)</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">classify_outcome</span><span class="p">(</span><span class="n">final</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">counts</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;wrong letter&quot;</span><span class="p">:</span>
+            <span class="n">wrong_energy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy</span><span class="p">(</span><span class="n">w_hop</span><span class="p">,</span> <span class="n">final</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;spurious&quot;</span><span class="p">:</span>
+            <span class="n">spurious_energy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy</span><span class="p">(</span><span class="n">w_hop</span><span class="p">,</span> <span class="n">final</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;7-pixel corruptions (</span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s2"> trials): </span><span class="si">{</span><span class="n">counts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stored patterns all have energy </span><span class="si">{</span><span class="n">energy</span><span class="p">(</span><span class="n">w_hop</span><span class="p">,</span><span class="w"> </span><span class="n">σ</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrong-letter results: energy in [</span><span class="si">{</span><span class="nb">min</span><span class="p">(</span><span class="n">wrong_energy</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">wrong_energy</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;spurious results:     energy in [</span><span class="si">{</span><span class="nb">min</span><span class="p">(</span><span class="n">spurious_energy</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">spurious_energy</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7-pixel corruptions (1000 trials): {&#39;intended&#39;: 404, &#39;wrong letter&#39;: 62, &#39;spurious&#39;: 534}
+stored patterns all have energy -12.5
+wrong-letter results: energy in [-12.5, -12.5]
+spurious results:     energy in [-12.5, -10.4]
+</pre></div>
+</div>
+</div>
+</div>
+<p>两种失败模式都会出现，而且在这种破坏程度下，虚假状态在数量上要更为常见一些。</p>
+<p>一个<strong>错误字母</strong>的结果恰好处于存储的能量 <span class="math notranslate nohighlight">\(-N/2\)</span> 上：这种破坏将起点推过了一个盆地边界，进入了另一个同样深的存储记忆的吸引域。</p>
+<p>能量下降会收敛到<em>某个</em>最小值，但当相关模式的吸引域相互交错时，无法保证收敛到<em>最近</em>的那个。</p>
+<p>一个<strong>虚假</strong>的结果是设计者从未打算得到的局部最小值，通常是存储模式的混合，作为存储规则的一种副产品被创造出来。</p>
+<p>其能量范围从比存储模式浅一些，一直到与之完全相同的深度，因此仅凭深度本身并不能判断某个记忆是否是我们所要求的那种。</p>
+<p>一些最深的虚假状态是符号反转：因为 <span class="math notranslate nohighlight">\(\operatorname{sgn}(w(-s)) = -\operatorname{sgn}(ws)\)</span>，只要 <span class="math notranslate nohighlight">\(\sigma\)</span> 是不动点，向量 <span class="math notranslate nohighlight">\(-\sigma\)</span> 就以同样的能量成为不动点，因此无论我们是否希望如此，网络都会存储每个字母的”底片”版本。</p>
+<p>由于所有这些都是真正的局部最小值，向下的动态过程无法从任何一个中逃脱。</p>
+<p>这两点都是网络不完美的原因，也正是为什么<strong>模拟退火</strong>很重要：加入递减的随机扰动，能让系统在稳定下来之前跳出一个浅层虚假吸引域，或跨越一个盆地边界，而纯粹的能量下降永远做不到这一点。</p>
+</section>
+</div>
+<div class="exercise admonition" id="gc_ex2">
+
+<p class="admonition-title"><span class="caption-number">练习 87.2 </span></p>
+<section id="exercise-content">
+<p>遗传算法的探索来自两个算子：交叉和变异。</p>
+<p>书中指出，交叉”是该算法的核心”，而单独的变异”是注入多样性的一种糟糕机制”。</p>
+<p>在阿克塞尔罗德的博弈中检验这一论断。</p>
+<p>编写一个仅使用变异的变体（每个子代都是从一个被选中的父代经变异得到的副本，不进行交叉），并将其达到的适应度与完整算法进行比较。</p>
+<p>书中谨慎地指出了<em>何时</em>单独的变异是弱势的：“当变异率设定为非常低的值时，单独的变异是一种注入多样性的糟糕机制。”</p>
+<p>因此在<strong>低</strong>变异率下运行比较，此时交叉必须承担探索的重任。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="genetic_classifier-solution-3">
+
+<p class="admonition-title">解答<a class="reference internal" href="#gc_ex2"> 练习 87.2</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">evolve_no_crossover</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">generations</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">p_mut</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="s2">&quot;Mutation-only variant: each child is a mutated copy of one selected parent.&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">pop</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">70</span><span class="p">))</span>
+    <span class="n">best_hist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">generations</span><span class="p">):</span>
+        <span class="n">fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fitness</span><span class="p">(</span><span class="n">pop</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)])</span>
+        <span class="n">best_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>            <span class="c1"># recorded exactly as in `evolve`</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">fit</span> <span class="o">-</span> <span class="n">fit</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">+</span> <span class="mf">1e-6</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">weight</span><span class="p">),</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">weight</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="n">nxt</span> <span class="o">=</span> <span class="n">pop</span><span class="p">[</span><span class="n">parents</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">nxt</span><span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="mi">70</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">p_mut</span><span class="p">]</span> <span class="o">^=</span> <span class="mi">1</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="n">nxt</span>
+    <span class="k">return</span> <span class="n">best_hist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">seed</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">panel_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">with_x</span> <span class="o">=</span> <span class="n">evolve</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">generations</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">p_mut</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">panel_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">without_x</span> <span class="o">=</span> <span class="n">evolve_no_crossover</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">seed</span><span class="p">,</span> <span class="n">with_x</span><span class="p">,</span> <span class="n">without_x</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;seed&#39;</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;with crossover&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;mutation only&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sd</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sd</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">a</span><span class="si">:</span><span class="s2">&gt;16.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">b</span><span class="si">:</span><span class="s2">&gt;16.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;mean&#39;</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">rows</span><span class="p">])</span><span class="si">:</span><span class="s2">&gt;16.3f</span><span class="si">}</span><span class="s2"> &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">rows</span><span class="p">])</span><span class="si">:</span><span class="s2">&gt;16.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>seed   with crossover    mutation only
+   0            2.643            2.572
+   1            2.540            2.583
+   2            2.664            2.547
+   3            2.657            2.616
+   4            2.669            2.556
+mean            2.635            2.575
+</pre></div>
+</div>
+</div>
+</div>
+<p>在低变异率下，交叉的优势很明显：在几乎每个随机种子上，它都达到了比仅使用变异的变体更高的适应度。</p>
+<p>原因正是书中所给出的。</p>
+<p>在变异很少的情况下，仅使用变异的种群只能每次通过一次罕见的位翻转来缓慢前进，并且随着选择过程不断复制其少数最优字符串，多样性很快就会丧失。</p>
+<p>而交叉则重组了整段已经在不同字符串中被证明有用的<em>片段</em>：将一种应对某个对手的良好方式，与应对另一个对手的良好方式拼接在一起。</p>
+<p>它注入了大规模、结构化的变异，同时保留了适应度已经青睐的模式，这正是霍兰德将其置于该算法核心地位的原因。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>在较高的变异率下，这一差距会缩小，甚至可能消失：当变异本身就能产生大量多样性时，交叉的贡献就不那么关键了。</p>
+<p>尝试用 <code class="docutils literal notranslate"><span class="pre">p_mut=0.02</span></code> 重新运行该比较，看看这一效应如何缩小。</p>
+<p>交叉是否具有决定性作用，既取决于变异率，也取决于编码方式是否将有用的构建模块与连续的位段对齐——对于这个基于历史索引的策略表而言，它只做到了部分对齐。</p>
+</div>
+</section>
+</div>
+<div class="exercise admonition" id="gc_ex3">
+
+<p class="admonition-title"><span class="caption-number">练习 87.3 </span></p>
+<section id="exercise-content">
+<p>双臂老虎机分类器进行概率匹配，这是次优的：它会永远以固定的比例继续拉动较差的那个臂。</p>
+<p>一个自然的修正方法是，随着系统信心的增强，使拍卖变得更加”贪婪”。</p>
+<p>用一个softmax函数替代与强度成比例的选择规则：</p>
+<div class="math notranslate nohighlight">
+\[
+\pi_1 = \frac{e^{\beta S_1}}{e^{\beta S_1} + e^{\beta S_2}},
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\beta\)</span> 控制贪婪程度（<span class="math notranslate nohighlight">\(\beta \to \infty\)</span> 时总是选择更强的那个臂）。</p>
+<p>实现它，并展示长期而言拉动最佳臂的比例如何依赖于 <span class="math notranslate nohighlight">\(\beta\)</span>。</p>
+<p><span class="math notranslate nohighlight">\(\beta\)</span> 需要多大，才能使分类器从概率匹配转向最优策略？</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="genetic_classifier-solution-5">
+
+<p class="admonition-title">解答<a class="reference internal" href="#gc_ex3"> 练习 87.3</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bandit_softmax</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">σ</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">20_000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>                             <span class="c1"># equal strengths, as before</span>
+    <span class="n">τ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">pulls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">β</span> <span class="o">*</span> <span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">S</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p1</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="n">μ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">σ</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+        <span class="n">τ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">reward</span> <span class="o">-</span> <span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="n">τ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">pulls</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pulls</span><span class="p">[</span><span class="o">-</span><span class="mi">5000</span><span class="p">:]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">μ</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;probability match target = </span><span class="si">{</span><span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">μ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">μ</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">,  optimal = 1.000</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">β</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">):</span>
+    <span class="n">frac</span> <span class="o">=</span> <span class="n">bandit_softmax</span><span class="p">(</span><span class="n">μ</span><span class="p">,</span> <span class="n">β</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;β = </span><span class="si">{</span><span class="n">β</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2">: fraction on best arm = </span><span class="si">{</span><span class="n">frac</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>probability match target = 0.750,  optimal = 1.000
+
+β =  0.5: fraction on best arm = 0.732
+β =  1.0: fraction on best arm = 0.888
+β =  2.0: fraction on best arm = 0.980
+β =  4.0: fraction on best arm = 1.000
+β =  8.0: fraction on best arm = 1.000
+</pre></div>
+</div>
+</div>
+</div>
+<p>随着 <span class="math notranslate nohighlight">\(\beta\)</span> 的增大，分类器摆脱了概率匹配，转而集中拉动较好的那个臂，逐渐逼近总是拉动该臂的最优策略。</p>
+<p>这个练习具体展示了为什么<em>计账和拍卖规则</em>——而不仅仅是拥有分类器这一事实——决定了一个分类器系统的表现好坏。</p>
+<p>亚瑟和西蒙的强度比例规则只是一个谱系上的一个点；贪婪规则则位于谱系的另一端。</p>
+<p>真正的分类器系统，包括 <a class="reference internal" href="marimon_mcgrattan_sargent.html"><span class="doc">人工智能主体中作为交换媒介的货币</span></a> 中的那个系统，都是刻意选择其拍卖和强度更新规则的，正是因为这一选择才是区分一个仅仅进行概率匹配的系统与一个学会良好行动的系统的关键所在。</p>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Tools and Techniques
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Elementary Statistics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bayes Law
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Statistics and Information
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Linear Programming
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   36. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   37. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Dynamics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   38. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   39. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   40. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   43. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   44. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   45. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Search
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   50. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   53. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   55. 工作搜寻 VI：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   56. 工作搜寻 VII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   57. 工作搜寻 VIII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Reinforcement Learning
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   72. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   73. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   74. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   75. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   83. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   107. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   108. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   109. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   110. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Asset Pricing and Finance
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   119. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Data and Empirics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   128. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   129. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Auctions
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   133. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   134. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   135. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   136. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   137. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/genetic_classifier.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/genetic_classifier.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/genetic_classifier.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/genetic_classifier.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/genetic_classifier.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "genetic_classifier";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/genetic_classifier.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

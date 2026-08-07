@@ -10,6 +10,35 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 带有阿罗证券的竞争均衡
+  headings:
+    Introduction: 引言
+    The setting: 设定
+    The setting::Preferences and endowments: 偏好和禀赋
+    Recursive Formulation: 递归表述
+    State Variable Degeneracy: 状态变量退化
+    Markov Asset Prices: 马尔可夫资产价格
+    Markov Asset Prices::Exogenous Pricing Kernel: 外生定价核
+    Markov Asset Prices::Multi-Step-Forward Transition Probabilities and Pricing Kernels: 多步前向转移概率和定价核
+    Markov Asset Prices::Laws of Iterated Expectations and Iterated Values: 迭代期望法则和迭代值法则
+    General Equilibrium: 一般均衡
+    General Equilibrium::Inputs: 输入
+    General Equilibrium::Outputs: 输出
+    General Equilibrium::$Q$ is the Pricing Kernel: $Q$ 是定价核
+    General Equilibrium::Values: 数值
+    General Equilibrium::Continuation Wealth: 延续财富
+    General Equilibrium::Optimal Portfolios: 最优投资组合
+    General Equilibrium::Equilibrium Wealth Distribution $\alpha$: 均衡财富分布 $\alpha$
+    Finite Horizon: 有限期限
+    Finite Horizon::Continuation Wealths: 延续财富
+    Python Code: Python代码
+    Examples: 示例
+    Examples::Example 1: 示例 1
+    Examples::Example 2: 示例 2
+    Examples::Example 3: 示例 3
+    Examples::Example 4: 示例 4
+    Examples::Finite Horizon Example: 有限期限示例
 ---
 
 # 带有阿罗证券的竞争均衡
@@ -854,7 +883,7 @@ class RecurCompetitive:
     def price_risk_free_bond(self):
         "给定Q，计算一期无风险债券价格"
 
-        PRF = np.sum(self.Q, 0)
+        PRF = np.sum(self.Q, axis=1)
         self.PRF = PRF
 
         return PRF
@@ -862,7 +891,7 @@ class RecurCompetitive:
     def risk_free_rate(self):
         "给定Q，计算一期无风险利率R"
 
-        R = np.sum(self.Q, 0)
+        R = np.sum(self.Q, axis=1)
         R = np.reciprocal(R)
         self.R = R
 
@@ -1272,4 +1301,3 @@ ex1.ψ, ex1_large.ψ[-1]
 ex1_large.value_functionss()
 ex1.J, ex1_large.J[-1]
 ```
-

@@ -9,9 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>17. 随机回答的期望效用 &#8212; Python中级数量经济学</title>
-    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
     
         <script>
             MathJax = {
@@ -70,13 +77,13 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=a459934d9fea1f60268e46d95e2569a33e1f6ec2" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
-    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=b4b7a797" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -94,8 +101,8 @@
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-    <script src="_static/scripts/quantecon-book-theme.js?digest=06ebc90d5139b434c2742937a4ef3b185cb93e2f"></script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
     <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
     <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
@@ -150,10 +157,31 @@
 <meta property="og:site_name" content="Python中级数量经济学" />
 <meta name="theme-color" content="#ffffff" />
 
+
+
+
   </head>
 <body>
 
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
 <!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
 
     <span id="top"></span>
 
@@ -165,7 +193,12 @@
 
                 <div class="qe-page__toc">
 
-                    <div class="inner">
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
 
                         
                         <div class="qe-page__toc-header">
@@ -178,31 +211,31 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">17.1. 概述</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">17.2. 隐私度量</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">17.3. 概念集合</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#leysieffer1976respondent">17.3.1. <span class="xref cite cite-t">leysieffer1976respondent</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lanke1976degree">17.3.2. <span class="xref cite cite-t">lanke1976degree</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fligner1977comparison">17.3.3. <span class="xref cite cite-t">fligner1977comparison</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#greenberg1977respondent">17.3.4. <span class="xref cite cite-t">greenberg1977respondent</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#leysieffer-and-warner-1976">17.3.1. Leysieffer and Warner(1976)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lanke-1976">17.3.2. Lanke(1976)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fligner-policello-and-singh">17.3.3. 2.3 Fligner, Policello, and Singh</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#greenberg-kuebler-abernathy-and-horvitz-1977">17.3.4. 2.4 Greenberg, Kuebler, Abernathy, and Horvitz (1977)</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">17.4. 受访者的期望效用</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">17.4.1. 真实边界</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">17.4.2. 绘制真话边界</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">17.4. 受访者的期望效用</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">17.4.1. 真实边界</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">17.4.2. 绘制真话边界</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">17.5. 调查设计的功利主义观点</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">17.5.1. 等方差曲线</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">17.5.2. 绘制等方差曲线</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">17.5.3. 最优调查设计</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">17.5. 调查设计的功利主义观点</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">17.5.1. 等方差曲线</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">17.5.2. 绘制等方差曲线</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">17.5.3. 最优调查设计</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">17.6. 对提议隐私措施的批评</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id38">17.6.1. 对<span class="xref cite cite-t">lanke1976degree</span>方法的分析</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id41">17.6.2. <span class="xref cite cite-t">leysieffer1976respondent</span>的方法</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chadhuri-mukerjee-88">17.6.3. 对<span class="xref cite cite-t">Chadhuri_Mukerjee_88</span>方法的分析</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id46">17.6.4. <span class="xref cite cite-t">greenberg1977respondent</span>的方法</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">17.6. 对提议隐私措施的批评</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">17.6.1. 对Lanke (1976)方法的分析</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">17.6.2. Leysieffer and Warner (1976)的方法</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chaudhuri-and-mukerjees-1988">17.6.3. 对Chaudhuri and Mukerjee’s (1988)方法的分析</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#greenberg-et-al-1977">17.6.4. Greenberg et al. (1977)的方法</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id49">17.7. 总结说明</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">17.7. 总结说明</a></li>
 </ul>
                             <p class="logo">
                                 
@@ -213,17 +246,23 @@
                                 
                             </p>
 
-                            <p class="powered">Powered by <a href="https://jupyterbook.org/en/stable/">Jupyter Book</a></p>
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
 
                         </nav>
 
                         <div class="qe-page__toc-footer">
                             
                             
-                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                            
+                            
+                            
                         </div>
 
                     </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
 
                 </div>
 
@@ -233,10 +272,9 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">随机回答的期望效用</p>
-
                     </div>
-                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+
+                    <!-- Authors section -->
                         <p class="qe-page__header-authors" font-size="18">
                             
                                 
@@ -249,6 +287,82 @@
                             
                         </p>
 
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 19, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/util_rand_resp.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/3968516" class="changelog-hash">3968516</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">[action-translation] resync: util_rand_resp.md (#157)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/1b49a3b" class="changelog-hash">1b49a3b</a>
+                                
+                                <span class="changelog-author">nisha617</span>
+                                <span class="changelog-time">10 months ago</span>
+                                <span class="changelog-message">Update util_rand_resp.md</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/e0ec0e6" class="changelog-hash">e0ec0e6</a>
+                                
+                                <span class="changelog-author">nisha617</span>
+                                <span class="changelog-time">10 months ago</span>
+                                <span class="changelog-message">Add files via upload</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/a156f78" class="changelog-hash">a156f78</a>
+                                
+                                <span class="changelog-author">nisha617</span>
+                                <span class="changelog-time">11 months ago</span>
+                                <span class="changelog-message">Add files via upload</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/86bda7c" class="changelog-hash">86bda7c</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update translation for util_rand_resp.md</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c4c4b86" class="changelog-hash">c4c4b86</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update matplotlib</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/387e084" class="changelog-hash">387e084</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lecture series</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
 
                 </div> <!-- .page__header -->
 
@@ -276,11 +390,11 @@
 <h1><span class="section-number">17. </span>随机回答的期望效用<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
 <section id="id2">
 <h2><span class="section-number">17.1. </span>概述<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
-<p><a class="reference internal" href="rand_resp.html"><span class="doc">这篇讲座</span></a> 描述了传统的 Warner <span id="id3">[<a class="reference internal" href="zreferences.html#id18" title="Stanley L Warner. Randomized response: a survey technique for eliminating evasive answer bias. Journal of the American Statistical Association, 60(309):63–69, 1965.">Warner, 1965</a>]</span> 随机回答调查，这种调查旨在保护受访者的隐私。</p>
-<p>Lars Ljungqvist <span id="id4">[<a class="reference internal" href="zreferences.html#id19" title="Lars Ljungqvist. A unified approach to measures of privacy in randomized response models: a utilitarian perspective. Journal of the American Statistical Association, 88(421):97–103, 1993.">Ljungqvist, 1993</a>]</span> 分析了受访者是否如实回答如何取决于<strong>期望效用</strong>。</p>
-<p>本讲座讲述了 Ljungqvist 如何使用他的框架来阐明其他研究者提出的替代性随机回答调查技术，例如 <span id="id5">[<a class="reference internal" href="zreferences.html#id26" title="Jan Lanke. On the choice of the unrelated question in simmons' version of randomized response. Journal of the American Statistical Association, 70(349):80–83, 1975.">Lanke, 1975</a>]</span>、 <span id="id6">[<a class="reference internal" href="zreferences.html#id20" title="Jan Lanke. On the degree of protection in randomized interviews. International Statistical Review/Revue Internationale de Statistique, pages 197–203, 1976.">Lanke, 1976</a>]</span>、 <span id="id7">[<a class="reference internal" href="zreferences.html#id21" title="Frederick W Leysieffer and Stanley L Warner. Respondent jeopardy and optimal designs in randomized response models. Journal of the American Statistical Association, 71(355):649–656, 1976.">Leysieffer and Warner, 1976</a>]</span>、
-<span id="id8">[<a class="reference internal" href="zreferences.html#id22" title="Harald Anderson. Estimation of a proportion through randomized response. International Statistical Review/Revue Internationale de Statistique, pages 213–217, 1976.">Anderson, 1976</a>]</span>、 <span id="id9">[<a class="reference internal" href="zreferences.html#id23" title="Michael A Fligner, George E Policello, and Jagbir Singh. A comparison of two randomized response survey methods with consideration for the level of respondent protection. Communications in Statistics-Theory and Methods, 6(15):1511–1524, 1977.">Fligner <em>et al.</em>, 1977</a>]</span>、 <span id="id10">[<a class="reference internal" href="zreferences.html#id24" title="Bernard G Greenberg, Roy R Kuebler, James R Abernathy, and Daniel G Horvitz. Respondent hazards in the unrelated question randomized response model. Journal of Statistical Planning and Inference, 1(1):53–60, 1977.">Greenberg <em>et al.</em>, 1977</a>]</span>、
-<span id="id11">[<a class="reference internal" href="zreferences.html#id25" title="Bernard G Greenberg, Abdel-Latif A Abul-Ela, Walt R Simmons, and Daniel G Horvitz. The unrelated question randomized response model: theoretical framework. Journal of the American Statistical Association, 64(326):520–539, 1969.">Greenberg <em>et al.</em>, 1969</a>]</span>。</p>
+<p><a class="reference internal" href="rand_resp.html"><span class="doc">这篇讲座</span></a> 描述了传统的 Warner <span class="bibtex-citation" id="id3">[<a class="reference internal" href="zreferences.html#id101" title="Stanley L Warner. Randomized response: a survey technique for eliminating evasive answer bias. Journal of the American Statistical Association, 60(309):63–69, 1965.">Warner, 1965</a>]</span> 随机回答调查，这种调查旨在保护受访者的隐私。</p>
+<p>Lars Ljungqvist <span class="bibtex-citation" id="id4">[<a class="reference internal" href="zreferences.html#id102" title="Lars Ljungqvist. A unified approach to measures of privacy in randomized response models: a utilitarian perspective. Journal of the American Statistical Association, 88(421):97–103, 1993.">Ljungqvist, 1993</a>]</span> 分析了受访者是否如实回答如何取决于<strong>期望效用</strong>。</p>
+<p>本讲座讲述了 Ljungqvist 如何使用他的框架来阐明其他研究者提出的替代性随机回答调查技术，例如 <span class="bibtex-citation" id="id5">[<a class="reference internal" href="zreferences.html#id109" title="Jan Lanke. On the choice of the unrelated question in simmons' version of randomized response. Journal of the American Statistical Association, 70(349):80–83, 1975.">Lanke, 1975</a>]</span>、 <span class="bibtex-citation" id="id6">[<a class="reference internal" href="zreferences.html#id103" title="Jan Lanke. On the degree of protection in randomized interviews. International Statistical Review/Revue Internationale de Statistique, pages 197–203, 1976.">Lanke, 1976</a>]</span>、 <span class="bibtex-citation" id="id7">[<a class="reference internal" href="zreferences.html#id104" title="Frederick W Leysieffer and Stanley L Warner. Respondent jeopardy and optimal designs in randomized response models. Journal of the American Statistical Association, 71(355):649–656, 1976.">Leysieffer and Warner, 1976</a>]</span>、
+<span class="bibtex-citation" id="id8">[<a class="reference internal" href="zreferences.html#id105" title="Harald Anderson. Estimation of a proportion through randomized response. International Statistical Review/Revue Internationale de Statistique, pages 213–217, 1976.">Anderson, 1976</a>]</span>、 <span class="bibtex-citation" id="id9">[<a class="reference internal" href="zreferences.html#id106" title="Michael A Fligner, George E Policello, and Jagbir Singh. A comparison of two randomized response survey methods with consideration for the level of respondent protection. Communications in Statistics-Theory and Methods, 6(15):1511–1524, 1977.">Fligner <em>et al.</em>, 1977</a>]</span>、 <span class="bibtex-citation" id="id10">[<a class="reference internal" href="zreferences.html#id107" title="Bernard G Greenberg, Roy R Kuebler, James R Abernathy, and Daniel G Horvitz. Respondent hazards in the unrelated question randomized response model. Journal of Statistical Planning and Inference, 1(1):53–60, 1977.">Greenberg <em>et al.</em>, 1977</a>]</span>、
+<span class="bibtex-citation" id="id11">[<a class="reference internal" href="zreferences.html#id108" title="Bernard G Greenberg, Abdel-Latif A Abul-Ela, Walt R Simmons, and Daniel G Horvitz. The unrelated question randomized response model: theoretical framework. Journal of the American Statistical Association, 64(326):520–539, 1969.">Greenberg <em>et al.</em>, 1969</a>]</span>。</p>
 </section>
 <section id="id12">
 <h2><span class="section-number">17.2. </span>隐私度量<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
@@ -302,8 +416,8 @@
 <section id="id13">
 <h2><span class="section-number">17.3. </span>概念集合<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p>在这里我们描述一些研究者提出的概念</p>
-<section id="leysieffer1976respondent">
-<h3><span class="section-number">17.3.1. </span><span id="id14">Leysieffer and Warner [<a class="reference internal" href="zreferences.html#id21" title="Frederick W Leysieffer and Stanley L Warner. Respondent jeopardy and optimal designs in randomized response models. Journal of the American Statistical Association, 71(355):649–656, 1976.">1976</a>]</span><a class="headerlink" href="#leysieffer1976respondent" title="Link to this heading">#</a></h3>
+<section id="leysieffer-and-warner-1976">
+<h3><span class="section-number">17.3.1. </span>Leysieffer and Warner(1976)<a class="headerlink" href="#leysieffer-and-warner-1976" title="Link to this heading">#</a></h3>
 <p>如果回答 <span class="math notranslate nohighlight">\(r\)</span> 相对于 <span class="math notranslate nohighlight">\(A\)</span> 或 <span class="math notranslate nohighlight">\(A^{'}\)</span> 满足以下条件，则被视为具有危害性：</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-two">
 <span class="eqno">(17.2)<a class="headerlink" href="#equation-eq-util-rand-two" title="Link to this equation">#</a></span>\[\begin{split}
@@ -338,7 +452,7 @@ g(\text{no}|A^{'})&amp;&gt;1
 \end{split}\]</div>
 <p>Leysieffer和Warner证明，估计的方差只能通过增加这两个危害性度量中的一个或两个来降低。</p>
 <p>因此，一个有效的随机回应模型应在保证受访者配合的前提下，达到所能承受的最大风险水平。</p>
-<p>作为一个特例，Leysieffer和Warner考虑了一个“否”的回答不具有危害性的问题；也就是说，<span class="math notranslate nohighlight">\(g(\text{no}|A^{'})\)</span>可以是无限大的。</p>
+<p>作为一个特例，Leysieffer和Warner考虑了一个”否”的回答不具有危害性的问题；也就是说，<span class="math notranslate nohighlight">\(g(\text{no}|A^{'})\)</span>可以是无限大的。</p>
 <p>显然，最优设计必须满足</p>
 <div class="math notranslate nohighlight">
 \[
@@ -350,37 +464,39 @@ g(\text{no}|A^{'})&amp;&gt;1
 \text{Pr}(A|\text{no})=0
 \]</div>
 </section>
-<section id="lanke1976degree">
-<h3><span class="section-number">17.3.2. </span><span id="id15">Lanke [<a class="reference internal" href="zreferences.html#id20" title="Jan Lanke. On the degree of protection in randomized interviews. International Statistical Review/Revue Internationale de Statistique, pages 197–203, 1976.">1976</a>]</span><a class="headerlink" href="#lanke1976degree" title="Link to this heading">#</a></h3>
-<p><span id="id16">Lanke [<a class="reference internal" href="zreferences.html#id26" title="Jan Lanke. On the choice of the unrelated question in simmons' version of randomized response. Journal of the American Statistical Association, 70(349):80–83, 1975.">1975</a>]</span> 认为”人们可能想要隐藏的是属于A组的身份，而不是属于补集A’组的身份。”</p>
-<p>因此，<span id="id17">Lanke [<a class="reference internal" href="zreferences.html#id20" title="Jan Lanke. On the degree of protection in randomized interviews. International Statistical Review/Revue Internationale de Statistique, pages 197–203, 1976.">1976</a>]</span> 认为一个合适的保护度量是最小化</p>
+<section id="lanke-1976">
+<h3><span class="section-number">17.3.2. </span>Lanke(1976)<a class="headerlink" href="#lanke-1976" title="Link to this heading">#</a></h3>
+<p>Lanke (1975) <span class="bibtex-citation" id="id14">[<a class="reference internal" href="zreferences.html#id109" title="Jan Lanke. On the choice of the unrelated question in simmons' version of randomized response. Journal of the American Statistical Association, 70(349):80–83, 1975.">Lanke, 1975</a>]</span> 认为”人们可能想要隐藏的是属于A组的身份，而不是属于补集A’组的身份。”</p>
+<p>因此，Lanke (1976) <span class="bibtex-citation" id="id15">[<a class="reference internal" href="zreferences.html#id103" title="Jan Lanke. On the degree of protection in randomized interviews. International Statistical Review/Revue Internationale de Statistique, pages 197–203, 1976.">Lanke, 1976</a>]</span> 认为一个合适的保护度量是最小化</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-five-a">
 <span class="eqno">(17.5)<a class="headerlink" href="#equation-eq-util-rand-five-a" title="Link to this equation">#</a></span>\[
 \max \left\{ \text{Pr}(A|\text{yes}), \text{Pr}(A|\text{no}) \right\}
 \]</div>
-<p>在保持这个度量不变的情况下，他解释了在什么条件下，使用无关问题模型或<span id="id18">Warner [<a class="reference internal" href="zreferences.html#id18" title="Stanley L Warner. Randomized response: a survey technique for eliminating evasive answer bias. Journal of the American Statistical Association, 60(309):63–69, 1965.">1965</a>]</span>的原始模型可以获得最小方差估计。</p>
+<p>在保持这个度量不变的情况下，他解释了在什么条件下，使用无关问题模型或Warner (1965)的原始模型可以获得最小方差估计。</p>
 </section>
-<section id="fligner1977comparison">
-<h3><span class="section-number">17.3.3. </span><span id="id19">Fligner <em>et al.</em> [<a class="reference internal" href="zreferences.html#id23" title="Michael A Fligner, George E Policello, and Jagbir Singh. A comparison of two randomized response survey methods with consideration for the level of respondent protection. Communications in Statistics-Theory and Methods, 6(15):1511–1524, 1977.">1977</a>]</span><a class="headerlink" href="#fligner1977comparison" title="Link to this heading">#</a></h3>
-<p><span id="id20">Fligner <em>et al.</em> [<a class="reference internal" href="zreferences.html#id23" title="Michael A Fligner, George E Policello, and Jagbir Singh. A comparison of two randomized response survey methods with consideration for the level of respondent protection. Communications in Statistics-Theory and Methods, 6(15):1511–1524, 1977.">1977</a>]</span>得出了与<span id="id21">Lanke [<a class="reference internal" href="zreferences.html#id20" title="Jan Lanke. On the degree of protection in randomized interviews. International Statistical Review/Revue Internationale de Statistique, pages 197–203, 1976.">1976</a>]</span>类似的结论。</p>
+<section id="fligner-policello-and-singh">
+<h3><span class="section-number">17.3.3. </span>2.3 Fligner, Policello, and Singh<a class="headerlink" href="#fligner-policello-and-singh" title="Link to this heading">#</a></h3>
+<p>Fligner, Policello, and Singh得出了与Lanke (1976)类似的结论。<span class="bibtex-citation" id="id16">[<a class="reference internal" href="zreferences.html#id106" title="Michael A Fligner, George E Policello, and Jagbir Singh. A comparison of two randomized response survey methods with consideration for the level of respondent protection. Communications in Statistics-Theory and Methods, 6(15):1511–1524, 1977.">Fligner <em>et al.</em>, 1977</a>]</span></p>
 <p>他们将”隐私保护”度量为</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-six">
 <span class="eqno">(17.6)<a class="headerlink" href="#equation-eq-util-rand-six" title="Link to this equation">#</a></span>\[
 \frac{1-\max \left\{ \text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}) \right\}}{1-\pi_A}
 \]</div>
 </section>
-<section id="greenberg1977respondent">
-<h3><span class="section-number">17.3.4. </span><span id="id22">Greenberg <em>et al.</em> [<a class="reference internal" href="zreferences.html#id24" title="Bernard G Greenberg, Roy R Kuebler, James R Abernathy, and Daniel G Horvitz. Respondent hazards in the unrelated question randomized response model. Journal of Statistical Planning and Inference, 1(1):53–60, 1977.">1977</a>]</span><a class="headerlink" href="#greenberg1977respondent" title="Link to this heading">#</a></h3>
-<p><span id="id23">Greenberg <em>et al.</em> [<a class="reference internal" href="zreferences.html#id24" title="Bernard G Greenberg, Roy R Kuebler, James R Abernathy, and Daniel G Horvitz. Respondent hazards in the unrelated question randomized response model. Journal of Statistical Planning and Inference, 1(1):53–60, 1977.">1977</a>]</span> 强调，不仅要考虑 <span class="math notranslate nohighlight">\(A\)</span> 组成员的风险，还要考虑 <span class="math notranslate nohighlight">\(A'\)</span> 组成员的风险。他们定义在 <span class="math notranslate nohighlight">\(A\)</span> 组个体身上的风险为这一个体被认为属于A组的概率：</p>
+<section id="greenberg-kuebler-abernathy-and-horvitz-1977">
+<h3><span class="section-number">17.3.4. </span>2.4 Greenberg, Kuebler, Abernathy, and Horvitz (1977)<a class="headerlink" href="#greenberg-kuebler-abernathy-and-horvitz-1977" title="Link to this heading">#</a></h3>
+<p><span class="bibtex-citation" id="id17">[<a class="reference internal" href="zreferences.html#id107" title="Bernard G Greenberg, Roy R Kuebler, James R Abernathy, and Daniel G Horvitz. Respondent hazards in the unrelated question randomized response model. Journal of Statistical Planning and Inference, 1(1):53–60, 1977.">Greenberg <em>et al.</em>, 1977</a>]</span></p>
+<p>Greenberg, Kuebler, Abernathy, and Horvitz (1977) 强调，不仅要考虑 <span class="math notranslate nohighlight">\(A\)</span> 组成员的风险，还要考虑不属于该敏感群体的个体的风险。他们定义在 <span class="math notranslate nohighlight">\(A\)</span> 组个体身上的风险为这一个体被认为属于A组的概率：</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-seven-a">
-<span class="eqno">(17.7)<a class="headerlink" href="#equation-eq-util-rand-seven-a" title="Link to this equation">#</a></span>\[\text{Pr}(\text{yes}|A)\times \text{Pr}(A|\text{yes})+\text{Pr}(\text{no}|A)\times \text{Pr}(A|\text{no})
+<span class="eqno">(17.7)<a class="headerlink" href="#equation-eq-util-rand-seven-a" title="Link to this equation">#</a></span>\[
+\text{Pr}(\text{yes}|A)\times \text{Pr}(A|\text{yes})+\text{Pr}(\text{no}|A)\times \text{Pr}(A|\text{no})
 \]</div>
 <p>类似地，对于不属于<span class="math notranslate nohighlight">\(A\)</span>的个体，其风险为</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-seven-b">
 <span class="eqno">(17.8)<a class="headerlink" href="#equation-eq-util-rand-seven-b" title="Link to this equation">#</a></span>\[
 \text{Pr}(\text{yes}|A^{'})\times \text{Pr}(A|\text{yes})+\text{Pr}(\text{no}|A^{'}) \times \text{Pr}(A|\text{no})
 \]</div>
-<p><span id="id24">Greenberg <em>et al.</em> [<a class="reference internal" href="zreferences.html#id24" title="Bernard G Greenberg, Roy R Kuebler, James R Abernathy, and Daniel G Horvitz. Respondent hazards in the unrelated question randomized response model. Journal of Statistical Planning and Inference, 1(1):53–60, 1977.">1977</a>]</span>还考虑了另一个相关的风险度量，“这可能更接近受访者实际感受到的担忧。”</p>
+<p>Greenberg等人(1977)还考虑了另一个相关的风险度量，“这可能更接近受访者实际感受到的担忧。”</p>
 <p>对于在 <span class="math notranslate nohighlight">\(A\)</span> 和 <span class="math notranslate nohighlight">\(A^{'}\)</span> 中的个体，其”有限风险”分别为</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-eight-a">
 <span class="eqno">(17.9)<a class="headerlink" href="#equation-eq-util-rand-eight-a" title="Link to this equation">#</a></span>\[
@@ -394,10 +510,10 @@ g(\text{no}|A^{'})&amp;&gt;1
 <p>这个度量仅仅是<a class="reference internal" href="#equation-eq-util-rand-seven-a">(17.7)</a>中的第一项，即个体回答”是”且被认为属于<span class="math notranslate nohighlight">\(A\)</span>的概率。</p>
 </section>
 </section>
-<section id="id25">
-<h2><span class="section-number">17.4. </span>受访者的期望效用<a class="headerlink" href="#id25" title="Link to this heading">#</a></h2>
-<section id="id26">
-<h3><span class="section-number">17.4.1. </span>真实边界<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
+<section id="id18">
+<h2><span class="section-number">17.4. </span>受访者的期望效用<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
+<section id="id19">
+<h3><span class="section-number">17.4.1. </span>真实边界<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
 <p>用于估计属于 <span class="math notranslate nohighlight">\(A\)</span> 的人群比例的随机回答技术的关键假设是:</p>
 <ul class="simple">
 <li><p><strong>假设1</strong>: 受访者对被认为属于<span class="math notranslate nohighlight">\(A\)</span>感到不适。</p></li>
@@ -420,12 +536,12 @@ g(\text{no}|A^{'})&amp;&gt;1
 <p>则存在一个 <span class="math notranslate nohighlight">\(r_i\)</span> 使得</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-nine-a">
 <span class="eqno">(17.11)<a class="headerlink" href="#equation-eq-util-rand-nine-a" title="Link to this equation">#</a></span>\[
-\frac{\partial U_i\left(\text{Pr}(A|r_i),\phi_i\right) }{\partial \text{Pr}(A|r_i)} &lt;0, \quad \phi_i \in \left\{\text{truth},\text{lie}\right\}
+\frac{\partial U_i\left(\text{Pr}(A|r_i),\phi_i\right) }{\partial \text{Pr}(A|r_i)} &lt;0, \text{ for } \phi_i \in \left\{\text{truth},\text{lie}\right\}
 \]</div>
 <p>且</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-nine-b">
 <span class="eqno">(17.12)<a class="headerlink" href="#equation-eq-util-rand-nine-b" title="Link to this equation">#</a></span>\[
-U_i\left(\text{Pr}(A|r_i),\text{truth}\right)&gt;U_i\left(\text{Pr}(A|r_i),\text{lie}\right)  , \quad \text{Pr}(A|r_i) \in [0,1]
+U_i\left(\text{Pr}(A|r_i),\text{truth}\right)&gt;U_i\left(\text{Pr}(A|r_i),\text{lie}\right)  , \text{ for } \text{Pr}(A|r_i) \in [0,1]
 \]</div>
 <p>现在假设个体<span class="math notranslate nohighlight">\(i\)</span>的真实答案是”是”。</p>
 <p>如果满足以下条件，个体 <span class="math notranslate nohighlight">\(i\)</span> 会选择如实回答：</p>
@@ -446,7 +562,7 @@ U_i\left(\text{Pr}(A|\text{no}),\text{truth}\right)\geq U_i\left(\text{Pr}(A|\te
 <p>因此”是”的答案增加了个体属于 <span class="math notranslate nohighlight">\(A\)</span> 的概率。</p>
 <p>约束<a class="reference internal" href="#equation-eq-util-rand-ten-b">(17.14)</a>必定成立。</p>
 <p>因此，约束<a class="reference internal" href="#equation-eq-util-rand-ten-a">(17.13)</a>成为个体 <span class="math notranslate nohighlight">\(i\)</span> 始终如实回答的唯一必要条件。</p>
-<p>在等式情况下，约束<a class="reference internal" href="#equation-eq-util-rand-ten-a">(17.13)</a>确定了当真实答案为”是”时，使个体在说真话和说谎之间无差异的条件概率：</p>
+<p>在等式情况下，约束 <span class="math notranslate nohighlight">\((10.\text{a})\)</span> 确定了当真实答案为”是”时，使个体在说真话和说谎之间无差异的条件概率：</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-eleven">
 <span class="eqno">(17.15)<a class="headerlink" href="#equation-eq-util-rand-eleven" title="Link to this equation">#</a></span>\[
 U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)= U_i\left(\text{Pr}(A|\text{no}),\text{lie}\right)
@@ -463,12 +579,12 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)= U_i\left(\text{Pr}(A|\text
 <li><p>假设现在 <span class="math notranslate nohighlight">\(\text{Pr}(A|\text{yes})\)</span> 增加。这会降低说真话的效用。为了保持说真话和说谎之间的无差异，<span class="math notranslate nohighlight">\(\text{Pr}(A|\text{no})\)</span>必须增加以降低说谎的效用。</p></li>
 </ul>
 </section>
-<section id="id27">
-<h3><span class="section-number">17.4.2. </span>绘制真话边界<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
+<section id="id20">
+<h3><span class="section-number">17.4.2. </span>绘制真话边界<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
 <p>我们可以推导出关于真话边界的两个结论：</p>
 <ul class="simple">
 <li><p>真话边界将条件概率空间分为两个子集：“说真话”和”说谎”。因此，充分的隐私会引出真实答案，而不充分的隐私则会导致谎言。真话边界取决于受访者的效用函数。</p></li>
-<li><p><a class="reference internal" href="#equation-eq-util-rand-nine-a">(17.11)</a>中的假设仅足以保证真话边界的正斜率。真话边界可以是凹形或凸形。</p></li>
+<li><p><a class="reference internal" href="#equation-eq-util-rand-nine-a">(17.11)</a>和<a class="reference internal" href="#equation-eq-util-rand-nine-a">(17.11)</a>中的假设仅足以保证真话边界的正斜率。真话边界可以是凹形或凸形。</p></li>
 </ul>
 <p>我们可以用以下Python代码绘制一些真话边界：</p>
 <div class="cell docutils container">
@@ -490,8 +606,8 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)= U_i\left(\text{Pr}(A|\text
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Pr(A|yes)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Pr(A|no)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Pr(A|是)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Pr(A|否)&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.42</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;说真话&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span> <span class="s1">&#39;style&#39;</span><span class="p">:</span><span class="s1">&#39;italic&#39;</span><span class="p">})</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;说谎&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span> <span class="s1">&#39;style&#39;</span><span class="p">:</span><span class="s1">&#39;italic&#39;</span><span class="p">})</span>
 
@@ -502,7 +618,13 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)= U_i\left(\text{Pr}(A|\text
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c497dacedfdd3a61622b4948e0469d9f6cc33efb64680a572796c31fac4f28da.png" src="_images/c497dacedfdd3a61622b4948e0469d9f6cc33efb64680a572796c31fac4f28da.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/98068fea27bbe9c635596e1424dfd20aae1dbfa88e37acddbc976cc3a1618d0f.png" src="_images/98068fea27bbe9c635596e1424dfd20aae1dbfa88e37acddbc976cc3a1618d0f.png" />
 </div>
 </div>
 <p>图1.1 三种真实边界类型。</p>
@@ -538,20 +660,20 @@ U_i(\text{Pr}(A|r_i),\phi_i)=-\text{Pr}(A|r_i)+f(\phi_i)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/14264488d05ae0da53ad8ac17ebeebcfed9bb7dcf8d422d59a72f730fc9deac0.png" src="_images/14264488d05ae0da53ad8ac17ebeebcfed9bb7dcf8d422d59a72f730fc9deac0.png" />
+<img alt="_images/fa7624e726350a01eb6a61f2cdb7c1761cac08df96e54b06c9a45de4ab187c72.png" src="_images/fa7624e726350a01eb6a61f2cdb7c1761cac08df96e54b06c9a45de4ab187c72.png" />
 </div>
 </div>
 </section>
 </section>
-<section id="id28">
-<h2><span class="section-number">17.5. </span>调查设计的功利主义观点<a class="headerlink" href="#id28" title="Link to this heading">#</a></h2>
-<section id="id29">
-<h3><span class="section-number">17.5.1. </span>等方差曲线<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
+<section id="id21">
+<h2><span class="section-number">17.5. </span>调查设计的功利主义观点<a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
+<section id="id22">
+<h3><span class="section-number">17.5.1. </span>等方差曲线<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
 <p>统计学家的目标是</p>
 <ul class="simple">
 <li><p>找到一个随机回答调查设计，使估计量的偏差和方差最小化。</p></li>
 </ul>
-<p>在一个确保所有受访者都会诚实回答的设计中，Anderson(1976, 定理1) <span id="id30">[<a class="reference internal" href="zreferences.html#id22" title="Harald Anderson. Estimation of a proportion through randomized response. International Statistical Review/Revue Internationale de Statistique, pages 213–217, 1976.">Anderson, 1976</a>]</span> 证明了在两种回答模型中最小方差估计的方差为</p>
+<p>在一个确保所有受访者都会诚实回答的设计中，Anderson(1976, 定理1) <span class="bibtex-citation" id="id23">[<a class="reference internal" href="zreferences.html#id105" title="Harald Anderson. Estimation of a proportion through randomized response. International Statistical Review/Revue Internationale de Statistique, pages 213–217, 1976.">Anderson, 1976</a>]</span> 证明了在两种回答模型中最小方差估计的方差为</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-thirteen">
 <span class="eqno">(17.17)<a class="headerlink" href="#equation-eq-util-rand-thirteen" title="Link to this equation">#</a></span>\[
 \begin{aligned}
@@ -576,14 +698,14 @@ V(\text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}))
 <li><p>等方差曲线始终向上倾斜且呈凹形。</p></li>
 </ul>
 </section>
-<section id="id31">
-<h3><span class="section-number">17.5.2. </span>绘制等方差曲线<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
+<section id="id24">
+<h3><span class="section-number">17.5.2. </span>绘制等方差曲线<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
 <p>我们使用Python代码来绘制等方差曲线。</p>
-<p>这些条件概率对可以使用<span id="id32">Warner [<a class="reference internal" href="zreferences.html#id18" title="Stanley L Warner. Randomized response: a survey technique for eliminating evasive answer bias. Journal of the American Statistical Association, 60(309):63–69, 1965.">1965</a>]</span>的模型获得。</p>
+<p>这些条件概率对可以使用Warner (1965)的模型获得。</p>
 <p>注意：</p>
 <ul class="simple">
 <li><p>只要统计学家能完全控制模型设计，等方差曲线上的任何点都可以通过无关问题模型达到。</p></li>
-<li><p><span id="id33">Warner [<a class="reference internal" href="zreferences.html#id18" title="Stanley L Warner. Randomized response: a survey technique for eliminating evasive answer bias. Journal of the American Statistical Association, 60(309):63–69, 1965.">1965</a>]</span>的原始随机化回应模型比无关问题模型灵活性较低。</p></li>
+<li><p>Warner (1965)的原始随机化回应模型比无关问题模型灵活性较低。</p></li>
 </ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -630,7 +752,7 @@ V(\text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}))
 <li><p>同一条等方差曲线上的所有点具有相同的方差</p></li>
 <li><p>从 <span class="math notranslate nohighlight">\(V_1\)</span> 到 <span class="math notranslate nohighlight">\(V_9\)</span>，等方差曲线的方差单调增加，颜色也单调变亮</p></li>
 </ul>
-<p>假设等方差模型的参数遵循Ljungqvist <span id="id34">[<a class="reference internal" href="zreferences.html#id19" title="Lars Ljungqvist. A unified approach to measures of privacy in randomized response models: a utilitarian perspective. Journal of the American Statistical Association, 88(421):97–103, 1993.">Ljungqvist, 1993</a>]</span>中的设定，即：</p>
+<p>假设等方差模型的参数遵循Ljungqvist <span class="bibtex-citation" id="id25">[<a class="reference internal" href="zreferences.html#id102" title="Lars Ljungqvist. A unified approach to measures of privacy in randomized response models: a utilitarian perspective. Journal of the American Statistical Association, 88(421):97–103, 1993.">Ljungqvist, 1993</a>]</span>中的设定，即：</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(\pi=0.3\)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\(n=100\)</span></p></li>
@@ -644,12 +766,15 @@ V(\text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}))
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/3241a6e0617b06b16c13269a48da8e17414bce041d1b826f4e5b0b841ed297f2.png" src="_images/3241a6e0617b06b16c13269a48da8e17414bce041d1b826f4e5b0b841ed297f2.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/0f804233b7287fedf044b7e7419939f7c7f6121d17ed664ea7724c3d2208bdbd.png" src="_images/0f804233b7287fedf044b7e7419939f7c7f6121d17ed664ea7724c3d2208bdbd.png" />
 </div>
 </div>
 </section>
-<section id="id35">
-<h3><span class="section-number">17.5.3. </span>最优调查设计<a class="headerlink" href="#id35" title="Link to this heading">#</a></h3>
+<section id="id26">
+<h3><span class="section-number">17.5.3. </span>最优调查设计<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
 <p>在等方差曲线上的一点可以通过无关问题设计来实现。</p>
 <p>我们现在专注于寻找”最优调查设计”，它需要：</p>
 <ul class="simple">
@@ -672,13 +797,13 @@ V(\text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}))
 </ul>
 </section>
 </section>
-<section id="id36">
-<h2><span class="section-number">17.6. </span>对提议隐私措施的批评<a class="headerlink" href="#id36" title="Link to this heading">#</a></h2>
+<section id="id27">
+<h2><span class="section-number">17.6. </span>对提议隐私措施的批评<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
 <p>我们可以用功利主义方法来分析一些隐私措施。</p>
 <p>我们将使用Python代码来帮助我们。</p>
-<section id="id38">
-<h3><span class="section-number">17.6.1. </span>对<span id="id37">Lanke [<a class="reference internal" href="zreferences.html#id20" title="Jan Lanke. On the degree of protection in randomized interviews. International Statistical Review/Revue Internationale de Statistique, pages 197–203, 1976.">1976</a>]</span>方法的分析<a class="headerlink" href="#id38" title="Link to this heading">#</a></h3>
-<p><span id="id39">Lanke [<a class="reference internal" href="zreferences.html#id20" title="Jan Lanke. On the degree of protection in randomized interviews. International Statistical Review/Revue Internationale de Statistique, pages 197–203, 1976.">1976</a>]</span>建议一个隐私保护标准，即最小化：</p>
+<section id="id28">
+<h3><span class="section-number">17.6.1. </span>对Lanke (1976)方法的分析<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
+<p>Lanke (1976)建议一个隐私保护标准，即最小化：</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-five-b">
 <span class="eqno">(17.20)<a class="headerlink" href="#equation-eq-util-rand-five-b" title="Link to this equation">#</a></span>\[
 \max \left\{ \text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}) \right\}
@@ -726,13 +851,16 @@ V(\text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}))
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/b8e688a71c53725f0ebf5ea2945b13b31c82c64ad3bdda57b4459dd3012fef97.png" src="_images/b8e688a71c53725f0ebf5ea2945b13b31c82c64ad3bdda57b4459dd3012fef97.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/1c08e04b26d9d73cfeff3608ed3c0d0f796e95a201e9725f8170966ae5f0e712.png" src="_images/1c08e04b26d9d73cfeff3608ed3c0d0f796e95a201e9725f8170966ae5f0e712.png" />
 </div>
 </div>
 </section>
-<section id="id41">
-<h3><span class="section-number">17.6.2. </span><span id="id40">Leysieffer and Warner [<a class="reference internal" href="zreferences.html#id21" title="Frederick W Leysieffer and Stanley L Warner. Respondent jeopardy and optimal designs in randomized response models. Journal of the American Statistical Association, 71(355):649–656, 1976.">1976</a>]</span>的方法<a class="headerlink" href="#id41" title="Link to this heading">#</a></h3>
-<p>当”否”答案不存在风险时，<span id="id42">Leysieffer and Warner [<a class="reference internal" href="zreferences.html#id21" title="Frederick W Leysieffer and Stanley L Warner. Respondent jeopardy and optimal designs in randomized response models. Journal of the American Statistical Association, 71(355):649–656, 1976.">1976</a>]</span>建议使用的二维风险度量可简化为一维，这意味着</p>
+<section id="id29">
+<h3><span class="section-number">17.6.2. </span>Leysieffer and Warner (1976)的方法<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
+<p>Leysieffer and Warner (1976)建议使用二维风险度量，当”否”答案不存在风险时，该度量可简化为一维，这意味着</p>
 <div class="math notranslate nohighlight">
 \[
 \text{Pr}(\text{yes}|A)=1
@@ -744,9 +872,10 @@ V(\text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}))
 \]</div>
 <p>从功利主义的角度来看，这不是最优选择。</p>
 </section>
-<section id="chadhuri-mukerjee-88">
-<h3><span class="section-number">17.6.3. </span>对<span id="id43">Chadhuri and Mukerjee [<a class="reference internal" href="zreferences.html#id17" title="A Chadhuri and R Mukerjee. Randomized Response: Theory and Technique. Marcel Dekker, New York, 1988.">1988</a>]</span>方法的分析<a class="headerlink" href="#chadhuri-mukerjee-88" title="Link to this heading">#</a></h3>
-<p><span id="id44">Chadhuri and Mukerjee [<a class="reference internal" href="zreferences.html#id17" title="A Chadhuri and R Mukerjee. Randomized Response: Theory and Technique. Marcel Dekker, New York, 1988.">1988</a>]</span>认为，由于”是”有时可能与敏感群体 <span class="math notranslate nohighlight">\(A\)</span> 相关，聪明的受访者可能会倾向于总是安全但虚假地回答”否”。在这种情况下，真实边界使得个体在真实答案为”是”时选择说谎，且</p>
+<section id="chaudhuri-and-mukerjees-1988">
+<h3><span class="section-number">17.6.3. </span>对Chaudhuri and Mukerjee’s (1988)方法的分析<a class="headerlink" href="#chaudhuri-and-mukerjees-1988" title="Link to this heading">#</a></h3>
+<p><span class="bibtex-citation" id="id30">[<a class="reference internal" href="zreferences.html#id100" title="A. Chaudhuri and R. Mukerjee. Randomized Response: Theory and Techniques. Marcel Dekker, New York, 1988.">Chaudhuri and Mukerjee, 1988</a>]</span></p>
+<p>Chaudhuri and Mukerjee (1988)认为，由于”是”有时可能与敏感群体 <span class="math notranslate nohighlight">\(A\)</span> 相关，聪明的受访者可能会倾向于总是安全但虚假地回答”否”。在这种情况下，真实边界使得个体在真实答案为”是”时选择说谎，且</p>
 <div class="math notranslate nohighlight">
 \[
 \text{Pr}(A|\text{no})=0
@@ -761,7 +890,7 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
 <p>因此，不存在可实现的模型设计。</p>
 <p>然而，从功利主义的角度来看，应该存在其他与真实答案相一致的调查设计。</p>
 <p>特别是，如果消除了说谎带来的相对优势，受访者将选择如实回答。</p>
-<p>我们可以用Python来展示最优模型设计:</p>
+<p>我们可以用Python来展示最优模型设计对应图4中的点Q：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -798,11 +927,11 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nv</span><span class="p">)):</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">pi</span> <span class="o">-</span> <span class="p">(</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">nv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x0</span> <span class="o">-</span> <span class="n">pi</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">))</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.07</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;V</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="mf">0.61</span><span class="p">,</span> <span class="mf">0.146</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="mf">0.61</span><span class="p">,</span> <span class="mf">0.146</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Pr(A|是)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Pr(A|否)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Pr(A|yes)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Pr(A|no)&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="s2">&quot;说实话&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span> <span class="s1">&#39;style&#39;</span><span class="p">:</span><span class="s1">&#39;italic&#39;</span><span class="p">})</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;说谎&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span> <span class="s1">&#39;style&#39;</span><span class="p">:</span><span class="s1">&#39;italic&#39;</span><span class="p">})</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.63</span><span class="p">,</span> <span class="mf">0.141</span><span class="p">,</span> <span class="s2">&quot;最优设计&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span><span class="mi">16</span><span class="p">,</span><span class="s1">&#39;color&#39;</span><span class="p">:</span><span class="s1">&#39;r&#39;</span><span class="p">})</span>
@@ -813,19 +942,14 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
 </div>
 </div>
 <div class="cell_output docutils container">
-<figure class="align-default" id="fig-optimal-design">
-<img alt="_images/513844dd2ca2652203ea1f8a3c84499d32b6c362be4b6450ff3bce7eedbadbc5.png" src="_images/513844dd2ca2652203ea1f8a3c84499d32b6c362be4b6450ff3bce7eedbadbc5.png" />
-<figcaption>
-<p><span class="caption-number">图 17.1 </span><span class="caption-text">Optimal survey design under utilitarian approach showing computed point <span class="math notranslate nohighlight">\(Q\)</span></span><a class="headerlink" href="#fig-optimal-design" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
+<img alt="_images/da980d75c4a24ab87784418cb74c80301fabdc9af3580749ffaefa1ff38cdb0e.png" src="_images/da980d75c4a24ab87784418cb74c80301fabdc9af3580749ffaefa1ff38cdb0e.png" />
 </div>
 </div>
-<p>最优模型设计对应图中的点 <span class="math notranslate nohighlight">\(Q\)</span>.</p>
 </section>
-<section id="id46">
-<h3><span class="section-number">17.6.4. </span><span id="id45">Greenberg <em>et al.</em> [<a class="reference internal" href="zreferences.html#id24" title="Bernard G Greenberg, Roy R Kuebler, James R Abernathy, and Daniel G Horvitz. Respondent hazards in the unrelated question randomized response model. Journal of Statistical Planning and Inference, 1(1):53–60, 1977.">1977</a>]</span>的方法<a class="headerlink" href="#id46" title="Link to this heading">#</a></h3>
-<p><span id="id47">Greenberg <em>et al.</em> [<a class="reference internal" href="zreferences.html#id24" title="Bernard G Greenberg, Roy R Kuebler, James R Abernathy, and Daniel G Horvitz. Respondent hazards in the unrelated question randomized response model. Journal of Statistical Planning and Inference, 1(1):53–60, 1977.">1977</a>]</span>将属于群体<span class="math notranslate nohighlight">\(A\)</span>的个体的风险定义为他/她被认为属于<span class="math notranslate nohighlight">\(A\)</span>的概率:</p>
+<section id="greenberg-et-al-1977">
+<h3><span class="section-number">17.6.4. </span>Greenberg et al. (1977)的方法<a class="headerlink" href="#greenberg-et-al-1977" title="Link to this heading">#</a></h3>
+<p><span class="bibtex-citation" id="id31">[<a class="reference internal" href="zreferences.html#id107" title="Bernard G Greenberg, Roy R Kuebler, James R Abernathy, and Daniel G Horvitz. Respondent hazards in the unrelated question randomized response model. Journal of Statistical Planning and Inference, 1(1):53–60, 1977.">Greenberg <em>et al.</em>, 1977</a>]</span></p>
+<p>Greenberg et al. (1977)将属于群体<span class="math notranslate nohighlight">\(A\)</span>的个体的风险定义为他/她被认为属于<span class="math notranslate nohighlight">\(A\)</span>的概率:</p>
 <div class="math notranslate nohighlight" id="equation-eq-util-rand-seven-aa">
 <span class="eqno">(17.21)<a class="headerlink" href="#equation-eq-util-rand-seven-aa" title="Link to this equation">#</a></span>\[
 \text{Pr}(\text{yes}|A)\times \text{Pr}(A|\text{yes})+\text{Pr}(\text{no}|A)\times \text{Pr}(A|\text{no})
@@ -846,11 +970,12 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
 <span class="eqno">(17.24)<a class="headerlink" href="#equation-eq-util-rand-eight-bb" title="Link to this equation">#</a></span>\[
 \text{Pr}(\text{yes}|A^{'})\times \text{Pr}(A|\text{yes})
 \]</div>
-<p>根据<span id="id48">[<a class="reference internal" href="zreferences.html#id24" title="Bernard G Greenberg, Roy R Kuebler, James R Abernathy, and Daniel G Horvitz. Respondent hazards in the unrelated question randomized response model. Journal of Statistical Planning and Inference, 1(1):53–60, 1977.">Greenberg <em>et al.</em>, 1977</a>]</span>的说法，受访者在随机选择要回答的问题<strong>之前</strong>，就已经承诺根据<a class="reference internal" href="#equation-eq-util-rand-seven-aa">(17.21)</a>或<a class="reference internal" href="#equation-eq-util-rand-eight-aa">(17.23)</a>中的概率如实回答。</p>
+<p>根据Greenberg et al. (1977)的说法，受访者在随机选择要回答的问题<strong>之前</strong>，就已经承诺根据<a class="reference internal" href="#equation-eq-util-rand-seven-aa">(17.21)</a>或<a class="reference internal" href="#equation-eq-util-rand-eight-aa">(17.23)</a>中的概率如实回答。</p>
 <p>假设适当的隐私度量由<a class="reference internal" href="#equation-eq-util-rand-eight-aa">(17.23)</a>和<a class="reference internal" href="#equation-eq-util-rand-eight-bb">(17.24)</a>中的”有限风险”概念来表示。</p>
 <p>考虑一个无关问题模型，其中无关问题被替换为指令”说’不’”，这意味着</p>
 <div class="math notranslate nohighlight">
-\[\text{Pr}(A|\text{yes})=1
+\[
+\text{Pr}(A|\text{yes})=1
 \]</div>
 <p>由此可得：</p>
 <ul class="simple">
@@ -863,8 +988,8 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
 <p>这忽略了一个事实，即受访者在看到需要回答的问题之前，仍然保留说谎的选择。</p>
 </section>
 </section>
-<section id="id49">
-<h2><span class="section-number">17.7. </span>总结说明<a class="headerlink" href="#id49" title="Link to this heading">#</a></h2>
+<section id="id32">
+<h2><span class="section-number">17.7. </span>总结说明<a class="headerlink" href="#id32" title="Link to this heading">#</a></h2>
 <p>随机回答程序的合理性在于：</p>
 <ul class="simple">
 <li><p>认为受访者会因被视为属于敏感群体而感到不适。</p></li>
@@ -877,7 +1002,7 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
 <li><p>真实边界将感知属于敏感群体的条件概率空间 <span class="math notranslate nohighlight">\(\text{Pr}(A|\text{yes})\)</span> 和 <span class="math notranslate nohighlight">\(\text{Pr}(A|\text{no})\)</span> 划分为说真话区域和说谎区域。</p></li>
 <li><p>最优模型设计是在真实边界接触到最低可能的等方差曲线的点上获得的。</p></li>
 </ul>
-<p><span id="id50">Ljungqvist [<a class="reference internal" href="zreferences.html#id19" title="Lars Ljungqvist. A unified approach to measures of privacy in randomized response models: a utilitarian perspective. Journal of the American Statistical Association, 88(421):97–103, 1993.">1993</a>]</span>分析的一个实际含义是，可以通过**选择足够接近的 <span class="math notranslate nohighlight">\(\text{Pr}(A|\text{yes})\)</span> 和 <span class="math notranslate nohighlight">\(\text{Pr}(A|\text{no})\)</span>**来承认对受访者隐私需求的不确定性。</p>
+<p>Ljungqvist <span class="bibtex-citation" id="id33">[<a class="reference internal" href="zreferences.html#id102" title="Lars Ljungqvist. A unified approach to measures of privacy in randomized response models: a utilitarian perspective. Journal of the American Statistical Association, 88(421):97–103, 1993.">Ljungqvist, 1993</a>]</span>分析的一个实际含义是，可以通过**选择足够接近的 <span class="math notranslate nohighlight">\(\text{Pr}(A|\text{yes})\)</span> 和 <span class="math notranslate nohighlight">\(\text{Pr}(A|\text{no})\)</span>**来承认对受访者隐私需求的不确定性。</p>
 </section>
 </section>
 
@@ -934,7 +1059,7 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
                 <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
                     <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础工具
+  Tools and Techniques
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -976,7 +1101,7 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础统计学
+  Elementary Statistics
  </span>
 </p>
 <ul class="current nav bd-sidenav nav sidenav_l1">
@@ -1033,7 +1158,7 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  贝叶斯定律
+  Bayes Law
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -1055,7 +1180,7 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  统计与信息论
+  Statistics and Information
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -1105,358 +1230,648 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mix_model.html">
-   30. 错误模型
+   32. 错误模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="navy_captain.html">
-   31. 贝叶斯与频率主义决策规则的比较
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  线性规划
+  Linear Programming
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="opt_transport.html">
-   32. 最优传输
+   36. 最优传输
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="von_neumann_model.html">
-   33. 冯·诺依曼增长模型（及其推广）
+   37. 冯·诺依曼增长模型（及其推广）
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  动态系统导论
+  Introduction to Dynamics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="finite_markov.html">
-   34. 有限马尔可夫链
+   38. 有限马尔可夫链
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="inventory_dynamics.html">
-   35. 库存动态
+   39. 库存动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="linear_models.html">
-   36. 线性状态空间模型
+   40. 线性状态空间模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="samuelson.html">
-   37. 萨缪尔森乘数-加速器模型
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kesten_processes.html">
-   38. Kesten过程与企业动态
+   43. Kesten过程与企业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="wealth_dynamics.html">
-   39. 财富分布动态
+   44. 财富分布动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman.html">
-   40. 初见卡尔曼滤波器
+   45. 初见卡尔曼滤波器
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman_2.html">
-   41. 卡尔曼滤波器进阶
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  搜索
+  Search
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model.html">
-   42. 工作搜寻 I: McCall搜寻模型
+   50. 工作搜寻 I: McCall搜寻模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model_with_separation.html">
-   43. 工作搜寻 II：搜寻与离职
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   44. 工作搜寻 III: 拟合值函数迭代
+   53. 工作搜寻 IV: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="mccall_correlated.html">
-   45. 工作搜寻 IV：相关工资报价
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   46. 工作搜寻 V：职业选择建模
+   55. 工作搜寻 VI：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   47. 工作搜寻 VI：在职搜索
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mccall_q.html">
-   48. 工作搜寻 VII：McCall劳动者的Q学习
+   56. 工作搜寻 VII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   49. 工作搜寻 VII: 带学习的搜索
+   57. 工作搜寻 VIII: 带学习的搜索
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  消费、储蓄与资本
+  Reinforcement Learning
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_1.html">
-   50. Cass-Koopmans模型
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_2.html">
-   51. Cass-Koopmans竞争均衡
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal.html">
-   52. 带扭曲性税收的Cass-Koopmans模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal_2.html">
-   53. 带扭曲性税收的双国模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ak2.html">
-   54. 代际交叠模型中的转型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_problem.html">
-   55. 吃蛋糕问题 I：最优储蓄导论
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_numerical.html">
-   56. 吃蛋糕问题 II：数值方法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth.html">
-   57. 最优增长 I：随机最优增长模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth_fast.html">
-   58. 最优增长 II：使用Numba加速代码
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="coleman_policy_iter.html">
-   59. 最优增长 III：时间迭代
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="egm_policy_iter.html">
-   60. 最优增长 IV：内生网格法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp.html">
-   61. 收入波动问题 I：基本模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp_advanced.html">
-   62. 收入波动问题 II：资产随机收益
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  LQ控制
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   63. LQ控制：基础
+   72. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   64. LQ控制的拉格朗日方法
+   73. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   65. 消除交叉项
+   74. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   66. 永久收入模型
+   75. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   67. 永久收入 II：线性二次方法
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   68. 通过库存实现生产平滑
+   83. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  多主体模型
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   69. 就业与失业的湖泊模型
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   70. 理性预期均衡
+   107. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   71. 线性理性预期模型中的稳定性
+   108. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   72. 马尔可夫完美均衡
+   109. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   73. 不确定性陷阱
+   110. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   74. 艾亚加里模型
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   75. 长寿、异质性个体、世代交叠模型
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  资产定价与金融
+  Asset Pricing and Finance
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   76. 资产定价：有限状态模型
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   77. 带有阿罗证券的竞争均衡
+   119. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   78. 异质信念与泡沫
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  数据与实证
+  Data and Empirics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="pandas_panel.html">
-   79. 用Pandas处理面板数据
+   128. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   80. Python线性回归
+   129. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   81. 最大似然估计
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  拍卖
+  Auctions
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   82. 一价和二价拍卖
+   133. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   83. 多种商品分配机制
+   134. 多种商品分配机制
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  其他
+  Other
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   84. 故障排除
+   135. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   85. 参考文献
+   136. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   86. 执行统计
+   137. 执行统计
   </a>
  </li>
 </ul>
@@ -1500,6 +1915,8 @@ U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)&lt; U_i\left(\text{Pr}(A|\t
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/util_rand_resp.md" download><i data-feather="github"></i></a></li>
                     -->
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
                 </ul>
 
             </div>

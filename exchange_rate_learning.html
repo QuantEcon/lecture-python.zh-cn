@@ -1,0 +1,2147 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>86. 汇率不确定性、学习与实验 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'exchange_rate_learning';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/exchange_rate_learning.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="87. 遗传算法与分类器系统" href="genetic_classifier.html" />
+    <link rel="prev" title="85. 世代交叠货币经济中的适应性主体" href="olg_adaptive_money.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="汇率不确定性、学习与实验"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="汇率不确定性、学习与实验" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/exchange_rate_learning.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=exchange_rate_learning>
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">86.1. 概览</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">86.2. 双货币经济</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">86.2.1. 回顾不确定性</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">86.3. 牛顿-拉夫森学习</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">86.3.1. 不确定性表现为一个奇异海森矩阵</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">86.3.2. 收敛到一个依赖历史的汇率</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">86.3.3. 历史的死手</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">86.3.4. 不确定性的幽灵</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">86.4. 来自实验室的证据</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">86.5. 遗传算法经济体</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">86.5.1. 永不消退的波动</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">86.5.2. 波动的形态</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">86.6. 结语</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">86.7. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 27, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/exchange_rate_learning.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/bf8200a" class="changelog-hash">bf8200a</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">1 week ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] Tom's July 25 edits of two suites of new lectures (#207)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="toc-backref" href="#id22" role="doc-backlink"><span class="section-number">86. </span>汇率不确定性、学习与实验</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<nav class="contents" id="contents">
+<span id="index-0"></span><p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id22">汇率不确定性、学习与实验</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id23">概览</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id24">双货币经济</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id25">牛顿-拉夫森学习</a></p></li>
+<li><p><a class="reference internal" href="#id15" id="id26">来自实验室的证据</a></p></li>
+<li><p><a class="reference internal" href="#id17" id="id27">遗传算法经济体</a></p></li>
+<li><p><a class="reference internal" href="#id20" id="id28">结语</a></p></li>
+<li><p><a class="reference internal" href="#id21" id="id29">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="id2">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink"><span class="section-number">86.1. </span>概览</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>在 <a class="reference internal" href="bounded_rationality.html"><span class="doc">一种奇特的有限理性定义</span></a> 中，我们遇到过一个模型，其中理性预期完全无法确定汇率。</p>
+<p>两种法定货币，只要回报率相等就是完美替代品，这使得汇率 <span class="math notranslate nohighlight">\(e\)</span> <em>完全不受限制</em>：如果均衡条件对某个 <span class="math notranslate nohighlight">\(e\)</span> 有解，那么对其他任何 <span class="math notranslate nohighlight">\(e\)</span> 也都有解，并且所有情形下的实际配置都是相同的。</p>
+<p>本讲座遵循 <span class="bibtex-citation" id="id3">Sargent [<a class="reference internal" href="zreferences.html#id490" title="Thomas J. Sargent. Bounded Rationality in Macroeconomics. The Arne Ryde Memorial Lectures. Oxford University Press, Oxford, 1993.">1993</a>]</span> 的思路，将理性主体从这个经济中驱逐出去，代之以适应性主体。</p>
+<p>以下内容围绕两个问题展开。</p>
+<p><strong>第一</strong>，学习能否确定汇率？</p>
+<p>一个适应性主体拥有信念、修正信念的规则以及初始条件，而这些初始条件恰恰是均衡条件未能确定的东西。</p>
+<p>因此，一个由适应性主体组成的系统<em>可以</em>在理性预期无法做到的地方选定一个汇率。</p>
+<p>我们将看到它确实做到了，但方式非常特殊。</p>
+<p>牛顿-拉夫森学习者会收敛到一个<strong>确定的</strong>汇率，而这个汇率完全取决于它们的出发点。</p>
+<p>“历史的死手”完成了基本面拒绝完成的锁定任务。</p>
+<p><strong>第二</strong>，不确定性的幽灵是否依然存在？</p>
+<p>确实存在。</p>
+<p>学习算法的静止点恰好复现了这种不确定性：使算法停止的条件，正是当初使汇率变得自由的那个套利条件。</p>
+<p>萨金特将这种使汇率依赖于历史的机制称为确定汇率所依靠的”一根脆弱的芦苇”。</p>
+<p>接下来我们转向证据。</p>
+<p><span class="bibtex-citation" id="id4">Arifovic [<a class="reference internal" href="zreferences.html#id501" title="Jasmina Arifovic. The behavior of the exchange rate in the genetic algorithm and experimental economies. Journal of Political Economy, 104(3):510–541, 1996. doi:10.1086/262032.">1996</a>]</span> 将这一经济体作为付费人类受试者参与的实验室实验来运行。</p>
+<p>他们的汇率从未稳定下来。</p>
+<p>而当她用<strong>遗传算法</strong>——一个由选择、交叉和变异培育出来的二进制字符串主体群体——替换牛顿-拉夫森学习者时，她得到了一个汇率持续波动的经济体，其频谱与真实的浮动汇率相似。</p>
+<p>这种对比——一种收敛的学习规则与一种产生持续波动的学习规则——正是本讲座的落脚点，也是通往 <a class="reference internal" href="marimon_mcgrattan_sargent.html"><span class="doc">人工智能主体中作为交换媒介的货币</span></a> 的引桥，在那里遗传算法和分类器系统将完全接管。</p>
+<p>让我们先导入一些包。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h2><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">86.2. </span>双货币经济</a><a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<p>我们采用 <span class="bibtex-citation" id="id6">Kareken and Wallace [<a class="reference internal" href="zreferences.html#id491" title="John Kareken and Neil Wallace. On the indeterminacy of equilibrium exchange rates. Quarterly Journal of Economics, 96(2):207–222, 1981. doi:10.2307/1882388.">1981</a>]</span> 不确定性的世代交叠模型化身。</p>
+<p>在每个时点 <span class="math notranslate nohighlight">\(t\)</span>，有 <span class="math notranslate nohighlight">\(N\)</span> 个生存两期的主体出生，年轻时禀赋为 <span class="math notranslate nohighlight">\(w_1\)</span>，年老时禀赋为 <span class="math notranslate nohighlight">\(w_2\)</span>，且 <span class="math notranslate nohighlight">\(w_1 &gt; w_2\)</span>。</p>
+<p>存在两种供给量固定的法定货币 <span class="math notranslate nohighlight">\(H_1\)</span> 和 <span class="math notranslate nohighlight">\(H_2\)</span>。</p>
+<p>一个年轻主体做出两项决策：储蓄多少 <span class="math notranslate nohighlight">\(s_t\)</span>，以及将这部分储蓄中多大比例 <span class="math notranslate nohighlight">\(\lambda_t\)</span> 持有为货币 1（其余部分持有货币 2）。</p>
+<p>选择 <span class="math notranslate nohighlight">\((s_t, \lambda_t)\)</span> 的主体实现的终身效用为</p>
+<div class="math notranslate nohighlight" id="equation-xr-utility">
+<span class="eqno">(86.1)<a class="headerlink" href="#equation-xr-utility" title="Link to this equation">#</a></span>\[U(s_t, \lambda_t)
+= u(w_1 - s_t)
++ u\!\left(w_2 + \lambda_t s_t \frac{p_{1t}}{p_{1,t+1}}
+              + (1 - \lambda_t) s_t \frac{p_{2t}}{p_{2,t+1}}\right),\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(p_{it}\)</span> 是以货币 <span class="math notranslate nohighlight">\(i\)</span> 计价的价格水平，<span class="math notranslate nohighlight">\(p_{it}/p_{i,t+1}\)</span> 是持有货币 <span class="math notranslate nohighlight">\(i\)</span> 的总回报率。</p>
+<p>我们全程采用 <span class="math notranslate nohighlight">\(u(c) = \ln c\)</span>。</p>
+<p>将每种货币的供给等同于对它的需求，得到价格水平</p>
+<div class="math notranslate nohighlight" id="equation-xr-prices">
+<span class="eqno">(86.2)<a class="headerlink" href="#equation-xr-prices" title="Link to this equation">#</a></span>\[p_{1t} = \frac{H_1}{\sum_i \lambda_{it} s_{it}},
+\qquad
+p_{2t} = \frac{H_2}{\sum_i (1 - \lambda_{it}) s_{it}},\]</div>
+<p>汇率为 <span class="math notranslate nohighlight">\(e_t = p_{1t}/p_{2t}\)</span>。</p>
+<section id="id7">
+<h3><span class="section-number">86.2.1. </span>回顾不确定性<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p>考虑一个价格恒定的平稳均衡。</p>
+<p>那么每种货币的回报为 <span class="math notranslate nohighlight">\(p_{it}/p_{i,t+1} = 1\)</span>，所以两种回报相等，且 <a class="reference internal" href="#equation-xr-utility">(86.1)</a> 中的组合回报无论 <span class="math notranslate nohighlight">\(\lambda\)</span> 为何值都是 <span class="math notranslate nohighlight">\(1\)</span>。</p>
+<p>储蓄决策于是求解 <span class="math notranslate nohighlight">\(\max_s \ln(w_1 - s) + \ln(w_2 + s)\)</span>，得到</p>
+<div class="math notranslate nohighlight">
+\[
+s^\star = \frac{w_1 - w_2}{2},
+\]</div>
+<p>但组合份额 <span class="math notranslate nohighlight">\(\lambda\)</span> 是<em>完全不确定的</em>：当两种回报相等时，效用与 <span class="math notranslate nohighlight">\(\lambda\)</span> 无关。</p>
+<p>而 <span class="math notranslate nohighlight">\(\lambda\)</span> 恰恰决定了汇率。</p>
+<p>由 <a class="reference internal" href="#equation-xr-prices">(86.2)</a>，在公共的 <span class="math notranslate nohighlight">\((s, \lambda)\)</span> 下，</p>
+<div class="math notranslate nohighlight">
+\[
+e = \frac{p_{1}}{p_{2}} = \frac{H_1}{H_2}\cdot\frac{1 - \lambda}{\lambda}.
+\]</div>
+<p>每一个 <span class="math notranslate nohighlight">\(\lambda \in (0, 1)\)</span> 都是均衡，因此每一个 <span class="math notranslate nohighlight">\(e \in (0, \infty)\)</span> 都是均衡。</p>
+<p>这正是 <a class="reference internal" href="bounded_rationality.html"><span class="doc">一种奇特的有限理性定义</span></a> 中的不确定性，现在通过一个未确定的组合选择表现了出来。</p>
+<p>本讲座将运行两个参数不同的经济体——萨金特的经济体和阿里福维奇的经济体——因此我们将参数放入一个容器中，并显式传递，而不是让它们作为全局变量随意存在。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Params</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">w1</span><span class="p">:</span> <span class="nb">float</span>          <span class="c1"># 年轻时的禀赋</span>
+    <span class="n">w2</span><span class="p">:</span> <span class="nb">float</span>          <span class="c1"># 年老时的禀赋</span>
+    <span class="n">H1</span><span class="p">:</span> <span class="nb">float</span>          <span class="c1"># 货币1的固定供给</span>
+    <span class="n">H2</span><span class="p">:</span> <span class="nb">float</span>          <span class="c1"># 货币2的固定供给</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">s_star</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;理性预期储蓄率，当两种货币回报均为1时。&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">w2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+
+<span class="n">kw</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span><span class="n">w1</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">w2</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span> <span class="n">H1</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">H2</span><span class="o">=</span><span class="mf">120.0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rational expectations saving rate s* = </span><span class="si">{</span><span class="n">kw</span><span class="o">.</span><span class="n">s_star</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;any portfolio share λ is an equilibrium, and e = (H1/H2)(1-λ)/λ is free&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>rational expectations saving rate s* = 2.5
+any portfolio share λ is an equilibrium, and e = (H1/H2)(1-λ)/λ is free
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">86.3. </span>牛顿-拉夫森学习</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>现在驱逐理性主体。</p>
+<p>遵循 <span class="bibtex-citation" id="id9">Sargent [<a class="reference internal" href="zreferences.html#id490" title="Thomas J. Sargent. Bounded Rationality in Macroeconomics. The Arne Ryde Memorial Lectures. Oxford University Press, Oxford, 1993.">1993</a>]</span>，我们将总体分成两类——称为”偶数类”和”奇数类”——因为一个世代的终身效用只有等到该世代年老之后才能被评估。</p>
+<p>每一类都携带自己的规则 <span class="math notranslate nohighlight">\((s, \lambda)\)</span>，仅根据同一类之前主体的经验来更新。</p>
+<p>一个主体根据实现的效用，通过<strong>牛顿-拉夫森</strong>步骤来修正 <span class="math notranslate nohighlight">\((s, \lambda)\)</span>：朝着根据 <a class="reference internal" href="#equation-xr-utility">(86.1)</a> 的二阶展开、依据主体实际经历的回报本应能提高效用的方向移动。</p>
+<p>用 <span class="math notranslate nohighlight">\(g\)</span> 表示梯度，<span class="math notranslate nohighlight">\(R\)</span> 表示（负定）海森矩阵的滚动估计，递推式为</p>
+<div class="math notranslate nohighlight" id="equation-xr-newton">
+<span class="eqno">(86.3)<a class="headerlink" href="#equation-xr-newton" title="Link to this equation">#</a></span>\[\begin{split}\begin{aligned}
+R_{\tau+1} &amp;= R_\tau + \gamma_\tau (H_\tau - R_\tau), \\
+\begin{bmatrix} s \\ \lambda \end{bmatrix}_{\tau+1}
+&amp;= \begin{bmatrix} s \\ \lambda \end{bmatrix}_\tau
+   - \gamma_\tau R_{\tau+1}^{-1}\, g_\tau,
+\end{aligned}\end{split}\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(H_\tau\)</span> 是实现的海森矩阵，<span class="math notranslate nohighlight">\(\gamma_\tau\)</span> 是增益。</p>
+<p>下面是 <a class="reference internal" href="#equation-xr-utility">(86.1)</a> 关于回报 <span class="math notranslate nohighlight">\(R_1 = p_{1t}/p_{1,t+1}\)</span> 和 <span class="math notranslate nohighlight">\(R_2 = p_{2t}/p_{2,t+1}\)</span> 的梯度与海森矩阵。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">grad_hess</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">R1</span><span class="p">,</span> <span class="n">R2</span><span class="p">):</span>
+    <span class="s2">&quot;实现效用 U(s, λ) 的梯度与海森矩阵。&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">lam</span><span class="o">*</span><span class="n">R1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">lam</span><span class="p">)</span><span class="o">*</span><span class="n">R2</span>               <span class="c1"># 组合总回报</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">w2</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">A</span>                         <span class="c1"># 老年消费</span>
+    <span class="n">dR</span> <span class="o">=</span> <span class="n">R1</span> <span class="o">-</span> <span class="n">R2</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">w1</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="n">A</span><span class="o">/</span><span class="n">c2</span><span class="p">,</span>
+                  <span class="n">s</span><span class="o">*</span><span class="n">dR</span><span class="o">/</span><span class="n">c2</span><span class="p">])</span>
+    <span class="n">H_ss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">w1</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">A</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">c2</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">H_ll</span> <span class="o">=</span> <span class="o">-</span><span class="n">s</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dR</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">c2</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">H_sl</span> <span class="o">=</span> <span class="n">dR</span><span class="o">/</span><span class="n">c2</span> <span class="o">-</span> <span class="n">s</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">dR</span><span class="o">/</span><span class="n">c2</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">g</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">H_ss</span><span class="p">,</span> <span class="n">H_sl</span><span class="p">],</span> <span class="p">[</span><span class="n">H_sl</span><span class="p">,</span> <span class="n">H_ll</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id10">
+<h3><span class="section-number">86.3.1. </span>不确定性表现为一个奇异海森矩阵<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<p>看看海森矩阵中 <span class="math notranslate nohighlight">\(\lambda\)</span> 那一块。</p>
+<p>当两种回报相等，<span class="math notranslate nohighlight">\(R_1 = R_2\)</span> 时，所有 <span class="math notranslate nohighlight">\(\lambda\)</span>-偏导数都消失了：梯度分量 <span class="math notranslate nohighlight">\(s(R_1 - R_2)/c_2\)</span> 为零，曲率 <span class="math notranslate nohighlight">\(-s^2(R_1 - R_2)^2/c_2^2\)</span> 也是零。</p>
+<p>在回报相等时，效用<strong>沿 <span class="math notranslate nohighlight">\(\lambda\)</span> 方向是平坦的</strong>。</p>
+<p>这正是局部所见的不确定性：没有任何力量将 <span class="math notranslate nohighlight">\(\lambda\)</span> 推向任何方向，因此一次牛顿步骤——将梯度除以曲率——在 <span class="math notranslate nohighlight">\(\lambda\)</span> 方向上是 <span class="math notranslate nohighlight">\(0/0\)</span>。</p>
+<p>为使算法能够真正移动，我们必须保持 <span class="math notranslate nohighlight">\(R\)</span> 可逆。</p>
+<p>我们通过在 <span class="math notranslate nohighlight">\(\lambda\)</span> 方向引入一个小的<strong>先验曲率</strong> <span class="math notranslate nohighlight">\(\kappa\)</span> 来做到这一点。</p>
+<p>从经济学角度看，这恰恰是 <span class="bibtex-citation" id="id11">Sargent [<a class="reference internal" href="zreferences.html#id490" title="Thomas J. Sargent. Bounded Rationality in Macroeconomics. The Arne Ryde Memorial Lectures. Oxford University Press, Oxford, 1993.">1993</a>]</span> 所援引的迟滞性：正是它作为”历史的死手”使一个原本自由的汇率能够安定下来。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">newton_learning</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">lam0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">κ</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    带有牛顿-拉夫森学习(s, λ)的双货币世代交叠模型，每一类（偶数/奇数）一条规则。</span>
+<span class="sd">    κ是不确定λ方向上的先验曲率，用于保持二阶矩矩阵R可逆。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">lam</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lam0</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">κ</span><span class="p">]])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>   <span class="c1"># 先验曲率</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">s_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">lam_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">t</span> <span class="o">%</span> <span class="mi">2</span>                                    <span class="c1"># 在t时年轻的一类</span>
+        <span class="n">p1</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">H1</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">p2</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">H2</span> <span class="o">/</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">lam</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="o">*</span><span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">e</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">p1</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">p2</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>                                   <span class="c1"># 在t-1时年轻的一类现在年老了</span>
+            <span class="n">jp</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">j</span>
+            <span class="n">R1</span><span class="p">,</span> <span class="n">R2</span> <span class="o">=</span> <span class="n">p1</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">p1</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p2</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">p2</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">g</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="n">grad_hess</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="n">jp</span><span class="p">],</span> <span class="n">lam</span><span class="p">[</span><span class="n">jp</span><span class="p">],</span> <span class="n">R1</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>
+            <span class="n">H</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="n">κ</span>                         <span class="c1"># 保留先验的λ曲率</span>
+            <span class="n">R</span><span class="p">[</span><span class="n">jp</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="n">jp</span><span class="p">]</span> <span class="o">+</span> <span class="n">gain</span><span class="o">*</span><span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="n">R</span><span class="p">[</span><span class="n">jp</span><span class="p">])</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">gain</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="n">jp</span><span class="p">],</span> <span class="n">g</span><span class="p">)</span>
+            <span class="n">s</span><span class="p">[</span><span class="n">jp</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">jp</span><span class="p">]</span> <span class="o">-</span> <span class="n">step</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">w1</span> <span class="o">-</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="n">lam</span><span class="p">[</span><span class="n">jp</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lam</span><span class="p">[</span><span class="n">jp</span><span class="p">]</span> <span class="o">-</span> <span class="n">step</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">)</span>
+        <span class="n">s_hist</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="n">lam_hist</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">lam</span>
+
+    <span class="k">return</span> <span class="n">e</span><span class="p">,</span> <span class="n">s_hist</span><span class="p">,</span> <span class="n">lam_hist</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id12">
+<h3><span class="section-number">86.3.2. </span>收敛到一个依赖历史的汇率<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>运行两个初始条件不同、其余条件完全相同的实验。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">e1</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">l1</span> <span class="o">=</span> <span class="n">newton_learning</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="p">[</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.40</span><span class="p">])</span>
+<span class="n">e2</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">l2</span> <span class="o">=</span> <span class="n">newton_learning</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.62</span><span class="p">,</span> <span class="mf">0.58</span><span class="p">])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e1</span><span class="p">),</span> <span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;experiment 1&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e2</span><span class="p">),</span> <span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;experiment 2&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;log exchange rate&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$t$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">s_h</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">s1</span><span class="p">,</span> <span class="s1">&#39;C0&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">s2</span><span class="p">,</span> <span class="s1">&#39;C1&#39;</span><span class="p">)]:</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s_h</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s_h</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">s_star</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;saving  (solid = even, dotted = odd)&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$t$&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">l_h</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">l1</span><span class="p">,</span> <span class="s1">&#39;C0&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">l2</span><span class="p">,</span> <span class="s1">&#39;C1&#39;</span><span class="p">)]:</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">l_h</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">l_h</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;portfolio share $\lambda$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$t$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-xr-learning">
+<img alt="_images/f24fe46f5af2cbd587b421feb9f98e3f18add92b8e2570581b031305ef2eb00a.png" src="_images/f24fe46f5af2cbd587b421feb9f98e3f18add92b8e2570581b031305ef2eb00a.png" />
+<figcaption>
+<p><span class="caption-number">图 86.1 </span><span class="caption-text">Newton-Raphson learning from two initial conditions</span><a class="headerlink" href="#fig-xr-learning" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>两个经济体都收敛了。</p>
+<p>储蓄从任一方向都会攀升或下降至理性预期比率 <span class="math notranslate nohighlight">\(s^\star = 2.5\)</span>，且两类主体的组合份额都汇合到一个共同的值。</p>
+<p>但这两个实验收敛到了<em>不同的汇率</em>。</p>
+<p>它们之间唯一的差别在于组合的起始点。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;experiment 1&quot;</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">l1</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;experiment 2&quot;</span><span class="p">,</span> <span class="n">e2</span><span class="p">,</span> <span class="n">l2</span><span class="p">)]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: e → </span><span class="si">{</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">,  s → </span><span class="si">{</span><span class="n">s1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">,  λ → </span><span class="si">{</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>experiment 1: e → 1.3998,  s → 2.500,  λ → 0.373
+experiment 2: e → 0.5819,  s → 2.500,  λ → 0.589
+</pre></div>
+</div>
+</div>
+</div>
+<p>储蓄率是由基本面锁定的；汇率则是由历史锁定的。</p>
+</section>
+<section id="id13">
+<h3><span class="section-number">86.3.3. </span>历史的死手<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<p>为了看清历史对结果的支配有多彻底，我们扫描初始组合份额，记录每个经济体最终稳定在哪个汇率上。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">λ0_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="n">e_limits</span> <span class="o">=</span> <span class="p">[</span><span class="n">newton_learning</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="n">λ0</span><span class="p">,</span> <span class="n">λ0</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">λ0</span> <span class="ow">in</span> <span class="n">λ0_grid</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">λ0_grid</span><span class="p">,</span> <span class="n">e_limits</span><span class="p">,</span> <span class="s1">&#39;C0o-&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;limiting $e$ from learning&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">λ0_grid</span><span class="p">,</span> <span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">H1</span><span class="o">/</span><span class="n">kw</span><span class="o">.</span><span class="n">H2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">λ0_grid</span><span class="p">)</span><span class="o">/</span><span class="n">λ0_grid</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$(H_1/H_2)(1-\lambda)/\lambda$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;initial portfolio share $\lambda_0$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;limiting exchange rate $e$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-xr-limits">
+<img alt="_images/c205ffa6552ca53ac81f2db0f8ec532987d05d7b4a95fe1ea98aaa52f7908a10.png" src="_images/c205ffa6552ca53ac81f2db0f8ec532987d05d7b4a95fe1ea98aaa52f7908a10.png" />
+<figcaption>
+<p><span class="caption-number">图 86.2 </span><span class="caption-text">Limiting exchange rate against initial portfolio share</span><a class="headerlink" href="#fig-xr-limits" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>极限汇率描绘出了<em>整个理性预期连续统</em>。</p>
+<p>曲线上的每一点都是有效的理性预期均衡；学习纯粹依据初始条件在其中作出选择。</p>
+<p>正是在这个意义上，学习使汇率变得确定。</p>
+<p>它并没有添加基本面所缺失的某个基本因素。</p>
+<p>它把<em>水平上的不确定性</em>转化为<em>对历史的依赖</em>：经济体最终到达的汇率，就是初始组合信念所蕴含的那个值，被冻结在原地。</p>
+</section>
+<section id="id14">
+<h3><span class="section-number">86.3.4. </span>不确定性的幽灵<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<p>为什么汇率会被冻结，而不是移动到某个特定的值？</p>
+<p>因为算法在梯度消失的任何地方都会静止下来，而组合梯度 <span class="math notranslate nohighlight">\(s(R_1 - R_2)/c_2\)</span> 恰好在 <span class="math notranslate nohighlight">\(R_1 = R_2\)</span> 时消失，而这正是使汇率在理性预期下变得自由的那个<strong>套利条件</strong>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># at the limit the classes have merged, so prices are constant and R1 = R2 = 1</span>
+<span class="n">s_lim</span><span class="p">,</span> <span class="n">lam_lim</span> <span class="o">=</span> <span class="n">s1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">l1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">p1_lim</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">H1</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam_lim</span><span class="o">*</span><span class="n">s_lim</span><span class="p">)</span>
+<span class="n">p2_lim</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">H2</span> <span class="o">/</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">lam_lim</span><span class="p">)</span><span class="o">*</span><span class="n">s_lim</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;classes converged to a common rule:  s = </span><span class="si">{</span><span class="n">s_lim</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">,  λ = </span><span class="si">{</span><span class="n">lam_lim</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;→ prices constant across periods, so R1 = R2 = 1 (arbitrage holds at the rest point)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;→ the λ-gradient is zero for *any* λ, so learning cannot move the exchange rate off &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;wherever history left it&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>classes converged to a common rule:  s = [2.5 2.5],  λ = [0.3732 0.3732]
+→ prices constant across periods, so R1 = R2 = 1 (arbitrage holds at the rest point)
+→ the λ-gradient is zero for *any* λ, so learning cannot move the exchange rate off wherever history left it
+</pre></div>
+</div>
+</div>
+</div>
+<p>学习动态的静止点<em>就是</em>理性预期均衡本身，汇率也不例外。</p>
+<p>不确定性并没有被消除；它被转移到了初始条件之中。</p>
+<p>萨金特对这种机制能够承受多大分量说得很直白：</p>
+<blockquote>
+<div><p>换句话说，一个使汇率依赖于历史的机制，似乎是一种形式欠佳的机制。</p>
+</div></blockquote>
+<p>一个仅由初始信念的偶然性所决定的汇率，是一根脆弱的芦苇。</p>
+<p>如果经济体稍有不同——如果学习规则始终在不断试探而不是安定下来——整个构造都可能崩溃。</p>
+<p>而这正是接下来两个例证所展示的内容。</p>
+</section>
+</section>
+<section id="id15">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">86.4. </span>来自实验室的证据</a><a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<p><span class="bibtex-citation" id="id16">Arifovic [<a class="reference internal" href="zreferences.html#id501" title="Jasmina Arifovic. The behavior of the exchange rate in the genetic algorithm and experimental economies. Journal of Political Economy, 104(3):510–541, 1996. doi:10.1086/262032.">1996</a>]</span> 用 <span class="math notranslate nohighlight">\(w_1 = 11\)</span>、<span class="math notranslate nohighlight">\(w_2 = 1\)</span>、<span class="math notranslate nohighlight">\(H_1 = H_2 = 10\)</span> 将这个双货币经济作为一项付费人类受试者实验来实施。</p>
+<p>每个年轻的受试者选择一个储蓄率，以及在两种货币之间分配的比例；实验者根据这些选择清算两个货币市场，正如 <a class="reference internal" href="#equation-xr-prices">(86.2)</a> 所描述的那样。</p>
+<p>结果与牛顿-拉夫森模拟完全不同。</p>
+<p>汇率持续波动，大致在 <span class="math notranslate nohighlight">\(0.5\)</span> 到 <span class="math notranslate nohighlight">\(2\)</span> 之间的区间内，没有任何安定下来的迹象。</p>
+<p>如果说有什么变化的话，波动幅度在各场次实验中反而增大了。</p>
+<p>始终收敛到一个常数值的简单牛顿-拉夫森模型，在这方面表现很差。</p>
+<p>因此，阿里福维奇为同一个经济体建立了一个不同的模型，其中主体是由遗传算法培育出来的一个<strong>群体</strong>。</p>
+</section>
+<section id="id17">
+<h2><a class="toc-backref" href="#id27" role="doc-backlink"><span class="section-number">86.5. </span>遗传算法经济体</a><a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<p>现在每一类都是 <span class="math notranslate nohighlight">\(N = 30\)</span> 个主体组成的群体，每个主体是长度为 <span class="math notranslate nohighlight">\(30\)</span> 的<strong>二进制字符串</strong>：前 <span class="math notranslate nohighlight">\(20\)</span> 位编码其储蓄率，后 <span class="math notranslate nohighlight">\(10\)</span> 位编码其组合份额。</p>
+<p>每一期，年轻群体的字符串被解码为 <span class="math notranslate nohighlight">\((s_i, \lambda_i)\)</span> 对，两个货币市场根据 <a class="reference internal" href="#equation-xr-prices">(86.2)</a> 依总量出清，然后读出汇率。</p>
+<p>一代之后，当该世代年老时，每个字符串实现的效用 <a class="reference internal" href="#equation-xr-utility">(86.1)</a> 就是其<strong>适应度</strong>，遗传算法据此培育下一代。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span><span class="p">,</span> <span class="n">L_s</span><span class="p">,</span> <span class="n">L_lam</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span>           <span class="c1"># 群体规模；储蓄和组合份额的位数</span>
+
+<span class="n">arifovic</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span><span class="n">w1</span><span class="o">=</span><span class="mf">11.0</span><span class="p">,</span> <span class="n">w2</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">H1</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">H2</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pop</span><span class="p">):</span>
+    <span class="s2">&quot;二进制字符串 → (s, λ)，其中s在(0, w1)中，λ在(0, 1)中。&quot;</span>
+    <span class="n">ints_s</span> <span class="o">=</span> <span class="n">pop</span><span class="p">[:,</span> <span class="p">:</span><span class="n">L_s</span><span class="p">]</span> <span class="o">@</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L_s</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ints_l</span> <span class="o">=</span> <span class="n">pop</span><span class="p">[:,</span> <span class="n">L_s</span><span class="p">:]</span> <span class="o">@</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L_lam</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">w1</span> <span class="o">-</span> <span class="mf">0.10</span><span class="p">)</span> <span class="o">*</span> <span class="n">ints_s</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">L_s</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">lam</span> <span class="o">=</span> <span class="mf">0.02</span> <span class="o">+</span> <span class="mf">0.96</span> <span class="o">*</span> <span class="n">ints_l</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">L_lam</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="n">lam</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">market_prices</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pop</span><span class="p">):</span>
+    <span class="n">s</span><span class="p">,</span> <span class="n">lam</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pop</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">H1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lam</span><span class="o">*</span><span class="n">s</span><span class="p">),</span> <span class="n">p</span><span class="o">.</span><span class="n">H2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">lam</span><span class="p">)</span><span class="o">*</span><span class="n">s</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fitness</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pop</span><span class="p">,</span> <span class="n">R1</span><span class="p">,</span> <span class="n">R2</span><span class="p">):</span>
+    <span class="s2">&quot;给定每个字符串所经历的回报，计算其实现的终身效用。&quot;</span>
+    <span class="n">s</span><span class="p">,</span> <span class="n">lam</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pop</span><span class="p">)</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">w2</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="p">(</span><span class="n">lam</span><span class="o">*</span><span class="n">R1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">lam</span><span class="p">)</span><span class="o">*</span><span class="n">R2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">w1</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>这个遗传算法拥有经典的三种算子——按适应度比例进行父代<strong>选择</strong>、单点<strong>交叉</strong>和位翻转<strong>变异</strong>——再加上阿里福维奇引入的一种算子，即<strong>选举算子</strong>：只有当一个子代在最近一期的回报下会比其父代更优时，它才被纳入下一代，否则父代得以存续。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">genetic_step</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pop</span><span class="p">,</span> <span class="n">R1</span><span class="p">,</span> <span class="n">R2</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">p_mut</span><span class="o">=</span><span class="mf">0.033</span><span class="p">,</span> <span class="n">election</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="s2">&quot;从当前一代培育出新的一代。&quot;</span>
+    <span class="n">fit</span> <span class="o">=</span> <span class="n">fitness</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pop</span><span class="p">,</span> <span class="n">R1</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="n">fit</span> <span class="o">-</span> <span class="n">fit</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">+</span> <span class="mf">1e-6</span>                  <span class="c1"># 平移为正值以用于轮盘赌选择</span>
+    <span class="n">new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">weight</span><span class="p">),</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">weight</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pop</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pop</span><span class="p">[</span><span class="n">j</span><span class="p">]])</span>
+        <span class="n">cut</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">L_s</span> <span class="o">+</span> <span class="n">L_lam</span><span class="p">)</span>           <span class="c1"># 单点交叉</span>
+        <span class="n">kids</span> <span class="o">=</span> <span class="n">parents</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">kids</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">cut</span><span class="p">:],</span> <span class="n">kids</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">cut</span><span class="p">:]</span> <span class="o">=</span> <span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">cut</span><span class="p">:],</span> <span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">cut</span><span class="p">:]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">kids</span><span class="p">:</span>                               <span class="c1"># 变异</span>
+            <span class="n">c</span><span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">L_s</span> <span class="o">+</span> <span class="n">L_lam</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">p_mut</span><span class="p">]</span> <span class="o">^=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">election</span><span class="p">:</span>                                 <span class="c1"># 阿里福维奇的选举算子</span>
+            <span class="n">f_kids</span> <span class="o">=</span> <span class="n">fitness</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">kids</span><span class="p">,</span> <span class="n">R1</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>
+            <span class="n">f_par</span> <span class="o">=</span> <span class="n">fitness</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">R1</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                <span class="n">new</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">kids</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="k">if</span> <span class="n">f_kids</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">f_par</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="k">else</span> <span class="n">parents</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">new</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">kids</span>
+    <span class="k">return</span> <span class="n">new</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">genetic_economy</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">election</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">L_s</span> <span class="o">+</span> <span class="n">L_lam</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>   <span class="c1"># 偶数、奇数</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">t</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">p1</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p2</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">market_prices</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pops</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">e</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">p1</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">p2</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">jp</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">j</span>
+            <span class="n">R1</span><span class="p">,</span> <span class="n">R2</span> <span class="o">=</span> <span class="n">p1</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">p1</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p2</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">p2</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">pops</span><span class="p">[</span><span class="n">jp</span><span class="p">]</span> <span class="o">=</span> <span class="n">genetic_step</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pops</span><span class="p">[</span><span class="n">jp</span><span class="p">],</span> <span class="n">R1</span><span class="p">,</span> <span class="n">R2</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">election</span><span class="o">=</span><span class="n">election</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">e</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id18">
+<h3><span class="section-number">86.5.1. </span>永不消退的波动<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">e_ga</span> <span class="o">=</span> <span class="n">genetic_economy</span><span class="p">(</span><span class="n">arifovic</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">log_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e_ga</span><span class="p">[</span><span class="mi">500</span><span class="p">:])</span>                            <span class="c1"># 舍弃一段预烧期</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_e</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$t$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">log e_t$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-xr-genetic">
+<img alt="_images/b272e878a122f86ca3ae45614159485cb03a3d1debc6311cae3321a2a4abd88f.png" src="_images/b272e878a122f86ca3ae45614159485cb03a3d1debc6311cae3321a2a4abd88f.png" />
+<figcaption>
+<p><span class="caption-number">图 86.3 </span><span class="caption-text">Exchange rate in the genetic-algorithm economy</span><a class="headerlink" href="#fig-xr-genetic" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>汇率不断波动，而且持续波动下去。</p>
+<p>与牛顿-拉夫森学习者不同，这个遗传群体从未安定下来：变异不断注入新的字符串，市场也不断对其重新定价。</p>
+<p>这种波动是一种永久性特征，而不是一种暂态现象。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">early</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e_ga</span><span class="p">[</span><span class="mi">500</span><span class="p">:</span><span class="mi">1500</span><span class="p">])</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="n">late</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e_ga</span><span class="p">[</span><span class="mi">3000</span><span class="p">:])</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;standard deviation of log e, early window: </span><span class="si">{</span><span class="n">early</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;standard deviation of log e, late window:  </span><span class="si">{</span><span class="n">late</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;→ the volatility does not damp out over time&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>standard deviation of log e, early window: 1.279
+standard deviation of log e, late window:  1.194
+→ the volatility does not damp out over time
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id19">
+<h3><span class="section-number">86.5.2. </span>波动的形态<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<p>阿里福维奇报告称，她的遗传经济体中的汇率行为几乎就像随机游走——但带有<strong>均值回复</strong>性质，表现为其一阶差分频谱在零频率处出现一个凹陷。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">averaged_spectrum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_seg</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
+    <span class="s2">&quot;巴特利特平均周期图，用于获得可读的频谱估计。&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">seg</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">//</span> <span class="n">n_seg</span>
+    <span class="n">acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">seg</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_seg</span><span class="p">):</span>
+        <span class="n">acc</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">*</span><span class="n">seg</span><span class="p">:(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">seg</span><span class="p">]))</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">seg</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">seg</span><span class="p">),</span> <span class="n">acc</span> <span class="o">/</span> <span class="n">n_seg</span>
+
+
+<span class="n">d_log_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e_ga</span><span class="p">[</span><span class="mi">500</span><span class="p">:]))</span>
+<span class="n">d_log_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">d_log_e</span><span class="p">,</span> <span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">d_log_e</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">]))</span>    <span class="c1"># 缩尾处理极端值</span>
+<span class="n">freq</span><span class="p">,</span> <span class="n">spec</span> <span class="o">=</span> <span class="n">averaged_spectrum</span><span class="p">(</span><span class="n">d_log_e</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">acf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">:]</span><span class="o">*</span><span class="n">x</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="n">k</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">)])</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;spectrum of $\Delta \log e$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;frequency&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">25</span><span class="p">),</span> <span class="n">acf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e_ga</span><span class="p">[</span><span class="mi">500</span><span class="p">:]),</span> <span class="mi">25</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;autocorrelation of $\log e$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;lag&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-xr-spectrum">
+<img alt="_images/7600dafccd8a9e456c81d7c2b7317a40149d097928ff7b7cc807f1a9dc13ddbb.png" src="_images/7600dafccd8a9e456c81d7c2b7317a40149d097928ff7b7cc807f1a9dc13ddbb.png" />
+<figcaption>
+<p><span class="caption-number">图 86.4 </span><span class="caption-text">Spectrum and autocorrelation of the exchange rate</span><a class="headerlink" href="#fig-xr-spectrum" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>一阶差分的频谱在零频率附近较低，并向更高频率上升，这是一个<em>水平</em>值接近随机游走的序列的特征，但又具有足够的均值回复性，将低频功率压低下去。</p>
+<p>水平值的自相关衰减缓慢，如同近单位根序列那样，但它<em>确实</em>会衰减，而纯粹的随机游走则不会如此。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">band</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;spectral power of Δlog e near zero frequency: </span><span class="si">{</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;average spectral power over low-to-mid band:  </span><span class="si">{</span><span class="n">spec</span><span class="p">[</span><span class="n">band</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;→ pronounced dip at zero frequency (mean reversion): </span><span class="si">{</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">spec</span><span class="p">[</span><span class="n">band</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>spectral power of Δlog e near zero frequency: 0.0446
+average spectral power over low-to-mid band:  0.2174
+→ pronounced dip at zero frequency (mean reversion): True
+</pre></div>
+</div>
+</div>
+</div>
+<p>该书的评估是：真实的硬通货货币对浮动汇率的对数差分频谱看起来与此非常相似，只是<em>没有</em>零频率处的凹陷；实际汇率更加接近纯粹的随机游走。</p>
+<p>阿里福维奇的遗传经济体在完全没有基本面冲击的情况下，仅凭一个不断适应的主体群体对两种本质上完全相同的货币重新定价，就在很大程度上产生了这种效果。</p>
+</section>
+</section>
+<section id="id20">
+<h2><a class="toc-backref" href="#id28" role="doc-backlink"><span class="section-number">86.6. </span>结语</a><a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
+<p>对同一个不确定经济体的两个模型给出了两种截然不同的结论。</p>
+<p>牛顿-拉夫森学习者会<strong>收敛</strong>——而且正是在收敛的过程中，暴露了这种不确定性，而不是消除了它。</p>
+<p>它的静止点是一个使汇率保持自由的套利条件，因此极限汇率就是历史上初始组合信念所蕴含的那个值。</p>
+<p>依靠死手来确定，萨金特认为这是一根脆弱的芦苇。</p>
+<p>遗传算法经济体则<strong>不会收敛</strong>。</p>
+<p>一整个由不断变异刷新、由市场不断重新定价的适应性字符串所组成的群体，产生了永不消退的汇率波动，这种波动模仿了真实浮动汇率的低频行为——而这个经济体根本没有任何基本面扰动。</p>
+<p>它们之间的差距并不在于经济学本身，因为经济学是相同的，而在于<em>适应机制</em>本身。</p>
+<p>一种能够稳定单一主体学习的装置——即只保留改进后代的选举算子——在一个自我指涉的市场内部，结果却维持了波动而不是抑制了波动（见 <a class="reference internal" href="#xr_ex2"><span class="std std-numref">练习 86.2</span></a>）。</p>
+<p>经济学家采用哪种学习模型，再一次成为有限理性研究纲领被迫摆到台面上来的诸多选择之一。</p>
+<p>这套机制——霍兰德的遗传算法及其更为丰富的近亲，分类器系统——正是 <a class="reference internal" href="marimon_mcgrattan_sargent.html"><span class="doc">人工智能主体中作为交换媒介的货币</span></a> 的主题，在那里，一个由适应性主体组成的群体不仅要调整组合，还必须<em>从零开始发现</em>哪种商品将充当货币。</p>
+</section>
+<section id="id21">
+<h2><a class="toc-backref" href="#id29" role="doc-backlink"><span class="section-number">86.7. </span>练习</a><a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="xr_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 86.1 </span></p>
+<section id="exercise-content">
+<p>牛顿-拉夫森经济体会收敛到一个静止点，在该点上两类主体共享一条公共规则，且套利条件 <span class="math notranslate nohighlight">\(R_1 = R_2\)</span> 成立。</p>
+<p>通过让两类主体以<strong>非对称</strong>方式起步，验证极限汇率依赖于<em>整个</em>初始条件，而不仅仅是初始 <span class="math notranslate nohighlight">\(\lambda\)</span> 这一说法。</p>
+<p>从若干个初始条件出发运行学习者，其中偶数类和奇数类以不同的组合份额起步，并确认：(a) 两类主体的份额会汇合到一个共同的值；(b) 储蓄会收敛到 <span class="math notranslate nohighlight">\(s^\star\)</span>；© 极限汇率依赖于起始点。</p>
+<p>共同的极限 <span class="math notranslate nohighlight">\(\lambda\)</span> 是否等于两个初始份额的平均值？</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="exchange_rate_learning-solution-1">
+
+<p class="admonition-title">解答<a class="reference internal" href="#xr_ex1"> 练习 86.1</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">starts</span> <span class="o">=</span> <span class="p">[([</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.30</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]),</span>
+          <span class="p">([</span><span class="mf">2.2</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">]),</span>
+          <span class="p">([</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.55</span><span class="p">]),</span>
+          <span class="p">([</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.40</span><span class="p">,</span> <span class="mf">0.60</span><span class="p">])]</span>
+<span class="k">for</span> <span class="n">s0</span><span class="p">,</span> <span class="n">lam0</span> <span class="ow">in</span> <span class="n">starts</span><span class="p">:</span>
+    <span class="n">e</span><span class="p">,</span> <span class="n">s_h</span><span class="p">,</span> <span class="n">l_h</span> <span class="o">=</span> <span class="n">newton_learning</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">lam0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">lam0</span><span class="p">),</span> <span class="n">l_h</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">l_h</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">s_h</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+                 <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">lam0</span><span class="p">)])</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;initial λ&quot;</span><span class="p">,</span> <span class="s2">&quot;λ even (limit)&quot;</span><span class="p">,</span> <span class="s2">&quot;λ odd (limit)&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;s (limit)&quot;</span><span class="p">,</span> <span class="s2">&quot;e (limit)&quot;</span><span class="p">,</span> <span class="s2">&quot;mean of initial λ&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>initial λ</th>
+      <th>λ even (limit)</th>
+      <th>λ odd (limit)</th>
+      <th>s (limit)</th>
+      <th>e (limit)</th>
+      <th>mean of initial λ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[0.3, 0.5]</td>
+      <td>0.4117</td>
+      <td>0.4117</td>
+      <td>2.5</td>
+      <td>1.1908</td>
+      <td>0.40</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[0.5, 0.3]</td>
+      <td>0.3666</td>
+      <td>0.3666</td>
+      <td>2.5</td>
+      <td>1.4397</td>
+      <td>0.40</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>[0.35, 0.55]</td>
+      <td>0.4433</td>
+      <td>0.4433</td>
+      <td>2.5</td>
+      <td>1.0463</td>
+      <td>0.45</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[0.4, 0.6]</td>
+      <td>0.5208</td>
+      <td>0.5208</td>
+      <td>2.5</td>
+      <td>0.7668</td>
+      <td>0.50</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>两类主体的份额始终会汇合（第2列和第3列一致），储蓄始终收敛到 <span class="math notranslate nohighlight">\(s^\star = 2.5\)</span>，且极限汇率在不同起始点之间有所不同——因此它确实依赖于历史。</p>
+<p>但共同的极限 <span class="math notranslate nohighlight">\(\lambda\)</span> <strong>并不</strong>只是两个初始份额的简单平均：将汇合后的值与最后一列进行比较即可看出。</p>
+<p>暂态路径很重要，因为在两类主体仍然存在差异时，回报也存在差异，而这些暂态回报差在套利条件关闭这种运动之前，会推动 <span class="math notranslate nohighlight">\(\lambda\)</span> 四处移动。</p>
+<p>汇率记录的是整个调整过程的历史，而不仅仅是其起始平均值。</p>
+</section>
+</div>
+<div class="exercise admonition" id="xr_ex2">
+
+<p class="admonition-title"><span class="caption-number">练习 86.2 </span></p>
+<section id="exercise-content">
+<p>阿里福维奇的<strong>选举算子</strong>只在一个子代在最新回报下击败其父代时才将其纳入下一代。</p>
+<p>在单主体优化中，这样一个过滤器只可能带来好处——它永远不会让一个更差的规则取代一个更好的规则。</p>
+<p>但这个经济体是<em>自我指涉的</em>：用于衡量适应度的回报本身正是由群体的选择所决定的。</p>
+<p>请研究选举算子对汇率波动性的影响。</p>
+<p>在若干个种子值下分别运行带有和不带有该算子的遗传经济体，并报告对数汇率的波动性。</p>
+<p>该算子将波动性推向哪个方向？你能解释原因吗？</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="exchange_rate_learning-solution-3">
+
+<p class="admonition-title">解答<a class="reference internal" href="#xr_ex2"> 练习 86.2</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">election</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="n">sds</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">genetic_economy</span><span class="p">(</span><span class="n">arifovic</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">sd</span><span class="p">,</span>
+                                  <span class="n">election</span><span class="o">=</span><span class="n">election</span><span class="p">)[</span><span class="mi">500</span><span class="p">:])</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+           <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)]</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">election</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sds</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">sds</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sds</span><span class="p">)])</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;election operator&quot;</span><span class="p">,</span> <span class="s2">&quot;mean s.d. of log e&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>election operator</th>
+      <th>mean s.d. of log e</th>
+      <th>min</th>
+      <th>max</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>True</td>
+      <td>1.220</td>
+      <td>1.081</td>
+      <td>1.350</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>False</td>
+      <td>0.522</td>
+      <td>0.473</td>
+      <td>0.553</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>选举算子会<strong>提高</strong>波动性——这与它在单主体搜索中的稳定作用恰恰相反。</p>
+<p>其机制在于自我指涉性。</p>
+<p>在开启该过滤器的情况下，群体只保留在<em>上一期回报下</em>击败其父代的后代，因此它会追逐最近有利可图的组合。</p>
+<p>但”最近有利可图”取决于汇率，而汇率恰恰会被群体自身的追逐所推动——于是整个群体都涌向最近的赢家，出现过度反应，汇率随之剧烈变动，使另一种组合变得有利可图，于是群体又转而追逐那一种组合。</p>
+<p>如果关闭该过滤器，变异会使群体保持分散，各种不同的组合在总量层面 <a class="reference internal" href="#equation-xr-prices">(86.2)</a> 上会部分相互抵消，从而抑制了波动。</p>
+<p>一种能够毫不含糊地改善孤立学习者的装置，却可能使一个由学习者组成的市场变得不稳定。</p>
+<p>这是一个简明的警示：不能将单主体的直觉简单套用到多主体系统之中——这一主题在 <a class="reference internal" href="marimon_mcgrattan_sargent.html"><span class="doc">人工智能主体中作为交换媒介的货币</span></a> 中还会再次出现。</p>
+</section>
+</div>
+<div class="exercise admonition" id="xr_ex3">
+
+<p class="admonition-title"><span class="caption-number">练习 86.3 </span></p>
+<section id="exercise-content">
+<p>本讲声称遗传经济体的汇率”接近随机游走，但带有均值回复”。</p>
+<p>请将这一说法量化。</p>
+<p>将 <span class="math notranslate nohighlight">\(\log e_t\)</span> 视为数据，估计一阶自回归模型 <span class="math notranslate nohighlight">\(\log e_t = \mu + \phi \log e_{t-1} + \varepsilon_t\)</span> 中的系数，并将其与 <span class="math notranslate nohighlight">\(1\)</span>（纯随机游走）进行比较。</p>
+<p>对若干个种子值分别进行此项估计。</p>
+<p><span class="math notranslate nohighlight">\(\phi\)</span> 是否接近但小于 <span class="math notranslate nohighlight">\(1\)</span>，与一个近单位根、具有均值回复性质的序列相符？</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="exchange_rate_learning-solution-5">
+
+<p class="admonition-title">解答<a class="reference internal" href="#xr_ex3"> 练习 86.3</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ar1_coefficient</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="s2">&quot;OLS估计x_t = μ + φ x_{t-1} + ε中的φ。&quot;</span>
+    <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x0</span><span class="p">),</span> <span class="n">x0</span><span class="p">])</span>
+    <span class="n">μ</span><span class="p">,</span> <span class="n">φ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">φ</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+    <span class="n">le</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">genetic_economy</span><span class="p">(</span><span class="n">arifovic</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">sd</span><span class="p">)[</span><span class="mi">500</span><span class="p">:])</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">sd</span><span class="p">,</span> <span class="n">ar1_coefficient</span><span class="p">(</span><span class="n">le</span><span class="p">)])</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;seed&quot;</span><span class="p">,</span> <span class="s2">&quot;AR(1) coefficient φ&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">mean φ across seeds: </span><span class="si">{</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;AR(1) coefficient φ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> seed  AR(1) coefficient φ
+    0               0.9165
+    1               0.8849
+    2               0.8974
+    3               0.8739
+    4               0.8726
+    5               0.8979
+
+mean φ across seeds: 0.8905
+</pre></div>
+</div>
+</div>
+</div>
+<p>估计出的 <span class="math notranslate nohighlight">\(\phi\)</span> 始终接近 <span class="math notranslate nohighlight">\(1\)</span>，但严格小于 <span class="math notranslate nohighlight">\(1\)</span>——一个高度持续的序列，但仍会回归其均值，而不是永远漂移下去。</p>
+<p>这正是频谱所展示的那种”接近随机游走但带有均值回复”的特征：一个纯粹的随机游走会有精确等于 <span class="math notranslate nohighlight">\(1\)</span> 的 <span class="math notranslate nohighlight">\(\phi\)</span>（且零频率处没有凹陷），而略低于 <span class="math notranslate nohighlight">\(1\)</span> 的取值则产生了我们所看到的缓慢自相关衰减和低频凹陷。</p>
+<p>遗传经济体在没有任何基本面冲击驱动的情况下，仅凭自身就落入了这个近单位根区域——这种持续性完全是由对两种本质上相同的货币进行重新定价的群体动态所制造出来的。</p>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Tools and Techniques
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Elementary Statistics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bayes Law
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Statistics and Information
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Linear Programming
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   36. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   37. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Dynamics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   38. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   39. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   40. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   43. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   44. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   45. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Search
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   50. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   53. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   55. 工作搜寻 VI：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   56. 工作搜寻 VII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   57. 工作搜寻 VIII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Reinforcement Learning
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   72. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   73. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   74. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   75. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   83. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   107. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   108. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   109. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   110. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Asset Pricing and Finance
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   119. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Data and Empirics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   128. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   129. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Auctions
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   133. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   134. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   135. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   136. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   137. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/exchange_rate_learning.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/exchange_rate_learning.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/exchange_rate_learning.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/exchange_rate_learning.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/exchange_rate_learning.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "exchange_rate_learning";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/exchange_rate_learning.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

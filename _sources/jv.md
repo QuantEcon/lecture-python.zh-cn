@@ -7,6 +7,17 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 工作搜寻 VII：在职搜索
+  headings:
+    Overview: 概述
+    Overview::Model Features: 模型特点
+    Model: 模型
+    Model::Parameterization: 参数化
+    Model::Back-of-the-Envelope Calculations: 粗略计算
+    Implementation: 模型实现
+    Solving for Policies: 策略求解
+    Exercises: 练习
 ---
 
 (jv)=
@@ -18,13 +29,24 @@ kernelspec:
 </div>
 ```
 
-# {index}`工作搜寻 VI：在职搜索 <single: Job Search VI: On-the-Job Search>`
+# {index}`工作搜寻 VII：在职搜索 <single: Job Search VII: On-the-Job Search>`
 
 ```{index} single: Models; On-the-Job Search
 ```
 
 ```{contents} 目录
 :depth: 2
+```
+
+```{include} _admonition/gpu.md
+```
+
+除了 Anaconda 中已有的库之外，本讲座还需要以下库：
+
+```{code-cell} ipython3
+:tags: [hide-output]
+
+!pip install jax
 ```
 
 ## 概述
@@ -35,21 +57,23 @@ kernelspec:
 
 让我们从一些导入开始：
 
-```{code-cell} ipython
+```{code-cell} ipython3
+from typing import NamedTuple
+
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
-plt.rcParams['font.family'] = ['Source Han Serif SC']
-
-import numpy as np
+plt.rcParams['font.family'] = ['Source Han Serif SC', 'DejaVu Sans']
 import scipy.stats as stats
-from numba import jit, prange
+import jax
+import jax.numpy as jnp
+import jax.random as jr
 ```
 
 ### 模型特点
 
-```{index} single: 在职搜索; 模型特点
+```{index} single: On-the-Job Search; Model Features
 ```
 
 * 模型结合了在职搜索和工作岗位特定的人力资本积累
@@ -57,21 +81,21 @@ from numba import jit, prange
 
 ## 模型
 
-```{index} single: 在职搜索; 模型
+```{index} single: On-the-Job Search; Model
 ```
 
 设 $x_t$ 为劳动者在当前公司和工作岗位的人力资本水平，$w_t$ 为其当前工资。
 
 工资由以下公式决定：$w_t = x_t(1 - s_t - \phi_t)$，其中
 
-* $\phi_t$ 表示劳动者在当前岗位为提高人力资本而付出的时间
-* $s_t$ 表示寻找新工作机会的时间
+* $\phi_t$ 表示劳动者在当前岗位为提高人力资本而付出的投资
+* $s_t$ 表示用于从其他公司获得新工作机会的搜索努力
 
 只要劳动者继续留在当前工作，$\{x_t\}$ 的演变由 $x_{t+1} = g(x_t, \phi_t)$ 给出。
 
 当 $t$ 时刻的搜索努力为 $s_t$ 时，劳动者以概率 $\pi(s_t) \in [0, 1]$ 得到新的工作机会。
 
-这个机会的价值（以力资本衡量）是 $u_{t+1}$，其中 $\{u_t\}$ 是具有共同分布 $f$ 的独立同分布序列。
+这个机会的价值（以工作岗位特定人力资本衡量）是 $u_{t+1}$，其中 $\{u_t\}$ 是具有共同分布 $f$ 的独立同分布序列。
 
 劳动者可以拒绝当前的工作机会并继续现有的工作。
 
@@ -89,7 +113,7 @@ x_{t+1}
     \max \{ g(x_t, \phi_t), u_{t+1}\}
 ```
 
-模型中每个劳动者的目标：通过控制变量 $\{s_t\}$ 和 $\{\phi_t\}$ 来最大化预期折现工资总和。
+主体的目标：通过控制变量 $\{s_t\}$ 和 $\{\phi_t\}$ 来最大化预期折现工资总和。
 
 对 $v(x_{t+1})$ 取期望并使用 {eq}`jd`，
 这个问题的贝尔曼方程可以写成
@@ -113,7 +137,7 @@ $a \vee b := \max\{a, b\}$。
 ```{index} single: On-the-Job Search; 参数化
 ```
 
-在下面的实现中，我们将给以上模型添加参数化设定
+在下面的实现中，我们将聚焦于以下参数化设定
 
 $$
 g(x, \phi) = A (x \phi)^{\alpha},
@@ -138,7 +162,7 @@ $\text{Beta}(2,2)$ 分布的支撑集是 $(0,1)$ - 它具有单峰、对称的�
 
 我们可以看到，劳动者有两种途径来积累资本并提高工资：
 
-1. 通过 $\phi$ 投资于适用于当前工作人力资本
+1. 通过 $\phi$ 投资于当前工作岗位特定的人力资本
 1. 通过 $s$ 搜寻更匹配岗位特定人力资本的新工作
 
 由于工资是 $x (1 - s - \phi)$，通过 $\phi$ 或 $s$ 进行投资的边际成本是相同的。
@@ -175,194 +199,195 @@ $\text{Beta}(2,2)$ 分布的支撑集是 $(0,1)$ - 它具有单峰、对称的�
 ```{index} single: On-the-Job Search; Programming Implementation
 ```
 
-我们将设置一个`JVWorker`类来保存上述模型的参数
+我们使用 [JAX](https://docs.jax.dev/) 来求解模型，使用一个 `NamedTuple` 来保存参数和网格。
 
 ```{code-cell} ipython3
-class JVWorker:
-    r"""
-    一个Jovanovic类型的就业模型，包含在职搜索。
+class JVWorker(NamedTuple):
+    A: float                # g中的规模参数
+    α: float                # g中的曲率参数
+    β: float                # 折现因子
+    x_grid: jnp.ndarray     # 人力资本值的网格
+    s_grid: jnp.ndarray     # 搜索努力值的网格
+    ϕ_grid: jnp.ndarray     # 投资值的网格
+    f_rvs: jnp.ndarray      # 来自f的抽样，用于蒙特卡洛积分
 
+
+def create_jv_worker(A=1.4,               # g中的规模参数
+                     α=0.6,               # g中的曲率参数
+                     β=0.96,              # 折现因子
+                     a=2,                 # f的参数
+                     b=2,                 # f的参数
+                     grid_size=50,        # 状态网格的大小
+                     mc_size=100,         # f的抽样数量
+                     search_grid_size=15, # 每个行动网格的大小
+                     ɛ=1e-4,
+                     seed=1234):
     """
+    创建一个在职搜索模型的实例。
+    """
+    f_rvs = jr.beta(jr.key(seed), a, b, (mc_size,))
 
-    def __init__(self,
-                 A=1.4,
-                 α=0.6,
-                 β=0.96,         # 折现因子
-                 π=np.sqrt,      # 搜索努力函数
-                 a=2,            # f的参数
-                 b=2,            # f的参数
-                 grid_size=50,
-                 mc_size=100,
-                 ɛ=1e-4):
+    # 网格的最大值是f的大分位数值和固定点y = g(y, 1)的最大值
+    grid_max = max(A**(1 / (1 - α)), stats.beta(a, b).ppf(1 - ɛ))
 
-        self.A, self.α, self.β, self.π = A, α, β, π
-        self.mc_size, self.ɛ = mc_size, ɛ
+    x_grid = jnp.linspace(ɛ, grid_max, grid_size)
+    s_grid = jnp.linspace(ɛ, 1, search_grid_size)
+    ϕ_grid = jnp.linspace(ɛ, 1, search_grid_size)
 
-        self.g = jit(lambda x, ϕ: A * (x * ϕ)**α)    # 转移函数
-        self.f_rvs = np.random.beta(a, b, mc_size)
-
-        # 网格的最大值是f的大分位数值和固定点y = g(y, 1)的最大值
-        ɛ = 1e-4
-        grid_max = max(A**(1 / (1 - α)), stats.beta(a, b).ppf(1 - ɛ))
-
-        # 人力资本
-        self.x_grid = np.linspace(ɛ, grid_max, grid_size)
+    return JVWorker(A=A, α=α, β=β, x_grid=x_grid, s_grid=s_grid,
+                    ϕ_grid=ϕ_grid, f_rvs=f_rvs)
 ```
 
-函数`operator_factory`接收这个类的实例并返回jit编译的贝尔曼算子`T`，即：
+以下是转移函数 $g$ 和获得工作机会的概率 $\pi$。
 
-$$
-Tv(x)
-= \max_{s + \phi \leq 1} w(s, \phi)
-$$
+```{code-cell} ipython3
+@jax.jit
+def g(jv, x, ϕ):
+    "工作岗位特定人力资本的转移函数。"
+    return jv.A * (x * ϕ)**jv.α
 
-其中
+
+@jax.jit
+def π(s):
+    "搜索努力为s时获得工作机会的概率。"
+    return jnp.sqrt(s)
+```
+
+接下来，我们在最大化之前写出贝尔曼方程 {eq}`jvbell` 的右侧：
 
 ```{math}
 :label: defw
 
-w(s, \phi)
+B(x, s, \phi)
  := x (1 - s - \phi) + \beta (1 - \pi(s)) v[g(x, \phi)] +
          \beta \pi(s) \int v[g(x, \phi) \vee u] f(du)
 ```
 
-当我们表示$v$时，将使用NumPy数组`v`在网格`x_grid`上给出值。
+我们用一个数组来表示$v$，该数组给出$v$在`x_grid`上的值，并通过线性插值从中恢复出一个函数。
 
-但要计算{eq}`defw`右侧，我们需要一个函数，所以我们用函数`v_func`替换数组`v`和`x_grid`，该函数在`x_grid`上对`v`进行线性插值。
+积分被替换为对`f_rvs`中抽样值的蒙特卡洛平均。
 
-在`for`循环内部，对状态空间网格中的每个`x`，我们设置函数$w(z) = w(s, \phi)$，如{eq}`defw`中定义。
-
-该函数在所有可行的$(s, \phi)$对上最大化。
-
-另一个函数`get_greedy`在给定值函数的情况下，返回每个$x$处$s$和$\phi$的最优选择。
+下面的函数是针对**单个**状态 $x$ 和**单个**行动对 $(s, \phi)$ 编写的 --- 所以它读起来很像{eq}`defw`本身。
 
 ```{code-cell} ipython3
-def operator_factory(jv, parallel_flag=True):
-
+def _B(v, jv, x, s, ϕ):
     """
-    返回Bellman算子T的jit编译版本
+    贝尔曼方程在最大化之前的右侧，针对单个状态x和单个行动对(s, ϕ)。
 
-    jv是JVWorker的一个实例
-
+    不可行的组合（即s + ϕ > 1的情形）被赋值为-∞，
+    因此它们永远不会被最大化步骤选中。
     """
+    v_func = lambda z: jnp.interp(z, jv.x_grid, v)
+    gxϕ = g(jv, x, ϕ)
 
-    π, β = jv.π, jv.β
-    x_grid, ɛ, mc_size = jv.x_grid, jv.ɛ, jv.mc_size
-    f_rvs, g = jv.f_rvs, jv.g
+    # ∫ v[g(x, ϕ) ∨ u] f(du) 的蒙特卡洛估计
+    integral = jnp.mean(v_func(jnp.maximum(gxϕ, jv.f_rvs)))
 
-    @jit
-    def state_action_values(z, x, v):
-        s, ϕ = z
-        v_func = lambda x: np.interp(x, x_grid, v)
-
-        integral = 0
-        for m in range(mc_size):
-            u = f_rvs[m]
-            integral += v_func(max(g(x, ϕ), u))
-        integral = integral / mc_size
-
-        q = π(s) * integral + (1 - π(s)) * v_func(g(x, ϕ))
-        return x * (1 - ϕ - s) + β * q
-
-    @jit(parallel=parallel_flag)
-    def T(v):
-        """
-        Bellman算子
-        """
-
-        v_new = np.empty_like(v)
-        for i in prange(len(x_grid)):
-            x = x_grid[i]
-
-            # 在网格上搜索
-            search_grid = np.linspace(ɛ, 1, 15)
-            max_val = -1
-            for s in search_grid:
-                for ϕ in search_grid:
-                    current_val = state_action_values((s, ϕ), x, v) if s + ϕ <= 1 else -1
-                    if current_val > max_val:
-                        max_val = current_val
-            v_new[i] = max_val
-
-        return v_new
-
-    @jit
-    def get_greedy(v):
-        """
-        计算给定函数v的v-贪婪策略
-        """
-        s_policy, ϕ_policy = np.empty_like(v), np.empty_like(v)
-
-        for i in range(len(x_grid)):
-            x = x_grid[i]
-            # 在网格上搜索
-            search_grid = np.linspace(ɛ, 1, 15)
-            max_val = -1
-            for s in search_grid:
-                for ϕ in search_grid:
-                    current_val = state_action_values((s, ϕ), x, v) if s + ϕ <= 1 else -1
-                    if current_val > max_val:
-                        max_val = current_val
-                        max_s, max_ϕ = s, ϕ
-                        s_policy[i], ϕ_policy[i] = max_s, max_ϕ
-        return s_policy, ϕ_policy
-
-    return T, get_greedy
+    q = π(s) * integral + (1 - π(s)) * v_func(gxϕ)
+    return jnp.where(s + ϕ <= 1, x * (1 - s - ϕ) + jv.β * q, -jnp.inf)
 ```
 
-为了求解模型，我们将编写一个使用贝尔曼算子并通过迭代寻找不动点的函数。
+现在我们在状态和行动的每一种组合上评估`_B`。
+
+我们不写三重嵌套循环，而是三次应用`jax.vmap`。
+
+每次应用都针对一个参数进行向量化，因此下面的堆叠相当于扮演了三重循环的角色 --- 但整个过程编译为可以并行运行的代码。
+
+在`in_axes`中，`0`标记了被映射的参数，而`None`则表示该参数保持固定。
 
 ```{code-cell} ipython3
-def solve_model(jv,
-                use_parallel=True,
-                tol=1e-4,
-                max_iter=1000,
-                verbose=True,
-                print_skip=25):
+# _B的参数顺序是    (v,    jv,   x,    s,    ϕ)
+_B_ϕ   = jax.vmap(_B,    in_axes=(None, None, None, None, 0))     # 对ϕ
+_B_sϕ  = jax.vmap(_B_ϕ,  in_axes=(None, None, None, 0,    None))  # 然后对s
+_B_xsϕ = jax.vmap(_B_sϕ, in_axes=(None, None, 0,    None, None))  # 然后对x
+```
 
+结果是$B$的完全向量化版本。
+
+```{code-cell} ipython3
+@jax.jit
+def B(v, jv):
     """
-    通过值函数迭代求解模型
+    在每一种(状态, 行动)组合上评估B。
 
-    * jv 是 JVWorker 的一个实例
-
+    返回一个形状为(len(x_grid), len(s_grid), len(ϕ_grid))的数组，其中
+    条目[i, j, k]保存了在状态x_i下选择(s_j, ϕ_k)的值。
     """
+    return _B_xsϕ(v, jv, jv.x_grid, jv.s_grid, jv.ϕ_grid)
+```
 
-    T, _ = operator_factory(jv, parallel_flag=use_parallel)
+有了`B`，贝尔曼算子和贪婪策略都只需一行代码
+--- 我们在两个行动坐标轴上进行最大化，一种情况下取最大值，另一种情况下取最大化点。
 
-    # 设置循环
-    v = jv.x_grid * 0.5  # 初始条件
-    i = 0
-    error = tol + 1
+```{code-cell} ipython3
+@jax.jit
+def T(v, jv):
+    "贝尔曼算子。"
+    return jnp.max(B(v, jv), axis=(1, 2))
 
-    while i < max_iter and error > tol:
-        v_new = T(v)
-        error = np.max(np.abs(v - v_new))
-        i += 1
-        if verbose and i % print_skip == 0:
-            print(f"第{i}次迭代的误差为{error}。")
-        v = v_new
 
-    if error > tol:
-        print("未能收敛！")
-    elif verbose:
-        print(f"\n在第{i}次迭代后收敛。")
+@jax.jit
+def get_greedy(v, jv):
+    "计算v-贪婪策略，以一对(s_policy, ϕ_policy)的形式返回。"
+    vals = B(v, jv)
 
-    return v_new
+    # 将两个行动坐标轴展平，这样单个argmax就能在每个状态下选出最佳
+    # 组合，然后将展平后的索引转换回(s, ϕ)对
+    n_s, n_ϕ = len(jv.s_grid), len(jv.ϕ_grid)
+    best = jnp.argmax(vals.reshape(len(jv.x_grid), n_s * n_ϕ), axis=1)
+    j, k = jnp.unravel_index(best, (n_s, n_ϕ))
+
+    return jv.s_grid[j], jv.ϕ_grid[k]
+```
+
+为了求解模型，我们迭代$T$直至收敛。
+
+我们使用`jax.lax.while_loop`，以便整个迭代过程编译成单一操作，并限制迭代步数以确保循环总能终止。
+
+```{code-cell} ipython3
+@jax.jit
+def solve_model(jv, tol=1e-4, max_iter=1_000):
+    """
+    通过值函数迭代求解模型。
+
+    返回值函数、所用的迭代次数以及最终误差，以便调用者检查是否收敛。
+    """
+    def condition(loop_state):
+        i, v, error = loop_state
+        return (error > tol) & (i < max_iter)
+
+    def update(loop_state):
+        i, v, error = loop_state
+        v_new = T(v, jv)
+        return i + 1, v_new, jnp.max(jnp.abs(v_new - v))
+
+    v_init = jv.x_grid * 0.5
+    i, v, error = jax.lax.while_loop(condition, update, (0, v_init, tol + 1))
+    return v, i, error
+```
+
+```{note}
+这里的网格较小，这个模型在NumPy中也能运行得很好。
+
+我们使用JAX，是因为这段代码几乎和对应的NumPy代码一样可读，
+同时又具有更好的可扩展性 --- 可以扩展到更精细的网格，或者带有额外状态变量的更丰富的模型版本，
+在这些情况下，同样的代码将能够充分利用GPU。
 ```
 
 ## 策略求解
 
-```{index} single: 在职搜索; 求解政策
+```{index} single: On-the-Job Search; Solving for Policies
 ```
 
 让我们生成最优政策并看看它们是什么样子。
 
 (jv_policies)=
 ```{code-cell} ipython3
-jv = JVWorker()
-T, get_greedy = operator_factory(jv)
-v_star = solve_model(jv)
-s_star, ϕ_star = get_greedy(v_star)
+jv = create_jv_worker()
+v_star, num_iter, error = solve_model(jv)
+s_star, ϕ_star = get_greedy(v_star, jv)
+
+print(f"经过{num_iter}次迭代收敛，误差为{error:.2e}。")
 ```
 
 我们绘制以下图表：
@@ -406,10 +431,10 @@ plt.show()
 
 用以下方式绘制每个实现对应一个点的45度图,设置
 
-```{code-block} python3
-jv = JVWorker(grid_size=25, mc_size=50)
+```{code-block} ipython3
+jv = create_jv_worker(grid_size=25, mc_size=50)
 plot_grid_max, plot_grid_size = 1.2, 100
-plot_grid = np.linspace(0, plot_grid_max, plot_grid_size)
+plot_grid = jnp.linspace(0, plot_grid_max, plot_grid_size)
 fig, ax = plt.subplots()
 ax.set_xlim(0, plot_grid_max)
 ax.set_ylim(0, plot_grid_max)
@@ -426,25 +451,41 @@ ax.set_ylim(0, plot_grid_max)
 :class: dropdown
 ```
 
-以下是生成45度图的代码
+以下是生成45度图的代码。
+
+注意，我们一次性抽取所有的实现值，而不是在状态和抽样上循环。
 
 ```{code-cell} ipython3
-jv = JVWorker(grid_size=25, mc_size=50)
-π, g, f_rvs, x_grid = jv.π, jv.g, jv.f_rvs, jv.x_grid
-T, get_greedy = operator_factory(jv)
-v_star = solve_model(jv, verbose=False)
-s_policy, ϕ_policy = get_greedy(v_star)
+jv = create_jv_worker(grid_size=25, mc_size=50)
+v_star, _, _ = solve_model(jv)
+s_policy, ϕ_policy = get_greedy(v_star, jv)
 
 # 将策略函数数组转换为实际函数
-s = lambda y: np.interp(y, x_grid, s_policy)
-ϕ = lambda y: np.interp(y, x_grid, ϕ_policy)
-
-def h(x, b, u):
-    return (1 - b) * g(x, ϕ(x)) + b * max(g(x, ϕ(x)), u)
-
+s = lambda y: jnp.interp(y, jv.x_grid, s_policy)
+ϕ = lambda y: jnp.interp(y, jv.x_grid, ϕ_policy)
 
 plot_grid_max, plot_grid_size = 1.2, 100
-plot_grid = np.linspace(0, plot_grid_max, plot_grid_size)
+plot_grid = jnp.linspace(0, plot_grid_max, plot_grid_size)
+
+
+@jax.jit
+def simulate_next(key, plot_grid):
+    """
+    对plot_grid中的每个x，根据上面给出的x_{t+1}运动规律，抽取下一期资本的实现值。
+    返回一个形状为(len(plot_grid), mc_size)的数组。
+    """
+    K = len(jv.f_rvs)
+    gxϕ = g(jv, plot_grid, ϕ(plot_grid))[:, jnp.newaxis]   # 形状 (n, 1)
+    u = jv.f_rvs[jnp.newaxis, :]                           # 形状 (1, K)
+
+    # 工作机会以概率π(s(x))到来，在各次抽样之间相互独立
+    b = jr.uniform(key, (len(plot_grid), K)) < π(s(plot_grid))[:, jnp.newaxis]
+
+    return jnp.where(b, jnp.maximum(gxϕ, u), gxϕ)
+
+
+x_next = simulate_next(jr.key(1234), plot_grid)
+
 fig, ax = plt.subplots(figsize=(8, 8))
 ticks = (0.25, 0.5, 0.75, 1.0)
 ax.set(xticks=ticks, yticks=ticks,
@@ -453,12 +494,8 @@ ax.set(xticks=ticks, yticks=ticks,
        xlabel='$x_t$', ylabel='$x_{t+1}$')
 
 ax.plot(plot_grid, plot_grid, 'k--', alpha=0.6)  # 45度线
-for x in plot_grid:
-    for i in range(jv.mc_size):
-        b = 1 if np.random.uniform(0, 1) < π(s(x)) else 0
-        u = f_rvs[i]
-        y = h(x, b, u)
-        ax.plot(x, y, 'go', alpha=0.25)
+ax.plot(jnp.repeat(plot_grid, x_next.shape[1]), x_next.ravel(),
+        'go', alpha=0.25)
 
 plt.show()
 ```
@@ -509,21 +546,20 @@ $\phi_t = \phi(x_t) \approx 0.6$。
 可以用以下方法生成图像
 
 ```{code-cell} ipython3
-jv = JVWorker()
+jv = create_jv_worker()
 
 def xbar(ϕ):
-    A, α = jv.A, jv.α
-    return (A * ϕ**α)**(1 / (1 - α))
+    return (jv.A * ϕ**jv.α)**(1 / (1 - jv.α))
 
-ϕ_grid = np.linspace(0, 1, 100)
+ϕ_grid = jnp.linspace(0, 1, 100)
+
 fig, ax = plt.subplots(figsize=(9, 7))
 ax.set(xlabel=r'$\phi$')
-ax.plot(ϕ_grid, [xbar(ϕ) * (1 - ϕ) for ϕ in ϕ_grid], label=r'$w^*(\phi)$')
+ax.plot(ϕ_grid, xbar(ϕ_grid) * (1 - ϕ_grid), label=r'$w^*(\phi)$')
 ax.legend()
 
 plt.show()
 ```
-
 
 观察到最大值约在0.6处。
 
@@ -535,4 +571,3 @@ plt.show()
 
 ```{solution-end}
 ```
-

@@ -7,6 +7,16 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: Python线性回归
+  headings:
+    Overview: 概述
+    Overview::Prerequisites: 预备知识
+    Simple Linear Regression: 简单线性回归
+    Extending the Linear Regression Model: 扩展线性回归模型
+    Endogeneity: 内生性
+    Summary: 总结
+    Exercises: 练习
 ---
 
 ```{raw} jupyter
@@ -36,14 +46,14 @@ tags: [hide-output]
 
 线性回归是分析两个或多个变量之间关系的基础工具。
 
-在本讲中，我们将使用Python的`statsmodels`包来探索线性回归分析。我们将学习如何:
+在本讲中，我们将使用Python的`statsmodels`包来估计、解释和可视化线性回归模型。
 
-- 建立和估计简单及多元线性回归模型
-- 通过图表直观展示分析结果
-- 理解内生性问题和遗漏变量偏差
-- 使用两阶段最小二乘法处理内生性
+在此过程中，我们将讨论多个主题，包括
 
-通过这些内容,你将掌握使用Python进行线性回归分析的基本技能。
+- 简单和多元线性回归
+- 可视化
+- 内生性和遗漏变量偏差
+- 两阶段最小二乘法
 
 作为示例，我们将复现Acemoglu、Johnson和Robinson具有开创性意义的论文{cite}`Acemoglu2001`中的结果。
 
@@ -51,9 +61,9 @@ tags: [hide-output]
 
 在这篇论文中，作者强调了制度在经济发展中的重要性。
 
-该论文的一个重要创新是利用了早期殖民者的死亡率数据,作为各地区制度差异的*外生*来源。
+该论文的主要贡献是利用殖民者死亡率作为制度差异的一种*外生*变异来源。
 
-这种方法对于确定因果关系至关重要 - 即制度质量的提高会带来经济增长，而不是经济发展反过来改善了制度。
+我们需要这种变异来确定究竟是制度带来了更高的经济增长，而不是反过来。
 
 让我们从一些导入开始：
 
@@ -76,13 +86,13 @@ sns.set_theme()
 
 ### 预备知识
 
-本讲座需要基础计量经济学知识。
+本讲座假设你熟悉基础计量经济学。
 
-如果你需要复习相关概念，可以参考{cite}`Wooldridge2015`等教材。
+如需相关内容的入门教材，例如可参考{cite}`Wooldridge2015`。
 
 ## 简单线性回归
 
-让我们从一个有趣的经济学问题开始 - 制度差异是否会影响一个国家的经济发展水平？这正是{cite}`Acemoglu2001`试图回答的问题。
+{cite}`Acemoglu2001`希望确定制度差异是否有助于解释观察到的经济结果。
 
 我们如何衡量*制度差异*和*经济结果*？
 
@@ -92,25 +102,26 @@ sns.set_theme()
 - 制度差异用[政治风险研究组织](https://www.prsgroup.com/)构建的1985-95年间平均防止征用风险指数表示。
 
 这些数据以及论文中使用的其他变量都可以从Daron Acemoglu的[个人主页](https://economics.mit.edu/people/faculty/daron-acemoglu/data-archive)下载。
-接下来，我们用pandas的`.read_stata()`函数来读取这些存储在`.dta`格式文件中的数据
 
-```{code-cell} ipython3
-df1 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable1.dta?raw=true')
+我们将使用pandas的`.read_stata()`函数来读取这些存储在`.dta`格式文件中的数据到数据框
+
+```{code-cell} python3
+df1 = pd.read_stata('https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/ols/maketable1.dta')
 df1.head()
 ```
 
 让我们使用散点图来观察人均GDP和防止征用指数之间是否存在明显的关系
 
-```{code-cell} ipython3
+```{code-cell} python3
 df1.plot(x='avexpr', y='logpgp95', kind='scatter')
 plt.show()
 ```
 
-从散点图中可以清楚地看到，一个国家的防止征用保护水平与其人均GDP之间存在明显的正相关关系。
+从散点图中可以看到，防止征用保护与人均GDP对数之间存在相当强的正相关关系。
 
-换句话说，如果我们把防止征用保护视为衡量制度质量的指标，那么数据表明制度质量越好的国家，经济表现（以人均GDP衡量）也往往越好。
+具体来说，如果更高的防止征用保护是制度质量的一个衡量指标，那么更好的制度似乎与更好的经济结果（更高的人均GDP）呈正相关。
 
-从散点图的形状来看，用一条直线来拟合这种关系是比较合适的。因此我们可以用一个简单的线性模型来描述它们之间的关系。
+根据这个散点图，选择线性模型来描述这种关系似乎是一个合理的假设。
 
 我们可以将这个模型写作
 
@@ -126,7 +137,7 @@ $$
 
 直观来看，这个线性模型涉及选择一条最佳的直线来拟合数据，如下图所示（图2，引用自{cite}`Acemoglu2001`）
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 使用numpy的polyfit需要我们删除缺失值
 df1_subset = df1.dropna(subset=['logpgp95', 'avexpr'])
 
@@ -159,7 +170,7 @@ plt.show()
 
 估计线性模型参数（$\beta$值）最常用的技术是普通最小二乘法（OLS）。
 
-顾名思义，OLS模型是通过寻找能使*残差平方和*最小化的参数来求解的，即：
+顾名思义，OLS模型是通过寻找能使**残差平方和**最小化的参数来求解的，即：
 
 $$
 \underset{\hat{\beta}}{\min} \sum^N_{i=1}{\hat{u}^2_i}
@@ -167,19 +178,17 @@ $$
 
 其中$\hat{u}_i$是观测值与因变量预测值之间的差异。
 
-为了估计截距项$\beta_0$，我们需要在数据集中添加一列值为1的常数列。
+为了估计截距项$\beta_0$，我们需要在数据集中添加一列值为1的常数列（考虑如果将$\beta_0$替换为$\beta_0 x_i$且$x_i = 1$的方程）
 
-这样做的原因是，如果我们将$\beta_0$写成$\beta_0 x_i$的形式，其中$x_i = 1$，那么这一项就代表了回归线在y轴上的截距。
-
-```{code-cell} ipython3
+```{code-cell} python3
 df1['const'] = 1
 ```
 
 现在我们可以使用OLS函数在`statsmodels`中构建我们的模型。
 
-我们将在`statsmodels`中使用`pandas`数据类型，不过标准数组也可以作为参数使用
+我们将在`statsmodels`中使用`pandas`数据框，不过标准数组也可以作为参数使用
 
-```{code-cell} ipython3
+```{code-cell} python3
 reg1 = sm.OLS(endog=df1['logpgp95'], exog=df1[['const', 'avexpr']], \
     missing='drop')
 type(reg1)
@@ -190,7 +199,7 @@ type(reg1)
 我们需要使用`.fit()`来获得参数估计值
 $\hat{\beta}_0$ 和 $\hat{\beta}_1$
 
-```{code-cell} ipython3
+```{code-cell} python3
 results = reg1.fit()
 type(results)
 ```
@@ -201,7 +210,7 @@ type(results)
 
 请注意，在原始论文中一个观测值被错误地删除了（参见Acemoglu网页中`maketable2.do`文件中的注释），因此系数略有不同。
 
-```{code-cell} ipython3
+```{code-cell} python3
 print(results.summary())
 ```
 
@@ -223,21 +232,21 @@ $$
 
 我们可以使用这个方程来预测特定征收保护指数值对应的人均GDP对数水平。
 
-例如，对于一个指数值为7.07的国家（这是数据集中最高的指数值），我们发现他们预测的1995年人均GDP对数值为8.38。
+例如，对于一个指数值为7.07的国家（该数据集的平均值），我们发现他们预测的1995年人均GDP对数值为8.38。
 
-```{code-cell} ipython3
+```{code-cell} python3
 mean_expr = np.mean(df1_subset['avexpr'])
 mean_expr
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 predicted_logpdp95 = 4.63 + 0.53 * 7.07
 predicted_logpdp95
 ```
 
 获得这个结果有一个更简单（也更准确）的方法，就是使用`.predict()` 并设置 $constant = 1$ 和 ${avexpr}_i = mean\_expr$
 
-```{code-cell} ipython3
+```{code-cell} python3
 results.predict(exog=[1, mean_expr])
 ```
 
@@ -245,18 +254,21 @@ results.predict(exog=[1, mean_expr])
 
 将预测值与${avexpr}_i$绘制在图上显示，预测值都落在我们之前拟合的直线上。
 
-同时也绘制了${logpgp95}_i$的观测值以作比较。
+同时也绘制了${logpgp95}_i$的观测值以作比较
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 从整个样本中删除缺失观测值
+
 df1_plot = df1.dropna(subset=['logpgp95', 'avexpr'])
 
 # 绘制预测值
+
 fix, ax = plt.subplots()
 ax.scatter(df1_plot['avexpr'], results.predict(), alpha=0.5,
         label='predicted')
 
 # 绘制观测值
+
 ax.scatter(df1_plot['avexpr'], df1_plot['logpgp95'], alpha=0.5,
         label='observed')
 
@@ -269,23 +281,21 @@ plt.show()
 
 ## 扩展线性回归模型
 
-到目前为止，我们只关注了制度对经济表现的影响。但显然,一个国家的GDP还受到许多其他因素的影响。我们的模型目前还没有考虑这些因素。
+到目前为止，我们只考虑了制度对经济表现的影响 - 几乎可以肯定还有许多其他影响GDP的因素没有包含在我们的模型中。
 
-如果我们忽略了这些影响$logpgp95_i$的重要变量,就会产生所谓的**遗漏变量偏差**。这种偏差会导致我们的参数估计既有偏又不一致。
+遗漏影响$logpgp95_i$的变量将导致**遗漏变量偏差**，从而产生有偏且不一致的参数估计。
 
-为了解决这个问题,我们可以将原来的双变量回归扩展为**多变量回归模型**,把其他可能影响$logpgp95_i$的因素也纳入考虑。
+我们可以通过加入其他可能影响$logpgp95_i$的因素，将我们的双变量回归模型扩展为**多元回归模型**。
 
-在{cite}`Acemoglu2001`中，作者考虑了多个可能影响经济发展的因素：
+{cite}`Acemoglu2001`考虑了其他因素，例如：
 
-- 气候条件：他们使用纬度作为衡量气候的代理变量，因为纬度与温度、降水等气候特征密切相关
-- 地区特征：通过引入大陆虚拟变量（如亚洲、非洲等），来控制不同地区在文化、历史等方面的差异
+- 气候对经济结果的影响；用纬度作为其代理变量
+- 同时影响经济表现和制度的差异，例如文化、历史等；通过使用大陆虚拟变量来控制
 
-让我们来看看这些扩展模型的估计结果。
+让我们使用`maketable2.dta`中的数据估计论文中考虑的一些扩展模型（表2）
 
-我们将使用`maketable2.dta`中的数据，复现论文表2中的分析
-
-```{code-cell} ipython3
-df2 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable2.dta?raw=true')
+```{code-cell} python3
+df2 = pd.read_stata('https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/ols/maketable2.dta')
 
 # 向数据集添加常数项
 df2['const'] = 1
@@ -303,7 +313,7 @@ reg3 = sm.OLS(df2['logpgp95'], df2[X3], missing='drop').fit()
 
 现在我们已经拟合了模型，我们将使用`summary_col`在一个表格中显示结果（模型编号与论文中的相对应）
 
-```{code-cell} ipython3
+```{code-cell} python3
 info_dict={'R-squared' : lambda x: f"{x.rsquared:.2f}",
            'No. observations' : lambda x: f"{int(x.nobs):d}"}
 
@@ -327,53 +337,45 @@ print(results_table)
 
 ## 内生性
 
-{cite}`Acemoglu2001` 指出，使用OLS模型估计制度对经济发展的影响时，我们面临一个重要的挑战 - **内生性**问题。这个问题会导致我们的估计结果产生偏差。
+正如{cite}`Acemoglu2001`所讨论的，OLS模型可能存在**内生性**问题，从而导致模型估计有偏且不一致。
 
-为什么会存在内生性呢？主要是因为制度质量和经济发展水平之间可能相互影响：
+也就是说，制度与经济结果之间很可能存在双向关系：
 
 - 较富裕的国家可能有能力负担或倾向于选择更好的制度
 - 影响收入的变量可能也与制度差异相关
 - 指数的构建可能存在偏差；分析师可能倾向于认为收入较高的国家拥有更好的制度
 
-要解决这个问题，我们可以采用一种叫做**两阶段最小二乘法(2SLS)**的方法。
+为了应对内生性问题，我们可以使用**两阶段最小二乘法（2SLS）回归**，它是OLS回归的一种扩展。
 
-这种方法需要用一个变量来替代内生变量${avexpr}_i$，该变量必须：
+这种方法需要用满足以下条件的变量来替代内生变量${avexpr}_i$：
 
 1. 与${avexpr}_i$相关
-2. 与误差项不相关（即不应直接影响因变量，否则由于遗漏变量偏差会与$u_i$相关）
+1. 与误差项不相关（即不应直接影响因变量，否则由于遗漏变量偏差会与$u_i$相关）
 
 这组新的回归变量被称为**工具变量**，其目的是消除我们在衡量制度差异时的内生性问题。
 
 {cite}`Acemoglu2001`的主要贡献在于使用殖民者死亡率作为制度差异的工具变量。
 
-他们的论证是这样的：在死亡率高的地区，殖民者倾向于建立掠夺性的制度，主要目的是快速榨取资源而不是长期发展。
+他们假设，殖民者的死亡率越高，导致建立的制度本质上越具有掠夺性（对征用的保护更少），而这些制度至今仍然存在。
 
-这些制度往往对私有财产保护不足,容易被征收。
+通过散点图（{cite}`Acemoglu2001`中的图3），我们可以看到防止征用保护与殖民者死亡率呈负相关，这与作者的假设相符，也满足了有效工具变量的第一个条件。
 
-而且由于制度具有持续性，这种制度特征一直延续到了今天。
-
-我们可以通过散点图（见{cite}`Acemoglu2001`的图3）验证这一假设。
-
-图中显示，殖民者死亡率越高的地区，其防止征收风险指数越低（即财产保护程度越差）。
-
-这种负相关关系支持了作者的假设，也满足了工具变量的第一个条件
-
-```{code-cell} ipython3
-# Dropping NA's is required to use numpy's polyfit
+```{code-cell} python3
+# 使用numpy的polyfit需要我们删除缺失值
 df1_subset2 = df1.dropna(subset=['logem4', 'avexpr'])
 
 X = df1_subset2['logem4']
 y = df1_subset2['avexpr']
 labels = df1_subset2['shortnam']
 
-# Replace markers with country labels
+# 用国家标签替换标记点
 fig, ax = plt.subplots()
 ax.scatter(X, y, marker='')
 
 for i, label in enumerate(labels):
     ax.annotate(label, (X.iloc[i], y.iloc[i]))
 
-# Fit a linear trend line
+# 拟合线性趋势线
 ax.plot(np.unique(X),
          np.poly1d(np.polyfit(X, y, 1))(np.unique(X)),
          color='black')
@@ -412,11 +414,11 @@ $$
 {avexpr}_i = \delta_0 + \delta_1 {logem4}_i + v_i
 $$
 
-让我们使用`maketable4.dta`文件中的数据来估计这个方程。我们只使用完整的观测值样本（用`baseco = 1`标识的数据）。
+估计这个方程所需的数据位于`maketable4.dta`中（仅使用`baseco = 1`标识的完整数据进行估计）
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 导入并选择数据
-df4 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable4.dta?raw=true')
+df4 = pd.read_stata('https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/ols/maketable4.dta')
 df4 = df4[df4['baseco'] == 1]
 
 # 添加常数变量
@@ -441,28 +443,25 @@ $$
 {logpgp95}_i = \beta_0 + \beta_1 \widehat{avexpr}_i + u_i
 $$
 
-```{code-cell} ipython3
+```{code-cell} python3
 df4['predicted_avexpr'] = results_fs.predict()
 
 results_ss = sm.OLS(df4['logpgp95'],
                     df4[['const', 'predicted_avexpr']]).fit()
 print(results_ss.summary())
 ```
-通过第二阶段回归，我们得到了制度对经济发展影响的无偏且一致的估计结果。
 
-结果表明，制度质量与经济发展之间存在比OLS估计更强的正相关关系。这说明在控制内生性问题后，制度的影响实际上比简单回归显示的更大。
+第二阶段回归的结果给了我们一个关于制度对经济结果影响的无偏且一致的估计。
 
-不过需要注意的是，虽然这种分步骤进行OLS回归的方法可以得到正确的参数估计，但由于没有考虑到第一阶段估计的不确定性，标准误差的计算并不准确。
+这个结果表明的正相关关系比OLS结果所显示的更强。
 
-因此在实践中，我们不建议用这种"手动"方式来进行2SLS估计。
+请注意，虽然我们的参数估计是正确的，但我们的标准误差并不正确，因此不建议"手动"（分阶段使用OLS）计算2SLS。
 
-我们可以使用[linearmodels](https://github.com/bashtage/linearmodels)包（statsmodels的扩展）在一步中正确估计2SLS回归。
+我们可以使用[linearmodels](https://github.com/bashtage/linearmodels)包（`statsmodels`的一个扩展）在一步中正确估计2SLS回归。
 
-注意，在使用`IV2SLS`时，外生变量和工具变量在函数参数中是分开的（而之前工具变量包含了外生变量）。
+请注意，在使用`IV2SLS`时，外生变量和工具变量在函数参数中是分开的（而之前工具变量包含了外生变量）
 
-在`statsmodels`中，我们使用`exog`参数来指定外生变量，使用`instruments`参数来指定工具变量。
-
-```{code-cell} ipython3
+```{code-cell} python3
 iv = IV2SLS(dependent=df4['logpgp95'],
             exog=df4['const'],
             endog=df4['avexpr'],
@@ -479,20 +478,18 @@ print(iv.summary)
 
 我们已经演示了在`statsmodels`和`linearmodels`中的基本OLS和2SLS回归。
 
-如果你熟悉R语言，你可以使用`statsmodels`的[公式接口](https://www.statsmodels.org/dev/example_formulas.html)，或考虑使用[r2py](https://rpy2.github.io/)在Python中调用R。
+如果你熟悉R语言，你可能想使用`statsmodels`的[公式接口](https://www.statsmodels.org/dev/example_formulas.html)，或考虑使用[r2py](https://rpy2.github.io/)在Python中调用R。
 
 ## 练习
 
 ```{exercise}
 :label: ols_ex1
 
-在前面的讲座中，我们讨论了原始模型中的内生性问题。这个问题源于收入水平可能反过来影响制度的发展,从而导致估计结果产生偏差。
+在本讲座中，我们认为原始模型存在内生性偏差，这是因为收入很可能对制度发展产生影响。
 
-虽然识别内生性问题最好是通过仔细分析数据和模型的经济含义，但我们也可以使用一个统计工具——**豪斯曼检验**来正式验证内生性的存在。
+虽然内生性通常最好通过思考数据和模型来识别，但我们可以使用**豪斯曼检验**来正式检验内生性。
 
-具体来说，我们要检验内生变量（制度质量指标$avexpr_i$）是否与回归方程的误差项$u_i$相关。
-
-如果存在相关性，就说明存在内生性问题
+我们想检验内生变量$avexpr_i$与误差项$u_i$之间是否存在相关性
 
 $$
 \begin{aligned}
@@ -524,9 +521,9 @@ $$
 :class: dropdown
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 加载数据
-df4 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable4.dta?raw=true')
+df4 = pd.read_stata('https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/ols/maketable4.dta')
 
 # 添加常数项
 df4['const'] = 1
@@ -592,9 +589,9 @@ $$
 :class: dropdown
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 # 加载数据
-df1 = pd.read_stata('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable1.dta?raw=true')
+df1 = pd.read_stata('https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/ols/maketable1.dta')
 df1 = df1.dropna(subset=['logpgp95', 'avexpr'])
 
 # 添加常数项
@@ -616,4 +613,3 @@ print(f'β_1 = {β_hat[1]:.2}')
 
 ```{solution-end}
 ```
-

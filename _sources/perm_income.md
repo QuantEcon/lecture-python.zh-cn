@@ -7,6 +7,30 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 永久收入模型
+  headings:
+    Overview: 概述
+    The Savings Problem: 储蓄问题
+    The Savings Problem::Preliminaries: 预备知识
+    The Savings Problem::The Decision Problem: 决策问题
+    The Savings Problem::Assumptions: 假设
+    The Savings Problem::First-Order Conditions: 一阶条件
+    The Savings Problem::The Optimal Decision Rule: 最优决策规则
+    The Savings Problem::The Optimal Decision Rule::Responding to the State: 对状态的响应
+    The Savings Problem::The Optimal Decision Rule::A State-Space Representation: 状态空间表示
+    The Savings Problem::The Optimal Decision Rule::A Simple Example with IID Income: 一个简单的独立同分布收入示例
+    Alternative Representations: 替代表示方法
+    Alternative Representations::Hall's Representation: 霍尔的表示方法
+    Alternative Representations::Cointegration: 协整
+    Alternative Representations::Cross-Sectional Implications: 横截面含义
+    Alternative Representations::Impulse Response Functions: 脉冲响应函数
+    Alternative Representations::Moving Average Representation: 移动平均表示
+    Two Classic Examples: 两个经典例子
+    Two Classic Examples::Example 1: 示例1
+    Two Classic Examples::Example 2: 示例2
+    Further Reading: 延伸阅读
+    'Appendix: The Euler Equation': 附录：欧拉方程
 ---
 
 (perm_income)=
@@ -477,8 +501,8 @@ r = 0.05
 T = 60
 
 @jit
-def time_path(T):
-    w = np.random.randn(T+1)  # w_0, w_1, ..., w_T
+def time_path(T, rng):
+    w = rng.standard_normal(T+1)  # w_0, w_1, ..., w_T
     w[0] = 0
     b = np.zeros(T+1)
     for t in range(1, T+1):
@@ -487,7 +511,8 @@ def time_path(T):
     c = μ + (1 - β) * (σ * w - b)
     return w, b, c
 
-w, b, c = time_path(T)
+rng = np.random.default_rng()
+w, b, c = time_path(T, rng)
 
 fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -510,7 +535,7 @@ fig, ax = plt.subplots(figsize=(10, 6))
 
 b_sum = np.zeros(T+1)
 for i in range(250):
-    w, b, c = time_path(T)  # Generate new time path
+    w, b, c = time_path(T, rng)  # Generate new time path
     rcolor = random.choice(('c', 'g', 'b', 'k'))
     ax.plot(c, color=rcolor, lw=0.8, alpha=0.7)
 
@@ -1001,4 +1026,3 @@ $$
 [^f5]: 如果由$y^t$张成的线性空间等于由$w^t$张成的线性空间，则过程$y_t$的移动平均表示被称为**基本的**。通过卡尔曼滤波获得的时不变创新表示在构造上是基本的。
 
 [^f8]: 相关思想的有趣应用请参见{cite}`CampbellShiller88`、{cite}`LettLud2001`、{cite}`LettLud2004`。
-

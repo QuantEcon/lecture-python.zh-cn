@@ -1,0 +1,2344 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>52. 工作搜寻 III：带分离和马尔可夫工资的搜寻 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'mccall_model_with_sep_markov';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/mccall_model_with_sep_markov.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="53. 工作搜寻 IV: 拟合值函数迭代" href="mccall_fitted_vfi.html" />
+    <link rel="prev" title="51. 工作搜寻 II：搜寻与离职" href="mccall_model_with_separation.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="工作搜寻 III：带分离和马尔可夫工资的搜寻"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="工作搜寻 III：带分离和马尔可夫工资的搜寻" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/mccall_model_with_sep_markov.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=mccall_model_with_sep_markov>
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">52.1. 模型设置</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">52.1.1. 决策问题</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">52.1.2. 工资报价过程</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">52.1.3. 价值函数</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">52.1.4. 最优策略</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">52.2. 代码</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">52.2.1. 设置</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">52.2.2. 求解：第一遍</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">52.2.3. 实地测试</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">52.3. 提高效率</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">52.4. 敏感性分析</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">52.5. 就业模拟</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">52.6. 遍历性</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">52.7. 横截面分析</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c-0-5">52.8. 更低的失业补偿（c=0.5）</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">52.9. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 22, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/mccall_model_with_sep_markov.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/be4a8b2" class="changelog-hash">be4a8b2</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">Seed the 37 missing lectures — full source-TOC coverage (#196)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="iii">
+<h1><a class="toc-backref" href="#id16" role="doc-backlink"><span class="section-number">52. </span>工作搜寻 III：带分离和马尔可夫工资的搜寻</a><a class="headerlink" href="#iii" title="Link to this heading">#</a></h1>
+<div class="warning admonition">
+<p class="admonition-title">GPU</p>
+<p>本讲座是在配有GPU的机器上构建的——不过没有GPU也可以运行。</p>
+<p><a class="reference external" href="https://colab.research.google.com/">Google Colab</a> 提供带GPU的免费套餐，使用方法如下：</p>
+<ol class="arabic simple">
+<li><p>点击右上角的”播放”图标</p></li>
+<li><p>选择 Colab</p></li>
+<li><p>将运行时环境设置为包含GPU</p></li>
+</ol>
+</div>
+<nav class="contents" id="contents">
+<span id="index-0"></span><p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#iii" id="id16">工作搜寻 III：带分离和马尔可夫工资的搜寻</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id17">模型设置</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id18">代码</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id19">提高效率</a></p></li>
+<li><p><a class="reference internal" href="#id11" id="id20">敏感性分析</a></p></li>
+<li><p><a class="reference internal" href="#id12" id="id21">就业模拟</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id22">遍历性</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id23">横截面分析</a></p></li>
+<li><p><a class="reference internal" href="#c-0-5" id="id24">更低的失业补偿（c=0.5）</a></p></li>
+<li><p><a class="reference internal" href="#id15" id="id25">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>本讲座建立在<a class="reference internal" href="mccall_model_with_separation.html"><span class="doc">上一讲</span></a>中提出的带分离的工作搜寻模型之上。</p>
+<p>关键区别在于，工资报价现在遵循<a class="reference internal" href="finite_markov.html"><span class="doc">马尔可夫链</span></a>，而不是独立同分布（IID）。</p>
+<p>这一修改为工资报价过程增加了持续性，这意味着今天的工资报价提供了关于明天报价的信息。</p>
+<p>这一特征使模型更加真实，因为劳动力市场条件往往随时间表现出序列相关性。</p>
+<p>除了 Anaconda 中已有的内容外，本讲座还需要以下库</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantecon<span class="w"> </span>jax
+</pre></div>
+</div>
+</div>
+<details class="admonition hide below-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell output</p>
+<p class="expanded admonition-title">Hide code cell output</p>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (0.11.4)
+Requirement already satisfied: jax in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (0.11.0)
+Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (0.65.1)
+Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (2.4.6)
+Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (2.34.2)
+Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (1.18.0)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (1.14.0)
+Requirement already satisfied: jaxlib&lt;=0.11.0,&gt;=0.11.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (0.11.0)
+Requirement already satisfied: ml_dtypes&gt;=0.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (0.5.4)
+Requirement already satisfied: opt_einsum in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (3.4.0)
+Requirement already satisfied: llvmlite&lt;0.48,&gt;=0.47.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.47.0)
+Requirement already satisfied: charset_normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (3.4.7)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (3.18)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.26 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (2.7.0)
+Requirement already satisfied: certifi&gt;=2023.5.7 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (2026.6.17)
+Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from sympy-&gt;quantecon) (1.3.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<p>我们使用以下导入：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">quantecon.markov</span><span class="w"> </span><span class="kn">import</span> <span class="n">tauchen</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">lax</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>  <span class="c1"># i18n</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>  <span class="c1"># i18n</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id1">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink"><span class="section-number">52.1. </span>模型设置</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>设定如下：</p>
+<ul class="simple">
+<li><p>每个失业的个体从一个有限集合 <span class="math notranslate nohighlight">\(\mathbb W\)</span> 中获得一个工资报价 <span class="math notranslate nohighlight">\(w\)</span></p></li>
+<li><p>工资报价遵循一个转移矩阵为 <span class="math notranslate nohighlight">\(P\)</span> 的马尔可夫链</p></li>
+<li><p>工作每期以概率 <span class="math notranslate nohighlight">\(\alpha\)</span> 终止（分离率）</p></li>
+<li><p>失业工人每期获得补偿 <span class="math notranslate nohighlight">\(c\)</span></p></li>
+<li><p>未来收益以因子 <span class="math notranslate nohighlight">\(\beta \in (0,1)\)</span> 贴现</p></li>
+</ul>
+<section id="id2">
+<h3><span class="section-number">52.1.1. </span>决策问题<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p>当失业并收到工资报价 <span class="math notranslate nohighlight">\(w\)</span> 时，个体在以下两者之间选择：</p>
+<ol class="arabic simple">
+<li><p>接受报价 <span class="math notranslate nohighlight">\(w\)</span>：以工资 <span class="math notranslate nohighlight">\(w\)</span> 就业</p></li>
+<li><p>拒绝报价：保持失业，获得 <span class="math notranslate nohighlight">\(c\)</span>，下一期得到新报价</p></li>
+</ol>
+<p>工资更新如下：</p>
+<ul class="simple">
+<li><p>如果一个失业个体拒绝了报价 <span class="math notranslate nohighlight">\(w\)</span>，那么他们的下一个报价从 <span class="math notranslate nohighlight">\(P(w, \cdot)\)</span> 中抽取</p></li>
+<li><p>如果一个就业个体失去了一份工资为 <span class="math notranslate nohighlight">\(w\)</span> 的工作，那么他们的下一个报价从 <span class="math notranslate nohighlight">\(P(w, \cdot)\)</span> 中抽取</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3><span class="section-number">52.1.2. </span>工资报价过程<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>为了构造工资报价过程，我们从一个 AR1 过程开始。</p>
+<div class="math notranslate nohighlight">
+\[
+    X_{t+1} = \rho X_t + \nu Z_{t+1}
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\{Z_t\}\)</span> 是独立同分布的标准正态分布。</p>
+<p>下面我们将始终选择 <span class="math notranslate nohighlight">\(\rho \in (0, 1)\)</span>。</p>
+<p>这意味着工资过程将是正相关的：当前工资报价越高，我们明天获得高报价的可能性就越大。</p>
+<p>为了从 AR1 过程转换到工资报价过程，我们设 <span class="math notranslate nohighlight">\(W_t = \exp(X_t)\)</span>。</p>
+<p>实际上，在实践中，我们按如下方式近似这个工资过程：</p>
+<ul class="simple">
+<li><p>使用<a class="reference internal" href="finite_markov.html#fm_ex3"><span class="std std-ref">Tauchen 方法</span></a>离散化 AR1 过程，以及</p></li>
+<li><p>取所得工资报价值的指数。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3><span class="section-number">52.1.3. </span>价值函数<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<p>我们令</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(v_u(w)\)</span> 为当前工资报价为 <span class="math notranslate nohighlight">\(w\)</span> 时失业的价值</p></li>
+<li><p><span class="math notranslate nohighlight">\(v_e(w)\)</span> 为以工资 <span class="math notranslate nohighlight">\(w\)</span> 就业的价值</p></li>
+</ul>
+<p>贝尔曼方程是<a class="reference internal" href="mccall_model_with_separation.html"><span class="doc">独立同分布情形</span></a>的显然修改。</p>
+<p>唯一的变化是，下一期的期望是使用以当前工资 <span class="math notranslate nohighlight">\(w\)</span> 为条件的转移矩阵 <span class="math notranslate nohighlight">\(P\)</span> 计算的，而不是从 <span class="math notranslate nohighlight">\(q\)</span> 中独立抽取。</p>
+<p>失业工人的价值函数满足贝尔曼方程</p>
+<div class="math notranslate nohighlight">
+\[
+    v_u(w) = \max
+        \left\{
+            v_e(w), u(c) + \beta \sum_{w'} v_u(w') P(w,w')
+        \right\}
+\]</div>
+<p>就业工人的价值函数满足贝尔曼方程</p>
+<div class="math notranslate nohighlight">
+\[
+    v_e(w) = 
+    u(w) + \beta
+    \left[
+        \alpha \sum_{w'} v_u(w') P(w,w') + (1-\alpha) v_e(w)
+    \right]
+\]</div>
+<p>作为一种记号约定，给定一个将值赋给工资的函数 <span class="math notranslate nohighlight">\(h\)</span>，通常设</p>
+<div class="math notranslate nohighlight">
+\[
+    (Ph)(w) = \sum_{w'} h(w') P(w,w')
+\]</div>
+<p>（为了理解这个表达式，把 <span class="math notranslate nohighlight">\(P\)</span> 想象成一个矩阵，<span class="math notranslate nohighlight">\(h\)</span> 想象成一个列向量，<span class="math notranslate nohighlight">\(w\)</span> 想象成一个行索引。）</p>
+<p>有了这个记号，贝尔曼方程变为</p>
+<div class="math notranslate nohighlight">
+\[
+    v_u(w) = \max\{v_e(w), u(c) + \beta (P v_u)(w)\}
+\]</div>
+<p>以及</p>
+<div class="math notranslate nohighlight">
+\[
+    v_e(w) = 
+    u(w) + \beta
+    \left[
+        \alpha (P v_u)(w) + (1-\alpha) v_e(w)
+    \right]
+\]</div>
+</section>
+<section id="id5">
+<h3><span class="section-number">52.1.4. </span>最优策略<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>一旦我们有了这些贝尔曼方程的解 <span class="math notranslate nohighlight">\(v_e\)</span> 和 <span class="math notranslate nohighlight">\(v_u\)</span>，我们就可以计算最优策略：如果满足下式，则以当前工资报价 <span class="math notranslate nohighlight">\(w\)</span> 接受</p>
+<div class="math notranslate nohighlight">
+\[
+    v_e(w) \geq u(c) + \beta (P v_u)(w)
+\]</div>
+<p>最优策略被证明是一个保留工资策略：接受所有高于某个阈值的工资。</p>
+</section>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink"><span class="section-number">52.2. </span>代码</a><a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>现在让我们实现这个模型。</p>
+<section id="id7">
+<h3><span class="section-number">52.2.1. </span>设置<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p>默认效用函数是一个 CRRA 效用函数</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">u</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">γ</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">γ</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">γ</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们设置一个 <code class="docutils literal notranslate"><span class="pre">Model</span></code> 类来存储求解模型所需的信息。</p>
+<p>我们包含 <code class="docutils literal notranslate"><span class="pre">P_cumsum</span></code>，即转移矩阵的按行累积和，以优化模拟——细节将在下面解释。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">w_vals</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">P</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">P_cumsum</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>  
+    <span class="n">β</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">c</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">α</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">γ</span><span class="p">:</span> <span class="nb">float</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>下一个函数保存默认值并创建一个 <code class="docutils literal notranslate"><span class="pre">Model</span></code> 实例：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_js_with_sep_model</span><span class="p">(</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>          <span class="c1"># 工资网格大小</span>
+        <span class="n">ρ</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>        <span class="c1"># 工资持续性</span>
+        <span class="n">ν</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>        <span class="c1"># 工资波动率</span>
+        <span class="n">β</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.96</span><span class="p">,</span>       <span class="c1"># 贴现因子</span>
+        <span class="n">α</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>       <span class="c1"># 分离率</span>
+        <span class="n">c</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>        <span class="c1"># 失业补偿</span>
+        <span class="n">γ</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span>         <span class="c1"># 效用参数</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    创建一个带分离的工作搜寻模型实例。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mc</span> <span class="o">=</span> <span class="n">tauchen</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ρ</span><span class="p">,</span> <span class="n">ν</span><span class="p">)</span>
+    <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mc</span><span class="o">.</span><span class="n">state_values</span><span class="p">)),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mc</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
+    <span class="n">P_cumsum</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Model</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P_cumsum</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id8">
+<h3><span class="section-number">52.2.2. </span>求解：第一遍<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>让我们组装一个（不太高效的）例程来计算保留工资。</p>
+<p>（我们将在下面仔细考虑效率问题。）</p>
+<p>它的工作方式是从 <span class="math notranslate nohighlight">\(v_e\)</span> 和 <span class="math notranslate nohighlight">\(v_u\)</span> 的猜测开始，然后迭代至收敛。</p>
+<p>以下是分别更新 <span class="math notranslate nohighlight">\(v_u\)</span> 和 <span class="math notranslate nohighlight">\(v_e\)</span> 的贝尔曼算子。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">T_u</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">v_u</span><span class="p">,</span> <span class="n">v_e</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    应用失业贝尔曼更新规则并返回 v_u 的新猜测。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P_cumsum</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">γ</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">u</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span> <span class="o">+</span> <span class="n">β</span> <span class="o">*</span> <span class="n">P</span> <span class="o">@</span> <span class="n">v_u</span> 
+    <span class="n">v_u_new</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">v_e</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v_u_new</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">T_e</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">v_u</span><span class="p">,</span> <span class="n">v_e</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    应用就业贝尔曼更新规则并返回 v_e 的新猜测。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P_cumsum</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">γ</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="n">v_e_new</span> <span class="o">=</span> <span class="n">u</span><span class="p">(</span><span class="n">w_vals</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span> <span class="o">+</span> <span class="n">β</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">α</span><span class="p">)</span> <span class="o">*</span> <span class="n">v_e</span> <span class="o">+</span> <span class="n">α</span> <span class="o">*</span> <span class="n">P</span> <span class="o">@</span> <span class="n">v_u</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v_e_new</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>这里是一个迭代至收敛然后计算保留工资的例程。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">solve_model_first_pass</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">,</span>           <span class="c1"># 包含默认参数的实例</span>
+        <span class="n">v_u_init</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>  <span class="c1"># v_u 的初始条件</span>
+        <span class="n">v_e_init</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>  <span class="c1"># v_e 的初始条件</span>
+        <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>        <span class="c1"># 误差容限</span>
+        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1_000</span><span class="p">,</span>    <span class="c1"># 循环的最大迭代次数</span>
+    <span class="p">):</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P_cumsum</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">γ</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">tol</span> <span class="o">+</span> <span class="mi">1</span> 
+    <span class="n">v_u</span> <span class="o">=</span> <span class="n">v_u_init</span>
+    <span class="n">v_e</span> <span class="o">=</span> <span class="n">v_e_init</span>
+    
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">max_iter</span> <span class="ow">and</span> <span class="n">error</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">:</span>
+        <span class="n">v_u_next</span> <span class="o">=</span> <span class="n">T_u</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">v_u</span><span class="p">,</span> <span class="n">v_e</span><span class="p">)</span>
+        <span class="n">v_e_next</span> <span class="o">=</span> <span class="n">T_e</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">v_u</span><span class="p">,</span> <span class="n">v_e</span><span class="p">)</span>
+        <span class="n">error_u</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v_u_next</span> <span class="o">-</span> <span class="n">v_u</span><span class="p">))</span>
+        <span class="n">error_e</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v_e_next</span> <span class="o">-</span> <span class="n">v_e</span><span class="p">))</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">error_u</span><span class="p">,</span> <span class="n">error_e</span><span class="p">)</span>
+        <span class="n">v_u</span> <span class="o">=</span> <span class="n">v_u_next</span>
+        <span class="n">v_e</span> <span class="o">=</span> <span class="n">v_e_next</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># 计算接受和拒绝值</span>
+    <span class="n">continuation_values</span> <span class="o">=</span> <span class="n">u</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span> <span class="o">+</span> <span class="n">β</span> <span class="o">*</span> <span class="n">P</span> <span class="o">@</span> <span class="n">v_u</span>
+
+    <span class="c1"># 找到接受变为最优的位置</span>
+    <span class="n">accept_indices</span> <span class="o">=</span> <span class="n">v_e</span> <span class="o">&gt;=</span> <span class="n">continuation_values</span>
+    <span class="n">first_accept_idx</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">accept_indices</span><span class="p">)</span>  <span class="c1"># 第一个 True 的索引</span>
+
+    <span class="c1"># 如果没有接受（全为 False），返回无穷大</span>
+    <span class="c1"># 否则返回第一个接受索引处的工资</span>
+    <span class="n">w_bar</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="n">jnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">accept_indices</span><span class="p">),</span> <span class="n">w_vals</span><span class="p">[</span><span class="n">first_accept_idx</span><span class="p">],</span> <span class="n">jnp</span><span class="o">.</span><span class="n">inf</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">v_u</span><span class="p">,</span> <span class="n">v_e</span><span class="p">,</span> <span class="n">w_bar</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h3><span class="section-number">52.2.3. </span>实地测试<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p>让我们求解这个模型：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">create_js_with_sep_model</span><span class="p">()</span>
+<span class="n">n</span><span class="p">,</span> <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P_cumsum</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">γ</span> <span class="o">=</span> <span class="n">model</span>
+<span class="n">v_u_init</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">v_e_init</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">v_u</span><span class="p">,</span> <span class="n">v_e</span><span class="p">,</span> <span class="n">w_bar_first</span> <span class="o">=</span> <span class="n">solve_model_first_pass</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">v_u_init</span><span class="p">,</span> <span class="n">v_e_init</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>接下来我们计算延续值。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h</span> <span class="o">=</span> <span class="n">u</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span> <span class="o">+</span> <span class="n">β</span> <span class="o">*</span> <span class="n">P</span> <span class="o">@</span> <span class="n">v_u</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们绘制结果。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">5.2</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_vals</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="s1">&#39;g-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;延续值函数 $h$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_vals</span><span class="p">,</span> <span class="n">v_e</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;就业价值函数 $v_e$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$w$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/ac50599a1763618619d31f2e7eebabf0eb032494470ad4bf269d26d41656c018.png" src="_images/ac50599a1763618619d31f2e7eebabf0eb032494470ad4bf269d26d41656c018.png" />
+</div>
+</div>
+<p>保留工资位于 <span class="math notranslate nohighlight">\(v_e\)</span> 与延续值函数（即拒绝的价值）的交点处。</p>
+</section>
+</section>
+<section id="id10">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink"><span class="section-number">52.3. </span>提高效率</a><a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>上述求解方法工作得很好，但我们可以做得更好。</p>
+<p>首先，我们使用就业工人的贝尔曼方程用 <span class="math notranslate nohighlight">\(Pv_u\)</span> 来表示 <span class="math notranslate nohighlight">\(v_e\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+    v_e(w) = 
+    \frac{1}{1-\beta(1-\alpha)} \cdot (u(w) + \alpha\beta(Pv_u)(w))
+\]</div>
+<p>接下来我们代入失业个体的贝尔曼方程得到</p>
+<div class="math notranslate nohighlight">
+\[
+    v_u(w) = 
+    \max
+    \left\{
+        \frac{1}{1-\beta(1-\alpha)} \cdot (u(w) + \alpha\beta(Pv_u)(w)),
+        u(c) + \beta(Pv_u)(w)
+    \right\}
+\]</div>
+<p>然后我们使用价值函数迭代来求解 <span class="math notranslate nohighlight">\(v_u\)</span>。</p>
+<p>有了 <span class="math notranslate nohighlight">\(v_u\)</span>，我们可以通过上面的方程恢复 <span class="math notranslate nohighlight">\(v_e\)</span>，然后计算保留工资。</p>
+<p>以下是失业工人价值函数的新贝尔曼算子：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">T</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    v_u 的贝尔曼算子。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P_cumsum</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">γ</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">α</span><span class="p">))</span>
+    <span class="n">v_e</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span><span class="p">(</span><span class="n">w_vals</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span> <span class="o">+</span> <span class="n">α</span> <span class="o">*</span> <span class="n">β</span> <span class="o">*</span> <span class="n">P</span> <span class="o">@</span> <span class="n">v</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">u</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span> <span class="o">+</span> <span class="n">β</span> <span class="o">*</span> <span class="n">P</span> <span class="o">@</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">v_e</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>这里是一个价值函数迭代的例程。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vfi</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">,</span>
+        <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>   <span class="c1"># 误差容限</span>
+        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100_000</span><span class="p">,</span>   <span class="c1"># 最大迭代界限</span>
+    <span class="p">):</span>
+
+    <span class="n">v_init</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w_vals</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">cond</span><span class="p">(</span><span class="n">loop_state</span><span class="p">):</span>
+        <span class="n">v</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">loop_state</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">error</span> <span class="o">&gt;</span> <span class="n">tolerance</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">max_iter</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">loop_state</span><span class="p">):</span>
+        <span class="n">v</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">loop_state</span>
+        <span class="n">v_new</span> <span class="o">=</span> <span class="n">T</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v_new</span> <span class="o">-</span> <span class="n">v</span><span class="p">))</span>
+        <span class="n">new_loop_state</span> <span class="o">=</span> <span class="n">v_new</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">new_loop_state</span>
+
+    <span class="n">initial_state</span> <span class="o">=</span> <span class="p">(</span><span class="n">v_init</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">final_loop_state</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">while_loop</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="n">update</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">)</span>
+    <span class="n">v_final</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">final_loop_state</span>
+
+    <span class="k">return</span> <span class="n">v_final</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>这里是一个从价值函数计算保留工资的例程。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_reservation_wage</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    从失业个体的价值函数 v := v_u 计算保留工资。</span>
+
+<span class="sd">    保留工资是使得接受 (v_e(w)) 至少和拒绝 (u(c) + β(Pv_u)(w))</span>
+<span class="sd">    一样好的最低工资 w。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P_cumsum</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">γ</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="c1"># 计算接受和拒绝值</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">α</span><span class="p">))</span>
+    <span class="n">v_e</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span><span class="p">(</span><span class="n">w_vals</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span> <span class="o">+</span> <span class="n">α</span> <span class="o">*</span> <span class="n">β</span> <span class="o">*</span> <span class="n">P</span> <span class="o">@</span> <span class="n">v</span><span class="p">)</span>
+    <span class="n">continuation_values</span> <span class="o">=</span> <span class="n">u</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span> <span class="o">+</span> <span class="n">β</span> <span class="o">*</span> <span class="n">P</span> <span class="o">@</span> <span class="n">v</span>
+
+    <span class="c1"># 找到接受变为最优的位置</span>
+    <span class="n">accept_indices</span> <span class="o">=</span> <span class="n">v_e</span> <span class="o">&gt;=</span> <span class="n">continuation_values</span>
+    <span class="n">first_accept_idx</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">accept_indices</span><span class="p">)</span>  <span class="c1"># 第一个 True 的索引</span>
+
+    <span class="c1"># 如果没有接受（全为 False），返回无穷大</span>
+    <span class="c1"># 否则返回第一个接受索引处的工资</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">accept_indices</span><span class="p">),</span> <span class="n">w_vals</span><span class="p">[</span><span class="n">first_accept_idx</span><span class="p">],</span> <span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们使用新方法求解模型：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">create_js_with_sep_model</span><span class="p">()</span>
+<span class="n">n</span><span class="p">,</span> <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P_cumsum</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">γ</span> <span class="o">=</span> <span class="n">model</span>
+<span class="n">v_u</span> <span class="o">=</span> <span class="n">vfi</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">w_bar</span> <span class="o">=</span> <span class="n">get_reservation_wage</span><span class="p">(</span><span class="n">v_u</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们验证两种方法产生相同的保留工资：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reservation wage (first method):  </span><span class="si">{</span><span class="n">w_bar_first</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reservation wage (second method): </span><span class="si">{</span><span class="n">w_bar</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Difference: </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">w_bar</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">w_bar_first</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reservation wage (first method):  1.365155
+Reservation wage (second method): 1.365155
+Difference: 0.00e+00
+</pre></div>
+</div>
+</div>
+</div>
+<p>接下来我们计算一些用于绘图的相关量。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">β</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">α</span><span class="p">))</span>
+<span class="n">v_e</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span><span class="p">(</span><span class="n">w_vals</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span> <span class="o">+</span> <span class="n">α</span> <span class="o">*</span> <span class="n">β</span> <span class="o">*</span> <span class="n">P</span> <span class="o">@</span> <span class="n">v_u</span><span class="p">)</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">u</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span> <span class="o">+</span> <span class="n">β</span> <span class="o">*</span> <span class="n">P</span> <span class="o">@</span> <span class="n">v_u</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们绘制结果。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">5.2</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_vals</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="s1">&#39;g-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;延续值函数 $h$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_vals</span><span class="p">,</span> <span class="n">v_e</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;就业价值函数 $v_e$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$w$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/f8912693cf838d4d65c7c05bfd82c07c77eac5b9d8567eadaed44b20976553fb.png" src="_images/f8912693cf838d4d65c7c05bfd82c07c77eac5b9d8567eadaed44b20976553fb.png" />
+</div>
+</div>
+<p>结果与之前相同，但我们只在一个数组上迭代——而且我们的 JAX 代码也更高效。</p>
+</section>
+<section id="id11">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink"><span class="section-number">52.4. </span>敏感性分析</a><a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>让我们检查保留工资如何随分离率变化。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">α_vals</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="n">w_bar_vec</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">α</span> <span class="ow">in</span> <span class="n">α_vals</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">create_js_with_sep_model</span><span class="p">(</span><span class="n">α</span><span class="o">=</span><span class="n">α</span><span class="p">)</span>
+    <span class="n">v_u</span> <span class="o">=</span> <span class="n">vfi</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">w_bar</span> <span class="o">=</span> <span class="n">get_reservation_wage</span><span class="p">(</span><span class="n">v_u</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+    <span class="n">w_bar_vec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w_bar</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">5.2</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">α_vals</span><span class="p">,</span> <span class="n">w_bar_vec</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;保留工资&quot;</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\alpha$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$w$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/d7c903320b33577c543cb16b3ebdbd15a6b2ae6da88c02c4ddf7ae4d040ce430.png" src="_images/d7c903320b33577c543cb16b3ebdbd15a6b2ae6da88c02c4ddf7ae4d040ce430.png" />
+</div>
+</div>
+<p>你能为你在这幅图中看到的结果提供一个直观的经济学故事吗？</p>
+</section>
+<section id="id12">
+<h2><a class="toc-backref" href="#id21" role="doc-backlink"><span class="section-number">52.5. </span>就业模拟</a><a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<p>现在让我们模拟单个个体在最优策略下的就业动态。</p>
+<p>请注意，当模拟工资报价的马尔可夫链时，我们需要多次从 <span class="math notranslate nohighlight">\(P\)</span> 的每一行的分布中抽取。</p>
+<p>为此，我们使用逆变换法：抽取一个均匀随机变量并找到它落在累积分布中的位置。</p>
+<p>这通过在预先计算的累积和 <code class="docutils literal notranslate"><span class="pre">P_cumsum</span></code> 上使用 <code class="docutils literal notranslate"><span class="pre">jnp.searchsorted</span></code> 来实现，这比每次重新计算累积和要快得多。</p>
+<p>函数 <code class="docutils literal notranslate"><span class="pre">update_agent</span></code> 将个体的状态推进一期。</p>
+<p>个体的状态是一个对 <span class="math notranslate nohighlight">\((S_t, W_t)\)</span>，其中 <span class="math notranslate nohighlight">\(S_t\)</span> 是就业状态（0 表示失业，1 表示就业），<span class="math notranslate nohighlight">\(W_t\)</span> 是</p>
+<ul class="simple">
+<li><p>他们当前的工资报价（如果失业），或</p></li>
+<li><p>他们当前的工资（如果就业）。</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">update_agent</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">wage_idx</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">w_bar</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    更新个体的就业状态和当前工资。</span>
+
+<span class="sd">    参数：</span>
+<span class="sd">    - key: JAX 随机密钥</span>
+<span class="sd">    - status: 当前就业状态（0 或 1）</span>
+<span class="sd">    - wage_idx: 当前工资，记录为数组索引</span>
+<span class="sd">    - model: Model 实例</span>
+<span class="sd">    - w_bar: 保留工资</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P_cumsum</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">γ</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="n">key1</span><span class="p">,</span> <span class="n">key2</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="c1"># 使用预先计算的累积和通过逆变换法</span>
+    <span class="c1"># 进行高效抽样。</span>
+    <span class="n">new_wage_idx</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
+        <span class="n">P_cumsum</span><span class="p">[</span><span class="n">wage_idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">key1</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">separation_occurs</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">key2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">α</span>
+    <span class="c1"># 如果当前工资达到或超过保留工资则接受</span>
+    <span class="n">accepts</span> <span class="o">=</span> <span class="n">w_vals</span><span class="p">[</span><span class="n">wage_idx</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">w_bar</span>
+
+    <span class="c1"># 如果就业：无分离则 status = 1，有分离则 status = 0</span>
+    <span class="c1"># 如果失业：接受则 status = 1，拒绝则 status = 0</span>
+    <span class="n">next_status</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="n">status</span><span class="p">,</span>
+        <span class="mi">1</span> <span class="o">-</span> <span class="n">separation_occurs</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>  <span class="c1"># 就业路径</span>
+        <span class="n">accepts</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>                 <span class="c1"># 失业路径</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 如果就业：无分离则工资 = 当前，有分离则工资 = 新的</span>
+    <span class="c1"># 如果失业：接受则工资 = 当前，拒绝则工资 = 新的</span>
+    <span class="n">next_wage</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="n">status</span><span class="p">,</span>
+        <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">separation_occurs</span><span class="p">,</span> <span class="n">new_wage_idx</span><span class="p">,</span> <span class="n">wage_idx</span><span class="p">),</span>  <span class="c1"># 就业路径</span>
+        <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">accepts</span><span class="p">,</span> <span class="n">wage_idx</span><span class="p">,</span> <span class="n">new_wage_idx</span><span class="p">)</span>             <span class="c1"># 失业路径</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">next_status</span><span class="p">,</span> <span class="n">next_wage</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>这里是一个模拟单个个体就业路径的函数。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">simulate_employment_path</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">,</span>     <span class="c1"># 模型细节</span>
+        <span class="n">w_bar</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>    <span class="c1"># 保留工资</span>
+        <span class="n">T</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2_000</span><span class="p">,</span>   <span class="c1"># 模拟长度</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span>    <span class="c1"># 为模拟设置种子</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    从失业开始模拟 T 期的就业路径。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="c1"># 解包模型</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">w_vals</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P_cumsum</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">γ</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="c1"># 初始条件</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">wage_idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">wage_path</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">status_path</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">wage_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w_vals</span><span class="p">[</span><span class="n">wage_idx</span><span class="p">])</span>
+        <span class="n">status_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+
+        <span class="n">key</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">status</span><span class="p">,</span> <span class="n">wage_idx</span> <span class="o">=</span> <span class="n">update_agent</span><span class="p">(</span>
+            <span class="n">subkey</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">wage_idx</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">w_bar</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wage_path</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">status_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们创建一个就业模拟的综合图：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">create_js_with_sep_model</span><span class="p">()</span>
+
+<span class="c1"># 计算用于绘图的保留工资</span>
+<span class="n">v_u</span> <span class="o">=</span> <span class="n">vfi</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">w_bar</span> <span class="o">=</span> <span class="n">get_reservation_wage</span><span class="p">(</span><span class="n">v_u</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+<span class="n">wage_path</span><span class="p">,</span> <span class="n">employment_status</span> <span class="o">=</span> <span class="n">simulate_employment_path</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">w_bar</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">,</span> <span class="n">ax3</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="c1"># 绘制就业状态</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">employment_status</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+    <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">employment_status</span><span class="p">)),</span> <span class="n">employment_status</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span>
+<span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;就业状态&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;就业路径（0=失业，1=就业）&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>
+
+<span class="c1"># 绘制带就业状态着色的工资路径</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wage_path</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">w_bar</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;保留工资：</span><span class="si">{</span><span class="n">w_bar</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;时间&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;工资&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;工资路径（实际和报价）&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="c1"># 绘制失业时间的累积比例</span>
+<span class="n">unemployed_indicator</span> <span class="o">=</span> <span class="p">(</span><span class="n">employment_status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">cumulative_unemployment</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">jnp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">unemployed_indicator</span><span class="p">)</span> <span class="o">/</span>
+    <span class="n">jnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">employment_status</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cumulative_unemployment</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">unemployed_indicator</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;最终比率：</span><span class="si">{</span><span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">unemployed_indicator</span><span class="p">)</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;时间&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;累积失业率&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;失业时间的累积比例&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<img alt="_images/f2db4176489189e6ae6569c71d2ca10043b79589a3b5863fd246dfc0e6e4e035.png" src="_images/f2db4176489189e6ae6569c71d2ca10043b79589a3b5863fd246dfc0e6e4e035.png" />
+</div>
+</div>
+<p>该模拟有助于可视化与此模型相关的结果。</p>
+<p>个体遵循一个保留工资策略。</p>
+<p>个体经常失去工作，然后立即以不同的工资接受另一份工作。</p>
+<p>这是因为她使用上一份工作的工资 <span class="math notranslate nohighlight">\(w\)</span> 通过 <span class="math notranslate nohighlight">\(P(w, \cdot)\)</span> 抽取一个新的工资报价，而正相关意味着高的当前 <span class="math notranslate nohighlight">\(w\)</span> 往往导致高的新抽取值。</p>
+</section>
+<section id="id13">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink"><span class="section-number">52.6. </span>遍历性</a><a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<p>下面我们检查横截面失业。</p>
+<p>特别地，我们将查看横截面模拟中的失业率，并将其与时间平均失业率进行比较，后者是个体在很长时间序列中处于失业状态的时间比例。</p>
+<p>我们将看到这两个值近似相等——事实上在极限情形下它们完全相等。</p>
+<p>原因是过程 <span class="math notranslate nohighlight">\((S_t, W_t)\)</span>，其中</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(S_t\)</span> 是就业状态，以及</p></li>
+<li><p><span class="math notranslate nohighlight">\(W_t\)</span> 是工资</p></li>
+</ul>
+<p>是马尔可夫的，因为下一对仅取决于当前对和独立同分布的随机性，并且是遍历的。</p>
+<p>遍历性作为不可约性的结果而成立。</p>
+<p>事实上，从任何（状态，工资）对，一个个体最终都可以到达任何其他（状态，工资）对。</p>
+<p>这成立是因为：</p>
+<ul class="simple">
+<li><p>失业个体可以通过接受报价而就业</p></li>
+<li><p>就业个体可以通过分离而失业（概率 <span class="math notranslate nohighlight">\(\alpha\)</span>）</p></li>
+<li><p>工资过程可以在所有工资状态之间转移（因为 <span class="math notranslate nohighlight">\(P\)</span> 本身是不可约的）</p></li>
+</ul>
+<p>这些性质确保了链是遍历的，并在状态 <span class="math notranslate nohighlight">\((s, w)\)</span> 上有唯一的平稳分布 <span class="math notranslate nohighlight">\(\pi\)</span>。</p>
+<p>对于一个遍历马尔可夫链，遍历定理保证了时间平均 = 横截面平均。</p>
+<p>特别地，单个个体处于失业状态的时间比例（跨所有工资状态）收敛到横截面失业率：</p>
+<div class="math notranslate nohighlight">
+\[
+    \lim_{T \to \infty} \frac{1}{T} \sum_{t=1}^{T} \mathbb{1}\{S_t = \text{unemployed}\} = \sum_{w=1}^{n} \pi(\text{unemployed}, w)
+\]</div>
+<p>无论初始条件如何，这都成立——前提是我们对横截面分布进行预热（从给定的初始横截面向前推进，以消除该初始条件的影响）。</p>
+<p>因此，我们可以通过以下方式研究稳态失业：</p>
+<ul class="simple">
+<li><p>长时间跟踪一个个体（时间平均），或</p></li>
+<li><p>在单个时间点观察许多个体（横截面平均）</p></li>
+</ul>
+<p>对于我们的目的，第二种方法通常更好，因为它更容易并行化。</p>
+</section>
+<section id="id14">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink"><span class="section-number">52.7. </span>横截面分析</a><a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<p>现在让我们同时模拟许多个体来检查横截面失业率。</p>
+<p>为了高效地做到这一点，我们需要一种与上面定义的 <code class="docutils literal notranslate"><span class="pre">simulate_employment_path</span></code> 不同的方法。</p>
+<p>关键区别在于：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">simulate_employment_path</span></code> 记录单个个体的整个历史（所有 T 期），这对可视化有用但占用内存</p></li>
+<li><p>下面的新函数 <code class="docutils literal notranslate"><span class="pre">sim_agent</span></code> 只跟踪并返回最终状态，这就是我们进行横截面统计所需的全部内容</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sim_agent</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">lax.fori_loop</span></code> 而不是 Python 循环，使其可 JIT 编译并适用于跨许多个体的向量化</p></li>
+</ul>
+<p>我们首先定义一个将单个个体向前模拟 T 个时间步的函数：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sim_agent</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">initial_status</span><span class="p">,</span> <span class="n">initial_wage_idx</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">w_bar</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    使用 lax.fori_loop 将单个个体向前模拟 T 个时间步。</span>
+
+<span class="sd">    使用 fold_in 在每个时间步生成一个新的密钥。</span>
+
+<span class="sd">    参数：</span>
+<span class="sd">    - key: 此个体的 JAX 随机密钥</span>
+<span class="sd">    - initial_status: 初始就业状态（0 或 1）</span>
+<span class="sd">    - initial_wage_idx: 初始工资索引</span>
+<span class="sd">    - model: Model 实例</span>
+<span class="sd">    - w_bar: 保留工资</span>
+<span class="sd">    - T: 要模拟的时间期数</span>
+
+<span class="sd">    返回：</span>
+<span class="sd">    - final_status: T 期后的就业状态</span>
+<span class="sd">    - final_wage_idx: T 期后的工资索引</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">loop_state</span><span class="p">):</span>
+        <span class="n">status</span><span class="p">,</span> <span class="n">wage_idx</span> <span class="o">=</span> <span class="n">loop_state</span>
+        <span class="n">step_key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">fold_in</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="n">status</span><span class="p">,</span> <span class="n">wage_idx</span> <span class="o">=</span> <span class="n">update_agent</span><span class="p">(</span><span class="n">step_key</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">wage_idx</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">w_bar</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">wage_idx</span>
+
+    <span class="n">initial_loop_state</span> <span class="o">=</span> <span class="p">(</span><span class="n">initial_status</span><span class="p">,</span> <span class="n">initial_wage_idx</span><span class="p">)</span>
+    <span class="n">final_loop_state</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">fori_loop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">update</span><span class="p">,</span> <span class="n">initial_loop_state</span><span class="p">)</span>
+    <span class="n">final_status</span><span class="p">,</span> <span class="n">final_wage_idx</span> <span class="o">=</span> <span class="n">final_loop_state</span>
+    <span class="k">return</span> <span class="n">final_status</span><span class="p">,</span> <span class="n">final_wage_idx</span>
+
+
+<span class="c1"># 创建 sim_agent 的向量化版本以并行处理多个个体</span>
+<span class="n">sim_agents_vmap</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">sim_agent</span><span class="p">,</span> <span class="n">in_axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_cross_section</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">,</span>               <span class="c1"># 带参数的 Model 实例</span>
+        <span class="n">n_agents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100_000</span><span class="p">,</span>    <span class="c1"># 要模拟的个体数</span>
+        <span class="n">T</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>               <span class="c1"># 预热长度</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span>              <span class="c1"># 用于可重复性</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    模拟个体横截面并返回失业率。</span>
+
+<span class="sd">    这种方法：</span>
+<span class="sd">    1. 生成 n_agents 个随机密钥</span>
+<span class="sd">    2. 为每个个体调用 sim_agent（通过 vmap 向量化）</span>
+<span class="sd">    3. 收集最终状态以产生横截面</span>
+
+<span class="sd">    返回横截面失业率。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="c1"># 求解最优保留工资</span>
+    <span class="n">v_u</span> <span class="o">=</span> <span class="n">vfi</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">w_bar</span> <span class="o">=</span> <span class="n">get_reservation_wage</span><span class="p">(</span><span class="n">v_u</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+    <span class="c1"># 初始化数组</span>
+    <span class="n">initial_wage_indices</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_agents</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="n">initial_status_vec</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_agents</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+    <span class="c1"># 生成 n_agents 个随机密钥</span>
+    <span class="n">agent_keys</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">n_agents</span><span class="p">)</span>
+
+    <span class="c1"># 将每个个体向前模拟 T 步（向量化）</span>
+    <span class="n">final_status</span><span class="p">,</span> <span class="n">final_wage_idx</span> <span class="o">=</span> <span class="n">sim_agents_vmap</span><span class="p">(</span>
+        <span class="n">agent_keys</span><span class="p">,</span> <span class="n">initial_status_vec</span><span class="p">,</span> <span class="n">initial_wage_indices</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">w_bar</span><span class="p">,</span> <span class="n">T</span>
+    <span class="p">)</span>
+
+    <span class="n">unemployment_rate</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">final_status</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">unemployment_rate</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>此函数生成一个显示许多个体间就业状态分布的直方图：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_cross_sectional_unemployment</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">,</span>
+        <span class="n">t_snapshot</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>    <span class="c1"># 横截面快照的时间</span>
+        <span class="n">n_agents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20_000</span>    <span class="c1"># 要模拟的个体数</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    生成特定时间的横截面失业直方图。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 直接获取最终就业状态</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">v_u</span> <span class="o">=</span> <span class="n">vfi</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">w_bar</span> <span class="o">=</span> <span class="n">get_reservation_wage</span><span class="p">(</span><span class="n">v_u</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+    <span class="c1"># 初始化数组</span>
+    <span class="n">initial_wage_indices</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_agents</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="n">initial_status_vec</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_agents</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+    <span class="c1"># 生成 n_agents 个随机密钥</span>
+    <span class="n">agent_keys</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">n_agents</span><span class="p">)</span>
+
+    <span class="c1"># 将每个个体向前模拟 T 步（向量化）</span>
+    <span class="n">final_status</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sim_agents_vmap</span><span class="p">(</span>
+        <span class="n">agent_keys</span><span class="p">,</span> <span class="n">initial_status_vec</span><span class="p">,</span> <span class="n">initial_wage_indices</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">w_bar</span><span class="p">,</span> <span class="n">t_snapshot</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 计算失业率</span>
+    <span class="n">unemployment_rate</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">final_status</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+    <span class="c1"># 将直方图绘制为密度（条形之和为 1）</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">final_status</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">final_status</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">final_status</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+            <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;就业状态（0=失业，1=就业）&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;密度&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;t=</span><span class="si">{</span><span class="n">t_snapshot</span><span class="si">}</span><span class="s1"> 时的横截面分布，&#39;</span> <span class="o">+</span>
+                 <span class="sa">f</span><span class="s1">&#39;失业率 = </span><span class="si">{</span><span class="n">unemployment_rate</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在让我们比较时间平均失业率（来自单个个体的长时间模拟）与横截面失业率（来自单个时间点的许多个体）。</p>
+<p>我们在上面声称，由于遍历性，这些数字在大样本中将近似相等。</p>
+<p>让我们看看这是否属实。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">create_js_with_sep_model</span><span class="p">()</span>
+<span class="n">cross_sectional_unemp</span> <span class="o">=</span> <span class="n">simulate_cross_section</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">n_agents</span><span class="o">=</span><span class="mi">20_000</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">200</span>
+<span class="p">)</span>
+
+<span class="n">time_avg_unemp</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">unemployed_indicator</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time-average unemployment rate (single agent): &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_avg_unemp</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cross-sectional unemployment rate (at t=200): &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cross_sectional_unemp</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Difference: </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">time_avg_unemp</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cross_sectional_unemp</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Time-average unemployment rate (single agent): 0.1640
+Cross-sectional unemployment rate (at t=200): 0.1696
+Difference: 0.0056
+</pre></div>
+</div>
+</div>
+</div>
+<p>确实，它们非常接近。</p>
+<p>现在让我们可视化横截面分布：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cross_sectional_unemployment</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/22e5581c05ed84508db0cc3bbbcbec1c867c28d5bd4343987d5c91038b3664e7.png" src="_images/22e5581c05ed84508db0cc3bbbcbec1c867c28d5bd4343987d5c91038b3664e7.png" />
+</div>
+</div>
+</section>
+<section id="c-0-5">
+<h2><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">52.8. </span>更低的失业补偿（c=0.5）</a><a class="headerlink" href="#c-0-5" title="Link to this heading">#</a></h2>
+<p>当失业补偿更低时，横截面失业率会发生什么变化？</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_low_c</span> <span class="o">=</span> <span class="n">create_js_with_sep_model</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plot_cross_sectional_unemployment</span><span class="p">(</span><span class="n">model_low_c</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/444e544fc26e5fb38375cb6543854db3ea5734878fc1f1203258b2770e7269b2.png" src="_images/444e544fc26e5fb38375cb6543854db3ea5734878fc1f1203258b2770e7269b2.png" />
+</div>
+</div>
+</section>
+<section id="id15">
+<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">52.9. </span>练习</a><a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="mmwsm_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 52.1 </span></p>
+<section id="exercise-content">
+<p>创建一幅图，更仔细地研究稳态横截面失业率如何随失业补偿变化。</p>
+<p>尝试一系列失业补偿 <code class="docutils literal notranslate"><span class="pre">c</span></code> 的值，例如 <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">0.2,</span> <span class="pre">0.4,</span> <span class="pre">0.6,</span> <span class="pre">0.8,</span> <span class="pre">1.0</span></code>。
+对于每个值，计算稳态横截面失业率并将其对 <code class="docutils literal notranslate"><span class="pre">c</span></code> 作图。</p>
+<p>你观察到失业补偿与失业率之间存在什么关系？</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="mccall_model_with_sep_markov-solution-1">
+
+<p class="admonition-title">解答<a class="reference internal" href="#mmwsm_ex1"> 练习 52.1</a></p>
+<section id="solution-content">
+<p>我们为不同的失业补偿值计算稳态失业率：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c_values</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span>
+<span class="n">rates</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">c_values</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">create_js_with_sep_model</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">unemployment_rate</span> <span class="o">=</span> <span class="n">simulate_cross_section</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">rates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unemployment_rate</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">c_values</span><span class="p">,</span> <span class="n">rates</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;稳态失业率&#39;</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;失业补偿 (c)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;失业率&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/78bd544eba7c7e284a04d2e0b47591aca74cbd9fd23f7e187e2780e2dbd7a421.png" src="_images/78bd544eba7c7e284a04d2e0b47591aca74cbd9fd23f7e187e2780e2dbd7a421.png" />
+</div>
+</div>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Tools and Techniques
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Elementary Statistics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bayes Law
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Statistics and Information
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Linear Programming
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   36. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   37. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Dynamics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   38. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   39. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   40. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   43. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   44. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   45. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Search
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   50. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   53. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   55. 工作搜寻 VI：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   56. 工作搜寻 VII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   57. 工作搜寻 VIII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Reinforcement Learning
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   72. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   73. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   74. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   75. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   83. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   107. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   108. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   109. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   110. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Asset Pricing and Finance
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   119. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Data and Empirics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   128. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   129. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Auctions
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   133. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   134. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   135. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   136. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   137. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/mccall_model_with_sep_markov.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/mccall_model_with_sep_markov.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/mccall_model_with_sep_markov.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/mccall_model_with_sep_markov.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/mccall_model_with_sep_markov.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "mccall_model_with_sep_markov";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/mccall_model_with_sep_markov.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

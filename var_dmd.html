@@ -9,9 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>6. 向量自回归和动态模态分解 &#8212; Python中级数量经济学</title>
-    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
     
         <script>
             MathJax = {
@@ -70,13 +77,13 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=a459934d9fea1f60268e46d95e2569a33e1f6ec2" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
-    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=b4b7a797" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -94,8 +101,8 @@
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-    <script src="_static/scripts/quantecon-book-theme.js?digest=06ebc90d5139b434c2742937a4ef3b185cb93e2f"></script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
     <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
     <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
@@ -150,10 +157,31 @@
 <meta property="og:site_name" content="Python中级数量经济学" />
 <meta name="theme-color" content="#ffffff" />
 
+
+
+
   </head>
 <body>
 
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
 <!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
 
     <span id="top"></span>
 
@@ -165,7 +193,12 @@
 
                 <div class="qe-page__toc">
 
-                    <div class="inner">
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
 
                         
                         <div class="qe-page__toc-header">
@@ -196,17 +229,23 @@
                                 
                             </p>
 
-                            <p class="powered">Powered by <a href="https://jupyterbook.org/en/stable/">Jupyter Book</a></p>
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
 
                         </nav>
 
                         <div class="qe-page__toc-footer">
                             
                             
-                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                            
+                            
+                            
                         </div>
 
                     </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
 
                 </div>
 
@@ -216,10 +255,9 @@
 
                         <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
 
-                        <p class="qe-page__header-subheading">向量自回归和动态模态分解</p>
-
                     </div>
-                    <!-- length 2, since its a string and empty dict has length 2 - {} -->
+
+                    <!-- Authors section -->
                         <p class="qe-page__header-authors" font-size="18">
                             
                                 
@@ -232,6 +270,82 @@
                             
                         </p>
 
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Jul 19, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/var_dmd.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/bfa0105" class="changelog-hash">bfa0105</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 weeks ago</span>
+                                <span class="changelog-message">[action-translation] resync: var_dmd.md (#158)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/6a6c5c2" class="changelog-hash">6a6c5c2</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">updates</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/296ff21" class="changelog-hash">296ff21</a>
+                                
+                                <span class="changelog-author">Songyi Wang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">Update translation</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/f2e7452" class="changelog-hash">f2e7452</a>
+                                
+                                <span class="changelog-author">Songyi Wang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">Update translation</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/67b7391" class="changelog-hash">67b7391</a>
+                                
+                                <span class="changelog-author">Songyi Wang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">Update var_dmd</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/ab0498b" class="changelog-hash">ab0498b</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update all translated lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/387e084" class="changelog-hash">387e084</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lecture series</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
 
                 </div> <!-- .page__header -->
 
@@ -309,7 +423,7 @@ X' =  \begin{bmatrix} X_2 \mid X_3 \mid \cdots \mid X_{n+1}\end{bmatrix}
 \[
 X^+ = X^\top  (X X^\top )^{-1} 
 \]</div>
-<p>这里<span class="math notranslate nohighlight">\(X^+\)</span>是一个满足<span class="math notranslate nohighlight">\(X X^+ = I_{m \times m}\)</span>的<strong>右逆</strong>，。</p>
+<p>这里<span class="math notranslate nohighlight">\(X^+\)</span>是一个满足<span class="math notranslate nohighlight">\(X X^+ = I_{m \times m}\)</span>的<strong>右逆</strong>。</p>
 <p>在这种情况下，我们用于估计总体回归系数矩阵<span class="math notranslate nohighlight">\(A\)</span>的最小二乘估计量的公式<a class="reference internal" href="#equation-eq-commona">(6.3)</a>就变为</p>
 <div class="math notranslate nohighlight" id="equation-eq-ahatform101">
 <span class="eqno">(6.4)<a class="headerlink" href="#equation-eq-ahatform101" title="Link to this equation">#</a></span>\[ 
@@ -317,14 +431,14 @@ X^+ = X^\top  (X X^\top )^{-1}
 \]</div>
 <p>这个计算最小二乘回归系数的公式在计量经济学中被广泛地使用。</p>
 <p>它也被用于估计向量自回归。</p>
-<p>公式<a class="reference internal" href="#equation-eq-ahatform101">(6.4)</a>的右边，正比于<span class="math notranslate nohighlight">\(X_{t+1}\)</span>和<span class="math notranslate nohighlight">\(X_t\)</span>的经验交叉二阶矩矩，乘以<span class="math notranslate nohighlight">\(X_t\)</span>二阶矩阵的逆矩阵。</p>
+<p>公式<a class="reference internal" href="#equation-eq-ahatform101">(6.4)</a>的右边，正比于<span class="math notranslate nohighlight">\(X_{t+1}\)</span>和<span class="math notranslate nohighlight">\(X_t\)</span>的经验交叉二阶矩矩阵，乘以<span class="math notranslate nohighlight">\(X_t\)</span>二阶矩阵的逆矩阵。</p>
 <p><strong>高瘦型情况：</strong></p>
 <p>当<span class="math notranslate nohighlight">\(m &gt; &gt; n\)</span>时，即属性数量<span class="math notranslate nohighlight">\(m\)</span>远大于时间序列的观测值<span class="math notranslate nohighlight">\(n\)</span>，且当<span class="math notranslate nohighlight">\(X\)</span>的<strong>列</strong>线性独立时，<span class="math notranslate nohighlight">\(X^\top X\)</span>的逆矩阵存在，且广义逆矩阵<span class="math notranslate nohighlight">\(X^+\)</span>为</p>
 <div class="math notranslate nohighlight">
 \[
 X^+ = (X^\top X)^{-1} X^\top 
 \]</div>
-<p>这里<span class="math notranslate nohighlight">\(X^+\)</span>是一个满足<span class="math notranslate nohighlight">\(X^+ X = I_{n \times n}\)</span>的<strong>左逆</strong>，。</p>
+<p>这里<span class="math notranslate nohighlight">\(X^+\)</span>是一个满足<span class="math notranslate nohighlight">\(X^+ X = I_{n \times n}\)</span>的<strong>左逆</strong>。</p>
 <p>在这种情况下，我们用于估计<span class="math notranslate nohighlight">\(A\)</span>的最小二乘估计公式<a class="reference internal" href="#equation-eq-commona">(6.3)</a>变为</p>
 <div class="math notranslate nohighlight" id="equation-eq-hataversion0">
 <span class="eqno">(6.5)<a class="headerlink" href="#equation-eq-hataversion0" title="Link to this equation">#</a></span>\[
@@ -347,7 +461,8 @@ X^+ = (X^\top X)^{-1} X^\top
 <p>作为对<span class="math notranslate nohighlight">\(A\)</span>的估计量<span class="math notranslate nohighlight">\(\hat A\)</span>，我们想要形成一个<span class="math notranslate nohighlight">\(m \times m\)</span>的矩阵，来解决最小二乘最佳拟合问题</p>
 <div class="math notranslate nohighlight" id="equation-eq-alseqn">
 <span class="eqno">(6.6)<a class="headerlink" href="#equation-eq-alseqn" title="Link to this equation">#</a></span>\[ 
-\hat A = \textrm{argmin}_{\check A} || X' - \check  A X ||_F\]</div>
+\hat A = \textrm{argmin}_{\check A} || X' - \check  A X ||_F   
+\]</div>
 <p>其中 <span class="math notranslate nohighlight">\(|| \cdot ||_F\)</span> 表示矩阵的Frobenius（或欧几里得）范数。</p>
 <p>Frobenius范数定义为</p>
 <div class="math notranslate nohighlight">
@@ -397,13 +512,11 @@ X^{+} =  V \Sigma^{-1}  U^\top
 </section>
 <section id="dmd">
 <h2><span class="section-number">6.2. </span>动态模态分解(DMD)<a class="headerlink" href="#dmd" title="Link to this heading">#</a></h2>
-<p>接下来我们将研究一个特殊情况 – 当变量数量<span class="math notranslate nohighlight">\(m &gt;&gt; n\)</span>时的情形。</p>
-<p><strong>动态模态分解</strong>可以用于处理这种”高瘦型”矩阵。</p>
-<p>假设有一个<span class="math notranslate nohighlight">\(m \times (n+1)\)</span>的数据矩阵<span class="math notranslate nohighlight">\(\tilde X\)</span>，它包含了比时间周期<span class="math notranslate nohighlight">\(n+1\)</span>多得多的属性（或变量）<span class="math notranslate nohighlight">\(m\)</span>。</p>
-<p>动态模态分解由<span id="id3">[<a class="reference internal" href="zreferences.html#id27" title="Peter J Schmid. Dynamic mode decomposition of numerical and experimental data. Journal of fluid mechanics, 656:5–28, 2010.">Schmid, 2010</a>]</span>首次提出，</p>
-<p>你可以在 <span id="id4">[<a class="reference internal" href="zreferences.html#id50" title="J. N. Kutz, S. L. Brunton, Brunton B. W, and J. L. Proctor. Dynamic mode decomposition: data-driven modeling of complex systems. SIAM, 2016.">Kutz <em>et al.</em>, 2016</a>]</span> 和 <span id="id5">[<a class="reference internal" href="zreferences.html#id266" title="Steven L. Brunton and J. Nathan Kutz. Data-Driven Science and Engineering: Machine Learning, Dynamical Systems, and Control. Cambridge University Press, 2019.">Brunton and Kutz, 2019</a>]</span>（第7.2节）中阅读有关动态模态分解的内容。</p>
-<p><strong>动态模态分解</strong>（DMD）的目标是找到最小二乘回归系数矩阵<span class="math notranslate nohighlight">\(\hat A\)</span>的一个低秩近似，其中近似矩阵的秩<span class="math notranslate nohighlight">\(r\)</span>小于原始矩阵的秩<span class="math notranslate nohighlight">\(p\)</span>。</p>
-<p>这个近似可以通过公式<a class="reference internal" href="#equation-eq-ahatsvdformula">(6.11)</a>来构造。</p>
+<p>我们转向与<strong>动态模态分解</strong>相关的<span class="math notranslate nohighlight">\(m &gt;&gt;n\)</span> <strong>高瘦型</strong>情况。</p>
+<p>这里一个<span class="math notranslate nohighlight">\( m \times n+1 \)</span> 的数据矩阵 <span class="math notranslate nohighlight">\( \tilde X \)</span> 包含了比时间周期 <span class="math notranslate nohighlight">\( n+1 \)</span> 多得多的属性（或变量）<span class="math notranslate nohighlight">\( m \)</span>。</p>
+<p>动态模态分解由<span class="bibtex-citation" id="id3">[<a class="reference internal" href="zreferences.html#id110" title="Peter J Schmid. Dynamic mode decomposition of numerical and experimental data. Journal of fluid mechanics, 656:5–28, 2010.">Schmid, 2010</a>]</span>首次提出，</p>
+<p>你可以在 <span class="bibtex-citation" id="id4">[<a class="reference internal" href="zreferences.html#id135" title="J. Nathan Kutz, Steven L. Brunton, Bingni W. Brunton, and Joshua L. Proctor. Dynamic Mode Decomposition: Data-Driven Modeling of Complex Systems. SIAM, 2016.">Kutz <em>et al.</em>, 2016</a>]</span> 和 <span class="bibtex-citation" id="id5">[<a class="reference internal" href="zreferences.html#id363" title="Steven L. Brunton and J. Nathan Kutz. Data-Driven Science and Engineering: Machine Learning, Dynamical Systems, and Control. Cambridge University Press, 2019.">Brunton and Kutz, 2019</a>]</span>（第7.2节）中阅读有关动态模态分解的内容。</p>
+<p><strong>动态模态分解</strong>（DMD）计算公式<a class="reference internal" href="#equation-eq-ahatsvdformula">(6.11)</a>所描述的最小二乘回归系数<span class="math notranslate nohighlight">\(\hat A\)</span>的一个秩<span class="math notranslate nohighlight">\(r &lt; p\)</span>的近似。</p>
 <p>我们将逐步构建一种适合应用的表示。</p>
 <p>我们将通过三种不同的表示方式来描述一阶线性动态系统（即我们的向量自回归），从而实现这一点。</p>
 <p><strong>三种表示的指南：</strong> 在实践中，我们主要关注表示3。</p>
@@ -411,7 +524,7 @@ X^{+} =  V \Sigma^{-1}  U^\top
 <p>在应用中，我们将只使用<strong>DMD模态</strong>的一小部分子集来近似动态。</p>
 <p>我们使用这样一个小的DMD模态子集来构建对<span class="math notranslate nohighlight">\(A\)</span>的降秩近似。</p>
 <p>为此，我们需要使用与表示法3相关的<strong>简化</strong>SVD，而不是与表示法1和2相关的<strong>完整</strong>SVD。</p>
-<p><strong>快速指南：</strong> 如果您想直接应用这些方法，可以直接跳到表示法3。</p>
+<p><strong>给不耐烦的读者的指南：</strong> 在我们的应用中，我们将使用表示法3。</p>
 <p>第一次阅读时，您可以跳过铺垫性的表示法1和2。</p>
 </section>
 <section id="id6">
@@ -459,18 +572,18 @@ X_t = U \tilde b_t
 </section>
 <section id="id7">
 <h2><span class="section-number">6.4. </span>表示法 2<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
-<p>这种表示方法与<span id="id8">[<a class="reference internal" href="zreferences.html#id27" title="Peter J Schmid. Dynamic mode decomposition of numerical and experimental data. Journal of fluid mechanics, 656:5–28, 2010.">Schmid, 2010</a>]</span>最初提出的方法有关。</p>
-<p>它可以被视为推导表示3的一个中间步骤。</p>
+<p>这种表示方法与<span class="bibtex-citation" id="id8">[<a class="reference internal" href="zreferences.html#id110" title="Peter J Schmid. Dynamic mode decomposition of numerical and experimental data. Journal of fluid mechanics, 656:5–28, 2010.">Schmid, 2010</a>]</span>最初提出的方法有关。</p>
+<p>它可以被视为推导后面将要介绍的表示3的一个中间步骤。</p>
 <p>与表示1一样，我们继续：</p>
 <ul class="simple">
 <li><p>使用<strong>完整</strong>SVD而<strong>不是</strong>简化SVD</p></li>
 </ul>
-<p>在<a class="reference internal" href="svd_intro.html"><span class="doc">奇异值分解</span></a>课程中我们学到:</p>
+<p>正如我们在<a class="reference internal" href="svd_intro.html"><span class="doc">奇异值分解</span></a> 讲座中观察和阐释的那样</p>
 <ul class="simple">
 <li><p>(a) 对于完整SVD，<span class="math notranslate nohighlight">\(U U^\top = I_{m \times m}\)</span>和<span class="math notranslate nohighlight">\(U^\top U = I_{p \times p}\)</span>都是单位矩阵</p></li>
 <li><p>(b) 对于<span class="math notranslate nohighlight">\(X\)</span>的简化SVD，<span class="math notranslate nohighlight">\(U^\top U\)</span>不是单位矩阵。</p></li>
 </ul>
-<p>这个区别很重要，因为我们后面会使用简化SVD而不是完整SVD。这意味着我们需要处理<span class="math notranslate nohighlight">\(U^\top U\)</span>不是单位矩阵的情况。</p>
+<p>正如我们后面将会看到的，完整SVD对于我们最终想要做的事情来说过于局限，也就是说，我们需要应对由于使用<span class="math notranslate nohighlight">\(X\)</span>的简化SVD而导致<span class="math notranslate nohighlight">\(U^\top U\)</span><strong>不是</strong>单位矩阵的情形。</p>
 <p>但现在，让我们假设我们使用的是完整SVD，这样条件(a)和(b)都得到满足。</p>
 <p>对方程<a class="reference internal" href="#equation-eq-atilde0">(6.14)</a>中定义的<span class="math notranslate nohighlight">\(m \times m\)</span>矩阵<span class="math notranslate nohighlight">\(\tilde A = U^\top  \hat A U\)</span>进行特征分解：</p>
 <div class="math notranslate nohighlight" id="equation-eq-tildeaeigen">
@@ -490,9 +603,10 @@ X_t = U \tilde b_t
 X_{t+1} = U W \Lambda W^{-1} U^\top   X_t 
 \]</div>
 <p>将上述方程两边同时乘以<span class="math notranslate nohighlight">\(W^{-1} U^\top \)</span>，得到：</p>
-<p><span class="math notranslate nohighlight">\(
+<div class="math notranslate nohighlight">
+\[ 
 W^{-1} U^\top  X_{t+1} = \Lambda W^{-1} U^\top  X_t 
-\)</span>$</p>
+\]</div>
 <p>或</p>
 <div class="math notranslate nohighlight">
 \[
@@ -514,7 +628,7 @@ X_t = U W \hat b_t
 \overline X_{t+1} = U W \Lambda^t W^{-1} U^\top  X_1 
 \]</div>
 <p>实际上，
-<span id="id9">[<a class="reference internal" href="zreferences.html#id27" title="Peter J Schmid. Dynamic mode decomposition of numerical and experimental data. Journal of fluid mechanics, 656:5–28, 2010.">Schmid, 2010</a>]</span>定义了一个<span class="math notranslate nohighlight">\(m \times m\)</span>的矩阵<span class="math notranslate nohighlight">\(\Phi_s\)</span>为</p>
+<span class="bibtex-citation" id="id9">[<a class="reference internal" href="zreferences.html#id110" title="Peter J Schmid. Dynamic mode decomposition of numerical and experimental data. Journal of fluid mechanics, 656:5–28, 2010.">Schmid, 2010</a>]</span>定义了一个<span class="math notranslate nohighlight">\(m \times m\)</span>的矩阵<span class="math notranslate nohighlight">\(\Phi_s\)</span>为</p>
 <div class="math notranslate nohighlight" id="equation-eq-phisfull">
 <span class="eqno">(6.18)<a class="headerlink" href="#equation-eq-phisfull" title="Link to this equation">#</a></span>\[ 
 \Phi_s = UW 
@@ -524,7 +638,7 @@ X_t = U W \hat b_t
 <span class="eqno">(6.19)<a class="headerlink" href="#equation-eq-phisfullinv" title="Link to this equation">#</a></span>\[
 \Phi_s^+ = W^{-1}U^\top  
 \]</div>
-<p><span id="id10">[<a class="reference internal" href="zreferences.html#id27" title="Peter J Schmid. Dynamic mode decomposition of numerical and experimental data. Journal of fluid mechanics, 656:5–28, 2010.">Schmid, 2010</a>]</span>随后将方程<a class="reference internal" href="#equation-eq-dssebookrepr">(6.17)</a>表示为</p>
+<p><span class="bibtex-citation" id="id10">[<a class="reference internal" href="zreferences.html#id110" title="Peter J Schmid. Dynamic mode decomposition of numerical and experimental data. Journal of fluid mechanics, 656:5–28, 2010.">Schmid, 2010</a>]</span>随后将方程<a class="reference internal" href="#equation-eq-dssebookrepr">(6.17)</a>表示为</p>
 <div class="math notranslate nohighlight" id="equation-eq-schmidrep">
 <span class="eqno">(6.20)<a class="headerlink" href="#equation-eq-schmidrep" title="Link to this equation">#</a></span>\[
 \overline X_{t+1} = \Phi_s \Lambda^t \Phi_s^+ X_1 
@@ -542,7 +656,7 @@ DMD<strong>投影模态</strong>。</p>
 \hat b =  \Phi_s^+ X
 \]</div>
 <p>是 <span class="math notranslate nohighlight">\(m \times n\)</span> 矩阵 <span class="math notranslate nohighlight">\(X\)</span> 在 <span class="math notranslate nohighlight">\(m \times p\)</span> 矩阵 <span class="math notranslate nohighlight">\(\Phi_s\)</span> 上的回归系数矩阵。</p>
-<p>我们将在讨论由 Tu 等人 <span id="id11">[<a class="reference internal" href="zreferences.html#id36" title="J. H. Tu, C. W. Rowley, D. M. Luchtenburg, S. L. Brunton, and J. N. Kutz. On dynamic mode decomposition: theory and applications. Journal of Computational Dynamics, 1(2):391–421, 2014.">Tu <em>et al.</em>, 2014</a>]</span> 提出的表示法3时进一步讨论。</p>
+<p>在讨论表示法3时，我们将在相关背景下进一步讨论这个解释，表示法3是由 Tu 等人 <span class="bibtex-citation" id="id11">[<a class="reference internal" href="zreferences.html#id119" title="J. H. Tu, C. W. Rowley, D. M. Luchtenburg, S. L. Brunton, and J. N. Kutz. On dynamic mode decomposition: theory and applications. Journal of Computational Dynamics, 1(2):391–421, 2014.">Tu <em>et al.</em>, 2014</a>]</span> 提出的。</p>
 <p>当我们想要使用简化SVD时（这在实践中经常出现），使用表示法3更为合适。</p>
 </section>
 <section id="id12">
@@ -557,7 +671,8 @@ X = \tilde U \tilde \Sigma \tilde V^\top ,
 <p>其中现在 <span class="math notranslate nohighlight">\(\tilde U\)</span> 是 <span class="math notranslate nohighlight">\(m \times p\)</span> 的矩阵，<span class="math notranslate nohighlight">\(\tilde \Sigma\)</span> 是 <span class="math notranslate nohighlight">\(p \times p\)</span> 的矩阵，而 <span class="math notranslate nohighlight">\(\tilde V^\top\)</span> 是 <span class="math notranslate nohighlight">\(p \times n\)</span> 的矩阵。</p>
 <p>我们的 <span class="math notranslate nohighlight">\(A\)</span> 的最小范数最小二乘近似器现在的表示为</p>
 <div class="math notranslate nohighlight" id="equation-eq-ahatwithtildes">
-<span class="eqno">(6.21)<a class="headerlink" href="#equation-eq-ahatwithtildes" title="Link to this equation">#</a></span>\[\hat A = X' \tilde V \tilde \Sigma^{-1} \tilde U^\top 
+<span class="eqno">(6.21)<a class="headerlink" href="#equation-eq-ahatwithtildes" title="Link to this equation">#</a></span>\[
+\hat A = X' \tilde V \tilde \Sigma^{-1} \tilde U^\top 
 \]</div>
 <p><strong>计算<span class="math notranslate nohighlight">\(\hat A\)</span>的主要特征向量</strong></p>
 <p>我们首先参照构建表示法1时使用的步骤，通过以下方式为旋转的<span class="math notranslate nohighlight">\(p \times 1\)</span>状态<span class="math notranslate nohighlight">\(\tilde b_t\)</span>定义一个转移矩阵：</p>
@@ -566,7 +681,7 @@ X = \tilde U \tilde \Sigma \tilde V^\top ,
 \tilde A =\tilde  U^\top  \hat A \tilde U 
 \]</div>
 <p><strong>作为投影系数的解释</strong></p>
-<p><span id="id13">[<a class="reference internal" href="zreferences.html#id51" title="Steven L. Brunton and J. Nathan Kutz. Data-Driven Science and Engineering, Second Edition. Cambridge University Press, New York, 2022.">Brunton and Kutz, 2022</a>]</span>指出<span class="math notranslate nohighlight">\(\tilde A\)</span>可以被理解为<span class="math notranslate nohighlight">\(\hat A\)</span>在<span class="math notranslate nohighlight">\(\tilde U\)</span>中<span class="math notranslate nohighlight">\(p\)</span>个模态上的投影。</p>
+<p><span class="bibtex-citation" id="id13">[<a class="reference internal" href="zreferences.html#id136" title="Steven L. Brunton and J. Nathan Kutz. Data-Driven Science and Engineering, Second Edition. Cambridge University Press, New York, 2022.">Brunton and Kutz, 2022</a>]</span>指出<span class="math notranslate nohighlight">\(\tilde A\)</span>可以被理解为<span class="math notranslate nohighlight">\(\hat A\)</span>在<span class="math notranslate nohighlight">\(\tilde U\)</span>中<span class="math notranslate nohighlight">\(p\)</span>个模态上的投影。</p>
 <p>要验证这一点，首先注意到，由于<span class="math notranslate nohighlight">\( \tilde U^\top  \tilde U = I\)</span>，因此：</p>
 <div class="math notranslate nohighlight" id="equation-eq-tildeaverify">
 <span class="eqno">(6.23)<a class="headerlink" href="#equation-eq-tildeaverify" title="Link to this equation">#</a></span>\[
@@ -619,9 +734,14 @@ X = \tilde U \tilde \Sigma \tilde V^\top ,
 \Phi \equiv \hat A \tilde \Phi_s = X' \tilde V \tilde \Sigma^{-1}  \tilde  W
 \]</div>
 <p>不难发现，<span class="math notranslate nohighlight">\(\Phi\)</span>的列<strong>确实是</strong><span class="math notranslate nohighlight">\(\hat A\)</span>的特征向量。</p>
-<p>这是Tu等人<span id="id14">[<a class="reference internal" href="zreferences.html#id36" title="J. H. Tu, C. W. Rowley, D. M. Luchtenburg, S. L. Brunton, and J. N. Kutz. On dynamic mode decomposition: theory and applications. Journal of Computational Dynamics, 1(2):391–421, 2014.">Tu <em>et al.</em>, 2014</a>]</span>证明的一个结果，我们下面来介绍。</p>
-<p><strong>命题</strong> <span class="math notranslate nohighlight">\(\Phi\)</span>的<span class="math notranslate nohighlight">\(p\)</span>列是<span class="math notranslate nohighlight">\(\hat A\)</span>的特征向量。</p>
-<p><strong>证明：</strong> 根据公式<a class="reference internal" href="#equation-eq-phiformula">(6.26)</a>，我们有</p>
+<p>这是Tu等人<span class="bibtex-citation" id="id14">[<a class="reference internal" href="zreferences.html#id119" title="J. H. Tu, C. W. Rowley, D. M. Luchtenburg, S. L. Brunton, and J. N. Kutz. On dynamic mode decomposition: theory and applications. Journal of Computational Dynamics, 1(2):391–421, 2014.">Tu <em>et al.</em>, 2014</a>]</span>证明的一个结果，我们下面来介绍。</p>
+<div class="proof proposition admonition" id="prop-dmd-eigenvectors">
+<p class="admonition-title"><span class="caption-number">命题 6.1 </span></p>
+<section class="proposition-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(\Phi\)</span>的<span class="math notranslate nohighlight">\(p\)</span>列是<span class="math notranslate nohighlight">\(\hat A\)</span>的特征向量。</p>
+</section>
+</div><div class="proof admonition" id="proof">
+<p>Proof. 根据公式<a class="reference internal" href="#equation-eq-phiformula">(6.26)</a>，我们有</p>
 <div class="math notranslate nohighlight">
 \[  
 \begin{aligned}
@@ -634,7 +754,7 @@ X = \tilde U \tilde \Sigma \tilde V^\top ,
 <p>因此</p>
 <div class="math notranslate nohighlight" id="equation-eq-aphilambda">
 <span class="eqno">(6.27)<a class="headerlink" href="#equation-eq-aphilambda" title="Link to this equation">#</a></span>\[  
-\hat A \Phi = \Phi \Lambda 
+\hat A \Phi = \Phi \Lambda .
 \]</div>
 <p>令 <span class="math notranslate nohighlight">\(\phi_i\)</span> 为 <span class="math notranslate nohighlight">\(\Phi\)</span> 的第 <span class="math notranslate nohighlight">\(i\)</span> 列，<span class="math notranslate nohighlight">\(\lambda_i\)</span> 为分解式 <a class="reference internal" href="#equation-eq-tildeaeigenred">(6.24)</a> 中 <span class="math notranslate nohighlight">\(\tilde A\)</span> 对应的第 <span class="math notranslate nohighlight">\(i\)</span> 个特征值。</p>
 <p>将等式 <a class="reference internal" href="#equation-eq-aphilambda">(6.27)</a> 两边的 <span class="math notranslate nohighlight">\(m \times 1\)</span> 向量对应项相等得到：</p>
@@ -643,8 +763,8 @@ X = \tilde U \tilde \Sigma \tilde V^\top ,
 \hat A \phi_i = \lambda_i \phi_i .
 \]</div>
 <p>这个等式证实了 <span class="math notranslate nohighlight">\(\phi_i\)</span> 是 <span class="math notranslate nohighlight">\(\hat A\)</span> 的特征向量，对应于 <span class="math notranslate nohighlight">\(\tilde A\)</span> 和 <span class="math notranslate nohighlight">\(\hat A\)</span> 的特征值 <span class="math notranslate nohighlight">\(\lambda_i\)</span>。</p>
-<p>证明至此完成。</p>
-<p>另见 <span id="id15">[<a class="reference internal" href="zreferences.html#id51" title="Steven L. Brunton and J. Nathan Kutz. Data-Driven Science and Engineering, Second Edition. Cambridge University Press, New York, 2022.">Brunton and Kutz, 2022</a>]</span> (第238页)。</p>
+</div>
+<p>另见 <span class="bibtex-citation" id="id15">[<a class="reference internal" href="zreferences.html#id136" title="Steven L. Brunton and J. Nathan Kutz. Data-Driven Science and Engineering, Second Edition. Cambridge University Press, New York, 2022.">Brunton and Kutz, 2022</a>]</span> (第238页)。</p>
 <section id="check-b">
 <h3><span class="section-number">6.5.1. </span><span class="math notranslate nohighlight">\(\check b\)</span> 的解码器作为线性投影<a class="headerlink" href="#check-b" title="Link to this heading">#</a></h3>
 <p>根据特征分解 <a class="reference internal" href="#equation-eq-aphilambda">(6.27)</a> ，我们可以将 <span class="math notranslate nohighlight">\(\hat A\)</span> 表示为：</p>
@@ -688,7 +808,8 @@ X = \check X + \epsilon
 <p>或</p>
 <div class="math notranslate nohighlight" id="equation-eq-xbcheck">
 <span class="eqno">(6.32)<a class="headerlink" href="#equation-eq-xbcheck" title="Link to this equation">#</a></span>\[
-X = \Phi \check b + \epsilon\]</div>
+X = \Phi \check b + \epsilon
+\]</div>
 <p>其中 <span class="math notranslate nohighlight">\(\epsilon\)</span> 是一个 <span class="math notranslate nohighlight">\(m \times n\)</span> 的最小二乘误差矩阵，满足最小二乘正交条件 <span class="math notranslate nohighlight">\(\epsilon^\top \Phi =0\)</span> 或</p>
 <div class="math notranslate nohighlight" id="equation-eq-orthls">
 <span class="eqno">(6.33)<a class="headerlink" href="#equation-eq-orthls" title="Link to this equation">#</a></span>\[ 
@@ -699,7 +820,7 @@ X = \Phi \check b + \epsilon\]</div>
 <section id="id16">
 <h3><span class="section-number">6.5.2. </span>一种近似方法<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
 <p>我们现在描述一种不使用公式 <a class="reference internal" href="#equation-eq-decoder102">(6.29)</a>的近似计算 <span class="math notranslate nohighlight">\(p \times 1\)</span> 的向量 <span class="math notranslate nohighlight">\(\check b_t\)</span> 的方法。</p>
-<p>具体来说，以下论述改编自 <span id="id17">[<a class="reference internal" href="zreferences.html#id51" title="Steven L. Brunton and J. Nathan Kutz. Data-Driven Science and Engineering, Second Edition. Cambridge University Press, New York, 2022.">Brunton and Kutz, 2022</a>]</span>（第240页）提供的一种高效计算方法，从而近似 <span class="math notranslate nohighlight">\(\check b_t\)</span>。</p>
+<p>具体来说，以下论述改编自 <span class="bibtex-citation" id="id17">[<a class="reference internal" href="zreferences.html#id136" title="Steven L. Brunton and J. Nathan Kutz. Data-Driven Science and Engineering, Second Edition. Cambridge University Press, New York, 2022.">Brunton and Kutz, 2022</a>]</span>（第240页）提供的一种高效计算方法，从而近似 <span class="math notranslate nohighlight">\(\check b_t\)</span>。</p>
 <p>为方便起见，我们将在时间 <span class="math notranslate nohighlight">\(t=1\)</span> 应用该方法。</p>
 <p>对于 <span class="math notranslate nohighlight">\(t=1\)</span>，根据方程 <a class="reference internal" href="#equation-eq-xbcheck">(6.32)</a>，我们有</p>
 <div class="math notranslate nohighlight" id="equation-eq-x1proj">
@@ -707,7 +828,7 @@ X = \Phi \check b + \epsilon\]</div>
    \check X_1 = \Phi \check b_1
 \]</div>
 <p>其中 <span class="math notranslate nohighlight">\(\check b_1\)</span> 是一个 <span class="math notranslate nohighlight">\(p \times 1\)</span> 的向量。</p>
-<p>回顾上面表示1中的 <span class="math notranslate nohighlight">\(X_1 = U \tilde b_1\)</span>,其中 <span class="math notranslate nohighlight">\(\tilde b_1\)</span> 是表示1的时间1基向量,而 <span class="math notranslate nohighlight">\(U\)</span> 来自完整SVD分解 <span class="math notranslate nohighlight">\(X = U \Sigma V^\top\)</span>。</p>
+<p>回顾上面表示法1中的 <span class="math notranslate nohighlight">\(X_1 = U \tilde b_1\)</span>，其中 <span class="math notranslate nohighlight">\(\tilde b_1\)</span> 是表示法1的时间1基向量，而 <span class="math notranslate nohighlight">\(U\)</span> 来自完整SVD分解 <span class="math notranslate nohighlight">\(X = U \Sigma V^\top\)</span>。</p>
 <p>从方程 <a class="reference internal" href="#equation-eq-xbcheck">(6.32)</a> 可以得出:</p>
 <div class="math notranslate nohighlight">
 \[ 
@@ -719,7 +840,7 @@ X = \Phi \check b + \epsilon\]</div>
 \[
 \tilde b_1 = U^\top  X' V \tilde \Sigma^{-1} \tilde W \check b_1 + U^\top  \epsilon_1
 \]</div>
-<p>将误差项 <span class="math notranslate nohighlight">\(U^\top  \epsilon_1\)</span> 替换为零,并将完整SVD中的 <span class="math notranslate nohighlight">\(U\)</span> 替换为简化SVD中的 <span class="math notranslate nohighlight">\(\tilde U\)</span>,我们得到 <span class="math notranslate nohighlight">\(\tilde b_1\)</span> 的近似值 <span class="math notranslate nohighlight">\(\hat b_1\)</span>:</p>
+<p>将误差项 <span class="math notranslate nohighlight">\(U^\top  \epsilon_1\)</span> 替换为零，并将来自 <span class="math notranslate nohighlight">\(X\)</span> 的<strong>完整</strong>SVD的 <span class="math notranslate nohighlight">\(U\)</span> 替换为来自<strong>简化</strong>SVD的 <span class="math notranslate nohighlight">\(\tilde U\)</span>，我们得到 <span class="math notranslate nohighlight">\(\tilde b_1\)</span> 的近似值 <span class="math notranslate nohighlight">\(\hat b_1\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[ 
   \hat b_1 = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1} \tilde  W \check b_1
@@ -727,7 +848,8 @@ X = \Phi \check b + \epsilon\]</div>
 <p>回顾方程 <a class="reference internal" href="#equation-eq-tildeaverify">(6.23)</a> 中的 <span class="math notranslate nohighlight">\( \tilde A = \tilde U^\top  X' \tilde V \tilde \Sigma^{-1}\)</span>。</p>
 <p>因此可得:</p>
 <div class="math notranslate nohighlight">
-\[\hat  b_1 = \tilde   A \tilde W \check b_1
+\[ 
+  \hat  b_1 = \tilde   A \tilde W \check b_1
 \]</div>
 <p>因此，根据 <span class="math notranslate nohighlight">\(\tilde A\)</span> 的特征分解 <a class="reference internal" href="#equation-eq-tildeaeigenred">(6.24)</a>，我们有</p>
 <div class="math notranslate nohighlight">
@@ -753,7 +875,8 @@ X = \Phi \check b + \epsilon\]</div>
 <p>在给定 <span class="math notranslate nohighlight">\(X_t\)</span> 的条件下，我们可以通过精确模态计算解码后的 <span class="math notranslate nohighlight">\(\check X_{t+j},   j = 1, 2, \ldots \)</span> ：</p>
 <div class="math notranslate nohighlight" id="equation-eq-checkxevoln">
 <span class="eqno">(6.37)<a class="headerlink" href="#equation-eq-checkxevoln" title="Link to this equation">#</a></span>\[
-\check X_{t+j} = \Phi \Lambda^j \Phi^{+} X_t\]</div>
+\check X_{t+j} = \Phi \Lambda^j \Phi^{+} X_t
+\]</div>
 <p>或者通过近似模态计算解码的 <span class="math notranslate nohighlight">\(\hat X_{t+j}\)</span>:</p>
 <div class="math notranslate nohighlight" id="equation-eq-checkxevoln2">
 <span class="eqno">(6.38)<a class="headerlink" href="#equation-eq-checkxevoln2" title="Link to this equation">#</a></span>\[ 
@@ -772,7 +895,8 @@ X = \Phi \check b + \epsilon\]</div>
 </section>
 <section id="python">
 <h2><span class="section-number">6.6. </span>Python代码来源<a class="headerlink" href="#python" title="Link to this heading">#</a></h2>
-<p>你可以在<a class="reference external" href="https://mathlab.sissa.it/pydmd">这里</a>找到DMD的Python实现。</p>
+<p>你可以在这里找到DMD的Python实现：</p>
+<p><a class="reference external" href="https://mathlab.sissa.it/pydmd">https://mathlab.sissa.it/pydmd</a></p>
 </section>
 </section>
 
@@ -829,7 +953,7 @@ X = \Phi \check b + \epsilon\]</div>
                 <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
                     <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础工具
+  Tools and Techniques
  </span>
 </p>
 <ul class="current nav bd-sidenav nav sidenav_l1">
@@ -871,7 +995,7 @@ X = \Phi \check b + \epsilon\]</div>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  基础统计学
+  Elementary Statistics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -928,7 +1052,7 @@ X = \Phi \check b + \epsilon\]</div>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  贝叶斯定律
+  Bayes Law
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -950,7 +1074,7 @@ X = \Phi \check b + \epsilon\]</div>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  统计与信息论
+  Statistics and Information
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
@@ -1000,358 +1124,648 @@ X = \Phi \check b + \epsilon\]</div>
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mix_model.html">
-   30. 错误模型
+   32. 错误模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="navy_captain.html">
-   31. 贝叶斯与频率主义决策规则的比较
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  线性规划
+  Linear Programming
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="opt_transport.html">
-   32. 最优传输
+   36. 最优传输
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="von_neumann_model.html">
-   33. 冯·诺依曼增长模型（及其推广）
+   37. 冯·诺依曼增长模型（及其推广）
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  动态系统导论
+  Introduction to Dynamics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="finite_markov.html">
-   34. 有限马尔可夫链
+   38. 有限马尔可夫链
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="inventory_dynamics.html">
-   35. 库存动态
+   39. 库存动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="linear_models.html">
-   36. 线性状态空间模型
+   40. 线性状态空间模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="samuelson.html">
-   37. 萨缪尔森乘数-加速器模型
+   41. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   42. 加速原理与商业周期的本质
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kesten_processes.html">
-   38. Kesten过程与企业动态
+   43. Kesten过程与企业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="wealth_dynamics.html">
-   39. 财富分布动态
+   44. 财富分布动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman.html">
-   40. 初见卡尔曼滤波器
+   45. 初见卡尔曼滤波器
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="kalman_2.html">
-   41. 卡尔曼滤波器进阶
+   46. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   47. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   48. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   49. 两种测量模型与投资加速数
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  搜索
+  Search
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model.html">
-   42. 工作搜寻 I: McCall搜寻模型
+   50. 工作搜寻 I: McCall搜寻模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_model_with_separation.html">
-   43. 工作搜寻 II：搜寻与离职
+   51. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   52. 工作搜寻 III：带分离和马尔可夫工资的搜寻
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_fitted_vfi.html">
-   44. 工作搜寻 III: 拟合值函数迭代
+   53. 工作搜寻 IV: 拟合值函数迭代
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="mccall_correlated.html">
-   45. 工作搜寻 IV：相关工资报价
+  <a class="reference internal" href="mccall_persist_trans.html">
+   54. 工作搜寻 V：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   46. 工作搜寻 V：职业选择建模
+   55. 工作搜寻 VI：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   47. 工作搜寻 VI：在职搜索
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mccall_q.html">
-   48. 工作搜寻 VII：McCall劳动者的Q学习
+   56. 工作搜寻 VII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   49. 工作搜寻 VII: 带学习的搜索
+   57. 工作搜寻 VIII: 带学习的搜索
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  消费、储蓄与资本
+  Reinforcement Learning
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_1.html">
-   50. Cass-Koopmans模型
+  <a class="reference internal" href="inventory_q.html">
+   58. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_koopmans_2.html">
-   51. Cass-Koopmans竞争均衡
+  <a class="reference internal" href="rs_inventory_q.html">
+   59. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal.html">
-   52. 带扭曲性税收的Cass-Koopmans模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cass_fiscal_2.html">
-   53. 带扭曲性税收的双国模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ak2.html">
-   54. 代际交叠模型中的转型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_problem.html">
-   55. 吃蛋糕问题 I：最优储蓄导论
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cake_eating_numerical.html">
-   56. 吃蛋糕问题 II：数值方法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth.html">
-   57. 最优增长 I：随机最优增长模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="optgrowth_fast.html">
-   58. 最优增长 II：使用Numba加速代码
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="coleman_policy_iter.html">
-   59. 最优增长 III：时间迭代
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="egm_policy_iter.html">
-   60. 最优增长 IV：内生网格法
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp.html">
-   61. 收入波动问题 I：基本模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ifp_advanced.html">
-   62. 收入波动问题 II：资产随机收益
+  <a class="reference internal" href="mccall_q.html">
+   60. 工作搜寻 IX：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  LQ控制
+  Introduction to Optimal Savings
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   61. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   62. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   63. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   64. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   65. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   66. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Household Problems
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   67. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   68. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   69. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   70. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   71. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ Control
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   63. LQ控制：基础
+   72. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   64. LQ控制的拉格朗日方法
+   73. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   65. 消除交叉项
+   74. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   66. 永久收入模型
+   75. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   67. 永久收入 II：线性二次方法
+   76. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   77. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   78. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   79. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   80. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   81. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   82. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   68. 通过库存实现生产平滑
+   83. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  多主体模型
+  Bounded Rationality in Macroeconomics
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   84. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   85. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   86. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   87. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   88. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   89. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Phillips Curve Tradeoffs
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   90. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   91. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   92. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   93. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   94. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   95. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   96. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   97. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   98. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   99. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   100. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Optimal Growth
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   101. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   102. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   103. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   104. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Multiple Agent Models
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   69. 就业与失业的湖泊模型
+   105. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   106. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   70. 理性预期均衡
+   107. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   71. 线性理性预期模型中的稳定性
+   108. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   72. 马尔可夫完美均衡
+   109. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   73. 不确定性陷阱
+   110. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   74. 艾亚加里模型
+   111. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   112. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   113. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   75. 长寿、异质性个体、世代交叠模型
+   114. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   115. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  资产定价与金融
+  Asset Pricing and Finance
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   76. 资产定价：有限状态模型
+   116. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   117. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   118. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   77. 带有阿罗证券的竞争均衡
+   119. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   78. 异质信念与泡沫
+   120. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   121. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   122. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   123. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   124. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   125. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   126. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   127. 误设定下的恢复
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  数据与实证
+  Data and Empirics
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="pandas_panel.html">
-   79. 用Pandas处理面板数据
+   128. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   80. Python线性回归
+   129. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   81. 最大似然估计
+   130. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   131. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   132. 具有非对称冲击的失业动态
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  拍卖
+  Auctions
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   82. 一价和二价拍卖
+   133. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   83. 多种商品分配机制
+   134. 多种商品分配机制
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  其他
+  Other
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   84. 故障排除
+   135. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   85. 参考文献
+   136. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   86. 执行统计
+   137. 执行统计
   </a>
  </li>
 </ul>
@@ -1395,6 +1809,8 @@ X = \Phi \check b + \epsilon\]</div>
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/var_dmd.md" download><i data-feather="github"></i></a></li>
                     -->
                     <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
                 </ul>
 
             </div>

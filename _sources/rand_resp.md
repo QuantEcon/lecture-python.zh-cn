@@ -7,6 +7,13 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+translation:
+  title: 随机化回应调查
+  headings:
+    Overview: 概述
+    Warner's Strategy: Warner的策略
+    Comparing Two Survey Designs: 比较两种调查设计
+    Concluding Remarks: 结束语
 ---
 
 # 随机化回应调查
@@ -51,6 +58,7 @@ import pandas as pd
 Warner {cite}`warner1965randomized` 提出并分析了以下程序：
 
 - 从人群中有放回地抽取 $n$ 个随机样本，并对每个人进行访谈。
+- 从人群中有放回地抽取 $n$ 个随机样本，并对每个人进行访谈。
 - 准备一个**随机转盘**，该转盘指向字母 A 的概率为 $p$，指向字母 B 的概率为 $(1-p)$。
 - 每个受试者转动随机转盘，看到一个访谈者**看不到**的结果（A 或 B）。
 - 受试者说明自己是否属于转盘所指向的组。
@@ -88,7 +96,6 @@ $$
 或
 
 $$
-
 \pi p + (1-\pi)(1-p)=\frac{n_1}{n}
 $$ (eq:3)
 
@@ -175,12 +182,11 @@ $$ (eq:ten)
 
 $$
 \begin{aligned}
-
 Var(\hat{\pi})&=\frac{ \left[ \pi T_a + (1-\pi)(1-T_b)\right]  \left[1- \pi T_a -(1-\pi)(1-T_b)\right] }{n}
 \end{aligned}
 $$ (eq:eleven)
 
-定义一个
+定义如下量是有用的：
 
 $$
 \text{MSE 比率}=\frac{\text{随机化的均方误差}}{\text{常规的均方误差}}
@@ -221,9 +227,9 @@ class Comparison:
         A = self.A
         n = self.n
         df = self.template.copy()
-        np.random.seed(seed)
-        sample = np.random.rand(size, self.n) <= A
-        random_device = np.random.rand(size, n)
+        rng = np.random.default_rng(seed)
+        sample = rng.random((size, self.n)) <= A
+        random_device = rng.random((size, n))
         mse_rd = {}
         for p in self.p_arr:
             spinner = random_device <= p
@@ -232,8 +238,8 @@ class Comparison:
             pi_hat = (p - 1) / (2 * p - 1) + n1 / n / (2 * p - 1)
             mse_rd[p] = np.sum((pi_hat - A)**2)
         for inum, irow in df.iterrows():
-            truth_a = np.random.rand(size, self.n) <= irow.T_a
-            truth_b = np.random.rand(size, self.n) <= irow.T_b
+            truth_a = rng.random((size, self.n)) <= irow.T_a
+            truth_b = rng.random((size, self.n)) <= irow.T_b
             trad_answer = sample * truth_a + (1 - sample) * (1 - truth_b)
             pi_trad = trad_answer.sum(axis=1) / n
             df.loc[inum, 'Bias'] = pi_trad.mean() - A
@@ -315,4 +321,3 @@ df3_mc
 {doc}`这个QuantEcon讲座<util_rand_resp>`描述了一些其他的随机化回应调查方法。
 
 该讲座介绍了Lars Ljungqvist {cite}`ljungqvist1993unified`对这些替代方案进行的功利主义分析。
-

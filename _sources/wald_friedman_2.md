@@ -9,6 +9,20 @@ kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
+translation:
+  title: 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  headings:
+    Overview: 概述
+    A Dynamic Programming Approach: 动态规划方法
+    A Dynamic Programming Approach::Losses and Costs: 损失和成本
+    A Dynamic Programming Approach::Digression on Type I and Type II Errors: 关于第一类和第二类错误的说明
+    A Dynamic Programming Approach::Intuition: 直观理解
+    A Dynamic Programming Approach::A Bellman Equation: 贝尔曼方程
+    Implementation: 实现
+    Analysis: 分析
+    Analysis::Cost Function: 成本函数
+    Analysis::Simulations: 模拟
+    Analysis::Comparative Statics: 比较静态分析
 ---
 
 (wald_friedman_2)=
@@ -89,6 +103,7 @@ kernelspec:
 import numpy as np
 import matplotlib.pyplot as plt
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+import matplotlib as mpl
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
@@ -128,7 +143,6 @@ $$
 
 ```{note}
 在{cite:t}`Bertsekas75`中，信念是与分布$f_0$相关联的，但在这里
-
 我们将信念与分布 $f_1$ 关联起来,以匹配{doc}`关于Wald序贯分析的讲座<wald_friedman>`中的讨论。
 ```
 
@@ -327,7 +341,6 @@ $$
 
 \begin{aligned}
 h(\pi) &= c + \mathbb E [J(\pi')] \\
-
 &= c + \mathbb E_{\pi'} \min \{ \pi' L_0, (1 - \pi') L_1, h(\pi') \} \\
 &= c + \int \min \{ \kappa(z', \pi) L_0, (1 - \kappa(z', \pi) ) L_1, h(\kappa(z', \pi) ) \} f_\pi (z') dz'
 \end{aligned}
@@ -430,7 +443,7 @@ class WaldFriedman:
         return π_new
 ```
 
-如同{doc}`最优增长讲座 <optgrowth>`中所述，为了近似连续的值函数
+如同{doc}`os_stochastic`中所述，为了近似连续的值函数
 
 * 我们在有限的 $\pi$ 值网格上进行迭代。
 * 当我们在网格点之间评估 $\mathbb E[J(\pi')]$ 时，我们使用线性插值。
@@ -712,7 +725,6 @@ wf = WaldFriedman(c=2.5)
 simulation_plot(wf)
 ```
 
-
 由于每次抽样成本的增加，决策者在做出决定前会减少抽样次数。
 
 因为他用更少的抽样来做决定，他的正确判断比例下降。
@@ -729,4 +741,3 @@ simulation_plot(wf)
 
 [^f1]: 决策者的行为就像他相信随机变量序列 $[z_{0}, z_{1}, \ldots]$ 是*可交换的*。关于可交换性的讨论，请参见[可交换性和贝叶斯更新](https://python.quantecon.org/exchangeable.html)和
 {cite}`Kreps88`第11章。
-
