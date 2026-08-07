@@ -134,7 +134,6 @@ s_t = x_t - c_t
 * 每个 $\xi_t$ 的共同分布记为 $\phi$。
 * 假设生产函数 $f$ 是递增且连续的。
 
-
 ### 优化问题
 
 给定初始状态 $x_0$，个体希望最大化
@@ -172,8 +171,6 @@ x_{t+1} = f(x_t - c_t) \xi_{t+1}
 
 * $x_t$ 被称为**状态**变量——它刻画了每一期开始时的“世界状态”。
 * $c_t$ 被称为**控制**变量——它是主体在观察到状态之后于每一期所选择的值。
-
-
 
 ### 最优策略
 
@@ -238,8 +235,6 @@ x_{t+1} = f(x_t - \sigma(x_t)) \xi_{t+1},
 
 下一节将更正式地介绍这些思想。
 
-
-
 ### 最优性
 
 与给定策略 $\sigma$ 相关的终身价值 $v_{\sigma}$ 是由下式定义的映射
@@ -266,7 +261,6 @@ v^*(x) := \sup_{\sigma \in \Sigma} \; v_{\sigma}(x)
 价值函数给出了在状态 $x$ 下，考虑所有可行策略后所能获得的最大价值。
 
 如果对所有 $x \in \mathbb R_+$ 都有 $v_\sigma(x) = v^*(x)$，则称策略 $\sigma \in \Sigma$ 为**最优**策略。
-
 
 ### 贝尔曼方程
 
@@ -305,9 +299,6 @@ v(x) = \max_{0 \leq c \leq x}
 1. 为我们提供了更多关于价值函数的信息，并且
 2. 提示了一种计算价值函数的方法，我们将在下面讨论。
 
-
-
-
 ### 逐期最优策略
 
 价值函数可以用来计算最优策略。
@@ -342,7 +333,6 @@ v(x) = \max_{0 \leq c \leq x}
 
 这样做的优势在于：我们现在解决的是一个维度低得多的
 优化问题。
-
 
 ### 贝尔曼算子
 
@@ -383,9 +373,6 @@ $$
 这正好说明 $v$ 是贝尔曼方程的一个解。
 
 由此可知 $v^*$ 是 $T$ 的一个不动点。
-
-
-
 
 ### 理论结果回顾
 
@@ -440,7 +427,6 @@ $$
 * [EDTC](https://johnstachurski.net/edtc.html) 的第12.2节。
 ```
 
-
 ## 计算
 
 ```{index} single: Dynamic Programming; Computation
@@ -454,7 +440,6 @@ $$
 
 我们将使用拟合价值函数迭代法，这一方法已经在
 {doc}`os_numerical` 中介绍过。
-
 
 ### 标量最大化
 
@@ -479,8 +464,6 @@ def maximize(g, upper_bound):
     maximizer, maximum = result.x, -result.fun
     return maximizer, maximum
 ```
-
-
 
 ### 模型
 
@@ -521,8 +504,8 @@ def create_model(
     x_grid = np.linspace(1e-4, grid_max, grid_size)
 
     # 存储冲击（设定随机种子，使结果可重现）
-    np.random.seed(seed)
-    shocks = np.exp(μ + ν * np.random.randn(shock_size))
+    rng = np.random.default_rng(seed)
+    shocks = np.exp(μ + ν * rng.standard_normal(shock_size))
 
     return Model(u, f, β, μ, ν, x_grid, shocks)
 ```
