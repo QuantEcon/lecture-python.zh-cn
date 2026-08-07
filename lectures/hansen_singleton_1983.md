@@ -530,8 +530,7 @@ def simulate_restricted_var(
     """
     从受限模型模拟 [对数消费增长, 对数回报]。
     """
-    if seed is not None:
-        np.random.seed(seed)
+    rng = np.random.default_rng(seed)
 
     if len(params) != 6 + 2 * n_lags:
         raise ValueError("Parameter vector length must be 6 + 2 * n_lags.")
@@ -566,7 +565,7 @@ def simulate_restricted_var(
         for lag in range(1, n_lags + 1):
             lag_stack.append(y[t - lag, :])
         lag_vec = np.concatenate(lag_stack)
-        shock = np.random.multivariate_normal(np.zeros(2), Σ_v)
+        shock = rng.multivariate_normal(np.zeros(2), Σ_v)
         y[t, :] = np.linalg.solve(A0, A1 @ lag_vec + μ + shock)
 
     return y[burn_in:, :]
@@ -930,7 +929,7 @@ def estimate_mle(data, n_lags, verbose=False):
     }
 ```
 
-下面的残差诊断总结了正态性和序列相关性检查
+残差诊断下面总结了正态性和序列相关性检查
 
 ```{code-cell} ipython3
 def residual_diagnostics(resid):
@@ -1055,7 +1054,6 @@ display_table(sim_results, fmt={
 ```
 
 点估计接近真实参数，而针对"真实值正确"这一原假设的 t 统计量在数量级上很小，与抽样变异一致。
-
 
 ## 偏好参数与似然比检验
 
@@ -1419,7 +1417,6 @@ display_table(spread_pretty, fmt={
 ## 实证 MLE 估计
 
 现在我们将 {cite:t}`hansen1983stochastic` 的最大似然估计器应用于真实数据。
-
 
 ### 数据
 
