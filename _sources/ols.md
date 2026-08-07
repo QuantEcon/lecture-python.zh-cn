@@ -81,7 +81,7 @@ import statsmodels.api as sm
 from statsmodels.iolib.summary2 import summary_col
 from linearmodels.iv import IV2SLS
 import seaborn as sns
-sns.set_theme()
+sns.set_theme(rc={'font.family': ['Source Han Serif SC', 'DejaVu Sans']})  # set_theme 会重置字体，用 rc 覆盖保留中文字体
 ```
 
 ### 预备知识
