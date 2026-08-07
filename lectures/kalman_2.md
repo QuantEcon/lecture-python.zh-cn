@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.1
+    jupytext_version: 1.16.7
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -69,7 +69,7 @@ plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 import numpy as np
 from quantecon import Kalman, LinearStateSpace
-from collections import namedtuple
+from typing import NamedTuple
 from scipy.stats import multivariate_normal
 ```
 
@@ -167,11 +167,17 @@ x_t  = \begin{bmatrix} h_{t} \cr u_{t} \end{bmatrix} , \quad
                      0 & \sigma_{u,0}^2 \end{bmatrix}
 ```
 
-为了计算公司的工资设定政策，我们首先创建一个 `namedtuple` 来存储模型的参数：
+为了计算公司的工资设定政策，我们首先创建一个 `NamedTuple` 来存储模型的参数：
 
 ```{code-cell} ipython3
-WorkerModel = namedtuple("WorkerModel", 
-                ('A', 'C', 'G', 'R', 'xhat_0', 'Σ_0'))
+class WorkerModel(NamedTuple):
+    A: np.ndarray
+    C: np.ndarray
+    G: np.ndarray
+    R: float
+    xhat_0: np.ndarray
+    Σ_0: np.ndarray
+
 
 def create_worker(α=.8, β=.2, c=.2,
                   R=.5, g=1.0, hhat_0=4, uhat_0=4, 
@@ -194,7 +200,7 @@ def create_worker(α=.8, β=.2, c=.2,
     return WorkerModel(A=A, C=C, G=G, R=R, xhat_0=xhat_0, Σ_0=Σ_0)
 ```
 
-请注意 `WorkerModel` namedtuple 是如何创建计算相应状态空间表示 {eq}`ssrepresent` 所需的所有对象的。
+请注意 `WorkerModel` NamedTuple 是如何创建计算相应状态空间表示 {eq}`ssrepresent` 所需的所有对象的。
 
 这十分方便，因为为了模拟劳动者的历史 $\{y_t, h_t\}$，我们需要使用 [`LinearStateSpace`](https://quanteconpy.readthedocs.io/en/latest/tools/lss.html) 类为其构建状态空间系统。
 
@@ -465,7 +471,7 @@ fig.tight_layout()
 plt.show()
 ```
 
-更一般地，我们可以在 `create_worker` namedtuple 中更改定义劳动者的部分或全部参数。
+更一般地，我们可以在 `create_worker` 工厂函数中更改定义劳动者的部分或全部参数。
 
 这是一个例子：
 
