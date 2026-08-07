@@ -8,7 +8,7 @@ kernelspec:
   language: python
   name: python3
 translation:
-  title: '工作搜寻 VIII: 带学习的搜索'
+  title: '工作搜寻 IX: 带学习的搜索'
   headings:
     Overview: 概述
     Overview::Model Features: 模型特点
@@ -43,7 +43,7 @@ translation:
 </div>
 ```
 
-# 工作搜寻 VIII: 带学习的搜索
+# 工作搜寻 IX: 带学习的搜索
 
 ```{contents} 目录
 :depth: 2
@@ -1104,7 +1104,6 @@ $F$ ~ Beta(1, 1)，$G$ ~ Beta(3, 1.2)，且 $c$=0.8。
 ```{code-cell} python3
 job_search_example(1, 1, 3, 1.2, c=0.8)
 ```
-
 
 ### 示例 5
 
