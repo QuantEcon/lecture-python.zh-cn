@@ -3,12 +3,14 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.2
 kernelspec:
   display_name: Python 3
   language: python
   name: python3
 translation:
-  title: 工作搜寻 V：持续性与暂时性工资冲击
+  title: 工作搜寻 VI：持续性与暂时性工资冲击
   headings:
     Overview: 概述
     The model: 模型
@@ -26,7 +28,7 @@ translation:
 </div>
 ```
 
-# 工作搜寻 V：持续性与暂时性工资冲击
+# 工作搜寻 VI：持续性与暂时性工资冲击
 
 ```{include} _admonition/gpu.md
 ```
