@@ -8,7 +8,7 @@ kernelspec:
   language: python
   name: python3
 translation:
-  title: 工作搜寻 VII：在职搜索
+  title: 工作搜寻 VIII：在职搜索
   headings:
     Overview: 概述
     Overview::Model Features: 模型特点
@@ -29,7 +29,7 @@ translation:
 </div>
 ```
 
-# {index}`工作搜寻 VII：在职搜索 <single: Job Search VII: On-the-Job Search>`
+# {index}`工作搜寻 VIII：在职搜索 <single: Job Search VIII: On-the-Job Search>`
 
 ```{index} single: Models; On-the-Job Search
 ```
