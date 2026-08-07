@@ -84,7 +84,7 @@ from jax import lax
 # arviz
 import arviz as az
 
-sns.set_style('white')
+sns.set_style('white', rc={'font.family': ['Source Han Serif SC', 'DejaVu Sans']})  # set_style 会重置字体，用 rc 覆盖保留中文字体
 key = random.PRNGKey(0)
 ```
 
