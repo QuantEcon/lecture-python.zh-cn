@@ -10,18 +10,18 @@ kernelspec:
   language: python
   name: python3
 translation:
-  title: 工作搜寻 IX：McCall劳动者的Q学习
+  title: 工作搜寻 X：McCall劳动者的Q学习
   headings:
     Overview: 概述
-    Review of McCall Model: McCall 模型回顾
-    Implied Quality Function  $Q$: 隐含质量函数 $Q$
-    From Probabilities  to Samples: 从概率到样本
-    Q-Learning: Q-学习
-    Employed Worker Can't Quit: 禁止在职劳动者辞职的情况
-    Possible Extensions: 可能的扩展方向
+    Review of McCall model: McCall 模型回顾
+    Implied quality function $Q$: 隐含质量函数 $Q$
+    From probabilities to samples: 从概率到样本
+    Q-learning: Q-学习
+    Employed worker can't quit: 禁止在职劳动者辞职的情况
+    Possible extensions: 可能的扩展方向
 ---
 
-# 工作搜寻 IX：McCall劳动者的Q学习
+# 工作搜寻 X：McCall劳动者的Q学习
 
 ## 概述
 
