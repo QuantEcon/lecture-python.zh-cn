@@ -13,20 +13,20 @@ translation:
   title: 似然比过程和贝叶斯学习
   headings:
     Overview: 概述
-    The Setting: 背景设置
-    Likelihood Ratio Processes and Bayes’ Law: 似然比过程和贝叶斯定律
-    Likelihood Ratio Processes and Bayes’ Law::A recursive formula: 递归公式
+    The setting: 背景设置
+    Likelihood ratio processes and Bayes’ law: 似然比过程和贝叶斯定律
+    Likelihood ratio processes and Bayes’ law::A recursive formula: 递归公式
     Another timing protocol: 另一种时序协议
     Another timing protocol::Behavior of $\pi_t$ under wrong model: 在错误模型下 $\pi_t$ 的行为
-    Behavior of  Posterior Probability $\{\pi_t\}$  Under  Subjective Probability Distribution: 后验概率 $\{\pi_t\}$ 在主观概率分布下的行为
-    Behavior of  Posterior Probability $\{\pi_t\}$  Under  Subjective Probability Distribution::Mechanical details again: 再谈机械细节
-    Behavior of  Posterior Probability $\{\pi_t\}$  Under  Subjective Probability Distribution::Some simulations: 一些模拟
-    Initial Prior is Verified by Paths Drawn from Subjective Conditional Densities: 通过从主观条件密度中抽取的路径验证初始先验
-    Drilling Down a Little Bit: 深入分析
-    Related Lectures: 相关讲座
+    Behavior of posterior probability $\{\pi_t\}$ under subjective probability distribution: 后验概率 $\{\pi_t\}$ 在主观概率分布下的行为
+    Behavior of posterior probability $\{\pi_t\}$ under subjective probability distribution::Mechanical details again: 再谈机械细节
+    Behavior of posterior probability $\{\pi_t\}$ under subjective probability distribution::Some simulations: 一些模拟
+    Initial prior is verified by paths drawn from subjective conditional densities: 通过从主观条件密度中抽取的路径验证初始先验
+    Drilling down a little bit: 深入分析
+    Related lectures: 相关讲座
 ---
 
-(likelihood_ratio_process)=
+(likelihood_bayes)=
 ```{raw} jupyter
 <div id="qe-notebook-header" align="right" style="text-align:right;">
         <a href="https://quantecon.org/" title="quantecon.org">
@@ -67,7 +67,7 @@ mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 import numpy as np
-from numba import vectorize, jit, prange
+from numba import vectorize, jit
 from math import gamma
 import pandas as pd
 from scipy.integrate import quad
@@ -76,10 +76,7 @@ from scipy.integrate import quad
 import seaborn as sns
 colors = sns.color_palette()
 
-@jit
-def set_seed():
-    np.random.seed(142857)
-set_seed()
+rng = np.random.default_rng(142857)
 ```
 
 ## 背景设置
@@ -162,7 +159,7 @@ g = jit(lambda x: p(x, G_a, G_b))
 
 ```{code-cell} ipython3
 @jit
-def simulate(a, b, T=50, N=500):
+def simulate(a, b, rng, T=50, N=500):
     '''
     生成N组T个似然比观测值，
     以N x T矩阵形式返回。
@@ -174,7 +171,7 @@ def simulate(a, b, T=50, N=500):
     for i in range(N):
 
         for j in range(T):
-            w = np.random.beta(a, b)
+            w = rng.beta(a, b)
             l_arr[i, j] = f(w) / g(w)
 
     return l_arr
@@ -183,12 +180,12 @@ def simulate(a, b, T=50, N=500):
 我们还将使用以下Python代码来准备一些信息丰富的模拟
 
 ```{code-cell} ipython3
-l_arr_g = simulate(G_a, G_b, N=50000)
+l_arr_g = simulate(G_a, G_b, rng, N=50000)
 l_seq_g = np.cumprod(l_arr_g, axis=1)
 ```
 
 ```{code-cell} ipython3
-l_arr_f = simulate(F_a, F_b, N=50000)
+l_arr_f = simulate(F_a, F_b, rng, N=50000)
 l_seq_f = np.cumprod(l_arr_f, axis=1)
 ```
 
@@ -449,16 +446,16 @@ $$
 
 ```{code-cell} ipython3
 @jit
-def simulate_mixture_path(x_true, T):
+def simulate_mixture_path(x_true, T, rng):
     """
     模拟混合时序协议下的 T 个观测值。
     """
     w = np.empty(T)
     for t in range(T):
-        if np.random.rand() < x_true:
-            w[t] = np.random.beta(F_a, F_b)
+        if rng.random() < x_true:
+            w[t] = rng.beta(F_a, F_b)
         else:
-            w[t] = np.random.beta(G_a, G_b)
+            w[t] = rng.beta(G_a, G_b)
     return w
 ```
 
@@ -479,8 +476,8 @@ prior_params = [(1, 3), (1, 1), (3, 1)]
 prior_means = [a/(a+b) for a, b in prior_params]
 
 # 从混合模型生成一条观测路径
-set_seed()
-w_mix = simulate_mixture_path(x_true, T_mix)
+rng = np.random.default_rng(142857)
+w_mix = simulate_mixture_path(x_true, T_mix, rng)
 ```
 
 ### 在错误模型下 $\pi_t$ 的行为
@@ -736,7 +733,7 @@ $$
 
 ```{code-cell} ipython3
 @jit
-def martingale_simulate(π0, N=5000, T=200):
+def martingale_simulate(π0, rng, N=5000, T=200):
 
     π_path = np.empty((N,T+1))
     w_path = np.empty((N,T))
@@ -746,27 +743,27 @@ def martingale_simulate(π0, N=5000, T=200):
         π = π0
         for t in range(T):
             # draw w
-            if np.random.rand() <= π:
-                w = np.random.beta(F_a, F_b)
+            if rng.random() <= π:
+                w = rng.beta(F_a, F_b)
             else:
-                w = np.random.beta(G_a, G_b)
+                w = rng.beta(G_a, G_b)
             π = π*f(w)/g(w)/(π*f(w)/g(w) + 1 - π)
             π_path[n,t+1] = π
             w_path[n,t] = w
 
     return π_path, w_path
 
-def fraction_0_1(π0, N, T, decimals):
+def fraction_0_1(π0, rng, N, T, decimals):
 
-    π_path, w_path = martingale_simulate(π0, N=N, T=T)
+    π_path, w_path = martingale_simulate(π0, rng, N=N, T=T)
     values, counts = np.unique(np.round(π_path[:,-1], decimals=decimals), return_counts=True)
     return values, counts
 
-def create_table(π0s, N=10000, T=500, decimals=2):
+def create_table(π0s, rng, N=10000, T=500, decimals=2):
 
     outcomes = []
     for π0 in π0s:
-        values, counts = fraction_0_1(π0, N=N, T=T, decimals=decimals)
+        values, counts = fraction_0_1(π0, rng, N=N, T=T, decimals=decimals)
         freq = counts/N
         outcomes.append(dict(zip(values, freq)))
     table = pd.DataFrame(outcomes).sort_index(axis=1).fillna(0)
@@ -777,15 +774,15 @@ def create_table(π0s, N=10000, T=500, decimals=2):
 T = 200
 π0 = .5
 
-π_path, w_path = martingale_simulate(π0=π0, T=T, N=10000)
+π_path, w_path = martingale_simulate(π0=π0, rng=rng, T=T, N=10000)
 ```
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
 for i in range(100):
-    ax.plot(range(T+1), π_path[i, :])
+    ax.plot(range(T+1), π_path[i, :], lw=2)
 
-ax.set_xlabel('$t$')
+ax.set_xlabel('time')
 ax.set_ylabel(r'$\pi_t$')
 plt.show()
 ```
@@ -826,11 +823,11 @@ plt.show()
 那么让我们把 $\pi_0$ 改为 $.3$，看看对于不同的 $t$ 值，$\pi_t$ 集合的分布会发生什么变化。
 
 ```{code-cell} ipython3
-# 模拟
+# simulate
 T = 200
 π0 = .3
 
-π_path3, w_path3 = martingale_simulate(π0=π0, T=T, N=10000)
+π_path3, w_path3 = martingale_simulate(π0=π0, rng=rng, T=T, N=10000)
 ```
 
 ```{code-cell} ipython3
@@ -838,7 +835,7 @@ fig, ax = plt.subplots()
 for t in [1, 10, T-1]:
     ax.hist(π_path3[:,t], bins=20, alpha=0.4, label=f'T={t}')
 
-ax.set_ylabel('计数')
+ax.set_ylabel('count')
 ax.set_xlabel(r'$\pi_T$')
 ax.legend(loc='upper right')
 plt.show()
@@ -848,19 +845,21 @@ plt.show()
 
 注意其中一条路径涉及系统性更高的 $w_t$ 值，这些结果将 $\pi_t$ 向上推动。
 
-在模拟早期的随机抽样会将主观分布推向更频繁地从 $F$ 中抽样的方向，这会将 $\pi_t$ 推向 $0$。
+在模拟早期的随机抽样会将主观分布推向更频繁地从 $F$ 中抽样的方向，这会将 $\pi_t$ 推向 $1$。
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
 for i, j in enumerate([10, 100]):
-    ax.plot(range(T+1), π_path[j,:], color=colors[i], label=fr'$\pi$_path, {j}-th simulation')
-    ax.plot(range(1,T+1), w_path[j,:], color=colors[i], label=fr'$w$_path, {j}-th simulation', alpha=0.3)
+    ax.plot(range(T+1), π_path[j,:], color=colors[i],
+    label=fr'${{\pi_t}}$, {j}-th simulation', lw=2)
+    ax.plot(range(1,T+1), w_path[j,:], color=colors[i],
+    label=fr'${{w_t}}$, {j}-th simulation', alpha=0.3, lw=2)
 
 ax.legend(loc='upper right')
-ax.set_xlabel('$t$')
+ax.set_xlabel('time')
 ax.set_ylabel(r'$\pi_t$')
 ax2 = ax.twinx()
-ax2.set_ylabel("$w_t$")
+ax2.set_ylabel(r"$w_t$")
 plt.show()
 ```
 
@@ -878,7 +877,7 @@ plt.show()
 
 ```{code-cell} ipython3
 # create table
-table = create_table(list(np.linspace(0,1,11)), N=10000, T=500)
+table = create_table(list(np.linspace(0,1,11)), rng, N=10000, T=500)
 table
 ```
 
@@ -903,27 +902,27 @@ $$
 
 ```{code-cell} ipython3
 @jit
-def compute_cond_var(pi, mc_size=int(1e6)):
-    # create monte carlo draws
+def compute_cond_var(π, rng, mc_size=int(1e6)):
+    # Create Monte Carlo draws
     mc_draws = np.zeros(mc_size)
 
-    for i in prange(mc_size):
-        if np.random.rand() <= pi:
-            mc_draws[i] = np.random.beta(F_a, F_b)
+    for i in range(mc_size):
+        if rng.random() <= π:
+            mc_draws[i] = rng.beta(F_a, F_b)
         else:
-            mc_draws[i] = np.random.beta(G_a, G_b)
+            mc_draws[i] = rng.beta(G_a, G_b)
 
-    dev = pi*f(mc_draws)/(pi*f(mc_draws) + (1-pi)*g(mc_draws)) - pi
+    dev = π*f(mc_draws)/(π*f(mc_draws) + (1-π)*g(mc_draws)) - π
     return np.mean(dev**2)
 
-pi_array = np.linspace(0, 1, 40)
+π_array = np.linspace(0, 1, 40)
 cond_var_array = []
 
-for pi in pi_array:
-    cond_var_array.append(compute_cond_var(pi))
+for π in π_array:
+    cond_var_array.append(compute_cond_var(π, rng))
 
 fig, ax = plt.subplots()
-ax.plot(pi_array, cond_var_array)
+ax.plot(π_array, cond_var_array, lw=2)
 ax.set_xlabel(r'$\pi_{t-1}$')
 ax.set_ylabel(r'$\sigma^{2}(\pi_{t}\vert \pi_{t-1})$')
 plt.show()
