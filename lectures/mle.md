@@ -169,13 +169,13 @@ plt.show()
 
 Treisman的主要数据来源是《福布斯》年度富豪榜及其估计净资产。
 
-数据集`mle/fp.dta`可以从[这里](https://python.quantecon.org/_static/lecture_specific/mle/fp.dta)
+数据集 `fp.dta` 可以从[这里](https://github.com/QuantEcon/data-lectures/raw/main/lectures/fp.dta)
 或其[AER页面](https://www.aeaweb.org/articles?id=10.1257/aer.p20161068)下载。
 
 ```{code-cell} ipython3
 # 加载数据并查看
 df = pd.read_stata(
-    "https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/mle/fp.dta"
+    "https://github.com/QuantEcon/data-lectures/raw/main/lectures/fp.dta"
 )
 df.head()
 ```
