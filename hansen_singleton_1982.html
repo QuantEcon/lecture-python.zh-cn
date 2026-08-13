@@ -271,7 +271,7 @@
 
                     <!-- Last modified / Changelog dropdown -->
                         <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
-                            Last changed: Jul 22, 2026
+                            Last changed: Aug 13, 2026
                             <span class="changelog-icon">▼</span>
                         </button>
 
@@ -279,6 +279,15 @@
                     <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
                         <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/hansen_singleton_1982.md">full history</a>)</h4>
                         <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/151c402" class="changelog-hash">151c402</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">25 minutes ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] Repoint the hansen_singleton pair at QuantEcon/data-lectures (wave B2') (#250)</span>
+                            </li>
                             
                             <li class="changelog-entry">
                                 
@@ -1208,7 +1217,7 @@ Euler-error ACF lags 1-3: 0.678, 0.356, 0.023
 <p>我们专注于他们的 ND+VWR 设定，使用 FRED 非耐用品消费和 Ken French 市值加权市场回报作为 CRSP 的代理，采用相同的 1959:2–1978:12 样本期。</p>
 <p>由于 Ken French 回报与原始的 CRSP 纽约证券交易所市值加权回报不完全相同，我们只想在定性上与论文匹配。</p>
 <p>本讲和配套讲座 <a class="reference internal" href="hansen_singleton_1983.html"><span class="doc">随机消费、风险规避与资产回报的时间行为</span></a> 使用相同的数据构建。</p>
-<p>下面的隐藏单元格加载了一个供应的月度数据集，包含总实际回报和总消费增长。这些数据由维护脚本 <a class="reference external" href="https://github.com/QuantEcon/lecture-python.myst/blob/main/lectures/_static/lecture_specific/hansen_singleton_1982/make_data.py"><code class="docutils literal notranslate"><span class="pre">_static/lecture_specific/hansen_singleton_1982/make_data.py</span></code></a> 从 <a class="reference external" href="https://fred.stlouisfed.org/">FRED</a> 和 <a class="reference external" href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html">Ken French</a> 数据库构建，并在此直接从 GitHub 读取。</p>
+<p>下面的隐藏单元格从 <a class="reference external" href="https://github.com/QuantEcon/data-lectures">QuantEcon/data-lectures</a> 加载了一个月度数据集，包含总实际回报和总消费增长。这些数据由维护脚本 <a class="reference external" href="https://github.com/QuantEcon/data-lectures/blob/main/builders/hansen_singleton_1982_data.py"><code class="docutils literal notranslate"><span class="pre">builders/hansen_singleton_1982_data.py</span></code></a> 从 <a class="reference external" href="https://fred.stlouisfed.org/">FRED</a> 和 <a class="reference external" href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html">Ken French</a> 数据库构建，并在此直接从 GitHub 读取。</p>
 <div class="cell tag_hide-cell docutils container">
 <details class="admonition hide above-input">
 <summary aria-label="Toggle hidden content">
@@ -1216,13 +1225,9 @@ Euler-error ACF lags 1-3: 0.678, 0.356, 0.023
 <p class="expanded admonition-title">Hide code cell content</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DATA_URL</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/&quot;</span>
-    <span class="s2">&quot;lectures/_static/lecture_specific/hansen_singleton_1982/&quot;</span>
-    <span class="s2">&quot;hansen_singleton_1982_data.csv&quot;</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DATA_URL</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/QuantEcon/data-lectures/raw/main/lectures/hansen_singleton_1982_data.csv&quot;</span>
 
-<span class="c1"># 一次性读取供应的快照；load_hs_monthly_data 只对其切片。</span>
+<span class="c1"># 一次性获取快照；load_hs_monthly_data 只对其切片。</span>
 <span class="n">_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">DATA_URL</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
@@ -1230,9 +1235,9 @@ Euler-error ACF lags 1-3: 0.678, 0.356, 0.023
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    加载月度总实际回报和总消费增长序列。</span>
 
-<span class="sd">    数据是由维护脚本</span>
-<span class="sd">    ``_static/lecture_specific/hansen_singleton_1982/make_data.py`` 构建的</span>
-<span class="sd">    供应快照，该脚本从 FRED 和 Ken French 数据库构建它们。</span>
+<span class="sd">    数据是由 QuantEcon/data-lectures 中的维护脚本</span>
+<span class="sd">    ``builders/hansen_singleton_1982_data.py`` 构建的快照，</span>
+<span class="sd">    该脚本从 FRED 和 Ken French 数据库构建它们。</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_timestamp</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">)</span>
     <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">end</span><span class="p">)</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_timestamp</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">)</span>

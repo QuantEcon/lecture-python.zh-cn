@@ -281,7 +281,7 @@
 
                     <!-- Last modified / Changelog dropdown -->
                         <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
-                            Last changed: Jul 22, 2026
+                            Last changed: Aug 13, 2026
                             <span class="changelog-icon">▼</span>
                         </button>
 
@@ -289,6 +289,24 @@
                     <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
                         <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/hansen_singleton_1983.md">full history</a>)</h4>
                         <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/151c402" class="changelog-hash">151c402</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">25 minutes ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] Repoint the hansen_singleton pair at QuantEcon/data-lectures (wave B2') (#250)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/3e1289b" class="changelog-hash">3e1289b</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">1 hour ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] [hansen_singleton_1983.md] Update np.random → Generator API (#226)</span>
+                            </li>
                             
                             <li class="changelog-entry">
                                 
@@ -694,8 +712,7 @@ f_V(\mathbf{v}_t) = (2\pi)^{-1} |\boldsymbol{\Sigma}|^{-1/2} \exp\!\left(-\tfrac
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    从受限模型模拟 [对数消费增长, 对数回报]。</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_lags</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Parameter vector length must be 6 + 2 * n_lags.&quot;</span><span class="p">)</span>
@@ -730,7 +747,7 @@ f_V(\mathbf{v}_t) = (2\pi)^{-1} |\boldsymbol{\Sigma}|^{-1/2} \exp\!\left(-\tfrac
         <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">lag_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="n">lag</span><span class="p">,</span> <span class="p">:])</span>
         <span class="n">lag_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">lag_stack</span><span class="p">)</span>
-        <span class="n">shock</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">Σ_v</span><span class="p">)</span>
+        <span class="n">shock</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">Σ_v</span><span class="p">)</span>
         <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A0</span><span class="p">,</span> <span class="n">A1</span> <span class="o">@</span> <span class="n">lag_vec</span> <span class="o">+</span> <span class="n">μ</span> <span class="o">+</span> <span class="n">shock</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">y</span><span class="p">[</span><span class="n">burn_in</span><span class="p">:,</span> <span class="p">:]</span>
@@ -1106,7 +1123,7 @@ f_V(\mathbf{v}_t) = (2\pi)^{-1} |\boldsymbol{\Sigma}|^{-1/2} \exp\!\left(-\tfrac
 </div>
 </div>
 </div>
-<p>下面的残差诊断总结了正态性和序列相关性检查</p>
+<p>残差诊断下面总结了正态性和序列相关性检查</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">residual_diagnostics</span><span class="p">(</span><span class="n">resid</span><span class="p">):</span>
@@ -1238,7 +1255,7 @@ f_V(\mathbf{v}_t) = (2\pi)^{-1} |\boldsymbol{\Sigma}|^{-1/2} \exp\!\left(-\tfrac
 \[\begin{split}\begin{array}{rcccc}
  &amp; \text{true} &amp; \text{estimate} &amp; \text{se} &amp; t\ (H_0{:}\ \text{true}) \\
 \hline
-α &amp; -1.0000 &amp; -0.9934 &amp; 0.011671 &amp; 0.56 \\β &amp; 0.9930 &amp; 0.9928 &amp; 0.000110 &amp; -1.57
+α &amp; -1.0000 &amp; -0.9757 &amp; 0.011291 &amp; 2.15 \\β &amp; 0.9930 &amp; 0.9929 &amp; 0.000107 &amp; -0.78
 \end{array}\end{split}\]</div>
 </div>
 </div>
@@ -1602,7 +1619,7 @@ E_{t-1}[R_{it} - R_{jt}] = \frac{\sigma_j^2 - \sigma_i^2}{2},
 <p><code class="docutils literal notranslate"><span class="pre">Mkt-RF</span></code> 是所有 CRSP 公司的价值加权回报减去无风险利率，<code class="docutils literal notranslate"><span class="pre">RF</span></code> 是一个月期国库券回报（详情请参阅<a class="reference external" href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html">此处</a>）。</p>
 <p>虽然 Hansen-Singleton 使用 CRSP 价值加权 NYSE 回报，但我们使用 Ken French 市场因子作为最接近的开放获取替代方案。</p>
 <p>消费序列由非耐用品消费（<code class="docutils literal notranslate"><span class="pre">ND</span></code>）与非耐用品平减指数构造而成。</p>
-<p>下面的隐藏单元格加载了一个封装好的月度回报和消费序列数据集。这些数据由位于 <a class="reference external" href="https://github.com/QuantEcon/lecture-python.myst/blob/main/lectures/_static/lecture_specific/hansen_singleton_1983/make_data.py"><code class="docutils literal notranslate"><span class="pre">_static/lecture_specific/hansen_singleton_1983/make_data.py</span></code></a> 的维护脚本从 <a class="reference external" href="https://fred.stlouisfed.org/">FRED</a> 和 <a class="reference external" href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html">Ken French</a> 数据库构建而成，并在此直接从 GitHub 读取。</p>
+<p>下面的隐藏单元格从 <a class="reference external" href="https://github.com/QuantEcon/data-lectures">QuantEcon/data-lectures</a> 加载月度回报和消费序列数据集。这些数据由位于 <a class="reference external" href="https://github.com/QuantEcon/data-lectures/blob/main/builders/hansen_singleton_1983_data.py"><code class="docutils literal notranslate"><span class="pre">builders/hansen_singleton_1983_data.py</span></code></a> 的维护脚本从 <a class="reference external" href="https://fred.stlouisfed.org/">FRED</a> 和 <a class="reference external" href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html">Ken French</a> 数据库构建而成，并在此直接从 GitHub 读取。</p>
 <div class="cell tag_hide-cell docutils container">
 <details class="admonition hide above-input">
 <summary aria-label="Toggle hidden content">
@@ -1610,13 +1627,9 @@ E_{t-1}[R_{it} - R_{jt}] = \frac{\sigma_j^2 - \sigma_i^2}{2},
 <p class="expanded admonition-title">Hide code cell content</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DATA_URL</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/&quot;</span>
-    <span class="s2">&quot;lectures/_static/lecture_specific/hansen_singleton_1983/&quot;</span>
-    <span class="s2">&quot;hansen_singleton_1983_data.csv&quot;</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DATA_URL</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/QuantEcon/data-lectures/raw/main/lectures/hansen_singleton_1983_data.csv&quot;</span>
 
-<span class="c1"># 读取一次封装的快照；load_hs_monthly_data 只是对它进行切片。</span>
+<span class="c1"># 获取一次快照；load_hs_monthly_data 只是对它进行切片。</span>
 <span class="n">_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">DATA_URL</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
@@ -1626,8 +1639,8 @@ E_{t-1}[R_{it} - R_{jt}] = \frac{\sigma_j^2 - \sigma_i^2}{2},
 <span class="sd">    总消费增长、总消费通胀、人均实际</span>
 <span class="sd">    消费和总实际国库券回报。</span>
 
-<span class="sd">    这些数据是由位于</span>
-<span class="sd">    ``_static/lecture_specific/hansen_singleton_1983/make_data.py`` 的维护脚本构建的封装快照，</span>
+<span class="sd">    这些数据是由 QuantEcon/data-lectures 中位于</span>
+<span class="sd">    ``builders/hansen_singleton_1983_data.py`` 的维护脚本构建的快照，</span>
 <span class="sd">    该脚本从 FRED 和 Ken French 数据库构建它们。</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_timestamp</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">)</span>
@@ -1873,7 +1886,7 @@ E_{t-1}[R_{it} - R_{jt}] = \frac{\sigma_j^2 - \sigma_i^2}{2},
 \[\begin{split}\begin{array}{rcccccc}
 \text{NLAG} &amp; \hat{\alpha} &amp; \mathrm{se}(\hat{\alpha}) &amp; \hat{\beta} &amp; \mathrm{se}(\hat{\beta}) &amp; \text{logL} &amp; \text{T} \\
 \hline
-2 &amp; -0.3060 &amp; 0.0599 &amp; 0.9996 &amp; 0.0003 &amp; 1817.5 &amp; 237 \\4 &amp; -0.2882 &amp; 0.0612 &amp; 0.9996 &amp; 0.0003 &amp; 1804.9 &amp; 235 \\6 &amp; -0.1991 &amp; 0.0571 &amp; 0.9996 &amp; 0.0003 &amp; 1791.4 &amp; 233
+2 &amp; -0.3060 &amp; 0.0600 &amp; 0.9996 &amp; 0.0003 &amp; 1817.5 &amp; 237 \\4 &amp; -0.2882 &amp; 0.0612 &amp; 0.9996 &amp; 0.0003 &amp; 1804.9 &amp; 235 \\6 &amp; -0.1991 &amp; 0.0571 &amp; 0.9996 &amp; 0.0003 &amp; 1791.4 &amp; 233
 \end{array}\end{split}\]</div>
 </div>
 </div>
@@ -2001,7 +2014,7 @@ E_{t-1}[R_{it} - R_{jt}] = \frac{\sigma_j^2 - \sigma_i^2}{2},
 \[\begin{split}\begin{array}{rccccc}
 \text{NLAG} &amp; \text{LR} &amp; \text{p(LR)} &amp; \text{chi2.cdf(LR,df)} &amp; \text{df} &amp; \text{T} \\
 \hline
-2 &amp; 42.507 &amp; 0.000 &amp; 1.000 &amp; 3 &amp; 237 \\4 &amp; 46.617 &amp; 0.000 &amp; 1.000 &amp; 7 &amp; 235 \\6 &amp; 66.656 &amp; 0.000 &amp; 1.000 &amp; 11 &amp; 233
+2 &amp; 42.504 &amp; 0.000 &amp; 1.000 &amp; 3 &amp; 237 \\4 &amp; 46.617 &amp; 0.000 &amp; 1.000 &amp; 7 &amp; 235 \\6 &amp; 66.656 &amp; 0.000 &amp; 1.000 &amp; 11 &amp; 233
 \end{array}\end{split}\]</div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>T-bill model rejected at 5% for lags: [2, 4, 6]
 </pre></div>
