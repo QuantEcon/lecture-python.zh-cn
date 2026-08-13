@@ -1436,18 +1436,14 @@ display_table(spread_pretty, fmt={
 
 消费序列由非耐用品消费（`ND`）与非耐用品平减指数构造而成。
 
-下面的隐藏单元格加载了一个封装好的月度回报和消费序列数据集。这些数据由位于 [`_static/lecture_specific/hansen_singleton_1983/make_data.py`](https://github.com/QuantEcon/lecture-python.myst/blob/main/lectures/_static/lecture_specific/hansen_singleton_1983/make_data.py) 的维护脚本从 [FRED](https://fred.stlouisfed.org/) 和 [Ken French](https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html) 数据库构建而成，并在此直接从 GitHub 读取。
+下面的隐藏单元格从 [QuantEcon/data-lectures](https://github.com/QuantEcon/data-lectures) 加载月度回报和消费序列数据集。这些数据由位于 [`builders/hansen_singleton_1983_data.py`](https://github.com/QuantEcon/data-lectures/blob/main/builders/hansen_singleton_1983_data.py) 的维护脚本从 [FRED](https://fred.stlouisfed.org/) 和 [Ken French](https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html) 数据库构建而成，并在此直接从 GitHub 读取。
 
 ```{code-cell} ipython3
 :tags: [hide-cell]
 
-DATA_URL = (
-    "https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/"
-    "lectures/_static/lecture_specific/hansen_singleton_1983/"
-    "hansen_singleton_1983_data.csv"
-)
+DATA_URL = "https://github.com/QuantEcon/data-lectures/raw/main/lectures/hansen_singleton_1983_data.csv"
 
-# 读取一次封装的快照；load_hs_monthly_data 只是对它进行切片。
+# 获取一次快照；load_hs_monthly_data 只是对它进行切片。
 _data = pd.read_csv(DATA_URL, index_col=0, parse_dates=True)
 
 
@@ -1457,8 +1453,8 @@ def load_hs_monthly_data(start="1959-02-01", end="1978-12-01"):
     总消费增长、总消费通胀、人均实际
     消费和总实际国库券回报。
 
-    这些数据是由位于
-    ``_static/lecture_specific/hansen_singleton_1983/make_data.py`` 的维护脚本构建的封装快照，
+    这些数据是由 QuantEcon/data-lectures 中位于
+    ``builders/hansen_singleton_1983_data.py`` 的维护脚本构建的快照，
     该脚本从 FRED 和 Ken French 数据库构建它们。
     """
     start = pd.Timestamp(start).to_period("M").to_timestamp("M")
