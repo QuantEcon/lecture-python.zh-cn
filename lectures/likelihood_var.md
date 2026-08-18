@@ -78,6 +78,8 @@ import quantecon as qe
 from numba import jit
 from typing import NamedTuple, Optional, Tuple
 from collections import namedtuple
+
+rng = np.random.default_rng()
 ```
 
 ## VAR模型设置
@@ -233,7 +235,7 @@ def log_likelihood_path(X, model):
         
     return log_L
 
-def simulate_var(model, T, N_paths=1):
+def simulate_var(model, T, rng, N_paths=1):
     """
     从VAR模型中模拟路径
     """
@@ -243,13 +245,13 @@ def simulate_var(model, T, N_paths=1):
     
     for i in range(N_paths):
         # 生成初始状态
-        x = mvn.rvs(mean=model.μ_0, cov=model.Σ_0)
+        x = mvn.rvs(mean=model.μ_0, cov=model.Σ_0, random_state=rng)
         x = np.atleast_1d(x)
         paths[i, 0] = x
         
         # 向前模拟
         for t in range(T):
-            w = np.random.randn(m)
+            w = rng.standard_normal(m)
             x = model.A @ x + model.C @ w
             paths[i, t+1] = x
             
@@ -337,7 +339,7 @@ model_g = create_var_model(A_g, C_g)
 # 从模型f进行模拟
 T = 200
 N_paths = 100
-paths_from_f = simulate_var(model_f, T, N_paths)
+paths_from_f = simulate_var(model_f, T, rng, N_paths)
 
 L_ratios_f = compute_likelihood_ratio_var(paths_from_f, model_f, model_g)
 
@@ -399,8 +401,8 @@ print("模型g的特征值:", np.linalg.eigvals(A_g))
 T = 50
 N_paths = 50
 
-paths_from_f = simulate_var(model2_f, T, N_paths)
-paths_from_g = simulate_var(model2_g, T, N_paths)
+paths_from_f = simulate_var(model2_f, T, rng, N_paths)
+paths_from_g = simulate_var(model2_g, T, rng, N_paths)
 
 # 计算似然比
 L_ratios_ff = compute_likelihood_ratio_var(paths_from_f, model2_f, model2_g)
@@ -429,7 +431,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-让我们应用{doc}`likelihood_ratio_process`中描述的Neyman-Pearson频率主义决策规则，当$\log L_T \geq 0$时选择模型$f$，当$\log L_T < 0$时选择模型$g$
+让我们应用 {doc}`likelihood_ratio_process` 中描述的Neyman-Pearson频率主义决策规则，当$\log L_T \geq 0$时选择模型$f$，当$\log L_T < 0$时选择模型$g$
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
@@ -468,11 +470,11 @@ def model_selection_analysis(T_values, model_f, model_g, N_sim=500):
     
     for T in T_values:
         # 从模型 f 模拟
-        paths_f = simulate_var(model_f, T, N_sim//2)
+        paths_f = simulate_var(model_f, T, rng, N_sim//2)
         L_ratios_f = compute_likelihood_ratio_var(paths_f, model_f, model_g)
         
         # 从模型 g 模拟
-        paths_g = simulate_var(model_g, T, N_sim//2)
+        paths_g = simulate_var(model_g, T, rng, N_sim//2)
         L_ratios_g = compute_likelihood_ratio_var(paths_g, model_f, model_g)
         
         # 决策规则：如果 log L_T >= 0 则选择 f
@@ -698,12 +700,12 @@ def create_samuelson_var_model(a, b, γ, G, σ, stationary_init=False,
     
     return model, G_obs, info
 
-def simulate_samuelson(model, G_obs, T, N_paths=1):
+def simulate_samuelson(model, G_obs, T, rng, N_paths=1):
     """
     模拟萨缪尔森模型
     """
     # 模拟状态路径
-    states = simulate_var(model, T, N_paths)
+    states = simulate_var(model, T, rng, N_paths)
     
     # 使用G矩阵提取可观测值
     if N_paths == 1:
@@ -746,8 +748,8 @@ T = 50
 N_paths = 50
 
 # 获取状态和观测值
-states_f, obs_f = simulate_samuelson(model_sam_f, G_obs_f, T, N_paths)
-states_g, obs_g = simulate_samuelson(model_sam_g, G_obs_g, T, N_paths)
+states_f, obs_f = simulate_samuelson(model_sam_f, G_obs_f, T, rng, N_paths)
+states_g, obs_g = simulate_samuelson(model_sam_g, G_obs_g, T, rng, N_paths)
 
 output_paths_f = obs_f[:, :, 0] 
 output_paths_g = obs_g[:, :, 0]
@@ -799,10 +801,10 @@ ax.set_title(r'$\log L_t$ (真实模型 = g)')
 plt.show()
 ```
 
-在左图中,数据由$f$生成,似然比趋向正无穷。
+在左图中，数据由 $f$ 生成，似然比趋向正无穷。
 
-在右图中,数据由$g$生成,似然比趋向负无穷。
+在右图中，数据由 $g$ 生成，似然比趋向负无穷。
 
-在这两种情况下,为了数值稳定性,我们对对数似然比过程设置了上下限阈值,因为它们会很快增长到无界。
+在这两种情况下，为了数值稳定性，我们对对数似然比过程设置了上下限阈值，因为它们会很快增长到无界。
 
-在这两种情况下,似然比过程最终都能帮助我们选择正确的模型。
+在这两种情况下，似然比过程最终都能帮助我们选择正确的模型。
