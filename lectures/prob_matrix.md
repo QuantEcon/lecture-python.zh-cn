@@ -41,7 +41,7 @@ translation:
     Coupling: 耦合
     Copula functions: Copula函数
     Copula functions::Bivariate examples with discrete and continuous distributions: 离散和连续分布的二元示例
-    Copula functions::Bivariate examples with discrete and continuous distributions::Discrete marginal distribution: 离散边际分布
+    Copula functions::Bivariate examples with discrete and continuous distributions::Discrete marginal distribution: 离散边缘分布
     Copula functions::Gaussian copula example: 高斯Copula示例
     Exercises: 练习
 ---
@@ -878,7 +878,7 @@ d.joint_tb()
 ```
 
 ```{code-cell} ipython3
-# 样本边际分布
+# 样本边缘分布
 d.draw(1_000_000)
 d.marg_dist()
 ```
@@ -981,7 +981,7 @@ ax.set_xticks([])
 plt.show()
 ```
 
-然后我们可以使用内置的`numpy`函数来抽取随机样本，并从样本均值和方差计算**样本**边际分布。
+然后我们可以使用内置的`numpy`函数来抽取随机样本，并从样本均值和方差计算**样本**边缘分布。
 
 ```{code-cell} ipython3
 μ= np.array([0, 5])
@@ -1248,11 +1248,11 @@ $$
 \end{aligned}
 $$
 
-因此，我们提出的两个联合分布具有相同的边际分布。
+因此，我们提出的两个联合分布具有相同的边缘分布。
 
 但是联合分布本身不同。
 
-因此，多个联合分布 $[f_{ij}]$ 可以具有相同的边际分布。
+因此，多个联合分布 $[f_{ij}]$ 可以具有相同的边缘分布。
 
 耦合在最优传输问题和马尔可夫过程中很重要。请参见这篇{doc}`关于最优传输的讲座 <opt_transport>`。
 
@@ -1260,7 +1260,7 @@ $$
 
 假设 $X_1, X_2, \dots, X_N$ 是 $N$ 个随机变量，并且
 
-* 它们的边际分布是 $F_1(x_1), F_2(x_2),\dots, F_N(x_N)$，并且
+* 它们的边缘分布是 $F_1(x_1), F_2(x_2),\dots, F_N(x_N)$，并且
 
 * 它们的联合分布是$H(x_1,x_2,\dots,x_N)$
 
@@ -1270,27 +1270,27 @@ $$
 H(x_1,x_2,\dots,x_N) = C(F_1(x_1), F_2(x_2),\dots,F_N(x_N)).
 $$
 
-如果边际分布是连续的，那么Copula函数是唯一的。
+如果边缘分布是连续的，那么Copula函数是唯一的。
 
-在这种情况下，我们可以从边际分布的逆函数中恢复它：
+在这种情况下，我们可以从边缘分布的逆函数中恢复它：
 
 $$
 C(u_1,u_2,\dots,u_N) = H(F^{-1}_1(u_1),F^{-1}_2(u_2),\dots,F^{-1}_N(u_N))
 $$
 
-当边际分布不连续时，需要使用广义逆函数，此时Copula函数仅在 $\textrm{Ran}(F_1)\times \cdots \times \textrm{Ran}(F_N)$ 上唯一确定。
+当边缘分布不连续时，需要使用广义逆函数，此时Copula函数仅在 $\textrm{Ran}(F_1)\times \cdots \times \textrm{Ran}(F_N)$ 上唯一确定。
 
-反过来，给定单变量**边际分布**$F_1(x_1), F_2(x_2),\dots,F_N(x_N)$和一个Copula函数$C(\cdot)$，函数$H(x_1,x_2,\dots,x_N) = C(F_1(x_1), F_2(x_2),\dots,F_N(x_N))$是$F_1(x_1), F_2(x_2),\dots,F_N(x_N)$的一个**耦合**。
+反过来，给定单变量**边缘分布**$F_1(x_1), F_2(x_2),\dots,F_N(x_N)$和一个Copula函数$C(\cdot)$，函数$H(x_1,x_2,\dots,x_N) = C(F_1(x_1), F_2(x_2),\dots,F_N(x_N))$是$F_1(x_1), F_2(x_2),\dots,F_N(x_N)$的一个**耦合**。
 
-因此，对于给定的边际分布，当相关的单变量随机变量不独立时，我们可以使用Copula函数来确定联合分布。
+因此，对于给定的边缘分布，当相关的单变量随机变量不独立时，我们可以使用Copula函数来确定联合分布。
 
 Copula函数常被用来描述随机变量之间的**相依性**。
 
 ### 离散和连续分布的二元示例
 
-#### 离散边际分布
+#### 离散边缘分布
 
-如上所述，对于两个给定的边际分布，可能存在多个耦合。
+如上所述，对于两个给定的边缘分布，可能存在多个耦合。
 
 例如，考虑两个随机变量 $X, Y$ 的分布为
 
@@ -1348,7 +1348,7 @@ ymtb.add_row([1, r_hat])
 print(ymtb)
 ```
 
-现在让我们用两个边际分布，一个是$X$的，另一个是$Y$的，来构造两个不同的耦合。
+现在让我们用两个边缘分布，一个是$X$的，另一个是$Y$的，来构造两个不同的耦合。
 
 对于第一个联合分布：
 
@@ -1365,7 +1365,7 @@ $$
 \end{array}\right]
 $$
 
-让我们使用Python来构造这个联合分布，然后验证其边际分布是否符合要求。
+让我们使用Python来构造这个联合分布，然后验证其边缘分布是否符合要求。
 
 ```{code-cell} ipython3
 # 定义参数
@@ -1508,28 +1508,28 @@ c2_ymtb.add_row([1, c2_r_hat])
 print(c2_ymtb)
 ```
 
-经过验证，联合分布 $c_1$ 和 $c_2$ 具有相同的 $X$ 和 $Y$ 的边际分布。
+经过验证，联合分布 $c_1$ 和 $c_2$ 具有相同的 $X$ 和 $Y$ 的边缘分布。
 
 因此它们都是 $X$ 和 $Y$ 的耦合。
 
 ### 高斯Copula示例
 
-**高斯Copula**利用二维正态分布在任意边际分布之间引入依赖关系。
+**高斯Copula**利用二维正态分布在任意边缘分布之间引入依赖关系。
 
 其构造过程分为三步：
 
 1. 从相关系数为 $\rho$ 的二元标准正态分布中抽取 $(Z_1, Z_2)$。
 2. 应用标准正态累积分布函数：$U_k = \Phi(Z_k)$。
-   - $(U_1, U_2)$ 具有均匀边际分布，但保留了 $(Z_1, Z_2)$ 的依赖结构——这就是Copula本身。
-3. 应用所需边际分布的逆累积分布函数：$X_k = F_k^{-1}(U_k)$。
+   - $(U_1, U_2)$ 具有均匀边缘分布，但保留了 $(Z_1, Z_2)$ 的依赖结构——这就是Copula本身。
+3. 应用所需边缘分布的逆累积分布函数：$X_k = F_k^{-1}(U_k)$。
 
-以下代码用指数分布作为边际分布来说明这一过程。
+以下代码用指数分布作为边缘分布来说明这一过程。
 
 ```{code-cell} ipython3
 ---
 mystnb:
   figure:
-    caption: 具有指数边际分布的高斯Copula
+    caption: 具有指数边缘分布的高斯Copula
     name: fig-gaussian-copula
 ---
 
@@ -1542,11 +1542,11 @@ z = rng.multivariate_normal(
     [0, 0], [[1, ρ_cop], [ρ_cop, 1]], n_cop
 )
 
-# 应用正态CDF -> 得到均匀边际分布（Copula本身）
+# 应用正态CDF -> 得到均匀边缘分布（Copula本身）
 u1 = stats.norm.cdf(z[:, 0])
 u2 = stats.norm.cdf(z[:, 1])
 
-# 应用所需边际分布的逆CDF（此处为指数分布）
+# 应用所需边缘分布的逆CDF（此处为指数分布）
 x1 = stats.expon.ppf(u1, scale=1.0)   # 均值为1的指数分布
 x2 = stats.expon.ppf(u2, scale=0.5)   # 均值为0.5的指数分布
 
@@ -1565,9 +1565,9 @@ print(f"(u1, u2) 的样本相关系数: {np.corrcoef(u1, u2)[0, 1]:.3f}")
 
 左图展示了Copula本身——即用均匀坐标表示的依赖结构，它取自相关系数 $\rho = 0.8$ 的二元正态分布。
 
-右图展示了将同样的依赖关系转换到指数边际分布后的情形。
+右图展示了将同样的依赖关系转换到指数边缘分布后的情形。
 
-改变 $\rho$ 可以控制依赖关系的强弱，而边际分布保持不变。
+改变 $\rho$ 可以控制依赖关系的强弱，而边缘分布保持不变。
 
 ## 练习
 
