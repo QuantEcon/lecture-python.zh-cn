@@ -3,28 +3,31 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.1
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 translation:
   title: 异质信念与泡沫
   headings:
     Overview: 概述
     Overview::References: 参考文献
     Overview::Bubbles: 泡沫
-    Structure of the Model: 模型结构
-    Structure of the Model::Ownership Rights: 所有权权利
-    Structure of the Model::Short Sales Prohibited: 禁止卖空
-    Structure of the Model::Optimism and Pessimism: 乐观与悲观
-    Structure of the Model::Information: 信息
-    Solving the Model: 求解模型
-    Solving the Model::Summary Table: 总结表
-    Solving the Model::Single Belief Prices: 单一信念价格
-    Solving the Model::Single Belief Prices::Single Belief Prices as Benchmarks: 单一信念价格作为基准
-    Solving the Model::Pricing under Heterogeneous Beliefs: 异质信念下的定价
-    Solving the Model::Insufficient Funds: 资金不足
-    Solving the Model::Further Interpretation: 进一步解释
+    Structure of the model: 模型结构
+    Structure of the model::Ownership rights: 所有权权利
+    Structure of the model::Short sales prohibited: 禁止卖空
+    Structure of the model::Optimism and pessimism: 乐观与悲观
+    Structure of the model::Information: 信息
+    Solving the model: 求解模型
+    Solving the model::Summary table: 总结表
+    Solving the model::Single belief prices: 单一信念价格
+    Solving the model::Single belief prices::Single belief prices as benchmarks: 单一信念价格作为基准
+    Solving the model::Pricing under heterogeneous beliefs: 异质信念下的定价
+    Solving the model::Insufficient funds: 资金不足
+    Solving the model::Further interpretation: 进一步解释
+    Exercises: 练习
 ---
 
 (harrison_kreps)=
@@ -187,8 +190,8 @@ $P_b$ 的平稳分布约为 $\pi_b = \begin{bmatrix} .43 & .57 \end{bmatrix}$。
 
 这很重要，因为它限制了悲观者表达他们观点的方式。
 
-* 他们**可以**通过出售自己的股份来表达观点。
-* 他们**不能**通过人为"制造股份"来更强烈地表达观点——也就是说，他们不能从更乐观的投资者那里借入股份然后立即卖出。
+* 他们*可以*通过出售自己的股份来表达观点。
+* 他们*不能*通过人为"制造股份"来更强烈地表达观点——也就是说，他们不能从更乐观的投资者那里借入股份然后立即卖出。
 
 ### 乐观与悲观
 
@@ -342,11 +345,11 @@ $$
 如果边际投资者是类型$b$，则满足：
 
 $$
-P_a(s,1)  \bar p(0) + P_a(s,1) ( 1 +  \bar  p(1)) <
-P_b(s,1)  \bar p(0) + P_b(s,1) ( 1 +  \bar  p(1))
+P_a(s,0)  \bar p(0) + P_a(s,1) ( 1 +  \bar  p(1)) <
+P_b(s,0)  \bar p(0) + P_b(s,1) ( 1 +  \bar  p(1))
 $$
 
-**因此边际投资者是（暂时的）乐观型**。
+*因此边际投资者是（暂时的）乐观型*。
 
 方程{eq}`hakr2`是一个函数方程，类似于贝尔曼方程，可以通过以下方式求解：
 
@@ -522,11 +525,13 @@ Scheinkman提取了关于金融监管对泡沫影响的见解。
 
 他强调了限制做空和限制杠杆具有相反的效果。
 
+## 练习
+
 ```{exercise-start}
 :label: hk_ex1
 ```
 
-本练习邀请你使用我们上面构建的函数重新创建汇总表。
+本练习邀请你使用我们上面构建的函数来重新创建摘要表。
 
 |    $s_t$    |   0   |   1   |
 |-------------|-------|-------|
@@ -537,13 +542,13 @@ Scheinkman提取了关于金融监管对泡沫影响的见解。
 | $\hat{p}_a$ | 1.85  | 1.69  |
 | $\hat{p}_b$ | 1.69  | 2.08  |
 
-首先你需要定义转移矩阵和股息支付向量。
+你首先需要定义转移矩阵和股息收益向量。
 
-此外，在下面我们将通过引入两种额外类型的投资者来解释对应于$p_o$的行，一种是**永久乐观型**，另一种是**永久悲观型**。
+此外，下面我们将通过设想另外两类主体来为对应 $p_o$ 的那一行添加一种解释，其中一位主体是**永久乐观的**，另一位是**永久悲观的**。
 
-我们为永久乐观型和永久悲观型投资者构建主观转移概率矩阵如下。
+我们为永久乐观和永久悲观的投资者构建主观转移概率矩阵，方法如下。
 
-永久乐观型投资者(即在每个状态下持最乐观信念的投资者)认为转移矩阵为
+永久乐观的投资者（即在每个状态下都持有最乐观信念的投资者）相信转移矩阵为
 
 $$
 P_o =
@@ -553,7 +558,7 @@ P_o =
     \end{bmatrix}
 $$
 
-永久悲观型投资者认为转移矩阵为
+永久悲观的投资者相信转移矩阵为
 
 $$
 P_p =
@@ -563,7 +568,7 @@ P_p =
     \end{bmatrix}
 $$
 
-我们将在下面展示练习1的解答时使用这些转移矩阵。
+我们将在下面给出练习1的解答时使用这些转移矩阵。
 
 ```{exercise-end}
 ```
@@ -572,14 +577,14 @@ $$
 :class: dropdown
 ```
 
-首先，我们将获得具有同质信念的均衡价格向量，包括当所有投资者都持乐观或悲观态度时的情况。
+首先，我们将求出具有同质信念时的均衡价格向量，包括所有投资者都乐观或都悲观的情形。
 
 ```{code-cell} ipython3
-qa = np.array([[1/2, 1/2], [2/3, 1/3]])    # a类型转移矩阵
-qb = np.array([[2/3, 1/3], [1/4, 3/4]])    # b类型转移矩阵
-# 乐观投资者转移矩阵
+qa = np.array([[1/2, 1/2], [2/3, 1/3]])    # Type a transition matrix
+qb = np.array([[2/3, 1/3], [1/4, 3/4]])    # Type b transition matrix
+# Optimistic investor transition matrix
 qopt = np.array([[1/2, 1/2], [1/4, 3/4]])
-# 悲观投资者转移矩阵
+# Pessimistic investor transition matrix
 qpess = np.array([[2/3, 1/3], [2/3, 1/3]])
 
 dividendreturn = np.array([[0], [1]])
@@ -591,12 +596,12 @@ for transition, label in zip(transitions, labels):
     print(label)
     print("=" * 20)
     s0, s1 = np.round(price_single_beliefs(transition, dividendreturn), 2)
-    print(f"状态0: {s0}")
-    print(f"状态1: {s1}")
+    print(f"State 0: {s0}")
+    print(f"State 1: {s1}")
     print("-" * 20)
 ```
 
-我们将使用price_optimistic_beliefs函数来找出在异质信念下的价格。
+我们将使用 price_optimistic_beliefs 函数来求出异质信念下的价格。
 
 ```{code-cell} ipython3
 opt_beliefs = price_optimistic_beliefs([qa, qb], dividendreturn)
@@ -611,9 +616,9 @@ for p, label in zip(opt_beliefs, labels):
     print("-" * 20)
 ```
 
-注意，在异质信念下的均衡价格等于在**永久乐观**投资者单一信念下的价格 - 这是因为在异质信念均衡中的边际投资者总是暂时乐观的那类投资者。
+注意，异质信念下的均衡价格等于**永久乐观**投资者在单一信念下的价格——这是因为在异质信念均衡中，边际投资者始终是那个暂时乐观的类型。
 
 ```{solution-end}
 ```
 
-[^f1]: 通过假设两类个体总是有"足够深的口袋"来购买所有资产，该模型将财富动态排除在外。Harrison-Kreps模型在状态从0变为1或从1变为0时会产生大量交易量。
+[^f1]: 通过假设两类主体都始终拥有"足够深的口袋"以购买全部资产，该模型将财富动态排除在考虑范围之外。当状态从0变为1或从1变为0时，哈里森-克雷普斯模型会产生较高的交易量。
