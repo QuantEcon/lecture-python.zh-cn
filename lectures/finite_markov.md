@@ -22,7 +22,7 @@ translation:
     Simulation::Rolling Our Own: 自己编写模拟程序
     Simulation::Using QuantEcon's Routines: 使用QuantEcon库
     Simulation::Using QuantEcon's Routines::Adding State Values and Initial Conditions: 自定义状态值和初始状态
-    Marginal Distributions: 边际分布
+    Marginal Distributions: 边缘分布
     Marginal Distributions::Multiple Step Transition Probabilities: 多步转移概率
     'Marginal Distributions::Example: Probability of Recession': 示例：衰退的概率
     'Marginal Distributions::Example 2: Cross-Sectional Distributions': 示例2：分布的横截面解释
@@ -377,7 +377,7 @@ mc.simulate_indices(ts_length=4)
 ```
 
 (mc_md)=
-## {index}`边际分布 <single: Marginal Distributions>`
+## {index}`边缘分布 <single: Marginal Distributions>`
 
 ```{index} single: Markov Chains; Marginal Distributions
 ```
@@ -385,9 +385,9 @@ mc.simulate_indices(ts_length=4)
 假设我们有：
 
 1. 一个马尔可夫链 $\{X_t\}$，其转移概率矩阵为 $P$
-1. 在时间 $t$ 时，$X_t$ 的边际分布为 $\psi_t$
+1. 在时间 $t$ 时，$X_t$ 的边缘分布为 $\psi_t$
 
-我们想知道：在未来某个时间点，比如 $t+1$ 或更一般地 $t+m$ 时，系统的边际分布会是什么？
+我们想知道：在未来某个时间点，比如 $t+1$ 或更一般地 $t+m$ 时，系统的边缘分布会是什么？
 
 为了解决这个问题，我们用 $\psi_t$ 表示时间 $t$ 时随机变量 $X_t$ 的概率分布，其中 $t = 0, 1, 2, \ldots$。
 
@@ -421,7 +421,7 @@ $$
 \psi_{t+1} = \psi_t P
 ```
 
-由此可见，将边际分布向前推进一个时间单位，只需要将分布向量右乘转移矩阵 $P$。
+由此可见，将边缘分布向前推进一个时间单位，只需要将分布向量右乘转移矩阵 $P$。
 
 如果我们想将分布向前推进 $m$ 个时间单位，只需要将分布向量右乘 $P$ 的 $m$ 次幂。
 
@@ -495,7 +495,7 @@ $$
 
 ```{index} single: Markov Chains; Cross-Sectional Distributions
 ```
-我们研究的边际分布不仅可以解释为概率，还可以被理解为大数定律下大样本中实际观察到的横截面分布。
+我们研究的边缘分布不仅可以解释为概率，还可以被理解为大数定律下大样本中实际观察到的横截面分布。
 
 为了更好地理解这一点，让我们回到{ref}`前面讨论的<mc_eg1>`劳动者就业/失业动态模型。
 
@@ -509,7 +509,7 @@ $$
 
 如果我们想知道10个周期后的横截面分布会是什么样子，答案是$\psi P^{10}$，其中$P$是{eq}`p_unempemp`中给出的随机矩阵。
 
-这一结果成立是因为每个劳动者的状态都按照矩阵$P$的规律演变，因此$\psi P^{10}$代表了随机选取的单个劳动者的边际分布。
+这一结果成立是因为每个劳动者的状态都按照矩阵$P$的规律演变，因此$\psi P^{10}$代表了随机选取的单个劳动者的边缘分布。
 
 根据大数定律，当样本规模足够大时，观察到的频率会非常接近理论概率。
 
@@ -672,7 +672,7 @@ mc.is_aperiodic
 ```{index} single: Markov Chains; Stationary Distributions
 ```
 
-如{eq}`fin_mc_fr`所示，我们可以通过右乘$P$将边际分布向前推进一个时间单位。
+如{eq}`fin_mc_fr`所示，我们可以通过右乘$P$将边缘分布向前推进一个时间单位。
 
 某些分布在这种更新过程下保持不变 --- 比如，
 
@@ -686,7 +686,7 @@ P = np.array([[0.4, 0.6],
 这种分布被称为**平稳分布**或**不变分布**。
 
 (mc_stat_dd)=
-形式上，如果对于转移矩阵$P$，边际分布$\psi^*$满足$\psi^* = \psi^* P$，则称其为$P$的**平稳分布**。
+形式上，如果对于转移矩阵$P$，边缘分布$\psi^*$满足$\psi^* = \psi^* P$，则称其为$P$的**平稳分布**。
 
 （这与我们在{doc}`AR(1)过程讲座 <intro:ar1_processes>`中学到的平稳性概念是相同的，只是应用在不同的场景中。）
 
@@ -706,7 +706,7 @@ P = np.array([[0.4, 0.6],
 
 对于给定的随机矩阵 $P$，可能存在多个平稳分布。
 
-* 例如，如果 $P$ 是单位矩阵，那么所有边际分布都是平稳的。
+* 例如，如果 $P$ 是单位矩阵，那么所有边缘分布都是平稳的。
 
 要获得唯一的不变分布，转移矩阵 $P$ 必须具有这样的性质：状态空间的任何非平凡子集都不能是**无限持续的**。
 
@@ -721,7 +721,7 @@ P = np.array([[0.4, 0.6],
 **定理。** 如果$P$既是非周期的又是不可约的，那么
 
 1. $P$恰好有一个平稳分布$\psi^*$。
-1. 对于任何初始边际分布$\psi_0$，当$t \to \infty$时，有$\| \psi_0 P^t - \psi^* \| \to 0$。
+1. 对于任何初始边缘分布$\psi_0$，当$t \to \infty$时，有$\| \psi_0 P^t - \psi^* \| \to 0$。
 
 证明可参见{cite}`haggstrom2002finite`的定理5.2。
 
@@ -800,7 +800,7 @@ mc.stationary_distributions  # 显示所有平稳分布
 
 ```{index} single: Markov Chains; Convergence to Stationarity
 ```
-马尔可夫链收敛定理的第2部分{ref}`如上所述<mc_conv_thm>`表明，无论初始状态如何，$X_t$的边际分布最终都会收敛到平稳分布。
+马尔可夫链收敛定理的第2部分{ref}`如上所述<mc_conv_thm>`表明，无论初始状态如何，$X_t$的边缘分布最终都会收敛到平稳分布。
 
 这一结果强有力地证明了我们可以将$\psi^*$理解为系统长期随机行为的稳定状态，无论系统最初处于什么状态。
 
@@ -867,7 +867,7 @@ plt.show()
 
 * 若 $X_t = x$ 则 $\mathbf{1}\{X_t = x\} = 1$，否则为零
 * 收敛是以概率1发生的
-* 无论 $X_0$ 的边际分布如何，这个结果都成立
+* 无论 $X_0$ 的边缘分布如何，这个结果都成立
 
 这个结果告诉我们，随着时间趋于无穷，马尔可夫链在状态 $x$ 停留的时间比例将收敛到 $\psi^*(x)$。
 
@@ -937,7 +937,7 @@ $$
 
 计算无条件期望值 {eq}`mc_une` 相对简单。
 
-我们只需对 $X_t$ 的边际分布求和即可
+我们只需对 $X_t$ 的边缘分布求和即可
 
 $$
 \mathbb E [ h(X_t) ]
@@ -974,7 +974,7 @@ $$
 \mathbb E \left[ \mathbb E [ h(X_{t + k})  \mid X_t = x] \right] = \mathbb E [  h(X_{t + k}) ]
 $$
 
-其中左边的外部期望 $ \mathbb E$ 是关于 $X_t$ 的边际分布 $\psi_t$ 求得的无条件分布（再次参见方程 {eq}`mdfmc2`）。
+其中左边的外部期望 $ \mathbb E$ 是关于 $X_t$ 的边缘分布 $\psi_t$ 求得的无条件分布（再次参见方程 {eq}`mdfmc2`）。
 
 为了验证迭代期望法则，我们使用方程 {eq}`mc_cce2` 将 $ (P^k h)(x)$ 代入 $E [ h(X_{t + k})  \mid X_t = x]$，写作
 

@@ -4,9 +4,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.11.1
+    jupytext_version: 1.16.7
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 translation:
@@ -38,14 +38,19 @@ translation:
     Python implementation::Convergence of the Riccati equation: 黎卡提方程的收敛
     Python implementation::The VAR representation: VAR 表示
     Python implementation::Likelihood evaluation: 似然评估
-    An example: 一个例子
-    An example::A linear state-space system and its filter: 一个线性状态空间系统及其滤波器
-    An example::Impulse responses of $y_t$ to the innovations $a_t$: $y_t$ 对新息 $a_t$ 的脉冲响应
-    An example::Bivariate VAR(2) in state-space form: 状态空间形式的二元 VAR(2)
-    'An example::Numerical example: impulse responses to innovations': 数值例子：对新息的脉冲响应
+    Where this leads: 由此引出的方向
     Summary: 总结
     Exercises: 练习
 ---
+
+(kalman_filter_var)=
+```{raw} jupyter
+<div id="qe-notebook-header" align="right" style="text-align:right;">
+        <a href="https://quantecon.org/" title="quantecon.org">
+                <img style="width:250px;display:inline;" width="250px" src="https://assets.quantecon.org/img/qe-menubar-logo.svg" alt="QuantEcon">
+        </a>
+</div>
+```
 
 # 卡尔曼滤波器与向量自回归
 
@@ -53,6 +58,10 @@ translation:
 ```
 
 ```{index} single: Vector Autoregression; and Kalman filter
+```
+
+```{contents} Contents
+:depth: 2
 ```
 
 除了 Anaconda 中已有的库之外，本讲座还需要以下库：
@@ -85,6 +94,8 @@ translation:
 - 时不变卡尔曼滤波器如何生成一个**向量自回归**
 - 为什么卡尔曼滤波器是*解释*由经济数据估计得到的 *VAR* 的一个基本工具
 
+后续讲座 {doc}`var_subsets` 将这套工具应用于一个在实践中经常出现的问题：当计量经济学家只能观测到 VAR 中部分变量时，会发生什么。
+
 ## 状态空间系统
 
 卡尔曼滤波器适用于以下针对 $t \geq 0$ 的**状态空间系统**：
@@ -103,7 +114,7 @@ $$ (eq:statespace)
 - $w_{t+1}$ 是一个 $p \times 1$ 的独立同分布的正态随机变量序列，均值为
   $0$，协方差矩阵为单位矩阵
 - $v_t$ 是一个独立同分布的正态随机变量序列，均值为零，协方差矩阵为 $R$
-- 对所有 $t+1$ 和 $s \geq 0$，$w_{t+1}$ 与 $v_s$ 正交
+- $w_t$ 与 $v_s$ 在所有日期对上都正交
 
 系数矩阵具有以下维度：
 $A$ 是 $n \times n$，$C$ 是 $n \times p$，$G$ 是 $m \times n$，$R$ 是 $m \times m$。
@@ -118,6 +129,7 @@ $$ (eq:kalf3)
 并且我们知道由 {eq}`eq:statespace` 和 {eq}`eq:kalf3` 所隐含的所有一阶矩和二阶矩。
 
 ## 卡尔曼滤波器
+
 
 ### 起始分布
 
@@ -303,7 +315,7 @@ $\mathbb{E} a_t a_{t-1}^\top = 0$，更一般地，$\mathbb{E}[a_t \mid a_{t-1},
 
 有时 {eq}`eq:kalf10` 被称为**白化滤波器**：它以信号过程 $\{y_t\}$ 为输入，并产生白噪声新息过程 $\{a_t\}$ 作为输出。
 
-类似地定义 $H(a^t)$，线性空间 $H(a^t)$ 是线性空间 $H(y^t)$ 的一个正交基。
+类似地定义 $H(a^t)$，则 $H(a^t) = H(y^t)$，且 $[a_t, \ldots, a_0]$ 是该共同空间的一个正交基。
 
 卡尔曼滤波器不是通过一个大的回归来计算 $\mathbb{E}[x_t \mid y_{t-1}, \ldots, y_0]$，而是对基 $[a_{t-1}, \ldots, a_0]$ 的一系列相继正交分量执行一系列小回归，这是 **Gram-Schmidt 过程**的一个实例。
 
@@ -322,6 +334,7 @@ $\mathbb{E} a_t a_{t-1}^\top = 0$，更一般地，$\mathbb{E}[a_t \mid a_{t-1},
 均值和协方差过程 $\{(\hat{x}_t, \Sigma_t)\}$ 也是马尔可夫的，它们是在 $[y_{t-1}, \ldots, y_0]$ 条件下 $x_t$ 分布的充分统计量。
 
 ## 估计
+
 
 ### 新息表示
 
@@ -379,6 +392,7 @@ $$
 
 ## 向量自回归与卡尔曼滤波器
 
+
 ### 收敛到稳态
 
 在 {cite:t}`AHMS1996` 所讨论的条件下，对黎卡提方程 {eq}`eq:riccati` 的迭代从任何正半定初始值 $\Sigma_0$ 出发都收敛到一个**时不变**矩阵 $\Sigma$。
@@ -427,7 +441,7 @@ $$ (eq:varorth)
 
 正交条件 {eq}`eq:varorth` 将 {eq}`eq:var1` 识别为一个向量自回归。
 
-通过 $L x_{t+1} \equiv x_t$ 定义滞后算子 $L$，由 {eq}`eq:innovti` 推导出的**移动平均表示**为
+设 $L$ 表示滞后算子，使得 $L x_t = x_{t-1}$，由 {eq}`eq:innovti` 推导出的**移动平均表示**为
 
 $$
 y_t = \left[I + G(I - AL)^{-1} KL\right] a_t
@@ -608,22 +622,32 @@ kf.set_state(np.zeros(1), np.eye(1) * 10.0)  # 弥散先验
 T = 200
 x_path, y_path = lss.simulate(ts_length=T, random_state=42)
 
-# 形状: x_path 是 (n, T+1), y_path 是 (m, T)
-x_true = x_path[0, :T]
+# 形状: x_path 是 (n, T), y_path 是 (m, T)
+x_true = x_path[0, :]
 y_obs = y_path[0, :]
 ```
 
-然后我们手动逐步运行卡尔曼滤波器，以收集滤波后的估计值。
+然后我们手动逐步运行卡尔曼滤波器。
+
+`Kalman.update` 方法执行一个*完整*周期，将先验转移到滤波分布，然后再转移到下一期的先验。
+
+因此，{eq}`eq:kalf10` 中定义的 $(\hat{x}_t, \Sigma_t)$ 是在调用 `update` *之前* 该对象所持有的值，我们在那时记录它们。
 
 ```{code-cell} ipython3
 x_hats = np.zeros(T)
 Sigmas = np.zeros(T)
+innovations = np.zeros(T)
 
 for t in range(T):
+    x_hats[t] = kf.x_hat.item()      # x_hat_t = E[x_t | y^{t-1}]
+    Sigmas[t] = kf.Sigma.item()      # Sigma_t
+    innovations[t] = y_obs[t] - (G @ kf.x_hat).item()
     kf.update(y_obs[t:t+1])          # 一个完整的滤波周期
-    x_hats[t] = kf.x_hat.item()
-    Sigmas[t] = kf.Sigma.item()
 ```
+
+正确排列这个顺序很重要。
+
+如果在调用之后再记录 `kf.x_hat`，将会存储一步向前预测 $\hat{x}_{t+1}$，而将其与 $y_t$ 相减得到的序列将不是新息，也不会具有方差 $G\Sigma G^\top + R$。
 
 ```{code-cell} ipython3
 ---
@@ -651,7 +675,7 @@ axes[1].axhline(kf.Sigma_infinity[0, 0], ls='--', color='k',
 axes[1].set_title('条件方差')
 axes[1].legend(fontsize=9)
 
-axes[2].plot(t_range, y_obs - x_hats, color='C2', lw=2, alpha=0.7,
+axes[2].plot(t_range, innovations, color='C2', lw=2, alpha=0.7,
              label=r'新息 $a_t = y_t - G\hat{x}_t$')
 axes[2].set_title('新息')
 axes[2].set_xlabel('时间 $t$')
@@ -665,6 +689,18 @@ plt.show()
 条件方差从弥散先验迅速下降，然后稳定到其稳态值。
 
 新息序列围绕零波动，正如一步预测误差所应有的那样。
+
+它的样本标准差应接近于 $\sqrt{G\Sigma_\infty G^\top + R}$。
+
+```{code-cell} ipython3
+print(f"sample sd of innovations   = {innovations.std():.4f}")
+print(f"steady-state sd            = "
+      f"{np.sqrt(kf.Sigma_infinity[0, 0] + R[0, 0]):.4f}")
+print(f"first-order autocorrelation = "
+      f"{np.corrcoef(innovations[1:], innovations[:-1])[0, 1]:.4f}")
+```
+
+自相关接近于零，证实了滤波器已经将观测序列白化。
 
 ### 黎卡提方程的收敛
 
@@ -752,317 +788,15 @@ ll = log_likelihood(A, C, G, R,
 print(f"Log-likelihood of sample: {ll:.4f}")
 ```
 
-## 一个例子
+## 由此引出的方向
 
-我们现在通过一个结构化的例子来说明一个二元 VAR(2) 如何自然地嵌入状态空间框架，以及卡尔曼滤波器如何给出一个 Wold（新息）表示。
+卡尔曼滤波器将一个状态空间系统映射为总体上对 $y_t$ 关于其自身过去值进行回归所能恢复出的 VAR。
 
-### 一个线性状态空间系统及其滤波器
+当状态 $x_t$ 包含计量经济学家*看不到*的变量时，这一映射就变得最为有趣。
 
-状态方程和观测方程为
+后续内容 {doc}`var_subsets` 讨论了这方面的一个典型情形：$Y_t$ 遵循一个有限阶 VAR，而计量经济学家只能观测到其子向量 $y_t = S_y Y_t$。
 
-$$
-x_{t+1} = A x_t + C w_{t+1}
-$$ (eq:ex_state)
-
-$$
-y_t = G x_t + v_t
-$$ (eq:ex_obs)
-
-具有初始条件和冲击分布
-
-$$
-x_0 \sim N(\hat{x}_0, \Sigma_0), \quad
-w_{t+1} \sim N(0, I), \quad
-v_t \sim N(0, R).
-$$
-
-稳态误差协方差矩阵 $\Sigma$ 满足黎卡提方程
-
-$$
-\Sigma = A \Sigma A^\top + CC^\top
-         - A \Sigma G^\top \bigl(G \Sigma G^\top + R\bigr)^{-1} G \Sigma A^\top
-$$ (eq:ex_riccati)
-
-且相关的稳态卡尔曼增益为
-
-$$
-K = A \Sigma G^\top \bigl(G \Sigma G^\top + R\bigr)^{-1}
-$$ (eq:ex_gain)
-
-从初始估计 $\hat{x}_0$ 出发，卡尔曼滤波器通过下式更新状态估计
-
-$$
-\hat{x}_{t+1} = A \hat{x}_t + K a_t
-$$ (eq:ex_kf_update)
-
-其中新息为
-
-$$
-a_t = y_t - G \hat{x}_t
-$$ (eq:ex_innovation)
-
-将 {eq}`eq:ex_innovation` 代入 {eq}`eq:ex_kf_update` 并展开：
-
-$$
-\hat{x}_{t+1} = A \hat{x}_t + K(y_t - G\hat{x}_t)
-              = (A - KG)\hat{x}_t + K y_t
-              = (A - KG)\hat{x}_t + K G x_t + K v_t
-$$ (eq:ex_kf_expanded)
-
-### $y_t$ 对新息 $a_t$ 的脉冲响应
-
-计算可观测向量 $y_t$ 对其自身新息 $a_t$ 的**普通脉冲响应函数**是有用的，这个移动平均（Wold）表示是 VAR {eq}`eq:var1` 的镜像。
-
-从时不变新息表示 {eq}`eq:innovti`
-
-$$
-\hat{x}_{t+1} = A\hat{x}_t + K a_t, \qquad y_t = G\hat{x}_t + a_t,
-$$
-
-移动平均表示 {eq}`eq:sf_wold` 为
-
-$$
-y_t = \bigl[I + G(I - AL)^{-1} K L\bigr]\, a_t
-    = a_t + \sum_{h=1}^{\infty} G A^{h-1} K\, a_{t-h}.
-$$
-
-因此 $y_t$ 对单位新息 $a_t$ 的脉冲响应为
-
-$$
-\Psi_0 = I, \qquad \Psi_h = G A^{h-1} K \quad (h \ge 1).
-$$ (eq:ex_y_to_a)
-
-这些系数以由 $A$ 的特征值支配的速率衰减。
-
-我们可以直接从一个 `quantecon` `LinearStateSpace` 对象中读取系数 {eq}`eq:ex_y_to_a`。
-
-我们构建一个状态空间系统，其状态是滤波估计 $\hat{x}_t$，其单一"冲击"是通过 $C = K$ 加载的新息 $a_t$，其观测矩阵为 $G$。
-
-该对象的 `impulse_response` 方法返回序列 $G A^{j} K$，其中 $j = 0, 1, 2, \ldots$，这些正好是 $h \ge 1$ 时的 $\Psi_h$；我们在前面加上 $\Psi_0 = I$ 以捕获当期直达效应 $y_t = G\hat{x}_t + a_t$。
-
-下面返回的数组，其元素 `[h, i, j]` 等于可观测量 `i` 在视界 `h` 处对新息分量 `j` 的响应。
-
-```{code-cell} ipython3
-def y_to_a_irf(A, K, G, T=40):
-    """
-    返回 y_t 对其自身新息 a_t 的 Wold 脉冲响应函数。
-    """
-    n, m = A.shape[0], G.shape[0]
-    lss = qe.LinearStateSpace(A, K, G, np.zeros((m, m)), mu_0=np.zeros(n))
-    _, ycoef = lss.impulse_response(j=T - 2)      # [GK, GAK, GA^2K, ...]
-    Psi = np.empty((T, m, m))
-    Psi[0] = np.eye(m)                          # 当期响应
-    for h in range(1, T):
-        Psi[h] = ycoef[h - 1]
-    return Psi
-```
-
-### 状态空间形式的二元 VAR(2)
-
-考虑两个可观测序列 $r_t$ 和 $z_t$。
-
-将它们堆叠成状态向量 $x_t = (r_t,\; r_{t-1},\; z_t,\; z_{t-1})^\top$。
-
-我们假设 VAR(2) 状态转移方程：
-
-$$
-\begin{pmatrix} r_{t+1} \\ r_t \\ z_{t+1} \\ z_t \end{pmatrix}
-=
-\begin{pmatrix}
-  d_1      & d_2      & d_3      & d_4      \\
-  1        & 0        & 0        & 0        \\
-  \delta_1 & \delta_2 & \delta_3 & \delta_4 \\
-  0        & 0        & 1        & 0
-\end{pmatrix}
-\begin{pmatrix} r_t \\ r_{t-1} \\ z_t \\ z_{t-1} \end{pmatrix}
-+
-\begin{pmatrix}
-  c_{11} & c_{12} \\
-  0      & 0      \\
-  c_{21} & c_{22} \\
-  0      & 0
-\end{pmatrix}
-\begin{pmatrix} w_{1,t+1} \\ w_{2,t+1} \end{pmatrix}
-$$ (eq:ex_var2_state)
-
-我们考虑两种可能的观测方程。
-
-第一种是对 $r_t$ 和 $z_t$ 的二元观测：
-
-$$
-\begin{pmatrix} r_t \\ z_t \end{pmatrix}
-=
-\begin{pmatrix}
-  1 & 0 & 0 & 0 \\
-  0 & 0 & 1 & 0
-\end{pmatrix}
-\begin{pmatrix} r_t \\ r_{t-1} \\ z_t \\ z_{t-1} \end{pmatrix}
-+
-\begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}
-\begin{pmatrix} v_{1t} \\ v_{2t} \end{pmatrix}
-$$ (eq:ex_var2_obs)
-
-第二种是对 $r_t$ 的单变量观测：
-
-$$
-y_t = \begin{pmatrix} 1 & 0 & 0 & 0 \end{pmatrix}
-\begin{pmatrix} r_t \\ r_{t-1} \\ z_t \\ z_{t-1} \end{pmatrix}
-+ v_{1t}
-$$ (eq:ex_scalar_obs)
-
-我们现在比较这两个观测系统生成的 Wold 脉冲响应。
-
-系统 1 同时观测 $r_t$ 和 $z_t$，因此其新息 $a_t$ 是 $2 \times 1$ 的。
-
-系统 2 只观测 $r_t$，因此其新息 $u_t$ 是标量。
-
-两个系统的转移矩阵相同，但观测矩阵不同。
-
-因此，稳态卡尔曼增益也不同，可观测量对其自身新息的 Wold 响应也不同。
-
-### 数值例子：对新息的脉冲响应
-
-参数值为：
-
-$$
-\begin{aligned}
-d_1 &= 0.80,\quad d_2 = 0.05,\quad d_3 = 0.75,\quad d_4 = -0.72 \\
-\delta_1 &= 0.00,\quad \delta_2 = 0.00,\quad \delta_3 = 0.75,\quad \delta_4 = 0.20 \\
-c_{11} &= 1.0,\quad c_{12} = 0.0,\quad c_{21} = 0.0,\quad c_{22} = 1.0 \\
-R &= 0.0001 \times I_2 \quad \text{(二元情形)}, \qquad
-R = 0.0001 \quad \text{(单变量情形)}.
-\end{aligned}
-$$
-
-这些给出 $4 \times 4$ 转移矩阵和 $4 \times 2$ 冲击加载矩阵
-
-$$
-A = \begin{pmatrix}
-0.80 & 0.05 & 0.75 & -0.72 \\
-1    & 0    & 0    & 0    \\
-0    & 0    & 0.75 & 0.20 \\
-0    & 0    & 1    & 0
-\end{pmatrix}, \qquad
-C = \begin{pmatrix}
-1   & 0   \\
-0   & 0   \\
-0   & 1   \\
-0   & 0
-\end{pmatrix}.
-$$
-
-**系统 1** 使用二元观测方程 {eq}`eq:ex_var2_obs`，因此
-$G$ 从状态中选取 $(r_t, z_t)^\top$，新息 $a_t$ 是 $2 \times 1$ 的。
-
-**系统 2** 使用单变量观测方程 {eq}`eq:ex_scalar_obs`，因此该方程中的行向量只选取 $r_t$，新息 $u_t$ 是标量。
-
-```{code-cell} ipython3
-# 参数
-d1, d2, d3, d4 = 0.80, 0.05, 0.75, -.72
-δ1, δ2, δ3, δ4 = 0.00, 0.00, 0.75, 0.20
-c11, c12, c21, c22 = 1.0,  0.0,  0.0,  1.0
-σ_v = 0.01  # sqrt(0.0001)
-
-# 共享矩阵
-A_var = np.array([[d1,     d2,     d3,     d4    ],
-                  [1.0,    0.0,    0.0,    0.0   ],
-                  [δ1, δ2, δ3, δ4],
-                  [0.0,    0.0,    1.0,    0.0   ]])
-
-C_var = np.array([[c11, c12],
-                  [0.0, 0.0],
-                  [c21, c22],
-                  [0.0, 0.0]])
-
-# 系统 1: 二元观测
-G_biv = np.array([[1.0, 0.0, 0.0, 0.0],
-                  [0.0, 0.0, 1.0, 0.0]])
-H_biv = σ_v * np.eye(2)          # H @ H.T = 0.0001 * I_2
-
-lss_biv = qe.LinearStateSpace(A_var, C_var, G_biv, H_biv,
-                               mu_0=np.zeros(4), Sigma_0=np.eye(4))
-kf_biv = qe.Kalman(lss_biv)
-_, K_biv = kf_biv.stationary_values()
-
-print("System 1 - steady-state Kalman gain K (4x2):")
-print(np.round(K_biv, 5))
-
-# 系统 2: 单变量观测
-G_uni = np.array([[1.0, 0.0, 0.0, 0.0]])
-H_uni = np.array([[σ_v]])         # H @ H.T = 0.0001
-
-lss_uni = qe.LinearStateSpace(A_var, C_var, G_uni, H_uni,
-                               mu_0=np.zeros(4), Sigma_0=np.eye(4))
-kf_uni = qe.Kalman(lss_uni)
-_, K_uni = kf_uni.stationary_values()
-
-print("\nSystem 2 - steady-state Kalman gain K (4x1):")
-print(np.round(K_uni, 5))
-```
-
-我们现在应用上面定义的辅助函数 `y_to_a_irf` 来计算可观测量 $y_t$ 对其自身新息 $a_t$ 的普通脉冲响应 {eq}`eq:ex_y_to_a`，分别针对系统 1（二元，因此 $a_t$ 是 $2 \times 1$ 的）和系统 2（单变量，因此 $u_t$ 是标量）。
-
-```{code-cell} ipython3
----
-mystnb:
-  figure:
-    caption: 系统 1 对自身新息的响应
-    name: fig-kfvar-sys1-ya
----
-T_irf = 40
-horizons = np.arange(T_irf)
-
-Psi_biv = y_to_a_irf(A_var, K_biv, G_biv, T_irf)   # 系统 1: (T, 2, 2)
-Psi_uni = y_to_a_irf(A_var, K_uni, G_uni, T_irf)   # 系统 2: (T, 1, 1)
-
-obs_labels = [r'$r_t$', r'$z_t$']
-innov_labels = [r'$a_{1,t}$', r'$a_{2,t}$']
-
-# 系统 1 的响应
-fig, axes = plt.subplots(2, 2, figsize=(10, 6), sharex=True)
-for i, obs in enumerate(obs_labels):
-    for j, inn in enumerate(innov_labels):
-        ax = axes[i, j]
-        ax.plot(horizons, Psi_biv[:, i, j], lw=2)
-        ax.axhline(0, color='k', lw=0.6, ls='--')
-        ax.set_title(fr'{obs} 对 {inn}', fontsize=9)
-        if i == 1:
-            ax.set_xlabel('视界 $h$')
-        if j == 0:
-            ax.set_ylabel('响应')
-fig.tight_layout()
-plt.show()
-```
-
-自身新息在冲击时刻对其自身可观测量产生一对一的影响，然后逐渐消退。
-
-对角面板从 1 开始，非对角面板从 0 开始，因为 $\Psi_0 = I$。
-
-$r_t$ 对 $a_{2,t}$ 的交叉响应在短视界上是相当大的，而 $z_t$ 对 $a_{1,t}$ 的响应在显示的尺度上非常微小。
-
-```{code-cell} ipython3
----
-mystnb:
-  figure:
-    caption: 系统 2 对自身新息的响应
-    name: fig-kfvar-sys2-ya
----
-fig, ax = plt.subplots()
-ax.plot(horizons, Psi_uni[:, 0, 0], lw=2)
-ax.axhline(0, color='k', lw=0.6, ls='--')
-ax.set_xlabel('视界 $h$')
-ax.set_ylabel('响应')
-fig.tight_layout()
-plt.show()
-```
-
-只观测 $r_t$ 时，单一新息在冲击时刻对 $r_t$ 产生一对一的影响，然后单调地衰减到零。
-
-对于 $h \ge 1$，响应通过状态矩阵 $A$ 传播并以几何速率衰减，勾勒出二元（系统 1）和单变量（系统 2）过程的 Wold 移动平均表示。
-
-这些是来自 Wold 表示的预测误差响应，不是结构性冲击响应。
-
-有了这个例子，我们现在可以把本讲座的主要要点汇总起来。
+在那里，我们构建了通用代码，给定 $Y_t$ 的 VAR 以及选择矩阵 $S_y$，返回 $y_t$ 的 VAR 表示和移动平均表示，并将小系统中的新息表达为大系统中新息的分布滞后形式。
 
 ## 总结
 
@@ -1074,7 +808,9 @@ plt.show()
 
 向后求解新息表示得到一个无限阶 VAR，而向前求解则得到 Wold 移动平均表示。
 
-数值例子表明，改变观测变量会改变卡尔曼增益，从而改变 Wold 响应，即使底层状态动态相同也是如此。
+计量经济学家观测哪些变量，决定了卡尔曼增益，进而决定了 VAR 表示和 Wold 表示，即使底层状态动态保持不变也是如此。
+
+{doc}`var_subsets` 对这一观察进行了系统的探讨。
 
 ## 练习
 
@@ -1193,12 +929,12 @@ x2_path, y2_path = lss2.simulate(ts_length=T2, random_state=0)
 
 x_hats2 = np.zeros((T2, 2))
 for t in range(T2):
+    x_hats2[t] = kf2.x_hat.ravel()     # 在更新之前记录 x_hat_t
     kf2.update(y2_path[:, t])
-    x_hats2[t] = kf2.x_hat.ravel()
 
 fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
 for i, ax in enumerate(axes):
-    ax.plot(x2_path[i, :T2], lw=2, label=f'真实 $x_{{{i+1},t}}$')
+    ax.plot(x2_path[i, :], lw=2, label=f'真实 $x_{{{i+1},t}}$')
     ax.plot(x_hats2[:, i], lw=2, ls='--', label=rf'$\hat{{x}}_{{{i+1},t}}$')
     ax.set_title(f'分量 {i+1}')
     ax.legend(fontsize=9)

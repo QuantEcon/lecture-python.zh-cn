@@ -81,7 +81,7 @@ import statsmodels.api as sm
 from statsmodels.iolib.summary2 import summary_col
 from linearmodels.iv import IV2SLS
 import seaborn as sns
-sns.set_theme()
+sns.set_theme(rc={'font.family': ['Source Han Serif SC', 'DejaVu Sans']})  # set_theme 会重置字体，用 rc 覆盖保留中文字体
 ```
 
 ### 预备知识
@@ -106,7 +106,7 @@ sns.set_theme()
 我们将使用pandas的`.read_stata()`函数来读取这些存储在`.dta`格式文件中的数据到数据框
 
 ```{code-cell} python3
-df1 = pd.read_stata('https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/ols/maketable1.dta')
+df1 = pd.read_stata('https://github.com/QuantEcon/data-lectures/raw/main/lectures/maketable1.dta')
 df1.head()
 ```
 
@@ -295,7 +295,7 @@ plt.show()
 让我们使用`maketable2.dta`中的数据估计论文中考虑的一些扩展模型（表2）
 
 ```{code-cell} python3
-df2 = pd.read_stata('https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/ols/maketable2.dta')
+df2 = pd.read_stata('https://github.com/QuantEcon/data-lectures/raw/main/lectures/maketable2.dta')
 
 # 向数据集添加常数项
 df2['const'] = 1
@@ -418,7 +418,7 @@ $$
 
 ```{code-cell} python3
 # 导入并选择数据
-df4 = pd.read_stata('https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/ols/maketable4.dta')
+df4 = pd.read_stata('https://github.com/QuantEcon/data-lectures/raw/main/lectures/maketable4.dta')
 df4 = df4[df4['baseco'] == 1]
 
 # 添加常数变量
@@ -523,7 +523,7 @@ $$
 
 ```{code-cell} python3
 # 加载数据
-df4 = pd.read_stata('https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/ols/maketable4.dta')
+df4 = pd.read_stata('https://github.com/QuantEcon/data-lectures/raw/main/lectures/maketable4.dta')
 
 # 添加常数项
 df4['const'] = 1
@@ -591,7 +591,7 @@ $$
 
 ```{code-cell} python3
 # 加载数据
-df1 = pd.read_stata('https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/lectures/_static/lecture_specific/ols/maketable1.dta')
+df1 = pd.read_stata('https://github.com/QuantEcon/data-lectures/raw/main/lectures/maketable1.dta')
 df1 = df1.dropna(subset=['logpgp95', 'avexpr'])
 
 # 添加常数项

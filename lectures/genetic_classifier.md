@@ -46,7 +46,7 @@ translation:
 
 到目前为止的讲座给适应性主体赋予了相当计量经济学化的大脑。
 
-在 {doc}`olg_adaptive_money` 中，它们运行递归最小二乘法；在 {doc}`exchange_rate_learning` 中，它们针对实现效用采取了牛顿步骤。
+在 {doc}`olg_adaptive_money` 和 {doc}`intermediate:learning_approximation`（英文版）中，它们运行递归最小二乘法；在 {doc}`exchange_rate_learning` 中，它们针对实现效用采取了牛顿步骤。
 
 在每种情况下，主体都持有一个*参数化*规则并调整其系数。
 
@@ -577,7 +577,7 @@ for μ in ([1.0, 0.5], [2.0, 1.0], [3.0, 1.0]):
 
 贯穿整个这部分内容的一个反复出现的发现是：适应性主体系统，无论多么迟缓，都倾向于收敛到理性预期均衡。
 
-{doc}`olg_adaptive_money` 展示了最小二乘学习者找到一个均衡；{doc}`exchange_rate_learning` 展示了牛顿学习者稳定在（众多均衡中的）一个均衡上。
+{doc}`olg_adaptive_money` 和 {doc}`intermediate:learning_approximation`（英文版）展示了最小二乘学习者找到一个均衡；{doc}`exchange_rate_learning` 展示了牛顿学习者稳定在（众多均衡中的）一个均衡上。
 
 **演化编程**（evolutionary programming）将这一倾向转化为一种工具。
 
@@ -587,7 +587,7 @@ for μ in ([1.0, 0.5], [2.0, 1.0], [3.0, 1.0]):
 
 > 适应性主体在"教导"经济学家，正如任何用于求解非线性方程的数值算法都在"教导"数学家一样。当这些主体能够"教导"我们某些东西时，那是因为我们设计它们如此。
 
-这与本系列中反复出现的对偶性相同：一个学习型经济体是一个去中心化的均衡计算过程，而一个均衡计算过程是一个中心化的学习算法。
+这与贯穿 {doc}`intermediate:learning_approximation`（英文版）的对偶性相同：一个学习型经济体是一个去中心化的均衡计算过程，而一个均衡计算过程是一个中心化的学习算法。
 
 遗传算法和分类器系统只是比递归最小二乘更丰富的计算引擎，能够搜索崎岖的景观，发现一个好规则的结构，而不仅仅是调整固定规则的系数。
 
