@@ -174,6 +174,8 @@ a_m & = (a_m\cdot e_1) e_1 + (a_m\cdot e_2) e_2 + \cdots + (a_m \cdot e_n) e_n  
 ```{code-cell} ipython3
 import numpy as np
 from scipy.linalg import qr
+
+rng = np.random.default_rng()
 ```
 
 ```{code-cell} ipython3
@@ -355,7 +357,7 @@ def QR_eigvals(A, tol=1e-12, maxiter=1000):
 
 ```{code-cell} ipython3
 # 用一个随机矩阵A做实验
-A = np.random.random((3, 3))
+A = rng.random((3, 3))
 ```
 
 ```{code-cell} ipython3
@@ -393,14 +395,14 @@ k = 5
 n = 1000
 
 # 生成一些随机矩
-𝜇 = np.random.random(size=k)
-C = np.random.random((k, k))
+𝜇 = rng.random(size=k)
+C = rng.random((k, k))
 Σ = C.T @ C
 ```
 
 ```{code-cell} ipython3
 # X 是一个随机矩阵，其中每一列都遵循多元正态分布
-X = np.random.multivariate_normal(𝜇, Σ, size=n)
+X = rng.multivariate_normal(𝜇, Σ, size=n)
 ```
 
 ```{code-cell} ipython3
