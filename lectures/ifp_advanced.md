@@ -334,7 +334,7 @@ def create_ifp(
     assert β * ER < 1, "稳定性条件不成立。"
 
     # 使用 JAX 生成随机抽取
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     subkey1, subkey2 = jax.random.split(key)
     η_draws = jax.random.normal(subkey1, (shock_draw_size,))
     ζ_draws = jax.random.normal(subkey2, (shock_draw_size,))
@@ -558,7 +558,7 @@ def compute_asset_stationary(
     z_idx_0_vector = jnp.zeros(num_households).astype(jnp.int32)
 
     # 对许多家庭进行向量化
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     keys = jax.random.split(key, num_households)
     # 在 (key, a_0, z_idx_0) 上向量化 simulate_household
     sim_all_households = jax.vmap(
