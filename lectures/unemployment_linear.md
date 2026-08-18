@@ -115,7 +115,6 @@ mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
 恰恰就是失业率。
 ```
 
-
 ## 数据
 
 我们使用美国民用失业率，即来自 FRED 的 `UNRATE` 序列，月度且经过季节性调整。
@@ -152,7 +151,6 @@ plt.show()
 如 {numref}`fig-unrate-monthly` 所示，失业率在衰退中急剧上升，在复苏中缓慢下降，但它始终保持在一个区间内——在整个战后时期大致为 3% 到 11%。
 
 （请记住这个区间，因为它与单位根之争相关联，我们将在下文讨论。）
-
 
 ## 失业的线性模型
 
@@ -215,7 +213,7 @@ def run_nuts(model, data, seed=0, num_warmup=1000, num_samples=2000, num_chains=
                 num_warmup=num_warmup, num_samples=num_samples,
                 num_chains=num_chains, chain_method="vectorized",
                 progress_bar=False)
-    mcmc.run(random.PRNGKey(seed), jnp.asarray(data))
+    mcmc.run(random.key(seed), jnp.asarray(data))
     return mcmc
 ```
 
@@ -252,7 +250,6 @@ mcmc_monthly.print_summary()
 因此，我们发现自然率观点和滞后效应观点在月度数据中几乎无法区分——估计结果与两者都一致。
 
 这就是为什么那个时代的单位根检验难以平息这场辩论 {cite}`roed1997hysteresis`。
-
 
 ## 随机游走会漂离
 
@@ -305,8 +302,6 @@ plt.show()
 
 当我们检查年度数据时，这一点会更加清楚。
 
-
-
 ## 月度与年度
 
 月度数据把 $\phi$ 钉在了 1 上。
@@ -353,8 +348,6 @@ plt.show()
 这并不矛盾。
 
 如果月度持续性是 $\phi$，那么对于年末值而言，持续性大约是 $\phi^{12}$，而将一个接近 1 的数字提升到十二次方会把它明显拉到 1 以下——这与我们的年度估计一致。
-
-
 
 ## 模型遗漏了什么
 
@@ -410,7 +403,6 @@ resid = u_monthly[1:] - (med["ubar"] + med["phi"] * (u_monthly[:-1] - med["ubar"
 
 （因为我们的估计 $\hat\phi$ 非常接近 1，所以这几乎就是月度变化 $u_{t+1} - u_t$。）
 
-
 ### 与高斯分布比较
 
 现在我们来问，这些残差看起来是否是高斯的。
@@ -463,7 +455,6 @@ print(f"residual skewness = {skewness(resid):.2f}")
 对称高斯分布（橙色）无法匹配这两个特征：它把向上和向下的冲击视为等可能，也无法容纳偶尔出现的非常大的跳跃。
 
 所以我们的模型注定会误读数据，把罕见的向上跳跃和长期温和的下滑视为*同一种*冲击。
-
 
 ### 关于代入法的说明
 
