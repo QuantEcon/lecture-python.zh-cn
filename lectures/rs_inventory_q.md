@@ -80,7 +80,6 @@ mpl.font_manager.fontManager.addfont(FONTPATH)  # i18n
 mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
 ```
 
-
 ## 模型
 
 {doc}`inventory_q` 中库存管理问题的贝尔曼方程具有如下形式
@@ -143,9 +142,8 @@ $\gamma$ 越大，意味着对下行风险的厌恶程度越高。
 
 贝尔曼算子、贪婪策略和 VFI 算法都可以从风险中性的情形沿用过来，只需将期望替换为确定性等价物。
 
-
-
 ## 通过值函数迭代求解
+
 
 ### 模型设定
 
@@ -237,7 +235,6 @@ def T_rs(v, model):
     K = len(x_values) - 1
     return T_rs_kernel(v, d_values, ϕ_values, c, κ, β, γ, K)
 ```
-
 
 ### 计算贪婪策略
 
@@ -356,13 +353,12 @@ plt.show()
 
 ```{code-cell} ipython3
 @numba.jit(nopython=True)
-def sim_inventories(ts_length, σ, p, X_init=0, seed=0):
+def sim_inventories(ts_length, σ, p, rng, X_init=0):
     """模拟策略 σ 下的库存动态。"""
-    np.random.seed(seed)
     X = np.zeros(ts_length, dtype=np.int32)
     X[0] = X_init
     for t in range(ts_length - 1):
-        d = np.random.geometric(p) - 1
+        d = rng.geometric(p) - 1
         X[t+1] = max(X[t] - d, 0) + σ[X[t]]
     return X
 ```
@@ -378,7 +374,8 @@ K = len(x_values) - 1
 
 for i, γ in enumerate(γ_values):
     v, σ = results[γ]
-    X = sim_inventories(ts_length, σ, model.p, X_init=K // 2, seed=sim_seed)
+    X = sim_inventories(ts_length, σ, model.p,
+                        np.random.default_rng(sim_seed), X_init=K // 2)
     axes[i].plot(X, alpha=0.7)
     axes[i].set_ylabel("库存")
     axes[i].set_title(f"$\\gamma = {γ}$")
@@ -416,7 +413,6 @@ plt.show()
 
 此外还有一个延续值的渠道：下一期库存 $\max(x - D,
 0) + a$ 随 $D$ 变化，而更高的 $x$ 意味着 $x - D$ 更紧密地跟随 $D$，从而通过 $v$ 将该方差向前传播。
-
 
 ## Q-Learning
 
@@ -580,8 +576,7 @@ Q-learning 循环与风险中性版本相仿，关键变化在于：更新目标
 ```{code-cell} ipython3
 @numba.jit(nopython=True)
 def q_learning_rs_kernel(K, p, c, κ, β, γ, n_steps, X_init,
-                         ε_init, ε_min, ε_decay, q_init, snapshot_steps, seed):
-    np.random.seed(seed)
+                         ε_init, ε_min, ε_decay, q_init, snapshot_steps, rng):
     q = np.full((K + 1, K + 1), q_init)  # 乐观初始化
     n = np.zeros((K + 1, K + 1))        # 用于学习率的访问计数
     ε = ε_init
@@ -592,7 +587,7 @@ def q_learning_rs_kernel(K, p, c, κ, β, γ, n_steps, X_init,
 
     # 初始化状态和行动
     x = X_init
-    a = np.random.randint(0, K - x + 1)
+    a = rng.integers(0, K - x + 1)
 
     for t in range(n_steps):
         # 如有需要则记录策略快照
@@ -601,7 +596,7 @@ def q_learning_rs_kernel(K, p, c, κ, β, γ, n_steps, X_init,
             snap_idx += 1
 
         # === 抽取 D_{t+1} 并观测结果 ===
-        d = np.random.geometric(p) - 1
+        d = rng.geometric(p) - 1
         reward = min(x, d) - c * a - κ * (a > 0)
         x_next = max(x - d, 0) + a
 
@@ -622,8 +617,8 @@ def q_learning_rs_kernel(K, p, c, κ, β, γ, n_steps, X_init,
 
         # === 行为策略：ε-贪婪（使用 a_next，即 argmin 行动）===
         x = x_next
-        if np.random.random() < ε:
-            a = np.random.randint(0, K - x + 1)
+        if rng.random() < ε:
+            a = rng.integers(0, K - x + 1)
         else:
             a = a_next
         ε = max(ε_min, ε * ε_decay)
@@ -641,8 +636,9 @@ def q_learning_rs(model, n_steps=20_000_000, X_init=0,
     K = len(x_values) - 1
     if snapshot_steps is None:
         snapshot_steps = np.array([], dtype=np.int64)
+    rng = np.random.default_rng(seed)
     return q_learning_rs_kernel(K, p, c, κ, β, γ, n_steps, X_init,
-                                ε_init, ε_min, ε_decay, q_init, snapshot_steps, seed)
+                                ε_init, ε_min, ε_decay, q_init, snapshot_steps, rng)
 ```
 
 ### 运行 Q-learning
@@ -710,7 +706,8 @@ X_init = K // 2
 sim_seed = 5678
 
 # 最优策略
-X_opt = sim_inventories(ts_length, σ_star, model.p, X_init, seed=sim_seed)
+X_opt = sim_inventories(ts_length, σ_star, model.p,
+                        np.random.default_rng(sim_seed), X_init)
 axes[0].plot(X_opt, alpha=0.7)
 axes[0].set_ylabel("库存")
 axes[0].set_title("最优 (VFI)")
@@ -719,7 +716,8 @@ axes[0].set_ylim(0, K + 2)
 # Q-learning 快照
 for i in range(n_snaps):
     σ_snap = snapshots[i]
-    X = sim_inventories(ts_length, σ_snap, model.p, X_init, seed=sim_seed)
+    X = sim_inventories(ts_length, σ_snap, model.p,
+                        np.random.default_rng(sim_seed), X_init)
     axes[i + 1].plot(X, alpha=0.7)
     axes[i + 1].set_ylabel("库存")
     axes[i + 1].set_title(f"第 {snap_steps[i]:,} 步")
