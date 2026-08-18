@@ -244,7 +244,6 @@ $$
 
 下面给出示例。
 
-
 ## 实现
 
 让我们转向实现。
@@ -324,8 +323,8 @@ def create_model(
     grid = np.linspace(1e-4, grid_max, grid_size)
 
     # 存储冲击（使用种子，以便结果可复现）
-    np.random.seed(seed)
-    shocks = np.exp(μ + ν * np.random.randn(shock_size))
+    rng = np.random.default_rng(seed)
+    shocks = np.exp(μ + ν * rng.standard_normal(shock_size))
 
     return Model(u, f, β, μ, ν, grid, shocks, α, u_prime, f_prime)
 ```
