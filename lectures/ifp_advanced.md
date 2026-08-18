@@ -366,8 +366,8 @@ def Y(z, η, a_y, b_y):
 
 ```{code-cell} ipython3
 def K(
-        a_in: jnp.array,   # a_in[i, z] 是资产网格
         c_in: jnp.array,   # c_in[i, z] = a_in[i, z] 处的消费
+        a_in: jnp.array,   # a_in[i, z] 是资产网格
         ifp: IFP
     ):
     """
@@ -408,7 +408,7 @@ def K(
     c_out = c_out.at[0, :].set(0)
     a_out = a_out.at[0, :].set(0)
 
-    return a_out, c_out
+    return c_out, a_out
 ```
 
 下一个函数使用 JAX 通过时间迭代求解最优消费政策的近似：
@@ -464,15 +464,15 @@ a_init = σ_init.copy()
 让我们用 JAX 生成一个近似解：
 
 ```{code-cell} ipython3
-a_star, σ_star = solve_model(ifp, a_init, σ_init)
+σ_star, a_star = solve_model(ifp, σ_init, a_init)
 ```
 
 让我们再用计时器试一次。
 
 ```{code-cell} python3
 with qe.Timer(precision=8):
-    a_star, σ_star = solve_model(ifp, a_init, σ_init)
-    a_star.block_until_ready()
+    σ_star, a_star = solve_model(ifp, σ_init, a_init)
+    σ_star.block_until_ready()
 ```
 
 ## 模拟
@@ -614,7 +614,7 @@ s_grid = ifp.s_grid
 n_z = len(ifp.P)
 a_init = s_grid[:, None] * jnp.ones(n_z)
 c_init = a_init
-a_vec, c_vec = solve_model(ifp, a_init, c_init)
+c_vec, a_vec = solve_model(ifp, c_init, a_init)
 assets = compute_asset_stationary(c_vec, a_vec, ifp, num_households=200_000)
 
 # 为图形计算基尼系数
@@ -700,8 +700,8 @@ for a_r in a_r_vals:
     n_z_temp = len(ifp_temp.P)
     a_init_temp = s_grid_temp[:, None] * jnp.ones(n_z_temp)
     c_init_temp = a_init_temp
-    a_vec_temp, c_vec_temp = solve_model(
-        ifp_temp, a_init_temp, c_init_temp
+    c_vec_temp, a_vec_temp = solve_model(
+        ifp_temp, c_init_temp, a_init_temp
     )
 
     # 模拟家庭
@@ -772,8 +772,8 @@ for a_y in a_y_vals:
     n_z_temp = len(ifp_temp.P)
     a_init_temp = s_grid_temp[:, None] * jnp.ones(n_z_temp)
     c_init_temp = a_init_temp
-    a_vec_temp, c_vec_temp = solve_model(
-        ifp_temp, a_init_temp, c_init_temp
+    c_vec_temp, a_vec_temp = solve_model(
+        ifp_temp, c_init_temp, a_init_temp
     )
 
     # 模拟家庭
