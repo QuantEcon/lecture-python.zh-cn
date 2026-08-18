@@ -383,7 +383,8 @@ $$
 我们用 $N=8$ 的情况来说明这一点。
 
 ```{code-cell} ipython3
-c = np.random.random(8)
+rng = np.random.default_rng()
+c = rng.random(8)
 ```
 
 ```{code-cell} ipython3
