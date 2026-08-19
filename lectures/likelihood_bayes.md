@@ -39,21 +39,21 @@ translation:
 
 ## 概述
 
-本讲解描述了**似然比过程**在**贝叶斯学习**中所扮演的角色。
+本讲解描述了*似然比过程*在*贝叶斯学习*中所扮演的角色。
 
-如同{doc}`本讲 <likelihood_ratio_process>`中所述，我们将使用{doc}`本讲 <exchangeable>`中的一个简单统计设置。
+如同{doc}`likelihood_ratio_process` 中所述，我们将使用 {doc}`exchangeable` 中的一个简单统计设置。
 
-我们将重点关注似然比过程和**先验**概率如何决定**后验**概率。
+我们将重点关注似然比过程和*先验*概率如何决定*后验*概率。
 
 我们将推导出一个便利的递归公式，表示今天的后验概率是昨天后验概率和今天似然过程乘法增量的函数。
 
 我们还将介绍该公式的一个有用推广，该推广将今天的后验概率表示为初始先验和今天似然比过程实现值的函数。
 
-我们将研究在我们的设置中，贝叶斯学习者如何最终学习到生成数据的概率分布，这个结果建立在{doc}`本讲座 <likelihood_ratio_process>`中研究的似然比过程的渐近行为之上。
+我们将研究在我们的设置中，贝叶斯学习者如何最终学习到生成数据的概率分布，这个结果建立在 {doc}`likelihood_ratio_process` 中研究的似然比过程的渐近行为之上。
 
 我们还将深入探讨贝叶斯学习者的心理，研究其主观信念下的动态变化。
 
-本讲座提供了技术性结果，这些结果是{doc}`本讲座 <odu>`、{doc}`本讲座 <wald_friedman>`和{doc}`本讲座 <navy_captain>`中将要研究的结果的基础。
+本讲座提供了技术性结果，这些结果是 {doc}`odu`、{doc}`wald_friedman` 和 {doc}`navy_captain` 中将要研究的结果的基础。
 
 我们先加载一些Python模块。
 
@@ -67,7 +67,7 @@ mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 import numpy as np
-from numba import vectorize, jit
+from numba import vectorize, jit, prange
 from math import gamma
 import pandas as pd
 from scipy.integrate import quad
@@ -76,18 +76,21 @@ from scipy.integrate import quad
 import seaborn as sns
 colors = sns.color_palette()
 
-rng = np.random.default_rng(142857)
+@jit
+def set_seed():
+    np.random.seed(142857)
+set_seed()
 ```
 
 ## 背景设置
 
-我们首先回顾{doc}`本讲座 <likelihood_ratio_process>`中的设置，这也是我们在这里采用的设置。
+我们首先回顾 {doc}`likelihood_ratio_process` 中的设置，这也是我们在这里采用的设置。
 
 一个非负随机变量 $W$ 具有两个概率密度函数之一，要么是 $f$，要么是 $g$。
 
 在时间开始之前，自然界一劳永逸地决定是从 $f$ 还是从 $g$ 中进行一系列独立同分布的抽样。
 
-我们有时会用 $q$ 表示自然界一劳永逸选择的密度，所以 $q$ 要么是 $f$ 要么是 $g$，且是永久性的。
+我们用 $q$ 表示自然界一劳永逸选择的密度，所以 $q$ 要么是 $f$ 要么是 $g$，且是永久性的。
 
 自然界知道它永久从哪个密度中抽样，但我们这些观察者并不知道。
 
@@ -101,7 +104,7 @@ rng = np.random.default_rng(142857)
 
 我们想要利用这些观测来推断自然界选择了 $f$ 还是 $g$。
 
-**似然比过程**是完成这项任务的有用工具。
+似然比过程是完成这项任务的有用工具。
 
 首先，我们定义似然比过程的关键组成部分，即时间 $t$ 的似然比，它是一个随机变量：
 
@@ -140,7 +143,7 @@ $$
 
 似然比及其对数是使用 Neyman 和 Pearson 经典频率派方法进行推断的关键工具 {cite}`Neyman_Pearson`。
 
-我们将再次使用来自{doc}`本讲座 <likelihood_ratio_process>`的以下 Python 代码，该代码将 $f$ 和 $g$ 评估为两个不同的贝塔分布，然后通过从*某个*概率分布（例如，从 $g$ 生成的 IID 序列）生成序列 $w^t$ 来计算和模拟相关的似然比过程。
+我们将再次使用来自 {doc}`likelihood_ratio_process` 的以下 Python 代码，该代码将 $f$ 和 $g$ 评估为两个不同的贝塔分布，然后通过从*某个*概率分布（例如，从 $g$ 生成的 IID 序列）生成序列 $w^t$ 来计算和模拟相关的似然比过程。
 
 ```{code-cell} ipython3
 # Parameters in the two beta distributions.
@@ -150,7 +153,7 @@ G_a, G_b = 3, 1.2
 @vectorize
 def p(x, a, b):
     r = gamma(a + b) / (gamma(a) * gamma(b))
-    return r * x** (a-1) * (1 - x) ** (b-1)
+    return r * x**(a-1) * (1 - x)**(b-1)
 
 # The two density functions.
 f = jit(lambda x: p(x, F_a, F_b))
@@ -163,7 +166,6 @@ def simulate(a, b, rng, T=50, N=500):
     '''
     生成N组T个似然比观测值，
     以N x T矩阵形式返回。
-
     '''
 
     l_arr = np.empty((N, T))
@@ -194,7 +196,7 @@ l_seq_f = np.cumprod(l_arr_f, axis=1)
 设 $\pi_0 \in [0,1]$ 是贝叶斯统计学家对自然生成的 $w^t$ 序列是来自分布 $f$ 的独立同分布抽样的先验概率。
 
 * 这里的"概率"应被理解为总结或表达主观观点的一种方式
-* 它**不**意味着样本量无限增长时的预期相对频率
+* 它*不*意味着样本量无限增长时的预期相对频率
 
 设 $\pi_{t+1}$ 是定义如下的贝叶斯后验概率：
 
@@ -202,9 +204,9 @@ $$
 \pi_{t+1} = {\rm Prob}(q=f|w^{t+1})
 $$ (eq:defbayesposterior)
 
-似然比过程是后验概率 $\pi_t$ 演化公式中的主要角色，这是**贝叶斯定律**的一个实例。
+似然比过程是后验概率 $\pi_t$ 演化公式中的主要角色，这是*贝叶斯定律*的一个实例。
 
-让我们推导 $\pi_{t+1}$ 的两个公式，一个用似然比 $l(w_t)$ 表示，另一个用 $L(w^t)$ 表示。
+让我们推导 $\pi_{t+1}$ 的两个公式，一个用似然比 $\ell(w_t)$ 表示，另一个用 $L(w^t)$ 表示。
 
 首先，我们使用以下符号约定：
 
@@ -236,7 +238,7 @@ $$
 
 其中大括号$\{\cdot\}$是我们用来表示"事件"的简写。
 
-因此在我们的设定中，概率法则{eq}`eq:problawAB`意味着
+因此在我们的设定中，概率法则 {eq}`eq:problawAB` 意味着
 
 $$
 {\rm Prob}(q=f |w^{t+1})  {\rm Prob}(w^{t+1}  |\emptyset) = {\rm Prob}(w^{t+1} |q=f) {\rm Prob}(q=f  | \emptyset)
@@ -262,15 +264,15 @@ $$
 \pi_{t+1}=\frac{\pi_{0}L\left(w^{t+1}\right)}{\pi_{0}L\left(w^{t+1}\right)+1-\pi_{0}} .
 ```
 
-公式{eq}`eq_Bayeslaw1033`可以被视为在看到数据批次$\left\{ w_{i}\right\} _{i=1}^{t+1}$后对先验概率$\pi_0$的一步修正。
+公式 {eq}`eq_Bayeslaw1033` 可以被视为在看到数据批次 $\left\{ w_{i}\right\} _{i=1}^{t+1}$ 后对先验概率 $\pi_0$ 的一步修正。
 
-公式{eq}`eq_Bayeslaw1033`显示了似然比过程$L\left(w^{t+1}\right)$在确定后验概率$\pi_{t+1}$中起到的关键作用。
+公式 {eq}`eq_Bayeslaw1033` 显示了似然比过程 $L\left(w^{t+1}\right)$ 在确定后验概率 $\pi_{t+1}$ 中起到的关键作用。
 
-公式{eq}`eq_Bayeslaw1033`是理解以下观点的基础：由于似然比过程在$t \rightarrow + \infty$时的行为特征，似然比过程在决定$\pi_t$的极限行为时会主导初始先验$\pi_0$的影响。
+公式 {eq}`eq_Bayeslaw1033` 是理解以下观点的基础：由于似然比过程在 $t \rightarrow + \infty$ 时的行为特征，似然比过程在决定 $\pi_t$ 的极限行为时会主导初始先验 $\pi_0$ 的影响。
 
 ### 递归公式
 
-我们可以使用类似的推理方法得到公式{eq}`eq_Bayeslaw1033`的递归版本。
+我们可以使用类似的推理方法得到公式 {eq}`eq_Bayeslaw1033` 的递归版本。
 
 概率法则表明
 
@@ -290,19 +292,19 @@ $$
 {\rm Prob}(q=f|w^{t+1}) = \frac{{\rm Prob}(q=f|w^{t}) f(w_{t+1} )} {{\rm Prob}(w_{t+1})}
 $$
 
-将方程{eq}`eq:bayes150`右侧的分子和分母都除以$g(w_{t+1})$得到递归式
+将方程 {eq}`eq:bayes150` 右侧的分子和分母都除以$g(w_{t+1})$得到递归式
 
 ```{math}
 :label: eq_recur1
 
-\pi_{t+1}=\frac{\pi_{t} l_t(w_{t+1})}{\pi_{t} l_t(w_{t+1})+1-\pi_{t}}
+\pi_{t+1}=\frac{\pi_{t} \ell(w_{t+1})}{\pi_{t} \ell(w_{t+1})+1-\pi_{t}}
 ```
 
 其中$\pi_{0}$是$q = f$的贝叶斯先验概率，即在我们尚未看到任何数据时基于个人或主观判断的关于$q$的信念。
 
-通过迭代方程{eq}`eq_recur1`可以推导出公式{eq}`eq_Bayeslaw1033`。
+通过迭代方程 {eq}`eq_recur1` 可以推导出公式 {eq}`eq_Bayeslaw1033`。
 
-下面我们定义一个Python函数，该函数根据递归式{eq}`eq_recur1`使用似然比$\ell$更新信念$\pi$
+下面我们定义一个Python函数，该函数根据递归式 {eq}`eq_recur1` 使用似然比$\ell$更新信念$\pi$
 
 ```{code-cell} ipython3
 @jit
@@ -319,7 +321,7 @@ def update(π, l):
 
 当 $t \rightarrow + \infty$ 时，似然比过程在决定 $\pi_t$ 的极限行为中占主导地位，超过了初始先验 $\pi_0$ 的影响。
 
-为了说明这一见解，我们将绘制图表，展示似然比过程 $L_t$ 的**一条**模拟路径，以及与*相同*似然比过程实现但*不同*初始先验概率 $\pi_{0}$ 相关联的两条 $\pi_t$ 路径。
+为了说明这一见解，我们将绘制图表，展示似然比过程 $L_t$ 的*一条*模拟路径，以及与*相同*似然比过程实现但*不同*初始先验概率 $\pi_{0}$ 相关联的两条 $\pi_t$ 路径。
 
 首先，我们在Python中设定两个 $\pi_0$ 的值。
 
@@ -340,19 +342,25 @@ for t in range(T):
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 后验路径与对数似然
+    name: fig-posterior-lratio-f
+---
 fig, ax1 = plt.subplots()
 
 for i in range(2):
-    ax1.plot(range(T+1), π_seq_f[i, :], label=fr"$\pi_0$={π_seq_f[i, 0]}")
+    ax1.plot(range(T+1), π_seq_f[i, :], 
+    label=fr"$\pi_0$={π_seq_f[i, 0]}", lw=2)
 
 ax1.set_ylabel(r"$\pi_t$")
-ax1.set_xlabel("t")
+ax1.set_xlabel(r"$t$")
 ax1.legend()
-ax1.set_title("当f支配数据时")
 
 ax2 = ax1.twinx()
-ax2.plot(range(1, T+1), np.log(l_seq_f[0, :]), '--', color='b')
-ax2.set_ylabel("$log(L(w^{t}))$")
+ax2.plot(range(1, T+1), np.log(l_seq_f[0, :]), '--', color='b', lw=2)
+ax2.set_ylabel(r"$\log(L(w^{t}))$")
 
 plt.show()
 ```
@@ -374,19 +382,25 @@ for t in range(T):
 ```
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 后验路径与对数似然
+    name: fig-posterior-lratio-g
+---
 fig, ax1 = plt.subplots()
 
 for i in range(2):
-    ax1.plot(range(T+1), π_seq_g[i, :], label=fr"$\pi_0$={π_seq_g[i, 0]}")
+    ax1.plot(range(T+1), π_seq_g[i, :], 
+        label=fr"$\pi_0$={π_seq_g[i, 0]}", lw=2)
 
 ax1.set_ylabel(r"$\pi_t$")
-ax1.set_xlabel("t")
+ax1.set_xlabel(r"$t$")
 ax1.legend()
-ax1.set_title("当g支配数据时")
 
 ax2 = ax1.twinx()
-ax2.plot(range(1, T+1), np.log(l_seq_g[0, :]), '--', color='b')
-ax2.set_ylabel("$log(L(w^{t}))$")
+ax2.plot(range(1, T+1), np.log(l_seq_g[0, :]), '--', color='b', lw=2)
+ax2.set_ylabel(r"$\log(L(w^{t}))$")
 
 plt.show()
 ```
@@ -406,27 +420,27 @@ for i in range(2):
 np.abs(π_seq - π_seq_f).max() < 1e-10
 ```
 
-因此，我们得出结论，似然比过程是公式{eq}`eq_Bayeslaw1033`中贝叶斯后验概率的关键组成部分，该后验概率表示自然界从密度$f$中重复抽样得到历史$w^t$的概率。
+因此，我们得出结论，似然比过程是公式 {eq}`eq_Bayeslaw1033` 中贝叶斯后验概率的关键组成部分，该后验概率表示自然界从密度$f$中重复抽样得到历史$w^t$的概率。
 
 ## 另一种时序协议
 
 让我们研究当自然界在不同的时序协议下生成历史$w^t = \{w_1, w_2, \dots, w_t\}$时，后验概率$\pi_t = {\rm Prob}(q=f|w^{t})$的表现。
 
-到目前为止，我们假设在时间1之前，自然界以某种方式选择从**要么**$f$**要么**$g$中进行iid序列抽样来得到$w^t$。
+到目前为止，我们假设在时间1之前，自然界以某种方式选择从$f$或$g$中进行IID序列抽样来得到$w^t$。
 
-自然界关于是从$f$还是从$g$中抽样的决定因此是**永久性的**。
+自然界关于是从$f$还是从$g$中抽样的决定因此是*永久性的*。
 
-现在我们假设一个不同的时序协议，在**每个**时期$t =1, 2, \ldots$之前，自然界：
+现在我们假设一个不同的时序协议，在*每个*时期$t =1, 2, \ldots$之前，自然界：
 
 * 抛一个权重为$x$的硬币，然后
 * 如果抛出"正面"就从$f$中抽样
 * 如果抛出"反面"就从$g$中抽样
 
-在这个时序协议下，自然界**既不**永久地从$f$抽样**也不**永久地从$g$抽样，所以认为自然界在**永久地**从其中之一进行i.i.d.抽样的统计学家是错误的。
+在这个时序协议下，自然界*既不*永久地从$f$抽样*也不*永久地从$g$抽样，所以认为自然界*永久地*从其中之一进行IID抽样的统计学家是错误的。
 
-* 事实上，自然界实际上是**永久地**从$f$和$g$的$x$-混合分布中抽样——当$x \in (0,1)$时，这个分布既不是$f$也不是$g$
+* 事实上，自然界实际上是*永久地*从$f$和$g$的$x$-混合分布中抽样——当$x \in (0,1)$时，这个分布既不是$f$也不是$g$
 
-因此，贝叶斯先验 $\pi_0$ 和方程 {eq}`eq_Bayeslaw1033` 描述的后验概率序列**不应该**被解释为统计学家对于另一种时序协议（即自然从 $f$ 和 $g$ 的 $x$ 混合分布中抽样）下混合参数 $x$ 的观点。
+因此，贝叶斯先验 $\pi_0$ 和方程 {eq}`eq_Bayeslaw1033` 描述的后验概率序列*不应该*被解释为统计学家对于另一种时序协议（即自然从 $f$ 和 $g$ 的 $x$ 混合分布中抽样）下混合参数 $x$ 的观点。
 
 当我们回顾方程 {eq}`eq:defbayesposterior` 中 $\pi_t$ 的定义时，这一点就很清楚了。为方便起见，我们在这里重复该方程：
 
@@ -434,10 +448,10 @@ $$
 \pi_{t+1} = {\rm Prob}(q=f|w^{t+1})
 $$
 
-让我们编写一些 Python 代码来研究当自然实际上既不是从 $f$ 也不是从 $g$ 生成数据，而是从两个 beta 分布的 $x$ 混合分布中进行 i.i.d. 抽样时，$\pi_t$ 的行为。
+让我们编写一些 Python 代码来研究当自然实际上既不是从 $f$ 也不是从 $g$ 生成数据，而是从两个 beta 分布的 $x$ 混合分布中进行 IID 抽样时，$\pi_t$ 的行为。
 
 ```{note}
-这是一个统计学家的模型被错误指定的情况，因此我们应该预期相对于 $x$ 混合分布的 Kullback-Liebler 散度将影响结果。
+这是一个统计学家的模型被错误指定的情况，因此我们应该预期相对于 $x$ 混合分布的 Kullback–Leibler 散度将影响结果。
 ```
 
 我们可以研究对于自然混合概率 $x$ 的不同值，$\pi_t$ 会如何表现。
@@ -485,6 +499,12 @@ w_mix = simulate_mixture_path(x_true, T_mix, rng)
 让我们研究当数据实际上是由 $f$ 和 $g$ 的 $x$-混合生成时，从 $f$ 永久抽取的后验概率 $\pi_t$ 的表现。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 混合模型下的后验
+    name: fig-posterior-mixture
+---
 fig, ax = plt.subplots(figsize=(10, 6))
 T_plot = 200
 
@@ -517,7 +537,7 @@ plt.show()
 
 给定 $x = 0.5$，数据生成过程是 $f$ 和 $g$ 的混合：$m(w) = \frac{1}{2}f(w) + \frac{1}{2}g(w)$。
 
-让我们检查一下混合分布 $m$ 与 $f$ 和 $g$ 之间的 [KL散度](rel_entropy)。
+让我们检查一下混合分布 $m$ 与 $f$ 和 $g$ 之间的 {ref}`KL散度 <rel_entropy>`。
 
 ```{code-cell} ipython3
 def compute_KL(f, g):
@@ -531,7 +551,7 @@ def compute_KL(f, g):
 
 def compute_div_m(f, g):
     """
-    计算Jensen-Shannon散度
+    计算 KL(m, f) 和 KL(m, g)
     """
     def m(w):
         return 0.5 * (f(w) + g(w))
@@ -546,7 +566,7 @@ print(f'KL(m, f) = {KL_f:.3f}\nKL(m, g) = {KL_g:.3f}')
 
 由于 $KL(m, f) < KL(m, g)$，$f$ 相对于混合分布 $m$ 来说"更接近"。
 
-因此根据我们在{doc}`likelihood_ratio_process`中关于 KL 散度和似然比过程的讨论，当 $t \to \infty$ 时，$\log(L_t) \to \infty$。
+因此根据我们在 {doc}`likelihood_ratio_process` 中关于 KL 散度和似然比过程的讨论，当 $t \to \infty$ 时，$\log(L_t) \to \infty$。
 
 现在回看关键方程{eq}`eq_Bayeslaw1033`。
 
@@ -564,9 +584,9 @@ $$
 
 但我们如何学习真实的混合参数 $x$？
 
-这个主题将在{doc}`mix_model`中讨论。
+这个主题将在 {doc}`mix_model` 中讨论。
 
-我们将在{doc}`mix_model`的练习中探讨如何学习真实的混合参数 $x$。
+我们将在 {doc}`mix_model` 的练习中探讨如何学习真实的混合参数 $x$。
 
 ## 后验概率 $\{\pi_t\}$ 在主观概率分布下的行为
 
@@ -588,7 +608,7 @@ $$
 
 贝叶斯定律仅仅是概率法则的应用，用于计算第 $t$ 次抽样 $w_t$ 在已知 $[w_0, \ldots, w_{t-1}]$ 条件下的条件分布。
 
-在我们的工人对自然选择分布 $F$ 赋予主观概率 $\pi_{-1}$ 后，我们实际上从一开始就假设决策者**知道**过程 $\{w_t\}_{t=0}$ 的联合分布。
+在我们的工人对自然选择分布 $F$ 赋予主观概率 $\pi_{-1}$ 后，我们实际上从一开始就假设决策者*知道*过程 $\{w_t\}_{t=0}$ 的联合分布。
 
 我们假设工人也知道概率论的法则。
 
@@ -596,7 +616,7 @@ $$
 
 ### 再谈机械细节
 
-在时间 $0$ **之前**抽取工资报价时，工人将概率 $\pi_{-1} \in (0,1)$ 赋予分布 $F$。
+在时间 $0$ *之前*抽取工资报价时，工人将概率 $\pi_{-1} \in (0,1)$ 赋予分布 $F$。
 
 在时间 $0$ 抽取工资之前，工人因此认为 $w_0$ 的密度是
 
@@ -621,7 +641,7 @@ $$ (eq:like44)
 或
 
 $$
-\pi_t=\frac{\pi_{t-1} l_t(w_t)}{\pi_{t-1} l_t(w_t)+1-\pi_{t-1}}
+\pi_t=\frac{\pi_{t-1} \ell(w_t)}{\pi_{t-1} \ell(w_t)+1-\pi_{t-1}}
 $$
 
 而在给定$w_t, w_{t-1}, \ldots, w_0$条件下$w_{t+1}$的密度为：
@@ -641,15 +661,15 @@ E(\pi_t | \pi_{t-1}) & = \int \Bigl[  { \pi_{t-1} f(w) \over \pi_{t-1} f(w) + (1
 \end{aligned}
 $$
 
-因此过程$\pi_t$是一个**鞅**。
+因此过程$\pi_t$是一个*鞅*。
 
-事实上，它是一个**有界鞅**，因为每个$\pi_t$作为概率都在0和1之间。
+事实上，它是一个*有界鞅*，因为每个$\pi_t$作为概率都在0和1之间。
 
 在上述等式串的第一行中，第一个方括号中的项就是作为$w_{t}$函数的$\pi_t$，而第二个方括号中的项是在给定$w_{t-1}, \ldots , w_0$，或等价地在$w_{t-1}, \ldots , w_0$的*充分统计量*$\pi_{t-1}$的条件下$w_{t}$的密度。
 
-注意这里我们是在括号中第二项所描述的**主观**密度下计算 $E(\pi_t | \pi_{t-1})$。
+注意这里我们是在括号中第二项所描述的*主观*密度下计算 $E(\pi_t | \pi_{t-1})$。
 
-因为 $\{\pi_t\}$ 是一个有界鞅序列，根据**鞅收敛定理**，$\pi_t$ 几乎必然收敛到 $[0,1]$ 中的一个随机变量。
+因为 $\{\pi_t\}$ 是一个有界鞅序列，根据*鞅收敛定理*，$\pi_t$ 几乎必然收敛到 $[0,1]$ 中的一个随机变量。
 
 实际上，这意味着概率为1的样本路径 $\{\pi_t\}_{t=0}^\infty$ 是收敛的。
 
@@ -657,7 +677,7 @@ $$
 
 因此，让 $\{\pi_t(\omega)\}_{t=0}^\infty$ 表示由特定 $\omega \in \Omega$ 索引的特定样本路径。
 
-我们可以认为自然从概率分布 ${\textrm{Prob}} \Omega$ 中抽取一个 $\omega \in \Omega$，然后生成该过程的单个实现（或_模拟_）$\{\pi_t(\omega)\}_{t=0}^\infty$。
+我们可以认为自然从概率分布 ${\textrm{Prob}}(\Omega)$ 中抽取一个 $\omega \in \Omega$，然后生成该过程的单个实现（或_模拟_）$\{\pi_t(\omega)\}_{t=0}^\infty$。
 
 当 $t \rightarrow +\infty$ 时，$\{\pi_t(\omega)\}_{t=0}^\infty$ 的极限点是一个随机变量的实现，这个随机变量是当我们从 $\Omega$ 中采样 $\omega$ 并构造 $\{\pi_t(\omega)\}_{t=0}^\infty$ 的重复抽样时产生的。
 
@@ -679,7 +699,7 @@ $$
 \pi_\infty(\omega) =0
 $$
 
-因此，对某些实现来说，$\lim_{\rightarrow + \infty} \pi_t(\omega) =1$，而对其他实现来说，$\lim_{\rightarrow + \infty} \pi_t(\omega) =0$。
+因此，对某些实现来说，$\lim_{t \rightarrow + \infty} \pi_t(\omega) =1$，而对其他实现来说，$\lim_{t \rightarrow + \infty} \pi_t(\omega) =0$。
 
 现在让我们记住 $\{\pi_t\}_{t=0}^\infty$ 是一个鞅，并应用迭代期望法则。
 
@@ -699,7 +719,7 @@ $$
 
 $$
 E_{-1} \pi_\infty(\omega) = \pi_{-1}
-$$
+$$ (eq:expect_pi_infty)
 
 这里的数学期望 $E_{-1}$ 是相对于概率测度 ${\textrm{Prob}(\Omega)}$ 计算的。
 
@@ -715,7 +735,7 @@ $$
 E_{-1} \pi_\infty(\omega) = \lambda \cdot 1 + (1-\lambda) \cdot 0 = \lambda
 $$
 
-将此方程与方程(20)结合，我们推断出 ${\textrm{Prob}(\Omega)}$ 赋予 $\pi_\infty(\omega)$ 为 1 的概率必须是 $\pi_{-1}$。
+将此方程与方程 {eq}`eq:expect_pi_infty` 结合，我们推断出 ${\textrm{Prob}(\Omega)}$ 赋予 $\pi_\infty(\omega)$ 为 1 的概率必须是 $\pi_{-1}$。
 
 因此，在工人的主观分布下，$\{\pi_t\}$将有$\pi_{-1}$的样本路径逐点收敛到$1$，有$1 - \pi_{-1}$的样本路径逐点收敛到$0$。
 
@@ -756,7 +776,9 @@ def martingale_simulate(π0, rng, N=5000, T=200):
 def fraction_0_1(π0, rng, N, T, decimals):
 
     π_path, w_path = martingale_simulate(π0, rng, N=N, T=T)
-    values, counts = np.unique(np.round(π_path[:,-1], decimals=decimals), return_counts=True)
+    values, counts = np.unique(
+        np.round(π_path[:,-1], decimals=decimals), 
+        return_counts=True)
     return values, counts
 
 def create_table(π0s, rng, N=10000, T=500, decimals=2):
@@ -865,23 +887,23 @@ plt.show()
 
 ## 通过从主观条件密度中抽取的路径验证初始先验
 
-现在让我们使用Python代码生成一个表格，来验证我们之前关于点态极限$\pi_{\infty}(\omega)$的概率分布的说法。
+现在让我们使用 Python 代码生成一个表格，来验证我们之前关于点态极限 $\pi_{\infty}(\omega)$ 的概率分布的说法。
 
 我们将使用模拟来生成这个分布的直方图。
 
-在下表中，粗体显示的左列报告了$\pi_{-1}$的假设值。
+在下表中，粗体显示的左列报告了 $\pi_{-1}$ 的假设值。
 
-第二列报告了在$N = 10000$次模拟中，对于每次模拟在终止日期$T=500$时$\pi_{t}$收敛到$0$的比例。
+第二列报告了在 $N = 10000$ 次模拟中，对于每次模拟在终止日期 $T=500$ 时 $\pi_{t}$ 收敛到 $0$ 的比例。
 
-第三列报告了在$N = 10000$次模拟中，对于每次模拟在终止日期$T=500$时$\pi_{t}$收敛到$1$的比例。
+第三列报告了在 $N = 10000$ 次模拟中，对于每次模拟在终止日期 $T=500$ 时 $\pi_{t}$ 收敛到 $1$ 的比例。
 
 ```{code-cell} ipython3
-# create table
-table = create_table(list(np.linspace(0,1,11)), rng, N=10000, T=500)
+# Create table
+table = create_table(list(np.linspace(0,1,11)), N=10000, T=500)
 table
 ```
 
-对于$\pi_{t}$收敛到1的模拟比例确实总是接近$\pi_{-1}$，这与预期一致。
+对于 $\pi_{t}$ 收敛到 1 的模拟比例确实总是接近 $\pi_{-1}$，这与预期一致。
 
 ## 深入分析
 
@@ -936,4 +958,4 @@ plt.show()
 
 ## 相关讲座
 
-本讲座致力于建立一些有用的基础设施，这将有助于我们理解在{doc}`这个讲座 <odu>`、{doc}`这个讲座 <wald_friedman>` 和{doc}`这个讲座 <navy_captain>` 中描述的结果的推理基础。
+本讲座致力于建立一些有用的基础设施，这将有助于我们理解在 {doc}`odu`、{doc}`wald_friedman` 和 {doc}`navy_captain` 中描述的结果的推理基础。
