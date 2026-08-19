@@ -4,9 +4,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.11.5
+    jupytext_version: 1.16.7
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 translation:
@@ -381,7 +381,7 @@ N = 3  # 层数
 layer_sizes = [1, ] * (N + 1)
 param_scale = 0.1
 step_size = 0.01
-params = init_network_params(layer_sizes, random.PRNGKey(1))
+params = init_network_params(layer_sizes, random.key(1))
 ```
 
 ```{code-cell} ipython3
@@ -482,12 +482,12 @@ f_val = f(grid)
 
 ```{code-cell} ipython3
 indices = jnp.arange(M)
-key = random.PRNGKey(0)
+key = random.key(0)
 
 def train(params, grid, f_val, key, num_epochs=300):
     for epoch in range(num_epochs):
         key, _ = random.split(key)
-        random_permutation = random.permutation(random.PRNGKey(1), indices)
+        random_permutation = random.permutation(random.key(1), indices)
         for x, y in zip(grid[random_permutation], f_val[random_permutation]):
             params = update_la(params, x, y)
             
@@ -528,8 +528,6 @@ Image(fig.to_image(format="png"))
 * 如果网络太深，你会遇到[梯度消失问题](https://en.wikipedia.org/wiki/Vanishing_gradient_problem)
 * 在本讲所考虑的情况下，步长和训练轮数等其他参数可能与网络层数一样重要或更重要
 * 实际上，由于 $f$ 是 $x$ 的线性函数，使用恒等映射作为激活函数的单层网络可能效果最好。
-
-
 
 ## 示例2
 

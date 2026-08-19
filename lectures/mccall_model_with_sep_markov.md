@@ -129,9 +129,6 @@ $$
 * 使用{ref}`Tauchen 方法 <fm_ex3>`离散化 AR1 过程，以及
 * 取所得工资报价值的指数。
 
-
-
-
 ### 价值函数
 
 我们令
@@ -200,7 +197,6 @@ $$
 
 +++
 
-
 ## 代码
 
 现在让我们实现这个模型。
@@ -251,7 +247,6 @@ def create_js_with_sep_model(
     P_cumsum = jnp.cumsum(P, axis=1)
     return Model(n, w_vals, P, P_cumsum, β, c, α, γ)
 ```
-
 
 ### 求解：第一遍
 
@@ -328,7 +323,6 @@ def solve_model_first_pass(
     return v_u, v_e, w_bar
 ```
 
-
 ### 实地测试
 
 让我们求解这个模型：
@@ -361,7 +355,6 @@ plt.show()
 ```
 
 保留工资位于 $v_e$ 与延续值函数（即拒绝的价值）的交点处。
-
 
 ## 提高效率
 
@@ -505,7 +498,6 @@ plt.show()
 
 结果与之前相同，但我们只在一个数组上迭代——而且我们的 JAX 代码也更高效。
 
-
 ## 敏感性分析
 
 让我们检查保留工资如何随分离率变化。
@@ -608,7 +600,7 @@ def simulate_employment_path(
     从失业开始模拟 T 期的就业路径。
 
     """
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     # 解包模型
     n, w_vals, P, P_cumsum, β, c, α, γ = model
 
@@ -806,7 +798,7 @@ def simulate_cross_section(
 
     返回横截面失业率。
     """
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
 
     # 求解最优保留工资
     v_u = vfi(model)
@@ -841,7 +833,7 @@ def plot_cross_sectional_unemployment(
 
     """
     # 直接获取最终就业状态
-    key = jax.random.PRNGKey(42)
+    key = jax.random.key(42)
     v_u = vfi(model)
     w_bar = get_reservation_wage(v_u, model)
 

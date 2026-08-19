@@ -797,7 +797,7 @@ e_p.item()
 dim = 3000
 
 # 创建JAX随机密钥
-key = jax.random.PRNGKey(0)
+key = jax.random.key(0)
 
 # 创建随机矩阵A并将列归一化使其和为1
 A = jax.random.uniform(key, (dim, dim))
