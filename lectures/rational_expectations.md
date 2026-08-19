@@ -11,26 +11,26 @@ translation:
   title: 理性预期均衡
   headings:
     Overview: 概述
-    Overview::The Big Y, little y Trick: 大 $Y$，小 $y$ 技巧
-    Overview::The Big Y, little y Trick::A Simple Static Example of the Big Y, little y Trick: '"大 $Y$，小 $y$" 技巧的简单静态示例'
-    Overview::Related Planning Problem: 相关的规划问题
+    Overview::The big Y, little y trick: 大 Y，小 y 技巧
+    Overview::The big Y, little y trick::A simple static example of the big Y, little y trick: 大 Y，小 y 技巧的简单静态示例
+    Overview::Related planning problem: 相关的规划问题
     Overview::Further Reading: 延伸阅读
-    Rational Expectations Equilibrium: 理性预期均衡
-    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs: 带调整成本的竞争均衡
-    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::The Firm's Problem: 企业的问题
-    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::Prices and Aggregate Output: 价格和总产出
-    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::Representative Firm's Beliefs: 代表性企业的信念
-    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::Optimal Behavior Given Beliefs: 给定信念下的最优行为
-    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::Characterization with First-Order Necessary Conditions: 使用一阶必要条件的特征化
-    Rational Expectations Equilibrium::Competitive Equilibrium with Adjustment Costs::The Actual Law of Motion for Output: 产出的实际动态规律
-    Rational Expectations Equilibrium::Definition of Rational Expectations Equilibrium: 理性预期均衡的定义
-    Rational Expectations Equilibrium::Definition of Rational Expectations Equilibrium::Fixed Point Characterization: 不动点表征
-    Computing  an Equilibrium: 计算均衡
-    Computing  an Equilibrium::Failure of Contractivity: 收缩性的失效
-    Computing  an Equilibrium::A Planning Problem Approach: 规划问题方法
-    Computing  an Equilibrium::Solution of  Planning Problem: 规划问题的求解
-    Computing  an Equilibrium::Key Insight: 关键洞见
-    Computing  an Equilibrium::Key Insight::Structure of the Law of Motion: 动态规律的结构
+    Rational expectations equilibrium: 理性预期均衡
+    Rational expectations equilibrium::Competitive equilibrium with adjustment costs: 带调整成本的竞争均衡
+    Rational expectations equilibrium::Competitive equilibrium with adjustment costs::The firm's problem: 企业的问题
+    Rational expectations equilibrium::Competitive equilibrium with adjustment costs::Prices and aggregate output: 价格和总产出
+    Rational expectations equilibrium::Competitive equilibrium with adjustment costs::Representative firm's beliefs: 代表性企业的信念
+    Rational expectations equilibrium::Competitive equilibrium with adjustment costs::Optimal behavior given beliefs: 给定信念下的最优行为
+    Rational expectations equilibrium::Competitive equilibrium with adjustment costs::Characterization with first-order necessary conditions: 使用一阶必要条件的特征化
+    Rational expectations equilibrium::Competitive equilibrium with adjustment costs::The actual law of motion for output: 产出的实际动态规律
+    Rational expectations equilibrium::Definition of rational expectations equilibrium: 理性预期均衡的定义
+    Rational expectations equilibrium::Definition of rational expectations equilibrium::Fixed point characterization: 不动点表征
+    Computing an equilibrium: 计算均衡
+    Computing an equilibrium::Failure of contractivity: 收缩性的失效
+    Computing an equilibrium::A planning problem approach: 规划问题方法
+    Computing an equilibrium::Solution of planning problem: 规划问题的求解
+    Computing an equilibrium::Key insight: 关键洞见
+    Computing an equilibrium::Key insight::Structure of the law of motion: 动态规律的结构
     Exercises: 练习
 ---
 
@@ -106,7 +106,7 @@ import numpy as np
 from quantecon import LQ
 ```
 
-### 大 $Y$，小 $y$ 技巧
+### 大 Y，小 y 技巧
 
 这种广泛使用的方法适用于**代表性企业**或经济主体在竞争均衡中作为"价格接受者"的情况。
 
@@ -137,7 +137,7 @@ from quantecon import LQ
 
 我们首先在一个非常简单的静态环境中应用 "大 $Y$，小 $y$" 技巧。
 
-#### "大 $Y$，小 $y$" 技巧的简单静态示例
+#### 大 Y，小 y 技巧的简单静态示例
 
 考虑一个静态模型：存在单位测度的企业群体，在竞争性市场中生产并销售同质产品。
 
@@ -338,6 +338,8 @@ Y_{t+1} =  H(Y_t)
 
 **信念函数** $H$ 是一个均衡对象，因此还有待确定。
 
+因此，在此阶段，$Y_{t+1}$ 仅表示下一期的感知产出 $Y^e_{t+1}$。
+
 #### 给定信念下的最优行为
 
 现在，让我们先固定{eq}`ree_hlom`中的特定信念 $H$，并研究企业对它的反应。
@@ -389,12 +391,14 @@ $$
 v_y(y,Y) = a_0 - a_1 Y + \gamma (y' - y)
 $$
 
+同理，可得 $v_y(y', H(Y)) = a_0 - a_1 H(Y) +\gamma (y'' - y')$
+
 将此方程代入 {eq}`comp5` 得到**欧拉方程**
 
 ```{math}
 :label: ree_comp7
 
--\gamma (y_{t+1} - y_t) + \beta [a_0 - a_1 Y_{t+1} + \gamma (y_{t+2} - y_{t+1} )] =0
+-\gamma (y_{t+1} - y_t) + \beta [a_0 - a_1 H(Y_t) + \gamma (y_{t+2} - y_{t+1} )] =0
 ```
 
 企业最优地选择一条满足{eq}`ree_comp7` 的产出路径，在给定{eq}`ree_hlom` 的情况下，并受到以下条件的约束：
@@ -425,10 +429,12 @@ Y_{t+1} =  h(Y_t, Y_t)
 (ree_def)=
 ### 理性预期均衡的定义
 
+```{prf:definition}
 在带调整成本的模型中，**理性预期均衡**或**递归竞争均衡**是一对决策规则 $h$ 和总体动态规律 $H$，使得：
 
 1. 在给定信念 $H$ 的情况下，映射 $h$ 是企业的最优政策函数。
 1. 运动规律 $H$ 满足对所有 $Y$ 都有 $H(Y)= h(Y,Y)$。
+```
 
 因此，理性预期均衡是感知的动态规律{eq}`ree_hlom`和实际的动态规律{eq}`ree_comp9a`相一致。
 
@@ -449,7 +455,7 @@ Y_{t+1} =  h(Y_t, Y_t)
 
 ### 收缩性的失效
 
-熟悉动态规划论证的读者可能会尝试通过选择某个总体动态规律的初始猜测值 $H_0$，然后对$\Phi$ 进行迭代来解决这个问题。
+熟悉动态规划论证的读者可能会尝试通过选择某个总体动态规律的初始猜测值 $H_0$，然后对 $\Phi$ 进行迭代来解决这个问题。
 
 不幸的是，映射 $\Phi$ 并不是一个压缩映射。
 
@@ -457,11 +463,17 @@ Y_{t+1} =  h(Y_t, Y_t)
 
 有些情况下，这些迭代会发散。
 
+为了直观地理解这一点，考虑布莱克维尔的充分条件，并假设存在两个信念，对于所有 $Y$ 都满足 $H_a(Y) > H_b(Y)$。
+
+根据欧拉方程 {eq}`ree_comp7`，实际动态规律 $Y_{t+1} = h(Y_t, Y_t)$ 随 $H$ 的增大而减小，因此 $\Phi$ 会颠倒信念的排序。
+
+因此，布莱克维尔条件所要求的单调性不成立。
+
 幸运的是，这里还有另一种可行的方法。
 
-该方法利用了福利经济学基本定理中所表达的均衡与帕累托最优之间的联系（参见{cite}`MCWG1995`）。
+该方法利用了福利经济学基本定理中所表达的均衡与帕累托最优之间的联系（参见 {cite}`MCWG1995`）。
 
-Lucas和Prescott {cite}`Lucas_Prescott_1971` 使用这种方法构建了理性预期均衡。
+Lucas 和 Prescott {cite}`Lucas_Prescott_1971` 使用这种方法构建了理性预期均衡。
 
 以下是一些细节。
 
@@ -500,7 +512,7 @@ $$
 
 ### 规划问题的求解
 
-计算{eq}`comp10`中的积分得到二次形式 $a_0 Y_t - a_1 Y_t^2 / 2$。
+计算 {eq}`comp10` 中的积分得到二次形式 $a_0 Y_t - a_1 Y_t^2 / 2$。
 
 因此，规划问题的贝尔曼方程为
 
@@ -537,7 +549,9 @@ $$
 
 回到方程 {eq}`ree_comp7`，并令 $y_t = Y_t$ 对所有 $t$ 成立。
 
-通过一些简单的代数运算，你会发现当 $y_t=Y_t$ 时，方程 {eq}`comp16` 和 {eq}`ree_comp7` 是完全相同的。
+在理性预期均衡中，感知的动态规律与实际的动态规律是一致的，因此 $H(Y_t) = Y_{t+1}$。
+
+将这一点与 $y_t = Y_t$ 结合起来，通过一些简单的代数运算，你会发现方程 {eq}`comp16` 和 {eq}`ree_comp7` 是完全相同的。
 
 因此，规划问题的欧拉方程与我们通过以下方式得到的二阶差分方程一致：
 
@@ -546,7 +560,7 @@ $$
 
 如果对这两个差分方程应用相同的终端条件（事实也确实如此），那么我们就验证了规划问题的解也是理性预期均衡的产出序列。
 
-因此，对于这个例子，我们可以通过构建与贝尔曼方程{eq}`comp12`相应的最优线性调节器问题来计算均衡产出量。
+因此，对于这个例子，我们可以通过构建与贝尔曼方程 {eq}`comp12` 相应的最优线性调节器问题来计算均衡产出量。
 
 该规划问题的最优策略函数就是代表性企业在理性预期均衡中面临的总体动态规律 $H$。
 
@@ -563,7 +577,7 @@ Y_{t+1}
 
 其中 $\kappa_0, \kappa_1$ 为某个参数对。
 
-现在我们知道总体动态规律是线性的，从企业的贝尔曼方程{eq}`comp4`可以看出，企业的问题也可以被构建为一个LQ问题。
+现在我们知道总体动态规律是线性的，从企业的贝尔曼方程 {eq}`comp4` 可以看出，企业的问题也可以被构建为一个LQ问题。
 
 如习题所示，企业问题的LQ形式意味着动态规律具有如下形式：
 
@@ -573,7 +587,7 @@ Y_{t+1}
 y_{t+1} = h_0 + h_1 y_t + h_2 Y_t
 ```
 
-因此，理性预期均衡将由{eq}`ree_hlom2`--{eq}`ree_ex5`中的参数 $(\kappa_0, \kappa_1, h_0, h_1, h_2)$ 来定义。
+因此，理性预期均衡将由 {eq}`ree_hlom2`--{eq}`ree_ex5` 中的参数 $(\kappa_0, \kappa_1, h_0, h_1, h_2)$ 来定义。
 
 ## 练习
 
@@ -601,7 +615,7 @@ $$
 :class: dropdown
 ```
 
-要将问题映射到[折现最优线性控制问题](https://python.quantecon.org/lqcontrol.html)中，我们需要定义
+要将问题映射到{doc}`折现最优线性控制问题 <lqcontrol>`中，我们需要定义
 
 - 状态向量 $x_t$ 和控制向量 $u_t$
 - 定义偏好和状态动态规律的矩阵 $A, B, Q, R$
@@ -703,6 +717,17 @@ $$
 Y_{t+1}
 = n \left( 96.949 + y_t - 0.046 \, Y_t \right)
 = n 96.949 + (1 - n 0.046) Y_t
+$$
+
+对于连续体企业的情况，
+
+$$
+\begin{aligned}
+\int_0^1 y_{t+1}(\omega)\, d\omega
+    &= h_0 + h_1 \int_0^1 y_{t}(\omega)\, d\omega + h_2 Y_t \\
+Y_{t+1} &= h_0 + h_1 Y_t + h_2 Y_t \\
+Y_{t+1} &= 96.949 + (1 - 0.046) Y_t
+\end{aligned}
 $$
 
 ```{solution-end}

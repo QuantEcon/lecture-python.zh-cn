@@ -77,6 +77,8 @@ import numpy as np
 from numba import vectorize, jit, prange
 from math import gamma
 from scipy.integrate import quad
+
+rng = np.random.default_rng()
 ```
 
 ## 回顾：似然比过程
@@ -152,7 +154,7 @@ g = jit(lambda x: p(x, G_a, G_b))
 
 ```{code-cell} ipython3
 @jit
-def simulate(a, b, T=50, N=500):
+def simulate(a, b, rng, T=50, N=500):
     '''
     生成N组T个似然比观测值，
     以N x T矩阵形式返回。
@@ -162,7 +164,7 @@ def simulate(a, b, T=50, N=500):
 
     for i in range(N):
         for j in range(T):
-            w = np.random.beta(a, b)
+            w = rng.beta(a, b)
             l_arr[i, j] = f(w) / g(w)
 
     return l_arr
@@ -589,14 +591,14 @@ T = 100
 N = 10000
 
 # 自然遵循 f、g 或混合
-s_seq_f = np.random.beta(F_a, F_b, (N, T))
-s_seq_g = np.random.beta(G_a, G_b, (N, T))
+s_seq_f = rng.beta(F_a, F_b, (N, T))
+s_seq_g = rng.beta(G_a, G_b, (N, T))
 
 h = jit(lambda x: 0.5 * f(x) + 0.5 * g(x))
-model_choices = np.random.rand(N, T) < 0.5
+model_choices = rng.random((N, T)) < 0.5
 s_seq_h = np.empty((N, T))
-s_seq_h[model_choices] = np.random.beta(F_a, F_b, size=model_choices.sum())
-s_seq_h[~model_choices] = np.random.beta(G_a, G_b, size=(~model_choices).sum())
+s_seq_h[model_choices] = rng.beta(F_a, F_b, size=model_choices.sum())
+s_seq_h[~model_choices] = rng.beta(G_a, G_b, size=(~model_choices).sum())
 
 l_cum_f, c1_f = simulate_blume_easley(s_seq_f)
 l_cum_g, c1_g = simulate_blume_easley(s_seq_g)
@@ -643,9 +645,9 @@ plt.show()
 
 在右侧面板中，自然每期抛硬币。我们看到与左侧面板中的过程非常相似的模式。
 
-顶部面板的图形让我们想起[本节](KL_link)中的讨论。
+顶部面板的图形让我们想起 [本节](KL_link) 中的讨论。
 
-我们邀请读者重新访问[该节](llr_h)并尝试推断$D_{KL}(f\|g)$、$D_{KL}(g\|f)$、$D_{KL}(h\|f)$和$D_{KL}(h\|g)$之间的关系。
+我们邀请读者重新访问 [该节](llr_h) 并尝试推断$D_{KL}(f\|g)$、$D_{KL}(g\|f)$、$D_{KL}(h\|f)$和$D_{KL}(h\|g)$之间的关系。
 
 让我们计算KL散度的值
 
@@ -743,7 +745,7 @@ for row, (f_belief, g_belief, label) in enumerate([
     
     for col, nature_label in enumerate(nature_labels):
         params = nature_params[label][col]
-        s_seq = np.random.beta(params[0], params[1], (1000, 200))
+        s_seq = rng.beta(params[0], params[1], (1000, 200))
         _, c1 = simulate_blume_easley(s_seq, f_belief, g_belief, λ)
         
         median_c1 = np.median(c1, axis=0)
@@ -798,9 +800,7 @@ print(f"KL(h,f)={Kf_h:.3f}, KL(h,g)={Kg_h:.3f}")
 
 由于 $KL(f,g) > KL(g,f)$，我们看到当自然选择 $f$ 时，底部第一个面板的收敛比自然选择 $g$ 时的第二个面板更快。
 
-这与{eq}`eq:kl_likelihood_link`很好地联系在一起。
-
-
+这与 {eq}`eq:kl_likelihood_link` 很好地联系在一起。
 
 ## 相关讲座
 
@@ -811,8 +811,6 @@ print(f"KL(h,f)={Kf_h:.3f}, KL(h,g)={Kg_h:.3f}")
 似然过程在贝叶斯学习中扮演重要角色，这在{doc}`likelihood_bayes`中有描述，并在{doc}`odu`中有应用。
 
 似然比过程在{doc}`advanced:additive_functionals`中再次出现。
-
-
 
 ## 练习
 
@@ -1087,11 +1085,13 @@ g = jit(lambda x: p(x, G_a, G_b))
 现在我们可以为不同场景运行模拟
 
 ```{code-cell} ipython3
+rng = np.random.default_rng()
+
 # 自然遵循 f
-s_seq_f = np.random.beta(F_a, F_b, (N, T))
+s_seq_f = rng.beta(F_a, F_b, (N, T))
 
 # 自然遵循 g
-s_seq_g = np.random.beta(G_a, G_b, (N, T)) 
+s_seq_g = rng.beta(G_a, G_b, (N, T)) 
 
 results_f = {}
 results_g = {}
@@ -1208,6 +1208,8 @@ plt.show()
 T = 40
 N = 1000
 
+rng = np.random.default_rng()
+
 F_a, F_b = 2, 5
 G_a, G_b = 5, 2
 
@@ -1220,8 +1222,8 @@ g = jit(lambda x: p(x, G_a, G_b))
     (0.1, 0.9),
 ]
 
-s_seq_f = np.random.beta(F_a, F_b, (N, T))
-s_seq_g = np.random.beta(G_a, G_b, (N, T)) 
+s_seq_f = rng.beta(F_a, F_b, (N, T))
+s_seq_g = rng.beta(G_a, G_b, (N, T)) 
 
 results_f = {}
 results_g = {}
@@ -1551,9 +1553,11 @@ def plot_consumption_dynamics(results_f, results_g, λ=0.5, figsize=(14, 5)):
 T = 100
 N = 1000
 
+rng = np.random.default_rng()
+
 # 为自然状态f和g生成序列
-s_seq_f = np.random.beta(F_a, F_b, (N, T))
-s_seq_g = np.random.beta(G_a, G_b, (N, T))
+s_seq_f = rng.beta(F_a, F_b, (N, T))
+s_seq_g = rng.beta(G_a, G_b, (N, T))
 
 # 运行模拟
 results_f = simulate_three_model_allocation(s_seq_f, 
@@ -1677,9 +1681,11 @@ print(f"KL(f,h) = {Kf_h:.4f}, KL(g,h) = {Kg_h:.4f}")
 T = 1000
 N = 1000
 
+rng = np.random.default_rng()
+
 # 为不同的自然情景生成序列
-s_seq_f = np.random.beta(F_a, F_b, (N, T))
-s_seq_g = np.random.beta(G_a, G_b, (N, T))
+s_seq_f = rng.beta(F_a, F_b, (N, T))
+s_seq_g = rng.beta(G_a, G_b, (N, T))
 
 # 为两种情景运行模拟
 results_f = simulate_three_model_allocation(
