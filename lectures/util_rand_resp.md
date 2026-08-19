@@ -3,50 +3,42 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.2
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 translation:
   title: 随机回答的期望效用
   headings:
     Overview: 概述
-    Privacy Measures: 隐私度量
-    Zoo of Concepts: 概念集合
-    Zoo of Concepts::Leysieffer and Warner(1976): Leysieffer and Warner(1976)
-    Zoo of Concepts::Lanke(1976): Lanke(1976)
-    Zoo of Concepts::2.3 Fligner, Policello, and Singh: 2.3 Fligner, Policello, and Singh
-    Zoo of Concepts::2.4 Greenberg, Kuebler, Abernathy, and Horvitz (1977): 2.4 Greenberg, Kuebler, Abernathy, and Horvitz (1977)
-    Respondent's Expected Utility: 受访者的期望效用
-    Respondent's Expected Utility::Truth Border: 真实边界
-    Respondent's Expected Utility::Drawing a  Truth Border: 绘制真话边界
-    Utilitarian View of Survey Design: 调查设计的功利主义观点
-    Utilitarian View of Survey Design::Iso-variance Curves: 等方差曲线
-    Utilitarian View of Survey Design::Drawing  Iso-variance Curves: 绘制等方差曲线
-    Utilitarian View of Survey Design::Optimal Survey: 最优调查设计
-    Criticisms of Proposed Privacy Measures: 对提议隐私措施的批评
-    Criticisms of Proposed Privacy Measures::Analysis of Method of Lanke's (1976): 对Lanke (1976)方法的分析
-    Criticisms of Proposed Privacy Measures::Method of Leysieffer and Warner (1976): Leysieffer and Warner (1976)的方法
-    Criticisms of Proposed Privacy Measures::Analysis on the Method of Chaudhuri and Mukerjee's (1988): 对Chaudhuri and Mukerjee's (1988)方法的分析
-    Criticisms of Proposed Privacy Measures::Method of Greenberg et al. (1977): Greenberg et al. (1977)的方法
-    Concluding Remarks: 总结说明
+    Privacy measures: 隐私度量
+    Zoo of concepts: 概念集合
+    Zoo of concepts::Leysieffer and Warner (1976): Leysieffer and Warner (1976)
+    Zoo of concepts::Lanke (1976): Lanke (1976)
+    Zoo of concepts::Fligner et al. (1977): Fligner et al. (1977)
+    Zoo of concepts::Greenberg et al. (1977): Greenberg et al. (1977)
+    Respondent's expected utility: 受访者的期望效用
+    Respondent's expected utility::Truth border: 真实边界
+    Respondent's expected utility::Drawing a truth border: 绘制真话边界
+    Utilitarian view of survey design: 调查设计的功利主义观点
+    Utilitarian view of survey design::Iso-variance curves: 等方差曲线
+    Utilitarian view of survey design::Drawing iso-variance curves: 绘制等方差曲线
+    Utilitarian view of survey design::Optimal survey: 最优调查设计
+    Criticisms of proposed privacy measures: 对提议隐私措施的批评
+    Criticisms of proposed privacy measures::Analysis of the method of Lanke (1976): 对Lanke (1976)方法的分析
+    Criticisms of proposed privacy measures::Method of Leysieffer and Warner (1976): Leysieffer and Warner (1976)的方法
+    Criticisms of proposed privacy measures::Analysis of the method of Chaudhuri and Mukerjee (1988): 对Chaudhuri and Mukerjee (1988)方法的分析
+    Criticisms of proposed privacy measures::Method of Greenberg et al. (1977): Greenberg et al. (1977)的方法
+    Concluding remarks: 总结说明
 ---
-
-```{code-cell} ipython3
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
-mpl.font_manager.fontManager.addfont(FONTPATH)
-plt.rcParams['font.family'] = ['Source Han Serif SC']
-
-import numpy as np
-```
 
 # 随机回答的期望效用
 
 ## 概述
 
-{doc}`这篇讲座 <rand_resp>` 描述了传统的 Warner {cite}`warner1965randomized` 随机回答调查，这种调查旨在保护受访者的隐私。
+{doc}`这篇讲座 <rand_resp>` 描述了传统的 {cite:t}`warner1965randomized` 随机回答调查，这种调查旨在保护受访者的隐私。
 
 Lars Ljungqvist {cite}`ljungqvist1993unified` 分析了受访者是否如实回答如何取决于**期望效用**。
 
@@ -54,11 +46,18 @@ Lars Ljungqvist {cite}`ljungqvist1993unified` 分析了受访者是否如实回�
 {cite}`anderson1976estimation`、 {cite}`fligner1977comparison`、 {cite}`greenberg1977respondent`、
 {cite}`greenberg1969unrelated`。
 
+我们使用以下导入：
+
+```{code-cell} ipython3
+import matplotlib.pyplot as plt
+import numpy as np
+```
+
 ## 隐私度量
 
 我们考虑只有"是"和"否"两种可能答案的随机回答模型。
 
-该设计决定了以下概率:
+该设计决定了以下概率：
 
 $$
 \begin{aligned}
@@ -67,7 +66,7 @@ $$
 \end{aligned}
 $$
 
-这些设计概率反过来可以用来计算给定回答 $r$ 时属于敏感群体 $A$ 的条件概率:
+这些设计概率反过来可以用来计算给定回答 $r$ 时属于敏感群体 $A$ 的条件概率：
 
 $$
 \text{Pr}(A|r)=\frac{\pi_A \text{Pr}(r|A)}{\pi_A \text{Pr}(r|A)+ (1-\pi_A) \text{Pr}(r|A^{'})}
@@ -75,9 +74,9 @@ $$ (eq:util-rand-one)
 
 ## 概念集合
 
-在这里我们描述一些研究者提出的概念
+在这里，我们描述一些研究者提出的概念。
 
-### Leysieffer and Warner(1976)
+### Leysieffer and Warner (1976)
 
 如果回答 $r$ 相对于 $A$ 或 $A^{'}$ 满足以下条件，则被视为具有危害性：
 
@@ -95,7 +94,9 @@ $$
 \frac{\text{Pr}(A|r)}{\text{Pr}(A^{'}|r)}\times \frac{(1-\pi_A)}{\pi_A} = \frac{\text{Pr}(r|A)}{\text{Pr}(r|A^{'})}
 $$ (eq:util-rand-three)
 
-如果这个表达式大于（小于）$1$，则表明 $r$ 相对于 $A$ ($A^{'}$)具有危害性。因此，危害性的自然度量将是：
+如果这个表达式大于（小于）$1$，则表明 $r$ 相对于 $A$ ($A^{'}$) 具有危害性。
+
+因此，危害性的自然度量将是：
 
 $$
 \begin{aligned}
@@ -105,7 +106,7 @@ g(r|A^{'})&=\frac{\text{Pr}(r|A^{'})}{\text{Pr}(r|A)}
 \end{aligned}
 $$ (eq:util-rand-four)
 
-不失一般性地假设 $\text{Pr}(\text{yes}|A)>\text{Pr}(\text{yes}|A^{'})$，则"是"（"否"）的回答相对于$A$ ($A^{'}$)具有危害性，即：
+不失一般性地假设 $\text{Pr}(\text{yes}|A)>\text{Pr}(\text{yes}|A^{'})$，则“是”（“否”）的回答相对于 $A$ ($A^{'}$) 具有危害性，即：
 
 $$
 \begin{aligned}
@@ -115,11 +116,11 @@ g(\text{no}|A^{'})&>1
 \end{aligned}
 $$
 
-Leysieffer和Warner证明，估计的方差只能通过增加这两个危害性度量中的一个或两个来降低。
+Leysieffer 和 Warner 证明，估计的方差只能通过增加这两个危害性度量中的一个或两个来降低。
 
 因此，一个有效的随机回应模型应在保证受访者配合的前提下，达到所能承受的最大风险水平。
 
-作为一个特例，Leysieffer和Warner考虑了一个"否"的回答不具有危害性的问题；也就是说，$g(\text{no}|A^{'})$可以是无限大的。
+作为一个特例，Leysieffer 和 Warner 考虑了一个“否”的回答不具有危害性的问题；也就是说，$g(\text{no}|A^{'})$ 可以是无限大的。
 
 显然，最优设计必须满足
 
@@ -133,47 +134,45 @@ $$
 \text{Pr}(A|\text{no})=0
 $$
 
-### Lanke(1976)
+### Lanke (1976)
 
-Lanke (1975) {cite}`lanke1975choice` 认为"人们可能想要隐藏的是属于A组的身份，而不是属于补集A'组的身份。"
+{cite:t}`lanke1975choice` 认为“人们可能想要隐藏的是属于 A 组的身份，而不是属于补集 A' 组的身份。”
 
-因此，Lanke (1976) {cite}`lanke1976degree` 认为一个合适的保护度量是最小化
+因此，{cite:t}`lanke1976degree` 认为一个合适的保护度量是最小化
 
 $$
-\max \left\{ \text{Pr}(A|\text{yes}), \text{Pr}(A|\text{no}) \right\}
+\max \left\{ \text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}) \right\}
 $$ (eq:util-rand-five-a)
 
-在保持这个度量不变的情况下，他解释了在什么条件下，使用无关问题模型或Warner (1965)的原始模型可以获得最小方差估计。
+在保持这个度量不变的情况下，他解释了在什么条件下，使用无关问题模型或 {cite:t}`warner1965randomized` 的原始模型可以获得最小方差估计。
 
-### 2.3 Fligner, Policello, and Singh
+### Fligner et al. (1977)
 
-Fligner, Policello, and Singh得出了与Lanke (1976)类似的结论。{cite}`fligner1977comparison`
+{cite:t}`fligner1977comparison` 得出了与 {cite:t}`lanke1976degree` 类似的结论。
 
-他们将"隐私保护"度量为
+他们将“隐私保护”度量为
 
 $$
 \frac{1-\max \left\{ \text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}) \right\}}{1-\pi_A}
 $$ (eq:util-rand-six)
 
-### 2.4 Greenberg, Kuebler, Abernathy, and Horvitz (1977)
+### Greenberg et al. (1977)
 
-{cite}`greenberg1977respondent`
-
-Greenberg, Kuebler, Abernathy, and Horvitz (1977) 强调，不仅要考虑 $A$ 组成员的风险，还要考虑不属于该敏感群体的个体的风险。他们定义在 $A$ 组个体身上的风险为这一个体被认为属于A组的概率：
+{cite:t}`greenberg1977respondent` 强调，不仅要考虑 $A$ 组成员的风险，还要考虑不属于该敏感群体的个体的风险。他们定义在 $A$ 组个体身上的风险为这一个体被认为属于 A 组的概率：
 
 $$
 \text{Pr}(\text{yes}|A)\times \text{Pr}(A|\text{yes})+\text{Pr}(\text{no}|A)\times \text{Pr}(A|\text{no})
 $$ (eq:util-rand-seven-a)
 
-类似地，对于不属于$A$的个体，其风险为
+类似地，对于不属于 $A$ 的个体，其风险为
 
 $$
 \text{Pr}(\text{yes}|A^{'})\times \text{Pr}(A|\text{yes})+\text{Pr}(\text{no}|A^{'}) \times \text{Pr}(A|\text{no})
 $$ (eq:util-rand-seven-b)
 
-Greenberg等人(1977)还考虑了另一个相关的风险度量，"这可能更接近受访者实际感受到的担忧。"
+{cite:t}`greenberg1977respondent` 还考虑了另一个相关的风险度量，“这可能更接近受访者实际感受到的担忧。”
 
-对于在 $A$ 和 $A^{'}$ 中的个体，其"有限风险"分别为
+对于在 $A$ 和 $A^{'}$ 中的个体，其“有限风险”分别为
 
 $$
 \text{Pr}(\text{yes}|A)\times \text{Pr}(A|\text{yes})
@@ -185,17 +184,28 @@ $$
 \text{Pr}(\text{yes}|A^{'})\times \text{Pr}(A|\text{yes})
 $$ (eq:util-rand-eight-b)
 
-这个度量仅仅是{eq}`eq:util-rand-seven-a`中的第一项，即个体回答"是"且被认为属于$A$的概率。
+这个度量仅仅是 {eq}`eq:util-rand-seven-a` 中的第一项，即个体回答“是”且被认为属于 $A$ 的概率。
 
 ## 受访者的期望效用
 
+
 ### 真实边界
 
-用于估计属于 $A$ 的人群比例的随机回答技术的关键假设是:
+用于估计属于 $A$ 的人群比例的随机回答技术的关键假设是
 
-- **假设1**: 受访者对被认为属于$A$感到不适。
+```{prf:assumption} discomfort
+:label: as:util-rand-discomfort
 
-- **假设2**: 只要代价不太高，受访者更倾向于如实回答问题而不是撒谎。这里的代价指的是假设1中的不适感。
+受访者对被认为属于 $A$ 感到不适。
+```
+
+```{prf:assumption} preference for truth
+:label: as:util-rand-truth
+
+只要代价不太高，受访者更倾向于如实回答问题而不是撒谎。
+
+这里的代价指的是 {prf:ref}`as:util-rand-discomfort` 中的不适感。
+```
 
 让 $r_i$ 表示个体 $i$ 对随机问题的回答。
 
@@ -226,10 +236,10 @@ $$ (eq:util-rand-nine-a)
 且
 
 $$
-U_i\left(\text{Pr}(A|r_i),\text{truth}\right)>U_i\left(\text{Pr}(A|r_i),\text{lie}\right)  , \text{ for } \text{Pr}(A|r_i) \in [0,1]
+U_i\left(\text{Pr}(A|r_i),\text{truth}\right)>U_i\left(\text{Pr}(A|r_i),\text{lie}\right), \text{ for } \text{Pr}(A|r_i) \in [0,1]
 $$ (eq:util-rand-nine-b)
 
-现在假设个体$i$的真实答案是"是"。
+现在假设个体 $i$ 的真实答案是"是"。
 
 如果满足以下条件，个体 $i$ 会选择如实回答：
 
@@ -251,19 +261,19 @@ $$
 
 因此"是"的答案增加了个体属于 $A$ 的概率。
 
-约束{eq}`eq:util-rand-ten-b`必定成立。
+约束 {eq}`eq:util-rand-ten-b` 必定成立。
 
-因此，约束{eq}`eq:util-rand-ten-a`成为个体 $i$ 始终如实回答的唯一必要条件。
+因此，约束 {eq}`eq:util-rand-ten-a` 成为个体 $i$ 始终如实回答的唯一必要条件。
 
-在等式情况下，约束 $(10.\text{a})$ 确定了当真实答案为"是"时，使个体在说真话和说谎之间无差异的条件概率：
+在等式情况下，约束 {eq}`eq:util-rand-ten-a` 确定了当真实答案为"是"时，使个体在说真话和说谎之间无差异的条件概率：
 
 $$
 U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)= U_i\left(\text{Pr}(A|\text{no}),\text{lie}\right)
 $$ (eq:util-rand-eleven)
 
-方程{eq}`eq:util-rand-eleven`定义了一个"真实边界"。
+方程 {eq}`eq:util-rand-eleven` 定义了一个"真实边界"。
 
-对{eq}`eq:util-rand-eleven`中的条件概率求导表明，在条件概率空间中，真实边界具有正斜率：
+对 {eq}`eq:util-rand-eleven` 中的条件概率求导表明，在条件概率空间中，真实边界具有正斜率：
 
 $$
 \frac{\partial \text{Pr}(A|\text{no})}{\partial \text{Pr}(A|\text{yes})}=\frac{\frac{\partial U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right) }{\partial \text{Pr}(A|\text{yes})}}{\frac{\partial U_i\left(\text{Pr}(A|\text{no}),\text{lie}\right) }{\partial \text{Pr}(A|\text{no})}}>0
@@ -271,49 +281,59 @@ $$ (eq:util-rand-twelve)
 
 正相关关系的来源是：
 
-- 只要说真话的效用（即{eq}`eq:util-rand-eleven`左侧）至少与说谎的效用（{eq}`eq:util-rand-eleven`右侧）一样高，个体就愿意主动说出真实的"是"。
+- 只要说真话的效用（即 {eq}`eq:util-rand-eleven` 左侧）至少与说谎的效用（{eq}`eq:util-rand-eleven` 右侧）一样高，个体就愿意主动说出真实的"是"。
 
-- 假设现在 $\text{Pr}(A|\text{yes})$ 增加。这会降低说真话的效用。为了保持说真话和说谎之间的无差异，$\text{Pr}(A|\text{no})$必须增加以降低说谎的效用。
+- 假设现在 $\text{Pr}(A|\text{yes})$ 增加。
+
+  - 这会降低说真话的效用。
+
+  - 为了保持说真话和说谎之间的无差异，$\text{Pr}(A|\text{no})$ 必须增加以降低说谎的效用。
 
 ### 绘制真话边界
 
 我们可以推导出关于真话边界的两个结论：
 
-- 真话边界将条件概率空间分为两个子集："说真话"和"说谎"。因此，充分的隐私会引出真实答案，而不充分的隐私则会导致谎言。真话边界取决于受访者的效用函数。
+- 真话边界将条件概率空间分为两个子集："说真话"和"说谎"。
 
-- {eq}`eq:util-rand-nine-a`和{eq}`eq:util-rand-nine-a`中的假设仅足以保证真话边界的正斜率。真话边界可以是凹形或凸形。
+  - 因此，充分的隐私会引出真实答案，而不充分的隐私则会导致谎言。
 
-我们可以用以下Python代码绘制一些真话边界：
+  - 真话边界取决于受访者的效用函数。
+
+- {eq}`eq:util-rand-nine-a` 和 {eq}`eq:util-rand-nine-b` 中的假设仅足以保证真话边界的正斜率。
+
+  - 真话边界可以是凹形或凸形。
+
+我们可以用以下 Python 代码在 {numref}`fig-truth-borders` 中绘制一些真话边界，其中用 $p$ 表示 $\text{Pr}(A|r_i)$：
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 三种真实边界类型
+    name: fig-truth-borders
+---
 x1 = np.arange(0, 1, 0.001)
 y1 = x1 - 0.4
 x2 = np.arange(0.4**2, 1, 0.001)
 y2 = (pow(x2, 0.5) - 0.4)**2
 x3 = np.arange(0.4**0.5, 1, 0.001)
 y3 = pow(x3**2 - 0.4, 0.5)
-plt.figure(figsize=(12, 10))
-plt.plot(x1, y1, 'r-', label=r'真话边界: $U_i(Pr(A|r_i),\phi_i)=-Pr(A|r_i)+f(\phi_i)$')
-plt.fill_between(x1, 0, y1, facecolor='red', alpha=0.05)
-plt.plot(x2, y2, 'b-', label=r'真话边界: $U_i(Pr(A|r_i),\phi_i)=-Pr(A|r_i)^{2}+f(\phi_i)$')
-plt.fill_between(x2, 0, y2, facecolor='blue', alpha=0.05)
-plt.plot(x3, y3, 'y-', label=r'真话边界: $U_i(Pr(A|r_i),\phi_i)=-\sqrt{Pr(A|r_i)}+f(\phi_i)$')
-plt.fill_between(x3, 0, y3, facecolor='green', alpha=0.05)
-plt.plot(x1, x1, ':', linewidth=2)
-plt.xlim([0, 1])
-plt.ylim([0, 1])
 
-plt.xlabel('Pr(A|是)')
-plt.ylabel('Pr(A|否)')
-plt.text(0.42, 0.3, "说真话", fontdict={'size':28, 'style':'italic'})
-plt.text(0.8, 0.1, "说谎", fontdict={'size':28, 'style':'italic'})
-
-plt.legend(loc=0, fontsize='large')
-plt.title('图1.1')
+fig, ax = plt.subplots()
+ax.plot(x1, y1, 'r-', lw=2, label=r'$U_i = -p + f(\phi_i)$')
+ax.fill_between(x1, 0, y1, facecolor='red', alpha=0.05)
+ax.plot(x2, y2, 'b-', lw=2, label=r'$U_i = -p^2 + f(\phi_i)$')
+ax.fill_between(x2, 0, y2, facecolor='blue', alpha=0.05)
+ax.plot(x3, y3, 'y-', lw=2, label=r'$U_i = -\sqrt{p} + f(\phi_i)$')
+ax.fill_between(x3, 0, y3, facecolor='green', alpha=0.05)
+ax.plot(x1, x1, ':', lw=2)
+ax.set(xlim=(0, 1), ylim=(0, 1),
+       xlabel='Pr(A|yes)', ylabel='Pr(A|no)')
+ax.text(0.42, 0.3, "truth telling")
+ax.text(0.8, 0.1, "lying")
+ax.legend(loc='upper left')
 plt.show()
 ```
-
-图1.1 三种真实边界类型。
 
 在不失一般性的情况下，我们考虑真实边界：
 
@@ -321,32 +341,37 @@ $$
 U_i(\text{Pr}(A|r_i),\phi_i)=-\text{Pr}(A|r_i)+f(\phi_i)
 $$
 
-并在图1.2中绘制个体 $i$ 的"说真话"和"说谎区域"：
+并在 {numref}`fig-truth-lying-areas` 中绘制个体 $i$ 的"说真话"和"说谎区域"：
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 说真话与说谎区域
+    name: fig-truth-lying-areas
+---
 x1 = np.arange(0, 1, 0.001)
 y1 = x1 - 0.4
 z1 = x1
 z2 = 0
-plt.figure(figsize=(12, 10))
-plt.plot(x1, y1,'r-',label='真话边界：$U_i(Pr(A|r_i),\phi_i)=-Pr(A|r_i)+f(\phi_i)$')
-plt.plot(x1, x1, ':', linewidth=2)
-plt.fill_between(x1, y1, z1, facecolor='blue', alpha=0.05, label='说真话')
-plt.fill_between(x1, z2, y1, facecolor='green', alpha=0.05, label='说谎')
-plt.xlim([0, 1])
-plt.ylim([0, 1])
 
-plt.xlabel('Pr(A|yes)')
-plt.ylabel('Pr(A|no)')
-plt.text(0.5, 0.4, "说真话", fontdict={'size':28, 'style':'italic'})
-plt.text(0.8, 0.2, "说谎", fontdict={'size':28, 'style':'italic'})
-
-plt.legend(loc=0, fontsize='large')
-plt.title('图1.2')
+fig, ax = plt.subplots()
+ax.plot(x1, y1, 'r-', lw=2, label='truth border')
+ax.plot(x1, x1, ':', lw=2)
+ax.fill_between(x1, y1, z1, facecolor='blue', alpha=0.05,
+                label='truth telling')
+ax.fill_between(x1, z2, y1, facecolor='green', alpha=0.05,
+                label='lying')
+ax.set(xlim=(0, 1), ylim=(0, 1),
+       xlabel='Pr(A|yes)', ylabel='Pr(A|no)')
+ax.text(0.5, 0.4, "truth telling")
+ax.text(0.8, 0.2, "lying")
+ax.legend(loc='upper left')
 plt.show()
 ```
 
 ## 调查设计的功利主义观点
+
 
 ### 等方差曲线
 
@@ -354,7 +379,7 @@ plt.show()
 
 - 找到一个随机回答调查设计，使估计量的偏差和方差最小化。
 
-在一个确保所有受访者都会诚实回答的设计中，Anderson(1976, 定理1) {cite}`anderson1976estimation` 证明了在两种回答模型中最小方差估计的方差为
+在一个确保所有受访者都会诚实回答的设计中，{cite:t}`anderson1976estimation`（定理1）证明了在两种回答模型中最小方差估计的方差为
 
 $$
 \begin{aligned}
@@ -385,75 +410,70 @@ $$ (eq:util-rand-fourteen-b)
 
 ### 绘制等方差曲线
 
-我们使用Python代码来绘制等方差曲线。
+我们使用 Python 代码来绘制等方差曲线。
 
-这些条件概率对可以使用Warner (1965)的模型获得。
+这些条件概率对可以使用 {cite:t}`warner1965randomized` 的模型获得。
 
 注意：
 
 - 只要统计学家能完全控制模型设计，等方差曲线上的任何点都可以通过无关问题模型达到。
 
-- Warner (1965)的原始随机化回应模型比无关问题模型灵活性较低。
+- {cite:t}`warner1965randomized` 的原始随机化回应模型比无关问题模型灵活性较低。
 
 ```{code-cell} ipython3
-class Iso_Variance:
-    def __init__(self, pi, n):
-        self.pi = pi
-        self.n = n
+def plot_iso_variance_curves(π, n):
+    nv = np.array([0.27, 0.34, 0.49, 0.74, 0.92, 1.1, 1.47, 2.94, 14.7])
+    x = np.arange(0, 1, 0.001)
+    x0 = np.arange(π, 1, 0.001)
+    x2 = np.arange(0, π, 0.001)
+    y1 = [π for i in x0]
+    y2 = [π for i in x2]
+    y0 = 1 / (1 + (x0 * (1 - π)**2) / ((1 - x0) * π**2))
 
-    def plotting_iso_variance_curve(self):
-        pi = self.pi
-        n = self.n
-
-        nv = np.array([0.27, 0.34, 0.49, 0.74, 0.92, 1.1, 1.47, 2.94, 14.7])
-        x = np.arange(0, 1, 0.001)
-        x0 = np.arange(pi, 1, 0.001)
-        x2 = np.arange(0, pi, 0.001)
-        y1 = [pi for i in x0]
-        y2 = [pi for i in x2]
-        y0 = 1 / (1 + (x0 * (1 - pi)**2) / ((1 - x0) * pi**2))
-
-        plt.figure(figsize=(12, 10))
-        plt.plot(x0, y0, 'm-', label='Warner')
-        plt.plot(x, x, 'c:', linewidth=2)
-        plt.plot(x0, y1,'c:', linewidth=2)
-        plt.plot(y2, x2, 'c:', linewidth=2)
-        for i in range(len(nv)):
-            y = pi - (pi**2 * (1 - pi)**2) / (n * (nv[i] / n) * (x0 - pi + 1e-8))
-            plt.plot(x0, y, 'k--', alpha=1 - 0.07 * i, label=f'V{i+1}')
-        plt.xlim([0, 1])
-        plt.ylim([0, 0.5])
-        plt.xlabel('Pr(A|yes)')
-        plt.ylabel('Pr(A|no)')
-        plt.legend(loc=0, fontsize='large')
-        plt.text(0.32, 0.28, "High Var", fontdict={'size':15, 'style':'italic'})
-        plt.text(0.91, 0.01, "Low Var", fontdict={'size':15, 'style':'italic'})
-        plt.title('Figure 2')
-        plt.show()
+    fig, ax = plt.subplots()
+    ax.plot(x0, y0, 'm-', lw=2, label='Warner')
+    ax.plot(x, x, 'c:', lw=2)
+    ax.plot(x0, y1, 'c:', lw=2)
+    ax.plot(y2, x2, 'c:', lw=2)
+    for i in range(len(nv)):
+        y = π - (π**2 * (1 - π)**2) / (n * (nv[i] / n) * (x0 - π + 1e-8))
+        ax.plot(x0, y, 'k--', alpha=1 - 0.07 * i,
+                label='iso-variance curves' if i == 0 else None)
+    ax.set(xlim=(0, 1), ylim=(0, 0.5),
+           xlabel='Pr(A|yes)', ylabel='Pr(A|no)')
+    ax.text(0.42, 0.32, "high variance")
+    ax.text(0.83, 0.01, "low variance")
+    ax.legend(loc='upper left')
+    plt.show()
 ```
 
 等方差曲线的特性是：
 
 - 同一条等方差曲线上的所有点具有相同的方差
 
-- 从 $V_1$ 到 $V_9$，等方差曲线的方差单调增加，颜色也单调变亮
+- 方差随曲线向上向左移动而增加，曲线颜色随方差增加而变浅
 
-假设等方差模型的参数遵循Ljungqvist {cite}`ljungqvist1993unified`中的设定，即：
+假设等方差模型的参数遵循 Ljungqvist {cite}`ljungqvist1993unified` 中的设定，即：
 
 - $\pi=0.3$
 
 - $n=100$
 
-那么我们可以在图2中绘制等方差曲线：
+那么我们可以在 {numref}`fig-iso-variance` 中绘制等方差曲线：
 
 ```{code-cell} ipython3
-var = Iso_Variance(pi=0.3, n=100)
-var.plotting_iso_variance_curve()
+---
+mystnb:
+  figure:
+    caption: Iso-variance curves
+    name: fig-iso-variance
+---
+plot_iso_variance_curves(π=0.3, n=100)
 ```
 
 ### 最优调查设计
 
-在等方差曲线上的一点可以通过无关问题设计来实现。
+等方差曲线上的一点可以通过无关问题设计来实现。
 
 我们现在专注于寻找"最优调查设计"，它需要：
 
@@ -471,15 +491,23 @@ var.plotting_iso_variance_curve()
 
 关于模型设计的一些说明：
 
-- 个体是否诚实回答的决定取决于他或她对其他受访者行为的预期，因为这决定了个体对$\text{ Pr}(A|\text{yes})$和$\text{ Pr}(A|\text{no})$的计算。
+- 个体是否诚实回答的决定取决于他或她对其他受访者行为的预期，因为这决定了个体对 $\text{ Pr}(A|\text{yes})$ 和 $\text{ Pr}(A|\text{no})$ 的计算。
 
 - 最优设计模型的均衡是非合作博弈的纳什均衡。
 
-- 假设{eq}`eq:util-rand-nine-b`足以保证最优模型设计的存在。通过选择足够接近的$\text{ Pr}(A|\text{yes})$和$\text{ Pr}(A|\text{no})$，所有受访者都会发现如实回答是最优选择。这些概率越接近，估计量的方差就越大。
+- 假设 {eq}`eq:util-rand-nine-b` 足以保证最优模型设计的存在。
 
-- 如果受访者从说实话中获得的预期效用增加足够大，那么就不需要使用随机化回答模型。在$\text{ Pr}(A|\text{yes})=1$和$\text{ Pr}(A|\text{no})=0$， 即当受访者对直接提问如实回答时，可以获得最小可能的估计方差。
+  - 通过选择足够接近的 $\text{ Pr}(A|\text{yes})$ 和 $\text{ Pr}(A|\text{no})$，所有受访者都会发现如实回答是最优选择。
 
-- 一个更普遍的设计问题是最小化估计量的方差和偏差的某种加权和。接受一些最"不情愿"的受访者的谎言可能是最优的。
+  - 这些概率越接近，估计量的方差就越大。
+
+- 如果受访者从说实话中获得的预期效用增加足够大，那么就不需要使用随机化回答模型。
+
+在 $\text{ Pr}(A|\text{yes})=1$ 和 $\text{ Pr}(A|\text{no})=0$ 时，即当受访者对直接提问如实回答时，可以获得最小可能的估计方差。
+
+- 一个更普遍的设计问题是最小化估计量的方差和偏差的某种加权和。
+
+  - 接受一些最"不情愿"的受访者的谎言可能是最优的。
 
 ## 对提议隐私措施的批评
 
@@ -489,57 +517,63 @@ var.plotting_iso_variance_curve()
 
 ### 对Lanke (1976)方法的分析
 
-Lanke (1976)建议一个隐私保护标准，即最小化：
+{cite:t}`lanke1976degree` 建议一个隐私保护标准，即最小化：
 
 $$
 \max \left\{ \text{Pr}(A|\text{yes}) , \text{Pr}(A|\text{no}) \right\}
 $$ (eq:util-rand-five-b)
 
-按照Lanke的建议，统计学家应该在保持 $\text{ Pr}(A|\text{no})$ 固定为0的情况下，寻找与诚实回答相一致的最大可能的 $\text{ Pr}(A|\text{yes})$ 值。在图3中，方差在点 $X$ 处达到最小。
+按照Lanke的建议，统计学家应该在保持 $\text{ Pr}(A|\text{no})$ 固定为0的情况下，寻找与诚实回答相一致的最大可能的 $\text{ Pr}(A|\text{yes})$ 值。
 
-然而，我们可以看到在图3中，点 $Z$ 提供了一个更小的方差，它仍然能够保证受访者的配合，而且根据我们在第三部分对真实边界的讨论，这是可以实现的：
+在 {numref}`fig-lanke-analysis` 中，方差在点 $X$ 处达到最小。
+
+然而，如 {numref}`fig-lanke-analysis` 所示，点 $Z$ 提供了一个更小的方差，它仍然能够保证受访者的配合，而且根据我们此前对真实边界的讨论，这是可以实现的：
 
 ```{code-cell} ipython3
-pi = 0.3
+---
+mystnb:
+  figure:
+    caption: Lanke准则下的最优设计
+    name: fig-lanke-analysis
+---
+π = 0.3
 n = 100
 nv = [0.27, 0.34, 0.49, 0.74, 0.92, 1.1, 1.47, 2.94, 14.7]
 x = np.arange(0, 1, 0.001)
 y = x - 0.4
 z = x
-x0 = np.arange(pi, 1, 0.001)
-x2 = np.arange(0, pi, 0.001)
-y1 = [pi for i in x0]
-y2 = [pi for i in x2]
+x0 = np.arange(π, 1, 0.001)
+x2 = np.arange(0, π, 0.001)
+y1 = [π for i in x0]
+y2 = [π for i in x2]
 
-plt.figure(figsize=(12, 10))
-plt.plot(x, x, 'c:', linewidth=2)
-plt.plot(x0, y1, 'c:', linewidth=2)
-plt.plot(y2, x2, 'c:', linewidth=2)
-plt.plot(x, y, 'r-', label='真话边界')
-plt.fill_between(x, y, z, facecolor='blue', alpha=0.05, label='诚实回答')
-plt.fill_between(x, 0, y, facecolor='green', alpha=0.05, label='说谎')
+fig, ax = plt.subplots()
+ax.plot(x, x, 'c:', lw=2)
+ax.plot(x0, y1, 'c:', lw=2)
+ax.plot(y2, x2, 'c:', lw=2)
+ax.plot(x, y, 'r-', lw=2, label='真话边界')
+ax.fill_between(x, y, z, facecolor='blue', alpha=0.05,
+                label='诚实回答')
+ax.fill_between(x, 0, y, facecolor='green', alpha=0.05,
+                label='说谎')
 for i in range(len(nv)):
-    y = pi - (pi**2 * (1 - pi)**2) / (n * (nv[i] / n) * (x0 - pi + 1e-8))
-    plt.plot(x0, y, 'k--', alpha=1 - 0.07 * i, label=f'V{i+1}')
-
-
-plt.scatter(0.498, 0.1, c='b', marker='*', label='Z', s=150)
-plt.scatter(0.4, 0, c='y', label='X', s=150)
-plt.xlim([0, 1])
-plt.ylim([0, 0.5])
-plt.xlabel('Pr(A|yes)')
-plt.ylabel('Pr(A|no)')
-plt.text(0.45, 0.35, "诚实回答", fontdict={'size':28, 'style':'italic'})
-plt.text(0.85, 0.35, "说谎",fontdict = {'size':28, 'style':'italic'})
-plt.text(0.515, 0.095, "最优设计", fontdict={'size':16,'color':'b'})
-plt.legend(loc=0, fontsize='large')
-plt.title('图3')
+    y = π - (π**2 * (1 - π)**2) / (n * (nv[i] / n) * (x0 - π + 1e-8))
+    ax.plot(x0, y, 'k--', alpha=1 - 0.07 * i,
+            label='等方差曲线' if i == 0 else None)
+ax.scatter(0.498, 0.1, c='b', marker='*', s=150, label='Z')
+ax.scatter(0.4, 0, c='y', s=150, label='X')
+ax.set(xlim=(0, 1), ylim=(0, 0.5),
+       xlabel='Pr(A|yes)', ylabel='Pr(A|no)')
+ax.text(0.45, 0.4, "诚实回答")
+ax.text(0.85, 0.4, "说谎")
+ax.text(0.515, 0.095, "最优设计", color='b')
+ax.legend(loc='upper left')
 plt.show()
 ```
 
 ### Leysieffer and Warner (1976)的方法
 
-Leysieffer and Warner (1976)建议使用二维风险度量，当"否"答案不存在风险时，该度量可简化为一维，这意味着
+{cite:t}`leysieffer1976respondent` 建议使用二维风险度量，当"否"答案不存在风险时，该度量可简化为一维，这意味着
 
 $$
 \text{Pr}(\text{yes}|A)=1
@@ -553,11 +587,11 @@ $$
 
 从功利主义的角度来看，这不是最优选择。
 
-### 对Chaudhuri and Mukerjee's (1988)方法的分析
+### 对Chaudhuri and Mukerjee (1988)方法的分析
 
-{cite}`Chadhuri_Mukerjee_88`
+{cite:t}`Chadhuri_Mukerjee_88` 认为，由于"是"有时可能与敏感群体 $A$ 相关，聪明的受访者可能会倾向于总是安全但虚假地回答"否"。
 
-Chaudhuri and Mukerjee (1988)认为，由于"是"有时可能与敏感群体 $A$ 相关，聪明的受访者可能会倾向于总是安全但虚假地回答"否"。在这种情况下，真实边界使得个体在真实答案为"是"时选择说谎，且
+在这种情况下，真实边界使得个体在真实答案为"是"时选择说谎，且
 
 $$
 \text{Pr}(A|\text{no})=0
@@ -571,7 +605,7 @@ $$
 U_i\left(\text{Pr}(A|\text{yes}),\text{truth}\right)< U_i\left(\text{Pr}(A|\text{no}),\text{lie}\right)
 $$
 
-在任何情况下都成立。
+始终成立。
 
 因此，不存在可实现的模型设计。
 
@@ -579,58 +613,61 @@ $$
 
 特别是，如果消除了说谎带来的相对优势，受访者将选择如实回答。
 
-我们可以用Python来展示最优模型设计对应图4中的点Q：
+我们可以用Python来展示最优模型设计。
 
 ```{code-cell} ipython3
 def f(x):
-    if x < 0.16:
-        return 0
-    else:
-        return (pow(x, 0.5) - 0.4)**2
+    "Chaudhuri和Mukerjee假设下的真话边界。"
+    return np.where(x < 0.16, 0.0, (np.sqrt(x) - 0.4)**2)
 ```
 
 ```{code-cell} ipython3
-pi = 0.3
+---
+mystnb:
+  figure:
+    caption: 功利主义方法下的最优设计
+    name: fig-optimal-design
+---
+π = 0.3
 n = 100
 nv = [0.27, 0.34, 0.49, 0.74, 0.92, 1.1, 1.47, 2.94, 14.7]
 x = np.arange(0, 1, 0.001)
-y = [f(i) for i in x]
+y = f(x)
 z = x
-x0 = np.arange(pi, 1, 0.001)
-x2 = np.arange(0, pi, 0.001)
-y1 = [pi for i in x0]
-y2 = [pi for i in x2]
+x0 = np.arange(π, 1, 0.001)
+x2 = np.arange(0, π, 0.001)
+y1 = [π for i in x0]
+y2 = [π for i in x2]
 x3 = np.arange(0.16, 1, 0.001)
-y3 = (pow(x3, 0.5) - 0.4)**2
 
-plt.figure(figsize=(12, 10))
-plt.plot(x, x, 'c:', linewidth=2)
-plt.plot(x0, y1,'c:', linewidth=2)
-plt.plot(y2, x2,'c:', linewidth=2)
-plt.plot(x3, y3,'b-', label='真话边界')
-plt.fill_between(x, y, z, facecolor='blue', alpha=0.05, label='说实话')
-plt.fill_between(x3, 0, y3,facecolor='green', alpha=0.05, label='说谎')
+fig, ax = plt.subplots()
+ax.plot(x, x, 'c:', lw=2)
+ax.plot(x0, y1, 'c:', lw=2)
+ax.plot(y2, x2, 'c:', lw=2)
+ax.plot(x3, f(x3), 'b-', lw=2, label='真话边界')
+ax.fill_between(x, y, z, facecolor='blue', alpha=0.05,
+                label='诚实回答')
+ax.fill_between(x3, 0, f(x3), facecolor='green', alpha=0.05,
+                label='说谎')
 for i in range(len(nv)):
-    y = pi - (pi**2 * (1 - pi)**2) / (n * (nv[i] / n) * (x0 - pi + 1e-8))
-    plt.plot(x0, y, 'k--', alpha=1 - 0.07 * i, label=f'V{i+1}')
-plt.scatter(0.61, 0.146, c='r', marker='*', label='Z', s=150)
-plt.xlim([0, 1])
-plt.ylim([0, 0.5])
-plt.xlabel('Pr(A|yes)')
-plt.ylabel('Pr(A|no)')
-plt.text(0.45, 0.35, "说实话", fontdict={'size':28, 'style':'italic'})
-plt.text(0.8, 0.1, "说谎", fontdict={'size':28, 'style':'italic'})
-plt.text(0.63, 0.141, "最优设计", fontdict={'size':16,'color':'r'})
-plt.legend(loc=0, fontsize='large')
-plt.title('图4')
+    y = π - (π**2 * (1 - π)**2) / (n * (nv[i] / n) * (x0 - π + 1e-8))
+    ax.plot(x0, y, 'k--', alpha=1 - 0.07 * i,
+            label='等方差曲线' if i == 0 else None)
+ax.scatter(0.61, 0.146, c='r', marker='*', s=150, label='Q')
+ax.set(xlim=(0, 1), ylim=(0, 0.5),
+       xlabel='Pr(A|yes)', ylabel='Pr(A|no)')
+ax.text(0.45, 0.4, "诚实回答")
+ax.text(0.85, 0.1, "说谎")
+ax.text(0.63, 0.141, "最优设计", color='r')
+ax.legend(loc='upper left')
 plt.show()
 ```
 
+在此，最优模型设计对应 {numref}`fig-optimal-design` 中的点 $Q$。
+
 ### Greenberg et al. (1977)的方法
 
-{cite}`greenberg1977respondent`
-
-Greenberg et al. (1977)将属于群体$A$的个体的风险定义为他/她被认为属于$A$的概率:
+{cite:t}`greenberg1977respondent` 将属于群体 $A$ 的个体的风险定义为他/她被认为属于 $A$ 的概率：
 
 $$
 \text{Pr}(\text{yes}|A)\times \text{Pr}(A|\text{yes})+\text{Pr}(\text{no}|A)\times \text{Pr}(A|\text{no})
@@ -656,9 +693,9 @@ $$
 \text{Pr}(\text{yes}|A^{'})\times \text{Pr}(A|\text{yes})
 $$ (eq:util-rand-eight-bb)
 
-根据Greenberg et al. (1977)的说法，受访者在随机选择要回答的问题**之前**，就已经承诺根据{eq}`eq:util-rand-seven-aa`或{eq}`eq:util-rand-eight-aa`中的概率如实回答。
+根据 {cite:t}`greenberg1977respondent` 的说法，受访者在随机选择要回答的问题**之前**，就已经承诺根据 {eq}`eq:util-rand-seven-aa` 或 {eq}`eq:util-rand-eight-aa` 中的概率如实回答。
 
-假设适当的隐私度量由{eq}`eq:util-rand-eight-aa`和{eq}`eq:util-rand-eight-bb`中的"有限风险"概念来表示。
+假设适当的隐私度量由 {eq}`eq:util-rand-eight-aa` 和 {eq}`eq:util-rand-eight-bb` 中的"有限风险"概念来表示。
 
 考虑一个无关问题模型，其中无关问题被替换为指令"说'不'"，这意味着
 
@@ -698,4 +735,4 @@ $$
 
 - 最优模型设计是在真实边界接触到最低可能的等方差曲线的点上获得的。
 
-Ljungqvist {cite}`ljungqvist1993unified`分析的一个实际含义是，可以通过**选择足够接近的 $\text{Pr}(A|\text{yes})$ 和 $\text{Pr}(A|\text{no})$**来承认对受访者隐私需求的不确定性。
+{cite}`ljungqvist1993unified` 分析的一个实际含义是，可以通过 *选择足够接近的 $\text{Pr}(A|\text{yes})$ 和 $\text{Pr}(A|\text{no})$* 来承认对受访者隐私需求的不确定性。

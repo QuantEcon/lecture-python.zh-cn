@@ -3,25 +3,31 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.16.7
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 translation:
   title: 可交换性和贝叶斯更新
   headings:
     Overview: 概述
-    Independently and Identically Distributed: 独立同分布
-    Independently and Identically Distributed::IID Means Past Observations Don't Tell Us Anything About Future Observations: IID意味着过去的观测不能告诉我们任何关于未来观测的信息
-    A Setting in Which Past Observations Are Informative: 过去观测具有信息性的情况
-    Relationship Between IID and Exchangeable: IID和可交换之间的关系
+    Independently and identically distributed: 独立同分布
+    Independently and identically distributed::IID means past observations don't tell us anything about future observations: IID意味着过去的观测不能告诉我们任何关于未来观测的信息
+    A setting in which past observations are informative: 过去观测具有信息性的情况
+    Relationship between IID and exchangeable: IID和可交换之间的关系
     Exchangeability: 可交换性
     Bayes' Law: 贝叶斯定律
-    More Details about Bayesian Updating: 关于贝叶斯更新的更多细节
+    More details about Bayesian updating: 关于贝叶斯更新的更多细节
+    More details about Bayesian updating::The likelihood ratio: 似然比
+    More details about Bayesian updating::The densities and the probabilities of moving in each direction: 密度函数与各方向移动的概率
+    More details about Bayesian updating::Dynamics of the belief: 信念的动态变化
+    More details about Bayesian updating::Another instance: 另一个实例
     Appendix: 附录
-    Appendix::Sample Paths of $\pi_t$: $\pi_t$ 的样本路径
+    Appendix::Sample paths of $\pi_t$: $\pi_t$ 的样本路径
     Appendix::Rates of convergence: 收敛速率
-    Appendix::Graph of Ensemble Dynamics of $\pi_t$: $\pi_t$ 的集合动态图
+    Appendix::Graph of ensemble dynamics of $\pi_t$: $\pi_t$ 的集合动态图
     Sequels: 后续内容
 ---
 
@@ -48,13 +54,13 @@ translation:
 
 DeFinetti的工作对经济学家的相关性在David Kreps的{cite}`Kreps88`第11章中得到了有力的阐述。
 
-我们在本讲座中研究的一个例子是{doc}`这个讲座 <odu>`的一个关键组成部分，它扩充了
+我们下面研究的一个例子是 {doc}`odu` 的一个关键组成部分。
 
-{doc}`classic <mccall_model>` McCall的经典工作搜索模型{cite}`McCall1970`通过为失业劳动者提供一个统计推断问题来展示。
+该讲座扩充了McCall的经典工作搜索模型{cite}`McCall1970`（在 {doc}`mccall_model` 中研究过），通过为失业劳动者提供一个统计推断问题来展示。
 
 我们创建图表来说明似然比在贝叶斯定律中所起的作用。
 
-我们将使用这些图表来深入理解{doc}`本讲座 <odu>`中关于增强型McCall工作搜索模型中学习机制的运作原理。
+我们将使用这些图表来深入理解 {doc}`odu` 中驱动结果的运作机制。
 
 除此之外，本讲座还讨论了随机变量序列的统计概念之间的联系，这些序列是：
 
@@ -76,10 +82,9 @@ DeFinetti的工作对经济学家的相关性在David Kreps的{cite}`Kreps88`第
 
 让我们从一些导入开始：
 
-```{code-cell} ipython
----
-tags: [hide-output]
----
+```{code-cell} ipython3
+:tags: [hide-output]
+
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -87,11 +92,11 @@ mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
-from numba import jit, vectorize
 from math import gamma
+
+import numpy as np
 import scipy.optimize as op
 from scipy.integrate import quad
-import numpy as np
 ```
 
 ## 独立同分布
@@ -249,7 +254,6 @@ $$
 
 所以过去确实包含了可以用来了解未来的信息。
 
-
 ## 可交换性
 
 虽然序列 $W_0, W_1, \ldots$ 不是独立同分布的，但可以验证它是**可交换的**，这意味着"重新排序"的联合分布 $h(W_0, W_1)$ 和 $h(W_1, W_0)$ 满足
@@ -322,7 +326,7 @@ $$
 $$ (eq_Bayes102)
 
 
-等式{eq}`eq_Bayes102`源自贝叶斯法则，该法则告诉我们
+等式 {eq}`eq_Bayes102` 源自贝叶斯法则，该法则告诉我们
 
 $$
 \mathbb{P}\{q = f \,|\, W = w\}
@@ -371,131 +375,178 @@ $$
 
 我们将绘制 $l\left(w\right)$ 来帮助我们理解学习过程是如何进行的——即，如何通过贝叶斯更新来更新自然选择分布 $f$ 的概率 $\pi$。
 
-为了创建完成工作所需的 Python 基础设施，我们构建一个包装函数，该函数可以根据 $f$ 和 $g$ 的参数显示信息丰富的图表。
+我们分三步构建这幅图景，每一步产生一张图表。
 
-```{code-cell} python3
-@vectorize
-def p(x, a, b):
-    "通用贝塔分布函数。"
+这三张图都是由相同的素材构建的：密度函数 $f$ 和 $g$，以及似然比 $l(w) = f(w)/g(w)$ 等于1时对应的 $w$ 值。
+
+$f$ 和 $g$ 都是贝塔密度函数，所以我们先从一般的贝塔密度函数开始。
+
+```{code-cell} ipython3
+def p(w, a, b):
+    "参数为a和b的贝塔密度函数。"
     r = gamma(a + b) / (gamma(a) * gamma(b))
-    return r * x ** (a-1) * (1 - x) ** (b-1)
+    return r * w**(a - 1) * (1 - w)**(b - 1)
+```
 
-def learning_example(F_a=1, F_b=1, G_a=3, G_b=1.2):
+下一个函数为给定的一对贝塔分布组装素材。
+
+```{code-cell} ipython3
+def create_model(F_a=1, F_b=1, G_a=3, G_b=1.2):
     """
-    一个包装函数，用于显示信念π的更新规则，
-    给定指定F和G分布的参数。
+    构建密度函数f和g，以及似然比l(w) = f(w) / g(w)
+    等于1时对应的两个w值。
     """
+    f = lambda w: p(w, F_a, F_b)
+    g = lambda w: p(w, G_a, G_b)
 
-    f = jit(lambda x: p(x, F_a, F_b))
-    g = jit(lambda x: p(x, G_a, G_b))
-
-    # l(w) = f(w) / g(w)
-    l = lambda w: f(w) / g(w)
-    # 用于求解 l(w) = 1 的目标函数
-    obj = lambda w: l(w) - 1
-
-    x_grid = np.linspace(0, 1, 100)
-    π_grid = np.linspace(1e-3, 1-1e-3, 100)
-
-    w_max = 1
-    w_grid = np.linspace(1e-12, w_max-1e-12, 100)
-
-    # 贝塔分布的众数
-    # 用它将w分成两个区间进行根查找
+    # g的众数将[0, 1]分为两个区间，每个区间各含一个根
     G_mode = (G_a - 1) / (G_a + G_b - 2)
-    roots = np.empty(2)
-    roots[0] = op.root_scalar(obj, bracket=[1e-10, G_mode]).root
-    roots[1] = op.root_scalar(obj, bracket=[G_mode, 1-1e-10]).root
+    obj = lambda w: f(w) / g(w) - 1
+    roots = np.array([op.root_scalar(obj, bracket=[1e-10, G_mode]).root,
+                      op.root_scalar(obj, bracket=[G_mode, 1 - 1e-10]).root])
+    return f, g, roots
+```
 
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5))
+### 似然比
 
-    ax1.plot(l(w_grid), w_grid, label='$l$', lw=2)
-    ax1.vlines(1., 0., 1., linestyle="--")
-    ax1.hlines(roots, 0., 2., linestyle="--")
-    ax1.set_xlim([0., 2.])
-    ax1.legend(loc=4)
-    ax1.set(xlabel='$l(w)=f(w)/g(w)$', ylabel='$w$')
+我们的第一张图将似然比 $l(w)$ 绘制在横坐标轴上，将 $w$ 绘制在纵坐标轴上。
 
-    ax2.plot(f(x_grid), x_grid, label='$f$', lw=2)
-    ax2.plot(g(x_grid), x_grid, label='$g$', lw=2)
-    ax2.vlines(1., 0., 1., linestyle="--")
-    ax2.hlines(roots, 0., 2., linestyle="--")
-    ax2.legend(loc=4)
-    ax2.set(xlabel='$f(w), g(w)$', ylabel='$w$')
+我们采用这种方式绘制，以便 $w$ 能与接下来的两张图共享同一个坐标轴。
 
-    area1 = quad(f, 0, roots[0])[0]
-    area2 = quad(g, roots[0], roots[1])[0]
-    area3 = quad(f, roots[1], 1)[0]
+```{code-cell} ipython3
+def plot_likelihood_ratio(F_a=1, F_b=1, G_a=3, G_b=1.2):
+    f, g, roots = create_model(F_a, F_b, G_a, G_b)
+    w_grid = np.linspace(1e-12, 1 - 1e-12, 100)
 
-    ax2.text((f(0) + f(roots[0])) / 4, roots[0] / 2, f"{area1: .3g}")
-    ax2.fill_between([0, 1], 0, roots[0], color='blue', alpha=0.15)
-    ax2.text(np.mean(g(roots)) / 2, np.mean(roots), f"{area2: .3g}")
-    w_roots = np.linspace(roots[0], roots[1], 20)
-    ax2.fill_betweenx(w_roots, 0, g(w_roots), color='orange', alpha=0.15)
-    ax2.text((f(roots[1]) + f(1)) / 4, (roots[1] + 1) / 2, f"{area3: .3g}")
-    ax2.fill_between([0, 1], roots[1], 1, color='blue', alpha=0.15)
-
-    W = np.arange(0.01, 0.99, 0.08)
-    Π = np.arange(0.01, 0.99, 0.08)
-
-    ΔW = np.zeros((len(W), len(Π)))
-    ΔΠ = np.empty((len(W), len(Π)))
-    for i, w in enumerate(W):
-        for j, π in enumerate(Π):
-            lw = l(w)
-            ΔΠ[i, j] = π * (lw / (π * lw + 1 - π) - 1)
-
-    q = ax3.quiver(Π, W, ΔΠ, ΔW, scale=2, color='r', alpha=0.8)
-
-    ax3.fill_between(π_grid, 0, roots[0], color='blue', alpha=0.15)
-    ax3.fill_between(π_grid, roots[0], roots[1], color='green', alpha=0.15)
-    ax3.fill_between(π_grid, roots[1], w_max, color='blue', alpha=0.15)
-    ax3.hlines(roots, 0., 1., linestyle="--")
-    ax3.set(xlabel=r'$\pi$', ylabel='$w$')
-    ax3.grid()
-
+    fig, ax = plt.subplots(figsize=(6, 5))
+    ax.plot(f(w_grid) / g(w_grid), w_grid, label='$l$', lw=2)
+    ax.vlines(1, 0, 1, linestyle='--')
+    ax.hlines(roots, 0, 2, linestyle='--')
+    ax.set_xlim(0, 2)
+    ax.legend(loc=4)
+    ax.set(xlabel='$l(w) = f(w) / g(w)$', ylabel='$w$')
     plt.show()
 ```
 
-现在我们将创建一组图表来说明贝叶斯定律所引发的动态变化。
+我们从 $f$ 是 $[0,1]$ 上的均匀分布（即参数为 $F_a=1, F_b=1$ 的贝塔分布）开始，而 $g$ 是参数为 $G_a=3, G_b=1.2$ 的贝塔分布。
 
-我们将从Python函数的各种对象的默认值开始，然后在后续示例中对其进行修改。
-
-```{code-cell} python3
-learning_example()
+```{code-cell} ipython3
+plot_likelihood_ratio()
 ```
 
-请看上面的三个图表，这些图表是针对以下情况创建的：$f$ 是在 $[0,1]$ 上的均匀分布（即参数为 $F_a=1, F_b=1$ 的Beta分布），而 $g$ 是具有默认参数值 $G_a=3, G_b=1.2$ 的Beta分布。
+两条水平虚线标记了 $l(w) = 1$ 时对应的 $w$ 值。
 
-左侧的图表将似然比 $l(w)$ 作为横坐标轴，将 $w$ 作为纵坐标轴进行绘制。
+在这两条线之间，似然比小于1，因此根据{eq}`eq_Bayes103`，落在该区域的抽样会使 $\pi$ 向下推动。
 
-中间的图表将 $f(w)$ 和 $g(w)$ 对 $w$ 进行绘制，其中水平虚线显示了似然比等于1时的 $w$ 值。
+在这两条线之外，似然比大于1，因此落在该区域的抽样会使 $\pi$ 向上推动。
 
-右侧的图表用向右的箭头表示贝叶斯定律使 $\pi$ 增加的情况，用向左的箭头表示贝叶斯定律使 $\pi$ 减少的情况。
+### 密度函数与各方向移动的概率
+
+我们的第二张图将 $f(w)$ 和 $g(w)$ 对 $w$ 进行绘制，并对由同样两个 $w$ 值划分出的区域进行着色。
+
+对这些区域着色使我们能够为每个移动方向赋予一个概率，我们通过在相关区域上对相应密度函数积分来计算这个概率。
+
+```{code-cell} ipython3
+def plot_densities(F_a=1, F_b=1, G_a=3, G_b=1.2):
+    f, g, roots = create_model(F_a, F_b, G_a, G_b)
+    w_grid = np.linspace(0, 1, 100)
+
+    fig, ax = plt.subplots(figsize=(6, 5))
+    ax.plot(f(w_grid), w_grid, label='$f$', lw=2)
+    ax.plot(g(w_grid), w_grid, label='$g$', lw=2)
+    ax.vlines(1, 0, 1, linestyle='--')
+    ax.hlines(roots, 0, 2, linestyle='--')
+    ax.legend(loc=4)
+    ax.set(xlabel='$f(w), g(w)$', ylabel='$w$')
+
+    # 无论哪个密度函数被着色，落入各区域的概率
+    area_lower = quad(f, 0, roots[0])[0]
+    area_middle = quad(g, roots[0], roots[1])[0]
+    area_upper = quad(f, roots[1], 1)[0]
+
+    ax.fill_between([0, 1], 0, roots[0], color='blue', alpha=0.15)
+    ax.text((f(0) + f(roots[0])) / 4, roots[0] / 2, f"{area_lower: .3g}")
+    w_middle = np.linspace(roots[0], roots[1], 20)
+    ax.fill_betweenx(w_middle, 0, g(w_middle), color='orange', alpha=0.15)
+    ax.text(np.mean(g(roots)) / 2, np.mean(roots), f"{area_middle: .3g}")
+    ax.fill_between([0, 1], roots[1], 1, color='blue', alpha=0.15)
+    ax.text((f(roots[1]) + f(1)) / 4, (roots[1] + 1) / 2, f"{area_upper: .3g}")
+    plt.show()
+```
+
+让我们来看看与之前相同的一对分布。
+
+```{code-cell} ipython3
+plot_densities()
+```
+
+彩色区域中的分数是 $w$ 的实现值落入其旁边区域的概率。
+
+蓝色区域是 $f$ 的积分，橙色区域是 $g$ 的积分。
+
+例如，在真实分布$F$下，如果$w$落入区间$[0.524, 0.999]$，$\pi$将向$0$更新，这在$F$下发生的概率是$1 - .524 = .476$。
+
+但如果$G$是真实分布，这种情况发生的概率将是$0.816$。
+
+### 信念的动态变化
+
+我们的第三张图在 $(\pi, w)$ 平面上的每个点附加一个箭头，显示当当前信念为 $\pi$ 且新的抽样为 $w$ 时，贝叶斯定律所引起的 $\pi$ 的变化。
+
+```{code-cell} ipython3
+def plot_belief_dynamics(F_a=1, F_b=1, G_a=3, G_b=1.2):
+    f, g, roots = create_model(F_a, F_b, G_a, G_b)
+    π_grid = np.linspace(1e-3, 1 - 1e-3, 100)
+
+    # 在(π, w)的粗网格上每个点的π变化量
+    W = np.arange(0.01, 0.99, 0.08)
+    Π = np.arange(0.01, 0.99, 0.08)
+    lw = (f(W) / g(W))[:, None]     # 每个w处的似然比，作为一列
+    ΔΠ = Π * (lw / (Π * lw + 1 - Π) - 1)
+    ΔW = np.zeros_like(ΔΠ)
+
+    fig, ax = plt.subplots(figsize=(6, 5))
+    ax.quiver(Π, W, ΔΠ, ΔW, scale=2, color='r', alpha=0.8)
+    ax.fill_between(π_grid, 0, roots[0], color='blue', alpha=0.15)
+    ax.fill_between(π_grid, roots[0], roots[1], color='green', alpha=0.15)
+    ax.fill_between(π_grid, roots[1], 1, color='blue', alpha=0.15)
+    ax.hlines(roots, 0, 1, linestyle='--')
+    ax.set(xlabel=r'$\pi$', ylabel='$w$')
+    ax.grid()
+    plt.show()
+```
+
+我们再次使用同样的一对分布。
+
+```{code-cell} ipython3
+plot_belief_dynamics()
+```
+
+向右指的箭头表示贝叶斯定律使 $\pi$ 增加的情况，向左指的箭头表示贝叶斯定律使 $\pi$ 减少的情况。
 
 箭头的长度表示贝叶斯定律驱使 $\pi$ 改变的力的大小。
 
 这些长度取决于两个因素：横坐标轴上的先验概率 $\pi$，以及以当前 $w$ 值形式出现的证据（在纵坐标轴上）。
 
-中间图中彩色区域的分数分别表示在分布$F$和$G$下，$w$的实现值落入能将信念$\pi$向正确方向更新的区间的概率（即当$G$为真实分布时向$0$更新，当$F$为真实分布时向$1$更新）。
+在蓝色区域（$l(w) > 1$ 的地方），箭头指向右方；在虚线之间的绿色区域（$l(w) < 1$ 的地方），箭头指向左方。
 
-例如，在上述例子中，在真实分布$F$下，如果$w$落入区间$[0.524, 0.999]$，$\pi$将向$0$更新，这在$F$下发生的概率是$1 - .524 = .476$。
+对于这些参数，上方的蓝色区域是紧贴在 $w = 1$ 下方的一个薄片区域，因为只有在非常接近上限的抽样中，$l(w)$ 才会再次回升到大于1。
 
-但如果$G$是真实分布，这种情况发生的概率将是$0.816$。
-
-橙色区域中的分数$0.816$是$g(w)$在这个区间上的积分。
+### 另一个实例
 
 接下来我们使用代码为我们模型的另一个实例创建图形。
 
 我们保持$F$与前一个实例相同，即均匀分布，但现在假设$G$是一个参数为$G_a=2, G_b=1.6$的Beta分布。
 
-```{code-cell} python3
-learning_example(G_a=2, G_b=1.6)
+```{code-cell} ipython3
+plot_likelihood_ratio(G_a=2, G_b=1.6)
+plot_densities(G_a=2, G_b=1.6)
+plot_belief_dynamics(G_a=2, G_b=1.6)
 ```
 
-注意观察似然比、中间图表以及箭头与我们之前例子的对比。
+注意观察似然比、密度函数以及箭头与我们之前例子的对比。
 
 ## 附录
+
 
 ### $\pi_t$ 的样本路径
 
@@ -504,76 +555,64 @@ learning_example(G_a=2, G_b=1.6)
 - 自然永久从 $F$ 分布中抽取
 - 自然永久从 $G$ 分布中抽取
 
-结果取决于似然比过程的一个特殊性质，这在[本讲座](https://python-advanced.quantecon.org/additive_functionals.html)中有详细讨论。
+结果取决于似然比过程的一个特殊性质，这在 {doc}`advanced:additive_functionals` 中有详细讨论。
 
-让我们编写一些Python代码。
+在进行模拟之前，值得将贝叶斯定律用**赔率**而非概率重新表述。
 
-```{code-cell} python3
-def function_factory(F_a=1, F_b=1, G_a=3, G_b=1.2):
+用赔率 $\pi / (1 - \pi)$ 表示，更新规则 {eq}`eq_Bayes102` 变为
 
-    # 定义 f 和 g
-    f = jit(lambda x: p(x, F_a, F_b))
-    g = jit(lambda x: p(x, G_a, G_b))
+```{math}
+:label: eq_odds
 
-    @jit
-    def update(a, b, π):
-        "通过从参数为a和b的beta分布中抽样来更新π"
-
-        # 抽样
-        w = np.random.beta(a, b)
-
-        # 更新信念
-        π = 1 / (1 + ((1 - π) * g(w)) / (π * f(w)))
-
-        return π
-
-    @jit
-    def simulate_path(a, b, T=50):
-        "模拟长度为T的信念π路径"
-
-        π = np.empty(T+1)
-
-        # 初始条件
-        π[0] = 0.5
-
-        for t in range(1, T+1):
-            π[t] = update(a, b, π[t-1])
-
-        return π
-
-    def simulate(a=1, b=1, T=50, N=200, display=True):
-        "模拟N条长度为T的信念π路径"
-
-        π_paths = np.empty((N, T+1))
-        if display:
-            fig = plt.figure()
-
-        for i in range(N):
-            π_paths[i] = simulate_path(a=a, b=b, T=T)
-            if display:
-                plt.plot(range(T+1), π_paths[i], color='b', lw=0.8, alpha=0.5)
-
-        if display:
-            plt.show()
-
-        return π_paths
-
-    return simulate
+\frac{\pi_{t+1}}{1 - \pi_{t+1}} = l(w_{t+1}) \frac{\pi_{t}}{1 - \pi_{t}}
 ```
 
-```{code-cell} python3
-simulate = function_factory()
+因此贝叶斯定律在赔率上是*乘法*的，将 {eq}`eq_odds` 向前迭代回先验 $\pi_{-1}$，可得
+
+```{math}
+:label: eq_odds_product
+
+\frac{\pi_{t}}{1 - \pi_{t}} = \frac{\pi_{-1}}{1 - \pi_{-1}} \prod_{s=0}^{t} l(w_{s})
+```
+
+因此信念路径是似然比的累积乘积，这就是为什么似然比过程的性质决定了它的行为。
+
+这也意味着，我们可以使用累积乘积来模拟整个路径集合，而不需要按日期逐步迭代。
+
+```{code-cell} ipython3
+def simulate(rng, a, b, T=50, N=1000, π_init=0.5,
+             F_a=1, F_b=1, G_a=3, G_b=1.2):
+    """
+    在自然从 Beta(a, b) 中独立同分布抽取的情况下，模拟 N 条信念 π 在 T 个时期内的路径。
+    返回一个形状为 (N, T+1) 的数组，其第一列为共同的先验 π_init。
+    """
+    w = rng.beta(a, b, size=(N, T))
+    l = p(w, F_a, F_b) / p(w, G_a, G_b)
+    odds = (π_init / (1 - π_init)) * np.cumprod(l, axis=1)
+    return np.column_stack([np.full(N, π_init), odds / (1 + odds)])
+```
+
+以下函数用于绘制路径。
+
+```{code-cell} ipython3
+def plot_paths(π_paths):
+    fig, ax = plt.subplots()
+    ax.plot(π_paths.T, color='b', lw=0.8, alpha=0.5)
+    ax.set(xlabel='$t$', ylabel=r'$\pi_t$')
+    plt.show()
 ```
 
 我们首先生成 $N$ 条模拟的 $\{\pi_t\}$ 路径，每条路径包含 $T$ 个时期，其中序列是真实的从分布 $F$ 中独立同分布抽取的。我们设定初始先验 $\pi_{-1} = .5$。
 
-```{code-cell} python3
+```{code-cell} ipython3
+rng = np.random.default_rng(42)
 T = 50
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 当自然选择F时
-π_paths_F = simulate(a=1, b=1, T=T, N=1000)
+π_paths_F = simulate(rng, a=1, b=1, T=T, N=1000)
+plot_paths(π_paths_F)
 ```
 
 在上述例子中，对于大多数路径 $\pi_t \rightarrow 1$。
@@ -582,9 +621,10 @@ T = 50
 
 接下来，当序列确实是来自 $G$ 的独立同分布抽样时，我们生成 $T$ 期的路径。同样，我们设定初始先验 $\pi_{-1} = .5$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 当自然选择G时
-π_paths_G = simulate(a=3, b=1.2, T=T, N=1000)
+π_paths_G = simulate(rng, a=3, b=1.2, T=T, N=1000)
+plot_paths(π_paths_G)
 ```
 
 在上图中我们观察到现在大多数路径 $\pi_t \rightarrow 0$。
@@ -597,11 +637,13 @@ T = 50
 
 使用 $N$ 条模拟的 $\pi_t$ 路径，当数据是从 $F$ 中抽样生成时，我们在每个 $t$ 时刻计算 $1 - \sum_{i=1}^{N}\pi_{i,t}$，当数据是从 $G$ 中抽样生成时，我们计算 $\sum_{i=1}^{N}\pi_{i,t}$。
 
-```{code-cell} python3
-plt.plot(range(T+1), 1 - np.mean(π_paths_F, 0), label='F生成')
-plt.plot(range(T+1), np.mean(π_paths_G, 0), label='G生成')
-plt.legend()
-plt.title("收敛");
+```{code-cell} ipython3
+fig, ax = plt.subplots()
+ax.plot(range(T + 1), 1 - np.mean(π_paths_F, axis=0), label='F生成')
+ax.plot(range(T + 1), np.mean(π_paths_G, axis=0), label='G生成')
+ax.set(xlabel='$t$', title='收敛')
+ax.legend()
+plt.show()
 ```
 
 从上图可以看出，收敛速率似乎不依赖于是 $F$ 还是 $G$ 生成数据。
@@ -621,37 +663,30 @@ $$
 
 以下代码近似计算上述积分：
 
-```{code-cell} python3
-def expected_ratio(F_a=1, F_b=1, G_a=3, G_b=1.2):
-
-    # define f and g
-    f = jit(lambda x: p(x, F_a, F_b))
-    g = jit(lambda x: p(x, G_a, G_b))
-
+```{code-cell} ipython3
+def plot_expected_ratio(F_a=1, F_b=1, G_a=3, G_b=1.2):
+    # 直接构造 f 和 g：这里它们可能相同，此时 l(w) = 1 没有根
+    f = lambda w: p(w, F_a, F_b)
+    g = lambda w: p(w, G_a, G_b)
     l = lambda w: f(w) / g(w)
-    integrand_f = lambda w, π: f(w) * l(w) / (π * l(w) + 1 - π)
-    integrand_g = lambda w, π: g(w) * l(w) / (π * l(w) + 1 - π)
-
     π_grid = np.linspace(0.02, 0.98, 100)
 
-    expected_rario = np.empty(len(π_grid))
-    for q, inte in zip(["f", "g"], [integrand_f, integrand_g]):
-        for i, π in enumerate(π_grid):
-            expected_rario[i]= quad(inte, 0, 1, args=(π,))[0]
-        plt.plot(π_grid, expected_rario, label=f"{q} generates")
+    fig, ax = plt.subplots()
+    for label, a in [('f', f), ('g', g)]:
+        integrand = lambda w, π: a(w) * l(w) / (π * l(w) + 1 - π)
+        ratios = [quad(integrand, 0, 1, args=(π,))[0] for π in π_grid]
+        ax.plot(π_grid, ratios, label=f'{label} generates')
 
-    plt.hlines(1, 0, 1, linestyle="--")
-    plt.xlabel(r"$\pi_t$")
-    plt.ylabel(r"$E[\pi_{t+1}/\pi_t]$")
-    plt.legend()
-
+    ax.hlines(1, 0, 1, linestyle='--')
+    ax.set(xlabel=r'$\pi_t$', ylabel=r'$E[\pi_{t+1} / \pi_t]$')
+    ax.legend()
     plt.show()
 ```
 
 首先，考虑 $F_a=F_b=1$ 且 $G_a=3, G_b=1.2$ 的情况。
 
-```{code-cell} python3
-expected_ratio()
+```{code-cell} ipython3
+plot_expected_ratio()
 ```
 
 上图显示，当数据由 $F$ 生成时，$\pi_t$ 平均总是向北移动，而当数据由 $G$ 生成时，$\pi_t$ 向南移动。
@@ -660,21 +695,21 @@ expected_ratio()
 
 从某种意义上说，这里没有什么可学习的。
 
-```{code-cell} python3
-expected_ratio(F_a=3, F_b=1.2)
+```{code-cell} ipython3
+plot_expected_ratio(F_a=3, F_b=1.2)
 ```
 
 上图表明 $\pi_t$ 是惰性的，保持在其初始值。
 
 最后，让我们看一个 $f$ 和 $g$ 既不是非常不同也不完全相同的情况，特别是当 $F_a=2, F_b=1$ 且 $G_a=3, G_b=1.2$ 时。
 
-```{code-cell} python3
-expected_ratio(F_a=2, F_b=1, G_a=3, G_b=1.2)
+```{code-cell} ipython3
+plot_expected_ratio(F_a=2, F_b=1, G_a=3, G_b=1.2)
 ```
 
 ## 后续内容
 
 我们将在以下讲座中应用并深入探讨本讲座中提出的一些想法：
 
-* {doc}`本讲座 <likelihood_ratio_process>` 描述了**似然比过程**及其在频率派和贝叶斯统计理论中的作用
-* {doc}`本讲座 <navy_captain>` 研究了二战时期一位美国海军上尉的直觉，即海军要求他使用的（频率派）决策规则不如亚伯拉罕·瓦尔德尚未设计的序贯规则。
+* {doc}`likelihood_ratio_process` 描述了**似然比过程**及其在频率派和贝叶斯统计理论中的作用
+* {doc}`navy_captain` 研究了二战时期一位美国海军上尉的直觉，即海军要求他使用的（频率派）决策规则不如亚伯拉罕·瓦尔德尚未设计的序贯规则。

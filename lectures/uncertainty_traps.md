@@ -291,15 +291,15 @@ class UncertaintyTrapEcon:
         """
         self.θ = self.ρ * self.θ + self.σ_θ * w
 
-    def gen_aggregates(self):
+    def gen_aggregates(self, rng):
         """
         基于当前信念(μ, γ)生成总量。这是一个
         依赖于F抽样的模拟步骤。
         """
-        F_vals = self.σ_F * np.random.randn(self.num_firms)
+        F_vals = self.σ_F * rng.standard_normal(self.num_firms)
         M = np.sum(self.ψ(F_vals) > 0)  # 计算活跃企业数量
         if M > 0:
-            x_vals = self.θ + self.σ_x * np.random.randn(M)
+            x_vals = self.θ + self.σ_x * rng.standard_normal(M)
             X = x_vals.mean()
         else:
             X = 0
@@ -404,7 +404,7 @@ $$
 
 这里的 $M$ 是活跃企业的数量。下图在45度图上绘制了不同 $M$ 值下 $\gamma_{t+1}$ 对 $\gamma_t$ 的关系
 
-```{code-cell} ipython3
+```{code-cell} python3
 econ = UncertaintyTrapEcon()
 ρ, σ_θ, γ_x = econ.ρ, econ.σ_θ, econ.γ_x    # 简化名称
 γ = np.linspace(1e-10, 3, 200)              # γ 网格
@@ -426,7 +426,7 @@ plt.show()
 
 接下来让我们生成信念和总量的时间序列数据——即活跃企业数量和平均产出
 
-```{code-cell} ipython3
+```{code-cell} python3
 sim_length=2000
 
 μ_vec = np.empty(sim_length)
@@ -439,10 +439,11 @@ M_vec = np.empty(sim_length)
 γ_vec[0] = econ.γ
 θ_vec[0] = 0
 
-w_shocks = np.random.randn(sim_length)
+rng = np.random.default_rng()
+w_shocks = rng.standard_normal(sim_length)
 
 for t in range(sim_length-1):
-    X, M = econ.gen_aggregates()
+    X, M = econ.gen_aggregates(rng)
     X_vec[t] = X
     M_vec[t] = M
 
@@ -454,14 +455,14 @@ for t in range(sim_length-1):
     θ_vec[t+1] = econ.θ
 
 # 记录总量的最终值
-X, M = econ.gen_aggregates()
+X, M = econ.gen_aggregates(rng)
 X_vec[-1] = X
 M_vec[-1] = M
 ```
 
 首先，让我们看看在这些模拟中 $\mu$ 是如何跟踪 $\theta$ 的
 
-```{code-cell} ipython3
+```{code-cell} python3
 fig, ax = plt.subplots(figsize=(9, 6))
 ax.plot(range(sim_length), θ_vec, alpha=0.6, lw=2, label=r"$\theta$")
 ax.plot(range(sim_length), μ_vec, alpha=0.6, lw=2, label=r"$\mu$")
@@ -472,7 +473,7 @@ plt.show()
 
 现在让我们把所有内容一起绘制出来
 
-```{code-cell} ipython3
+```{code-cell} python3
 fig, axes = plt.subplots(4, 1, figsize=(12, 20))
 # 添加一些间距
 fig.subplots_adjust(hspace=0.3)
@@ -504,4 +505,3 @@ plt.show()
 
 ```{solution-end}
 ```
-

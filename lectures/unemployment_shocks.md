@@ -180,8 +180,6 @@ plt.show()
 
 {numref}`fig-shock-density` 展示了一个在零点处又高又窄的峰值，对应普通年份，加上一个位于正侧的低而宽的隆起，对应衰退跳跃。
 
-
-
 ## 贝叶斯估计
 
 我们对六个参数施加弱信息先验。
@@ -218,7 +216,7 @@ def run_nuts(model, data, seed=0, num_warmup=2000, num_samples=4000, num_chains=
                 num_warmup=num_warmup, num_samples=num_samples,
                 num_chains=num_chains, chain_method="vectorized",
                 progress_bar=False)
-    mcmc.run(random.PRNGKey(seed), jnp.asarray(data))
+    mcmc.run(random.key(seed), jnp.asarray(data))
     return mcmc
 ```
 
@@ -268,7 +266,6 @@ plt.show()
 
 拟合看起来相当不错（尽管我们仍难以捕捉右尾中的某些大冲击）。
 
-
 ## 用交叉验证比较模型
 
 跳跃模型看起来合理，但它真的比线性模型更好吗？
@@ -276,7 +273,6 @@ plt.show()
 为了回答这个问题，我们将使用一种*贝叶斯模型比较*的方法。
 
 我们分阶段构建它：指导原则、留一估计，以及计算的实际执行方式。
-
 
 ### 指导原则：样本外预测
 
@@ -289,7 +285,6 @@ plt.show()
 换句话说，我们关心的标准是样本外预测精度。
 
 我们没有用于样本外测试的新数据，因此使用*交叉验证*来制造一些。
-
 
 ### 留一交叉验证
 
@@ -312,7 +307,6 @@ $$
 $$
 \text{elpd}_{\text{loo}} = \sum_{i=1}^{n} \log p(u_i \mid u_{-i}).
 $$
-
 
 ### 计算方法
 
@@ -513,8 +507,6 @@ az.compare({
 
 这里 `az.compare` 确认了手工计算，并将跳跃模型排在第一位（其表格为了显示对分数进行了取整）。
 
-
-
 ### 适应时间序列结构
 
 留一法每次删除一个转移，但它并不尊重时间的顺序。
@@ -536,8 +528,6 @@ az.compare({
 对于我们这条短的年度序列，留未来交叉验证仍然可行，但对于长序列，它可能变得难以承受。
 
 （我们在此处未纳入的情况下运行了它，结论依然成立：在留未来法下，跳跃模型仍然击败线性模型，且优势幅度更大。）
-
-
 
 ## 结论
 

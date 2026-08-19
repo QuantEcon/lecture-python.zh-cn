@@ -96,7 +96,6 @@ mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
 
 此外，如果没有对快速增长的成本惩罚，第一个发现先前未开发市场的企业将通过在有利可图的投资出现时占用所有这些投资来抢占竞争，从而意味着比实际更普遍的垄断。
 
-
 ## 人员信息作为组织资本
 
 ```{index} single: Organization Capital; Personnel Information
@@ -196,13 +195,13 @@ mystnb:
     caption: 后验均值收敛与不确定性
     name: fig-posterior-evolution
 ---
-np.random.seed(0)
+rng = np.random.default_rng(0)
 
 θ_true = 0.8
 π = 1.0
 
 T = 20
-ε = np.random.randn(T)
+ε = rng.standard_normal(T)
 z_signals = θ_true + ε
 
 posterior_means = []
@@ -306,7 +305,6 @@ plt.show()
 
 这种收益递减的结构是*快速调整成本递增*的来源。
 
-
 ### 增长率与筛选时间
 
 增长率越大，$n$ 就必须越小——即在分配到职务 2 或 3 之前花在筛选任务上的时间越少。
@@ -374,7 +372,6 @@ plt.show()
 
 当增长迅速时，新工人必须更快地从筛选任务提升到生产性任务，因此在分配之前收集到的关于每个工人的信息更少。
 
-
 ### 综合效应：增长率与单位成本
 
 将函数 $c(n)$ 和 $n(\gamma)$ 组合起来揭示了单位成本如何依赖于增长率：
@@ -406,7 +403,6 @@ plt.show()
 
 企业增长越快，其筛选工人的时间就越少，工人与任务之间的匹配就越差，单位生产成本就越高。
 
-
 ## 行业均衡
 
 ```{index} single: Organization Capital; Industry Equilibrium
@@ -435,7 +431,6 @@ $$
 $$ (eq:surplus)
 
 其中 $A_{i2t}, A_{i3t}$ 和 $B$ 分别通过对行业中所有企业求和 $a_{i2t}$、$a_{i3t}$ 和 $b$ 得到。
-
 
 ### 关键性质：增长率与规模无关
 
@@ -690,7 +685,6 @@ plt.show()
 
 快速增长迫使在团队分配必须最终确定之前进行更少的观察，从而导致更高的成本。
 
-
 ## 企业专用人力资本
 
 ```{index} single: Organization Capital; Human Capital
@@ -756,7 +750,6 @@ plt.show()
 
 但是主要由学习组成的工作日也有收益递减，这产生了快速调整的成本。
 
-
 ## 转移组织资本的成本
 
 ```{index} single: Organization Capital; Transfer Costs
@@ -777,7 +770,6 @@ plt.show()
    * 与买家或卖家的融洽关系
 
 这些都是一个企业中*无法无成本转移*到另一个企业的组织资本类型。
-
 
 ## 总结与启示
 

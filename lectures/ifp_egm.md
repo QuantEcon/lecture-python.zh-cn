@@ -3,6 +3,8 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.2
 kernelspec:
   display_name: Python 3
   language: python
@@ -29,6 +31,14 @@ translation:
     JAX Implementation::A Sanity Check: 合理性检查
     Simulation: 模拟
 ---
+
+```{raw} jupyter
+<div id="qe-notebook-header" align="right" style="text-align:right;">
+        <a href="https://quantecon.org/" title="quantecon.org">
+                <img style="width:250px;display:inline;" width="250px" src="https://assets.quantecon.org/img/qe-menubar-logo.svg" alt="QuantEcon">
+        </a>
+</div>
+```
 
 # {index}`收入波动问题 III：内生网格法 <single: The Income Fluctuation Problem III: The Endogenous Grid Method>`
 
@@ -854,7 +864,7 @@ def compute_asset_stationary(
     z_idx_0_vector = jnp.zeros(num_households).astype(jnp.int32)
 
     # 对多个家庭进行向量化
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     keys = jax.random.split(key, num_households)
     # 对 (key, a_0, z_idx_0) 向量化 simulate_household
     sim_all_households = jax.vmap(
