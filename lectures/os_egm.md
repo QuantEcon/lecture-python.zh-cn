@@ -112,7 +112,6 @@ u'(c)
 
 然后迭代继续……
 
-
 ### 内生网格
 
 上面讨论的方法需要一个求根程序来找到对应于给定收入值 $x_i$ 的 $c_i$。
@@ -147,7 +146,6 @@ c_i =
 有了 $\{x_i, c_i\}$ 这些点后，我们可以像之前一样通过近似来重构 $K \sigma$。
 
 EGM 这个名称源于网格 $\{x_i\}$ 是**内生**确定的这一事实。
-
 
 ## 实现
 
@@ -218,8 +216,8 @@ def create_model(
     s_grid = np.linspace(1e-4, grid_max, grid_size)
 
     # 存储冲击（带种子，使结果可复现）
-    np.random.seed(seed)
-    shocks = np.exp(μ + ν * np.random.randn(shock_size))
+    rng = np.random.default_rng(seed)
+    shocks = np.exp(μ + ν * rng.standard_normal(shock_size))
 
     return Model(
         u, f, β, μ, ν, s_grid, shocks, α, u_prime, f_prime, u_prime_inv

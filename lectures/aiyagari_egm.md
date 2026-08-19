@@ -85,7 +85,6 @@ translation:
 * {cite}`Carroll2006`，介绍了内生网格法
 * {cite}`Ljungqvist2012` 的第 18 章，提供了教科书式的处理
 
-
 ### 预备知识
 
 我们使用以下导入：
@@ -162,7 +161,6 @@ $$
 $$
 
 其中 $s$ 是最优储蓄策略函数。
-
 
 ### 厂商
 
@@ -498,7 +496,7 @@ def capital_supply(household, prices, key,
 ```{code-cell} ipython3
 household = create_household()
 prices = Prices(r=0.01, w=1.0)
-key = jax.random.PRNGKey(42)
+key = jax.random.key(42)
 
 with qe.Timer():
     K_supply = capital_supply(household, prices, key)
@@ -555,7 +553,7 @@ def compute_equilibrium(firm, household, key,
 ```{code-cell} ipython3
 firm = Firm()
 household = create_household()
-key = jax.random.PRNGKey(42)
+key = jax.random.key(42)
 
 with qe.Timer():
     K_star = compute_equilibrium(firm, household, key)

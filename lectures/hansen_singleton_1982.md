@@ -115,7 +115,6 @@ def display_table(df, title=None, fmt=None):
     display(Latex("$" + latex + "$"))
 ```
 
-
 ## 经济模型
 
 我们考虑一个单一商品经济，其中有一个代表性消费者，其偏好是 CRRA 类型的，遵循 {cite:t}`hansen1982generalized` 和 {cite:t}`hansen1983stochastic`。
@@ -745,7 +744,6 @@ def run_two_step_by_lag(
     return pd.DataFrame(rows).set_index("NLAG")
 ```
 
-
 ### 模拟
 
 在将估计量应用于真实数据之前，我们验证 GMM 能从模拟数据中恢复已知参数。
@@ -1000,18 +998,14 @@ $\hat\gamma$ 和 $\hat\beta$ 都以其真实值为中心，$J$ 直方图跟踪�
 
 本讲和配套讲座 {doc}`hansen_singleton_1983` 使用相同的数据构建。
 
-下面的隐藏单元格加载了一个供应的月度数据集，包含总实际回报和总消费增长。这些数据由维护脚本 [`_static/lecture_specific/hansen_singleton_1982/make_data.py`](https://github.com/QuantEcon/lecture-python.myst/blob/main/lectures/_static/lecture_specific/hansen_singleton_1982/make_data.py) 从 [FRED](https://fred.stlouisfed.org/) 和 [Ken French](https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html) 数据库构建，并在此直接从 GitHub 读取。
+下面的隐藏单元格从 [QuantEcon/data-lectures](https://github.com/QuantEcon/data-lectures) 加载了一个月度数据集，包含总实际回报和总消费增长。这些数据由维护脚本 [`builders/hansen_singleton_1982_data.py`](https://github.com/QuantEcon/data-lectures/blob/main/builders/hansen_singleton_1982_data.py) 从 [FRED](https://fred.stlouisfed.org/) 和 [Ken French](https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html) 数据库构建，并在此直接从 GitHub 读取。
 
 ```{code-cell} ipython3
 :tags: [hide-cell]
 
-DATA_URL = (
-    "https://github.com/QuantEcon/lecture-python.myst/raw/refs/heads/main/"
-    "lectures/_static/lecture_specific/hansen_singleton_1982/"
-    "hansen_singleton_1982_data.csv"
-)
+DATA_URL = "https://github.com/QuantEcon/data-lectures/raw/main/lectures/hansen_singleton_1982_data.csv"
 
-# 一次性读取供应的快照；load_hs_monthly_data 只对其切片。
+# 一次性获取快照；load_hs_monthly_data 只对其切片。
 _data = pd.read_csv(DATA_URL, index_col=0, parse_dates=True)
 
 
@@ -1019,9 +1013,9 @@ def load_hs_monthly_data(start="1959-02-01", end="1978-12-01"):
     """
     加载月度总实际回报和总消费增长序列。
 
-    数据是由维护脚本
-    ``_static/lecture_specific/hansen_singleton_1982/make_data.py`` 构建的
-    供应快照，该脚本从 FRED 和 Ken French 数据库构建它们。
+    数据是由 QuantEcon/data-lectures 中的维护脚本
+    ``builders/hansen_singleton_1982_data.py`` 构建的快照，
+    该脚本从 FRED 和 Ken French 数据库构建它们。
     """
     start = pd.Timestamp(start).to_period("M").to_timestamp("M")
     end = pd.Timestamp(end).to_period("M").to_timestamp("M")

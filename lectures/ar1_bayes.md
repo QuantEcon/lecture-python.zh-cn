@@ -58,7 +58,6 @@ translation:
 
 - 将其视为从 $\{y_t\}$ 随机过程的[平稳分布](https://intro.quantecon.org/ar1_processes.html)中抽取的随机变量
 
-
 ### 模型设定
 
 统计模型的第一个组成部分是
@@ -147,11 +146,9 @@ logger = logging.getLogger('pymc')
 logger.setLevel(logging.CRITICAL)
 ```
 
-
 ## 估计
 
 让我们转向估计问题，先从似然函数开始。
-
 
 ### 似然函数
 
@@ -240,7 +237,6 @@ plt.show()
 ```
 
 可以看到，初始条件异常地大——该序列迅速脱离这个初始值，并在一个较低的区间内波动。
-
 
 ### PyMC实现
 
@@ -400,10 +396,10 @@ summary_y0
 
 fig, ax = plt.subplots()
 ax.hist(ρ_cond, bins=50, density=True, alpha=0.5,
-        label='条件化假设')
+        label='conditioning assumption')
 ax.hist(ρ_stat, bins=50, density=True, alpha=0.5,
-        label='平稳性假设')
-ax.axvline(ρ_true, color='k', linestyle='--', lw=2, label='真实值')
+        label='stationary assumption')
+ax.axvline(ρ_true, color='k', linestyle='--', lw=2, label='true value')
 ax.set_xlabel('ρ')
 ax.legend()
 plt.show()
@@ -497,7 +493,7 @@ NUTS_kernel = numpyro.infer.NUTS(AR1_model)
 
 # 运行MCMC
 mcmc = numpyro.infer.MCMC(NUTS_kernel, num_samples=50000, num_warmup=10000, progress_bar=False)
-mcmc.run(rng_key=random.PRNGKey(1), data=y)
+mcmc.run(rng_key=random.key(1), data=y)
 ```
 
 我们绘制轨迹图和后验分布图。
@@ -549,7 +545,7 @@ NUTS_kernel = numpyro.infer.NUTS(AR1_model_y0)
 
 # 运行MCMC
 mcmc2 = numpyro.infer.MCMC(NUTS_kernel, num_samples=50000, num_warmup=10000, progress_bar=False)
-mcmc2.run(rng_key=random.PRNGKey(1), data=y)
+mcmc2.run(rng_key=random.key(1), data=y)
 ```
 
 我们再次绘制轨迹图和后验分布图。

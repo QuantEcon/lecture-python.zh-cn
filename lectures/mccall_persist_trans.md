@@ -3,6 +3,8 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.2
 kernelspec:
   display_name: Python 3
   language: python
@@ -197,7 +199,7 @@ class Model(NamedTuple):
     e_draws: jnp.ndarray
 
 def create_job_search_model(μ=0.0, s=1.0, d=0.0, ρ=0.9, σ=0.1, β=0.98, c=5.0, 
-                           mc_size=1000, grid_size=100, key=jax.random.PRNGKey(1234)):
+                           mc_size=1000, grid_size=100, key=jax.random.key(1234)):
     """
     创建一个包含计算好的网格和抽取值的 Model。
     """
@@ -379,7 +381,7 @@ def draw_duration(key, μ, s, d, ρ, σ, β, z_grid, f_star, t_max=10_000):
 
 
 def compute_unemployment_duration(
-        model, key=jax.random.PRNGKey(1234), num_reps=100_000
+        model, key=jax.random.key(1234), num_reps=100_000
     ):
     """
     计算预期失业持续时间。

@@ -3,8 +3,10 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.1
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 translation:
@@ -356,7 +358,6 @@ def rate_update(x: jnp.ndarray, model: LakeModel) -> jnp.ndarray:
     return R @ x
 ```
 
-
 ### 总量动态
 
 让我们在默认参数下从 $X_0 = (12, 138)$ 开始进行一次模拟。
@@ -388,7 +389,6 @@ plt.show()
 ```
 
 总量 $E_t$ 和 $U_t$ 不会收敛，因为它们的和 $E_t + U_t$ 以速率 $g$ 增长。
-
 
 ### 比率动态
 
@@ -603,7 +603,7 @@ P = jnp.array([[1 - λ,        λ],
 xbar = rate_steady_state(model_markov)
 
 # 模拟马尔可夫链 - 对于随机更新我们需要一种不同的方法
-key = jax.random.PRNGKey(0)
+key = jax.random.key(0)
 
 def simulate_markov(P, initial_state, T, key):
     """模拟马尔可夫链T期"""

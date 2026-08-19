@@ -3,8 +3,10 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.16.7
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 translation:
@@ -579,8 +581,8 @@ def simulate_samuelson(
     
     # 如果是随机情形，生成冲击
     if σ > 0:
-        np.random.seed(seed)
-        ϵ = np.random.normal(0, 1, n)
+        rng = np.random.default_rng(seed)
+        ϵ = rng.normal(0, 1, n)
     
     # 向前模拟
     for t in range(2, n):
@@ -1139,7 +1141,8 @@ C[1] = σ  # 随机项
 
 sam_t = LinearStateSpace(A, C, G, mu_0=μ_0)
 
-x, y = sam_t.simulate(ts_length=n)
+rng = np.random.default_rng()
+x, y = sam_t.simulate(ts_length=n, random_state=rng)
 
 fig, axes = plt.subplots(3, 1, sharex=True, figsize=(12, 8))
 titles = ["产出 ($Y_t$)", "消费 ($C_t$)", "投资 ($I_t$)"]
@@ -1249,8 +1252,8 @@ class SamuelsonLSS(LinearStateSpace):
             except ValueError:
                 print("平稳分布不存在")
 
-        np.random.seed(seed)
-        x, y = self.simulate(ts_length)
+        rng = np.random.default_rng(seed)
+        x, y = self.simulate(ts_length, random_state=rng)
 
         fig, axes = plt.subplots(3, 1, sharex=True, figsize=(12, 8))
         titles = ["产出 ($Y_t$)", 

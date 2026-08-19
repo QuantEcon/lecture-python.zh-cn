@@ -84,7 +84,7 @@ from jax import lax
 # arviz
 import arviz as az
 
-sns.set_style('white')
+sns.set_style('white', rc={'font.family': ['Source Han Serif SC', 'DejaVu Sans']})  # set_style 会重置字体，用 rc 覆盖保留中文字体
 key = random.PRNGKey(0)
 ```
 
@@ -460,7 +460,6 @@ $$
 
 - 将集合 $\{W_t(\omega_i)\}^{I}_{i=1}, \ \{W_{t+1}(\omega_i)\}^{I}_{i=1}, \ \dots, \ \{W_{t+N}(\omega_i)\}^{I}_{i=1}$ 视为来自预测分布 $f(W_{t+1} \mid y_t, y_{t-1}, \dots , y_0)$, $f(W_{t+2} \mid y_t, y_{t-1}, \dots , y_0)$, $\dots$, $f(W_{t+N} \mid y_t, y_{t-1}, \dots , y_0)$ 的样本。
 
-
 ## 使用模拟来近似后验分布
 
 下面的代码单元使用 `numpyro` 计算时间 $t$ 时 $\rho, \sigma$ 的后验分布。
@@ -517,14 +516,14 @@ def draw_from_posterior(data, size=10000, dis_plot=True, key=key):
     # 绘制后验分布图和轨迹图
     if dis_plot:
         plot_data = az.from_numpyro(posterior=mcmc)
-        az.plot_trace_dist(plot_data, var_names=['ρ', 'σ'])
+        az.plot_trace(plot_data, var_names=['ρ', 'σ'])
 
     return post_sample
 
 post_samples = draw_from_posterior(initial_path)
 ```
 
-上面的图展示了后验分布和轨迹图。后验分布（左列）展示了在观察数据后参数的边际分布，而轨迹图（右列）通过展示采样器在各次迭代中如何探索参数空间，来帮助诊断MCMC的收敛性。
+上面的图展示了后验分布和轨迹图。后验分布（左列）展示了在观察数据后参数的边缘分布，而轨迹图（右列）通过展示采样器在各次迭代中如何探索参数空间，来帮助诊断MCMC的收敛性。
 
 ## 计算样本路径统计量
 

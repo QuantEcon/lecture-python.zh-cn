@@ -48,7 +48,6 @@ translation:
 :depth: 2
 ```
 
-
 ## 概述
 
 在本讲座中，我们通过向收入过程中添加暂时性冲击，继续扩展 {doc}`ifp_egm` 中的收入波动问题（IFP）。
@@ -76,8 +75,6 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"  # i18n
 mpl.font_manager.fontManager.addfont(FONTPATH)  # i18n
 mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
 ```
-
-
 
 ## 家庭问题
 
@@ -188,7 +185,6 @@ $$ \{(a_{0j}, c_{0j}), \ldots, (a_{mj}, c_{mj})\} $$
 
 对每个 $j$ 的线性插值。
 
-
 ## NumPy 实现
 
 在本节中，我们将编写一个 NumPy 版本的代码，目标仅在于清晰性，而非效率。
@@ -200,7 +196,6 @@ $$ \{(a_{0j}, c_{0j}), \ldots, (a_{mj}, c_{mj})\} $$
 $$
     u(c) = \frac{c^{1 - \gamma}} {1 - \gamma}
 $$
-
 
 ### 设置
 
@@ -382,8 +377,6 @@ ax.legend()
 plt.show()
 ```
 
-
-
 ## JAX 实现
 
 ```{index} single: Optimal Savings; Programming Implementation
@@ -421,7 +414,7 @@ def create_ifp(r=0.01,
                shock_draw_size=100,
                seed=1234):
 
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     s = jnp.linspace(0, savings_grid_max, savings_grid_size)
     Π, z_grid = jnp.array(Π), jnp.array(z_grid)
     R = 1 + r
@@ -429,7 +422,6 @@ def create_ifp(r=0.01,
     assert R * β < 1, "Stability condition violated."
     return IFP(R, β, γ, Π, z_grid, s, a_y, b_y, η_draws)
 ```
-
 
 ### 求解器
 
@@ -544,7 +536,6 @@ def solve_model(
 
     return c_out, a_out
 ```
-
 
 ### 测试运行
 
@@ -690,9 +681,6 @@ $$
 
 这个平稳分布代表了当家庭面临特异性冲击时，家庭间资产的长期分散情况。
 
-
-
-
 ## 模拟
 
 让我们回到默认模型，研究资产的平稳分布。
@@ -776,7 +764,7 @@ def compute_asset_stationary(
     z_idx_0_vector = jnp.zeros(num_households).astype(jnp.int32)
 
     # 对许多家庭进行向量化
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     keys = jax.random.split(key, num_households)
     # 在 (key, a_0, z_idx_0) 上对 simulate_household 进行向量化
     sim_all_households = jax.vmap(
@@ -807,13 +795,11 @@ plt.show()
 
 虽然我们至少获得了一个不平凡的右尾，但我们仍然存在左偏。
 
-
 ## 财富不平等
 
 让我们通过计算一些标准的衡量指标来观察财富不平等。
 
 我们还将研究不平等如何随利率变化。
-
 
 ### 衡量不平等
 
@@ -881,8 +867,6 @@ print(f"Top 1% wealth share: {top1:.4f}")
 
 在{doc}`后面的讲座 <ifp_advanced>` 中，我们将看看是否能改进这些数字。
 
-
-
 ### 利率与不平等
 
 让我们研究财富不平等如何随利率 $r$ 变化。
@@ -947,7 +931,6 @@ plt.show()
 然而差异很小，而且我们无法在不违反稳定性约束的情况下将 $r$ 提高太多。
 
 当然，改变利率无法产生我们在数据中看到的那种数字。
-
 
 ## 练习
 
