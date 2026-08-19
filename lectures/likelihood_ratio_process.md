@@ -1586,7 +1586,7 @@ def analyze_markov_chains(P_f, P_g, rng,
         plt.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
         plt.xlabel(r'$T$')
         plt.ylabel(r'$\log L_T$')
-        plt.title('马尔可夫链似然比(本质 = f)')
+        plt.title('马尔可夫链似然比(自然 = f)')
         plt.legend()
         plt.show()
     
