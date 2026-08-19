@@ -13,12 +13,12 @@ translation:
   title: 工作搜寻 IX：McCall劳动者的Q学习
   headings:
     Overview: 概述
-    Review of McCall Model: McCall 模型回顾
-    Implied Quality Function  $Q$: 隐含质量函数 $Q$
-    From Probabilities  to Samples: 从概率到样本
-    Q-Learning: Q-学习
-    Employed Worker Can't Quit: 禁止在职劳动者辞职的情况
-    Possible Extensions: 可能的扩展方向
+    Review of McCall model: McCall 模型回顾
+    Implied quality function $Q$: 隐含质量函数 $Q$
+    From probabilities to samples: 从概率到样本
+    Q-learning: Q-学习
+    Employed worker can't quit: 禁止在职劳动者辞职的情况
+    Possible extensions: 可能的扩展方向
 ---
 
 # 工作搜寻 IX：McCall劳动者的Q学习
@@ -276,7 +276,7 @@ Q\left(w,\text{reject}\right) & =c+\beta\int\max_{\text{accept, reject}}\left\{ 
 \end{aligned}
 $$ (eq:impliedq)
 
-注意，系统{eq}`eq:impliedq`的第一个方程假设在个体接受了一个报价后，他将来不会拒绝同样的报价。
+注意，系统{eq}`eq:impliedq`的第一个方程假设在个体接受了一个报价后，他将来不会有拒绝同样报价的选项。
 
 这些方程与我们在{doc}`这个 quantecon 讲座 <mccall_model>`中研究的劳动者最优值函数的贝尔曼方程是一致的。
 
@@ -573,7 +573,7 @@ def run_epochs(N, qlmc, qtable, rng):
     """
 
     for n in range(N):
-        if n%(N/10)==0:
+        if n % max(1, N // 10) == 0:
             print(f"进度：轮次 = {n}")
         new_qtable = qlmc.run_one_epoch(qtable, rng)
         qtable = new_qtable
@@ -636,10 +636,6 @@ ax.set_xlabel('工资')
 ax.set_ylabel('概率')
 
 plt.show()
-
-# VFI
-mcm = McCallModel(w=w_new, q=q_new)
-valfunc_VFI, flag = mcm.VFI()
 ```
 
 ```{code-cell} ipython3
@@ -661,13 +657,14 @@ def plot_epochs(epochs_to_plot, quit_allowed=1):
     max_epochs = np.max(epochs_to_plot)
     # 迭代训练轮数
     for n in range(max_epochs + 1):
-        if n%(max_epochs/10)==0:
+        if n % max(1, max_epochs // 10) == 0:
             print(f"进度: 训练轮数 = {n}")
         if n in epochs_to_plot:
             valfunc_qlr = valfunc_from_qtable(qtable)
             error = compute_error(valfunc_qlr, valfunc_VFI)
 
-            ax.plot(w_new, valfunc_qlr, '-o', label=f'QL:训练轮数={n}, 平均误差={error}')
+            ax.plot(w_new, valfunc_qlr, '-o',
+                    label=f'QL: 训练轮数={n}, 平均误差={error:.2f}')
 
 
         new_qtable = qlmc_new.run_one_epoch(qtable, rng)
@@ -675,7 +672,8 @@ def plot_epochs(epochs_to_plot, quit_allowed=1):
 
     ax.set_xlabel('工资')
     ax.set_ylabel('最优值')
-    ax.legend(loc='lower right')
+    ax.legend(bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=2)
+    plt.subplots_adjust(bottom=0.25)
     plt.show()
 ```
 
