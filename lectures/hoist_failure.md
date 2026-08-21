@@ -31,31 +31,6 @@ translation:
     Exercises: 练习
 ---
 
-jupytext:
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.10.3
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
-translation:
-  title: 故障树不确定性
-  headings:
-    Overview: 概述
-    The lognormal distribution: 对数正态分布
-    The convolution theorem: 卷积定理
-    Approximating continuous distributions: 近似连续分布
-    Discretizing the lognormal distribution: 离散化对数正态分布
-    Convolving probability mass functions: 概率质量函数的卷积
-    Fault tree analysis: 故障树分析
-    Failure rates unknown: 未知的故障率
-    Application: waste hoist failure rate: 应用：废物提升机失效率
-    Exercises: 练习
----
-
 ```{raw} jupyter
 <div id="qe-notebook-header" align="right" style="text-align:right;">
         <a href="https://quantecon.org/" title="quantecon.org">
