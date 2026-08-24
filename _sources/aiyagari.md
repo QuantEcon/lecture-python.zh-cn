@@ -415,7 +415,7 @@ plt.show()
 下一个函数通过以下步骤计算给定策略 $\sigma$ 的平稳分布：
 
 * 计算 $P_{\sigma}$ 的平稳分布 $\psi = (\psi(a, z))$，它定义了策略 $\sigma$ 下状态 $(a_t, z_t)$ 的马尔可夫链。
-* 对 $z_t$ 求和以得到 $a_t$ 的边缘分布。
+* 对 $z_t$ 求和以得到 $a_t$ 的边际分布。
 
 ```{code-cell} ipython3
 @jax.jit
@@ -440,7 +440,7 @@ def compute_asset_stationary(σ, household):
     ψ = compute_stationary(P_σ)
     ψ = jnp.reshape(ψ, (a_size, z_size))
 
-    # 沿行求和以得到资产的边缘分布
+    # 沿行求和以得到资产的边际分布
     ψ_a = jnp.sum(ψ, axis=1)
     return ψ_a
 ```

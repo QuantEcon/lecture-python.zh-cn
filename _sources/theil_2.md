@@ -140,7 +140,7 @@ x_{t+1} = g(x_t,\, z_t,\, u_t).
 ---
 mystnb:
   figure:
-    caption: CE 原理——策略与价值的对比
+    caption: CE principle -- policy vs. value
     name: fig-ce-policy-value
 ---
 a, b_coeff = 0.9, 1.0
@@ -298,7 +298,7 @@ u_t = h_1\!\left(x_t,\; \hat{h}_2 \cdot y_t\right) = h(x_t, z_t).
 ---
 mystnb:
   figure:
-    caption: 稳健策略随 θ 变化
+    caption: Robust policy varies with θ
     name: fig-robust-policy-theta
 ---
 σ_fixed = 1.0
@@ -574,7 +574,7 @@ print(f"β_tilde = {bt:.5f}, φ_tilde = {φ_rob:.4f}, ν_tilde = {ν_rob:.4f}")
 ---
 mystnb:
   figure:
-    caption: 标准与稳健消费路径的对比
+    caption: Standard vs robust consumption paths
     name: fig-std-vs-robust-paths
 ---
 np.random.seed(0)
@@ -630,7 +630,7 @@ plt.show()
 ---
 mystnb:
   figure:
-    caption: 观测等价轨迹
+    caption: Observational equivalence locus
     name: fig-oe-locus
 ---
 σ_range = np.linspace(-3e-7, 0.0, 200)

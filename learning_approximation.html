@@ -1,0 +1,2295 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>91. 学习、近似与均衡计算 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=1c349b9a0045df0ce6f4a606c2cc9441cbf3bef6" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css?v=982b99e0" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=8c6b312c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=9980b4379844dc0b911d69b62b295f34ede88fac"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'learning_approximation';</script>
+    <link rel="canonical" href="https://python.quantecon-zh-cn.org/learning_approximation.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="92. 汇率不确定性、学习与实验" href="exchange_rate_learning.html" />
+    <link rel="prev" title="90. 世代交叠货币经济中的适应性主体" href="olg_adaptive_money.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="学习、近似与均衡计算"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="学习、近似与均衡计算" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://python.quantecon-zh-cn.org/learning_approximation.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=learning_approximation>
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">91.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">91.2. 一个连续状态泛函方程</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">91.2.1. 赤字过程</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">91.3. 一个基准解</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">91.4. 参数化预期</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">91.4.1. 近似均衡与精确均衡</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">91.5. 学习就是均衡计算</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">91.6. 没有函数形式的学习</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">91.7. 结束语</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">91.8. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Aug 20, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/learning_approximation.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/9b2f799" class="changelog-hash">9b2f799</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">3 days ago</span>
+                                <span class="changelog-message">Fix learning_approximation FONTPATH: _fonts/ -> fonts/ (unbreaks the cache build) (#262)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/e0dd9b5" class="changelog-hash">e0dd9b5</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">4 days ago</span>
+                                <span class="changelog-message">Seed learning_approximation and restore its four local references (#261)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="toc-backref" href="#id15" role="doc-backlink"><span class="section-number">91. </span>学习、近似与均衡计算</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<nav class="contents" id="contents">
+<span id="index-0"></span><p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id15">学习、近似与均衡计算</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id16">概述</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id17">一个连续状态泛函方程</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id18">一个基准解</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id19">参数化预期</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id20">学习就是均衡计算</a></p></li>
+<li><p><a class="reference internal" href="#id11" id="id21">没有函数形式的学习</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id22">结束语</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id23">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>除了 Anaconda 中已有的库外，本讲座还需要以下库：</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantecon
+</pre></div>
+</div>
+</div>
+<details class="admonition hide below-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell output</p>
+<p class="expanded admonition-title">Hide code cell output</p>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (0.11.4)
+Requirement already satisfied: numba&gt;=0.49.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (0.65.1)
+Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (2.4.6)
+Requirement already satisfied: requests in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (2.34.2)
+Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (1.18.0)
+Requirement already satisfied: sympy in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (1.14.0)
+Requirement already satisfied: llvmlite&lt;0.48,&gt;=0.47.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from numba&gt;=0.49.0-&gt;quantecon) (0.47.0)
+Requirement already satisfied: charset_normalizer&lt;4,&gt;=2 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (3.4.7)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (3.18)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.26 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (2.7.0)
+Requirement already satisfied: certifi&gt;=2023.5.7 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from requests-&gt;quantecon) (2026.6.17)
+Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from sympy-&gt;quantecon) (1.3.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="id2">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink"><span class="section-number">91.1. </span>概述</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>在 <a class="reference internal" href="olg_adaptive_money.html"><span class="doc">世代交叠货币经济中的适应性主体</span></a> 中，一个适应性主体系统找到了一个它从未被告知过的理性预期均衡。</p>
+<p>那里的主体为政府赤字的每一个水平学习了一个<em>独立的</em>储蓄率——一个<strong>非参数</strong>规则，每个状态对应一个数字。</p>
+<p>当只有两个状态时，这种方法是有效的。</p>
+<p>但在其他情况下，它会遇到两个障碍，二者都在 <span class="bibtex-citation" id="id3">Sargent [<a class="reference internal" href="zreferences.html#id490" title="Thomas J. Sargent. Bounded Rationality in Macroeconomics. The Arne Ryde Memorial Lectures. Oxford University Press, Oxford, 1993.">1993</a>]</span> 中被提及：</p>
+<ul class="simple">
+<li><p>一个很少出现的状态学习得很慢，因为关于它的观测值到来得很慢；</p></li>
+<li><p>当状态数量很大时——尤其是当状态是<em>连续的</em>时——每个状态一个参数的做法是无望的。</p></li>
+</ul>
+<p>计量经济学家的应对方法是对决策规则施加<strong>参数</strong>形式，<span class="math notranslate nohighlight">\(s = f(G, \theta)\)</span>，其中 <span class="math notranslate nohighlight">\(\theta\)</span> 是低维的，并利用每一个观测值来估计 <span class="math notranslate nohighlight">\(\theta\)</span>。</p>
+<p>本讲座将详细探讨这样做的收益和代价。</p>
+<p>代价与收益是同一个想法的两面。</p>
+<p>一个参数族可以被快速学习，因为每一个观测值都能为每一个状态提供信息。</p>
+<p>但是，一个局限于某个函数族的学习方案，只有当该族中存在某个成员支持一个理性预期均衡时，才能收敛到该均衡。</p>
+<p>否则，它所能达到的最好结果只是一个<strong>近似均衡</strong>。</p>
+<p>将这个问题梳理清楚，会呈现出贯穿整个有限理性研究项目的一个主题：</p>
+<blockquote>
+<div><p>学习算法和均衡计算算法看起来彼此相似。</p>
+</div></blockquote>
+<p>我们将把这一点具体化。</p>
+<p><strong>马塞特参数化预期方法</strong>——一种用于<em>计算</em>理性预期均衡的标准工具——原来当以递归形式书写时，恰好就是一个适应性主体进行学习的模型。</p>
+<p>一次均衡计算，是建模者运行的一个集中式学习算法；一个学习型经济，则是主体们运行的一个去中心化的均衡计算。</p>
+<p>计划如下：</p>
+<ol class="arabic simple">
+<li><p>在上一讲的世代交叠模型中引入一个<em>连续的</em>赤字，将均衡条件转化为储蓄规则 <span class="math notranslate nohighlight">\(f(G)\)</span> 中的一个<strong>泛函方程</strong>。</p></li>
+<li><p>计算一个基准解，以便我们有可以据以衡量的真实值。</p></li>
+<li><p>用日益丰富的函数族通过<strong>参数化预期</strong>来求解它，观察近似均衡如何逐步让位于精确均衡。</p></li>
+<li><p>说明同一算法的递归、实时版本<strong>就是</strong>一个学习型经济。</p></li>
+<li><p>用核估计器<strong>非参数地</strong>学习储蓄规则，并权衡它与参数化路径之间的取舍。</p></li>
+</ol>
+<p>让我们从一些导入开始。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">quantecon</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qe</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>  <span class="c1"># i18n</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>  <span class="c1"># i18n</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink"><span class="section-number">91.2. </span>一个连续状态泛函方程</a><a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>我们保留 <a class="reference internal" href="olg_adaptive_money.html"><span class="doc">世代交叠货币经济中的适应性主体</span></a> 中的世代交叠货币经济——两期存活的主体、对数效用、年轻时的禀赋 <span class="math notranslate nohighlight">\(w_1\)</span> 和年老时的禀赋 <span class="math notranslate nohighlight">\(w_2\)</span>、作为唯一价值储藏手段的货币，以及一个通过印钞为赤字融资的政府。</p>
+<p>唯一的变化是：赤字 <span class="math notranslate nohighlight">\(G_t\)</span> 现在遵循一个<strong>连续</strong>马尔可夫过程，其转移核为 <span class="math notranslate nohighlight">\(F(G', G) = \operatorname{Prob}\{G_{t+1} \leq G' \mid G_t = G\}\)</span>。</p>
+<p>我们寻找一个平稳均衡，其中储蓄是当前赤字的一个<em>函数</em>，<span class="math notranslate nohighlight">\(s_t = f(G_t)\)</span>。</p>
+<p>家庭的一阶条件，在 <span class="math notranslate nohighlight">\(s_t = f(G_t)\)</span> 处求值，为</p>
+<div class="math notranslate nohighlight">
+\[
+u'(w_1 - f(G_t)) = \mathbb{E}_t\bigl[u'(w_2 + f(G_t) R_t)\, R_t\bigr],
+\qquad \mathbb{E}_t(\cdot) = \mathbb{E}(\cdot \mid G_t),
+\]</div>
+<p>而政府预算约束与市场出清一起，给出了以储蓄规则表示的货币回报率，与之前完全一样（当 <span class="math notranslate nohighlight">\(N = 1\)</span> 时），</p>
+<div class="math notranslate nohighlight">
+\[
+R_t = \frac{f(G_{t+1}) - G_{t+1}}{f(G_t)} .
+\]</div>
+<p>代入 <span class="math notranslate nohighlight">\(R_t\)</span>，并利用 <span class="math notranslate nohighlight">\(f(G_t) R_t = f(G_{t+1}) - G_{t+1}\)</span> 表示老年期的消费，将一阶条件转化为关于 <span class="math notranslate nohighlight">\(f\)</span> 的<strong>泛函方程</strong>：</p>
+<div class="math notranslate nohighlight" id="equation-functional-equation">
+<span class="eqno">(91.1)<a class="headerlink" href="#equation-functional-equation" title="Link to this equation">#</a></span>\[u'\bigl(w_1 - f(G_t)\bigr)
+= \mathbb{E}_t\!\left[
+u'\!\bigl(w_2 + f(G_{t+1}) - G_{t+1}\bigr)
+\cdot \frac{f(G_{t+1}) - G_{t+1}}{f(G_t)}
+\right].\]</div>
+<p>在对数效用下，<span class="math notranslate nohighlight">\(u'(c) = 1/c\)</span>，并且由于 <span class="math notranslate nohighlight">\(f(G_t)\)</span> 在时刻 <span class="math notranslate nohighlight">\(t\)</span> 已知，它可以提到期望符号之外。</p>
+<p>写成</p>
+<div class="math notranslate nohighlight" id="equation-psi-definition">
+<span class="eqno">(91.2)<a class="headerlink" href="#equation-psi-definition" title="Link to this equation">#</a></span>\[\psi(G_t) \equiv \mathbb{E}_t\bigl[u'(w_2 + f(G_{t+1}) - G_{t+1})\,(f(G_{t+1}) - G_{t+1})\bigr],\]</div>
+<p>方程 <a class="reference internal" href="#equation-functional-equation">(91.1)</a> 变为</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{w_1 - f(G_t)} = \frac{\psi(G_t)}{f(G_t)},
+\qquad\text{即}\qquad
+f(G_t) = \frac{w_1\,\psi(G_t)}{1 + \psi(G_t)} .
+\]</div>
+<p>所以整个问题就归结为求出<strong>条件期望</strong> <span class="math notranslate nohighlight">\(\psi(G)\)</span>：一旦我们求得它，储蓄规则就以闭合形式得出。</p>
+<p>这个观察是整个讲座的枢纽。</p>
+<p>下面的每一种方法——无论是参数的还是非参数的——都是估计同一个对象 <span class="math notranslate nohighlight">\(\psi(G)\)</span> 的一种方式。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">10.0</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">s_from_psi</span><span class="p">(</span><span class="n">ψ</span><span class="p">):</span>
+    <span class="s2">&quot;从条件期望 ψ 中恢复储蓄规则。&quot;</span>
+    <span class="k">return</span> <span class="n">w1</span> <span class="o">*</span> <span class="n">ψ</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ψ</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id5">
+<h3><span class="section-number">91.2.1. </span>赤字过程<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>我们假设 <span class="math notranslate nohighlight">\(\log G_t\)</span> 服从一个 AR(1) 过程，
+<span class="math notranslate nohighlight">\(\log G_{t+1} = (1-\rho)\log \bar G + \rho \log G_t + \sigma \varepsilon_{t+1}\)</span>，并使用 <span class="bibtex-citation" id="id6">Tauchen [<a class="reference internal" href="zreferences.html#id322" title="George Tauchen. Finite state markov-chain approximations to univariate and vector autoregressions. Economics Letters, 20(2):177–181, 1986.">1986</a>]</span> 的方法对其进行离散化，以得到用于基准解的精细网格。</p>
+<p>参数的设定使得赤字保持在足够温和的水平，从而在每个状态下都存在一个货币均衡。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ρ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">G_bar</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">,</span> <span class="mf">0.6</span>
+
+<span class="n">mc</span> <span class="o">=</span> <span class="n">qe</span><span class="o">.</span><span class="n">tauchen</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">ρ</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G_bar</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ρ</span><span class="p">),</span> <span class="n">n_std</span><span class="o">=</span><span class="mf">2.5</span><span class="p">)</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">mc</span><span class="o">.</span><span class="n">state_values</span><span class="p">),</span> <span class="n">mc</span><span class="o">.</span><span class="n">P</span>
+<span class="n">ergodic</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">stationary_distributions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>      <span class="c1"># 赤字大部分时间所处的位置</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;赤字网格：</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个点，从 </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> 到 </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;遍历分布下的平均赤字：</span><span class="si">{</span><span class="n">ergodic</span><span class="w"> </span><span class="o">@</span><span class="w"> </span><span class="n">G</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>赤字网格：21 个点，从 0.210 到 1.715
+遍历分布下的平均赤字：0.654
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id7">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink"><span class="section-number">91.3. </span>一个基准解</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>为了衡量任何学习方案，我们首先需要真实的 <span class="math notranslate nohighlight">\(f(G)\)</span>。</p>
+<p>在离散网格上，<a class="reference internal" href="#equation-functional-equation">(91.1)</a> 是一个方程组，我们通过<strong>迭代感知到实际的映射</strong>来求解它，这正是 <a class="reference internal" href="bounded_rationality.html"><span class="doc">一种奇特的有限理性定义</span></a> 中的 <span class="math notranslate nohighlight">\(T\)</span> 映射。</p>
+<p>猜测一个储蓄规则；用它代入右侧计算每个状态实际会引发的储蓄；重复直到两者一致。</p>
+<p>由于 <span class="math notranslate nohighlight">\(\psi\)</span> 是单调的，我们可以用一个区间根查找器逐状态地反演一阶条件，这使得迭代过程更加稳健。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">solve_benchmark</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">damp</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">5000</span><span class="p">):</span>
+    <span class="s2">&quot;赤字网格上感知到实际的储蓄映射的不动点。&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">w1</span> <span class="o">-</span> <span class="n">w2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+        <span class="n">s_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="c1"># 感知规则 s 下的 E_t[ u&#39;(c2) (s&#39; - G&#39;) ]</span>
+            <span class="n">expect</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">G</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">w2</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">G</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span> <span class="o">*</span> <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+            <span class="c1"># 在 (G_i, w1) 中求解  1/(w1 - s_i) = expect / s_i 得到 s_i</span>
+            <span class="n">foc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">si</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">w1</span> <span class="o">-</span> <span class="n">si</span><span class="p">)</span> <span class="o">-</span> <span class="n">expect</span><span class="o">/</span><span class="n">si</span>
+            <span class="n">s_new</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="n">foc</span><span class="p">,</span> <span class="n">G</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="n">w1</span> <span class="o">-</span> <span class="mf">1e-9</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_new</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="n">it</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">damp</span> <span class="o">*</span> <span class="n">s_new</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">damp</span><span class="p">)</span> <span class="o">*</span> <span class="n">s</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="n">it</span>
+
+
+<span class="n">s_benchmark</span><span class="p">,</span> <span class="n">iters</span> <span class="o">=</span> <span class="n">solve_benchmark</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;经过 </span><span class="si">{</span><span class="n">iters</span><span class="si">}</span><span class="s2"> 次迭代收敛&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">foc_residual</span><span class="p">(</span><span class="n">s_rule</span><span class="p">):</span>
+    <span class="s2">&quot;在真实核 P 下，一个储蓄规则的最大 |一阶条件误差|。&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">s_rule</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">G</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">w2</span> <span class="o">+</span> <span class="p">(</span><span class="n">s_rule</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">G</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span> <span class="o">/</span> <span class="n">s_rule</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                  <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">err</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">w1</span> <span class="o">-</span> <span class="n">s_rule</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">-</span> <span class="n">rhs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;基准一阶条件残差：</span><span class="si">{</span><span class="n">foc_residual</span><span class="p">(</span><span class="n">s_benchmark</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;储蓄规则 f(G) 从 </span><span class="si">{</span><span class="n">s_benchmark</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">（低赤字）&quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;变化到 </span><span class="si">{</span><span class="n">s_benchmark</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">（高赤字）&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>经过 224 次迭代收敛
+基准一阶条件残差：2.16e-14
+储蓄规则 f(G) 从 4.470（低赤字）变化到 2.831（高赤字）
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s_benchmark</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;赤字 $G$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;储蓄 $f(G)$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-la-benchmark">
+<img alt="_images/1768b0e67146678642006d174abf05efae12013d79f0ffbea86b861515e746d2.png" src="_images/1768b0e67146678642006d174abf05efae12013d79f0ffbea86b861515e746d2.png" />
+<figcaption>
+<p><span class="caption-number">图 91.1 </span><span class="caption-text">基准均衡储蓄规则</span><a class="headerlink" href="#fig-la-benchmark" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>随着赤字上升，储蓄下降：更大的赤字意味着更快的货币创造、更差的货币回报率，以及更少的储蓄。</p>
+<p>该规则呈现平缓的曲线，这一点稍后会很重要。</p>
+<p>这个 <span class="math notranslate nohighlight">\(f(G)\)</span> 是任何适应性主体都无法看到的对象。</p>
+<p>下面的一切都在尝试恢复它。</p>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink"><span class="section-number">91.4. </span>参数化预期</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>马塞特的<strong>参数化预期方法</strong>通过对 <a class="reference internal" href="#equation-psi-definition">(91.2)</a> 中的条件期望 <span class="math notranslate nohighlight">\(\psi(G)\)</span> 施加一个参数形式来处理 <a class="reference internal" href="#equation-functional-equation">(91.1)</a>，</p>
+<div class="math notranslate nohighlight">
+\[
+\psi(G) \approx \psi(G, \theta) = \phi(G)^\top \theta ,
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\phi(G)\)</span> 是一个基函数向量，<span class="math notranslate nohighlight">\(\theta\)</span> 是一个短的系数向量。</p>
+<p>该算法是关于 <span class="math notranslate nohighlight">\(\theta\)</span> 的一个不动点迭代：</p>
+<ol class="arabic simple">
+<li><p>给定 <span class="math notranslate nohighlight">\(\theta\)</span>，储蓄规则为 <span class="math notranslate nohighlight">\(f(G) = w_1 \psi(G,\theta) / (1 + \psi(G,\theta))\)</span>。</p></li>
+<li><p>模拟一条较长的赤字路径，并计算每期蕴含的储蓄。</p></li>
+<li><p>形成 <a class="reference internal" href="#equation-psi-definition">(91.2)</a> 中对象的<em>已实现</em>值，
+<span class="math notranslate nohighlight">\(y_t = u'(w_2 + s_{t+1} - G_{t+1})(s_{t+1} - G_{t+1})\)</span>，并将其对 <span class="math notranslate nohighlight">\(\phi(G_t)\)</span> 进行<strong>回归</strong>以得到新的 <span class="math notranslate nohighlight">\(\theta\)</span>。</p></li>
+<li><p>迭代直至收敛。</p></li>
+</ol>
+<p>步骤 3 中的回归所做的正是条件期望的工作：最小二乘法将已实现的 <span class="math notranslate nohighlight">\(y_t\)</span> 投影到当前状态的函数上，这正是 <span class="math notranslate nohighlight">\(\mathbb{E}_t[\cdot \mid G_t]\)</span> 所做的事情。</p>
+<p>我们使用重新标度的 <span class="math notranslate nohighlight">\(\log G\)</span> 中的单项式作为基函数，并改变其阶数。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_min</span><span class="p">,</span> <span class="n">G_max</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">G</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_deficit</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="s2">&quot;模拟 AR(1) 赤字过程，并截断至基准解的支持范围内。&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">μ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G_bar</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ρ</span><span class="p">)</span>
+    <span class="n">lg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">lg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G_bar</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="n">lg</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">μ</span> <span class="o">+</span> <span class="n">ρ</span> <span class="o">*</span> <span class="n">lg</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">σ</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">lg</span><span class="p">),</span> <span class="n">G_min</span><span class="p">,</span> <span class="n">G_max</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">basis</span><span class="p">(</span><span class="n">G_vals</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="s2">&quot;重新标度到 [-1, 1] 的对数赤字的单项式。&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G_vals</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G_min</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G_max</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G_min</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">x</span><span class="o">**</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">parameterized_expectations</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">40_000</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="s2">&quot;批量参数化预期；返回网格上蕴含的储蓄规则。&quot;</span>
+    <span class="n">G_sim</span> <span class="o">=</span> <span class="n">simulate_deficit</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+    <span class="n">Φ</span> <span class="o">=</span> <span class="n">basis</span><span class="p">(</span><span class="n">G_sim</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+    <span class="n">θ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">θ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iter</span><span class="p">):</span>
+        <span class="n">ψ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">Φ</span> <span class="o">@</span> <span class="n">θ</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">s_from_psi</span><span class="p">(</span><span class="n">ψ</span><span class="p">),</span> <span class="n">G_sim</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">w1</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">G_sim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="p">(</span><span class="n">w2</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">G_sim</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>     <span class="c1"># 已实现的被回归量</span>
+        <span class="n">θ_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">Φ</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">θ_new</span> <span class="o">-</span> <span class="n">θ</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-11</span><span class="p">:</span>
+            <span class="n">θ</span> <span class="o">=</span> <span class="n">θ_new</span>
+            <span class="k">break</span>
+        <span class="n">θ</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">θ</span> <span class="o">+</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">θ_new</span>
+    <span class="n">ψ_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">basis</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span> <span class="o">@</span> <span class="n">θ</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s_from_psi</span><span class="p">(</span><span class="n">ψ_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id9">
+<h3><span class="section-number">91.4.1. </span>近似均衡与精确均衡<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p>现在对日益丰富的函数族运行该算法：常数 <span class="math notranslate nohighlight">\(\psi\)</span>（储蓄与赤字无关）、线性的，以及二次的。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rules</span> <span class="o">=</span> <span class="p">{</span><span class="n">deg</span><span class="p">:</span> <span class="n">parameterized_expectations</span><span class="p">(</span><span class="n">deg</span><span class="p">)</span> <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s_benchmark</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;基准 $f(G)$&quot;</span><span class="p">)</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;0 阶（常数）&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;1 阶（线性）&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;2 阶（二次）&quot;</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">deg</span><span class="p">,</span> <span class="n">colour</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;C0&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;C1&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;C2&#39;</span><span class="p">)]:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">rules</span><span class="p">[</span><span class="n">deg</span><span class="p">],</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colour</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">deg</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;赤字 $G$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;储蓄 $s$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-la-pea">
+<img alt="_images/6ed01eaa2cfb2dadb91b1ff450eb5fcec2592a88989c244a3ff5bdba126fc001.png" src="_images/6ed01eaa2cfb2dadb91b1ff450eb5fcec2592a88989c244a3ff5bdba126fc001.png" />
+<figcaption>
+<p><span class="caption-number">图 91.2 </span><span class="caption-text">阶数递增的参数化预期规则</span><a class="headerlink" href="#fig-la-pea" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p><strong>常数</strong>族根本无法表示一个依赖于赤字的储蓄规则，因此它所能做到的最好效果就是一条穿过数据中部的水平线。</p>
+<p>这条水平线<em>确实是</em>一个近似均衡——学习方案的一个不动点——但它只是平均意义上满足一阶条件，而非逐状态满足。</p>
+<p><strong>线性</strong>族的表现要好得多，但在两端弯曲的方向错误。</p>
+<p><strong>二次</strong>族在视觉上与基准解几乎无法区分：因为这里的真实 <span class="math notranslate nohighlight">\(f(G)\)</span> 非常接近二次函数，一个三参数的规则基本上完美地捕捉到了它。</p>
+<p>我们可以用两种方式来量化”有多接近”：与基准解的距离，以及在真实核下一阶条件的残差——后者是衡量一个近似均衡与精确均衡有多远的诚实指标。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="n">s_hat</span> <span class="o">=</span> <span class="n">rules</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span>
+    <span class="n">sup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_hat</span> <span class="o">-</span> <span class="n">s_benchmark</span><span class="p">))</span>
+    <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ergodic</span> <span class="o">@</span> <span class="p">(</span><span class="n">s_hat</span> <span class="o">-</span> <span class="n">s_benchmark</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">labels</span><span class="p">[</span><span class="n">deg</span><span class="p">],</span> <span class="n">sup</span><span class="p">,</span> <span class="n">rms</span><span class="p">,</span> <span class="n">foc_residual</span><span class="p">(</span><span class="n">s_hat</span><span class="p">)])</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;族&quot;</span><span class="p">,</span> <span class="s2">&quot;sup $|s - f|$&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;遍历 RMS&quot;</span><span class="p">,</span> <span class="s2">&quot;一阶条件残差&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;族&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sup $|s - f|$</th>
+      <th>遍历 RMS</th>
+      <th>一阶条件残差</th>
+    </tr>
+    <tr>
+      <th>族</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0 阶（常数）</th>
+      <td>1.1826</td>
+      <td>0.3230</td>
+      <td>0.0090</td>
+    </tr>
+    <tr>
+      <th>1 阶（线性）</th>
+      <td>0.3458</td>
+      <td>0.0671</td>
+      <td>0.0039</td>
+    </tr>
+    <tr>
+      <th>2 阶（二次）</th>
+      <td>0.0386</td>
+      <td>0.0110</td>
+      <td>0.0006</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>随着函数族变得更加丰富，每一列都在下降。</p>
+<p>一阶条件残差——这个量在理性预期均衡处恰好为零，而在近似均衡处为正——从常数族到二次族下降了超过一个数量级。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>在有限数据下，更丰富并<em>不总是</em>更好。</p>
+<p>将阶数推得更高，多余的项就会开始追逐赤字分布尾部的抽样噪声——那里观测值稀少，而 sup 范数误差可能会重新上升，即便在主体实际所处位置的拟合正在改善。</p>
+<p>这与 <a class="reference internal" href="olg_adaptive_money.html"><span class="doc">世代交叠货币经济中的适应性主体</span></a> 中缓慢学习的稀有状态是同一现象，只是从近似的角度来看：一个方案在数据所在之处拟合得很好，而对一个很少被访问的区域拟合不佳，在预期效用意义上代价很小。</p>
+<p><a class="reference internal" href="#lae_ex1"><span class="std std-numref">练习 91.1</span></a> 探讨了这一点。</p>
+</div>
+</section>
+</section>
+<section id="id10">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink"><span class="section-number">91.5. </span>学习就是均衡计算</a><a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>到目前为止，参数化预期是<em>我们</em>运行来计算均衡的算法。</p>
+<p>现在到了整个讲座的关键点。</p>
+<p>将同一个算法以<strong>递归</strong>形式书写——每期随着一个新观测值的到来更新一次 <span class="math notranslate nohighlight">\(\theta\)</span>，而不是对整个模拟面板重新回归——它就变成了一个<em>适应性主体实时学习</em>的模型。</p>
+<p>递归形式就是普通的递归最小二乘法：</p>
+<div class="math notranslate nohighlight" id="equation-recursive-pea">
+<span class="eqno">(91.3)<a class="headerlink" href="#equation-recursive-pea" title="Link to this equation">#</a></span>\[\begin{split}\begin{aligned}
+R_{t+1} &amp;= R_t + \tfrac{1}{t}\bigl(\phi(G_t)\phi(G_t)^\top - R_t\bigr), \\
+\theta_{t+1} &amp;= \theta_t + \tfrac{1}{t} R_{t+1}^{-1} \phi(G_t)\bigl(y_t - \phi(G_t)^\top \theta_t\bigr),
+\end{aligned}\end{split}\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(y_t\)</span> 与之前相同，是已实现的被回归量，而 <span class="math notranslate nohighlight">\(R_t\)</span> 追踪回归量的二阶矩。</p>
+<p>这与我们在 <a class="reference internal" href="olg_adaptive_money.html"><span class="doc">世代交叠货币经济中的适应性主体</span></a> 中遇到的对象是完全相同的：一个具有 <span class="math notranslate nohighlight">\(1/t\)</span> 增益的随机逼近递归。</p>
+<p>与那里逐状态学习的唯一区别是，这里的 <span class="math notranslate nohighlight">\(\theta\)</span> 索引的是一个<em>参数化</em>规则，因此单个观测值可以同时更新整个储蓄规则。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">online_pea</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">500_000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ridge</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    递归最小二乘参数化预期：学习型经济。</span>
+
+<span class="sd">    时刻 t 的年轻主体根据当前的 θ 进行储蓄；下一期欧拉方程的</span>
+<span class="sd">    已实现值到来，θ 被更新一次。返回 θ 的路径以及最终蕴含的</span>
+<span class="sd">    储蓄规则。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G_sim</span> <span class="o">=</span> <span class="n">simulate_deficit</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+    <span class="n">θ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.0</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">degree</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">ridge</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">saving</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">θ</span><span class="p">):</span>
+        <span class="n">ψ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">basis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">g</span><span class="p">]),</span> <span class="n">degree</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">@</span> <span class="n">θ</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">s_from_psi</span><span class="p">(</span><span class="n">ψ</span><span class="p">),</span> <span class="n">g</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">w1</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">)</span>
+
+    <span class="n">x_prev</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">θ_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">s_t</span> <span class="o">=</span> <span class="n">saving</span><span class="p">(</span><span class="n">G_sim</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">θ</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x_prev</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>                                  <span class="c1"># t-1 期的欧拉方程现在实现</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">s_t</span> <span class="o">-</span> <span class="n">G_sim</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">w2</span> <span class="o">+</span> <span class="p">(</span><span class="n">s_t</span> <span class="o">-</span> <span class="n">G_sim</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+            <span class="n">gain</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">R</span> <span class="o">+=</span> <span class="n">gain</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">x_prev</span><span class="p">,</span> <span class="n">x_prev</span><span class="p">)</span> <span class="o">-</span> <span class="n">R</span><span class="p">)</span>
+            <span class="n">θ</span> <span class="o">=</span> <span class="n">θ</span> <span class="o">+</span> <span class="n">gain</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">x_prev</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">x_prev</span> <span class="o">@</span> <span class="n">θ</span><span class="p">))</span>
+        <span class="n">x_prev</span> <span class="o">=</span> <span class="n">basis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">G_sim</span><span class="p">[</span><span class="n">t</span><span class="p">]]),</span> <span class="n">degree</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">θ_path</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">θ</span>
+
+    <span class="n">s_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">saving</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">θ</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">G</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">θ_path</span><span class="p">,</span> <span class="n">s_grid</span>
+
+
+<span class="n">θ_path</span><span class="p">,</span> <span class="n">s_online</span> <span class="o">=</span> <span class="n">online_pea</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;在线 PEA：sup 误差 = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_online</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">s_benchmark</span><span class="p">))</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">，  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;遍历 RMS = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ergodic</span><span class="w"> </span><span class="o">@</span><span class="w"> </span><span class="p">(</span><span class="n">s_online</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">s_benchmark</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>在线 PEA：sup 误差 = 0.0837，  遍历 RMS = 0.0480
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">θ_path</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\theta_0$&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">θ_path</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\theta_1$&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">θ_path</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\theta_2$&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$t$（对数刻度）&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\theta_t$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;实时学习的系数&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s_benchmark</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;基准 $f(G)$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s_online</span><span class="p">,</span> <span class="s1">&#39;C3--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;在线 PEA&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;赤字 $G$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;储蓄 $s$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;学习后的储蓄规则&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-la-online">
+<img alt="_images/38d06ecbfd1479b8225f93185c6078a3646bbefb3d86ea05c387e538da141693.png" src="_images/38d06ecbfd1479b8225f93185c6078a3646bbefb3d86ea05c387e538da141693.png" />
+<figcaption>
+<p><span class="caption-number">图 91.3 </span><span class="caption-text">储蓄规则的在线学习</span><a class="headerlink" href="#fig-la-online" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>系数逐渐稳定下来，它们所蕴含的储蓄规则紧密地追踪着基准解。</p>
+<p>剩余的微小差距是一个尚未完全收敛的方案的标志。</p>
+<p>收敛是<em>缓慢的</em>：<span class="math notranslate nohighlight">\(1/t\)</span> 增益能保证收敛，但并不加快它，在线方案需要数十万期才能达到批量算法在寥寥几次遍历中所达到的精度。</p>
+<p>这个差距正是一个被限制只能从经验到来时逐步学习的主体，与一个可以随时重复使用整个模拟历史的建模者之间的区别。</p>
+<p>但极限是同一个对象。</p>
+<p>萨金特的总结：</p>
+<blockquote>
+<div><p>学习算法和均衡计算算法看起来彼此相似。均衡计算算法常常可以被解释为集中式学习算法，其中模型构建者扮演”社会规划者”的角色，摸索出一组能满足所有个体最优条件和市场出清条件的定价函数和主体决策规则。我们也已经看到，具有有限理性主体的学习系统有时可以被解释为去中心化的均衡计算算法。</p>
+</div></blockquote>
+<p>这就是马塞特之所以通过早期关于<em>最小二乘学习动态</em>的研究而得出参数化预期作为一种<em>计算</em>方法的原因。</p>
+<p>这二者是同一个递归，只是从两个方向去阅读它。</p>
+</section>
+<section id="id11">
+<h2><a class="toc-backref" href="#id21" role="doc-backlink"><span class="section-number">91.6. </span>没有函数形式的学习</a><a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>参数化路径速度快，但把一切都押注在函数族上。</p>
+<p>如果 <span class="math notranslate nohighlight">\(\{f(\cdot, \theta)\}\)</span> 中没有一个成员能支持一个均衡，那么该方案就会收敛到一个近似均衡然后停下来。</p>
+<p><strong>非参数</strong>替代方案不施加任何函数形式。</p>
+<p>遵循 <span class="bibtex-citation" id="id12">Chen and White [<a class="reference internal" href="zreferences.html#id499" title="Xiaohong Chen and Halbert White. Nonparametric adaptive learning with feedback. Journal of Economic Theory, 82(1):190–222, 1998. doi:10.1006/jeth.1998.2426.">1998</a>]</span> 的递归核估计器，主体直接从过去已实现值的核加权平均中估计条件期望 <span class="math notranslate nohighlight">\(\psi(G)\)</span>，让数据自己选择形状。</p>
+<p>递归核密度估计器本身就是一个随机逼近递归，</p>
+<div class="math notranslate nohighlight">
+\[
+\hat F_t(x) = \hat F_{t-1}(x) + \tfrac{1}{t}\!\left[K\!\left(\tfrac{x - x_t}{h_t}\right) - \hat F_{t-1}(x)\right],
+\]</div>
+<p>带宽 <span class="math notranslate nohighlight">\(h_t \searrow 0\)</span>，与本讲座中其他一切具有相同的 <span class="math notranslate nohighlight">\(1/t\)</span> 增益形式，只不过现在更新的是整个估计的密度，而非一个有限的参数向量。</p>
+<p>我们下面实现的是该递归的<strong>批量</strong>版本：<span class="math notranslate nohighlight">\(\psi(G)\)</span> 的<strong>内达拉亚-沃森</strong>估计，形式为已实现被回归量 <span class="math notranslate nohighlight">\(y\)</span> 在整个模拟历史上的核加权平均，权重随 <span class="math notranslate nohighlight">\(\log G\)</span> 上距离的增大而衰减，并迭代至不动点。</p>
+<p>以批量形式呈现能保持比较的清晰性，因为我们用以衡量它的参数化方案也是批量形式的。</p>
+<p>上面的递归展示与这个平滑器的关系，恰好正如 <a class="reference internal" href="#equation-recursive-pea">(91.3)</a> 与上一节批量算法的关系一样：同一个估计量，只是读作一个实时学习规则，而不是一个计算过程。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">kernel_smoother</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">400_000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">damp</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    非参数参数化预期。ψ(G) 通过对已实现被回归量的内达拉亚-沃森</span>
+<span class="sd">    平滑器来估计——没有函数形式。该规则被迭代至一个自洽的不动点。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G_sim</span> <span class="o">=</span> <span class="n">simulate_deficit</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+    <span class="n">log_sim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G_sim</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1"># 每个网格点相对于整个模拟历史的核权重</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">-</span> <span class="n">log_sim</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">G</span><span class="p">])</span>
+    <span class="n">W</span> <span class="o">/=</span> <span class="n">W</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">s_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="p">(</span><span class="n">w1</span> <span class="o">-</span> <span class="n">w2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iter</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G_sim</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">s_grid</span><span class="p">),</span> <span class="n">G_sim</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">w1</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">G_sim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="p">(</span><span class="n">w2</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">G_sim</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+        <span class="n">ψ</span> <span class="o">=</span> <span class="n">W</span> <span class="o">@</span> <span class="n">y</span>
+        <span class="n">s_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">s_from_psi</span><span class="p">(</span><span class="n">ψ</span><span class="p">),</span> <span class="n">G</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">w1</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_new</span> <span class="o">-</span> <span class="n">s_grid</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">:</span>
+            <span class="n">s_grid</span> <span class="o">=</span> <span class="n">s_new</span>
+            <span class="k">break</span>
+        <span class="n">s_grid</span> <span class="o">=</span> <span class="n">damp</span> <span class="o">*</span> <span class="n">s_new</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">damp</span><span class="p">)</span> <span class="o">*</span> <span class="n">s_grid</span>
+    <span class="k">return</span> <span class="n">s_grid</span>
+
+
+<span class="n">s_kernel</span> <span class="o">=</span> <span class="n">kernel_smoother</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;核平滑器：sup 误差 = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_kernel</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">s_benchmark</span><span class="p">))</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">，  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;遍历 RMS = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ergodic</span><span class="w"> </span><span class="o">@</span><span class="w"> </span><span class="p">(</span><span class="n">s_kernel</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">s_benchmark</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>核平滑器：sup 误差 = 0.0816，  遍历 RMS = 0.0166
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.5</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s_benchmark</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;基准 $f(G)$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s_kernel</span><span class="p">,</span> <span class="s1">&#39;C3o&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;核平滑器&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;赤字 $G$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;储蓄 $s$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-la-kernel">
+<img alt="_images/d00f6987bdb35ffe9250c73136fe96e0813c5b00da81707e18a26e8e7fd9cb3f.png" src="_images/d00f6987bdb35ffe9250c73136fe96e0813c5b00da81707e18a26e8e7fd9cb3f.png" />
+<figcaption>
+<p><span class="caption-number">图 91.4 </span><span class="caption-text">核平滑器对储蓄规则的近似</span><a class="headerlink" href="#fig-la-kernel" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>在没有施加任何函数形式的情况下，核学习器恢复基准解的精度与二次参数化规则大致相当。</p>
+<p>两者在这里表现得同样好，这并非我们可以依赖的巧合。</p>
+<p>这是因为真实的 <span class="math notranslate nohighlight">\(f(G)\)</span><em>恰好</em>几乎正好是二次的，所以我们所选择的参数族几乎完全正确。</p>
+<p>当情况并非如此时，二者就会分道扬镳，其间的权衡与计量经济学中的熟悉情形一样：</p>
+<ul class="simple">
+<li><p><strong>参数化</strong>方案学习速度快，外推也很顺畅，但其好坏完全取决于所选的函数族；一个选择不当的函数族会得出一个近似均衡，且没有任何警示；</p></li>
+<li><p><strong>非参数</strong>方案不会被一个糟糕的函数形式误导，但要为其灵活性付出学习较慢的代价，并且在数据稀疏之处——即赤字取值范围的边缘——会产生偏差，因为核在那里几乎没有邻居可供平均。</p></li>
+</ul>
+<p>两者都是同一形状的递归。</p>
+<p>一个适应性主体应该使用哪一种，再一次成为有限理性研究项目公开摆上台面的建模选择之一，而理性预期悄悄替我们做出了这一选择。</p>
+</section>
+<section id="id13">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink"><span class="section-number">91.7. </span>结束语</a><a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<p>世代交叠模型为我们提供了一个干净的实验室，用以说明一条普遍适用的道理。</p>
+<p>一个身处状态空间庞大或连续环境中的适应性主体，无法为每一种可能情形学习一个独立的反应。</p>
+<p>它必须进行<strong>泛化</strong>，施加某种结构，使得有限的经验能够为整个状态空间上的行为提供信息。</p>
+<p>这种结构究竟是一个低阶多项式、一个核带宽，还是别的什么，是一个具有实际后果的建模选择：它决定了可达到的极限究竟是一个理性预期均衡，还是仅仅是对它的一个近似。</p>
+<p>正是这同一种泛化行为，使得学习与均衡计算成为同一个对象的两个侧面。</p>
+<p>马塞特的算法通过参数化一个期望并进行回归来计算均衡；一个适应性主体通过参数化一个期望并进行回归来学习；这两个递归是完全一致的。</p>
+<p>下一讲，<a class="reference internal" href="marimon_mcgrattan_sargent.html"><span class="doc">人工智能主体中作为交换媒介的货币</span></a>，将泛化问题推向了最尖锐的形式。</p>
+<p>在那里，状态空间和行动空间都大到无法枚举规则的地步，主体必须使用约翰·霍兰德的分类器系统和遗传算法（而非本讲中的最小二乘法和核方法机制）从零开始<strong>发现</strong>一套紧凑的良好规则。</p>
+</section>
+<section id="id14">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink"><span class="section-number">91.8. </span>练习</a><a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="lae_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 91.1 </span></p>
+<section id="exercise-content">
+<p>上文的说明指出，将多项式阶数推得过高可能会<em>损害</em> sup 范数拟合，因为高阶项会追逐赤字分布稀疏访问尾部的抽样噪声。</p>
+<p>请验证这一点。</p>
+<p>对阶数 <span class="math notranslate nohighlight">\(0\)</span> 到 <span class="math notranslate nohighlight">\(5\)</span> 运行批量参数化预期算法，并报告相对于基准解的两种误差度量：整个网格上的 sup 范数，以及按赤字的遍历分布加权的 RMS 误差（即按主体实际活动之处加权）。</p>
+<p>哪一个度量随阶数单调变化，哪一个不是？</p>
+<p>请解释。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="learning_approximation-solution-1">
+
+<p class="admonition-title">解答<a class="reference internal" href="#lae_ex1"> 练习 91.1</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+    <span class="n">s_hat</span> <span class="o">=</span> <span class="n">parameterized_expectations</span><span class="p">(</span><span class="n">deg</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">150_000</span><span class="p">)</span>
+    <span class="n">sup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_hat</span> <span class="o">-</span> <span class="n">s_benchmark</span><span class="p">))</span>
+    <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ergodic</span> <span class="o">@</span> <span class="p">(</span><span class="n">s_hat</span> <span class="o">-</span> <span class="n">s_benchmark</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">deg</span><span class="p">,</span> <span class="n">sup</span><span class="p">,</span> <span class="n">rms</span><span class="p">])</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;阶数&quot;</span><span class="p">,</span> <span class="s2">&quot;sup 误差（整个网格）&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;遍历 RMS（主体所处之地）&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;阶数&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sup 误差（整个网格）</th>
+      <th>遍历 RMS（主体所处之地）</th>
+    </tr>
+    <tr>
+      <th>阶数</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1.1880</td>
+      <td>0.3243</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.3505</td>
+      <td>0.0677</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.0472</td>
+      <td>0.0128</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.1561</td>
+      <td>0.0203</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.1854</td>
+      <td>0.0221</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.2201</td>
+      <td>0.0241</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>遍历加权误差先单调下降，然后趋于平缓：一旦函数族足够丰富，能够捕捉到赤字实际所处位置的 <span class="math notranslate nohighlight">\(f\)</span> 的曲率，额外的项就不再增加任何价值。</p>
+<p>sup 范数误差起初下降，但随后又重新上升。</p>
+<p>高阶多项式在中心区域拟合得很好，但在网格两端振荡，而遍历分布在那里几乎没有质量，因此回归几乎没有数据来约束它们。</p>
+<p>这正是 <a class="reference internal" href="olg_adaptive_money.html"><span class="doc">世代交叠货币经济中的适应性主体</span></a> 中稀有状态问题在近似方面的镜像。</p>
+<p>一个学习方案会把它的精度分配到观测值所在的地方。</p>
+<p>对一个很少被访问的区域拟合不佳，在 sup 范数中会表现得很明显，但在预期效用中几乎不产生任何代价，这正是遍历加权度量才是具有经济意义的度量的原因。</p>
+</section>
+</div>
+<div class="exercise admonition" id="lae_ex2">
+
+<p class="admonition-title"><span class="caption-number">练习 91.2 </span></p>
+<section id="exercise-content">
+<p>常数族（0 阶）给出了一个<em>近似</em>均衡：一个单一的储蓄率，与赤字无关，仅在平均意义上满足一阶条件。</p>
+<p>这里有一个自然的基准可供比较。</p>
+<p>计算一个 0 阶参数化预期主体所收敛到的单一储蓄率 <span class="math notranslate nohighlight">\(\bar s\)</span>，并将其与赤字永远固定在其均值 <span class="math notranslate nohighlight">\(\bar G\)</span> 处的经济中的储蓄率进行比较。</p>
+<p>它们相同吗？</p>
+<p>它们应该相同吗？</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="learning_approximation-solution-3">
+
+<p class="admonition-title">解答<a class="reference internal" href="#lae_ex2"> 练习 91.2</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 0 阶近似均衡</span>
+<span class="n">s_const</span> <span class="o">=</span> <span class="n">parameterized_expectations</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>        <span class="c1"># 在各状态间为常数</span>
+
+<span class="c1"># 赤字固定在其均值处的确定性经济。与上一讲中赤字固定的</span>
+<span class="c1"># 模型一样，它有两个稳态；我们取高储蓄（低通胀）的那个，</span>
+<span class="c1"># 通过将储蓄映射迭代至其稳定不动点来求得。</span>
+<span class="n">G_mean</span> <span class="o">=</span> <span class="n">ergodic</span> <span class="o">@</span> <span class="n">G</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">deterministic_saving</span><span class="p">(</span><span class="n">G_fixed</span><span class="p">,</span> <span class="n">damp</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">w1</span> <span class="o">-</span> <span class="n">w2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="n">ψ</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">G_fixed</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">w2</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">G_fixed</span><span class="p">))</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">damp</span> <span class="o">*</span> <span class="n">s</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">damp</span><span class="p">)</span> <span class="o">*</span> <span class="n">s_from_psi</span><span class="p">(</span><span class="n">ψ</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+<span class="n">s_fixed</span> <span class="o">=</span> <span class="n">deterministic_saving</span><span class="p">(</span><span class="n">G_mean</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0 阶近似均衡储蓄率：</span><span class="si">{</span><span class="n">s_const</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;平均赤字 E[G]：</span><span class="si">{</span><span class="n">G_mean</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;赤字固定在 E[G] 处的经济中的储蓄率：</span><span class="si">{</span><span class="n">s_fixed</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0 阶近似均衡储蓄率：4.0137
+平均赤字 E[G]：0.6537
+赤字固定在 E[G] 处的经济中的储蓄率：4.0327
+</pre></div>
+</div>
+</div>
+</div>
+<p>它们接近但不相等。</p>
+<p>0 阶主体选择的是在<em>整个随机经济</em>中最能拟合一阶条件的单一储蓄率——这是对实现的回报率分布求得的平均值。</p>
+<p>固定赤字经济则用一个在均值赤字处退化的单点分布取代了整个分布。</p>
+<p>按照詹森式的论证，这两者不必一致：一阶条件在回报率上是非线性的，因此它在一个分散的赤字分布上的期望值，不同于它在均值赤字处的值。</p>
+<p>只有当赤字一开始就是确定性的，二者才会一致。</p>
+<p>其中的教训是，一个近似均衡并非一个简单的”确定性等价”对象。</p>
+<p>即使是最粗糙的单参数学习器，也在对它所经历的<em>整个</em>结果分布做出反应，而不是对一个点预测做出反应。</p>
+</section>
+</div>
+<div class="exercise admonition" id="lae_ex3">
+
+<p class="admonition-title"><span class="caption-number">练习 91.3 </span></p>
+<section id="exercise-content">
+<p>非参数核学习器有一个自由的调节常数：带宽 <span class="math notranslate nohighlight">\(h\)</span>。</p>
+<p>请探索它的影响。</p>
+<p>对一系列带宽运行核学习器，并报告相对于基准解的 sup 误差和遍历加权误差。</p>
+<p>解释这种权衡的形状，并将两种失败模式与偏差-方差分解联系起来。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="learning_approximation-solution-5">
+
+<p class="admonition-title">解答<a class="reference internal" href="#lae_ex3"> 练习 91.3</a></p>
+<section id="solution-content">
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">):</span>
+    <span class="n">s_h</span> <span class="o">=</span> <span class="n">kernel_smoother</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">)</span>
+    <span class="n">sup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_h</span> <span class="o">-</span> <span class="n">s_benchmark</span><span class="p">))</span>
+    <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ergodic</span> <span class="o">@</span> <span class="p">(</span><span class="n">s_h</span> <span class="o">-</span> <span class="n">s_benchmark</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">h</span><span class="p">,</span> <span class="n">sup</span><span class="p">,</span> <span class="n">rms</span><span class="p">])</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;带宽 $h$&quot;</span><span class="p">,</span> <span class="s2">&quot;sup 误差&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;遍历 RMS&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;带宽 $h$&quot;</span><span class="p">)</span>
+<span class="n">table</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sup 误差</th>
+      <th>遍历 RMS</th>
+    </tr>
+    <tr>
+      <th>带宽 $h$</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0.03</th>
+      <td>0.2140</td>
+      <td>0.0197</td>
+    </tr>
+    <tr>
+      <th>0.05</th>
+      <td>0.1269</td>
+      <td>0.0148</td>
+    </tr>
+    <tr>
+      <th>0.08</th>
+      <td>0.0873</td>
+      <td>0.0282</td>
+    </tr>
+    <tr>
+      <th>0.12</th>
+      <td>0.2045</td>
+      <td>0.0626</td>
+    </tr>
+    <tr>
+      <th>0.20</th>
+      <td>0.5110</td>
+      <td>0.1312</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">colour</span> <span class="ow">in</span> <span class="p">[(</span><span class="mf">0.03</span><span class="p">,</span> <span class="s1">&#39;C0&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.08</span><span class="p">,</span> <span class="s1">&#39;C1&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.20</span><span class="p">,</span> <span class="s1">&#39;C2&#39;</span><span class="p">)]:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">kernel_smoother</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">),</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colour</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;$h = </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s_benchmark</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;基准&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;赤字 $G$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;储蓄 $s$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/d2216552fd813296e3ead9d462a5e7e4e21e8457a9f29d8b4874784398d5183c.png" src="_images/d2216552fd813296e3ead9d462a5e7e4e21e8457a9f29d8b4874784398d5183c.png" />
+</div>
+</div>
+<p>存在一个内部最优点。</p>
+<p><strong>较小</strong>的带宽只对少数几个邻居求平均，因此估计带有噪声：它围绕基准解摆动，而在邻居稀少的边缘处摆动最为严重。</p>
+<p>这是权衡中的<strong>方差</strong>一端。</p>
+<p><strong>较大</strong>的带宽在较宽的窗口上求平均，使估计变得平滑，但也压平了 <span class="math notranslate nohighlight">\(f(G)\)</span> 的真实曲率，因而规则被拉向一条直线。</p>
+<p>这是<strong>偏差</strong>一端。</p>
+<p>带宽是 <a class="reference internal" href="#lae_ex1"><span class="std std-numref">练习 91.1</span></a> 中多项式阶数的非参数对应物：二者都控制着学习器所施加的结构多少，并且都有一个最佳点，在因灵活性不足而导致的拟合不佳与因灵活性过多而导致的噪声之间进行权衡。</p>
+<p>有限理性研究项目并不能告诉我们这个最佳点在哪里；这又是一个用一系列合理的备选方案取代理性预期这一单一约束的选择。</p>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础工具
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  统计与信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="pricing_information.html">
+   36. 信息的设计与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="market_diffusion.html">
+   37. 双向学习下的市场扩散
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   38. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   39. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   40. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   41. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   42. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   43. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   44. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   45. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   46. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   47. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   48. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   49. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_subsets.html">
+   50. 变量子集的向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   51. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   52. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   53. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   54. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   55. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   56. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_risk.html">
+   57. 工作搜寻 V：风险敏感型偏好
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   58. 工作搜寻 V：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   59. 工作搜寻 VI：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   60. 工作搜寻 VII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   61. 工作搜寻 VIII: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  强化学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   62. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   63. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   64. 工作搜寻 IX：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  最优储蓄导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   65. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   66. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   67. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   68. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   69. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   70. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  收入波动问题
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   71. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   72. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   73. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   74. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   75. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   76. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   77. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   78. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   79. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   80. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   81. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   82. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   83. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   84. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   85. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   86. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_bewley.html">
+   87. 稳健 LQ 贝利模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   88. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  宏观经济学中的有限理性
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   89. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   90. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   91. 学习、近似与均衡计算
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   92. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   93. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   94. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   95. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  菲利普斯曲线权衡
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   96. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   97. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   98. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   99. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   100. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   101. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   102. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   103. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   104. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   105. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   106. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  最优增长
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   107. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   108. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   109. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   110. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   111. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   112. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   113. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   114. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   115. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   116. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   117. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   118. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   119. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   120. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   121. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   122. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   123. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   124. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   125. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   126. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   127. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   128. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   129. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   130. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   131. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   132. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   133. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   134. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   135. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   136. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   137. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   138. 具有非对称冲击的失业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="sargent_surico.html">
+   139. 货币数量论的两个例证
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   140. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   141. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   142. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   143. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   144. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/learning_approximation.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                    <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/learning_approximation.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                    <option value="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/learning_approximation.ipynb">Colab</option>
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="https://github.com/QuantEcon/lecture-python.zh-cn.notebooks" data-urlpath="tree/lecture-python.zh-cn.notebooks/learning_approximation.ipynb" data-branch=main>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="https://colab.research.google.com/github/QuantEcon/lecture-python.zh-cn.notebooks/blob/main/learning_approximation.ipynb" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "learning_approximation";
+                const repoURL = "https://github.com/QuantEcon/lecture-python.zh-cn.notebooks";
+                const urlPath = "tree/lecture-python.zh-cn.notebooks/learning_approximation.ipynb";
+                const branch = "main"
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>
