@@ -8,7 +8,7 @@ kernelspec:
   language: python
   name: python3
 translation:
-  title: 工作搜寻 VI：职业选择建模
+  title: 工作搜寻 VII：职业选择建模
   headings:
     Overview: 概述
     Overview::Model Features: 模型特点
@@ -27,7 +27,7 @@ translation:
 </div>
 ```
 
-# 工作搜寻 VI：职业选择建模
+# 工作搜寻 VII：职业选择建模
 
 ```{index} single: Modeling; Career Choice
 ```

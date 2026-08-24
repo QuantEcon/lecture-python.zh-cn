@@ -8,7 +8,7 @@ kernelspec:
   language: python
   name: python3
 translation:
-  title: '工作搜寻 VIII: 带学习的搜索'
+  title: '工作搜寻 IX: 带学习的搜索'
   headings:
     Overview: 概述
     Overview::Model Features: 模型特点
@@ -43,7 +43,7 @@ translation:
 </div>
 ```
 
-# 工作搜寻 VIII: 带学习的搜索
+# 工作搜寻 IX: 带学习的搜索
 
 ```{contents} 目录
 :depth: 2
