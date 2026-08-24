@@ -86,6 +86,8 @@ from scipy.stats import beta as beta_dist
 import pandas as pd
 from IPython.display import display, Math
 import quantecon as qe
+
+rng = np.random.default_rng()
 ```
 
 ## 似然比过程
@@ -94,7 +96,7 @@ import quantecon as qe
 
 在时间开始之前，自然界一次性地决定是从 $f$ 还是 $g$ 中进行一系列独立同分布的抽样。
 
-我们有时用 $q$ 表示自然界一次性选择的密度，所以 $q$ 要么是 $f$ 要么是 $g$，且是永久性的。
+我们用 $q$ 表示自然界一次性选择的密度，所以 $q$ 要么是 $f$ 要么是 $g$，且是永久性的。
 
 自然界知道它永久性地从哪个密度中抽样，但我们这些观察者并不知道。
 
@@ -163,18 +165,18 @@ def likelihood_ratio(w, f_func, g_func):
     return f_func(w) / g_func(w)
 
 @jit
-def simulate_likelihood_ratios(a, b, f_func, g_func, T=50, N=500):
+def simulate_likelihood_ratios(a, b, f_func, g_func, rng, T=50, N=500):
     """
     Generate N sets of T observations of the likelihood ratio.
     """
     l_arr = np.empty((N, T))
     for i in range(N):
         for j in range(T):
-            w = np.random.beta(a, b)
+            w = rng.beta(a, b)
             l_arr[i, j] = f_func(w) / g_func(w)
     return l_arr
 
-def simulate_sequences(distribution, f_func, g_func, 
+def simulate_sequences(distribution, f_func, g_func, rng,
         F_params=(1, 1), G_params=(3, 1.2), T=50, N=500):
     """
     Generate N sequences of T observations from specified distribution.
@@ -186,7 +188,7 @@ def simulate_sequences(distribution, f_func, g_func,
     else:
         raise ValueError("distribution must be 'f' or 'g'")
     
-    l_arr = simulate_likelihood_ratios(a, b, f_func, g_func, T, N)
+    l_arr = simulate_likelihood_ratios(a, b, f_func, g_func, rng, T, N)
     l_seq = np.cumprod(l_arr, axis=1)
     return l_arr, l_seq
 
@@ -215,7 +217,7 @@ def plot_likelihood_paths(l_seq, title="Likelihood ratio paths",
 
 ```{code-cell} ipython3
 # 模拟当自然从g中抽取时的情况
-l_arr_g, l_seq_g = simulate_sequences('g', f, g, (F_a, F_b), (G_a, G_b))
+l_arr_g, l_seq_g = simulate_sequences('g', f, g, rng, (F_a, F_b), (G_a, G_b))
 plot_likelihood_paths(l_seq_g, 
                      title="当自然从g中抽取时的$L(w^{t})$路径",
                      ylim=[0, 3])
@@ -280,20 +282,20 @@ $$
 
 ```{code-cell} ipython3
 l_arr_g, l_seq_g = simulate_sequences('g', 
-                f, g, (F_a, F_b), (G_a, G_b), N=50000)
+                f, g, rng, (F_a, F_b), (G_a, G_b), N=50000)
 ```
 
-使用模拟来验证无条件期望值$E\left[L\left(w^{t}\right)\right]$等于1(通过对样本路径取平均)会很有用。
+使用模拟来验证无条件期望值 $E\left[L\left(w^{t}\right)\right]$ 等于1（通过对样本路径取平均）会很有用。
 
-但是在这里使用标准蒙特卡洛模拟方法会消耗太多计算时间,因此我们不会这样做。
+但是在这里使用标准蒙特卡洛模拟方法会消耗太多计算时间，因此我们不会这样做。
 
-原因是对于较大的$t$值,$L\left(w^{t}\right)$的分布极度偏斜。
+原因是对于较大的 $t$ 值，$L\left(w^{t}\right)$ 的分布极度偏斜。
 
-因为右尾部的概率密度接近于0,从右尾部采样足够多的点需要太多计算时间。
+因为右尾部的概率密度接近于0，从右尾部采样足够多的点需要太多计算时间。
 
-我们在{doc}`这篇讲座 <imp_sample>`中详细解释了这个问题。
+我们在 {doc}`这篇讲座 <imp_sample>` 中详细解释了这个问题。
 
-在那里我们描述了一种通过从不同的概率分布中采样来计算不同随机变量的均值,从而计算似然比均值的替代方法。
+在那里我们描述了一种通过从不同的概率分布中采样来计算不同随机变量的均值，从而计算似然比均值的替代方法。
 
 ## 自然永久从密度f中抽样
 
@@ -323,7 +325,7 @@ $$
 
 ```{code-cell} ipython3
 # 模拟当自然从f中抽取时
-l_arr_f, l_seq_f = simulate_sequences('f', f, g, 
+l_arr_f, l_seq_f = simulate_sequences('f', f, g, rng,
                         (F_a, F_b), (G_a, G_b), N=50000)
 ```
 
@@ -402,33 +404,33 @@ Neyman 和 Pearson 证明了检验这个假设的最佳方法是使用**似然�
 
 我们希望虚警概率小，检测概率大。
 
-当样本量$t$固定时，我们可以通过调整$c$来改变这两个概率。
+当样本量 $t$ 固定时，我们可以通过调整 $c$ 来改变这两个概率。
 
-一个令人困扰的"现实"是，当我们改变临界值$c$时，这两个概率会朝同一方向变化。
+一个令人困扰的"现实"是，当我们改变临界值 $c$ 时，这两个概率会朝同一方向变化。
 
 如果不指定第一类和第二类错误的具体损失，我们很难说应该如何权衡这两种错误的概率。
 
-我们知道增加样本量$t$可以改善统计推断。
+我们知道增加样本量 $t$ 可以改善统计推断。
 
 下面我们将绘制一些说明性图表来展示这一点。
 
-我们还将介绍一个用于选择样本量$t$的经典频率派方法。
+我们还将介绍一个用于选择样本量 $t$ 的经典频率派方法。
 
-让我们从将阈值$c$固定为$1$的情况开始。
+让我们从将阈值 $c$ 固定为 $1$ 的情况开始。
 
 ```{code-cell} ipython3
 c = 1
 ```
 
-下面我们绘制上面模拟的累积似然比的对数的经验分布，这些分布是由$f$或$g$生成的。
+下面我们绘制上面模拟的累积似然比的对数的经验分布，这些分布是由 $f$ 或 $g$ 生成的。
 
 取对数不会影响概率的计算，因为对数是单调变换。
 
-随着$t$的增加，第一类错误和第二类错误的概率都在减小，这是好事。
+随着 $t$ 的增加，第一类错误和第二类错误的概率都在减小，这是好事。
 
-这是因为当$g$是数据生成过程时，log$(L(w^t))$的大部分概率质量向$-\infty$移动，而当数据由$f$生成时，log$(L(w^t))$趋向于$\infty$。
+这是因为当 $g$ 是数据生成过程时，log$(L(w^t))$ 的大部分概率质量向 $-\infty$ 移动，而当数据由 $f$ 生成时，log$(L(w^t))$ 趋向于 $\infty$。
 
-log$(L(w^t))$在$f$和$g$下的这种不同行为使得最终能够区分$q=f$和$q=g$成为可能。
+log$(L(w^t))$ 在 $f$ 和 $g$ 下的这种不同行为使得最终能够区分 $q=f$ 和 $q=g$ 成为可能。
 
 ```{code-cell} ipython3
 def plot_log_histograms(l_seq_f, l_seq_g, c=1, time_points=[1, 7, 14, 21]):
@@ -592,7 +594,7 @@ plt.show()
 
 美国海军显然在第二次世界大战期间使用类似这样的程序来选择质量控制测试的样本大小 $t$。
 
-一位被命令执行此类测试的海军上校对此产生了疑虑，他向米尔顿·弗里德曼提出了这些疑虑，我们在{doc}`这篇讲座 <wald_friedman>`中对此进行了描述。
+一位被命令执行此类测试的海军上校对此产生了疑虑，他向米尔顿·弗里德曼提出了这些疑虑，我们在 {doc}`这篇讲座 <wald_friedman>` 中对此进行了描述。
 
 (llr_h)=
 ### 第三个分布 $h$
@@ -603,7 +605,7 @@ plt.show()
 
 让我们研究当 $h$ 支配数据时，累积似然比 $L$ 的表现。
 
-这里的一个关键工具被称为**库尔贝克-莱布勒散度**，我们在{doc}`divergence_measures`中已经研究过。
+这里的一个关键工具被称为**库尔贝克-莱布勒散度**，我们在 {doc}`divergence_measures` 中已经研究过。
 
 在我们的应用中，我们想要度量 $f$ 或 $g$ 与 $h$ 的偏离程度。
 
@@ -625,7 +627,7 @@ K_{g} = D_{KL}\bigl(h\|g\bigr) = KL(h, g)
 \end{aligned}
 $$
 
-让我们使用{doc}`divergence_measures`中的相同代码来计算库尔贝克-莱布勒差异。
+让我们使用 {doc}`divergence_measures` 中的相同代码来计算库尔贝克-莱布勒差异。
 
 ```{code-cell} ipython3
 def compute_KL(f, g):
@@ -650,21 +652,21 @@ def compute_KL_h(h, f, g):
 
 似然比和KL散度之间存在一个数学关系。
 
-当数据由分布$h$生成时，期望对数似然比为：
+当数据由分布 $h$ 生成时，期望对数似然比为：
 
 $$
 \frac{1}{t} E_{h}\!\bigl[\log L_t\bigr] = K_g - K_f
 $$ (eq:kl_likelihood_link)
 
-其中$L_t=\prod_{j=1}^{t}\frac{f(w_j)}{g(w_j)}$是似然比过程。
+其中 $L_t=\prod_{j=1}^{t}\frac{f(w_j)}{g(w_j)}$ 是似然比过程。
 
-方程{eq}`eq:kl_likelihood_link`告诉我们：
-- 当$K_g < K_f$（即$g$比$f$更接近$h$）时，期望对数似然比为负，所以$L\left(w^t\right) \rightarrow 0$。
-- 当$K_g > K_f$（即$f$比$g$更接近$h$）时，期望对数似然比为正，所以$L\left(w^t\right) \rightarrow + \infty$。
+方程 {eq}`eq:kl_likelihood_link` 告诉我们：
+- 当 $K_g < K_f$（即 $g$ 比 $f$ 更接近 $h$）时，期望对数似然比为负，所以 $L\left(w^t\right) \rightarrow 0$。
+- 当 $K_g > K_f$（即 $f$ 比 $g$ 更接近 $h$）时，期望对数似然比为正，所以 $L\left(w^t\right) \rightarrow + \infty$。
 
 让我们通过模拟来验证这一点。
 
-在模拟中，我们使用Beta分布$f$、$g$和$h$生成多条路径，并计算$\log(L(w^t))$的路径。
+在模拟中，我们使用Beta分布 $f$、$g$ 和 $h$ 生成多条路径，并计算 $\log(L(w^t))$ 的路径。
 
 首先，我们编写一个函数来计算似然比过程
 
@@ -716,7 +718,7 @@ for i, scenario in enumerate(scenarios):
     T = 150
 
     # Generate data from h
-    h_data = np.random.beta(scenario["h_params"][0], 
+    h_data = rng.beta(scenario["h_params"][0], 
                 scenario["h_params"][1], (N_paths, T))
     l_ratios, l_cumulative = compute_likelihood_ratios(h_data, f, g)
     log_l_cumulative = np.log(l_cumulative)
@@ -800,7 +802,7 @@ $$
 以下是我们用来实现时序协议1和2的Python代码
 
 ```{code-cell} ipython3
-def protocol_1(π_minus_1, T, N=1000, F_params=(1, 1), G_params=(3, 1.2)):
+def protocol_1(π_minus_1, T, rng, N=1000, F_params=(1, 1), G_params=(3, 1.2)):
     """
     Simulate Protocol 1: Nature decides once at t=-1 which model to use.
     """
@@ -808,20 +810,20 @@ def protocol_1(π_minus_1, T, N=1000, F_params=(1, 1), G_params=(3, 1.2)):
     G_a, G_b = G_params
     
     # Single coin flip for the true model
-    true_models_F = np.random.rand(N) < π_minus_1
+    true_models_F = rng.random(N) < π_minus_1
     sequences = np.empty((N, T))
     
     n_f = np.sum(true_models_F)
     n_g = N - n_f
     
     if n_f > 0:
-        sequences[true_models_F, :] = np.random.beta(F_a, F_b, (n_f, T))
+        sequences[true_models_F, :] = rng.beta(F_a, F_b, (n_f, T))
     if n_g > 0:
-        sequences[~true_models_F, :] = np.random.beta(G_a, G_b, (n_g, T))
+        sequences[~true_models_F, :] = rng.beta(G_a, G_b, (n_g, T))
     
     return sequences, true_models_F
 
-def protocol_2(π_minus_1, T, N=1000, F_params=(1, 1), G_params=(3, 1.2)):
+def protocol_2(π_minus_1, T, rng, N=1000, F_params=(1, 1), G_params=(3, 1.2)):
     """
     Simulate Protocol 2: Nature decides at each time step which model to use.
     """
@@ -829,21 +831,21 @@ def protocol_2(π_minus_1, T, N=1000, F_params=(1, 1), G_params=(3, 1.2)):
     G_a, G_b = G_params
     
     # Coin flips for each time step
-    true_models_F = np.random.rand(N, T) < π_minus_1
+    true_models_F = rng.random((N, T)) < π_minus_1
     sequences = np.empty((N, T))
     
     n_f = np.sum(true_models_F)
     n_g = N * T - n_f
     
     if n_f > 0:
-        sequences[true_models_F] = np.random.beta(F_a, F_b, n_f)
+        sequences[true_models_F] = rng.beta(F_a, F_b, n_f)
     if n_g > 0:
-        sequences[~true_models_F] = np.random.beta(G_a, G_b, n_g)
+        sequences[~true_models_F] = rng.beta(G_a, G_b, n_g)
     
     return sequences, true_models_F
 ```
 
-**注释：** 在时序协议2下，$\{w_t\}_{t=1}^T$ 是从 $h(w)$ 中独立同分布(IID)抽取的序列。在时序协议1下，$\{w_t\}_{t=1}^T$ 不是独立同分布的。它是**条件独立同分布**的 -- 意味着以概率 $\pi_{-1}$ 它是从 $f(w)$ 中独立同分布抽取的序列，以概率 $1-\pi_{-1}$ 它是从 $g(w)$ 中独立同分布抽取的序列。关于这一点的更多信息，请参见{doc}`这篇关于可交换性的讲座 <exchangeable>`。
+**注释：** 在时序协议2下，$\{w_t\}_{t=1}^T$ 是从 $h(w)$ 中独立同分布(IID)抽取的序列。在时序协议1下，$\{w_t\}_{t=1}^T$ 不是独立同分布的。它是**条件独立同分布**的 -- 意味着以概率 $\pi_{-1}$ 它是从 $f(w)$ 中独立同分布抽取的序列，以概率 $1-\pi_{-1}$ 它是从 $g(w)$ 中独立同分布抽取的序列。关于这一点的更多信息，请参见 {doc}`这篇关于可交换性的讲座 <exchangeable>`。
 
 我们再次部署一个**似然比过程**，其时间 $t$ 分量是似然比
 
@@ -892,12 +894,12 @@ $$ (eq:detectionerrorprob)
 ```{code-cell} ipython3
 
 def compute_protocol_1_errors(π_minus_1, T_max, N_simulations, f_func, g_func, 
-                              F_params=(1, 1), G_params=(3, 1.2)):
+                              rng, F_params=(1, 1), G_params=(3, 1.2)):
     """
     计算协议1的错误概率。
     """
     sequences, true_models = protocol_1(
-        π_minus_1, T_max, N_simulations, F_params, G_params)
+        π_minus_1, T_max, rng, N_simulations, F_params, G_params)
     l_ratios, L_cumulative = compute_likelihood_ratios(sequences, 
                                     f_func, g_func)
     
@@ -929,10 +931,10 @@ def compute_protocol_1_errors(π_minus_1, T_max, N_simulations, f_func, g_func,
 :tags: [hide-input]
 
 def analyze_protocol_1(π_minus_1, T_max, N_simulations, f_func, g_func, 
-                      F_params=(1, 1), G_params=(3, 1.2)):
+                      rng, F_params=(1, 1), G_params=(3, 1.2)):
     """分析协议1"""
     result = compute_protocol_1_errors(π_minus_1, T_max, N_simulations, 
-                                      f_func, g_func, F_params, G_params)
+                                      f_func, g_func, rng, F_params, G_params)
     
     # 绘制结果
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
@@ -968,7 +970,7 @@ T_max = 30
 N_simulations = 10_000
 
 result_p1 = analyze_protocol_1(π_minus_1, T_max, N_simulations, 
-                                f, g, (F_a, F_b), (G_a, G_b))
+                                f, g, rng, (F_a, F_b), (G_a, G_b))
 ```
 
 注意随着$T$的增长，模型选择的错误概率趋近于零。
@@ -1000,12 +1002,12 @@ $$ (eq:classerrorprob)
 
 ```{code-cell} ipython3
 def compute_protocol_2_errors(π_minus_1, T_max, N_simulations, f_func, g_func,
-                              F_params=(1, 1), G_params=(3, 1.2)):
+                              rng, F_params=(1, 1), G_params=(3, 1.2)):
     """
     计算协议2的错误概率。
     """
     sequences, true_models = protocol_2(π_minus_1, 
-                        T_max, N_simulations, F_params, G_params)
+                        T_max, rng, N_simulations, F_params, G_params)
     l_ratios, _ = compute_likelihood_ratios(sequences, f_func, g_func)
     
     T_range = np.arange(1, T_max + 1)
@@ -1108,11 +1110,11 @@ print(f"理论分类错误概率 = {theory_error:.4f}")
 在下一个单元格中，我们还将理论分类准确率与实验分类准确率进行比较
 
 ```{code-cell} ipython3
-def analyze_protocol_2(π_minus_1, T_max, N_simulations, f_func, g_func, 
+def analyze_protocol_2(π_minus_1, T_max, N_simulations, f_func, g_func, rng,
                       theory_error=None, F_params=(1, 1), G_params=(3, 1.2)):
     """分析协议2。"""
     result = compute_protocol_2_errors(π_minus_1, T_max, N_simulations, 
-                                      f_func, g_func, F_params, G_params)
+                                      f_func, g_func, rng, F_params, G_params)
     
     # 绘制结果
     plt.figure(figsize=(10, 6))
@@ -1132,7 +1134,7 @@ def analyze_protocol_2(π_minus_1, T_max, N_simulations, f_func, g_func,
     return result
 
 # 分析协议2
-result_p2 = analyze_protocol_2(π_minus_1, T_max, N_simulations, f, g, 
+result_p2 = analyze_protocol_2(π_minus_1, T_max, N_simulations, f, g, rng,
                               theory_error, (F_a, F_b), (G_a, G_b))
 ```
 
@@ -1171,7 +1173,7 @@ compare_protocols(result_p1, result_p2)
 
 一个合理的猜测是，似然比区分分布$f$和$g$的能力取决于它们有多"不同"。
 
-我们在{doc}`divergence_measures`中已经学习了一些衡量分布之间"差异"的度量。
+我们在 {doc}`divergence_measures` 中已经学习了一些衡量分布之间"差异"的度量。
 
 现在让我们研究两个在模型选择和分类背景下有用的分布之间"差异"的度量。
 
@@ -1244,7 +1246,7 @@ plt.show()
 
 显然，$e^{-C(f,g)T}$是误差率的上界。
 
-在{doc}`divergence_measures`中，我们还研究了**Jensen-Shannon散度**作为分布之间的对称距离度量。
+在 {doc}`divergence_measures` 中，我们还研究了**Jensen-Shannon散度**作为分布之间的对称距离度量。
 
 我们可以使用Jensen-Shannon散度来测量分布$f$和$g$之间的距离，并计算它与模型选择错误概率的协方差。
 
@@ -1323,8 +1325,8 @@ for i, ((f_a, f_b), (g_a, g_b)) in enumerate(distribution_pairs):
     chernoff_vals[i], _ = compute_chernoff_entropy(f, g)
 
     # 生成样本
-    sequences_f = np.random.beta(f_a, f_b, (N_half, T_large))
-    sequences_g = np.random.beta(g_a, g_b, (N_half, T_large))
+    sequences_f = rng.beta(f_a, f_b, (N_half, T_large))
+    sequences_g = rng.beta(g_a, g_b, (N_half, T_large))
 
     # 计算似然比和累积乘积
     _, L_cumulative_f = compute_likelihood_ratios(sequences_f, f, g)
@@ -1394,7 +1396,7 @@ plot_error_divergence(cor_data)
 
 显然，Chernoff熵和Jensen-Shannon熵都与模型选择错误概率密切相关。
 
-我们很快将在{doc}`wald_friedman`中遇到相关概念。
+我们很快将在 {doc}`wald_friedman` 中遇到相关概念。
 
 (lrp_markov)=
 ## 马尔可夫链
@@ -1504,12 +1506,12 @@ def markov_kl_divergence(P_f, P_g, pi_f):
     kl_rate = np.sum(pi_f[:, np.newaxis] * P_f * log_ratios)
     return kl_rate
 
-def simulate_markov_chain(P, pi_0, T, N_paths=1000):
+def simulate_markov_chain(P, pi_0, T, rng, N_paths=1000):
     """
     模拟马尔可夫链的N_paths条样本路径
     """
     mc = qe.MarkovChain(P, state_values=None)
-    initial_states = np.random.choice(len(P), size=N_paths, p=pi_0)
+    initial_states = rng.choice(len(P), size=N_paths, p=pi_0)
     paths = np.zeros((N_paths, T+1), dtype=int)
     
     for i in range(N_paths):
@@ -1540,7 +1542,7 @@ def compute_likelihood_ratio_markov(paths, P_f, P_g, π_0_f, π_0_g):
     
     return L_ratios
 
-def analyze_markov_chains(P_f, P_g, 
+def analyze_markov_chains(P_f, P_g, rng,
                 T=500, N_paths=1000, plot_paths=True, n_show=50):
     """
     两个马尔可夫链的完整分析
@@ -1561,7 +1563,7 @@ def analyze_markov_chains(P_f, P_g,
     
     if plot_paths:
         # 模拟并绘制路径
-        paths_from_f = simulate_markov_chain(P_f, π_f, T, N_paths)
+        paths_from_f = simulate_markov_chain(P_f, π_f, T, rng, N_paths)
         L_ratios_f = compute_likelihood_ratio_markov(
             paths_from_f, P_f, P_g, π_f, π_g)
         
@@ -1584,7 +1586,7 @@ def analyze_markov_chains(P_f, P_g,
         plt.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
         plt.xlabel(r'$T$')
         plt.ylabel(r'$\log L_T$')
-        plt.title('马尔可夫链似然比(本质 = f)')
+        plt.title('马尔可夫链似然比(自然 = f)')
         plt.legend()
         plt.show()
     
@@ -1595,7 +1597,7 @@ def analyze_markov_chains(P_f, P_g,
         'kl_rate_gf': kl_rate_gf
     }
 
-def compute_markov_selection_error(T_values, P_f, P_g, π_0_f, π_0_g, N_sim=1000):
+def compute_markov_selection_error(T_values, P_f, P_g, π_0_f, π_0_g, rng, N_sim=1000):
     """
     计算马尔可夫链的模型选择错误概率
     """
@@ -1603,8 +1605,8 @@ def compute_markov_selection_error(T_values, P_f, P_g, π_0_f, π_0_g, N_sim=100
     
     for T in T_values:
         # 从两个模型中模拟
-        paths_f = simulate_markov_chain(P_f, π_0_f, T, N_sim//2)
-        paths_g = simulate_markov_chain(P_g, π_0_g, T, N_sim//2)
+        paths_f = simulate_markov_chain(P_f, π_0_f, T, rng, N_sim//2)
+        paths_g = simulate_markov_chain(P_g, π_0_g, T, rng, N_sim//2)
         
         # 计算似然比
         L_f = compute_likelihood_ratio_markov(paths_f, P_f, P_g, π_0_f, π_0_g)
@@ -1636,7 +1638,7 @@ P_g = np.array([[0.5, 0.3, 0.2],
                 [0.2, 0.6, 0.2],
                 [0.2, 0.2, 0.6]])
 
-markov_results = analyze_markov_chains(P_f, P_g)
+markov_results = analyze_markov_chains(P_f, P_g, rng)
 ```
 
 ## 相关讲座

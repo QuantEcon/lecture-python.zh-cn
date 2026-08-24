@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>68. 最优储蓄 V：内生网格法 &#8212; Python中级数量经济学</title>
+    <title>69. 最优储蓄 V：内生网格法 &#8212; Python中级数量经济学</title>
     
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -128,12 +128,12 @@
     <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'os_egm';</script>
-    <link rel="canonical" href="https://python.quantecon-zh-cn.org/os_egm.html" />
+    <link rel="canonical" href="https://quantecon.github.io/lecture-python.zh-cn/os_egm.html" />
     <link rel="icon" href="_static/lectures-favicon.ico"/>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
-    <link rel="next" title="69. 最优储蓄 VI：使用 JAX 的 EGM" href="os_egm_jax.html" />
-    <link rel="prev" title="67. 最优储蓄 IV：时间迭代" href="os_time_iter.html" />
+    <link rel="next" title="70. 最优储蓄 VI：使用 JAX 的 EGM" href="os_egm_jax.html" />
+    <link rel="prev" title="68. 最优储蓄 IV：时间迭代" href="os_time_iter.html" />
 
 <!-- Normal Meta Tags -->
 <meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
@@ -151,7 +151,7 @@
 <!-- Opengraph tags -->
 <meta property="og:title" content="最优储蓄 V：内生网格法" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://python.quantecon-zh-cn.org/os_egm.html" />
+<meta property="og:url" content="https://quantecon.github.io/lecture-python.zh-cn/os_egm.html" />
 <meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
 <meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
 <meta property="og:site_name" content="Python中级数量经济学" />
@@ -208,16 +208,16 @@
 
                         <nav id="bd-toc-nav" class="qe-page__toc-nav">
                             <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">68.1. 概述</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">68.2. 核心思想</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">68.2.1. 理论</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">68.2.2. 外生网格</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">68.2.3. 内生网格</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">69.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">69.2. 核心思想</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">69.2.1. 理论</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">69.2.2. 外生网格</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">69.2.3. 内生网格</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">68.3. 实现</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">68.3.1. 算子</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">68.3.2. 测试</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">69.3. 实现</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">69.3.1. 算子</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">69.3.2. 测试</a></li>
 </ul>
 </li>
 </ul>
@@ -273,7 +273,7 @@
 
                     <!-- Last modified / Changelog dropdown -->
                         <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
-                            Last changed: Aug 13, 2026
+                            Last changed: Aug 18, 2026
                             <span class="changelog-icon">▼</span>
                         </button>
 
@@ -284,11 +284,20 @@
                             
                             <li class="changelog-entry">
                                 
-                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/151c402" class="changelog-hash">151c402</a>
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/4d8921b" class="changelog-hash">4d8921b</a>
                                 
                                 <span class="changelog-author">Matt McKay</span>
-                                <span class="changelog-time">3 days ago</span>
-                                <span class="changelog-message">🌐 [translation-sync] Repoint the hansen_singleton pair at QuantEcon/data-lectures (wave B2') (#250)</span>
+                                <span class="changelog-time">5 days ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] [os_egm.md] Update np.random → Generator API (#223)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/be4a8b2" class="changelog-hash">be4a8b2</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">1 month ago</span>
+                                <span class="changelog-message">Seed the 37 missing lectures — full source-TOC coverage (#196)</span>
                             </li>
                             
                         </ul>
@@ -304,7 +313,7 @@
                     <div>
                         
   <section class="tex2jax_ignore mathjax_ignore" id="v">
-<h1><a class="toc-backref" href="#id11" role="doc-backlink"><span class="section-number">68. </span><span class="target" id="index-0"></span>最优储蓄 V：内生网格法</a><a class="headerlink" href="#v" title="Link to this heading">#</a></h1>
+<h1><a class="toc-backref" href="#id11" role="doc-backlink"><span class="section-number">69. </span><span class="target" id="index-0"></span>最优储蓄 V：内生网格法</a><a class="headerlink" href="#v" title="Link to this heading">#</a></h1>
 <nav class="contents" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
@@ -348,7 +357,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </details>
 </div>
 <section id="id1">
-<h2><a class="toc-backref" href="#id12" role="doc-backlink"><span class="section-number">68.1. </span>概述</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id12" role="doc-backlink"><span class="section-number">69.1. </span>概述</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <p>之前，我们使用以下方法求解了最优储蓄问题：</p>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="os_stochastic.html"><span class="doc">价值函数迭代</span></a></p></li>
@@ -376,34 +385,34 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id13" role="doc-backlink"><span class="section-number">68.2. </span>核心思想</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id13" role="doc-backlink"><span class="section-number">69.2. </span>核心思想</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <p>首先我们回顾一下理论，然后转向数值方法。</p>
 <section id="id4">
-<h3><span class="section-number">68.2.1. </span>理论<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">69.2.1. </span>理论<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
 <p>我们使用 <a class="reference internal" href="os_time_iter.html"><span class="doc">最优储蓄 IV：时间迭代</span></a> 中提出的模型，遵循相同的术语和记号。</p>
 <p>正如我们所见，Coleman-Reffett 算子是一个非线性算子 <span class="math notranslate nohighlight">\(K\)</span>，其设计使得最优策略
 <span class="math notranslate nohighlight">\(\sigma^*\)</span> 是 <span class="math notranslate nohighlight">\(K\)</span> 的一个不动点。</p>
 <p>它以一个连续严格递增的消费策略 <span class="math notranslate nohighlight">\(\sigma \in \Sigma\)</span> 作为参数。</p>
 <p>它返回一个新函数 <span class="math notranslate nohighlight">\(K \sigma\)</span>，其中 <span class="math notranslate nohighlight">\((K \sigma)(x)\)</span> 是求解以下方程的 <span class="math notranslate nohighlight">\(c \in (0, \infty)\)</span>：</p>
 <div class="math notranslate nohighlight" id="equation-egm-coledef">
-<span class="eqno">(68.1)<a class="headerlink" href="#equation-egm-coledef" title="Link to this equation">#</a></span>\[u'(c)
+<span class="eqno">(69.1)<a class="headerlink" href="#equation-egm-coledef" title="Link to this equation">#</a></span>\[u'(c)
 = \beta \int (u' \circ \sigma) (f(x - c) z ) f'(x - c) z \phi(dz)\]</div>
 </section>
 <section id="id5">
-<h3><span class="section-number">68.2.2. </span>外生网格<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">69.2.2. </span>外生网格<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <p>正如 <a class="reference internal" href="os_time_iter.html"><span class="doc">最优储蓄 IV：时间迭代</span></a> 中所讨论的，为了在计算机上实现该方法，我们通过有限网格上的一组值来表示策略函数。</p>
 <p>在必要时，通过插值或其他方法从这个表示中重构函数本身。</p>
 <p>我们之前在 <a class="reference internal" href="os_time_iter.html"><span class="doc">最优储蓄 IV：时间迭代</span></a> 中获取更新后的消费策略的有限表示的策略是：</p>
 <ul class="simple">
 <li><p>固定一个收入点网格 <span class="math notranslate nohighlight">\(\{x_i\}\)</span></p></li>
-<li><p>使用 <a class="reference internal" href="#equation-egm-coledef">(68.1)</a> 和求根程序计算对应于每个 <span class="math notranslate nohighlight">\(x_i\)</span> 的消费值 <span class="math notranslate nohighlight">\(c_i\)</span></p></li>
+<li><p>使用 <a class="reference internal" href="#equation-egm-coledef">(69.1)</a> 和求根程序计算对应于每个 <span class="math notranslate nohighlight">\(x_i\)</span> 的消费值 <span class="math notranslate nohighlight">\(c_i\)</span></p></li>
 </ul>
 <p>然后将每个 <span class="math notranslate nohighlight">\(c_i\)</span> 解释为函数 <span class="math notranslate nohighlight">\(K \sigma\)</span> 在 <span class="math notranslate nohighlight">\(x_i\)</span> 处的值。</p>
 <p>因此，有了 <span class="math notranslate nohighlight">\(\{(x_i, c_i)\}\)</span> 这些点对，我们就可以通过近似来重构 <span class="math notranslate nohighlight">\(K \sigma\)</span>。</p>
 <p>然后迭代继续……</p>
 </section>
 <section id="id6">
-<h3><span class="section-number">68.2.3. </span>内生网格<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">69.2.3. </span>内生网格<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 <p>上面讨论的方法需要一个求根程序来找到对应于给定收入值 <span class="math notranslate nohighlight">\(x_i\)</span> 的 <span class="math notranslate nohighlight">\(c_i\)</span>。</p>
 <p>求根的代价很高，因为它通常涉及大量的函数求值。</p>
 <p>正如 Carroll <span class="bibtex-citation" id="id7">[<a class="reference internal" href="zreferences.html#id248" title="Christopher D Carroll. The method of endogenous gridpoints for solving dynamic stochastic optimization problems. Economics Letters, 91(3):312–320, 2006.">Carroll, 2006</a>]</span> 所指出的，如果 <span class="math notranslate nohighlight">\(x_i\)</span> 是内生选择的，我们就可以避免这一步骤。</p>
@@ -415,7 +424,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <li><p>然后我们通过以下方式获得 <span class="math notranslate nohighlight">\(c_i\)</span>：</p></li>
 </ul>
 <div class="math notranslate nohighlight" id="equation-egm-getc">
-<span class="eqno">(68.2)<a class="headerlink" href="#equation-egm-getc" title="Link to this equation">#</a></span>\[c_i =
+<span class="eqno">(69.2)<a class="headerlink" href="#equation-egm-getc" title="Link to this equation">#</a></span>\[c_i =
 (u')^{-1}
 \left\{
     \beta \int (u' \circ \sigma) (f(s_i) z ) \, f'(s_i) \, z \, \phi(dz)
@@ -423,13 +432,13 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 <ul class="simple">
 <li><p>最后，对于每个 <span class="math notranslate nohighlight">\(c_i\)</span>，我们设 <span class="math notranslate nohighlight">\(x_i = c_i + s_i\)</span>。</p></li>
 </ul>
-<p>重要的是，以这种方式构造的每个 <span class="math notranslate nohighlight">\((x_i, c_i)\)</span> 点对都满足 <a class="reference internal" href="#equation-egm-coledef">(68.1)</a>。</p>
+<p>重要的是，以这种方式构造的每个 <span class="math notranslate nohighlight">\((x_i, c_i)\)</span> 点对都满足 <a class="reference internal" href="#equation-egm-coledef">(69.1)</a>。</p>
 <p>有了 <span class="math notranslate nohighlight">\(\{x_i, c_i\}\)</span> 这些点后，我们可以像之前一样通过近似来重构 <span class="math notranslate nohighlight">\(K \sigma\)</span>。</p>
 <p>EGM 这个名称源于网格 <span class="math notranslate nohighlight">\(\{x_i\}\)</span> 是<strong>内生</strong>确定的这一事实。</p>
 </section>
 </section>
 <section id="id8">
-<h2><a class="toc-backref" href="#id14" role="doc-backlink"><span class="section-number">68.3. </span>实现</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id14" role="doc-backlink"><span class="section-number">69.3. </span>实现</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p>与 <a class="reference internal" href="os_time_iter.html"><span class="doc">最优储蓄 IV：时间迭代</span></a> 中一样，我们将从一个简单的设定开始，其中</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(u(c) = \ln c\)</span>，</p></li>
@@ -499,8 +508,8 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
     <span class="n">s_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">grid_max</span><span class="p">,</span> <span class="n">grid_size</span><span class="p">)</span>
 
     <span class="c1"># 存储冲击（带种子，使结果可复现）</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-    <span class="n">shocks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">μ</span> <span class="o">+</span> <span class="n">ν</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">shock_size</span><span class="p">))</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">shocks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">μ</span> <span class="o">+</span> <span class="n">ν</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">shock_size</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">Model</span><span class="p">(</span>
         <span class="n">u</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">μ</span><span class="p">,</span> <span class="n">ν</span><span class="p">,</span> <span class="n">s_grid</span><span class="p">,</span> <span class="n">shocks</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">u_prime</span><span class="p">,</span> <span class="n">f_prime</span><span class="p">,</span> <span class="n">u_prime_inv</span>
@@ -510,7 +519,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </div>
 <section id="id9">
-<h3><span class="section-number">68.3.1. </span>算子<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">69.3.1. </span>算子<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <p>这是使用上述 EGM 的 <span class="math notranslate nohighlight">\(K\)</span> 的一个实现。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -556,7 +565,7 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </section>
 <section id="id10">
-<h3><span class="section-number">68.3.2. </span>测试<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">69.3.2. </span>测试<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <p>首先我们创建一个实例。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -618,8 +627,8 @@ Requirement already satisfied: mpmath&lt;1.4,&gt;=1.1.0 in /home/runner/minicond
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Iteration 1, error = 1.208333333333334
-Iteration 2, error = 0.6834464555052779
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Iteration 1, error = 1.208333333333333
+Iteration 2, error = 0.6834464555052788
 Iteration 3, error = 0.3126351338414741
 Iteration 4, error = 0.12905177785629984
 Iteration 5, error = 0.05099394329538409
@@ -629,9 +638,9 @@ Iteration 8, error = 0.002937098891578671
 Iteration 9, error = 0.0011285611196765188
 Iteration 10, error = 0.00043347299641638415
 Iteration 11, error = 0.00016646919532892213
-Iteration 12, error = 6.392646634978405e-05
-Iteration 13, error = 2.4548101555943447e-05
-Iteration 14, error = 9.426520908739633e-06
+Iteration 12, error = 6.392646635156041e-05
+Iteration 13, error = 2.454810155327891e-05
+Iteration 14, error = 9.426520909627811e-06
 </pre></div>
 </div>
 </div>
@@ -656,7 +665,7 @@ Iteration 14, error = 9.426520908739633e-06
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
 </pre></div>
 </div>
-<img alt="_images/f4fc4bd050d266a1f51127013c744449c756bce76d1b349e4ffafd87d436aca2.png" src="_images/f4fc4bd050d266a1f51127013c744449c756bce76d1b349e4ffafd87d436aca2.png" />
+<img alt="_images/fce30b94b86f92e2aa2a9269583e63a924d1c93d1132d097bc4eacb9b96f882a.png" src="_images/fce30b94b86f92e2aa2a9269583e63a924d1c93d1132d097bc4eacb9b96f882a.png" />
 </div>
 </div>
 <p>两个策略之间的最大绝对偏差为</p>
@@ -681,7 +690,7 @@ Iteration 14, error = 9.426520908739633e-06
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0225 seconds elapsed
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0245 seconds elapsed
 </pre></div>
 </div>
 </div>
@@ -1074,23 +1083,28 @@ Iteration 14, error = 9.426520908739633e-06
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="mccall_risk.html">
+   57. 工作搜寻 V：风险敏感型偏好
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mccall_persist_trans.html">
-   57. 工作搜寻 V：持续性与暂时性工资冲击
+   58. 工作搜寻 VI：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   58. 工作搜寻 VI：职业选择建模
+   59. 工作搜寻 VII：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   59. 工作搜寻 VII：在职搜索
+   60. 工作搜寻 VIII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   60. 工作搜寻 VIII: 带学习的搜索
+   61. 工作搜寻 IX: 带学习的搜索
   </a>
  </li>
 </ul>
@@ -1102,17 +1116,17 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="inventory_q.html">
-   61. 通过 Q 学习进行库存管理
+   62. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rs_inventory_q.html">
-   62. 通过 Q-Learning 进行风险敏感型库存管理
+   63. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_q.html">
-   63. 工作搜寻 IX：McCall劳动者的Q学习
+   64. 工作搜寻 X：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
@@ -1124,64 +1138,64 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="current nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="os.html">
-   64. 吃蛋糕问题 I：最优储蓄导论
+   65. 吃蛋糕问题 I：最优储蓄导论
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_numerical.html">
-   65. 最优储蓄 II：数值方法吃蛋糕问题
+   66. 最优储蓄 II：数值方法吃蛋糕问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_stochastic.html">
-   66. 最优储蓄 III：随机回报
+   67. 最优储蓄 III：随机回报
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_time_iter.html">
-   67. 最优储蓄 IV：时间迭代
+   68. 最优储蓄 IV：时间迭代
   </a>
  </li>
  <li class="toctree-l1 current active active">
   <a class="current reference internal" href="#">
-   68. 最优储蓄 V：内生网格法
+   69. 最优储蓄 V：内生网格法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_egm_jax.html">
-   69. 最优储蓄 VI：使用 JAX 的 EGM
+   70. 最优储蓄 VI：使用 JAX 的 EGM
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  家庭问题
+  收入波动问题
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_discrete.html">
-   70. 收入波动问题 I：离散化与 VFI
+   71. 收入波动问题 I：离散化与 VFI
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_opi.html">
-   71. 收入波动问题 II：乐观策略迭代
+   72. 收入波动问题 II：乐观策略迭代
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_egm.html">
-   72. 收入波动问题 III：内生网格法
+   73. 收入波动问题 III：内生网格法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_egm_transient_shocks.html">
-   73. 收入波动问题 IV：暂时性收入冲击
+   74. 收入波动问题 IV：暂时性收入冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_advanced.html">
-   74. 收入波动问题 V：资产随机收益
+   75. 收入波动问题 V：资产随机收益
   </a>
  </li>
 </ul>
@@ -1193,67 +1207,67 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   75. LQ控制：基础
+   76. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   76. LQ控制的拉格朗日方法
+   77. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   77. 消除交叉项
+   78. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   78. 永久收入模型
+   79. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   79. 永久收入 II：线性二次方法
+   80. 永久收入 II：线性二次方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="robust_permanent_income.html">
-   80. 稳健永久收入与定价
+   81. 稳健永久收入与定价
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="theil_1.html">
-   81. 确定性等价
+   82. 确定性等价
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="theil_2.html">
-   82. 确定性等价与模型不确定性
+   83. 确定性等价与模型不确定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_permanent_income.html">
-   83. LQ 永久收入模型
+   84. LQ 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_bewley_complete_markets.html">
-   84. 不完全市场与完全市场下的消费平滑
+   85. 不完全市场与完全市场下的消费平滑
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_robust_smoothing.html">
-   85. 稳健消费平滑与预防性储蓄
+   86. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_robust_bewley.html">
-   86. 稳健 LQ 贝利模型
+   87. 稳健 LQ 贝利模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   87. 通过库存实现生产平滑
+   88. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
@@ -1265,32 +1279,37 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="bounded_rationality.html">
-   88. 一种奇特的有限理性定义
+   89. 一种奇特的有限理性定义
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="olg_adaptive_money.html">
-   89. 世代交叠货币经济中的适应性主体
+   90. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="learning_approximation.html">
+   91. 学习、近似与均衡计算
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="exchange_rate_learning.html">
-   90. 汇率不确定性、学习与实验
+   92. 汇率不确定性、学习与实验
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="genetic_classifier.html">
-   91. 遗传算法与分类器系统
+   93. 遗传算法与分类器系统
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="marimon_mcgrattan_sargent.html">
-   92. 人工智能主体中作为交换媒介的货币
+   94. 人工智能主体中作为交换媒介的货币
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="prospects_bounded_rationality.html">
-   93. 1993 年对宏观经济学中有限理性前景的展望
+   95. 1993 年对宏观经济学中有限理性前景的展望
   </a>
  </li>
 </ul>
@@ -1302,57 +1321,57 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_two_stories.html">
-   94. 美国通货膨胀的兴衰
+   96. 美国通货膨胀的兴衰
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_credibility.html">
-   95. 信誉问题
+   97. 信誉问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_credible_policies.html">
-   96. 可信的政府政策
+   98. 可信的政府政策
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_adaptive.html">
-   97. 适应性预期与费尔普斯问题
+   99. 适应性预期与费尔普斯问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_misspecified.html">
-   98. 最优错误设定信念
+   100. 最优错误设定信念
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_self_confirming.html">
-   99. 自我确认均衡
+   101. 自我确认均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_learning.html">
-   100. 适应性学习与逃逸动态
+   102. 适应性学习与逃逸动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_escaping_nash.html">
-   101. 逃离纳什通胀
+   103. 逃离纳什通胀
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_priors.html">
-   102. 先验、逃逸与学习循环
+   104. 先验、逃逸与学习循环
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_lost_conquest.html">
-   103. 失落的征服：2020 年代的美联储政策
+   105. 失落的征服：2020 年代的美联储政策
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_drifts_volatilities.html">
-   104. 漂移与波动率
+   106. 漂移与波动率
   </a>
  </li>
 </ul>
@@ -1364,22 +1383,22 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="cass_koopmans_1.html">
-   105. Cass-Koopmans模型
+   107. Cass-Koopmans模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_koopmans_2.html">
-   106. Cass-Koopmans竞争均衡
+   108. Cass-Koopmans竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_fiscal.html">
-   107. 带扭曲性税收的Cass-Koopmans模型
+   109. 带扭曲性税收的Cass-Koopmans模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_fiscal_2.html">
-   108. 带扭曲性税收的双国模型
+   110. 带扭曲性税收的双国模型
   </a>
  </li>
 </ul>
@@ -1391,57 +1410,57 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   109. 就业与失业的湖泊模型
+   111. 就业与失业的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="endogenous_lake.html">
-   110. 具有内生工作发现率的湖泊模型
+   112. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   111. 理性预期均衡
+   113. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   112. 线性理性预期模型中的稳定性
+   114. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   113. 马尔可夫完美均衡
+   115. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   114. 不确定性陷阱
+   116. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   115. 艾亚加里模型
+   117. 艾亚加里模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari_egm.html">
-   116. 使用内生网格法的Aiyagari模型
+   118. 使用内生网格法的Aiyagari模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak2.html">
-   117. 代际交叠模型中的转型
+   119. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   118. 长寿、异质性个体、世代交叠模型
+   120. 长寿、异质性个体、世代交叠模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="two_computation.html">
-   119. 为社会保障融资的两种计算方法
+   121. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
@@ -1453,62 +1472,62 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   120. 资产定价：有限状态模型
+   122. 资产定价：有限状态模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="hansen_singleton_1983.html">
-   121. 随机消费、风险规避与资产回报的时间行为
+   123. 随机消费、风险规避与资产回报的时间行为
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="hansen_singleton_1982.html">
-   122. 用广义矩方法估计欧拉方程
+   124. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   123. 带有阿罗证券的竞争均衡
+   125. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   124. 异质信念与泡沫
+   126. 异质信念与泡沫
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="morris_learn.html">
-   125. 贝叶斯学习下的投机行为
+   127. 贝叶斯学习下的投机行为
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_learning_re.html">
-   126. 理性学习与理性预期
+   128. 理性学习与理性预期
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ls_learning.html">
-   127. 自指模型中的最小二乘学习
+   129. 自指模型中的最小二乘学习
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="affine_risk_prices.html">
-   128. 资产价格的仿射模型
+   130. 资产价格的仿射模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ross_recovery.html">
-   129. 恢复定理
+   131. 恢复定理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="long_run_risk_operator.html">
-   130. 长期风险：一种算子方法
+   132. 长期风险：一种算子方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="misspecified_recovery.html">
-   131. 误设定下的恢复
+   133. 误设定下的恢复
   </a>
  </li>
 </ul>
@@ -1520,32 +1539,32 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="pandas_panel.html">
-   132. 用Pandas处理面板数据
+   134. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   133. Python线性回归
+   135. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   134. 最大似然估计
+   136. 最大似然估计
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="unemployment_linear.html">
-   135. 失业的线性模型
+   137. 失业的线性模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="unemployment_shocks.html">
-   136. 具有非对称冲击的失业动态
+   138. 具有非对称冲击的失业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="sargent_surico.html">
-   137. 货币数量论的两个例证
+   139. 货币数量论的两个例证
   </a>
  </li>
 </ul>
@@ -1557,12 +1576,12 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   138. 一价和二价拍卖
+   140. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   139. 多种商品分配机制
+   141. 多种商品分配机制
   </a>
  </li>
 </ul>
@@ -1574,17 +1593,17 @@ Iteration 14, error = 9.426520908739633e-06
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   140. 故障排除
+   142. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   141. 参考文献
+   143. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   142. 执行统计
+   144. 执行统计
   </a>
  </li>
 </ul>
@@ -1620,6 +1639,7 @@ Iteration 14, error = 9.426520908739633e-06
                     <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
                     <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
                     <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/os_egm.ipynb" download><i data-feather="download-cloud"></i></a></li>
                     <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
                         <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
                     <!--

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>61. 通过 Q 学习进行库存管理 &#8212; Python中级数量经济学</title>
+    <title>62. 通过 Q 学习进行库存管理 &#8212; Python中级数量经济学</title>
     
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -128,12 +128,12 @@
     <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'inventory_q';</script>
-    <link rel="canonical" href="https://python.quantecon-zh-cn.org/inventory_q.html" />
+    <link rel="canonical" href="https://quantecon.github.io/lecture-python.zh-cn/inventory_q.html" />
     <link rel="icon" href="_static/lectures-favicon.ico"/>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
-    <link rel="next" title="62. 通过 Q-Learning 进行风险敏感型库存管理" href="rs_inventory_q.html" />
-    <link rel="prev" title="60. 工作搜寻 VIII: 带学习的搜索" href="odu.html" />
+    <link rel="next" title="63. 通过 Q-Learning 进行风险敏感型库存管理" href="rs_inventory_q.html" />
+    <link rel="prev" title="61. 工作搜寻 IX: 带学习的搜索" href="odu.html" />
 
 <!-- Normal Meta Tags -->
 <meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
@@ -151,7 +151,7 @@
 <!-- Opengraph tags -->
 <meta property="og:title" content="通过 Q 学习进行库存管理" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://python.quantecon-zh-cn.org/inventory_q.html" />
+<meta property="og:url" content="https://quantecon.github.io/lecture-python.zh-cn/inventory_q.html" />
 <meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
 <meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
 <meta property="og:site_name" content="Python中级数量经济学" />
@@ -208,29 +208,29 @@
 
                         <nav id="bd-toc-nav" class="qe-page__toc-nav">
                             <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">61.1. 引言</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">61.2. 模型</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">61.3. 通过值函数迭代求解</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">61.3.1. 模型设定</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">61.3.2. 贝尔曼算子</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">61.3.3. 计算贪婪策略</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">61.3.4. 值函数迭代</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">61.3.5. 创建并求解一个实例</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">61.3.6. 模拟最优策略</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">62.1. 引言</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">62.2. 模型</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">62.3. 通过值函数迭代求解</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">62.3.1. 模型设定</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">62.3.2. 贝尔曼算子</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">62.3.3. 计算贪婪策略</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">62.3.4. 值函数迭代</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">62.3.5. 创建并求解一个实例</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">62.3.6. 模拟最优策略</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">61.4. Q 学习</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">61.4.1. Q 因子贝尔曼方程</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">61.4.2. Q 学习更新规则</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">61.4.3. 经理需要知道什么</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">61.4.4. Q 表和最大值的作用</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">61.4.5. 行为策略</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">61.4.6. 学习率</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon">61.4.7. 探索：epsilon-贪婪</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">61.4.8. 乐观初始化</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">61.4.9. 实现</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">61.4.10. 与精确解比较</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">61.4.11. 可视化随时间的学习</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">62.4. Q 学习</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">62.4.1. Q 因子贝尔曼方程</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">62.4.2. Q 学习更新规则</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">62.4.3. 经理需要知道什么</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">62.4.4. Q 表和最大值的作用</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">62.4.5. 行为策略</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">62.4.6. 学习率</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon">62.4.7. 探索：epsilon-贪婪</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">62.4.8. 乐观初始化</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">62.4.9. 实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">62.4.10. 与精确解比较</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">62.4.11. 可视化随时间的学习</a></li>
 </ul>
 </li>
 </ul>
@@ -286,7 +286,7 @@
 
                     <!-- Last modified / Changelog dropdown -->
                         <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
-                            Last changed: Aug 13, 2026
+                            Last changed: Aug 19, 2026
                             <span class="changelog-icon">▼</span>
                         </button>
 
@@ -297,11 +297,29 @@
                             
                             <li class="changelog-entry">
                                 
-                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/151c402" class="changelog-hash">151c402</a>
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/1965827" class="changelog-hash">1965827</a>
                                 
                                 <span class="changelog-author">Matt McKay</span>
-                                <span class="changelog-time">3 days ago</span>
-                                <span class="changelog-message">🌐 [translation-sync] Repoint the hansen_singleton pair at QuantEcon/data-lectures (wave B2') (#250)</span>
+                                <span class="changelog-time">5 days ago</span>
+                                <span class="changelog-message">Fix two review-flagged defects and complete the 边际分布 glossary wave (#257)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/8624207" class="changelog-hash">8624207</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">5 days ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] [inventory_q.md] Update np.random → Generator API (#217)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/be4a8b2" class="changelog-hash">be4a8b2</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">1 month ago</span>
+                                <span class="changelog-message">Seed the 37 missing lectures — full source-TOC coverage (#196)</span>
                             </li>
                             
                         </ul>
@@ -317,7 +335,7 @@
                     <div>
                         
   <section class="tex2jax_ignore mathjax_ignore" id="q">
-<h1><a class="toc-backref" href="#id22" role="doc-backlink"><span class="section-number">61. </span>通过 Q 学习进行库存管理</a><a class="headerlink" href="#q" title="Link to this heading">#</a></h1>
+<h1><a class="toc-backref" href="#id22" role="doc-backlink"><span class="section-number">62. </span>通过 Q 学习进行库存管理</a><a class="headerlink" href="#q" title="Link to this heading">#</a></h1>
 <nav class="contents" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
@@ -332,7 +350,7 @@
 </ul>
 </nav>
 <section id="id1">
-<h2><a class="toc-backref" href="#id23" role="doc-backlink"><span class="section-number">61.1. </span>引言</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id23" role="doc-backlink"><span class="section-number">62.1. </span>引言</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <p>在本讲座中，我们研究一个经典的库存管理问题。</p>
 <p>一家公司必须决定每期订购多少库存，同时面临不确定的需求以及在销售损失与订购成本之间的权衡。</p>
 <p>我们用两种方法处理这个问题。</p>
@@ -372,7 +390,7 @@
 </div>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">61.2. </span>模型</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">62.2. </span>模型</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
 <p>我们研究一家公司，其经理试图通过控制库存来最大化股东价值。</p>
 <p>为了简化问题，我们假设该公司只销售一种产品。</p>
 <p>设 <span class="math notranslate nohighlight">\(\pi_t\)</span> 为时间 <span class="math notranslate nohighlight">\(t\)</span> 的利润，<span class="math notranslate nohighlight">\(r &gt; 0\)</span> 为利率，则公司的价值为</p>
@@ -420,7 +438,7 @@
 <p>这表示当前库存状态为 <span class="math notranslate nohighlight">\(x\)</span> 时的可行订单集合。</p>
 <p>贝尔曼方程的形式为</p>
 <div class="math notranslate nohighlight" id="equation-inventory-q-bellman">
-<span class="eqno">(61.1)<a class="headerlink" href="#equation-inventory-q-bellman" title="Link to this equation">#</a></span>\[    v(x)
+<span class="eqno">(62.1)<a class="headerlink" href="#equation-inventory-q-bellman" title="Link to this equation">#</a></span>\[    v(x)
     = \max_{a \in \Gamma(x)} \mathbb E
     \left[
         \pi(x, a, D)
@@ -429,7 +447,7 @@
 <p>这里 <span class="math notranslate nohighlight">\(D\)</span> 是一个分布为 <span class="math notranslate nohighlight">\(\phi\)</span> 的随机变量。</p>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">61.3. </span>通过值函数迭代求解</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">62.3. </span>通过值函数迭代求解</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <p>让我们从经理知道所有参数、函数形式和分布的设定开始。</p>
 <p>她使用值函数迭代（VFI）以数值方式求解模型。</p>
 <p>其思想是对由下式定义的贝尔曼算子 <span class="math notranslate nohighlight">\(T\)</span> 进行迭代</p>
@@ -448,7 +466,7 @@
 \]</div>
 <p>当 <span class="math notranslate nohighlight">\(r &gt; 0\)</span>（等价地，<span class="math notranslate nohighlight">\(\beta &lt; 1\)</span>）时，序列 <span class="math notranslate nohighlight">\(v_{k+1} = T v_k\)</span> 收敛到唯一的不动点 <span class="math notranslate nohighlight">\(v^*\)</span>，它就是最优策略的值函数（例如，参见 <span class="bibtex-citation" id="id4">[<a class="reference internal" href="zreferences.html#id76" title="Thomas J. Sargent and John Stachurski. Dynamic Programming: Finite States. Cambridge University Press, 2025.">Sargent and Stachurski, 2025</a>]</span>）。</p>
 <section id="id5">
-<h3><span class="section-number">61.3.1. </span>模型设定<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.3.1. </span>模型设定<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <p>我们将模型基本要素存储在一个 <code class="docutils literal notranslate"><span class="pre">NamedTuple</span></code> 中。</p>
 <p>需求服从参数为 <span class="math notranslate nohighlight">\(p\)</span> 的<a class="reference external" href="https://en.wikipedia.org/wiki/Geometric_distribution">几何分布</a>，因此对于 <span class="math notranslate nohighlight">\(d = 0, 1, 2, \ldots\)</span>，<span class="math notranslate nohighlight">\(\phi(d) = (1 - p)^d \, p\)</span>。</p>
 <div class="cell docutils container">
@@ -492,7 +510,7 @@
 </div>
 </section>
 <section id="id6">
-<h3><span class="section-number">61.3.2. </span>贝尔曼算子<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.3.2. </span>贝尔曼算子<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 <p>核心计算是贝尔曼算子 <span class="math notranslate nohighlight">\(T\)</span>。</p>
 <p>对于每个库存水平 <span class="math notranslate nohighlight">\(x\)</span>，我们遍历所有可行的订购数量 <span class="math notranslate nohighlight">\(a \in \{0, \ldots, K - x\}\)</span>，并计算期望值</p>
 <div class="math notranslate nohighlight">
@@ -539,7 +557,7 @@
 </div>
 </section>
 <section id="id7">
-<h3><span class="section-number">61.3.3. </span>计算贪婪策略<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.3.3. </span>计算贪婪策略<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
 <p>回想一下，给定值函数 <span class="math notranslate nohighlight">\(v\)</span>，<strong><span class="math notranslate nohighlight">\(v\)</span>-贪婪策略</strong> 通过下式计算</p>
 <div class="math notranslate nohighlight">
 \[
@@ -585,7 +603,7 @@
 </div>
 </section>
 <section id="id8">
-<h3><span class="section-number">61.3.4. </span>值函数迭代<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.3.4. </span>值函数迭代<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <p>我们从 <span class="math notranslate nohighlight">\(v_0 = 0\)</span> 开始迭代 <span class="math notranslate nohighlight">\(v_{k+1} = T v_k\)</span> 直到收敛。</p>
 <p>一旦值函数收敛（达到容差 <code class="docutils literal notranslate"><span class="pre">tol</span></code> 之内），我们通过 <code class="docutils literal notranslate"><span class="pre">get_greedy</span></code> 提取最优策略 <span class="math notranslate nohighlight">\(\sigma^*\)</span>。</p>
 <div class="cell docutils container">
@@ -610,7 +628,7 @@
 </div>
 </section>
 <section id="id9">
-<h3><span class="section-number">61.3.5. </span>创建并求解一个实例<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.3.5. </span>创建并求解一个实例<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">create_sdd_inventory_model</span><span class="p">()</span>
@@ -635,19 +653,18 @@
 </div>
 </section>
 <section id="id10">
-<h3><span class="section-number">61.3.6. </span>模拟最优策略<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.3.6. </span>模拟最优策略<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <p>为了可视化解，我们在最优策略 <span class="math notranslate nohighlight">\(\sigma^*\)</span> 下模拟库存过程。</p>
 <p>在每一步，我们从几何分布中抽取一个需求冲击，并通过 <span class="math notranslate nohighlight">\(h\)</span> 更新状态。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">sim_inventories</span><span class="p">(</span><span class="n">ts_length</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">X_init</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sim_inventories</span><span class="p">(</span><span class="n">ts_length</span><span class="p">,</span> <span class="n">σ</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">X_init</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;在策略 σ 下模拟库存动态。&quot;&quot;&quot;</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ts_length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
     <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_init</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">geometric</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">geometric</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="n">X</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">σ</span><span class="p">[</span><span class="n">X</span><span class="p">[</span><span class="n">t</span><span class="p">]]</span>
     <span class="k">return</span> <span class="n">X</span>
 </pre></div>
@@ -658,8 +675,8 @@
 <p>注意 <strong>S-s 模式</strong>：当库存降到较低水平时，公司下达一个大订单来补充库存（向上的跳跃），此后随着需求被满足，库存逐渐下降。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_ts</span><span class="p">(</span><span class="n">ts_length</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="n">X</span> <span class="o">=</span> <span class="n">sim_inventories</span><span class="p">(</span><span class="n">ts_length</span><span class="p">,</span> <span class="n">σ_star</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_ts</span><span class="p">(</span><span class="n">ts_length</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">sim_inventories</span><span class="p">(</span><span class="n">ts_length</span><span class="p">,</span> <span class="n">σ_star</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">))</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$X_t$&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
@@ -685,18 +702,18 @@
 findfont: Failed to find font weight normal, now using 600.
 </pre></div>
 </div>
-<img alt="_images/ba80f768a1b38668f96fe0b7630cad755614bcd0287dc368e5fc96852f52ab14.png" src="_images/ba80f768a1b38668f96fe0b7630cad755614bcd0287dc368e5fc96852f52ab14.png" />
+<img alt="_images/341194d8a5fac990d00eefe0bf241e0ddc45e0ef2ecebf31dab92412066e15bf.png" src="_images/341194d8a5fac990d00eefe0bf241e0ddc45e0ef2ecebf31dab92412066e15bf.png" />
 </div>
 </div>
 </section>
 </section>
 <section id="id11">
-<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">61.4. </span>Q 学习</a><a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">62.4. </span>Q 学习</a><a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
 <p>现在我们要问：一个智能体能否在不知道模型的情况下<strong>学习</strong>最优策略？</p>
 <p>特别地，假设智能体不知道需求分布 <span class="math notranslate nohighlight">\(\phi\)</span>、成本参数 <span class="math notranslate nohighlight">\(c\)</span> 和 <span class="math notranslate nohighlight">\(\kappa\)</span>，或转移函数 <span class="math notranslate nohighlight">\(h\)</span>。</p>
 <p>相反，智能体只在与环境交互时观察到状态、动作和利润的序列。</p>
 <section id="id12">
-<h3><span class="section-number">61.4.1. </span>Q 因子贝尔曼方程<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.1. </span>Q 因子贝尔曼方程<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
 <p>Q 学习的第一步是修改贝尔曼方程，将其转化为一种能够从这些有限信息中学习的形式。</p>
 <p>我们不再使用值函数 <span class="math notranslate nohighlight">\(v(x)\)</span>，而是使用 <strong>Q 函数</strong>（或 Q 因子）<span class="math notranslate nohighlight">\(q(x, a)\)</span>。</p>
 <p>我们用值函数 <span class="math notranslate nohighlight">\(v^*\)</span> 来定义 <span class="math notranslate nohighlight">\(q\)</span>，如下</p>
@@ -708,7 +725,7 @@ findfont: Failed to find font weight normal, now using 600.
    \right].
 \]</div>
 <p>换句话说，<span class="math notranslate nohighlight">\(q(x, a)\)</span> 是在状态 <span class="math notranslate nohighlight">\(x\)</span> 中采取动作 <span class="math notranslate nohighlight">\(a\)</span>、此后遵循最优策略的期望值。</p>
-<p>注意贝尔曼方程 <a class="reference internal" href="#equation-inventory-q-bellman">(61.1)</a> 可以写为</p>
+<p>注意贝尔曼方程 <a class="reference internal" href="#equation-inventory-q-bellman">(62.1)</a> 可以写为</p>
 <div class="math notranslate nohighlight">
 \[
    v^*(x) = \max_{a \in \Gamma(x)} q(x, a).
@@ -725,7 +742,7 @@ findfont: Failed to find font weight normal, now using 600.
 <p>使用 <span class="math notranslate nohighlight">\(q\)</span> 的一个优势是，最优策略可以直接读取为 <span class="math notranslate nohighlight">\(\sigma(x) = \arg\max_a q(x, a)\)</span>，而无需知道转移函数。</p>
 </section>
 <section id="id13">
-<h3><span class="section-number">61.4.2. </span>Q 学习更新规则<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.2. </span>Q 学习更新规则<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
 <p>Q 学习使用 <strong><a class="reference external" href="https://en.wikipedia.org/wiki/Stochastic_approximation">随机逼近</a></strong> 来逼近 Q 因子贝尔曼方程的不动点。</p>
 <p>在每一步，智能体处于状态 <span class="math notranslate nohighlight">\(x\)</span>，采取动作 <span class="math notranslate nohighlight">\(a\)</span>，观察到奖励 <span class="math notranslate nohighlight">\(R_{t+1} = \pi(x, a, D_{t+1})\)</span> 和下一状态 <span class="math notranslate nohighlight">\(X_{t+1} = h(x, a, D_{t+1})\)</span>，并更新</p>
 <div class="math notranslate nohighlight">
@@ -738,7 +755,7 @@ findfont: Failed to find font weight normal, now using 600.
 <p>该更新将当前估计 <span class="math notranslate nohighlight">\(q_t(x, a)\)</span> 与贝尔曼目标的一个新样本混合。</p>
 </section>
 <section id="id14">
-<h3><span class="section-number">61.4.3. </span>经理需要知道什么<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.3. </span>经理需要知道什么<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <p>注意实现该更新<strong>不</strong>需要什么。</p>
 <p>经理不需要知道需求分布 <span class="math notranslate nohighlight">\(\phi\)</span>、单位成本 <span class="math notranslate nohighlight">\(c\)</span>、固定成本 <span class="math notranslate nohighlight">\(\kappa\)</span> 或转移函数 <span class="math notranslate nohighlight">\(h\)</span>。</p>
 <p>经理在每一步只需观察：</p>
@@ -752,7 +769,7 @@ findfont: Failed to find font weight normal, now using 600.
 <p>这些都是可直接观察的量——无需模型知识。</p>
 </section>
 <section id="id15">
-<h3><span class="section-number">61.4.4. </span>Q 表和最大值的作用<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.4. </span>Q 表和最大值的作用<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
 <p>理解更新规则如何与经理的动作相关联很重要。</p>
 <p>经理维护一个 <strong>Q 表</strong>——一个查找表，为每个状态-动作对 <span class="math notranslate nohighlight">\((x, a)\)</span> 存储一个估计 <span class="math notranslate nohighlight">\(q_t(x, a)\)</span>。</p>
 <p>在每一步，经理处于某个状态 <span class="math notranslate nohighlight">\(x\)</span>，必须选择一个具体动作 <span class="math notranslate nohighlight">\(a\)</span> 来采取。无论选择哪个 <span class="math notranslate nohighlight">\(a\)</span>，经理都会观察到利润 <span class="math notranslate nohighlight">\(R_{t+1}\)</span> 和下一状态 <span class="math notranslate nohighlight">\(X_{t+1}\)</span>，并使用上述规则更新表中的<em>那一个条目</em> <span class="math notranslate nohighlight">\(q_t(x, a)\)</span>。</p>
@@ -760,11 +777,11 @@ findfont: Failed to find font weight normal, now using 600.
 <p>但 <span class="math notranslate nohighlight">\(\max\)</span> 起的是不同的作用。</p>
 <p>量 <span class="math notranslate nohighlight">\(\max_{a' \in \Gamma(X_{t+1})} q_t(X_{t+1}, a')\)</span> 只是在最佳可能延续下处于状态 <span class="math notranslate nohighlight">\(X_{t+1}\)</span> 的价值的估计。</p>
 <p>这个标量作为 <span class="math notranslate nohighlight">\(q_t(x, a)\)</span> 的目标值的一部分进入更新。</p>
-<p>经理在时间 $t+1 <em>实际采取</em> 哪个动作是一个单独的决策。</p>
+<p>经理在时间 <span class="math notranslate nohighlight">\(t+1\)</span> <em>实际采取</em> 哪个动作是一个单独的决策。</p>
 <p>简而言之，<span class="math notranslate nohighlight">\(\max\)</span> 起的是寻找最优的作用；它并不规定经理实际采取的动作。</p>
 </section>
 <section id="id16">
-<h3><span class="section-number">61.4.5. </span>行为策略<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.5. </span>行为策略<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
 <p>支配经理如何选择动作的规则称为<strong>行为策略</strong>。</p>
 <p>因为更新目标中的 <span class="math notranslate nohighlight">\(\max\)</span> 总是指向 <span class="math notranslate nohighlight">\(q^*\)</span>，无论经理如何选择动作，行为策略只影响哪些 <span class="math notranslate nohighlight">\((x, a)\)</span> 条目随时间被访问——从而被更新。</p>
 <p>在强化学习文献中，这个性质称为<strong>离策略</strong>（off-policy）学习：收敛目标（<span class="math notranslate nohighlight">\(q^*\)</span>）不依赖于行为策略。</p>
@@ -773,12 +790,12 @@ findfont: Failed to find font weight normal, now using 600.
 <p>在实践中，我们希望经理大多数时候采取好的动作（在学习的同时赚取合理的利润），同时仍偶尔进行实验以发现更好的替代方案。</p>
 </section>
 <section id="id17">
-<h3><span class="section-number">61.4.6. </span>学习率<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.6. </span>学习率<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
 <p>我们使用 <span class="math notranslate nohighlight">\(\alpha_t = 1 / n_t(x, a)^{0.51}\)</span>，其中 <span class="math notranslate nohighlight">\(n_t(x, a)\)</span> 是到时间 <span class="math notranslate nohighlight">\(t\)</span> 为止对 <span class="math notranslate nohighlight">\((x, a)\)</span> 对访问的次数。</p>
 <p>它衰减得足够慢，允许从后期（信息更充分）的更新中学习，同时仍满足收敛的 <a class="reference external" href="https://en.wikipedia.org/wiki/Stochastic_approximation#Robbins%E2%80%93Monro_algorithm">Robbins–Monro 条件</a>。</p>
 </section>
 <section id="epsilon">
-<h3><span class="section-number">61.4.7. </span>探索：epsilon-贪婪<a class="headerlink" href="#epsilon" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.7. </span>探索：epsilon-贪婪<a class="headerlink" href="#epsilon" title="Link to this heading">#</a></h3>
 <p>对于我们的行为策略，我们使用 <span class="math notranslate nohighlight">\(\varepsilon\)</span>-贪婪策略：</p>
 <ul class="simple">
 <li><p>以概率 <span class="math notranslate nohighlight">\(\varepsilon\)</span>，选择一个随机的可行动作（探索）。</p></li>
@@ -790,14 +807,14 @@ findfont: Failed to find font weight normal, now using 600.
 <p>随机需求冲击自然地驱使经理经历不同的库存水平，从而在无需任何人为重置的情况下对状态空间进行探索。</p>
 </section>
 <section id="id18">
-<h3><span class="section-number">61.4.8. </span>乐观初始化<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.8. </span>乐观初始化<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
 <p>一个简单但强大的加速学习技术是<strong>乐观初始化</strong>：我们不从零开始初始化 Q 表，而是将每个条目初始化为高于真实最优值的值。</p>
 <p>因为每个未尝试过的动作看起来都乐观地好，所以每当智能体尝试一个动作时都会”失望”——更新会将该条目向现实拉低。这促使智能体尝试其他动作（它们仍然看起来乐观地高），从而在训练早期产生对状态-动作空间的广泛探索。</p>
 <p>这个思想有时被称为<strong>面对不确定性时的乐观主义</strong>，在老虎机和强化学习环境中都被广泛使用。</p>
 <p>在我们的问题中，值函数 <span class="math notranslate nohighlight">\(v^*\)</span> 的范围约为 13 到 18。我们将 Q 表初始化为 20——略高于真实最大值——以确保乐观探索，同时不至于极端到扭曲学习。</p>
 </section>
 <section id="id19">
-<h3><span class="section-number">61.4.9. </span>实现<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.9. </span>实现<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
 <p>我们首先定义一个辅助函数，用于从 Q 表中提取贪婪策略。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -824,8 +841,7 @@ findfont: Failed to find font weight normal, now using 600.
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">q_learning_kernel</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">κ</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">,</span> <span class="n">X_init</span><span class="p">,</span>
-                      <span class="n">ε_init</span><span class="p">,</span> <span class="n">ε_min</span><span class="p">,</span> <span class="n">ε_decay</span><span class="p">,</span> <span class="n">q_init</span><span class="p">,</span> <span class="n">snapshot_steps</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+                      <span class="n">ε_init</span><span class="p">,</span> <span class="n">ε_min</span><span class="p">,</span> <span class="n">ε_decay</span><span class="p">,</span> <span class="n">q_init</span><span class="p">,</span> <span class="n">snapshot_steps</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">q_init</span><span class="p">)</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>       <span class="c1"># 用于学习率的访问计数</span>
     <span class="n">ε</span> <span class="o">=</span> <span class="n">ε_init</span>
@@ -836,7 +852,7 @@ findfont: Failed to find font weight normal, now using 600.
 
     <span class="c1"># 初始化状态和动作</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">X_init</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">K</span> <span class="o">-</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">K</span> <span class="o">-</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_steps</span><span class="p">):</span>
         <span class="c1"># 如需要则记录策略快照</span>
@@ -845,7 +861,7 @@ findfont: Failed to find font weight normal, now using 600.
             <span class="n">snap_idx</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="c1"># === 抽取 D_{t+1} 并观察结果 ===</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">geometric</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">geometric</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="n">reward</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">a</span> <span class="o">-</span> <span class="n">κ</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">x_next</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span>
 
@@ -865,8 +881,8 @@ findfont: Failed to find font weight normal, now using 600.
 
         <span class="c1"># === 行为策略：ε-贪婪（使用 a_next，即 argmax 动作）===</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">x_next</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">ε</span><span class="p">:</span>
-            <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">K</span> <span class="o">-</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">ε</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">K</span> <span class="o">-</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="n">a_next</span>
         <span class="n">ε</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ε_min</span><span class="p">,</span> <span class="n">ε</span> <span class="o">*</span> <span class="n">ε_decay</span><span class="p">)</span>
@@ -886,8 +902,9 @@ findfont: Failed to find font weight normal, now using 600.
     <span class="n">K</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_values</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">snapshot_steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">snapshot_steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">q_learning_kernel</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">κ</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">,</span> <span class="n">X_init</span><span class="p">,</span>
-                             <span class="n">ε_init</span><span class="p">,</span> <span class="n">ε_min</span><span class="p">,</span> <span class="n">ε_decay</span><span class="p">,</span> <span class="n">q_init</span><span class="p">,</span> <span class="n">snapshot_steps</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+                             <span class="n">ε_init</span><span class="p">,</span> <span class="n">ε_min</span><span class="p">,</span> <span class="n">ε_decay</span><span class="p">,</span> <span class="n">q_init</span><span class="p">,</span> <span class="n">snapshot_steps</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -904,7 +921,7 @@ findfont: Failed to find font weight normal, now using 600.
 </div>
 </section>
 <section id="id20">
-<h3><span class="section-number">61.4.10. </span>与精确解比较<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.10. </span>与精确解比较<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
 <p>我们通过下式从最终的 Q 表中提取值函数和策略</p>
 <div class="math notranslate nohighlight">
 \[
@@ -950,12 +967,12 @@ findfont: Failed to find font weight normal, now using 600.
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
 </pre></div>
 </div>
-<img alt="_images/3282bdf0bb30ac8aeffa98700259afb916bc3e7a23b52f827fb089f51137edbf.png" src="_images/3282bdf0bb30ac8aeffa98700259afb916bc3e7a23b52f827fb089f51137edbf.png" />
+<img alt="_images/2f610ba2d544f3dd36ad7b3396f526d82d96154243b7de5143d101ec10d5a986.png" src="_images/2f610ba2d544f3dd36ad7b3396f526d82d96154243b7de5143d101ec10d5a986.png" />
 </div>
 </div>
 </section>
 <section id="id21">
-<h3><span class="section-number">61.4.11. </span>可视化随时间的学习<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
+<h3><span class="section-number">62.4.11. </span>可视化随时间的学习<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
 <p>下面的面板展示了智能体的行为在训练过程中如何演变。</p>
 <p>每个面板使用从给定训练步骤的 Q 表中提取的贪婪策略来模拟一条库存路径。</p>
 <p>所有面板使用<strong>相同的需求序列</strong>（通过固定的随机种子），因此差异仅反映策略的变化。</p>
@@ -974,7 +991,8 @@ findfont: Failed to find font weight normal, now using 600.
 <span class="n">sim_seed</span> <span class="o">=</span> <span class="mi">5678</span>
 
 <span class="c1"># 最优策略</span>
-<span class="n">X_opt</span> <span class="o">=</span> <span class="n">sim_inventories</span><span class="p">(</span><span class="n">ts_length</span><span class="p">,</span> <span class="n">σ_star</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">X_init</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">sim_seed</span><span class="p">)</span>
+<span class="n">X_opt</span> <span class="o">=</span> <span class="n">sim_inventories</span><span class="p">(</span><span class="n">ts_length</span><span class="p">,</span> <span class="n">σ_star</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">sim_seed</span><span class="p">),</span> <span class="n">X_init</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X_opt</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;库存&quot;</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;最优 (VFI)&quot;</span><span class="p">)</span>
@@ -983,7 +1001,8 @@ findfont: Failed to find font weight normal, now using 600.
 <span class="c1"># Q 学习快照</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_snaps</span><span class="p">):</span>
     <span class="n">σ_snap</span> <span class="o">=</span> <span class="n">snapshots</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    <span class="n">X</span> <span class="o">=</span> <span class="n">sim_inventories</span><span class="p">(</span><span class="n">ts_length</span><span class="p">,</span> <span class="n">σ_snap</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">X_init</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">sim_seed</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">sim_inventories</span><span class="p">(</span><span class="n">ts_length</span><span class="p">,</span> <span class="n">σ_snap</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">sim_seed</span><span class="p">),</span> <span class="n">X_init</span><span class="p">)</span>
     <span class="n">axes</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
     <span class="n">axes</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;库存&quot;</span><span class="p">)</span>
     <span class="n">axes</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;第 </span><span class="si">{</span><span class="n">snap_steps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> 步&quot;</span><span class="p">)</span>
@@ -996,7 +1015,7 @@ findfont: Failed to find font weight normal, now using 600.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/ad62eb19f9b601344fff26922889e4d590b5ba7d6f1259f0b052ae3bc0db1916.png" src="_images/ad62eb19f9b601344fff26922889e4d590b5ba7d6f1259f0b052ae3bc0db1916.png" />
+<img alt="_images/c32e2ba1bb9e8868948fadf9bab1be867d676eae61d11d3d26c47280f59632c7.png" src="_images/c32e2ba1bb9e8868948fadf9bab1be867d676eae61d11d3d26c47280f59632c7.png" />
 </div>
 </div>
 </section>
@@ -1383,23 +1402,28 @@ findfont: Failed to find font weight normal, now using 600.
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="mccall_risk.html">
+   57. 工作搜寻 V：风险敏感型偏好
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mccall_persist_trans.html">
-   57. 工作搜寻 V：持续性与暂时性工资冲击
+   58. 工作搜寻 VI：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   58. 工作搜寻 VI：职业选择建模
+   59. 工作搜寻 VII：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   59. 工作搜寻 VII：在职搜索
+   60. 工作搜寻 VIII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   60. 工作搜寻 VIII: 带学习的搜索
+   61. 工作搜寻 IX: 带学习的搜索
   </a>
  </li>
 </ul>
@@ -1411,17 +1435,17 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="current nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1 current active active">
   <a class="current reference internal" href="#">
-   61. 通过 Q 学习进行库存管理
+   62. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rs_inventory_q.html">
-   62. 通过 Q-Learning 进行风险敏感型库存管理
+   63. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_q.html">
-   63. 工作搜寻 IX：McCall劳动者的Q学习
+   64. 工作搜寻 X：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
@@ -1433,64 +1457,64 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="os.html">
-   64. 吃蛋糕问题 I：最优储蓄导论
+   65. 吃蛋糕问题 I：最优储蓄导论
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_numerical.html">
-   65. 最优储蓄 II：数值方法吃蛋糕问题
+   66. 最优储蓄 II：数值方法吃蛋糕问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_stochastic.html">
-   66. 最优储蓄 III：随机回报
+   67. 最优储蓄 III：随机回报
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_time_iter.html">
-   67. 最优储蓄 IV：时间迭代
+   68. 最优储蓄 IV：时间迭代
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_egm.html">
-   68. 最优储蓄 V：内生网格法
+   69. 最优储蓄 V：内生网格法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_egm_jax.html">
-   69. 最优储蓄 VI：使用 JAX 的 EGM
+   70. 最优储蓄 VI：使用 JAX 的 EGM
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  家庭问题
+  收入波动问题
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_discrete.html">
-   70. 收入波动问题 I：离散化与 VFI
+   71. 收入波动问题 I：离散化与 VFI
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_opi.html">
-   71. 收入波动问题 II：乐观策略迭代
+   72. 收入波动问题 II：乐观策略迭代
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_egm.html">
-   72. 收入波动问题 III：内生网格法
+   73. 收入波动问题 III：内生网格法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_egm_transient_shocks.html">
-   73. 收入波动问题 IV：暂时性收入冲击
+   74. 收入波动问题 IV：暂时性收入冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_advanced.html">
-   74. 收入波动问题 V：资产随机收益
+   75. 收入波动问题 V：资产随机收益
   </a>
  </li>
 </ul>
@@ -1502,67 +1526,67 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   75. LQ控制：基础
+   76. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   76. LQ控制的拉格朗日方法
+   77. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   77. 消除交叉项
+   78. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   78. 永久收入模型
+   79. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   79. 永久收入 II：线性二次方法
+   80. 永久收入 II：线性二次方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="robust_permanent_income.html">
-   80. 稳健永久收入与定价
+   81. 稳健永久收入与定价
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="theil_1.html">
-   81. 确定性等价
+   82. 确定性等价
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="theil_2.html">
-   82. 确定性等价与模型不确定性
+   83. 确定性等价与模型不确定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_permanent_income.html">
-   83. LQ 永久收入模型
+   84. LQ 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_bewley_complete_markets.html">
-   84. 不完全市场与完全市场下的消费平滑
+   85. 不完全市场与完全市场下的消费平滑
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_robust_smoothing.html">
-   85. 稳健消费平滑与预防性储蓄
+   86. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_robust_bewley.html">
-   86. 稳健 LQ 贝利模型
+   87. 稳健 LQ 贝利模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   87. 通过库存实现生产平滑
+   88. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
@@ -1574,32 +1598,37 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="bounded_rationality.html">
-   88. 一种奇特的有限理性定义
+   89. 一种奇特的有限理性定义
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="olg_adaptive_money.html">
-   89. 世代交叠货币经济中的适应性主体
+   90. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="learning_approximation.html">
+   91. 学习、近似与均衡计算
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="exchange_rate_learning.html">
-   90. 汇率不确定性、学习与实验
+   92. 汇率不确定性、学习与实验
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="genetic_classifier.html">
-   91. 遗传算法与分类器系统
+   93. 遗传算法与分类器系统
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="marimon_mcgrattan_sargent.html">
-   92. 人工智能主体中作为交换媒介的货币
+   94. 人工智能主体中作为交换媒介的货币
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="prospects_bounded_rationality.html">
-   93. 1993 年对宏观经济学中有限理性前景的展望
+   95. 1993 年对宏观经济学中有限理性前景的展望
   </a>
  </li>
 </ul>
@@ -1611,57 +1640,57 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_two_stories.html">
-   94. 美国通货膨胀的兴衰
+   96. 美国通货膨胀的兴衰
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_credibility.html">
-   95. 信誉问题
+   97. 信誉问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_credible_policies.html">
-   96. 可信的政府政策
+   98. 可信的政府政策
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_adaptive.html">
-   97. 适应性预期与费尔普斯问题
+   99. 适应性预期与费尔普斯问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_misspecified.html">
-   98. 最优错误设定信念
+   100. 最优错误设定信念
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_self_confirming.html">
-   99. 自我确认均衡
+   101. 自我确认均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_learning.html">
-   100. 适应性学习与逃逸动态
+   102. 适应性学习与逃逸动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_escaping_nash.html">
-   101. 逃离纳什通胀
+   103. 逃离纳什通胀
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_priors.html">
-   102. 先验、逃逸与学习循环
+   104. 先验、逃逸与学习循环
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_lost_conquest.html">
-   103. 失落的征服：2020 年代的美联储政策
+   105. 失落的征服：2020 年代的美联储政策
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_drifts_volatilities.html">
-   104. 漂移与波动率
+   106. 漂移与波动率
   </a>
  </li>
 </ul>
@@ -1673,22 +1702,22 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="cass_koopmans_1.html">
-   105. Cass-Koopmans模型
+   107. Cass-Koopmans模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_koopmans_2.html">
-   106. Cass-Koopmans竞争均衡
+   108. Cass-Koopmans竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_fiscal.html">
-   107. 带扭曲性税收的Cass-Koopmans模型
+   109. 带扭曲性税收的Cass-Koopmans模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_fiscal_2.html">
-   108. 带扭曲性税收的双国模型
+   110. 带扭曲性税收的双国模型
   </a>
  </li>
 </ul>
@@ -1700,57 +1729,57 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   109. 就业与失业的湖泊模型
+   111. 就业与失业的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="endogenous_lake.html">
-   110. 具有内生工作发现率的湖泊模型
+   112. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   111. 理性预期均衡
+   113. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   112. 线性理性预期模型中的稳定性
+   114. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   113. 马尔可夫完美均衡
+   115. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   114. 不确定性陷阱
+   116. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   115. 艾亚加里模型
+   117. 艾亚加里模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari_egm.html">
-   116. 使用内生网格法的Aiyagari模型
+   118. 使用内生网格法的Aiyagari模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak2.html">
-   117. 代际交叠模型中的转型
+   119. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   118. 长寿、异质性个体、世代交叠模型
+   120. 长寿、异质性个体、世代交叠模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="two_computation.html">
-   119. 为社会保障融资的两种计算方法
+   121. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
@@ -1762,62 +1791,62 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   120. 资产定价：有限状态模型
+   122. 资产定价：有限状态模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="hansen_singleton_1983.html">
-   121. 随机消费、风险规避与资产回报的时间行为
+   123. 随机消费、风险规避与资产回报的时间行为
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="hansen_singleton_1982.html">
-   122. 用广义矩方法估计欧拉方程
+   124. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   123. 带有阿罗证券的竞争均衡
+   125. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   124. 异质信念与泡沫
+   126. 异质信念与泡沫
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="morris_learn.html">
-   125. 贝叶斯学习下的投机行为
+   127. 贝叶斯学习下的投机行为
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_learning_re.html">
-   126. 理性学习与理性预期
+   128. 理性学习与理性预期
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ls_learning.html">
-   127. 自指模型中的最小二乘学习
+   129. 自指模型中的最小二乘学习
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="affine_risk_prices.html">
-   128. 资产价格的仿射模型
+   130. 资产价格的仿射模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ross_recovery.html">
-   129. 恢复定理
+   131. 恢复定理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="long_run_risk_operator.html">
-   130. 长期风险：一种算子方法
+   132. 长期风险：一种算子方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="misspecified_recovery.html">
-   131. 误设定下的恢复
+   133. 误设定下的恢复
   </a>
  </li>
 </ul>
@@ -1829,32 +1858,32 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="pandas_panel.html">
-   132. 用Pandas处理面板数据
+   134. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   133. Python线性回归
+   135. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   134. 最大似然估计
+   136. 最大似然估计
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="unemployment_linear.html">
-   135. 失业的线性模型
+   137. 失业的线性模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="unemployment_shocks.html">
-   136. 具有非对称冲击的失业动态
+   138. 具有非对称冲击的失业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="sargent_surico.html">
-   137. 货币数量论的两个例证
+   139. 货币数量论的两个例证
   </a>
  </li>
 </ul>
@@ -1866,12 +1895,12 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   138. 一价和二价拍卖
+   140. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   139. 多种商品分配机制
+   141. 多种商品分配机制
   </a>
  </li>
 </ul>
@@ -1883,17 +1912,17 @@ findfont: Failed to find font weight normal, now using 600.
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   140. 故障排除
+   142. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   141. 参考文献
+   143. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   142. 执行统计
+   144. 执行统计
   </a>
  </li>
 </ul>
@@ -1929,6 +1958,7 @@ findfont: Failed to find font weight normal, now using 600.
                     <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
                     <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
                     <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/inventory_q.ipynb" download><i data-feather="download-cloud"></i></a></li>
                     <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
                         <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
                     <!--

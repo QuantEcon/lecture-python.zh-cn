@@ -128,7 +128,7 @@
     <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'exchangeable';</script>
-    <link rel="canonical" href="https://python.quantecon-zh-cn.org/exchangeable.html" />
+    <link rel="canonical" href="https://quantecon.github.io/lecture-python.zh-cn/exchangeable.html" />
     <link rel="icon" href="_static/lectures-favicon.ico"/>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
@@ -151,7 +151,7 @@
 <!-- Opengraph tags -->
 <meta property="og:title" content="可交换性和贝叶斯更新" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://python.quantecon-zh-cn.org/exchangeable.html" />
+<meta property="og:url" content="https://quantecon.github.io/lecture-python.zh-cn/exchangeable.html" />
 <meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
 <meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
 <meta property="og:site_name" content="Python中级数量经济学" />
@@ -217,14 +217,20 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">28.4. IID和可交换之间的关系</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">28.5. 可交换性</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">28.6. 贝叶斯定律</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">28.7. 关于贝叶斯更新的更多细节</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">28.8. 附录</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pi-t">28.8.1. <span class="math notranslate nohighlight">\(\pi_t\)</span> 的样本路径</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">28.8.2. 收敛速率</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">28.8.3. <span class="math notranslate nohighlight">\(\pi_t\)</span> 的集合动态图</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">28.7. 关于贝叶斯更新的更多细节</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">28.7.1. 似然比</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">28.7.2. 密度函数与各方向移动的概率</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">28.7.3. 信念的动态变化</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">28.7.4. 另一个实例</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">28.9. 后续内容</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">28.8. 附录</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pi-t">28.8.1. <span class="math notranslate nohighlight">\(\pi_t\)</span> 的样本路径</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">28.8.2. 收敛速率</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">28.8.3. <span class="math notranslate nohighlight">\(\pi_t\)</span> 的集合动态图</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">28.9. 后续内容</a></li>
 </ul>
                             <p class="logo">
                                 
@@ -278,7 +284,7 @@
 
                     <!-- Last modified / Changelog dropdown -->
                         <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
-                            Last changed: Aug 13, 2026
+                            Last changed: Aug 18, 2026
                             <span class="changelog-icon">▼</span>
                         </button>
 
@@ -289,11 +295,65 @@
                             
                             <li class="changelog-entry">
                                 
-                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/151c402" class="changelog-hash">151c402</a>
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c186bf6" class="changelog-hash">c186bf6</a>
                                 
                                 <span class="changelog-author">Matt McKay</span>
-                                <span class="changelog-time">3 days ago</span>
-                                <span class="changelog-message">🌐 [translation-sync] Repoint the hansen_singleton pair at QuantEcon/data-lectures (wave B2') (#250)</span>
+                                <span class="changelog-time">5 days ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] [exchangeable] Simplify code and bring lecture into style-guide compliance (#233)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/0ef129f" class="changelog-hash">0ef129f</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">1 month ago</span>
+                                <span class="changelog-message">[action-translation] resync: exchangeable.md (#110)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/1822c97" class="changelog-hash">1822c97</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update q learning job search</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c4c4b86" class="changelog-hash">c4c4b86</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update matplotlib</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/0f3e233" class="changelog-hash">0f3e233</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/ab0498b" class="changelog-hash">ab0498b</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update all translated lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/387e084" class="changelog-hash">387e084</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lecture series</span>
                             </li>
                             
                         </ul>
@@ -309,34 +369,34 @@
                     <div>
                         
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1><a class="toc-backref" href="#id18" role="doc-backlink"><span class="section-number">28. </span>可交换性和贝叶斯更新</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1><a class="toc-backref" href="#id22" role="doc-backlink"><span class="section-number">28. </span>可交换性和贝叶斯更新</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
 <nav class="contents" id="id2">
 <p class="topic-title">目录</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#id1" id="id18">可交换性和贝叶斯更新</a></p>
+<li><p><a class="reference internal" href="#id1" id="id22">可交换性和贝叶斯更新</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id3" id="id19">概述</a></p></li>
-<li><p><a class="reference internal" href="#id7" id="id20">独立同分布</a></p></li>
-<li><p><a class="reference internal" href="#id8" id="id21">过去观测具有信息性的情况</a></p></li>
-<li><p><a class="reference internal" href="#id9" id="id22">IID和可交换之间的关系</a></p></li>
-<li><p><a class="reference internal" href="#id10" id="id23">可交换性</a></p></li>
-<li><p><a class="reference internal" href="#id12" id="id24">贝叶斯定律</a></p></li>
-<li><p><a class="reference internal" href="#id13" id="id25">关于贝叶斯更新的更多细节</a></p></li>
-<li><p><a class="reference internal" href="#id14" id="id26">附录</a></p></li>
-<li><p><a class="reference internal" href="#id17" id="id27">后续内容</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id23">概述</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id24">独立同分布</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id25">过去观测具有信息性的情况</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id26">IID和可交换之间的关系</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id27">可交换性</a></p></li>
+<li><p><a class="reference internal" href="#id12" id="id28">贝叶斯定律</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id29">关于贝叶斯更新的更多细节</a></p></li>
+<li><p><a class="reference internal" href="#id18" id="id30">附录</a></p></li>
+<li><p><a class="reference internal" href="#id21" id="id31">后续内容</a></p></li>
 </ul>
 </li>
 </ul>
 </nav>
 <section id="id3">
-<h2><a class="toc-backref" href="#id19" role="doc-backlink"><span class="section-number">28.1. </span>概述</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id23" role="doc-backlink"><span class="section-number">28.1. </span>概述</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <p>本讲座研究通过贝叶斯定律进行的学习。</p>
 <p>我们涉及由Bruno DeFinetti <span class="bibtex-citation" id="id4">[<a class="reference internal" href="zreferences.html#id139" title="Bruno de Finetti. La prevision: ses lois logiques, ses sources subjectives. Annales de l'Institut Henri Poincaré, 7:1 - 68, 1937. English translation in Kyburg and Smokler (eds.), \it Studies in Subjective Probability, Wiley, New York, 1964.">de Finetti, 1937</a>]</span>发明的贝叶斯统计推断的基础。</p>
 <p>DeFinetti的工作对经济学家的相关性在David Kreps的<span class="bibtex-citation" id="id5">[<a class="reference internal" href="zreferences.html#id201" title="David M. Kreps. Notes on the Theory of Choice. Westview Press, Boulder, Colorado, 1988.">Kreps, 1988</a>]</span>第11章中得到了有力的阐述。</p>
-<p>我们在本讲座中研究的一个例子是<a class="reference internal" href="odu.html"><span class="doc">这个讲座</span></a>的一个关键组成部分，它扩充了</p>
-<p><a class="reference internal" href="mccall_model.html"><span class="doc">classic</span></a> McCall的经典工作搜索模型<span class="bibtex-citation" id="id6">[<a class="reference internal" href="zreferences.html#id294" title="J J McCall. Economics of Information and Job Search. The Quarterly Journal of Economics, 84(1):113–126, 1970.">McCall, 1970</a>]</span>通过为失业劳动者提供一个统计推断问题来展示。</p>
+<p>我们下面研究的一个例子是 <a class="reference internal" href="odu.html"><span class="doc">工作搜寻 IX: 带学习的搜索</span></a> 的一个关键组成部分。</p>
+<p>该讲座扩充了McCall的经典工作搜索模型<span class="bibtex-citation" id="id6">[<a class="reference internal" href="zreferences.html#id294" title="J J McCall. Economics of Information and Job Search. The Quarterly Journal of Economics, 84(1):113–126, 1970.">McCall, 1970</a>]</span>（在 <a class="reference internal" href="mccall_model.html"><span class="doc">工作搜寻 I: McCall搜寻模型</span></a> 中研究过），通过为失业劳动者提供一个统计推断问题来展示。</p>
 <p>我们创建图表来说明似然比在贝叶斯定律中所起的作用。</p>
-<p>我们将使用这些图表来深入理解<a class="reference internal" href="odu.html"><span class="doc">本讲座</span></a>中关于增强型McCall工作搜索模型中学习机制的运作原理。</p>
+<p>我们将使用这些图表来深入理解 <a class="reference internal" href="odu.html"><span class="doc">工作搜寻 IX: 带学习的搜索</span></a> 中驱动结果的运作机制。</p>
 <p>除此之外，本讲座还讨论了随机变量序列的统计概念之间的联系，这些序列是：</p>
 <ul class="simple">
 <li><p>独立同分布的</p></li>
@@ -361,18 +421,18 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1">#设置默认图形大小</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vectorize</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">gamma</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">quad</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="id7">
-<h2><a class="toc-backref" href="#id20" role="doc-backlink"><span class="section-number">28.2. </span>独立同分布</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">28.2. </span>独立同分布</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p>我们首先来看看<strong>独立同分布序列</strong>这个概念。</p>
 <p>独立同分布序列通常简写为IID。</p>
 <p>这个概念包含两个方面：</p>
@@ -425,7 +485,7 @@ p(W_t | W_{t-1}, \ldots, W_0)   =  p(W_t) ,
 </section>
 </section>
 <section id="id8">
-<h2><a class="toc-backref" href="#id21" role="doc-backlink"><span class="section-number">28.3. </span>过去观测具有信息性的情况</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">28.3. </span>过去观测具有信息性的情况</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p>设<span class="math notranslate nohighlight">\(\{W_t\}_{t=0}^\infty\)</span>是一个非负标量随机变量序列，其联合概率分布按如下方式构建。</p>
 <p>有两个不同的累积分布函数<span class="math notranslate nohighlight">\(F\)</span>和<span class="math notranslate nohighlight">\(G\)</span>，它们分别具有密度函数<span class="math notranslate nohighlight">\(f\)</span>和<span class="math notranslate nohighlight">\(g\)</span>，用于描述一个非负标量随机变量<span class="math notranslate nohighlight">\(W\)</span>。</p>
 <p>在时间开始之前，比如在时间<span class="math notranslate nohighlight">\(t=-1\)</span>时，”自然”一次性地选择了<strong>要么</strong><span class="math notranslate nohighlight">\(f\)</span><strong>要么</strong><span class="math notranslate nohighlight">\(g\)</span>。</p>
@@ -450,7 +510,7 @@ p(W_t | W_{t-1}, \ldots, W_0)   =  p(W_t) ,
 <p>接下来我们将讨论这一点，并在此过程中描述<strong>可交换性</strong>的概念。</p>
 </section>
 <section id="id9">
-<h2><a class="toc-backref" href="#id22" role="doc-backlink"><span class="section-number">28.4. </span>IID和可交换之间的关系</a><a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">28.4. </span>IID和可交换之间的关系</a><a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <p>在自然选择<span class="math notranslate nohighlight">\(F\)</span>的条件下，序列<span class="math notranslate nohighlight">\(W_0, W_1, \ldots\)</span>的联合密度是</p>
 <div class="math notranslate nohighlight">
 \[
@@ -485,7 +545,7 @@ h(W_1 | W_0) \equiv \frac{h(W_0, W_1)}{(\tilde \pi f(W_0) + (1-\tilde \pi) g(W_0
 <p>所以过去确实包含了可以用来了解未来的信息。</p>
 </section>
 <section id="id10">
-<h2><a class="toc-backref" href="#id23" role="doc-backlink"><span class="section-number">28.5. </span>可交换性</a><a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id27" role="doc-backlink"><span class="section-number">28.5. </span>可交换性</a><a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <p>虽然序列 <span class="math notranslate nohighlight">\(W_0, W_1, \ldots\)</span> 不是独立同分布的，但可以验证它是<strong>可交换的</strong>，这意味着”重新排序”的联合分布 <span class="math notranslate nohighlight">\(h(W_0, W_1)\)</span> 和 <span class="math notranslate nohighlight">\(h(W_1, W_0)\)</span> 满足</p>
 <div class="math notranslate nohighlight">
 \[
@@ -501,7 +561,7 @@ h(W_0, W_1) = h(W_1, W_0)
 </div>
 </section>
 <section id="id12">
-<h2><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">28.6. </span>贝叶斯定律</a><a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id28" role="doc-backlink"><span class="section-number">28.6. </span>贝叶斯定律</a><a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <p>我们在上面注意到，在我们的示例模型中，从可交换但非独立同分布过程的历史数据中可以学到关于未来的一些信息。</p>
 <p>但是我们如何学习？</p>
 <p>以及学习什么？</p>
@@ -537,7 +597,7 @@ h(W_0, W_1) = h(W_1, W_0)
 <span class="eqno">(28.2)<a class="headerlink" href="#equation-eq-bayes102" title="Link to this equation">#</a></span>\[
 \pi_{t+1} = \frac{\pi_t f(w_{t+1})}{\pi_t f(w_{t+1}) + (1 - \pi_t) g(w_{t+1})}
 \]</div>
-<p>等式<a class="reference internal" href="#equation-eq-bayes102">(28.2)</a>源自贝叶斯法则，该法则告诉我们</p>
+<p>等式 <a class="reference internal" href="#equation-eq-bayes102">(28.2)</a> 源自贝叶斯法则，该法则告诉我们</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{P}\{q = f \,|\, W = w\}
@@ -551,7 +611,7 @@ h(W_0, W_1) = h(W_1, W_0)
 \]</div>
 </section>
 <section id="id13">
-<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">28.7. </span>关于贝叶斯更新的更多细节</a><a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id29" role="doc-backlink"><span class="section-number">28.7. </span>关于贝叶斯更新的更多细节</a><a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p>让我们仔细观察并重新整理等式<a class="reference internal" href="#equation-eq-bayes102">(28.2)</a>中表示的贝叶斯法则，目的是理解<strong>后验</strong>概率<span class="math notranslate nohighlight">\(\pi_{t+1}\)</span>如何受到<strong>先验</strong>概率<span class="math notranslate nohighlight">\(\pi_t\)</span>和<strong>似然比</strong>的影响</p>
 <div class="math notranslate nohighlight">
 \[
@@ -574,99 +634,66 @@ l(w) = \frac{f(w)}{g(w)}
 <p>当似然比<span class="math notranslate nohighlight">\(l(w_{t+1})\)</span>大于1时，观测值<span class="math notranslate nohighlight">\(w_{t+1}\)</span>会将分布<span class="math notranslate nohighlight">\(F\)</span>的概率<span class="math notranslate nohighlight">\(\pi\)</span>向上推动，当似然比<span class="math notranslate nohighlight">\(l(w_{t+1})\)</span>小于1时，观测值<span class="math notranslate nohighlight">\(w_{t+1}\)</span>会将<span class="math notranslate nohighlight">\(\pi\)</span>向下推动。</p>
 <p>表达式<a class="reference internal" href="#equation-eq-bayes103">(28.3)</a>是我们将用来显示由贝叶斯定律引起的<span class="math notranslate nohighlight">\(\{\pi_t\}_{t=0}^\infty\)</span>动态的一些图表的基础。</p>
 <p>我们将绘制 <span class="math notranslate nohighlight">\(l\left(w\right)\)</span> 来帮助我们理解学习过程是如何进行的——即，如何通过贝叶斯更新来更新自然选择分布 <span class="math notranslate nohighlight">\(f\)</span> 的概率 <span class="math notranslate nohighlight">\(\pi\)</span>。</p>
-<p>为了创建完成工作所需的 Python 基础设施，我们构建一个包装函数，该函数可以根据 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 的参数显示信息丰富的图表。</p>
+<p>我们分三步构建这幅图景，每一步产生一张图表。</p>
+<p>这三张图都是由相同的素材构建的：密度函数 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span>，以及似然比 <span class="math notranslate nohighlight">\(l(w) = f(w)/g(w)\)</span> 等于1时对应的 <span class="math notranslate nohighlight">\(w\)</span> 值。</p>
+<p><span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 都是贝塔密度函数，所以我们先从一般的贝塔密度函数开始。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@vectorize</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="s2">&quot;通用贝塔分布函数。&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="s2">&quot;参数为a和b的贝塔密度函数。&quot;</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">gamma</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">gamma</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">learning_example</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="n">w</span><span class="o">**</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>下一个函数为给定的一对贝塔分布组装素材。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_model</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    一个包装函数，用于显示信念π的更新规则，</span>
-<span class="sd">    给定指定F和G分布的参数。</span>
+<span class="sd">    构建密度函数f和g，以及似然比l(w) = f(w) / g(w)</span>
+<span class="sd">    等于1时对应的两个w值。</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">)</span>
 
-    <span class="n">f</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">))</span>
-    <span class="n">g</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">))</span>
-
-    <span class="c1"># l(w) = f(w) / g(w)</span>
-    <span class="n">l</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-    <span class="c1"># 用于求解 l(w) = 1 的目标函数</span>
-    <span class="n">obj</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">l</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-
-    <span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-    <span class="n">π_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-
-    <span class="n">w_max</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">w_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">w_max</span><span class="o">-</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-
-    <span class="c1"># 贝塔分布的众数</span>
-    <span class="c1"># 用它将w分成两个区间进行根查找</span>
+    <span class="c1"># g的众数将[0, 1]分为两个区间，每个区间各含一个根</span>
     <span class="n">G_mode</span> <span class="o">=</span> <span class="p">(</span><span class="n">G_a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">G_a</span> <span class="o">+</span> <span class="n">G_b</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">root_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">bracket</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">G_mode</span><span class="p">])</span><span class="o">.</span><span class="n">root</span>
-    <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">root_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">bracket</span><span class="o">=</span><span class="p">[</span><span class="n">G_mode</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="mf">1e-10</span><span class="p">])</span><span class="o">.</span><span class="n">root</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">op</span><span class="o">.</span><span class="n">root_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">bracket</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">G_mode</span><span class="p">])</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                      <span class="n">op</span><span class="o">.</span><span class="n">root_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">bracket</span><span class="o">=</span><span class="p">[</span><span class="n">G_mode</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-10</span><span class="p">])</span><span class="o">.</span><span class="n">root</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">roots</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id14">
+<h3><span class="section-number">28.7.1. </span>似然比<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<p>我们的第一张图将似然比 <span class="math notranslate nohighlight">\(l(w)\)</span> 绘制在横坐标轴上，将 <span class="math notranslate nohighlight">\(w\)</span> 绘制在纵坐标轴上。</p>
+<p>我们采用这种方式绘制，以便 <span class="math notranslate nohighlight">\(w\)</span> 能与接下来的两张图共享同一个坐标轴。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_likelihood_ratio</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">roots</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">)</span>
+    <span class="n">w_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
-    <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">,</span> <span class="n">ax3</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-
-    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">l</span><span class="p">(</span><span class="n">w_grid</span><span class="p">),</span> <span class="n">w_grid</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$l$&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">roots</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">])</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;$l(w)=f(w)/g(w)$&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;$w$&#39;</span><span class="p">)</span>
-
-    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x_grid</span><span class="p">),</span> <span class="n">x_grid</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$f$&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">x_grid</span><span class="p">),</span> <span class="n">x_grid</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$g$&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">roots</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;$f(w), g(w)$&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;$w$&#39;</span><span class="p">)</span>
-
-    <span class="n">area1</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">area2</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">area3</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="n">ax2</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="n">f</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">area1</span><span class="si">:</span><span class="s2"> .3g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">roots</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">roots</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">area2</span><span class="si">:</span><span class="s2"> .3g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">w_roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">20</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">(</span><span class="n">w_roots</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">w_roots</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="n">f</span><span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">area3</span><span class="si">:</span><span class="s2"> .3g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
-
-    <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">)</span>
-    <span class="n">Π</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">)</span>
-
-    <span class="n">ΔW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">Π</span><span class="p">)))</span>
-    <span class="n">ΔΠ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">Π</span><span class="p">)))</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">π</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Π</span><span class="p">):</span>
-            <span class="n">lw</span> <span class="o">=</span> <span class="n">l</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-            <span class="n">ΔΠ</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">π</span> <span class="o">*</span> <span class="p">(</span><span class="n">lw</span> <span class="o">/</span> <span class="p">(</span><span class="n">π</span> <span class="o">*</span> <span class="n">lw</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">π</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-
-    <span class="n">q</span> <span class="o">=</span> <span class="n">ax3</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">Π</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">ΔΠ</span><span class="p">,</span> <span class="n">ΔW</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
-
-    <span class="n">ax3</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">π_grid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
-    <span class="n">ax3</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
-    <span class="n">ax3</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">w_max</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
-    <span class="n">ax3</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">roots</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
-    <span class="n">ax3</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\pi$&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;$w$&#39;</span><span class="p">)</span>
-    <span class="n">ax3</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">w_grid</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">w_grid</span><span class="p">),</span> <span class="n">w_grid</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$l$&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">roots</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;$l(w) = f(w) / g(w)$&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;$w$&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>现在我们将创建一组图表来说明贝叶斯定律所引发的动态变化。</p>
-<p>我们将从Python函数的各种对象的默认值开始，然后在后续示例中对其进行修改。</p>
+<p>我们从 <span class="math notranslate nohighlight">\(f\)</span> 是 <span class="math notranslate nohighlight">\([0,1]\)</span> 上的均匀分布（即参数为 <span class="math notranslate nohighlight">\(F_a=1, F_b=1\)</span> 的贝塔分布）开始，而 <span class="math notranslate nohighlight">\(g\)</span> 是参数为 <span class="math notranslate nohighlight">\(G_a=3, G_b=1.2\)</span> 的贝塔分布。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">learning_example</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_likelihood_ratio</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -675,35 +702,133 @@ l(w) = \frac{f(w)}{g(w)}
 findfont: Failed to find font weight normal, now using 600.
 </pre></div>
 </div>
-<img alt="_images/ba83859127e2793746c2bdfb59785ea655774b96e628f474335fbaa1a17c9c4d.png" src="_images/ba83859127e2793746c2bdfb59785ea655774b96e628f474335fbaa1a17c9c4d.png" />
+<img alt="_images/a98077ee04b81a1fb9353d40f40dada6412aec14eac127410f4c2d59ebdd5037.png" src="_images/a98077ee04b81a1fb9353d40f40dada6412aec14eac127410f4c2d59ebdd5037.png" />
 </div>
 </div>
-<p>请看上面的三个图表，这些图表是针对以下情况创建的：<span class="math notranslate nohighlight">\(f\)</span> 是在 <span class="math notranslate nohighlight">\([0,1]\)</span> 上的均匀分布（即参数为 <span class="math notranslate nohighlight">\(F_a=1, F_b=1\)</span> 的Beta分布），而 <span class="math notranslate nohighlight">\(g\)</span> 是具有默认参数值 <span class="math notranslate nohighlight">\(G_a=3, G_b=1.2\)</span> 的Beta分布。</p>
-<p>左侧的图表将似然比 <span class="math notranslate nohighlight">\(l(w)\)</span> 作为横坐标轴，将 <span class="math notranslate nohighlight">\(w\)</span> 作为纵坐标轴进行绘制。</p>
-<p>中间的图表将 <span class="math notranslate nohighlight">\(f(w)\)</span> 和 <span class="math notranslate nohighlight">\(g(w)\)</span> 对 <span class="math notranslate nohighlight">\(w\)</span> 进行绘制，其中水平虚线显示了似然比等于1时的 <span class="math notranslate nohighlight">\(w\)</span> 值。</p>
-<p>右侧的图表用向右的箭头表示贝叶斯定律使 <span class="math notranslate nohighlight">\(\pi\)</span> 增加的情况，用向左的箭头表示贝叶斯定律使 <span class="math notranslate nohighlight">\(\pi\)</span> 减少的情况。</p>
-<p>箭头的长度表示贝叶斯定律驱使 <span class="math notranslate nohighlight">\(\pi\)</span> 改变的力的大小。</p>
-<p>这些长度取决于两个因素：横坐标轴上的先验概率 <span class="math notranslate nohighlight">\(\pi\)</span>，以及以当前 <span class="math notranslate nohighlight">\(w\)</span> 值形式出现的证据（在纵坐标轴上）。</p>
-<p>中间图中彩色区域的分数分别表示在分布<span class="math notranslate nohighlight">\(F\)</span>和<span class="math notranslate nohighlight">\(G\)</span>下，<span class="math notranslate nohighlight">\(w\)</span>的实现值落入能将信念<span class="math notranslate nohighlight">\(\pi\)</span>向正确方向更新的区间的概率（即当<span class="math notranslate nohighlight">\(G\)</span>为真实分布时向<span class="math notranslate nohighlight">\(0\)</span>更新，当<span class="math notranslate nohighlight">\(F\)</span>为真实分布时向<span class="math notranslate nohighlight">\(1\)</span>更新）。</p>
-<p>例如，在上述例子中，在真实分布<span class="math notranslate nohighlight">\(F\)</span>下，如果<span class="math notranslate nohighlight">\(w\)</span>落入区间<span class="math notranslate nohighlight">\([0.524, 0.999]\)</span>，<span class="math notranslate nohighlight">\(\pi\)</span>将向<span class="math notranslate nohighlight">\(0\)</span>更新，这在<span class="math notranslate nohighlight">\(F\)</span>下发生的概率是<span class="math notranslate nohighlight">\(1 - .524 = .476\)</span>。</p>
-<p>但如果<span class="math notranslate nohighlight">\(G\)</span>是真实分布，这种情况发生的概率将是<span class="math notranslate nohighlight">\(0.816\)</span>。</p>
-<p>橙色区域中的分数<span class="math notranslate nohighlight">\(0.816\)</span>是<span class="math notranslate nohighlight">\(g(w)\)</span>在这个区间上的积分。</p>
-<p>接下来我们使用代码为我们模型的另一个实例创建图形。</p>
-<p>我们保持<span class="math notranslate nohighlight">\(F\)</span>与前一个实例相同，即均匀分布，但现在假设<span class="math notranslate nohighlight">\(G\)</span>是一个参数为<span class="math notranslate nohighlight">\(G_a=2, G_b=1.6\)</span>的Beta分布。</p>
+<p>两条水平虚线标记了 <span class="math notranslate nohighlight">\(l(w) = 1\)</span> 时对应的 <span class="math notranslate nohighlight">\(w\)</span> 值。</p>
+<p>在这两条线之间，似然比小于1，因此根据<a class="reference internal" href="#equation-eq-bayes103">(28.3)</a>，落在该区域的抽样会使 <span class="math notranslate nohighlight">\(\pi\)</span> 向下推动。</p>
+<p>在这两条线之外，似然比大于1，因此落在该区域的抽样会使 <span class="math notranslate nohighlight">\(\pi\)</span> 向上推动。</p>
+</section>
+<section id="id15">
+<h3><span class="section-number">28.7.2. </span>密度函数与各方向移动的概率<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<p>我们的第二张图将 <span class="math notranslate nohighlight">\(f(w)\)</span> 和 <span class="math notranslate nohighlight">\(g(w)\)</span> 对 <span class="math notranslate nohighlight">\(w\)</span> 进行绘制，并对由同样两个 <span class="math notranslate nohighlight">\(w\)</span> 值划分出的区域进行着色。</p>
+<p>对这些区域着色使我们能够为每个移动方向赋予一个概率，我们通过在相关区域上对相应密度函数积分来计算这个概率。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">learning_example</span><span class="p">(</span><span class="n">G_a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.6</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_densities</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">roots</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">)</span>
+    <span class="n">w_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">w_grid</span><span class="p">),</span> <span class="n">w_grid</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$f$&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">w_grid</span><span class="p">),</span> <span class="n">w_grid</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$g$&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">roots</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;$f(w), g(w)$&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;$w$&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 无论哪个密度函数被着色，落入各区域的概率</span>
+    <span class="n">area_lower</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">area_middle</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">area_upper</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="n">f</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">area_lower</span><span class="si">:</span><span class="s2"> .3g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">w_middle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">20</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">(</span><span class="n">w_middle</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">w_middle</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">roots</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">roots</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">area_middle</span><span class="si">:</span><span class="s2"> .3g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="n">f</span><span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">area_upper</span><span class="si">:</span><span class="s2"> .3g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们来看看与之前相同的一对分布。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_densities</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/894771dfbbf1daeb2571bddb9841709db92b787b77b3dc5975118a4bdd0bee1e.png" src="_images/894771dfbbf1daeb2571bddb9841709db92b787b77b3dc5975118a4bdd0bee1e.png" />
+<img alt="_images/d493020c400c93759c8fe02eb15047924ebeef7cb5e36f1174cf9f4a30eb5170.png" src="_images/d493020c400c93759c8fe02eb15047924ebeef7cb5e36f1174cf9f4a30eb5170.png" />
 </div>
 </div>
-<p>注意观察似然比、中间图表以及箭头与我们之前例子的对比。</p>
+<p>彩色区域中的分数是 <span class="math notranslate nohighlight">\(w\)</span> 的实现值落入其旁边区域的概率。</p>
+<p>蓝色区域是 <span class="math notranslate nohighlight">\(f\)</span> 的积分，橙色区域是 <span class="math notranslate nohighlight">\(g\)</span> 的积分。</p>
+<p>例如，在真实分布<span class="math notranslate nohighlight">\(F\)</span>下，如果<span class="math notranslate nohighlight">\(w\)</span>落入区间<span class="math notranslate nohighlight">\([0.524, 0.999]\)</span>，<span class="math notranslate nohighlight">\(\pi\)</span>将向<span class="math notranslate nohighlight">\(0\)</span>更新，这在<span class="math notranslate nohighlight">\(F\)</span>下发生的概率是<span class="math notranslate nohighlight">\(1 - .524 = .476\)</span>。</p>
+<p>但如果<span class="math notranslate nohighlight">\(G\)</span>是真实分布，这种情况发生的概率将是<span class="math notranslate nohighlight">\(0.816\)</span>。</p>
 </section>
-<section id="id14">
-<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">28.8. </span>附录</a><a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<section id="id16">
+<h3><span class="section-number">28.7.3. </span>信念的动态变化<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<p>我们的第三张图在 <span class="math notranslate nohighlight">\((\pi, w)\)</span> 平面上的每个点附加一个箭头，显示当当前信念为 <span class="math notranslate nohighlight">\(\pi\)</span> 且新的抽样为 <span class="math notranslate nohighlight">\(w\)</span> 时，贝叶斯定律所引起的 <span class="math notranslate nohighlight">\(\pi\)</span> 的变化。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_belief_dynamics</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">roots</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">)</span>
+    <span class="n">π_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="c1"># 在(π, w)的粗网格上每个点的π变化量</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">)</span>
+    <span class="n">Π</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">)</span>
+    <span class="n">lw</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">W</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">W</span><span class="p">))[:,</span> <span class="kc">None</span><span class="p">]</span>     <span class="c1"># 每个w处的似然比，作为一列</span>
+    <span class="n">ΔΠ</span> <span class="o">=</span> <span class="n">Π</span> <span class="o">*</span> <span class="p">(</span><span class="n">lw</span> <span class="o">/</span> <span class="p">(</span><span class="n">Π</span> <span class="o">*</span> <span class="n">lw</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">Π</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ΔW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ΔΠ</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">Π</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">ΔΠ</span><span class="p">,</span> <span class="n">ΔW</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">π_grid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">roots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">roots</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\pi$&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;$w$&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们再次使用同样的一对分布。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_belief_dynamics</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/b55905d8071c32109c3f0fe2dacec453504474c10f160cc23843c8efc8ca7f54.png" src="_images/b55905d8071c32109c3f0fe2dacec453504474c10f160cc23843c8efc8ca7f54.png" />
+</div>
+</div>
+<p>向右指的箭头表示贝叶斯定律使 <span class="math notranslate nohighlight">\(\pi\)</span> 增加的情况，向左指的箭头表示贝叶斯定律使 <span class="math notranslate nohighlight">\(\pi\)</span> 减少的情况。</p>
+<p>箭头的长度表示贝叶斯定律驱使 <span class="math notranslate nohighlight">\(\pi\)</span> 改变的力的大小。</p>
+<p>这些长度取决于两个因素：横坐标轴上的先验概率 <span class="math notranslate nohighlight">\(\pi\)</span>，以及以当前 <span class="math notranslate nohighlight">\(w\)</span> 值形式出现的证据（在纵坐标轴上）。</p>
+<p>在蓝色区域（<span class="math notranslate nohighlight">\(l(w) &gt; 1\)</span> 的地方），箭头指向右方；在虚线之间的绿色区域（<span class="math notranslate nohighlight">\(l(w) &lt; 1\)</span> 的地方），箭头指向左方。</p>
+<p>对于这些参数，上方的蓝色区域是紧贴在 <span class="math notranslate nohighlight">\(w = 1\)</span> 下方的一个薄片区域，因为只有在非常接近上限的抽样中，<span class="math notranslate nohighlight">\(l(w)\)</span> 才会再次回升到大于1。</p>
+</section>
+<section id="id17">
+<h3><span class="section-number">28.7.4. </span>另一个实例<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<p>接下来我们使用代码为我们模型的另一个实例创建图形。</p>
+<p>我们保持<span class="math notranslate nohighlight">\(F\)</span>与前一个实例相同，即均匀分布，但现在假设<span class="math notranslate nohighlight">\(G\)</span>是一个参数为<span class="math notranslate nohighlight">\(G_a=2, G_b=1.6\)</span>的Beta分布。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_likelihood_ratio</span><span class="p">(</span><span class="n">G_a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.6</span><span class="p">)</span>
+<span class="n">plot_densities</span><span class="p">(</span><span class="n">G_a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.6</span><span class="p">)</span>
+<span class="n">plot_belief_dynamics</span><span class="p">(</span><span class="n">G_a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/ff3bd6c09af4bb3979a184d6f0afbda3d70e52721642a69905861b1037b60eb6.png" src="_images/ff3bd6c09af4bb3979a184d6f0afbda3d70e52721642a69905861b1037b60eb6.png" />
+<img alt="_images/f4146799a85020344893d207029e09fd2e873d14faeb8eeff04d3a6a62dda446.png" src="_images/f4146799a85020344893d207029e09fd2e873d14faeb8eeff04d3a6a62dda446.png" />
+<img alt="_images/e603af1ec19b73340330ddee0558cb28481b953d2c6036821f34c72904a82e9a.png" src="_images/e603af1ec19b73340330ddee0558cb28481b953d2c6036821f34c72904a82e9a.png" />
+</div>
+</div>
+<p>注意观察似然比、密度函数以及箭头与我们之前例子的对比。</p>
+</section>
+</section>
+<section id="id18">
+<h2><a class="toc-backref" href="#id30" role="doc-backlink"><span class="section-number">28.8. </span>附录</a><a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
 <section id="pi-t">
 <h3><span class="section-number">28.8.1. </span><span class="math notranslate nohighlight">\(\pi_t\)</span> 的样本路径<a class="headerlink" href="#pi-t" title="Link to this heading">#</a></h3>
 <p>现在我们将通过绘制 <span class="math notranslate nohighlight">\(\pi_t\)</span> 的多个样本路径来进行一些有趣的探索，这些路径基于两种可能的自然分布选择假设：</p>
@@ -711,67 +836,40 @@ findfont: Failed to find font weight normal, now using 600.
 <li><p>自然永久从 <span class="math notranslate nohighlight">\(F\)</span> 分布中抽取</p></li>
 <li><p>自然永久从 <span class="math notranslate nohighlight">\(G\)</span> 分布中抽取</p></li>
 </ul>
-<p>结果取决于似然比过程的一个特殊性质，这在<a class="reference external" href="https://python-advanced.quantecon.org/additive_functionals.html">本讲座</a>中有详细讨论。</p>
-<p>让我们编写一些Python代码。</p>
+<p>结果取决于似然比过程的一个特殊性质，这在 <a class="reference external" href="https://python-advanced.quantecon.org/additive_functionals.html" title="（在 Project name not set）"><span>Additive and Multiplicative Functionals</span></a> 中有详细讨论。</p>
+<p>在进行模拟之前，值得将贝叶斯定律用<strong>赔率</strong>而非概率重新表述。</p>
+<p>用赔率 <span class="math notranslate nohighlight">\(\pi / (1 - \pi)\)</span> 表示，更新规则 <a class="reference internal" href="#equation-eq-bayes102">(28.2)</a> 变为</p>
+<div class="math notranslate nohighlight" id="equation-eq-odds">
+<span class="eqno">(28.4)<a class="headerlink" href="#equation-eq-odds" title="Link to this equation">#</a></span>\[\frac{\pi_{t+1}}{1 - \pi_{t+1}} = l(w_{t+1}) \frac{\pi_{t}}{1 - \pi_{t}}\]</div>
+<p>因此贝叶斯定律在赔率上是<em>乘法</em>的，将 <a class="reference internal" href="#equation-eq-odds">(28.4)</a> 向前迭代回先验 <span class="math notranslate nohighlight">\(\pi_{-1}\)</span>，可得</p>
+<div class="math notranslate nohighlight" id="equation-eq-odds-product">
+<span class="eqno">(28.5)<a class="headerlink" href="#equation-eq-odds-product" title="Link to this equation">#</a></span>\[\frac{\pi_{t}}{1 - \pi_{t}} = \frac{\pi_{-1}}{1 - \pi_{-1}} \prod_{s=0}^{t} l(w_{s})\]</div>
+<p>因此信念路径是似然比的累积乘积，这就是为什么似然比过程的性质决定了它的行为。</p>
+<p>这也意味着，我们可以使用累积乘积来模拟整个路径集合，而不需要按日期逐步迭代。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">function_factory</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
-
-    <span class="c1"># 定义 f 和 g</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">))</span>
-    <span class="n">g</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">))</span>
-
-    <span class="nd">@jit</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">π</span><span class="p">):</span>
-        <span class="s2">&quot;通过从参数为a和b的beta分布中抽样来更新π&quot;</span>
-
-        <span class="c1"># 抽样</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-
-        <span class="c1"># 更新信念</span>
-        <span class="n">π</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π</span><span class="p">)</span> <span class="o">*</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">π</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)))</span>
-
-        <span class="k">return</span> <span class="n">π</span>
-
-    <span class="nd">@jit</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">simulate_path</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
-        <span class="s2">&quot;模拟长度为T的信念π路径&quot;</span>
-
-        <span class="n">π</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="c1"># 初始条件</span>
-        <span class="n">π</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
-
-        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">π</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">π</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-
-        <span class="k">return</span> <span class="n">π</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="s2">&quot;模拟N条长度为T的信念π路径&quot;</span>
-
-        <span class="n">π_paths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">display</span><span class="p">:</span>
-            <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
-            <span class="n">π_paths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulate_path</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">display</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">π_paths</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">display</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="n">π_paths</span>
-
-    <span class="k">return</span> <span class="n">simulate</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">π_init</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+             <span class="n">F_a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    在自然从 Beta(a, b) 中独立同分布抽取的情况下，模拟 N 条信念 π 在 T 个时期内的路径。</span>
+<span class="sd">    返回一个形状为 (N, T+1) 的数组，其第一列为共同的先验 π_init。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">)</span>
+    <span class="n">odds</span> <span class="o">=</span> <span class="p">(</span><span class="n">π_init</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">π_init</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">π_init</span><span class="p">),</span> <span class="n">odds</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">odds</span><span class="p">)])</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>以下函数用于绘制路径。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">simulate</span> <span class="o">=</span> <span class="n">function_factory</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_paths</span><span class="p">(</span><span class="n">π_paths</span><span class="p">):</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_paths</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;$t$&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\pi_t$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -779,7 +877,8 @@ findfont: Failed to find font weight normal, now using 600.
 <p>我们首先生成 <span class="math notranslate nohighlight">\(N\)</span> 条模拟的 <span class="math notranslate nohighlight">\(\{\pi_t\}\)</span> 路径，每条路径包含 <span class="math notranslate nohighlight">\(T\)</span> 个时期，其中序列是真实的从分布 <span class="math notranslate nohighlight">\(F\)</span> 中独立同分布抽取的。我们设定初始先验 <span class="math notranslate nohighlight">\(\pi_{-1} = .5\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="mi">50</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">50</span>
 </pre></div>
 </div>
 </div>
@@ -787,12 +886,13 @@ findfont: Failed to find font weight normal, now using 600.
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 当自然选择F时</span>
-<span class="n">π_paths_F</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">π_paths_F</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">plot_paths</span><span class="p">(</span><span class="n">π_paths_F</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/279104d2cd39918b83f61ea64fbea2d8e62adf41d5d0f21291f9dc37e6901d38.png" src="_images/279104d2cd39918b83f61ea64fbea2d8e62adf41d5d0f21291f9dc37e6901d38.png" />
+<img alt="_images/94c6c6b5be2a941eae1cda39695fe04e1fc61501bb80ed359dcdba1fb3472f8c.png" src="_images/94c6c6b5be2a941eae1cda39695fe04e1fc61501bb80ed359dcdba1fb3472f8c.png" />
 </div>
 </div>
 <p>在上述例子中，对于大多数路径 <span class="math notranslate nohighlight">\(\pi_t \rightarrow 1\)</span>。</p>
@@ -801,27 +901,30 @@ findfont: Failed to find font weight normal, now using 600.
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 当自然选择G时</span>
-<span class="n">π_paths_G</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">π_paths_G</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">plot_paths</span><span class="p">(</span><span class="n">π_paths_G</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c2858a86d68cc981327e3ee4bf6e6db4e7c1abdbd970b37bdc2de6d31f837c1d.png" src="_images/c2858a86d68cc981327e3ee4bf6e6db4e7c1abdbd970b37bdc2de6d31f837c1d.png" />
+<img alt="_images/d0d1dae381f8e5582d64296eabf169f52f546967840fa74929ecab8a2aa6d913.png" src="_images/d0d1dae381f8e5582d64296eabf169f52f546967840fa74929ecab8a2aa6d913.png" />
 </div>
 </div>
 <p>在上图中我们观察到现在大多数路径 <span class="math notranslate nohighlight">\(\pi_t \rightarrow 0\)</span>。</p>
 </section>
-<section id="id15">
-<h3><span class="section-number">28.8.2. </span>收敛速率<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<section id="id19">
+<h3><span class="section-number">28.8.2. </span>收敛速率<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
 <p>我们研究当自然生成的数据是来自 <span class="math notranslate nohighlight">\(F\)</span> 的独立同分布抽样时 <span class="math notranslate nohighlight">\(\pi_t\)</span> 向 <span class="math notranslate nohighlight">\(1\)</span> 的收敛速率，以及当自然生成的数据是来自 <span class="math notranslate nohighlight">\(G\)</span> 的独立同分布抽样时 <span class="math notranslate nohighlight">\(\pi_t\)</span> 向 <span class="math notranslate nohighlight">\(0\)</span> 的收敛速率。</p>
 <p>我们通过对 <span class="math notranslate nohighlight">\(\{\pi_t\}_{t=0}^T\)</span> 的模拟路径进行平均来实现这一点。</p>
 <p>使用 <span class="math notranslate nohighlight">\(N\)</span> 条模拟的 <span class="math notranslate nohighlight">\(\pi_t\)</span> 路径，当数据是从 <span class="math notranslate nohighlight">\(F\)</span> 中抽样生成时，我们在每个 <span class="math notranslate nohighlight">\(t\)</span> 时刻计算 <span class="math notranslate nohighlight">\(1 - \sum_{i=1}^{N}\pi_{i,t}\)</span>，当数据是从 <span class="math notranslate nohighlight">\(G\)</span> 中抽样生成时，我们计算 <span class="math notranslate nohighlight">\(\sum_{i=1}^{N}\pi_{i,t}\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">π_paths_F</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;F生成&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">π_paths_G</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;G生成&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;收敛&quot;</span><span class="p">);</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">π_paths_F</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;F生成&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">π_paths_G</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;G生成&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;$t$&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;收敛&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -829,13 +932,13 @@ findfont: Failed to find font weight normal, now using 600.
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
 </pre></div>
 </div>
-<img alt="_images/37dc407588ae9013283456489581124388b2ce3d941af2d0f1e2d324eee6eee6.png" src="_images/37dc407588ae9013283456489581124388b2ce3d941af2d0f1e2d324eee6eee6.png" />
+<img alt="_images/06af1630626de97916844a1e326b4d3351b319cbb9235fc298aaccb8731f3341.png" src="_images/06af1630626de97916844a1e326b4d3351b319cbb9235fc298aaccb8731f3341.png" />
 </div>
 </div>
 <p>从上图可以看出，收敛速率似乎不依赖于是 <span class="math notranslate nohighlight">\(F\)</span> 还是 <span class="math notranslate nohighlight">\(G\)</span> 生成数据。</p>
 </section>
-<section id="id16">
-<h3><span class="section-number">28.8.3. </span><span class="math notranslate nohighlight">\(\pi_t\)</span> 的集合动态图<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<section id="id20">
+<h3><span class="section-number">28.8.3. </span><span class="math notranslate nohighlight">\(\pi_t\)</span> 的集合动态图<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
 <p>通过对相关概率分布进行积分计算 <span class="math notranslate nohighlight">\(\frac{\pi_{t+1}}{\pi_{t}}\)</span> 的条件期望作为 <span class="math notranslate nohighlight">\(\pi_t\)</span> 的函数，可以获得关于 <span class="math notranslate nohighlight">\(\{\pi_t\}\)</span> 动态的更多见解：</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -848,29 +951,22 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <p>以下代码近似计算上述积分：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">expected_ratio</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
-
-    <span class="c1"># define f and g</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">))</span>
-    <span class="n">g</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">))</span>
-
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_expected_ratio</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
+    <span class="c1"># 直接构造 f 和 g：这里它们可能相同，此时 l(w) = 1 没有根</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">)</span>
     <span class="n">l</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-    <span class="n">integrand_f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">,</span> <span class="n">π</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="n">l</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">π</span> <span class="o">*</span> <span class="n">l</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">π</span><span class="p">)</span>
-    <span class="n">integrand_g</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">,</span> <span class="n">π</span><span class="p">:</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="n">l</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">π</span> <span class="o">*</span> <span class="n">l</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">π</span><span class="p">)</span>
-
     <span class="n">π_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
-    <span class="n">expected_rario</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">π_grid</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">q</span><span class="p">,</span> <span class="n">inte</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">integrand_f</span><span class="p">,</span> <span class="n">integrand_g</span><span class="p">]):</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">π</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">π_grid</span><span class="p">):</span>
-            <span class="n">expected_rario</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">inte</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">π</span><span class="p">,))[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">expected_rario</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2"> generates&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">g</span><span class="p">)]:</span>
+        <span class="n">integrand</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">,</span> <span class="n">π</span><span class="p">:</span> <span class="n">a</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="n">l</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">π</span> <span class="o">*</span> <span class="n">l</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">π</span><span class="p">)</span>
+        <span class="n">ratios</span> <span class="o">=</span> <span class="p">[</span><span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">π</span><span class="p">,))[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">π</span> <span class="ow">in</span> <span class="n">π_grid</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">π_grid</span><span class="p">,</span> <span class="n">ratios</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1"> generates&#39;</span><span class="p">)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\pi_t$&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$E[\pi_{t+1}/\pi_t]$&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-
+    <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\pi_t$&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$E[\pi_{t+1} / \pi_t]$&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -879,7 +975,7 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <p>首先，考虑 <span class="math notranslate nohighlight">\(F_a=F_b=1\)</span> 且 <span class="math notranslate nohighlight">\(G_a=3, G_b=1.2\)</span> 的情况。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expected_ratio</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_expected_ratio</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -892,7 +988,7 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <p>从某种意义上说，这里没有什么可学习的。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expected_ratio</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_expected_ratio</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -904,7 +1000,7 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <p>最后，让我们看一个 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 既不是非常不同也不完全相同的情况，特别是当 <span class="math notranslate nohighlight">\(F_a=2, F_b=1\)</span> 且 <span class="math notranslate nohighlight">\(G_a=3, G_b=1.2\)</span> 时。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expected_ratio</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_expected_ratio</span><span class="p">(</span><span class="n">F_a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">F_b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">G_a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">G_b</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -914,12 +1010,12 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 </div>
 </section>
 </section>
-<section id="id17">
-<h2><a class="toc-backref" href="#id27" role="doc-backlink"><span class="section-number">28.9. </span>后续内容</a><a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<section id="id21">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink"><span class="section-number">28.9. </span>后续内容</a><a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
 <p>我们将在以下讲座中应用并深入探讨本讲座中提出的一些想法：</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">本讲座</span></a> 描述了<strong>似然比过程</strong>及其在频率派和贝叶斯统计理论中的作用</p></li>
-<li><p><a class="reference internal" href="navy_captain.html"><span class="doc">本讲座</span></a> 研究了二战时期一位美国海军上尉的直觉，即海军要求他使用的（频率派）决策规则不如亚伯拉罕·瓦尔德尚未设计的序贯规则。</p></li>
+<li><p><a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a> 描述了<strong>似然比过程</strong>及其在频率派和贝叶斯统计理论中的作用</p></li>
+<li><p><a class="reference internal" href="navy_captain.html"><span class="doc">贝叶斯与频率主义决策规则的比较</span></a> 研究了二战时期一位美国海军上尉的直觉，即海军要求他使用的（频率派）决策规则不如亚伯拉罕·瓦尔德尚未设计的序贯规则。</p></li>
 </ul>
 </section>
 </section>
@@ -1304,23 +1400,28 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="mccall_risk.html">
+   57. 工作搜寻 V：风险敏感型偏好
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mccall_persist_trans.html">
-   57. 工作搜寻 V：持续性与暂时性工资冲击
+   58. 工作搜寻 VI：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   58. 工作搜寻 VI：职业选择建模
+   59. 工作搜寻 VII：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   59. 工作搜寻 VII：在职搜索
+   60. 工作搜寻 VIII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   60. 工作搜寻 VIII: 带学习的搜索
+   61. 工作搜寻 IX: 带学习的搜索
   </a>
  </li>
 </ul>
@@ -1332,17 +1433,17 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="inventory_q.html">
-   61. 通过 Q 学习进行库存管理
+   62. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rs_inventory_q.html">
-   62. 通过 Q-Learning 进行风险敏感型库存管理
+   63. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_q.html">
-   63. 工作搜寻 IX：McCall劳动者的Q学习
+   64. 工作搜寻 X：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
@@ -1354,64 +1455,64 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="os.html">
-   64. 吃蛋糕问题 I：最优储蓄导论
+   65. 吃蛋糕问题 I：最优储蓄导论
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_numerical.html">
-   65. 最优储蓄 II：数值方法吃蛋糕问题
+   66. 最优储蓄 II：数值方法吃蛋糕问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_stochastic.html">
-   66. 最优储蓄 III：随机回报
+   67. 最优储蓄 III：随机回报
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_time_iter.html">
-   67. 最优储蓄 IV：时间迭代
+   68. 最优储蓄 IV：时间迭代
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_egm.html">
-   68. 最优储蓄 V：内生网格法
+   69. 最优储蓄 V：内生网格法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_egm_jax.html">
-   69. 最优储蓄 VI：使用 JAX 的 EGM
+   70. 最优储蓄 VI：使用 JAX 的 EGM
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  家庭问题
+  收入波动问题
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_discrete.html">
-   70. 收入波动问题 I：离散化与 VFI
+   71. 收入波动问题 I：离散化与 VFI
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_opi.html">
-   71. 收入波动问题 II：乐观策略迭代
+   72. 收入波动问题 II：乐观策略迭代
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_egm.html">
-   72. 收入波动问题 III：内生网格法
+   73. 收入波动问题 III：内生网格法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_egm_transient_shocks.html">
-   73. 收入波动问题 IV：暂时性收入冲击
+   74. 收入波动问题 IV：暂时性收入冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_advanced.html">
-   74. 收入波动问题 V：资产随机收益
+   75. 收入波动问题 V：资产随机收益
   </a>
  </li>
 </ul>
@@ -1423,67 +1524,67 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   75. LQ控制：基础
+   76. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   76. LQ控制的拉格朗日方法
+   77. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   77. 消除交叉项
+   78. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   78. 永久收入模型
+   79. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   79. 永久收入 II：线性二次方法
+   80. 永久收入 II：线性二次方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="robust_permanent_income.html">
-   80. 稳健永久收入与定价
+   81. 稳健永久收入与定价
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="theil_1.html">
-   81. 确定性等价
+   82. 确定性等价
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="theil_2.html">
-   82. 确定性等价与模型不确定性
+   83. 确定性等价与模型不确定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_permanent_income.html">
-   83. LQ 永久收入模型
+   84. LQ 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_bewley_complete_markets.html">
-   84. 不完全市场与完全市场下的消费平滑
+   85. 不完全市场与完全市场下的消费平滑
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_robust_smoothing.html">
-   85. 稳健消费平滑与预防性储蓄
+   86. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_robust_bewley.html">
-   86. 稳健 LQ 贝利模型
+   87. 稳健 LQ 贝利模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   87. 通过库存实现生产平滑
+   88. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
@@ -1495,32 +1596,37 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="bounded_rationality.html">
-   88. 一种奇特的有限理性定义
+   89. 一种奇特的有限理性定义
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="olg_adaptive_money.html">
-   89. 世代交叠货币经济中的适应性主体
+   90. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="learning_approximation.html">
+   91. 学习、近似与均衡计算
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="exchange_rate_learning.html">
-   90. 汇率不确定性、学习与实验
+   92. 汇率不确定性、学习与实验
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="genetic_classifier.html">
-   91. 遗传算法与分类器系统
+   93. 遗传算法与分类器系统
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="marimon_mcgrattan_sargent.html">
-   92. 人工智能主体中作为交换媒介的货币
+   94. 人工智能主体中作为交换媒介的货币
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="prospects_bounded_rationality.html">
-   93. 1993 年对宏观经济学中有限理性前景的展望
+   95. 1993 年对宏观经济学中有限理性前景的展望
   </a>
  </li>
 </ul>
@@ -1532,57 +1638,57 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_two_stories.html">
-   94. 美国通货膨胀的兴衰
+   96. 美国通货膨胀的兴衰
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_credibility.html">
-   95. 信誉问题
+   97. 信誉问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_credible_policies.html">
-   96. 可信的政府政策
+   98. 可信的政府政策
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_adaptive.html">
-   97. 适应性预期与费尔普斯问题
+   99. 适应性预期与费尔普斯问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_misspecified.html">
-   98. 最优错误设定信念
+   100. 最优错误设定信念
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_self_confirming.html">
-   99. 自我确认均衡
+   101. 自我确认均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_learning.html">
-   100. 适应性学习与逃逸动态
+   102. 适应性学习与逃逸动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_escaping_nash.html">
-   101. 逃离纳什通胀
+   103. 逃离纳什通胀
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_priors.html">
-   102. 先验、逃逸与学习循环
+   104. 先验、逃逸与学习循环
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_lost_conquest.html">
-   103. 失落的征服：2020 年代的美联储政策
+   105. 失落的征服：2020 年代的美联储政策
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_drifts_volatilities.html">
-   104. 漂移与波动率
+   106. 漂移与波动率
   </a>
  </li>
 </ul>
@@ -1594,22 +1700,22 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="cass_koopmans_1.html">
-   105. Cass-Koopmans模型
+   107. Cass-Koopmans模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_koopmans_2.html">
-   106. Cass-Koopmans竞争均衡
+   108. Cass-Koopmans竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_fiscal.html">
-   107. 带扭曲性税收的Cass-Koopmans模型
+   109. 带扭曲性税收的Cass-Koopmans模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_fiscal_2.html">
-   108. 带扭曲性税收的双国模型
+   110. 带扭曲性税收的双国模型
   </a>
  </li>
 </ul>
@@ -1621,57 +1727,57 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   109. 就业与失业的湖泊模型
+   111. 就业与失业的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="endogenous_lake.html">
-   110. 具有内生工作发现率的湖泊模型
+   112. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   111. 理性预期均衡
+   113. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   112. 线性理性预期模型中的稳定性
+   114. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   113. 马尔可夫完美均衡
+   115. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   114. 不确定性陷阱
+   116. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   115. 艾亚加里模型
+   117. 艾亚加里模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari_egm.html">
-   116. 使用内生网格法的Aiyagari模型
+   118. 使用内生网格法的Aiyagari模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak2.html">
-   117. 代际交叠模型中的转型
+   119. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   118. 长寿、异质性个体、世代交叠模型
+   120. 长寿、异质性个体、世代交叠模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="two_computation.html">
-   119. 为社会保障融资的两种计算方法
+   121. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
@@ -1683,62 +1789,62 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   120. 资产定价：有限状态模型
+   122. 资产定价：有限状态模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="hansen_singleton_1983.html">
-   121. 随机消费、风险规避与资产回报的时间行为
+   123. 随机消费、风险规避与资产回报的时间行为
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="hansen_singleton_1982.html">
-   122. 用广义矩方法估计欧拉方程
+   124. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   123. 带有阿罗证券的竞争均衡
+   125. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   124. 异质信念与泡沫
+   126. 异质信念与泡沫
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="morris_learn.html">
-   125. 贝叶斯学习下的投机行为
+   127. 贝叶斯学习下的投机行为
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_learning_re.html">
-   126. 理性学习与理性预期
+   128. 理性学习与理性预期
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ls_learning.html">
-   127. 自指模型中的最小二乘学习
+   129. 自指模型中的最小二乘学习
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="affine_risk_prices.html">
-   128. 资产价格的仿射模型
+   130. 资产价格的仿射模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ross_recovery.html">
-   129. 恢复定理
+   131. 恢复定理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="long_run_risk_operator.html">
-   130. 长期风险：一种算子方法
+   132. 长期风险：一种算子方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="misspecified_recovery.html">
-   131. 误设定下的恢复
+   133. 误设定下的恢复
   </a>
  </li>
 </ul>
@@ -1750,32 +1856,32 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="pandas_panel.html">
-   132. 用Pandas处理面板数据
+   134. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   133. Python线性回归
+   135. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   134. 最大似然估计
+   136. 最大似然估计
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="unemployment_linear.html">
-   135. 失业的线性模型
+   137. 失业的线性模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="unemployment_shocks.html">
-   136. 具有非对称冲击的失业动态
+   138. 具有非对称冲击的失业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="sargent_surico.html">
-   137. 货币数量论的两个例证
+   139. 货币数量论的两个例证
   </a>
  </li>
 </ul>
@@ -1787,12 +1893,12 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   138. 一价和二价拍卖
+   140. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   139. 多种商品分配机制
+   141. 多种商品分配机制
   </a>
  </li>
 </ul>
@@ -1804,17 +1910,17 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   140. 故障排除
+   142. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   141. 参考文献
+   143. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   142. 执行统计
+   144. 执行统计
   </a>
  </li>
 </ul>
@@ -1850,6 +1956,7 @@ E\left[\frac{\pi_{t+1}}{\pi_{t}}\biggm|q=a, \pi_{t}\right] &amp;=E\left[\frac{l\
                     <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
                     <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
                     <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/exchangeable.ipynb" download><i data-feather="download-cloud"></i></a></li>
                     <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
                         <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
                     <!--

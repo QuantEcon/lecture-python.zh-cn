@@ -280,6 +280,7 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
+rng = np.random.default_rng()
 ```
 
 导入这些模块后，让我们来看示例。
@@ -421,7 +422,7 @@ $$
 
 ```{code-cell} ipython3
 import numpy as np
-X = np.random.rand(5,2)
+X = rng.random((5, 2))
 U, S, V = np.linalg.svd(X,full_matrices=True)  # 完整SVD
 Uhat, Shat, Vhat = np.linalg.svd(X,full_matrices=False) # 简化SVD
 print('U, S, V =')
@@ -473,7 +474,7 @@ UhatUhatT, UhatTUhat
 
 ```{code-cell} ipython3
 import numpy as np
-X = np.random.rand(2,5)
+X = rng.random((2, 5))
 U, S, V = np.linalg.svd(X,full_matrices=True)  # 完整SVD
 Uhat, Shat, Vhat = np.linalg.svd(X,full_matrices=False) # 简化SVD
 print('U, S, V = ')

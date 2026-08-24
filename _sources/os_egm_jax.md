@@ -127,7 +127,7 @@ def create_model(
     s_grid = jnp.linspace(1e-4, grid_max, grid_size)
 
     # 存储冲击（使用种子，以便结果可复现）
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     shocks = jnp.exp(μ + s * jax.random.normal(key, shape=(shock_size,)))
 
     return Model(β, μ, s, s_grid, shocks, α)

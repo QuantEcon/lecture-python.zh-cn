@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.10.3
+    jupytext_version: 1.17.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -216,7 +216,7 @@ plt.rcParams.update({'font.size': 14})
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
 # ensure the notebook generates the same randomness
-np.random.seed(1337)
+rng = np.random.default_rng(1337)
 ```
 
 我们重复进行一个有5个投标人的拍卖100,000次。
@@ -227,7 +227,7 @@ np.random.seed(1337)
 N = 5
 R = 100_000
 
-v = np.random.uniform(0, 1, (N, R))
+v = rng.uniform(0, 1, (N, R))
 
 # BNE in first-price sealed bid
 
@@ -441,7 +441,7 @@ v_grid = np.linspace(0.3, 1, 8)
 bid_analytical = b_star(v_grid, N)
 
 # 重新抽取估值
-v = np.random.uniform(0, 1, (N, R))
+v = rng.uniform(0, 1, (N, R))
 bid_simulated = [evaluate_largest(ii, v) for ii in v_grid]
 
 fig, ax = plt.subplots(figsize=(6, 4))
@@ -463,8 +463,8 @@ sns.despine()
 我们先通过以下Python代码来了解 $\chi^2$ 分布：
 
 ```{code-cell} ipython3
-np.random.seed(1337)
-v = np.random.chisquare(df=2, size=(N * R,))
+rng = np.random.default_rng(1337)
+v = rng.chisquare(df=2, size=(N * R,))
 
 plt.hist(v, bins=50, edgecolor='w')
 plt.xlabel('Values: $v$')
@@ -474,8 +474,8 @@ plt.show()
 现在我们让Python构建一个出价函数
 
 ```{code-cell} ipython3
-np.random.seed(1337)
-v = np.random.chisquare(df=2, size=(N, R))
+rng = np.random.default_rng(1337)
+v = rng.chisquare(df=2, size=(N, R))
 
 # 我们计算v的分位数作为我们的网格
 pct_quantile = np.linspace(0, 100, 101)[1:-1]
@@ -673,8 +673,8 @@ class bid_price_solution:
 ```
 
 ```{code-cell} ipython3
-np.random.seed(1337)
-v = np.random.chisquare(df=2, size=(N, R))
+rng = np.random.default_rng(1337)
+v = rng.chisquare(df=2, size=(N, R))
 
 chi_squ_case = bid_price_solution(v)
 ```

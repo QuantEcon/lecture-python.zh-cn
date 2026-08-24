@@ -3,8 +3,10 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.2
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 translation:
@@ -129,7 +131,6 @@ $\beta$ 越小，失业者相对于当前收益越是折现未来收益。
 * 当就业时，它等于工资 $W_t$
 * 当失业时，它等于失业补助金 $c$
 
-
 ### 权衡取舍
 
 劳动者面临一个权衡：
@@ -199,7 +200,6 @@ $$
 
 综上所述，我们看到 {eq}`odu_pv` 对所有 $w$ 都成立。
 
-
 ### 最优策略
 
 我们仍然不知道如何计算 $v^*$（尽管 {eq}`odu_pv` 给了我们一些提示，我们将在下面回到这一点）。
@@ -250,7 +250,6 @@ $$
 
 根据{eq}`reswage`，如果我们能计算出价值函数，就能计算出这个保留工资。
 
-
 ## 计算最优策略：第一种方法
 
 为了将上述想法付诸实践，我们需要计算每个可能状态 $w \in \mathbb W$ 下的价值函数。
@@ -278,8 +277,6 @@ v^*(i)
 \quad
 \text{对于 } i = 1, \ldots, n
 ```
-
-
 
 ### 算法
 
@@ -344,7 +341,6 @@ v'(i)
 而且，从 $T$ 的定义可以直接得出这个不动点就是 $v^*$。
 
 巴拿赫收缩映射定理的第二个推论是，无论 $v$ 取何值，序列 $\{ T^k v \}$ 都会收敛到不动点 $v^*$。
-
 
 ### 实现
 
@@ -782,7 +778,7 @@ class McCallModelContinuous(NamedTuple):
 def create_mccall_continuous(
         c=25, β=0.99, σ=0.5, μ=2.5, mc_size=1000, seed=1234
     ):
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     s = jax.random.normal(key, (mc_size,))
     w_draws = jnp.exp(μ + σ * s)
     return McCallModelContinuous(c, β, σ, μ, w_draws)
@@ -942,7 +938,7 @@ def simulate_lifetime_value(key, model, w_bar, n_periods=100):
 
     参数：
     -----------
-    key : jax.random.PRNGKey
+    key : jax.random.key
         JAX 的随机密钥
     model : McCallModelContinuous
         包含参数的模型
@@ -990,7 +986,7 @@ def compute_mean_lifetime_value(model, w_bar, num_reps=10000, seed=1234):
     计算多次模拟中的平均终身价值。
 
     """
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     keys = jax.random.split(key, num_reps)
 
     # 对所有重复模拟进行向量化
@@ -1028,7 +1024,6 @@ plt.show()
 
 该图证实，尽管劳动者在面对波动性更高的工资报价时会设定更高的保留工资（如上所示），但由于搜寻的期权价值，他们所获得的预期终身价值反而更高。
 
-
 ## 练习
 
 ```{exercise}
@@ -1063,7 +1058,7 @@ def compute_stopping_time_continuous(w_bar, key, model):
     -----------
     w_bar : float
         保留工资
-    key : jax.random.PRNGKey
+    key : jax.random.key
         JAX 的随机密钥
     model : McCallModelContinuous
         包含工资抽样的模型
@@ -1115,7 +1110,7 @@ def compute_mean_stopping_time_continuous(w_bar, model, num_reps=100000, seed=12
         所有重复中的平均停止时间
     """
     # 为每次蒙特卡洛重复生成一个密钥
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     keys = jax.random.split(key, num_reps)
 
     # 对 compute_stopping_time_continuous 进行向量化，并在所有密钥上进行评估

@@ -49,8 +49,6 @@ translation:
 :depth: 2
 ```
 
-
-
 ## 概述
 
 
@@ -103,7 +101,6 @@ mpl.font_manager.fontManager.addfont(FONTPATH)  # i18n
 mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
 ```
 
-
 ## 回顾：普通确定性等价
 
 {ref}`配套讲座 <certainty_equiv_theil1>` 详细地建立了 CE 性质。
@@ -140,7 +137,7 @@ x_{t+1} = g(x_t,\, z_t,\, u_t).
 ---
 mystnb:
   figure:
-    caption: CE principle -- policy vs. value
+    caption: CE 原理——策略与价值的对比
     name: fig-ce-policy-value
 ---
 a, b_coeff = 0.9, 1.0
@@ -176,7 +173,6 @@ axes[1].set_ylabel('值常数 $d$')
 plt.tight_layout()
 plt.show()
 ```
-
 
 ## 模型不确定性与稳健性
 
@@ -298,7 +294,7 @@ u_t = h_1\!\left(x_t,\; \hat{h}_2 \cdot y_t\right) = h(x_t, z_t).
 ---
 mystnb:
   figure:
-    caption: Robust policy varies with θ
+    caption: 稳健策略随 θ 变化
     name: fig-robust-policy-theta
 ---
 σ_fixed = 1.0
@@ -343,7 +339,6 @@ plt.show()
 
 这与普通 CE 形成鲜明对比：在稳健性下，*策略增益和值矩阵都依赖于稳健性参数 $\theta$ 和噪声载荷矩阵 $C$*。
 
-
 ## 稳健性下的值函数
 
 在对稳健性有偏好的情况下，{eq}`eq:multiplier` 的最优值再次是二次的，
@@ -379,7 +374,6 @@ z_{t+1} = f(z_t,\, w_{t+1}),
 即设 $\epsilon_{t+1} \equiv 0$ 的条件下最大化 {eq}`eq:multiplier`。
 
 随机性的存在降低了值（常数 $p$），但不改变决策规则。
-
 
 ## 风险敏感偏好
 
@@ -427,7 +421,6 @@ U_t = r(y_t, u_t) + \beta\, \mathcal{R}_t(U_{t+1})
 因此，风险敏感的贝尔曼方程与稳健控制问题有*相同*的不动点 $P$，从而有*相同的决策规则* $u_t = -F y_t$。
 
 > **关键等价性：** 参数为 $\theta$ 的稳健控制与参数为 $\sigma = -\theta^{-1}$ 的风险敏感控制产生相同的决策规则。
-
 
 ## 应用：永久收入模型
 
@@ -574,10 +567,10 @@ print(f"β_tilde = {bt:.5f}, φ_tilde = {φ_rob:.4f}, ν_tilde = {ν_rob:.4f}")
 ---
 mystnb:
   figure:
-    caption: Standard vs robust consumption paths
+    caption: 标准与稳健消费路径的对比
     name: fig-std-vs-robust-paths
 ---
-np.random.seed(0)
+rng = np.random.default_rng(0)
 T_sim = 100
 
 def simulate_ar1(φ, ν, shocks, mu0=0.0):
@@ -587,7 +580,7 @@ def simulate_ar1(φ, ν, shocks, mu0=0.0):
         path[t] = φ * path[t-1] + ν * ε
     return path
 
-shock_path = np.random.randn(T_sim - 1)
+shock_path = rng.standard_normal(T_sim - 1)
 mu0_init = 10.0
 mu_std_path = simulate_ar1(φ_std, ν_std, shock_path, mu0=mu0_init)
 mu_rob_path = simulate_ar1(φ_rob, ν_rob, shock_path, mu0=mu0_init)
@@ -630,7 +623,7 @@ plt.show()
 ---
 mystnb:
   figure:
-    caption: Observational equivalence locus
+    caption: 观测等价轨迹
     name: fig-oe-locus
 ---
 σ_range = np.linspace(-3e-7, 0.0, 200)
@@ -658,7 +651,6 @@ plt.show()
 
 这是因为对稳健性的偏好通过进入随机贴现因子的 $\mathcal{D}(P)$ 矩阵生成了不同的状态价格。
 
-
 ## 小结
 
 下表浓缩了主要结果：
@@ -672,7 +664,6 @@ plt.show()
 在所有这三种情形中，决策者都可以被描述为遵循一个两步流程：首先求解一个非随机控制问题，然后形成信念。
 
 差异在于第二步中形成的是哪种信念。
-
 
 ## 练习
 

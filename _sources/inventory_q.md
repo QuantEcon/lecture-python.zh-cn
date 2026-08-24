@@ -96,7 +96,6 @@ plt.rcParams['font.family'] = ['Source Han Serif SC']
 from typing import NamedTuple
 ```
 
-
 ## 模型
 
 我们研究一家公司，其经理试图通过控制库存来最大化股东价值。
@@ -170,8 +169,6 @@ $$
 
 这里 $D$ 是一个分布为 $\phi$ 的随机变量。
 
-
-
 ## 通过值函数迭代求解
 
 让我们从经理知道所有参数、函数形式和分布的设定开始。
@@ -196,7 +193,6 @@ $$
 $$
 
 当 $r > 0$（等价地，$\beta < 1$）时，序列 $v_{k+1} = T v_k$ 收敛到唯一的不动点 $v^*$，它就是最优策略的值函数（例如，参见 {cite}`Sargent_Stachurski_2025`）。
-
 
 ### 模型设定
 
@@ -285,7 +281,6 @@ def T(v, model):
     return T_kernel(v, d_values, ϕ_values, c, κ, β, K)
 ```
 
-
 ### 计算贪婪策略
 
 回想一下，给定值函数 $v$，**$v$-贪婪策略** 通过下式计算
@@ -371,13 +366,12 @@ v_star, σ_star = solve_inventory_model(v_init, model)
 
 ```{code-cell} ipython3
 @numba.jit(nopython=True)
-def sim_inventories(ts_length, σ, p, X_init=0, seed=0):
+def sim_inventories(ts_length, σ, p, rng, X_init=0):
     """在策略 σ 下模拟库存动态。"""
-    np.random.seed(seed)
     X = np.zeros(ts_length, dtype=np.int32)
     X[0] = X_init
     for t in range(ts_length - 1):
-        d = np.random.geometric(p) - 1
+        d = rng.geometric(p) - 1
         X[t+1] = max(X[t] - d, 0) + σ[X[t]]
     return X
 ```
@@ -387,8 +381,8 @@ def sim_inventories(ts_length, σ, p, X_init=0, seed=0):
 注意 **S-s 模式**：当库存降到较低水平时，公司下达一个大订单来补充库存（向上的跳跃），此后随着需求被满足，库存逐渐下降。
 
 ```{code-cell} ipython3
-def plot_ts(ts_length=200, fontsize=10):
-    X = sim_inventories(ts_length, σ_star, p)
+def plot_ts(ts_length=200, fontsize=10, seed=0):
+    X = sim_inventories(ts_length, σ_star, p, np.random.default_rng(seed))
     fig, ax = plt.subplots()
 
     ax.plot(X, label=r"$X_t$", alpha=0.7)
@@ -405,7 +399,6 @@ def plot_ts(ts_length=200, fontsize=10):
 plot_ts()
 ```
 
-
 ## Q 学习
 
 现在我们要问：一个智能体能否在不知道模型的情况下**学习**最优策略？
@@ -413,7 +406,6 @@ plot_ts()
 特别地，假设智能体不知道需求分布 $\phi$、成本参数 $c$ 和 $\kappa$，或转移函数 $h$。
 
 相反，智能体只在与环境交互时观察到状态、动作和利润的序列。
-
 
 ### Q 因子贝尔曼方程
 
@@ -451,7 +443,6 @@ $$
 
 使用 $q$ 的一个优势是，最优策略可以直接读取为 $\sigma(x) = \arg\max_a q(x, a)$，而无需知道转移函数。
 
-
 ### Q 学习更新规则
 
 Q 学习使用 **[随机逼近](https://en.wikipedia.org/wiki/Stochastic_approximation)** 来逼近 Q 因子贝尔曼方程的不动点。
@@ -484,7 +475,6 @@ $$
 
 这些都是可直接观察的量——无需模型知识。
 
-
 ### Q 表和最大值的作用
 
 理解更新规则如何与经理的动作相关联很重要。
@@ -501,7 +491,7 @@ $$
 
 这个标量作为 $q_t(x, a)$ 的目标值的一部分进入更新。
 
-经理在时间 $t+1 *实际采取* 哪个动作是一个单独的决策。
+经理在时间 $t+1$ *实际采取* 哪个动作是一个单独的决策。
 
 简而言之，$\max$ 起的是寻找最优的作用；它并不规定经理实际采取的动作。
 
@@ -524,7 +514,6 @@ $$
 我们使用 $\alpha_t = 1 / n_t(x, a)^{0.51}$，其中 $n_t(x, a)$ 是到时间 $t$ 为止对 $(x, a)$ 对访问的次数。
 
 它衰减得足够慢，允许从后期（信息更充分）的更新中学习，同时仍满足收敛的 [Robbins–Monro 条件](https://en.wikipedia.org/wiki/Stochastic_approximation#Robbins%E2%80%93Monro_algorithm)。
-
 
 ### 探索：epsilon-贪婪
 
@@ -578,8 +567,7 @@ Q 学习循环在一条连续的轨迹中运行总共 `n_steps` 步——正如�
 ```{code-cell} ipython3
 @numba.jit(nopython=True)
 def q_learning_kernel(K, p, c, κ, β, n_steps, X_init,
-                      ε_init, ε_min, ε_decay, q_init, snapshot_steps, seed):
-    np.random.seed(seed)
+                      ε_init, ε_min, ε_decay, q_init, snapshot_steps, rng):
     q = np.full((K + 1, K + 1), q_init)
     n = np.zeros((K + 1, K + 1))       # 用于学习率的访问计数
     ε = ε_init
@@ -590,7 +578,7 @@ def q_learning_kernel(K, p, c, κ, β, n_steps, X_init,
 
     # 初始化状态和动作
     x = X_init
-    a = np.random.randint(0, K - x + 1)
+    a = rng.integers(0, K - x + 1)
 
     for t in range(n_steps):
         # 如需要则记录策略快照
@@ -599,7 +587,7 @@ def q_learning_kernel(K, p, c, κ, β, n_steps, X_init,
             snap_idx += 1
 
         # === 抽取 D_{t+1} 并观察结果 ===
-        d = np.random.geometric(p) - 1
+        d = rng.geometric(p) - 1
         reward = min(x, d) - c * a - κ * (a > 0)
         x_next = max(x - d, 0) + a
 
@@ -619,8 +607,8 @@ def q_learning_kernel(K, p, c, κ, β, n_steps, X_init,
 
         # === 行为策略：ε-贪婪（使用 a_next，即 argmax 动作）===
         x = x_next
-        if np.random.random() < ε:
-            a = np.random.randint(0, K - x + 1)
+        if rng.random() < ε:
+            a = rng.integers(0, K - x + 1)
         else:
             a = a_next
         ε = max(ε_min, ε * ε_decay)
@@ -638,8 +626,9 @@ def q_learning(model, n_steps=20_000_000, X_init=0,
     K = len(x_values) - 1
     if snapshot_steps is None:
         snapshot_steps = np.array([], dtype=np.int64)
+    rng = np.random.default_rng(seed)
     return q_learning_kernel(K, p, c, κ, β, n_steps, X_init,
-                             ε_init, ε_min, ε_decay, q_init, snapshot_steps, seed)
+                             ε_init, ε_min, ε_decay, q_init, snapshot_steps, rng)
 ```
 
 接下来我们运行 $n$ = 500 万步，并在第 10,000 步、第 1,000,000 步和第 $n$ 步处拍摄策略快照。
@@ -716,7 +705,8 @@ X_init = K // 2
 sim_seed = 5678
 
 # 最优策略
-X_opt = sim_inventories(ts_length, σ_star, p, X_init, seed=sim_seed)
+X_opt = sim_inventories(ts_length, σ_star, p,
+                        np.random.default_rng(sim_seed), X_init)
 axes[0].plot(X_opt, alpha=0.7)
 axes[0].set_ylabel("库存")
 axes[0].set_title("最优 (VFI)")
@@ -725,7 +715,8 @@ axes[0].set_ylim(0, K + 2)
 # Q 学习快照
 for i in range(n_snaps):
     σ_snap = snapshots[i]
-    X = sim_inventories(ts_length, σ_snap, p, X_init, seed=sim_seed)
+    X = sim_inventories(ts_length, σ_snap, p,
+                        np.random.default_rng(sim_seed), X_init)
     axes[i + 1].plot(X, alpha=0.7)
     axes[i + 1].set_ylabel("库存")
     axes[i + 1].set_title(f"第 {snap_steps[i]:,} 步")

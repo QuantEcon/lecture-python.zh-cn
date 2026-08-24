@@ -10,18 +10,18 @@ kernelspec:
   language: python
   name: python3
 translation:
-  title: 工作搜寻 IX：McCall劳动者的Q学习
+  title: 工作搜寻 X：McCall劳动者的Q学习
   headings:
     Overview: 概述
-    Review of McCall Model: McCall 模型回顾
-    Implied Quality Function  $Q$: 隐含质量函数 $Q$
-    From Probabilities  to Samples: 从概率到样本
-    Q-Learning: Q-学习
-    Employed Worker Can't Quit: 禁止在职劳动者辞职的情况
-    Possible Extensions: 可能的扩展方向
+    Review of McCall model: McCall 模型回顾
+    Implied quality function $Q$: 隐含质量函数 $Q$
+    From probabilities to samples: 从概率到样本
+    Q-learning: Q-学习
+    Employed worker can't quit: 禁止在职劳动者辞职的情况
+    Possible extensions: 可能的扩展方向
 ---
 
-# 工作搜寻 IX：McCall劳动者的Q学习
+# 工作搜寻 X：McCall劳动者的Q学习
 
 ## 概述
 
@@ -90,7 +90,7 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
-np.random.seed(123)
+rng = np.random.default_rng(123)
 ```
 
 ## McCall 模型回顾
@@ -276,7 +276,7 @@ Q\left(w,\text{reject}\right) & =c+\beta\int\max_{\text{accept, reject}}\left\{ 
 \end{aligned}
 $$ (eq:impliedq)
 
-注意，系统{eq}`eq:impliedq`的第一个方程假设在个体接受了一个报价后，他将来不会拒绝同样的报价。
+注意，系统{eq}`eq:impliedq`的第一个方程假设在个体接受了一个报价后，他将来不会有拒绝同样报价的选项。
 
 这些方程与我们在{doc}`这个 quantecon 讲座 <mccall_model>`中研究的劳动者最优值函数的贝尔曼方程是一致的。
 
@@ -499,15 +499,15 @@ class Qlearning_McCall:
         self.quit_allowed = quit_allowed
 
 
-    def draw_offer_index(self):
+    def draw_offer_index(self, rng):
         """
         从工资分布中抽取状态索引。
         """
 
         q = self.q
-        return np.searchsorted(np.cumsum(q), np.random.random(), side="right")
+        return np.searchsorted(np.cumsum(q), rng.random(), side="right")
 
-    def temp_diff(self, qtable, state, accept):
+    def temp_diff(self, qtable, state, accept, rng):
         """
         计算与状态和动作相关的TD。
         """
@@ -515,7 +515,7 @@ class Qlearning_McCall:
         c, β, w = self.c, self.β, self.w
 
         if accept==0:
-            state_next = self.draw_offer_index()
+            state_next = self.draw_offer_index(rng)
             TD = c + β*np.max(qtable[state_next, :]) - qtable[state, accept]
         else:
             state_next = state
@@ -526,7 +526,7 @@ class Qlearning_McCall:
 
         return TD, state_next
 
-    def run_one_epoch(self, qtable, max_times=20000):
+    def run_one_epoch(self, qtable, rng, max_times=20000):
         """
         运行一个"轮次"。
         """
@@ -534,7 +534,7 @@ class Qlearning_McCall:
         c, β, w = self.c, self.β, self.w
         eps, δ, lr, T = self.eps, self.δ, self.lr, self.T
 
-        s0 = self.draw_offer_index()
+        s0 = self.draw_offer_index(rng)
         s = s0
         accept_count = 0
 
@@ -542,7 +542,7 @@ class Qlearning_McCall:
 
             # 选择动作
             accept = np.argmax(qtable[s, :])
-            if np.random.random()<=eps:
+            if rng.random()<=eps:
                 accept = 1 - accept
 
             if accept == 1:
@@ -550,7 +550,7 @@ class Qlearning_McCall:
             else:
                 accept_count = 0
 
-            TD, s_next = self.temp_diff(qtable, s, accept)
+            TD, s_next = self.temp_diff(qtable, s, accept, rng)
 
             # 更新qtable
             qtable_new = qtable.copy()
@@ -567,15 +567,15 @@ class Qlearning_McCall:
         return qtable_new
 
 @jit
-def run_epochs(N, qlmc, qtable):
+def run_epochs(N, qlmc, qtable, rng):
     """
     运行N次轮次，每次使用上一次迭代的qtable。
     """
 
     for n in range(N):
-        if n%(N/10)==0:
+        if n % max(1, N // 10) == 0:
             print(f"进度：轮次 = {n}")
-        new_qtable = qlmc.run_one_epoch(qtable)
+        new_qtable = qlmc.run_one_epoch(qtable, rng)
         qtable = new_qtable
 
     return qtable
@@ -593,7 +593,7 @@ qlmc = Qlearning_McCall()
 
 # 运行
 qtable0 = np.zeros((len(w_default), 2))
-qtable = run_epochs(20000, qlmc, qtable0)
+qtable = run_epochs(20000, qlmc, qtable0, rng)
 ```
 
 ```{code-cell} ipython3
@@ -636,10 +636,6 @@ ax.set_xlabel('工资')
 ax.set_ylabel('概率')
 
 plt.show()
-
-# VFI
-mcm = McCallModel(w=w_new, q=q_new)
-valfunc_VFI, flag = mcm.VFI()
 ```
 
 ```{code-cell} ipython3
@@ -661,21 +657,23 @@ def plot_epochs(epochs_to_plot, quit_allowed=1):
     max_epochs = np.max(epochs_to_plot)
     # 迭代训练轮数
     for n in range(max_epochs + 1):
-        if n%(max_epochs/10)==0:
+        if n % max(1, max_epochs // 10) == 0:
             print(f"进度: 训练轮数 = {n}")
         if n in epochs_to_plot:
             valfunc_qlr = valfunc_from_qtable(qtable)
             error = compute_error(valfunc_qlr, valfunc_VFI)
 
-            ax.plot(w_new, valfunc_qlr, '-o', label=f'QL:训练轮数={n}, 平均误差={error}')
+            ax.plot(w_new, valfunc_qlr, '-o',
+                    label=f'QL: 训练轮数={n}, 平均误差={error:.2f}')
 
 
-        new_qtable = qlmc_new.run_one_epoch(qtable)
+        new_qtable = qlmc_new.run_one_epoch(qtable, rng)
         qtable = new_qtable
 
     ax.set_xlabel('工资')
     ax.set_ylabel('最优值')
-    ax.legend(loc='lower right')
+    ax.legend(bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=2)
+    plt.subplots_adjust(bottom=0.25)
     plt.show()
 ```
 

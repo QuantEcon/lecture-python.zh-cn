@@ -3,6 +3,8 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.2
 kernelspec:
   display_name: Python 3
   language: python
@@ -42,7 +44,6 @@ translation:
 ```{contents} 目录
 :depth: 2
 ```
-
 
 ## 概述
 
@@ -288,7 +289,7 @@ def create_mccall_model(
     ):
     """创建McCall模型实例的工厂函数。"""
 
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     z_draws = jax.random.normal(key, (mc_size,))
 
     # 离散化只是为了获得适用于插值的合适工资网格
@@ -531,7 +532,7 @@ def simulate_employment_path(
     从失业状态开始，模拟T期的就业路径。
 
     """
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     c, α, β, ρ, ν, γ, w_grid, z_draws = model
 
     # 初始条件：从失业状态开始，并给定初始工资抽样
@@ -680,7 +681,7 @@ def simulate_cross_section(
     """
     c, α, β, ρ, ν, γ, w_grid, z_draws = model
 
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
 
     # 求解最优保留工资
     w_bar = get_reservation_wage(model)
@@ -749,7 +750,7 @@ def plot_cross_sectional_unemployment(
     c, α, β, ρ, ν, γ, w_grid, z_draws = model
 
     # 直接获取最终就业状态
-    key = jax.random.PRNGKey(42)
+    key = jax.random.key(42)
     w_bar = get_reservation_wage(model)
 
     # 初始化数组

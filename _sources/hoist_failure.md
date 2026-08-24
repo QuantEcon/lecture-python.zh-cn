@@ -13,24 +13,45 @@ translation:
   title: 故障树不确定性
   headings:
     Overview: 概述
-    Log normal distribution: 对数正态分布
-    The Convolution Property: 卷积性质
-    Approximating Distributions: 近似分布
-    create sums of two and three log normal random variates ssum2 = s1 + s2 and ssum3 = s1 + s2 + s3: 创建两个和三个对数正态随机变量的和 ssum2 = s1 + s2 和 ssum3 = s1 + s2 + s3
-    Cell to check -- note what happens when don't normalize!: 检查单元格 -- 注意当不进行归一化时会发生什么！
-    things match up without adjustment. Compare with above: 无需调整即可匹配。与上面进行比较
-    compute number of points to evaluate the probability mass function: 计算评估概率质量函数的点数
-    Convolving Probability Mass Functions: 概率质量函数的卷积
-    Let's compute the mean of the discretized pdf: 让我们计算离散化pdf的均值
-    Failure Tree Analysis: 故障树分析
-    Application: 应用
-    Failure Rates Unknown: 未知的故障率
-    Waste Hoist Failure Rate: 废物提升机失效率
+    The lognormal distribution: 对数正态分布
+    The lognormal distribution::Stability properties: 稳定性性质
+    The convolution theorem: 卷积定理
+    The convolution theorem::Discrete convolution: 离散卷积
+    'The convolution theorem::Example: discrete distributions': 示例：离散分布
+    Approximating continuous distributions: 近似连续分布
+    Discretizing the lognormal distribution: 离散化对数正态分布
+    Convolving probability mass functions: 概率质量函数的卷积
+    Convolving probability mass functions::The Fast Fourier Transform: 快速傅里叶变换
+    Fault tree analysis: 故障树分析
+    Fault tree analysis::The rare event approximation: 稀有事件近似
+    Fault tree analysis::System failure probability: 系统故障概率
+    Failure rates unknown: 未知的故障率
+    'Application: waste hoist failure rate': 应用：废物提升机失效率
+    'Application: waste hoist failure rate::Model specification': 模型设定
+    Exercises: 练习
 ---
 
+```{raw} jupyter
+<div id="qe-notebook-header" align="right" style="text-align:right;">
+        <a href="https://quantecon.org/" title="quantecon.org">
+                <img style="width:250px;display:inline;" width="250px" src="https://assets.quantecon.org/img/qe-menubar-logo.svg" alt="QuantEcon">
+        </a>
+</div>
+```
 
 # 故障树不确定性
 
+```{contents} Contents
+:depth: 2
+```
+
+除了Anaconda中已有的库外，本讲座还需要以下库：
+
+```{code-cell} ipython3
+:tags: [hide-output]
+
+!pip install quantecon tabulate
+```
 
 ## 概述
 
@@ -38,7 +59,7 @@ translation:
 
 我们将使用对数正态分布来近似关键部件的概率分布。
 
-为了近似描述整个系统故障率的 $n$ 个对数正态概率分布之**和**的概率分布，我们将计算这 $n$ 个对数正态概率分布的卷积。
+为了近似描述系统总故障率（表示为 $n$ 个对数正态随机变量之**和**）的概率分布，我们计算这些分布的卷积。
 
 我们将使用以下概念和工具：
 
@@ -48,21 +69,15 @@ translation:
 * 用于描述不确定概率的层次概率模型
 * 傅里叶变换和傅里叶逆变换作为计算序列卷积的高效方法
 
-关于傅里叶变换的更多信息，请参见这个 quantecon 讲座 [循环矩阵](https://python.quantecon.org/eig_circulant.html)
-以及这些讲座 [协方差平稳过程](https://python-advanced.quantecon.org/arma.html) 和 [谱估计](https://python-advanced.quantecon.org/estspec.html)。
-
-El-Shanawany, Ardron 和 Walker {cite}`Ardron_2018` 以及 Greenfield 和 Sargent {cite}`Greenfield_Sargent_1993` 使用了这里描述的一些方法来近似核设施安全系统的故障概率。
-
-这些方法响应了 Apostolakis {cite}`apostolakis1990` 提出的关于构建用于量化安全系统可靠性的不确定性的程序的一些建议。
-
-我们先引入一些Python工具。
-
-
-
-
-```{code-cell} ipython3
-!pip install tabulate
+```{seealso}
+关于傅里叶变换的更多信息，请参见 {doc}`循环矩阵 <eig_circulant>` 以及 {doc}`协方差平稳过程 <advanced:arma>` 和 {doc}`谱估计 <advanced:estspec>`。
 ```
+
+{cite:t}`Ardron_2018` 和 {cite:t}`Greenfield_Sargent_1993` 应用了这些方法来近似核设施安全系统的故障概率。
+
+这些技术响应了 {cite:t}`apostolakis1990` 提出的关于量化安全系统可靠性不确定性的建议。
+
+本讲座将使用以下导入和设置：
 
 ```{code-cell} ipython3
 import numpy as np
@@ -74,239 +89,282 @@ plt.rcParams['font.family'] = ['Source Han Serif SC']
 
 from scipy.signal import fftconvolve
 from tabulate import tabulate
-import time
+import quantecon as qe
 ```
-
-```{code-cell} ipython3
-np.set_printoptions(precision=3, suppress=True)
-```
-
-<!-- #region -->
 
 ## 对数正态分布
 
-如果一个随机变量 $x$ 服从均值为 $\mu$ 和方差为 $\sigma^2$ 的正态分布，那么 $x$ 的自然对数，即 $y = \log(x)$，就服从参数为 $\mu, \sigma^2$ 的**对数正态分布**。
-
-注意我们说的是**参数**而不是**均值和方差** $\mu,\sigma^2$。
-
- * $\mu$ 和 $\sigma^2$ 是 $x = \exp (y)$ 的均值和方差
- * 它们**不是** $y$ 的均值和方差
- * 相反，$y$ 的均值是 $e ^{\mu + \frac{1}{2} \sigma^2}$，方差是 $(e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} $
-
-对数正态随机变量 $y$ 是非负的。
-
-对数正态随机变量 $y$ 的密度函数是
-
-$$ f(y) = \frac{1}{y \sigma \sqrt{2 \pi}} \exp \left(  \frac{- (\log y - \mu)^2 }{2 \sigma^2} \right) $$
-
-其中 $y \geq 0$。
-
-对数正态随机变量的重要特征是
-
-$$
-\begin{aligned}
- \textrm{均值:} & \quad e ^{\mu + \frac{1}{2} \sigma^2} \cr
-\textrm{方差:}  & \quad (e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} \cr
-  \textrm{中位数:} & \quad e^\mu \cr
- \textrm{众数:} & \quad e^{\mu - \sigma^2} \cr
- \textrm{.95 分位数:} & \quad e^{\mu + 1.645 \sigma} \cr
- \textrm{.95-.05 分位数比:}  & \quad e^{1.645 \sigma} \cr
- \end{aligned}
-$$
-
-
-回顾两个独立正态分布随机变量的以下*稳定性*性质：
-
-如果 $x_1$ 是均值为 $\mu_1$、方差为 $\sigma_1^2$ 的正态分布，且 $x_2$ 独立于 $x_1$ 并且是均值为$\mu_2$、方差为 $\sigma_2^2$ 的正态分布，那么 $x_1 + x_2$ 是均值为 $\mu_1 + \mu_2$、方差为 $\sigma_1^2 + \sigma_2^2$ 的正态分布。
-
-
-独立的对数正态分布具有不同的*稳定性*性质。
-
-独立对数正态随机变量的**乘积**也是对数正态分布。
-
-
-特别地，如果 $y_1$ 是参数为 $(\mu_1, \sigma_1^2)$ 的对数正态分布，且
-$y_2$ 是参数为 $(\mu_2, \sigma_2^2)$ 的对数正态分布，那么乘积 $y_1 y_2$ 也是对数正态分布，其参数为 $(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)$。
+如果随机变量 $x$ 服从均值为 $\mu$、方差为 $\sigma^2$ 的正态分布，那么 $y = \exp(x)$ 服从参数为 $\mu, \sigma^2$ 的**对数正态分布**。
 
 ```{note}
+我们将 $\mu$ 和 $\sigma^2$ 称为*参数*而不是均值和方差，因为：
+* $\mu$ 和 $\sigma^2$ 是 $x = \log(y)$ 的均值和方差
+* 它们**不是** $y$ 的均值和方差
+* $y$ 的均值是 $\exp(\mu + \frac{1}{2}\sigma^2)$，方差是 $(e^{\sigma^2} - 1) e^{2\mu + \sigma^2}$
+```
+
+对数正态随机变量 $y$ 始终是非负的。
+
+$y$ 的概率密度函数是
+
+```{math}
+:label: lognormal_pdf
+
+f(y) = \frac{1}{y \sigma \sqrt{2 \pi}} \exp \left( \frac{- (\log y - \mu)^2 }{2 \sigma^2} \right), \quad y \geq 0
+```
+
+对数正态随机变量的重要特性是：
+
+```{math}
+:label: lognormal_properties
+
+\begin{aligned}
+ \text{均值:} & \quad e ^{\mu + \frac{1}{2} \sigma^2} \\
+ \text{方差:}  & \quad (e^{\sigma^2} - 1) e^{2 \mu + \sigma^2} \\
+  \text{中位数:} & \quad e^\mu \\
+ \text{众数:} & \quad e^{\mu - \sigma^2} \\
+ \text{0.95 分位数:} & \quad e^{\mu + 1.645 \sigma} \\
+ \text{0.95/0.05 分位数比:}  & \quad e^{3.29 \sigma}
+ \end{aligned}
+```
+
+### 稳定性性质
+
+回顾独立正态分布随机变量具有以下稳定性性质：
+
+如果 $x_1 \sim N(\mu_1, \sigma_1^2)$ 和 $x_2 \sim N(\mu_2, \sigma_2^2)$ 是独立的，那么 $x_1 + x_2 \sim N(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)$。
+
+独立的对数正态分布具有不同的稳定性性质：独立对数正态随机变量的**乘积**也是对数正态分布。
+
+具体来说，如果 $y_1$ 是参数为 $(\mu_1, \sigma_1^2)$ 的对数正态分布，且 $y_2$ 是参数为 $(\mu_2, \sigma_2^2)$ 的对数正态分布，那么 $y_1 y_2$ 是参数为 $(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)$ 的对数正态分布。
+
+```{warning}
 虽然两个对数正态分布的乘积是对数正态分布，但两个对数正态分布的**和**却**不是**对数正态分布。
 ```
 
-这个观察为我们在本讲中面临的挑战奠定了基础，即如何近似独立对数正态随机变量**和**的概率分布。
+这个观察结果引出了本讲座的核心挑战：近似独立对数正态随机变量**之和**的概率分布。
 
-要计算两个对数正态分布之和的概率分布，我们可以使用独立随机变量之和的概率分布的卷积性质。
+## 卷积定理
 
-## 卷积性质
+设 $x$ 和 $y$ 是概率密度分别为 $f(x)$ 和 $g(y)$ 的独立随机变量，其中 $x, y \in \mathbb{R}$。
 
-设 $x$ 是概率密度为 $f(x)$ 的随机变量，其中 $x \in {\bf R}$。
+设 $z = x + y$。
 
-设 $y$ 是概率密度为 $g(y)$ 的随机变量，其中 $y \in {\bf R}$。
+那么 $z$ 的概率密度为
 
-设 $x$ 和 $y$ 是独立随机变量，且 $z = x + y \in {\bf R}$。
+```{math}
+:label: convolution_continuous
 
-那么 $z$ 的概率分布为
-
-$$ h(z) = (f * g)(z) \equiv \int_{-\infty}^\infty f (z) g(z - \tau) d \tau $$
-
-其中 $(f*g)$ 表示两个函数 $f$ 和 $g$ 的**卷积**。
-
-如果随机变量都是非负的，则上述公式可简化为
-
-$$ h(z) = (f * g)(z) \equiv \int_{0}^\infty f (z) g(z - \tau) d \tau $$
-
-下面，我们将使用上述公式的离散化版本。
-
-具体来说，我们将把 $f$ 和 $g$ 都替换为离散化的对应形式，并归一化使其和为 $1$，这样它们就是概率分布。
-
-  * **离散化**指的是等间隔采样的版本
-
-然后我们将使用以下版本的公式
-
-$$ h_n = (f*g)_n = \sum_{m=0}^\infty f_m g_{n-m} , n \geq 0 $$
-
-来计算两个随机变量之和的概率分布的离散化版本，其中一个随机变量的概率质量函数为 $f$，另一个的概率质量函数为 $g$。
-
-在应用卷积性质到对数正态分布的和之前，让我们先用一些简单的离散分布来练习。
-
-以一个例子来说，让我们考虑以下两个概率分布
-
-$$ f_j = \textrm{Prob} (X = j), j = 0, 1 $$
-
-和
-
-$$ g_j = \textrm{Prob} (Y = j ) , j = 0, 1, 2, 3 $$
-
-和
-
-$$ h_j = \textrm{Prob} (Z \equiv X + Y = j) , j=0, 1, 2, 3, 4 $$
-
-卷积性质告诉我们
-
-$$ h = f* g = g* f $$
-
-让我们使用`numpy.convolve`和`scipy.signal.fftconvolve`来计算一个例子。
-
-```{code-cell} ipython3
-f = [.75, .25]
-g = [0., .6,  0., .4]
-h = np.convolve(f,g)
-hf = fftconvolve(f,g)
-
-print("f = ", f,  ", np.sum(f) = ", np.sum(f))
-print("g = ", g, ", np.sum(g) = ", np.sum(g))
-print("h = ", h, ", np.sum(h) = ", np.sum(h))
-print("hf = ", hf, ",np.sum(hf) = ", np.sum(hf))
+h(z) = (f * g)(z) \equiv \int_{-\infty}^\infty f(\tau) g(z - \tau) d\tau
 ```
 
-稍后我们将解释使用`scipy.signal.ftconvolve`而不是`numpy.convolve`的一些优势。
+其中 $(f*g)$ 表示 $f$ 和 $g$ 的**卷积**。
 
-它们提供相同的结果，但`scipy.signal.ftconvolve`要快得多。
+对于非负随机变量，这可以特化为
 
-这就是为什么我们在本讲座后面会依赖它。
+```{math}
+:label: convolution_nonnegative
 
+h(z) = (f * g)(z) \equiv \int_{0}^z f(\tau) g(z - \tau) d\tau
+```
 
-## 近似分布
+### 离散卷积
 
-我们将构建一个示例来验证离散化分布能够很好地近似从底层连续分布中抽取的样本。
+我们将使用卷积公式的离散化版本。
 
-我们将首先生成25000个样本，包含三个独立的对数正态随机变量以及它们的两两和三重和。
+我们将 $f$ 和 $g$ 都替换为离散化的对应形式，并归一化使其和为 1。
 
-然后我们将绘制直方图，并将其与适当离散化的对数正态分布的卷积进行比较。
+离散卷积公式为
+
+```{math}
+:label: convolution_discrete
+
+h_n = (f*g)_n = \sum_{m=0}^n f_m g_{n-m}, \quad n \geq 0
+```
+
+这计算了两个离散随机变量之和的概率质量函数。
+
+### 示例：离散分布
+
+考虑两个概率质量函数：
+
+$$
+f_j = \Pr(X = j), \quad j = 0, 1
+$$
+
+和
+
+$$
+g_j = \Pr(Y = j), \quad j = 0, 1, 2, 3
+$$
+
+$Z = X + Y$ 的分布由卷积 $h = f * g$ 给出。
 
 ```{code-cell} ipython3
-## 创建两个和三个对数正态随机变量的和 ssum2 = s1 + s2 和 ssum3 = s1 + s2 + s3
+# 定义概率质量函数
+f = [0.75, 0.25]
+g = [0.0, 0.6, 0.0, 0.4]
 
+# 使用两种方法计算卷积
+h = np.convolve(f, g)
+hf = fftconvolve(f, g)
 
-mu1, sigma1 = 5., 1. # 均值和标准差
-s1 = np.random.lognormal(mu1, sigma1, 25000)
+print(f"f = {f}, sum = {np.sum(f):.3f}")
+print(f"g = {g}, sum = {np.sum(g):.3f}")
+print(f"h = {h}, sum = {np.sum(h):.3f}")
+print(f"hf = {hf}, sum = {np.sum(hf):.3f}")
+```
 
-mu2, sigma2 = 5., 1. # 均值和标准差
-s2 = np.random.lognormal(mu2, sigma2, 25000)
+`numpy.convolve` 和 `scipy.signal.fftconvolve` 都得到相同的结果，但对于长序列，`fftconvolve` 要快得多。
 
-mu3, sigma3 = 5., 1. # 均值和标准差
-s3 = np.random.lognormal(mu3, sigma3, 25000)
+为了提高效率，本讲座将始终使用 `fftconvolve`。
 
+## 近似连续分布
+
+现在我们验证离散化分布能否准确近似来自底层连续分布的样本。
+
+我们从三个独立的对数正态随机变量中生成25,000个样本，并计算它们的两两之和与三者之和。
+
+然后我们将样本的直方图与离散化分布的直方图进行比较。
+
+```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 单个对数正态分布的样本直方图
+    name: fig-hoist-hist-1
+---
+# 设置对数正态分布的参数
+μ, σ = 5.0, 1.0
+n_samples = 25000
+
+# 生成样本
+rng = np.random.default_rng(1234)
+s1 = rng.lognormal(μ, σ, n_samples)
+s2 = rng.lognormal(μ, σ, n_samples)
+s3 = rng.lognormal(μ, σ, n_samples)
+
+# 计算和
 ssum2 = s1 + s2
-
 ssum3 = s1 + s2 + s3
 
-count, bins, ignored = plt.hist(s1, 1000, density=True, align='mid')
-```
-
-```{code-cell} ipython3
-
-count, bins, ignored = plt.hist(ssum2, 1000, density=True, align='mid')
-```
-
-```{code-cell} ipython3
-
-count, bins, ignored = plt.hist(ssum3, 1000, density=True, align='mid')
-```
-
-```{code-cell} ipython3
-samp_mean2 = np.mean(s2)
-pop_mean2 = np.exp(mu2+ (sigma2**2)/2)
-
-pop_mean2, samp_mean2, mu2, sigma2
-```
-
-以下是创建对数正态概率密度函数离散化版本的辅助函数。
-
-```{code-cell} ipython3
-def p_log_normal(x,μ,σ):
-    p = 1 / (σ*x*np.sqrt(2*np.pi)) * np.exp(-1/2*((np.log(x) - μ)/σ)**2)
-    return p
-
-def pdf_seq(μ,σ,I,m):
-    x = np.arange(1e-7,I,m)
-    p_array = p_log_normal(x,μ,σ)
-    p_array_norm = p_array/np.sum(p_array)
-    return p_array,p_array_norm,x
-```
-
-<!-- #region -->
-现在我们要为我们的离散化设置一个网格长度 $I$ 和网格增量大小 $m =1$。
-
-```{note}
-我们将 $I$ 设置为 $2$ 的幂，因为我们希望能够自由使用快速傅里叶变换来计算两个序列（离散分布）的卷积。
-```
-
-我们建议尝试 $2$ 的不同幂值 $p$。
-
-例如，将其设置为 $15$ 而不是 $12$，可以改善离散化概率质量函数对所研究的原始连续概率密度函数的近似程度。
-
-<!-- #endregion -->
-
-```{code-cell} ipython3
-p=15
-I = 2**p # 截断值
-m = .1 # 增量大小
-
-```
-
-```{code-cell} ipython3
-## 检查单元格 -- 注意当不进行归一化时会发生什么！
-## 无需调整即可匹配。与上面进行比较
-
-p1,p1_norm,x = pdf_seq(mu1,sigma1,I,m)
-## 计算评估概率质量函数的点数
-NT = x.size
-
-plt.figure(figsize = (8,8))
-plt.subplot(2,1,1)
-plt.plot(x[:int(NT)],p1[:int(NT)],label = '')
-plt.xlim(0,2500)
-count, bins, ignored = plt.hist(s1, 1000, density=True, align='mid')
-
+# 绘制 s1 的直方图
+fig, ax = plt.subplots()
+ax.hist(s1, 1000, density=True, alpha=0.6)
+ax.set_xlabel('数值')
+ax.set_ylabel('密度')
 plt.show()
 ```
 
 ```{code-cell} ipython3
-# 从离散化的概率密度函数计算均值并与理论值进行比较
+---
+mystnb:
+  figure:
+    caption: 两个对数正态分布之和的直方图
+    name: fig-hoist-hist-2
+---
+# 绘制两个对数正态分布之和的直方图
+fig, ax = plt.subplots()
+ax.hist(ssum2, 1000, density=True, alpha=0.6)
+ax.set_xlabel('数值')
+ax.set_ylabel('密度')
+plt.show()
+```
 
-mean= np.sum(np.multiply(x[:NT],p1_norm[:NT]))
-meantheory = np.exp(mu1+.5*sigma1**2)
-mean, meantheory
+```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 三个对数正态分布之和的直方图
+    name: fig-hoist-hist-3
+---
+# 绘制三个对数正态分布之和的直方图
+fig, ax = plt.subplots()
+ax.hist(ssum3, 1000, density=True, alpha=0.6)
+ax.set_xlabel('数值')
+ax.set_ylabel('密度')
+plt.show()
+```
+
+让我们验证样本均值是否与理论均值相匹配：
+
+```{code-cell} ipython3
+samp_mean = np.mean(s2)
+theoretical_mean = np.exp(μ + σ**2 / 2)
+
+print(f"理论均值: {theoretical_mean:.3f}")
+print(f"样本均值: {samp_mean:.3f}")
+```
+
+## 离散化对数正态分布
+
+我们定义辅助函数来创建对数正态概率密度函数的离散化版本。
+
+```{code-cell} ipython3
+def lognormal_pdf(x, μ, σ):
+    """
+    计算对数正态概率密度函数。
+    """
+    p = 1 / (σ * x * np.sqrt(2 * np.pi)) \
+            * np.exp(-0.5 * ((np.log(x) - μ) / σ)**2)
+    return p
+
+
+def discretize_lognormal(μ, σ, I, m):
+    """
+    创建离散化的对数正态概率质量函数。
+    """
+    x = np.arange(1e-7, I, m)
+    p_array = lognormal_pdf(x, μ, σ)
+    p_array_norm = p_array / np.sum(p_array)
+    return p_array, p_array_norm, x
+```
+
+我们将网格长度 $I$ 设置为 2 的幂，以便进行高效的快速傅里叶变换计算。
+
+```{note}
+增大幂次 $p$（例如从12增加到15）可以提高近似质量，但会增加计算成本。
+```
+
+```{code-cell} ipython3
+# 设置网格参数
+p = 15
+I = 2**p  # 截断值（2的幂以提高FFT效率）
+m = 0.1   # 增量大小
+```
+
+让我们直观地看一下离散化分布对连续对数正态分布的近似效果：
+
+```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 离散化密度与样本的对比
+    name: fig-hoist-discretized
+---
+# 计算离散化的概率密度函数
+pdf, pdf_norm, x = discretize_lognormal(μ, σ, I, m)
+
+# 绘制离散化的概率密度函数与直方图的对比
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(x, pdf, 'r-', lw=2, label='离散化概率密度函数')
+ax.hist(s1, 1000, density=True, alpha=0.6, label='样本直方图')
+ax.set_xlim(0, 2500)
+ax.set_xlabel('数值')
+ax.set_ylabel('密度')
+ax.legend()
+plt.show()
+```
+
+现在让我们验证离散化分布是否具有正确的均值：
+
+```{code-cell} ipython3
+# 从离散化的概率密度函数计算均值
+mean_discrete = np.sum(x * pdf_norm)
+mean_theory = np.exp(μ + 0.5 * σ**2)
+
+print(f"理论均值: {mean_theory:.3f}")
+print(f"离散化均值: {mean_discrete:.3f}")
 ```
 
 ## 概率质量函数的卷积
@@ -315,29 +373,29 @@ mean, meantheory
 
 我们还将计算上面构造的三个对数正态分布之和的概率。
 
-在进行这些计算之前，我们需要解释我们选择的用于计算两个序列卷积的Python算法。
+对于长序列，`scipy.signal.fftconvolve` 比 `numpy.convolve` 快得多，因为它使用了快速傅里叶变换。
 
-由于要进行卷积的序列很长，我们使用`scipy.signal.fftconvolve`函数而不是`numpy.convolve`函数。
+让我们先定义傅里叶变换和傅里叶逆变换
 
-这两个函数给出的结果实际上是等价的，但对于长序列来说，`scipy.signal.fftconvolve`要快得多。
+### 快速傅里叶变换
 
-程序`scipy.signal.fftconvolve`使用快速傅里叶变换及其逆变换来计算卷积。
+序列 $\{x_t\}_{t=0}^{T-1}$ 的**傅里叶变换**是
 
-让我们定义傅里叶变换和傅里叶逆变换。
+```{math}
+:label: eq:ft1
 
-序列 $\{x_t\}_{t=0}^{T-1}$ 的**傅里叶变换**是一个复数序列 $\{x(\omega_j)\}_{j=0}^{T-1}$，由下式给出：
+x(\omega_j) = \sum_{t=0}^{T-1} x_t \exp(-i \omega_j t)
+```
 
-$$
- x(\omega_j) = \sum_{t=0}^{T-1} x_t \exp(- i \omega_j t)
-$$ (eq:ft1)
+其中 $\omega_j = \frac{2\pi j}{T}$，$j = 0, 1, \ldots, T-1$。
 
-其中 $\omega_j = \frac{2 \pi j}{T}$，$j=0, 1, \ldots, T-1$。
+序列 $\{x(\omega_j)\}_{j=0}^{T-1}$ 的**傅里叶逆变换**是
 
-序列 $\{x(\omega_j)\}_{j=0}^{T-1}$ 的**傅里叶逆变换**为
+```{math}
+:label: eq:ift1
 
-$$
- x_t = T^{-1} \sum_{j=0}^{T-1} x(\omega_j) \exp (i \omega_j t)
-$$ (eq:ift1)
+x_t = T^{-1} \sum_{j=0}^{T-1} x(\omega_j) \exp(i \omega_j t)
+```
 
 序列 $\{x_t\}_{t=0}^{T-1}$ 和 $\{x(\omega_j)\}_{j=0}^{T-1}$ 包含相同的信息。
 
@@ -351,217 +409,246 @@ $$ (eq:ift1)
 
 **快速傅里叶变换**和相关的**快速傅里叶逆变换**能够非常快速地执行这些计算。
 
-这就是 `scipy.signal.fftconvolve` 使用的算法。
+这就是 `fftconvolve` 使用的算法。
 
-让我们做一个预热计算，比较 `numpy.convolve` 和 `scipy.signal.fftconvolve` 所需的时间。
+让我们做一个预热计算，比较 `numpy.convolve` 和 `scipy.signal.fftconvolve` 所需的时间
 
 ```{code-cell} ipython3
+# 离散化三个对数正态分布
+_, pmf1, x = discretize_lognormal(μ, σ, I, m)
+_, pmf2, x = discretize_lognormal(μ, σ, I, m)
+_, pmf3, x = discretize_lognormal(μ, σ, I, m)
 
+# 计时 numpy.convolve
+with qe.Timer() as timer_numpy:
+    conv_np = np.convolve(pmf1, pmf2)
+    conv_np = np.convolve(conv_np, pmf3)
+time_numpy = timer_numpy.elapsed
 
-p1,p1_norm,x = pdf_seq(mu1,sigma1,I,m)
-p2,p2_norm,x = pdf_seq(mu2,sigma2,I,m)
-p3,p3_norm,x = pdf_seq(mu3,sigma3,I,m)
+# 计时 fftconvolve
+with qe.Timer() as timer_fft:
+    conv_fft = fftconvolve(pmf1, pmf2)
+    conv_fft = fftconvolve(conv_fft, pmf3)
+time_fft = timer_fft.elapsed
 
-tic = time.perf_counter()
-
-c1 = np.convolve(p1_norm,p2_norm)
-c2 = np.convolve(c1,p3_norm)
-
-
-toc = time.perf_counter()
-
-tdiff1 = toc - tic
-
-tic = time.perf_counter()
-
-c1f = fftconvolve(p1_norm,p2_norm)
-c2f = fftconvolve(c1f,p3_norm)
-toc = time.perf_counter()
-
-toc = time.perf_counter()
-
-tdiff2 = toc - tic
-
-print("time with np.convolve = ", tdiff1,  "; time with fftconvolve = ",  tdiff2)
-
-
+print(f"使用 np.convolve 所需时间: {time_numpy:.4f} 秒")
+print(f"使用 fftconvolve 所需时间: {time_fft:.4f} 秒")
+print(f"加速倍数: {time_numpy / time_fft:.1f}x")
 ```
 
-快速傅里叶变换比 `numpy.convolve` 快两个数量级
+快速傅里叶变换带来了数量级的加速。
 
-现在让我们将计算得到的两个对数正态随机变量之和的概率质量函数近似值与我们上面形成的样本直方图进行对比绘制。
+现在让我们将计算得到的两个对数正态随机变量之和的概率质量函数近似值与我们上面形成的样本直方图进行对比绘制
 
 ```{code-cell} ipython3
-NT= np.size(x)
+---
+mystnb:
+  figure:
+    caption: 卷积与样本的对比，两个分量
+    name: fig-hoist-conv-2
+---
+# 计算两个分布的卷积以进行比较
+conv2 = fftconvolve(pmf1, pmf2)
 
-plt.figure(figsize = (8,8))
-plt.subplot(2,1,1)
-plt.plot(x[:int(NT)],c1f[:int(NT)]/m,label = '')
-plt.xlim(0,5000)
-
-count, bins, ignored = plt.hist(ssum2, 1000, density=True, align='mid')
-# plt.plot(P2P3[:10000],label = 'FFT method',linestyle = '--')
-
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(x, conv2[:len(x)] / m, 'r-', lw=2, label='卷积 (FFT)')
+ax.hist(ssum2, 1000, density=True, alpha=0.6, label='样本直方图')
+ax.set_xlim(0, 5000)
+ax.set_xlabel('数值')
+ax.set_ylabel('密度')
+ax.legend()
 plt.show()
 ```
 
+现在我们展示三个对数正态随机变量之和的图：
+
 ```{code-cell} ipython3
-NT= np.size(x)
-plt.figure(figsize = (8,8))
-plt.subplot(2,1,1)
-plt.plot(x[:int(NT)],c2f[:int(NT)]/m,label = '')
-plt.xlim(0,5000)
-
-count, bins, ignored = plt.hist(ssum3, 1000, density=True, align='mid')
-# plt.plot(P2P3[:10000],label = 'FFT方法',linestyle = '--')
-
+---
+mystnb:
+  figure:
+    caption: 卷积与样本的对比，三个分量
+    name: fig-hoist-conv-3
+---
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(x, conv_fft[:len(x)] / m, 'r-', lw=2, label='卷积 (FFT)')
+ax.hist(ssum3, 1000, density=True, alpha=0.6, label='样本直方图')
+ax.set_xlim(0, 5000)
+ax.set_xlabel('数值')
+ax.set_ylabel('密度')
+ax.legend()
 plt.show()
 ```
 
+让我们验证均值是否正确
+
 ```{code-cell} ipython3
-## 让我们计算离散化pdf的均值
-mean= np.sum(np.multiply(x[:NT],c1f[:NT]))
-# meantheory = np.exp(mu1+.5*sigma1**2)
-mean, 2*meantheory
+# 两个分布之和的均值
+mean_conv2 = np.sum(x * conv2[:len(x)])
+mean_theory2 = 2 * np.exp(μ + 0.5 * σ**2)
+
+print(f"两个分布之和:")
+print(f"  理论均值: {mean_theory2:.3f}")
+print(f"  计算均值: {mean_conv2:.3f}")
 ```
 
 ```{code-cell} ipython3
-## 让我们计算离散化pdf的均值
-mean= np.sum(np.multiply(x[:NT],c2f[:NT]))
-# meantheory = np.exp(mu1+.5*sigma1**2)
-mean, 3*meantheory
+# 三个分布之和的均值
+mean_conv3 = np.sum(x * conv_fft[:len(x)])
+mean_theory3 = 3 * np.exp(μ + 0.5 * σ**2)
+
+print(f"三个分布之和:")
+print(f"  理论均值: {mean_theory3:.3f}")
+print(f"  计算均值: {mean_conv3:.3f}")
 ```
 
-<!-- #region -->
 ## 故障树分析
 
 我们即将应用卷积定理来计算故障树分析中**顶事件**的概率。
 
 在应用卷积定理之前，我们首先描述将组成事件与我们要量化其故障率的**顶端**事件连接起来的模型。
 
-该模型是广泛使用的、El-Shanawany、Ardron和Walker {cite}`Ardron_2018`所描述的**故障树分析**的一个例子。
+正如 {cite:t}`Ardron_2018` 所描述的，故障树分析是一种广泛使用的评估系统可靠性的技术。
 
 为了构建统计模型，我们反复使用所谓的**稀有事件近似**。
 
-假设我们要计算事件$A \cup B$的概率。
+### 稀有事件近似
 
-* 并集$A \cup B$是事件$A$或$B$发生的情况
+我们想要计算事件 $A \cup B$ 的概率。
 
-概率法则告诉我们，$A$或$B$发生的概率为
+对于事件 $A$ 和 $B$，并集的概率为
 
-$$ P(A \cup B) = P(A) + P(B) - P(A \cap B) $$
+$$
+P(A \cup B) = P(A) + P(B) - P(A \cap B)
+$$
 
-其中交集$A \cap B$是事件$A$**和**$B$都发生的情况，而并集$A \cup B$是事件$A$**或**$B$发生的情况。
+其中 $A \cup B$ 是事件 $A$ **或** $B$ 发生的情况，$A \cap B$ 是事件 $A$ **和** $B$ 都发生的情况。
 
-如果$A$和$B$是独立的，那么
+如果 $A$ 和 $B$ 是独立的，那么 $P(A \cap B) = P(A) P(B)$。
 
-$$ P(A \cap B) = P(A) P(B)  $$
-
-如果 $P(A)$ 和 $P(B)$ 都很小，那么 $P(A) P(B)$ 就更小。
+当 $P(A)$ 和 $P(B)$ 都很小时，$P(A) P(B)$ 就更小。
 
 **稀有事件近似**为
 
-$$ P(A \cup B) \approx P(A) + P(B)  $$
+$$
+P(A \cup B) \approx P(A) + P(B)
+$$
 
-这种近似方法在评估系统故障时被广泛使用。
+这种近似方法在系统故障分析中被广泛使用。
 
+### 系统故障概率
 
-## 应用
+考虑一个具有 $n$ 个关键组件的系统，当**任何**一个组件发生故障时，系统就会发生故障。
 
-一个系统的设计特点是，当**任何**一个关键组件发生故障时，系统就会发生故障。
+我们假设：
 
-每个事件 $A_i$ 的故障概率 $P(A_i)$ 都很小。
-
-我们假设组件的故障是统计独立的随机变量。
-
+* 每个组件 $A_i$ 的故障概率 $P(A_i)$ 都很小
+* 组件故障在统计上是独立的
 
 我们反复应用**稀有事件近似**，得到系统故障问题的以下公式：
 
-$$ P(F) \approx P(A_1) + P (A_2) + \cdots + P (A_n) $$
+$$ 
+P(F) \approx P(A_1) + P (A_2) + \cdots + P (A_n) 
+$$
 
 或
 
-$$
-P(F) \approx \sum_{i=1}^n P (A_i)
-$$ (eq:probtop)
+```{math}
+:label: eq:probtop
+
+P(F) \approx \sum_{i=1}^n P(A_i)
+```
+
+其中 $P(F)$ 是系统故障概率。
 
 每个事件的概率以每年故障率的形式记录。
 
-
 ## 未知的故障率
 
-现在我们来讨论真正感兴趣的问题，参考 {cite}`Ardron_2018` 和 Greenfield and Sargent
+现在我们来讨论真正感兴趣的问题，遵循 {cite:t}`Ardron_2018` 和
+{cite:t}`Greenfield_Sargent_1993` 的方法，秉承 {cite:t}`apostolakis1990` 的精神。
 
-{cite}`Greenfield_Sargent_1993` 遵循 Apostolakis {cite}`apostolakis1990` 的思路。
+组件故障率 $P(A_i)$ 并非精确已知，需要进行估计。
 
-构成概率或失效率 $P(A_i)$ 并非先验已知，需要进行估计。
+我们通过指定**概率的概率**来解决这个问题，这体现了不了解作为故障树分析输入的构成概率的一种概念。
 
-我们通过指定**概率的概率**来解决这个问题，这反映了对故障树分析输入中的构成概率的不确定性这一概念。
+因此，我们假设系统分析师对系统组件的故障率 $P(A_i), i =1, \ldots, n$ 存在不确定性。
 
-因此，我们假设系统分析师对系统组件的失效率 $P(A_i), i =1, \ldots, n$ 存在不确定性。
+分析师通过将系统故障概率 $P(F)$ 和每个组件概率 $P(A_i)$ 视为随机变量来应对这种情况。
 
-分析师通过将系统失效概率 $P(F)$ 和每个组件概率 $P(A_i)$ 视为随机变量来应对这种情况。
+  * $P(A_i)$ 概率分布的离散程度表征了分析师对故障概率 $P(A_i)$ 的不确定性
 
-  * $P(A_i)$ 概率分布的离散程度表征了分析师对失效概率 $P(A_i)$ 的不确定性
+  * $P(F)$ 的隐含概率分布的离散程度表征了他对系统故障概率的不确定性
 
-  * $P(F)$ 的隐含概率分布的离散程度表征了分析师对系统失效概率的不确定性
-
-这就是所谓的**层次化**模型，其中分析师对概率$P(A_i)$本身也有概率估计。
+这就是所谓的**层次化**模型，其中分析师对概率 $P(A_i)$ 本身也有概率估计。
 
 分析师通过以下假设来形式化他的不确定性：
 
-* 失效概率 $P(A_i)$ 本身是一个对数正态随机变量，其参数为 $(\mu_i, \sigma_i)$。
-* 对于所有 $i \neq j$ 的配对，失效率 $P(A_i)$ 和 $P(A_j)$ 在统计上是相互独立的。
+ * 故障概率 $P(A_i)$ 本身是一个对数正态随机变量，其参数为 $(\mu_i, \sigma_i)$。
+ * 对于所有 $i \neq j$ 的配对，故障率 $P(A_i)$ 和 $P(A_j)$ 在统计上是相互独立的。
 
-分析师通过阅读工程论文中的可靠性研究来校准失效事件 $i = 1, \ldots, n$的参数$(\mu_i, \sigma_i)$，这些研究考察了与系统中使用的组件尽可能相似的组件的历史失效率。
+分析师通过阅读工程论文中的可靠性研究来校准故障事件 $i = 1, \ldots, n$ 的参数 $(\mu_i, \sigma_i)$，这些研究考察了与所研究系统中使用的组件尽可能相似的组件的历史故障率。
 
-分析师假设，这些关于年度失效率或失效时间的观测分散性的信息，可以帮助他预测零件在其系统中的性能表现。
+分析师假设，这些关于年度故障率或故障时间的观测分散性的信息，可以帮助他预测零件在其系统中的性能表现。
 
 分析师假设随机变量 $P(A_i)$ 在统计上是相互独立的。
 
-分析师想要近似系统失效概率 $P(F)$ 的概率质量函数和累积分布函数。
+分析师想要近似系统故障概率 $P(F)$ 的概率质量函数和累积分布函数。
 
   * 我们说概率质量函数是因为我们对每个随机变量进行了离散化，正如前文描述的那样。
 
-分析师通过重复应用卷积定理来计算**顶事件** $F$（即**系统失效**）的概率质量函数，以计算独立对数正态随机变量之和的概率分布，如方程 {eq}`eq:probtop` 所述。
+分析师通过重复应用卷积定理来计算**顶事件** $F$（即**系统故障**）的概率质量函数，以计算独立对数正态随机变量之和的概率分布，如方程 {eq}`eq:probtop` 所述。
 
-## 废物提升机失效率
+## 应用：废物提升机失效率
+
+现在我们分析一个具有 $n = 14$ 个组件的真实案例。
+
+该应用估计了核废料设施中一个关键提升机的年度故障率。
+
+监管机构要求系统的设计能够使顶事件的故障率以高概率保持在较小值。
+
+### 模型设定
 
 我们以接近实际的例子来说明，假设 $n = 14$。
 
-该例子估计了核废料设施中一个关键提升机的年度失效率。
+该例子估计了核废料设施中一个关键提升机的年度故障率。
 
-监管机构希望系统的设计能够使顶事件的失效率以高概率保持在较小值。
+监管机构希望系统的设计能够使顶事件的故障率以高概率保持在较小值。
 
-这个例子是{cite}`Greenfield_Sargent_1993`第27页表10中描述的设计方案B-2（案例I）。
+这个例子是 {cite:t}`Greenfield_Sargent_1993` 第27页表10中描述的设计方案B-2（案例I）。
 
 该表描述了十四个对数正态随机变量的参数 $\mu_i, \sigma_i$，这些随机变量由**七对**独立同分布的随机变量组成。
 
-* 在每一对内，参数$\mu_i, \sigma_i$是相同的
+* 在每一对内，参数 $\mu_i, \sigma_i$ 是相同的
 
-* 如{cite}`Greenfield_Sargent_1993`第27页表10所述，七个唯一概率 $P(A_i)$ 的对数正态分布参数已被校准为以下Python代码中的值：
+* 如 {cite:t}`Greenfield_Sargent_1993` 第27页表10所述，七个唯一概率 $P(A_i)$ 的对数正态分布参数已被校准为以下Python代码中的值：
 
 ```{code-cell} ipython3
-mu1, sigma1 = 4.28, 1.1947
-mu2, sigma2 = 3.39, 1.1947
-mu3, sigma3 = 2.795, 1.1947
-mu4, sigma4 = 2.717, 1.1947
-mu5, sigma5 = 2.717, 1.1947
-mu6, sigma6 = 1.444, 1.4632
-mu7, sigma7 = -.040, 1.4632
-
+# 组件故障率参数
+# (参见 Greenfield & Sargent 1993 表10)
+params = [
+    (4.28, 1.1947),   # 组件类型 1
+    (3.39, 1.1947),   # 组件类型 2
+    (2.795, 1.1947),  # 组件类型 3
+    (2.717, 1.1947),  # 组件类型 4
+    (2.717, 1.1947),  # 组件类型 5
+    (1.444, 1.4632),  # 组件类型 6
+    (-0.040, 1.4632), # 组件类型 7 (出现8次)
+]
 ```
 
 ```{note}
-由于故障率都很小，具有上述参数值的对数正态分布实际上描述的是 $P(A_i)$ 乘以 $10^{-09}$。
-```
+由于故障率都很小，这些对数正态分布实际上描述的是 $P(A_i) \times 10^{-9}$。
 
 所以我们将在概率质量函数和相关累积分布函数的 $x$ 轴上标注的概率应该乘以 $10^{-09}$
+```
 
-为了提取汇总计算分位数的表格，我们将使用一个辅助函数
+我们定义一个辅助函数来查找数组索引：
 
 ```{code-cell} ipython3
 def find_nearest(array, value):
+    """
+    查找数组中最接近给定值的元素的索引。
+    """
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
     return idx
@@ -571,96 +658,196 @@ def find_nearest(array, value):
 
 (请随意尝试不同的幂参数 $p$ 值，我们用它来设置网格中的点数，以构建离散化连续对数正态分布的概率质量函数。)
 
-我们将绘制一个与{cite}`Greenfield_Sargent_1993`第29页图5中的累积分布函数(CDF)相对应的图，并且还将展示一个与他们第28页表11相对应的表。
-
 ```{code-cell} ipython3
-p=15
-I = 2**p # 截断值
-m =  .05 # 增量大小
+# 设置网格参数
+p = 15
+I = 2**p
+m = 0.05
 
+# 离散化所有组件的故障率分布
+# 前6个组件使用各自独特的参数，后8个共享相同的参数
+component_pmfs = []
+for μ, σ in params[:6]:
+    _, pmf, x = discretize_lognormal(μ, σ, I, m)
+    component_pmfs.append(pmf)
 
+# 添加8份组件类型7的副本
+μ7, σ7 = params[6]
+_, pmf7, x = discretize_lognormal(μ7, σ7, I, m)
+component_pmfs.extend([pmf7] * 8)
 
+# 通过依次卷积计算系统故障分布
+with qe.Timer() as timer:
+    system_pmf = component_pmfs[0]
+    for pmf in component_pmfs[1:]:
+        system_pmf = fftconvolve(system_pmf, pmf)
 
-p1,p1_norm,x = pdf_seq(mu1,sigma1,I,m)
-p2,p2_norm,x = pdf_seq(mu2,sigma2,I,m)
-p3,p3_norm,x = pdf_seq(mu3,sigma3,I,m)
-p4,p4_norm,x = pdf_seq(mu4,sigma4,I,m)
-p5,p5_norm,x = pdf_seq(mu5,sigma5,I,m)
-p6,p6_norm,x = pdf_seq(mu6,sigma6,I,m)
-p7,p7_norm,x = pdf_seq(mu7,sigma7,I,m)
-p8,p8_norm,x = pdf_seq(mu7,sigma7,I,m)
-p9,p9_norm,x = pdf_seq(mu7,sigma7,I,m)
-p10,p10_norm,x = pdf_seq(mu7,sigma7,I,m)
-p11,p11_norm,x = pdf_seq(mu7,sigma7,I,m)
-p12,p12_norm,x = pdf_seq(mu7,sigma7,I,m)
-p13,p13_norm,x = pdf_seq(mu7,sigma7,I,m)
-p14,p14_norm,x = pdf_seq(mu7,sigma7,I,m)
-
-tic = time.perf_counter()
-
-c1 = fftconvolve(p1_norm,p2_norm)
-c2 = fftconvolve(c1,p3_norm)
-c3 = fftconvolve(c2,p4_norm)
-c4 = fftconvolve(c3,p5_norm)
-c5 = fftconvolve(c4,p6_norm)
-c6 = fftconvolve(c5,p7_norm)
-c7 = fftconvolve(c6,p8_norm)
-c8 = fftconvolve(c7,p9_norm)
-c9 = fftconvolve(c8,p10_norm)
-c10 = fftconvolve(c9,p11_norm)
-c11 = fftconvolve(c10,p12_norm)
-c12 = fftconvolve(c11,p13_norm)
-c13 = fftconvolve(c12,p14_norm)
-
-toc = time.perf_counter()
-
-tdiff13 = toc - tic
-
-print("13个卷积的计算时间 = ", tdiff13)
-
+print(f"13次卷积所需时间: {timer.elapsed:.4f} 秒")
 ```
 
+现在我们绘制一个与 {cite:t}`Greenfield_Sargent_1993` 第29页图5中的累积分布函数(CDF)相对应的图
+
 ```{code-cell} ipython3
-d13 = np.cumsum(c13)
-Nx=int(1400)
-plt.figure()
-plt.plot(x[0:int(Nx/m)],d13[0:int(Nx/m)])  # 展示给Yad看 -- 我乘以了m -- 步长
-plt.hlines(0.5,min(x),Nx,linestyles='dotted',colors = {'black'})
-plt.hlines(0.9,min(x),Nx,linestyles='dotted',colors = {'black'})
-plt.hlines(0.95,min(x),Nx,linestyles='dotted',colors = {'black'})
-plt.hlines(0.1,min(x),Nx,linestyles='dotted',colors = {'black'})
-plt.hlines(0.05,min(x),Nx,linestyles='dotted',colors = {'black'})
-plt.ylim(0,1)
-plt.xlim(0,Nx)
-plt.xlabel("$x10^{-9}$",loc = "right")
+---
+mystnb:
+  figure:
+    caption: 系统故障率的累积分布函数
+    name: fig-hoist-cdf
+---
+# 计算累积分布函数
+cdf = np.cumsum(system_pmf)
+
+# 绘制累积分布函数
+Nx = 1400
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(x[:int(Nx / m)], cdf[:int(Nx / m)], 'b-', lw=2)
+
+# 添加关键分位数的参考线
+quantile_levels = [0.05, 0.10, 0.50, 0.90, 0.95]
+for q in quantile_levels:
+    ax.axhline(q, color='gray', linestyle='--', alpha=0.5)
+
+ax.set_xlim(0, Nx)
+ax.set_ylim(0, 1)
+ax.set_xlabel(r'故障率 (每年 $\times 10^{-9}$)')
+ax.set_ylabel('累积概率')
 plt.show()
-
-x_1 = x[find_nearest(d13,0.01)]
-x_5 = x[find_nearest(d13,0.05)]
-x_10 = x[find_nearest(d13,0.1)]
-x_50 = x[find_nearest(d13,0.50)]
-x_66 = x[find_nearest(d13,0.665)]
-x_85 = x[find_nearest(d13,0.85)]
-x_90 = x[find_nearest(d13,0.90)]
-x_95 = x[find_nearest(d13,0.95)]
-x_99 = x[find_nearest(d13,0.99)]
-x_9978 = x[find_nearest(d13,0.9978)]
-
-print(tabulate([
-    ['1%',f"{x_1}"],
-    ['5%',f"{x_5}"],
-    ['10%',f"{x_10}"],
-    ['50%',f"{x_50}"],
-    ['66.5%',f"{x_66}"],
-    ['85%',f"{x_85}"],
-    ['90%',f"{x_90}"],
-    ['95%',f"{x_95}"],
-    ['99%',f"{x_99}"],
-    ['99.78%',f"{x_9978}"]],
-    headers = ['百分位数', 'x * 1e-9']))
 ```
 
-上表与 {cite}`Greenfield_Sargent_1993` 第28页表11的第2列数据非常接近。
+我们还展示一个与 {cite:t}`Greenfield_Sargent_1993` 第28页表11相对应的表，列出了系统故障率分布的关键分位数
 
-差异可能是由于在输入 $\mu_i, \sigma_i, i = 1, \ldots, 14$ 时保留的小数位数略有不同，以及在离散化时使用的点数不同所致。
 
+```{code-cell} ipython3
+# 查找分位数
+quantiles = [0.01, 0.05, 0.10, 0.50, 0.665, 0.85, 0.90, 0.95, 0.99, 0.9978]
+quantile_values = [x[find_nearest(cdf, q)] for q in quantiles]
+
+# 创建表格
+table_data = [[f"{100*q:.2f}%", f"{val:.3f}"]
+              for q, val in zip(quantiles, quantile_values)]
+
+print("\n系统故障率分位数 (×10^-9 每年):")
+print(tabulate(table_data, 
+      headers=['百分位数', '故障率'], tablefmt='grid'))
+```
+
+计算得到的分位数与 {cite}`Greenfield_Sargent_1993` 第28页表11第2列的数据非常接近。
+
+细微的差异可能是由于以下方面的差异所致：
+* 输入参数 $\mu_i, \sigma_i$ 的数值精度
+* 离散化中的网格点数
+* 网格增量大小
+
+## 练习
+
+```{exercise-start}
+:label: hoist_ex1
+```
+
+尝试不同的幂参数 $p$ 值（它决定了网格大小 $I = 2^p$）。
+
+尝试 $p \in \{12, 13, 14, 15, 16\}$ 并比较：
+1. 计算时间
+2. 中位数（第50百分位数）与参考值相比的准确性
+3. 内存使用情况的影响
+
+你观察到了哪些权衡？
+```{exercise-end}
+```
+
+```{solution-start} hoist_ex1
+:class: dropdown
+```
+
+以下是一种解答：
+
+```{code-cell} ipython3
+# 测试不同的网格大小
+p_values = [12, 13, 14, 15, 16]
+results = []
+
+for p_test in p_values:
+    I_test = 2**p_test
+    m_test = 0.05
+
+    # 离散化分布
+    pmfs_test = []
+    for μ, σ in params[:6]:
+        _, pmf, x_test = discretize_lognormal(μ, σ, I_test, m_test)
+        pmfs_test.append(pmf)
+
+    # 添加8份组件类型7的副本
+    μ7, σ7 = params[6]
+    _, pmf7, x_test = discretize_lognormal(μ7, σ7, I_test, m_test)
+    pmfs_test.extend([pmf7] * 8)
+
+    # 记录卷积计算耗时
+    with qe.Timer() as timer_test:
+        system_test = pmfs_test[0]
+        for pmf in pmfs_test[1:]:
+            system_test = fftconvolve(system_test, pmf)
+
+    # 计算中位数
+    cdf_test = np.cumsum(system_test)
+    median = x_test[find_nearest(cdf_test, 0.5)]
+
+    results.append([p_test, I_test,
+        f"{timer_test.elapsed:.4f}", f"{median:.7f}"])
+
+print(tabulate(results,
+               headers=['p', '网格大小 (2^p)', '时间 (秒)', '中位数'],
+               tablefmt='grid'))
+```
+结果通常显示以下权衡：
+
+- 更大的网格大小可以提供更好的精度，但会增加计算时间
+- 对于基于FFT的卷积，$p$ 与计算时间之间的关系大致是线性的
+- 超过 $p = 13$ 后，精度提升逐渐减小，而计算成本却持续增长
+- 对于这个应用，$p = 13$ 在精度和效率之间提供了良好的平衡
+
+```{solution-end}
+```
+
+```{exercise-start}
+:label: hoist_ex2
+```
+
+稀有事件近似假设 $P(A_i) P(A_j)$ 与 $P(A_i) + P(A_j)$ 相比可以忽略不计。
+
+利用计算得到的分布，计算系统故障率的期望值，并将其与各组件故障率期望值之和进行比较。
+
+在这种情况下，稀有事件近似的效果如何？
+```{exercise-end}
+```
+
+
+```{solution-start} hoist_ex2
+:class: dropdown
+```
+
+以下是一种解答：
+
+```{code-cell} ipython3
+# 为卷积结果创建扩展网格
+x_extended = np.arange(0, len(system_pmf) * m, m)
+E_system = np.sum(x_extended * system_pmf)
+
+# 计算各组件期望值之和
+component_means = [np.exp(μ + 0.5 * σ**2) for μ, σ in params[:6]]
+# 添加8个类型7的组件
+μ7, σ7 = params[6]
+component_means.extend([np.exp(μ7 + 0.5 * σ7**2)] * 8)
+
+E_sum = sum(component_means)
+
+print(f"系统故障率的期望值: {E_system:.3f} × 10^-9")
+print(f"各组件故障率期望值之和: {E_sum:.3f} × 10^-9")
+print(f"相对差异: {100 * abs(E_system - E_sum) / E_sum:.2f}%")
+```
+
+当故障概率很小时，稀有事件近似效果良好。
+
+由于期望值具有线性性质，和的期望值等于期望值之和，因此无论稀有事件近似如何，这两者都应该非常接近。
+
+```{solution-end}
+```

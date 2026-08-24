@@ -128,7 +128,7 @@
     <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'imp_sample';</script>
-    <link rel="canonical" href="https://python.quantecon-zh-cn.org/imp_sample.html" />
+    <link rel="canonical" href="https://quantecon.github.io/lecture-python.zh-cn/imp_sample.html" />
     <link rel="icon" href="_static/lectures-favicon.ico"/>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
@@ -151,7 +151,7 @@
 <!-- Opengraph tags -->
 <meta property="og:title" content="似然比过程的均值" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://python.quantecon-zh-cn.org/imp_sample.html" />
+<meta property="og:url" content="https://quantecon.github.io/lecture-python.zh-cn/imp_sample.html" />
 <meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
 <meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
 <meta property="og:site_name" content="Python中级数量经济学" />
@@ -268,7 +268,7 @@
 
                     <!-- Last modified / Changelog dropdown -->
                         <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
-                            Last changed: Aug 13, 2026
+                            Last changed: Aug 19, 2026
                             <span class="changelog-icon">▼</span>
                         </button>
 
@@ -279,11 +279,65 @@
                             
                             <li class="changelog-entry">
                                 
-                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/151c402" class="changelog-hash">151c402</a>
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/e7e518c" class="changelog-hash">e7e518c</a>
                                 
                                 <span class="changelog-author">Matt McKay</span>
-                                <span class="changelog-time">3 days ago</span>
-                                <span class="changelog-message">🌐 [translation-sync] Repoint the hansen_singleton pair at QuantEcon/data-lectures (wave B2') (#250)</span>
+                                <span class="changelog-time">5 days ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] [imp_sample] Convert code to JAX and check stylesheet compliance (#232)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/10ffa8c" class="changelog-hash">10ffa8c</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">1 month ago</span>
+                                <span class="changelog-message">[action-translation] resync: imp_sample.md (#116)</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/778e3e1" class="changelog-hash">778e3e1</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">11 months ago</span>
+                                <span class="changelog-message">updates</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/e73bdc9" class="changelog-hash">e73bdc9</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">11 months ago</span>
+                                <span class="changelog-message">updates</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/c4c4b86" class="changelog-hash">c4c4b86</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update matplotlib</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/ab0498b" class="changelog-hash">ab0498b</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update all translated lectures</span>
+                            </li>
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/387e084" class="changelog-hash">387e084</a>
+                                
+                                <span class="changelog-author">Humphrey Yang</span>
+                                <span class="changelog-time">1 year ago</span>
+                                <span class="changelog-message">update lecture series</span>
                             </li>
                             
                         </ul>
@@ -300,6 +354,16 @@
                         
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1><a class="toc-backref" href="#id10" role="doc-backlink"><span class="section-number">25. </span>似然比过程的均值</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<div class="warning admonition">
+<p class="admonition-title">GPU</p>
+<p>本讲座是在配有GPU的机器上构建的——不过没有GPU也可以运行。</p>
+<p><a class="reference external" href="https://colab.research.google.com/">Google Colab</a> 提供带GPU的免费套餐，使用方法如下：</p>
+<ol class="arabic simple">
+<li><p>点击右上角的”播放”图标</p></li>
+<li><p>选择 Colab</p></li>
+<li><p>将运行时环境设置为包含GPU</p></li>
+</ol>
+</div>
 <nav class="contents" id="id2">
 <p class="topic-title">目录</p>
 <ul class="simple">
@@ -318,22 +382,52 @@
 </nav>
 <section id="id3">
 <h2><a class="toc-backref" href="#id11" role="doc-backlink"><span class="section-number">25.1. </span>概述</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
-<p>在<a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">这篇讲座</span></a>中，我们描述了似然比过程的一个特殊性质，即尽管它几乎必然收敛于零，但对于所有 <span class="math notranslate nohighlight">\(t \geq 0\)</span>，其均值都等于1。</p>
+<p>在 <a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a> 中，我们描述了似然比过程的一个特殊性质，即尽管它几乎必然收敛于零，但对于所有 <span class="math notranslate nohighlight">\(t \geq 0\)</span>，其均值都等于1。</p>
 <p>虽然在理论上（即在总体中）很容易验证这个特殊性质，但要通过计算机模拟来验证它却很具有挑战性，因为这需要应用大数定律来研究重复模拟的样本平均值。</p>
 <p>为了应对这个挑战，本讲座使用__重要性抽样__来加速样本平均值向总体均值的收敛。</p>
 <p>我们使用重要性抽样来估计累积似然比 <span class="math notranslate nohighlight">\(L\left(\omega^t\right) = \prod_{i=1}^t \ell \left(\omega_i\right)\)</span> 的均值。</p>
+<p>除了Anaconda中包含的库外，本讲座还需要以下库：</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>jax
+</pre></div>
+</div>
+</div>
+<details class="admonition hide below-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell output</p>
+<p class="expanded admonition-title">Hide code cell output</p>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: jax in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (0.11.1)
+Requirement already satisfied: jaxlib&lt;=0.11.1,&gt;=0.11.1 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (0.11.1)
+Requirement already satisfied: ml_dtypes&gt;=0.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (0.6.0)
+Requirement already satisfied: numpy&gt;=2.1 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (2.4.6)
+Requirement already satisfied: opt_einsum in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (3.4.0)
+Requirement already satisfied: scipy&gt;=1.15 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from jax) (1.18.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
 <p>首先导入一些Python包。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vectorize</span><span class="p">,</span> <span class="n">prange</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
 <span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">gamma</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax.scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">beta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+
+<span class="c1"># 设置JAX使用64位浮点数</span>
+<span class="n">jax</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;jax_enable_x64&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -341,7 +435,7 @@
 </section>
 <section id="id4">
 <h2><a class="toc-backref" href="#id12" role="doc-backlink"><span class="section-number">25.2. </span>似然比的数学期望</a><a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
-<p>在<a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">这节课</span></a>中，我们研究了似然比 <span class="math notranslate nohighlight">\(\ell \left(\omega_t\right)\)</span></p>
+<p>在 <a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a> 中，我们研究了似然比 <span class="math notranslate nohighlight">\(\ell \left(\omega_t\right)\)</span></p>
 <div class="math notranslate nohighlight">
 \[
 \ell \left( \omega_t \right) = \frac{f\left(\omega_t\right)}{g\left(\omega_t\right)}
@@ -354,26 +448,29 @@
 L\left(\omega^t\right) = \prod_{i=1}^t \ell \left(\omega_i\right)
 \]</div>
 <p>我们的目标是很好地近似数学期望 <span class="math notranslate nohighlight">\(E \left[ L\left(\omega^t\right) \right]\)</span>。</p>
-<p>在<a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">这节课</span></a>中，我们证明了对所有 <span class="math notranslate nohighlight">\(t\)</span>，<span class="math notranslate nohighlight">\(E \left[ L\left(\omega^t\right) \right]\)</span> 等于1。</p>
+<p>在 <a class="reference internal" href="likelihood_ratio_process.html"><span class="doc">似然比过程</span></a> 中，我们证明了对所有 <span class="math notranslate nohighlight">\(t\)</span>，<span class="math notranslate nohighlight">\(E \left[ L\left(\omega^t\right) \right]\)</span> 等于1。</p>
 <p>我们想要检验当用模拟的样本均值替代 <span class="math notranslate nohighlight">\(E\)</span> 时，这个结论的准确程度如何。</p>
 <p>事实证明这比说起来要难，因为对于上述假设的Beta分布，当 <span class="math notranslate nohighlight">\(t \rightarrow \infty\)</span> 时，<span class="math notranslate nohighlight">\(L\left(\omega^t\right)\)</span> 具有非常偏斜的分布，且有很长的尾部。</p>
 <p>这个特性使得用标准蒙特卡洛模拟方法来有效且准确地估计均值变得困难。</p>
-<p>在本课中，我们将探讨标准蒙特卡洛方法为何会失效，以及<strong>重要性抽样</strong>如何提供一种计算上更有效的方法来近似累积似然比的均值。</p>
-<p>我们首先来看一下密度函数<code class="docutils literal notranslate"><span class="pre">f</span></code>和<code class="docutils literal notranslate"><span class="pre">g</span></code>。</p>
+<p>在本课中，我们将探讨标准蒙特卡洛方法为何会失效。</p>
+<p>我们还将展示<strong>重要性抽样</strong>如何提供一种计算上更有效的方法来近似累积似然比的均值。</p>
+<p>我们首先来看一下密度函数 <code class="docutils literal notranslate"><span class="pre">f</span></code> 和 <code class="docutils literal notranslate"><span class="pre">g</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 两个贝塔分布中的参数</span>
-<span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
-<span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.2</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 模型参数</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImpSampleParams</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">F_a</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>    <span class="c1"># f 的贝塔分布参数</span>
+    <span class="n">F_b</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">G_a</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span>    <span class="c1"># g 的贝塔分布参数</span>
+    <span class="n">G_b</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.2</span>
 
-<span class="nd">@vectorize</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">gamma</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">gamma</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="n">w</span> <span class="o">**</span> <span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">ImpSampleParams</span><span class="p">()</span>
 
-<span class="c1"># 两个密度函数</span>
-<span class="n">f</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">))</span>
-<span class="n">g</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">beta</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">F_a</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">F_b</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">g</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">beta</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">G_a</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">G_b</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -382,11 +479,10 @@ L\left(\omega^t\right) = \prod_{i=1}^t \ell \left(\omega_i\right)
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">w_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-2</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">w_range</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">w_range</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">w_range</span><span class="p">),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">w_range</span><span class="p">),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\omega$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;密度函数 $f$ 和 $g$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -394,37 +490,52 @@ L\left(\omega^t\right) = \prod_{i=1}^t \ell \left(\omega_i\right)
 <div class="cell_output docutils container">
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
 findfont: Failed to find font weight normal, now using 600.
-findfont: Failed to find font weight normal, now using 600.
-findfont: Failed to find font weight normal, now using 600.
 </pre></div>
 </div>
-<img alt="_images/84461e4f789408dae82ad1e30caeaf4e4646d0facbc73351773e366af0f7d1cd.png" src="_images/84461e4f789408dae82ad1e30caeaf4e4646d0facbc73351773e366af0f7d1cd.png" />
+<figure class="align-default" id="fig-imp-densities">
+<img alt="_images/90f929e9c0cdeed62a401258984a2347b4d4854caff72aaf4424c6ff28ee81a2.png" src="_images/90f929e9c0cdeed62a401258984a2347b4d4854caff72aaf4424c6ff28ee81a2.png" />
+<figcaption>
+<p><span class="caption-number">图 25.1 </span><span class="caption-text">贝塔密度函数 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span></span><a class="headerlink" href="#fig-imp-densities" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </div>
 </div>
 <p>似然比是 <code class="docutils literal notranslate"><span class="pre">l(w)=f(w)/g(w)</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">l</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">l</span><span class="p">(</span><span class="n">w_range</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\ell(\omega)$&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">l</span><span class="p">(</span><span class="n">w_range</span><span class="p">),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\omega$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\ell(\omega)$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/0cdf69f2538908ce7248e6f299233ff63d4092b6e097f0bb06979388cf450e2f.png" src="_images/0cdf69f2538908ce7248e6f299233ff63d4092b6e097f0bb06979388cf450e2f.png" />
+<figure class="align-default" id="fig-imp-likelihood-ratio">
+<img alt="_images/6ca28e8587619843fcea10e03063caa570e1889d089e0c6428b45e73a30d6735.png" src="_images/6ca28e8587619843fcea10e03063caa570e1889d089e0c6428b45e73a30d6735.png" />
+<figcaption>
+<p><span class="caption-number">图 25.2 </span><span class="caption-text">似然比 <span class="math notranslate nohighlight">\(\ell(\omega)\)</span>，对数坐标</span><a class="headerlink" href="#fig-imp-likelihood-ratio" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </div>
 </div>
-<p>上图显示当 <span class="math notranslate nohighlight">\(\omega \rightarrow 0\)</span> 时，<span class="math notranslate nohighlight">\(f \left(\omega\right)\)</span> 保持不变而 <span class="math notranslate nohighlight">\(g \left(\omega\right) \rightarrow 0\)</span>，因此似然比趋向无穷大。</p>
-<p>对 <span class="math notranslate nohighlight">\(\hat{E} \left[L\left(\omega^t\right)\right] = \hat{E} \left[\prod_{i=1}^t \ell \left(\omega_i\right)\right]\)</span> 的蒙特卡洛近似会重复从 <span class="math notranslate nohighlight">\(g\)</span> 中抽取 <span class="math notranslate nohighlight">\(\omega\)</span>，对每次抽取计算似然比 <span class="math notranslate nohighlight">\( \ell(\omega) = \frac{f(\omega)}{g(\omega)}\)</span>，然后对所有抽取结果取平均值。</p>
-<p>由于当 <span class="math notranslate nohighlight">\(\omega \rightarrow 0\)</span> 时 <span class="math notranslate nohighlight">\(g(\omega) \rightarrow 0\)</span>，这种模拟程序对样本空间 [0,1] 中的某些部分采样不足，而这些部分对于很好地近似似然比 <span class="math notranslate nohighlight">\(\ell(\omega)\)</span> 的数学期望来说是需要经常访问的重要区域。</p>
+<p>请注意纵轴使用了对数坐标：如果使用线性坐标，整条曲线会被左边缘的尖峰压平到接近零的位置。</p>
+<p><a class="reference internal" href="#fig-imp-densities"><span class="std std-numref">图 25.1</span></a> 显示，当 <span class="math notranslate nohighlight">\(\omega \rightarrow 0\)</span> 时，<span class="math notranslate nohighlight">\(f \left(\omega\right)\)</span> 保持不变，而 <span class="math notranslate nohighlight">\(g \left(\omega\right) \rightarrow 0\)</span>。</p>
+<p>因此 <a class="reference internal" href="#fig-imp-likelihood-ratio"><span class="std std-numref">图 25.2</span></a> 中的似然比以 <span class="math notranslate nohighlight">\(\omega^{-2}\)</span> 的速率发散至无穷大。</p>
+<p>当 <span class="math notranslate nohighlight">\(\omega \rightarrow 1\)</span> 时也会出现同样的情况，因为 <span class="math notranslate nohighlight">\(G_b &gt; 1\)</span> 也会迫使 <span class="math notranslate nohighlight">\(g\left(\omega\right) \rightarrow 0\)</span>，这就解释了右边缘的上扬现象。</p>
+<p>但那里的发散速度要慢得多——速率为 <span class="math notranslate nohighlight">\(\left(1-\omega\right)^{-1/5}\)</span>——正是 <span class="math notranslate nohighlight">\(\omega = 0\)</span> 附近的行为才导致了下文中的问题。</p>
+<p>对 <span class="math notranslate nohighlight">\(E \left[L\left(\omega^t\right)\right]\)</span> 的蒙特卡洛近似会重复从 <span class="math notranslate nohighlight">\(g\)</span> 中抽取 <span class="math notranslate nohighlight">\(t\)</span> 个独立观测值组成的序列 <span class="math notranslate nohighlight">\(\omega^t = \left(\omega_1, \ldots, \omega_t\right)\)</span>，对每个这样的序列计算乘积 <span class="math notranslate nohighlight">\(L\left(\omega^t\right) = \prod_{i=1}^t \ell \left(\omega_i\right)\)</span>，然后对独立抽取的多个序列所得的乘积取平均值。</p>
+<p>由于当 <span class="math notranslate nohighlight">\(\omega \rightarrow 0\)</span> 时 <span class="math notranslate nohighlight">\(g(\omega) \rightarrow 0\)</span>，这种模拟程序对样本空间 [0,1] 中的某些部分采样不足，而这些部分对于很好地近似 <span class="math notranslate nohighlight">\(\ell \left(\omega\right)\)</span> 的数学期望来说是需要经常访问的重要区域。</p>
+<p><span class="math notranslate nohighlight">\(L\left(\omega^t\right)\)</span> 中的每一个因子都以同样的方式发生了扭曲，因此这个问题会随着 <span class="math notranslate nohighlight">\(t\)</span> 的增大而不断累积加剧。</p>
 <p>我们在下面通过数值方法说明这一点。</p>
 </section>
 <section id="id5">
@@ -433,20 +544,20 @@ findfont: Failed to find font weight normal, now using 600.
 <p>在模拟过程中，我们不从 <span class="math notranslate nohighlight">\(g\)</span> 中抽取数据，而是使用另一个分布 <span class="math notranslate nohighlight">\(h\)</span> 来生成 <span class="math notranslate nohighlight">\(\omega\)</span> 的抽样。</p>
 <p>这个想法是设计 <span class="math notranslate nohighlight">\(h\)</span> 使其对 <span class="math notranslate nohighlight">\(\Omega\)</span> 中那些 <span class="math notranslate nohighlight">\(\ell \left(\omega_t\right)\)</span> 取值较大但在 <span class="math notranslate nohighlight">\(g\)</span> 下密度较低的区域进行过采样。</p>
 <p>用这种方式构造样本后，当我们计算似然比的经验均值时，必须用 <span class="math notranslate nohighlight">\(g\)</span> 和 <span class="math notranslate nohighlight">\(h\)</span> 的似然比对每个实现值进行加权。</p>
-<p>通过这样做，我们恰当地考虑到了我们使用<span class="math notranslate nohighlight">\(h\)</span>而不是<span class="math notranslate nohighlight">\(g\)</span>来模拟数据的事实。</p>
-<p>为了说明，假设我们对<span class="math notranslate nohighlight">\({E}\left[\ell\left(\omega\right)\right]\)</span>感兴趣。</p>
+<p>通过这样做，我们恰当地考虑到了我们使用 <span class="math notranslate nohighlight">\(h\)</span> 而不是 <span class="math notranslate nohighlight">\(g\)</span> 来模拟数据的事实。</p>
+<p>为了说明，假设我们对 <span class="math notranslate nohighlight">\({E}\left[\ell\left(\omega\right)\right]\)</span> 感兴趣。</p>
 <p>我们可以简单地计算：</p>
 <div class="math notranslate nohighlight">
 \[
-\hat{E}^g \left[\ell\left(\omega\right)\right] = \frac{1}{N} \sum_{i=1}^{N} \ell(w_i^g)
+\hat{E}^g \left[\ell\left(\omega\right)\right] = \frac{1}{N} \sum_{i=1}^{N} \ell\left(\omega_i^g\right)
 \]</div>
-<p>其中<span class="math notranslate nohighlight">\(\omega_i^g\)</span>表示<span class="math notranslate nohighlight">\(\omega_i\)</span>是从<span class="math notranslate nohighlight">\(g\)</span>中抽取的。</p>
+<p>其中 <span class="math notranslate nohighlight">\(\omega_i^g\)</span> 表示 <span class="math notranslate nohighlight">\(\omega_i\)</span> 是从 <span class="math notranslate nohighlight">\(g\)</span> 中抽取的。</p>
 <p>但是利用重要性抽样的见解，我们可以改为计算这个对象：</p>
 <div class="math notranslate nohighlight">
 \[
-\hat{E}^h \left[\ell\left(\omega\right) \frac{g(w)}{h(w)} \right] = \frac{1}{N} \sum_{i=1}^{N} \ell(w_i^h) \frac{g(w_i^h)}{h(w_i^h)}
+\hat{E}^h \left[\ell\left(\omega\right) \frac{g\left(\omega\right)}{h\left(\omega\right)} \right] = \frac{1}{N} \sum_{i=1}^{N} \ell\left(\omega_i^h\right) \frac{g\left(\omega_i^h\right)}{h\left(\omega_i^h\right)}
 \]</div>
-<p>其中<span class="math notranslate nohighlight">\(w_i\)</span>现在是从重要性分布<span class="math notranslate nohighlight">\(h\)</span>中抽取的。</p>
+<p>其中 <span class="math notranslate nohighlight">\(\omega_i\)</span> 现在是从重要性分布 <span class="math notranslate nohighlight">\(h\)</span> 中抽取的。</p>
 <p>注意上述两个在总体上是完全相同的对象：</p>
 <div class="math notranslate nohighlight">
 \[
@@ -459,7 +570,7 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <p>这些图比较了<span class="math notranslate nohighlight">\(g\)</span>和<span class="math notranslate nohighlight">\(h\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span> <span class="o">=</span> <span class="n">G_a</span><span class="p">,</span> <span class="n">G_b</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">G_a</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">G_b</span>
 <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span>
 </pre></div>
 </div>
@@ -469,9 +580,10 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">w_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">w_range</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;g=Beta(</span><span class="si">{</span><span class="n">g_a</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">g_b</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">p</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;h=Beta(</span><span class="si">{</span><span class="n">h_a</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">h_b</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;真实数据生成过程 $g$ 和重要性分布 $h$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">w_range</span><span class="p">),</span>
+         <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;g=Beta(</span><span class="si">{</span><span class="n">g_a</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">g_b</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">beta</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+         <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;h=Beta(</span><span class="si">{</span><span class="n">h_a</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">h_b</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -479,59 +591,94 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/bde39ed462d3173bcebe2ef90fc8787ab6962b534bd4f31191787f28b766410d.png" src="_images/bde39ed462d3173bcebe2ef90fc8787ab6962b534bd4f31191787f28b766410d.png" />
+<figure class="align-default" id="fig-imp-real">
+<img alt="_images/96a87384c742112730ec690e44c9ddc236c17c9a8edb547657c09eedc1e648e8.png" src="_images/96a87384c742112730ec690e44c9ddc236c17c9a8edb547657c09eedc1e648e8.png" />
+<figcaption>
+<p><span class="caption-number">图 25.3 </span><span class="caption-text">数据分布与重要性抽样分布</span><a class="headerlink" href="#fig-imp-real" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </div>
 </div>
 </section>
 <section id="id7">
 <h2><a class="toc-backref" href="#id15" role="doc-backlink"><span class="section-number">25.5. </span>近似累积似然比</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p>我们现在研究如何使用重要性抽样来近似
-<span class="math notranslate nohighlight">\({E} \left[L(\omega^t)\right] = \left[\prod_{i=1}^T \ell \left(\omega_i\right)\right]\)</span>。</p>
-<p>如上所述，我们的计划是从 <span class="math notranslate nohighlight">\(q\)</span> 中抽取序列 <span class="math notranslate nohighlight">\(\omega^t\)</span>，然后对似然比进行适当的重新加权：</p>
+<span class="math notranslate nohighlight">\({E} \left[L\left(\omega^t\right)\right] = E \left[\prod_{i=1}^t \ell \left(\omega_i\right)\right]\)</span>。</p>
+<p>如上所述，我们的计划是从 <span class="math notranslate nohighlight">\(q\)</span> 中抽取序列 <span class="math notranslate nohighlight">\(\omega^t\)</span>，然后对似然比进行适当的重新加权。</p>
+<p>分布的变换在总体上成立，这与单次抽取的情况完全一样：</p>
 <div class="math notranslate nohighlight">
 \[
-\hat{E}^p \left[L\left(\omega^t\right)\right] = \hat{E}^p \left[\prod_{t=1}^T \ell \left(\omega_t\right)\right] = \hat{E}^q \left[\prod_{t=1}^T \ell \left(\omega_t\right) \frac{p\left(\omega_{t}\right)}{q\left(\omega_{t}\right)}\right] =
-\frac{1}{N} \sum_{i=1}^{N}\left( \prod_{t=1}^{T} \ell(\omega_{i,t}^h)\frac{p\left(\omega_{i,t}^h\right)}{q\left(\omega_{i,t}^h\right)}\right)
+E^p \left[L\left(\omega^t\right)\right] = E^p \left[\prod_{i=1}^t \ell \left(\omega_i\right)\right] = E^q \left[\prod_{i=1}^t \ell \left(\omega_i\right) \frac{p\left(\omega_i\right)}{q\left(\omega_i\right)}\right]
 \]</div>
-<p>其中最后一个等式使用从重要性分布 <span class="math notranslate nohighlight">\(q\)</span> 中抽取的 <span class="math notranslate nohighlight">\(\omega_{i,t}^h\)</span>。</p>
-<p>这里 <span class="math notranslate nohighlight">\(\frac{p\left(\omega_{i,t}^q\right)}{q\left(\omega_{i,t}^q\right)}\)</span> 是我们分配给每个数据点 <span class="math notranslate nohighlight">\(\omega_{i,t}^q\)</span> 的权重。</p>
-<p>下面我们准备一个Python函数，用于计算给定任何beta分布 <span class="math notranslate nohighlight">\(p\)</span>、<span class="math notranslate nohighlight">\(q\)</span> 的重要性抽样估计。</p>
+<p>这启发了以下估计量</p>
+<div class="math notranslate nohighlight">
+\[
+\hat{E}^q \left[L\left(\omega^t\right)\right] =
+\frac{1}{N} \sum_{n=1}^{N}\left( \prod_{i=1}^{t} \ell\left(\omega_{n,i}^q\right)\frac{p\left(\omega_{n,i}^q\right)}{q\left(\omega_{n,i}^q\right)}\right)
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\omega_{n,i}^q\)</span> 是从重要性分布 <span class="math notranslate nohighlight">\(q\)</span> 中抽取的第 <span class="math notranslate nohighlight">\(n\)</span> 条序列的第 <span class="math notranslate nohighlight">\(i\)</span> 个观测值。</p>
+<p>这里 <span class="math notranslate nohighlight">\(\frac{p\left(\omega_{n,i}^q\right)}{q\left(\omega_{n,i}^q\right)}\)</span> 是我们分配给每个数据点 <span class="math notranslate nohighlight">\(\omega_{n,i}^q\)</span> 的权重。</p>
+<p>下面我们准备一个 Python 函数，用于计算给定任何 beta 分布 <span class="math notranslate nohighlight">\(p\)</span>、<span class="math notranslate nohighlight">\(q\)</span> 的重要性抽样估计。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@jit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">estimate</span><span class="p">(</span><span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">estimate_single_path</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimation for a single sample path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">μ_L</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loop_body</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">carry</span><span class="p">):</span>
+        <span class="n">L</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">key_state</span> <span class="o">=</span> <span class="n">carry</span>
+        <span class="n">key_state</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key_state</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">subkey</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">)</span>
 
-        <span class="n">L</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">weight</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
-            <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">)</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="c1"># Keep draws off the boundary, where the log densities</span>
+        <span class="c1"># below produce the undefined form 0 * inf</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-12</span><span class="p">)</span>
 
-            <span class="n">L</span> <span class="o">*=</span> <span class="n">l</span>
-            <span class="n">weight</span> <span class="o">*=</span> <span class="n">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">)</span>
+        <span class="c1"># Compute likelihood ratio using f/g functions</span>
+        <span class="n">likelihood_ratio</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">L</span> <span class="o">*</span> <span class="n">likelihood_ratio</span>
 
-        <span class="n">μ_L</span> <span class="o">+=</span> <span class="n">L</span> <span class="o">*</span> <span class="n">weight</span>
+        <span class="c1"># Importance sampling weight</span>
+        <span class="n">p_w</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">)</span>
+        <span class="n">q_w</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">)</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span> <span class="o">*</span> <span class="p">(</span><span class="n">p_w</span> <span class="o">/</span> <span class="n">q_w</span><span class="p">)</span>
 
-    <span class="n">μ_L</span> <span class="o">/=</span> <span class="n">N</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">key_state</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">μ_L</span>
+    <span class="c1"># Use fori_loop for dynamic T values</span>
+    <span class="n">final_L</span><span class="p">,</span> <span class="n">final_weight</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">fori_loop</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">loop_body</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">final_L</span> <span class="o">*</span> <span class="n">final_weight</span>
+
+<span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimation of a batch of sample paths.&quot;&quot;&quot;</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># Vectorize over keys, holding the parameters fixed</span>
+    <span class="n">estimates</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span>
+        <span class="n">estimate_single_path</span><span class="p">,</span>
+        <span class="n">in_axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="p">)(</span><span class="n">keys</span><span class="p">,</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">estimates</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>考虑<span class="math notranslate nohighlight">\(T=1\)</span>的情况，这相当于近似<span class="math notranslate nohighlight">\(E_0\left[\ell\left(\omega\right)\right]\)</span></p>
-<p>对于标准蒙特卡洛估计，我们可以设置<span class="math notranslate nohighlight">\(p=g\)</span>和<span class="math notranslate nohighlight">\(q=g\)</span>。</p>
+<p>考虑 <span class="math notranslate nohighlight">\(T=1\)</span> 的情况，这相当于近似 <span class="math notranslate nohighlight">\(E\left[\ell\left(\omega\right)\right]\)</span>。</p>
+<p>对于标准蒙特卡洛估计，我们可以设置 <span class="math notranslate nohighlight">\(p=g\)</span> 和 <span class="math notranslate nohighlight">\(q=g\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimate</span><span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimate</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span>
+         <span class="n">T</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.0273014652120478
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Array(0.98300826, dtype=float64)
 </pre></div>
 </div>
 </div>
@@ -539,101 +686,119 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <p>对于我们的重要性抽样估计，我们设定 <span class="math notranslate nohighlight">\(q = h\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimate</span><span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimate</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span><span class="p">,</span>
+         <span class="n">T</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.0040916338785988
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Array(1.00722995, dtype=float64)
 </pre></div>
 </div>
 </div>
 </div>
 <p>显然，即使在 <span class="math notranslate nohighlight">\(T=1\)</span> 时，我们的重要性采样估计比蒙特卡洛估计更接近 <span class="math notranslate nohighlight">\(1\)</span>。</p>
-<p>在计算更长序列的期望值 <span class="math notranslate nohighlight">\(E_0\left[L\left(\omega^t\right)\right]\)</span> 时，差异会更大。</p>
-<p>当设置 <span class="math notranslate nohighlight">\(T=10\)</span> 时，我们发现蒙特卡洛方法严重低估了均值，而重要性采样仍然产生接近其理论值1的估计。</p>
+<p>在计算更长序列的期望值 <span class="math notranslate nohighlight">\(E\left[L\left(\omega^t\right)\right]\)</span> 时，差异会更大。</p>
+<p>当设置 <span class="math notranslate nohighlight">\(T=10\)</span> 时，我们发现蒙特卡洛方法严重低估了均值，而重要性采样仍然产生接近其理论值 1 的估计。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimate</span><span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimate</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span>
+         <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.5466476890697871
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Array(0.60388316, dtype=float64)
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimate</span><span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimate</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span><span class="p">,</span>
+         <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.9835476647436706
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Array(0.99185478, dtype=float64)
 </pre></div>
 </div>
 </div>
 </div>
-<p>蒙特卡洛方法会低估是因为在分布<span class="math notranslate nohighlight">\(g\)</span>下，似然比<span class="math notranslate nohighlight">\(L(\omega^T) = \prod_{t=1}^T \frac{f(\omega_t)}{g(\omega_t)}\)</span>具有高度偏斜的分布。</p>
-<p>从<span class="math notranslate nohighlight">\(g\)</span>中抽取的大多数样本产生较小的似然比，而真实均值需要偶尔出现的非常大的值，这些值很少被采样到。</p>
-<p>在我们的情况下，由于当<span class="math notranslate nohighlight">\(\omega \to 0\)</span>时<span class="math notranslate nohighlight">\(g(\omega) \to 0\)</span>而<span class="math notranslate nohighlight">\(f(\omega)\)</span>保持不变，蒙特卡洛过程恰恰在似然比<span class="math notranslate nohighlight">\(\frac{f(\omega)}{g(\omega)}\)</span>最大的地方采样不足。</p>
-<p>随着<span class="math notranslate nohighlight">\(T\)</span>的增加，这个问题呈指数级恶化，使标准蒙特卡洛方法变得越来越不可靠。</p>
-<p>使用<span class="math notranslate nohighlight">\(q = h\)</span>的重要性采样通过更均匀地从对<span class="math notranslate nohighlight">\(f\)</span>和<span class="math notranslate nohighlight">\(g\)</span>都重要的区域采样来解决这个问题。</p>
+<p>蒙特卡洛方法会低估是因为在分布 <span class="math notranslate nohighlight">\(g\)</span> 下，似然比 <span class="math notranslate nohighlight">\(L(\omega^T) = \prod_{t=1}^T \frac{f(\omega_t)}{g(\omega_t)}\)</span> 具有高度偏斜的分布。</p>
+<p>从 <span class="math notranslate nohighlight">\(g\)</span> 中抽取的大多数样本产生较小的似然比，而真实均值需要偶尔出现的非常大的值，这些值很少被采样到。</p>
+<p>在我们的情况下，由于当 <span class="math notranslate nohighlight">\(\omega \to 0\)</span> 时 <span class="math notranslate nohighlight">\(g(\omega) \to 0\)</span> 而 <span class="math notranslate nohighlight">\(f(\omega)\)</span> 保持不变，蒙特卡洛过程恰恰在似然比 <span class="math notranslate nohighlight">\(\frac{f(\omega)}{g(\omega)}\)</span> 最大的地方采样不足。</p>
+<p>事实上情况比偏斜还要严重——蒙特卡洛估计量的方差是<strong>无穷大</strong>的。</p>
+<p>要说明这一点，注意单个似然比的二阶矩为</p>
+<div class="math notranslate nohighlight">
+\[
+E^g \left[\ell\left(\omega\right)^2\right]
+= \int_0^1 \left(\frac{f\left(\omega\right)}{g\left(\omega\right)}\right)^2 g\left(\omega\right) d\omega
+= \int_0^1 \frac{f\left(\omega\right)^2}{g\left(\omega\right)} d\omega
+\]</div>
+<p>这里 <span class="math notranslate nohighlight">\(f\)</span> 是均匀密度，而 <span class="math notranslate nohighlight">\(g\left(\omega\right)\)</span> 在 <span class="math notranslate nohighlight">\(\omega \to 0\)</span> 时以 <span class="math notranslate nohighlight">\(\omega^{G_a - 1} = \omega^2\)</span> 的速度趋于零。</p>
+<p>因此被积函数在原点附近的行为类似于 <span class="math notranslate nohighlight">\(\omega^{-2}\)</span>，该积分是发散的。</p>
+<p>所以 <span class="math notranslate nohighlight">\(\ell\left(\omega\right)\)</span> 没有有限的方差，并且由于各次抽取是独立的，对于任意 <span class="math notranslate nohighlight">\(t\)</span>，<span class="math notranslate nohighlight">\(L\left(\omega^t\right)\)</span> 同样没有有限的方差。</p>
+<p>这正是标准蒙特卡洛方法在此失效的确切含义：其样本均值不满足任何中心极限定理，因此不具备通常的 <span class="math notranslate nohighlight">\(\sqrt{N}\)</span> 收敛保证。</p>
+<p>随着 <span class="math notranslate nohighlight">\(T\)</span> 的增加，这个问题会不断恶化，使标准蒙特卡洛方法变得越来越不可靠。</p>
+<p>使用 <span class="math notranslate nohighlight">\(q = h\)</span> 的重要性采样通过更均匀地从对 <span class="math notranslate nohighlight">\(f\)</span> 和 <span class="math notranslate nohighlight">\(g\)</span> 都重要的区域采样来解决这个问题。</p>
 </section>
 <section id="id8">
 <h2><a class="toc-backref" href="#id16" role="doc-backlink"><span class="section-number">25.6. </span>样本均值的分布</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p>接下来我们研究蒙特卡洛和重要性采样方法的偏差和效率。</p>
-<p>下面的代码使用蒙特卡洛和重要性采样方法生成估计值的分布。</p>
+<p>下面的代码将估计重复<code class="docutils literal notranslate"><span class="pre">N_simu</span></code>次，这样我们就可以查看每种方法产生的估计值的分布。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-
-    <span class="n">μ_L_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">N_simu</span><span class="p">)</span>
-    <span class="n">μ_L_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">N_simu</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_simu</span><span class="p">):</span>
-        <span class="n">μ_L_p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">estimate</span><span class="p">(</span><span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
-        <span class="n">μ_L_q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">estimate</span><span class="p">(</span><span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">μ_L_p</span><span class="p">,</span> <span class="n">μ_L_q</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;N_simu&#39;</span><span class="p">,</span> <span class="s1">&#39;N_samples&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+             <span class="n">N_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Repeat the estimate N_simu times, drawing from q.&quot;&quot;&quot;</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">estimate</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span>
+                           <span class="n">N_samples</span><span class="p">)</span>
+    <span class="p">)(</span><span class="n">keys</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>设置 <span class="math notranslate nohighlight">\(q = p\)</span> 可以恢复标准蒙特卡洛方法，因为这样每个重要性权重都恒等于1。</p>
 <p>再次，我们首先通过设置T=1来估计<span class="math notranslate nohighlight">\({E} \left[\ell\left(\omega\right)\right]\)</span>。</p>
 <p>我们对每种方法进行1000次模拟。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N_simu</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">μ_L_p</span><span class="p">,</span> <span class="n">μ_L_q</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">)</span>
+<span class="n">μ_L_g</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span>
+                 <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">)</span>
+<span class="n">μ_L_h</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span>
+                 <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 标准蒙特卡洛（均值和标准差）</span>
-<span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanvar</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 标准蒙特卡洛（均值和方差）</span>
+<span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">μ_L_g</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">μ_L_g</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(0.998590814714994), np.float64(0.018438483136537818))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(Array(0.99558545, dtype=float64), Array(0.00448641, dtype=float64))
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 重要性采样（均值和标准差）</span>
-<span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanvar</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 重要性采样（均值和方差）</span>
+<span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">μ_L_h</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">μ_L_h</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(0.999849276231163), np.float64(2.3200817780104334e-05))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(Array(0.99985196, dtype=float64), Array(2.46227759e-05, dtype=float64))
 </pre></div>
 </div>
 </div>
@@ -642,74 +807,131 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <p>接下来，我们展示<span class="math notranslate nohighlight">\(\hat{E} \left[L\left(\omega^t\right)\right]\)</span>在<span class="math notranslate nohighlight">\(T=1, 5, 10, 20\)</span>这些情况下的估计值分布。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">simulate_multiple_T</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">,</span> <span class="n">T_values</span><span class="p">,</span>
+                        <span class="n">N_simu</span><span class="p">,</span> <span class="n">N_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run simulate once per T, returning a dict keyed by T.&quot;&quot;&quot;</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">T_values</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">T</span><span class="p">:</span> <span class="n">simulate</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span><span class="p">,</span>
+                        <span class="n">N_simu</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_samples</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">T</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">T_values</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>下面这个函数绘制我们用来比较两种方法的直方图。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_estimates</span><span class="p">(</span><span class="n">T_values</span><span class="p">,</span> <span class="n">mc</span><span class="p">,</span> <span class="n">imp</span><span class="p">,</span> <span class="n">imp_label</span><span class="p">,</span> <span class="n">n_rows</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compare Monte Carlo and importance sampling estimates.&quot;&quot;&quot;</span>
+    <span class="n">n_cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">T_values</span><span class="p">)</span> <span class="o">//</span> <span class="n">n_rows</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">n_cols</span><span class="p">,</span>
+                            <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">n_rows</span><span class="p">))</span>
+    <span class="n">μ_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
-<span class="n">μ_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">T</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">axs</span><span class="p">),</span> <span class="n">T_values</span><span class="p">):</span>
+        <span class="n">μ_L_g</span><span class="p">,</span> <span class="n">μ_L_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mc</span><span class="p">[</span><span class="n">T</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">imp</span><span class="p">[</span><span class="n">T</span><span class="p">])</span>
 
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]):</span>
-    <span class="n">row</span> <span class="o">=</span> <span class="n">i</span> <span class="o">//</span> <span class="mi">2</span>
-    <span class="n">col</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$μ_L$&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;frequency&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;$T$=</span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">μ_L_g</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">μ_range</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$g$ generating&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">μ_L_h</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">μ_range</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">imp_label</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
-    <span class="n">μ_L_p</span><span class="p">,</span> <span class="n">μ_L_q</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
-    <span class="n">μ_hat_p</span><span class="p">,</span> <span class="n">μ_hat_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">)</span>
-    <span class="n">σ_hat_p</span><span class="p">,</span> <span class="n">σ_hat_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanvar</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanvar</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">)</span>
+        <span class="c1"># Summarize each distribution in an upper corner</span>
+        <span class="k">for</span> <span class="n">μ_L</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">ha</span> <span class="ow">in</span> <span class="p">((</span><span class="n">μ_L_g</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">),</span>
+                                  <span class="p">(</span><span class="n">μ_L_h</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">)):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="n">ha</span><span class="p">,</span>
+                    <span class="n">va</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+                    <span class="n">s</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\hat</span><span class="si">{μ}</span><span class="s1">$=&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">μ_L</span><span class="p">)</span><span class="si">:</span><span class="s1">.3g</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span>
+                      <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;med=&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">μ_L</span><span class="p">)</span><span class="si">:</span><span class="s1">.3g</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span>
+                      <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;$\hat</span><span class="si">{σ}</span><span class="s1">^2$=&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">μ_L</span><span class="p">)</span><span class="si">:</span><span class="s1">.3g</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-    <span class="n">axs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$μ_L$&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;frequency&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;$T$=</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">n_p</span><span class="p">,</span> <span class="n">bins_p</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">μ_range</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$g$ generating&#39;</span><span class="p">)</span>
-    <span class="n">n_q</span><span class="p">,</span> <span class="n">bins_q</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">μ_range</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$h$ generating&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>蒙特卡洛估计不依赖于重要性分布，因此我们只计算一次，并在下面的每个图中重复使用它们。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
 
-    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">μ_hat</span><span class="p">,</span> <span class="n">σ_hat</span> <span class="ow">in</span> <span class="p">[[</span><span class="n">n_p</span><span class="p">,</span> <span class="n">bins_p</span><span class="p">,</span> <span class="n">μ_hat_p</span><span class="p">,</span> <span class="n">σ_hat_p</span><span class="p">],</span>
-                                  <span class="p">[</span><span class="n">n_q</span><span class="p">,</span> <span class="n">bins_q</span><span class="p">,</span> <span class="n">μ_hat_q</span><span class="p">,</span> <span class="n">σ_hat_q</span><span class="p">]]:</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-        <span class="n">axs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="sa">r</span><span class="s1">&#39;$\hat</span><span class="si">{μ}</span><span class="s1">$=&#39;</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">μ_hat</span><span class="si">:</span><span class="s1">.4g</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">+</span><span class="sa">r</span><span class="s1">&#39;, $\hat</span><span class="si">{σ}</span><span class="s1">=$&#39;</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">σ_hat</span><span class="si">:</span><span class="s1">.4g</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">mc</span> <span class="o">=</span> <span class="n">simulate_multiple_T</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span>
+                         <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">T_values</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">imp_h1</span> <span class="o">=</span> <span class="n">simulate_multiple_T</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span>
+                             <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span><span class="p">,</span> <span class="n">T_values</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">plot_estimates</span><span class="p">(</span><span class="n">T_values</span><span class="p">,</span> <span class="n">mc</span><span class="p">,</span> <span class="n">imp_h1</span><span class="p">,</span> <span class="s1">&#39;$h$ generating&#39;</span><span class="p">,</span>
+               <span class="n">n_rows</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/0702272171e1c369491cd93e6687621b69ff7c37c89e156893fc4573fc70ee6b.png" src="_images/0702272171e1c369491cd93e6687621b69ff7c37c89e156893fc4573fc70ee6b.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-imp-estimates">
+<img alt="_images/bf848124b0e93327c9ba1e0f95c81b7aa2218271f7e63f9addf907d043061709.png" src="_images/bf848124b0e93327c9ba1e0f95c81b7aa2218271f7e63f9addf907d043061709.png" />
+<figcaption>
+<p><span class="caption-number">图 25.4 </span><span class="caption-text">Monte Carlo and importance sampling estimates</span><a class="headerlink" href="#fig-imp-estimates" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </div>
 </div>
-<p>上述模拟练习表明,在所有<span class="math notranslate nohighlight">\(T\)</span>值下,重要性抽样估计都是无偏的,而标准蒙特卡洛估计则存在向下偏差。</p>
-<p>显然,随着<span class="math notranslate nohighlight">\(T\)</span>的增加,偏差也在增加。</p>
+<p>上述模拟练习表明，对于每一个<span class="math notranslate nohighlight">\(T\)</span>，重要性抽样估计都保持在<span class="math notranslate nohighlight">\(1\)</span>附近，而标准蒙特卡洛估计的分布则随着<span class="math notranslate nohighlight">\(T\)</span>的增加而持续向左偏移。</p>
+<p>有必要仔细分析一下这里究竟出了什么问题。</p>
+<p>蒙特卡洛估计量在总体意义上是无偏的——对于每个<span class="math notranslate nohighlight">\(T\)</span>，其期望恰好为<span class="math notranslate nohighlight">\(1\)</span>。</p>
+<p>随着<span class="math notranslate nohighlight">\(T\)</span>的增大而恶化的是其抽样分布的<em>形状</em>：几乎所有的概率质量都向零坍缩，而期望值则由罕见的极端离群值来维持。</p>
+<p>这就是为什么每个面板都同时报告了中位数。</p>
+<p>中位数随<span class="math notranslate nohighlight">\(T\)</span>稳步下降，而报告的均值<span class="math notranslate nohighlight">\(\hat{μ}\)</span>则是一个不可靠的统计量——回想一下，其潜在方差是无穷的，因此每个面板中打印的<span class="math notranslate nohighlight">\(\hat{σ}^2\)</span>所估计的量根本不存在，并且换一个不同的随机种子就可能使<span class="math notranslate nohighlight">\(\hat{μ}\)</span>发生很大的变化。</p>
+<p>重要性抽样恰恰弥补了这一缺陷。</p>
 </section>
 <section id="id9">
 <h2><a class="toc-backref" href="#id17" role="doc-backlink"><span class="section-number">25.7. </span>选择抽样分布</a><a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
-<p>在上面,我们任意选择了<span class="math notranslate nohighlight">\(h = Beta(0.5,0.5)\)</span>作为重要性分布。</p>
-<p>是否存在最优的重要性分布?</p>
-<p>在我们这个特定情况下,由于我们事先知道<span class="math notranslate nohighlight">\(E_0 \left[ L\left(\omega^t\right) \right] = 1\)</span>,我们可以利用这个知识。</p>
-<p>因此,假设我们直接使用<span class="math notranslate nohighlight">\(h = f\)</span>。</p>
-<p>当估计似然比的均值(T=1)时,我们得到:</p>
+<p>上面，我们任意选择 <span class="math notranslate nohighlight">\(h = Beta(0.5,0.5)\)</span> 作为重要性分布。</p>
+<p>是否存在最优的重要性分布？</p>
+<p>在我们这个特定的情形中，由于我们事先知道 <span class="math notranslate nohighlight">\(E \left[ L\left(\omega^t\right) \right] = 1\)</span>，我们可以利用这个信息。</p>
+<p>因此，假设我们简单地使用 <span class="math notranslate nohighlight">\(h = f\)</span>。</p>
+<p>在估计似然比的均值时（T=1），我们得到：</p>
 <div class="math notranslate nohighlight">
 \[
-\hat{E}^f \left[\ell(\omega) \frac{g(\omega)}{f(\omega)} \right] = \hat{E}^f \left[\frac{f(\omega)}{g(\omega)} \frac{g(\omega)}{f(\omega)} \right] = \frac{1}{N} \sum_{i=1}^{N} \ell(w_i^f) \frac{g(w_i^f)}{f(w_i^f)} = 1
+\hat{E}^f \left[\ell(\omega) \frac{g(\omega)}{f(\omega)} \right] = \hat{E}^f \left[\frac{f(\omega)}{g(\omega)} \frac{g(\omega)}{f(\omega)} \right] = \frac{1}{N} \sum_{i=1}^{N} \ell\left(\omega_i^f\right) \frac{g\left(\omega_i^f\right)}{f\left(\omega_i^f\right)} = 1
 \]</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">μ_L_p</span><span class="p">,</span> <span class="n">μ_L_q</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">F_a</span><span class="p">,</span> <span class="n">F_b</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">μ_L_f</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span>
+                 <span class="n">params</span><span class="o">.</span><span class="n">F_a</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">F_b</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 重要性采样（均值和标准差）</span>
-<span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanvar</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 重要性抽样（均值和方差）</span>
+<span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">μ_L_f</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">μ_L_f</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(1.0), np.float64(0.0))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(Array(1., dtype=float64), Array(1.23259516e-30, dtype=float64))
 </pre></div>
 </div>
 </div>
 </div>
 <p>我们也可以使用其他分布作为我们的重要性分布。</p>
-<p>下面我们选择几个分布并比较它们的采样特性。</p>
+<p>下面我们选择其中几个，并比较它们的抽样特性。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a_list</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span>
@@ -722,11 +944,14 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">w_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">w_range</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;g=Beta(</span><span class="si">{</span><span class="n">g_a</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">g_b</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">p</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">a_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$h_1$=Beta(</span><span class="si">{</span><span class="n">a_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">b_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">p</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">a_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$h_2$=Beta(</span><span class="si">{</span><span class="n">a_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">b_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">p</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">a_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">b_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$h_3$=Beta(</span><span class="si">{</span><span class="n">a_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">b_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;真实数据生成过程 $g$ 和重要性分布 $h$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">w_range</span><span class="p">),</span>
+         <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;g=Beta(</span><span class="si">{</span><span class="n">g_a</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">g_b</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">beta</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">a_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+         <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$h_1$=Beta(</span><span class="si">{</span><span class="n">a_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">b_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">beta</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">a_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+         <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$h_2$=Beta(</span><span class="si">{</span><span class="n">a_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">b_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">beta</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">w_range</span><span class="p">,</span> <span class="n">a_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">b_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+         <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$h_3$=Beta(</span><span class="si">{</span><span class="n">a_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">b_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -734,95 +959,77 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/5bb2203fa67d7d0c7583dc572646bc0d8c7a9a329b653132b1b8f2a25a25697a.png" src="_images/5bb2203fa67d7d0c7583dc572646bc0d8c7a9a329b653132b1b8f2a25a25697a.png" />
+<figure class="align-default" id="fig-imp-sampling-distributions">
+<img alt="_images/b7e07e1c36fa9de4567b6c209a91fc9490e0d3c1ed2df0b97acf50188fe1ce68.png" src="_images/b7e07e1c36fa9de4567b6c209a91fc9490e0d3c1ed2df0b97acf50188fe1ce68.png" />
+<figcaption>
+<p><span class="caption-number">图 25.5 </span><span class="caption-text">重要性抽样分布比较</span><a class="headerlink" href="#fig-imp-sampling-distributions" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </div>
 </div>
-<p>我们考虑两个额外的分布。</p>
-<p>提醒一下，<span class="math notranslate nohighlight">\(h_1\)</span>是我们上面使用的原始<span class="math notranslate nohighlight">\(Beta(0.5,0.5)\)</span>分布。</p>
-<p><span class="math notranslate nohighlight">\(h_2\)</span>是<span class="math notranslate nohighlight">\(Beta(1,1.2)\)</span>分布。</p>
-<p>注意<span class="math notranslate nohighlight">\(h_2\)</span>在分布的较高值处与<span class="math notranslate nohighlight">\(g\)</span>有相似的形状，但在较低值处有更多的质量。</p>
-<p>我们的直觉是<span class="math notranslate nohighlight">\(h_2\)</span>应该是一个不错的重要性抽样分布。</p>
-<p><span class="math notranslate nohighlight">\(h_3\)</span>是<span class="math notranslate nohighlight">\(Beta(2,5)\)</span>分布。</p>
-<p>注意<span class="math notranslate nohighlight">\(h_3\)</span>在非常接近0的值和接近1的值处的质量为零。</p>
-<p>我们的直觉是<span class="math notranslate nohighlight">\(h_3\)</span>将是一个较差的重要性抽样分布。</p>
-<p>我们首先模拟并绘制使用<span class="math notranslate nohighlight">\(h_2\)</span>作为重要性抽样分布时<span class="math notranslate nohighlight">\(\hat{E} \left[L\left(\omega^t\right)\right]\)</span>估计值的分布。</p>
+<p>我们再考虑另外两个分布。</p>
+<p>提醒一下，<span class="math notranslate nohighlight">\(h_1\)</span> 是我们上面使用的原始 <span class="math notranslate nohighlight">\(Beta(0.5,0.5)\)</span> 分布。</p>
+<p><span class="math notranslate nohighlight">\(h_2\)</span> 是 <span class="math notranslate nohighlight">\(Beta(1,1.2)\)</span> 分布。</p>
+<p>注意 <span class="math notranslate nohighlight">\(h_2\)</span> 在 <span class="math notranslate nohighlight">\(\omega\)</span> 取较大值时与 <span class="math notranslate nohighlight">\(g\)</span> 的形状相似，但在较小值时具有更多质量。</p>
+<p>我们的直觉是，<span class="math notranslate nohighlight">\(h_2\)</span> 应该是一个很好的重要性抽样分布。</p>
+<p><span class="math notranslate nohighlight">\(h_3\)</span> 是 <span class="math notranslate nohighlight">\(Beta(2,5)\)</span> 分布。</p>
+<p>注意 <span class="math notranslate nohighlight">\(h_3\)</span> 在接近 0 和接近 1 的取值处几乎没有质量。</p>
+<p>我们的直觉是，<span class="math notranslate nohighlight">\(h_3\)</span> 将会是一个较差的重要性抽样分布。</p>
+<p>上面的方差计算能让我们把这些直觉表述得更精确。</p>
+<p>从 <span class="math notranslate nohighlight">\(h\)</span> 中抽样并重新加权，会为每个观测值赋予 <span class="math notranslate nohighlight">\(\ell\left(\omega\right) g\left(\omega\right) / h\left(\omega\right) = f\left(\omega\right) / h\left(\omega\right)\)</span> 的值，因此该估计量恰好在以下条件下具有有限方差：</p>
+<div class="math notranslate nohighlight">
+\[
+\int_0^1 \frac{f\left(\omega\right)^2}{h\left(\omega\right)} d\omega &lt; \infty
+\]</div>
+<p>对于 <span class="math notranslate nohighlight">\(h_1\)</span> 和 <span class="math notranslate nohighlight">\(h_2\)</span>，该积分是收敛的。</p>
+<p>对于 <span class="math notranslate nohighlight">\(h_3\)</span>，该积分在<strong>两个</strong>端点都发散，因为 <span class="math notranslate nohighlight">\(h_3\)</span> 在原点附近以 <span class="math notranslate nohighlight">\(\omega\)</span> 的速率趋于零，而在 1 附近以 <span class="math notranslate nohighlight">\(\left(1-\omega\right)^4\)</span> 的速率趋于零。</p>
+<p>因此，使用 <span class="math notranslate nohighlight">\(h_3\)</span> 进行重要性抽样具有无限方差，这与标准蒙特卡洛方法一样——这正是它成为较差选择的原因。</p>
+<p>我们首先模拟并绘制使用 <span class="math notranslate nohighlight">\(h_2\)</span> 作为重要性抽样分布时，<span class="math notranslate nohighlight">\(\hat{E} \left[L\left(\omega^t\right)\right]\)</span> 的估计分布。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h_a</span> <span class="o">=</span> <span class="n">a_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">h_b</span> <span class="o">=</span> <span class="n">b_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T_values_h2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
+<span class="n">imp_h2</span> <span class="o">=</span> <span class="n">simulate_multiple_T</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span>
+                             <span class="n">a_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                             <span class="n">T_values_h2</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">)</span>
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-
-<span class="n">μ_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">]):</span>
-
-
-    <span class="n">μ_L_p</span><span class="p">,</span> <span class="n">μ_L_q</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
-    <span class="n">μ_hat_p</span><span class="p">,</span> <span class="n">μ_hat_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">)</span>
-    <span class="n">σ_hat_p</span><span class="p">,</span> <span class="n">σ_hat_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanvar</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanvar</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">)</span>
-
-    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$μ_L$&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;frequency&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;$T$=</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">n_p</span><span class="p">,</span> <span class="n">bins_p</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">μ_range</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$g$ generating&#39;</span><span class="p">)</span>
-    <span class="n">n_q</span><span class="p">,</span> <span class="n">bins_q</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">μ_range</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$h_2$ generating&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">μ_hat</span><span class="p">,</span> <span class="n">σ_hat</span> <span class="ow">in</span> <span class="p">[[</span><span class="n">n_p</span><span class="p">,</span> <span class="n">bins_p</span><span class="p">,</span> <span class="n">μ_hat_p</span><span class="p">,</span> <span class="n">σ_hat_p</span><span class="p">],</span>
-                                  <span class="p">[</span><span class="n">n_q</span><span class="p">,</span> <span class="n">bins_q</span><span class="p">,</span> <span class="n">μ_hat_q</span><span class="p">,</span> <span class="n">σ_hat_q</span><span class="p">]]:</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="sa">r</span><span class="s1">&#39;$\hat</span><span class="si">{μ}</span><span class="s1">$=&#39;</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">μ_hat</span><span class="si">:</span><span class="s1">.4g</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">+</span><span class="sa">r</span><span class="s1">&#39;, $\hat</span><span class="si">{σ}</span><span class="s1">=$&#39;</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">σ_hat</span><span class="si">:</span><span class="s1">.4g</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">plot_estimates</span><span class="p">(</span><span class="n">T_values_h2</span><span class="p">,</span> <span class="n">mc</span><span class="p">,</span> <span class="n">imp_h2</span><span class="p">,</span> <span class="s1">&#39;$h_2$ 生成&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/b6cbfa29e91b56dadfc4e219d1713080c23d4eacb7f5312bf2045c0d63dde996.png" src="_images/b6cbfa29e91b56dadfc4e219d1713080c23d4eacb7f5312bf2045c0d63dde996.png" />
+<figure class="align-default" id="fig-imp-estimates-h2">
+<img alt="_images/2c01fbb82b993c8dcdf289d33c0c5c98bb2927b911f6a1ed7c109eb419957234.png" src="_images/2c01fbb82b993c8dcdf289d33c0c5c98bb2927b911f6a1ed7c109eb419957234.png" />
+<figcaption>
+<p><span class="caption-number">图 25.6 </span><span class="caption-text">使用重要性分布 <span class="math notranslate nohighlight">\(h_2\)</span> 的估计</span><a class="headerlink" href="#fig-imp-estimates-h2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </div>
 </div>
-<p>我们的模拟结果表明，<span class="math notranslate nohighlight">\(h_2\)</span> 确实是我们这个问题的一个很好的重要性抽样分布。</p>
-<p>即使在 <span class="math notranslate nohighlight">\(T=20\)</span> 时，均值也非常接近 <span class="math notranslate nohighlight">\(1\)</span>，且方差很小。</p>
+<p>我们的模拟结果表明，<span class="math notranslate nohighlight">\(h_2\)</span> 确实是我们问题的一个相当好的重要性抽样分布。</p>
+<p>即使在 <span class="math notranslate nohighlight">\(T=20\)</span> 时，均值也非常接近 <span class="math notranslate nohighlight">\(1\)</span>，并且方差很小。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h_a</span> <span class="o">=</span> <span class="n">a_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="n">h_b</span> <span class="o">=</span> <span class="n">b_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T_values_h3</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
+<span class="n">imp_h3</span> <span class="o">=</span> <span class="n">simulate_multiple_T</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span>
+                             <span class="n">a_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">b_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                             <span class="n">T_values_h3</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">)</span>
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-
-<span class="n">μ_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">]):</span>
-
-
-    <span class="n">μ_L_p</span><span class="p">,</span> <span class="n">μ_L_q</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">g_a</span><span class="p">,</span> <span class="n">g_b</span><span class="p">,</span> <span class="n">h_a</span><span class="p">,</span> <span class="n">h_b</span><span class="p">,</span> <span class="n">N_simu</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
-    <span class="n">μ_hat_p</span><span class="p">,</span> <span class="n">μ_hat_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">)</span>
-    <span class="n">σ_hat_p</span><span class="p">,</span> <span class="n">σ_hat_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanvar</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanvar</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">)</span>
-
-    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$μ_L$&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;frequency&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;$T$=</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">n_p</span><span class="p">,</span> <span class="n">bins_p</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">μ_L_p</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">μ_range</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$g$ generating&#39;</span><span class="p">)</span>
-    <span class="n">n_q</span><span class="p">,</span> <span class="n">bins_q</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">μ_L_q</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">μ_range</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$h_3$ generating&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">μ_hat</span><span class="p">,</span> <span class="n">σ_hat</span> <span class="ow">in</span> <span class="p">[[</span><span class="n">n_p</span><span class="p">,</span> <span class="n">bins_p</span><span class="p">,</span> <span class="n">μ_hat_p</span><span class="p">,</span> <span class="n">σ_hat_p</span><span class="p">],</span>
-                                  <span class="p">[</span><span class="n">n_q</span><span class="p">,</span> <span class="n">bins_q</span><span class="p">,</span> <span class="n">μ_hat_q</span><span class="p">,</span> <span class="n">σ_hat_q</span><span class="p">]]:</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="sa">r</span><span class="s1">&#39;$\hat</span><span class="si">{μ}</span><span class="s1">$=&#39;</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">μ_hat</span><span class="si">:</span><span class="s1">.4g</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">+</span><span class="sa">r</span><span class="s1">&#39;, $\hat</span><span class="si">{σ}</span><span class="s1">=$&#39;</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">σ_hat</span><span class="si">:</span><span class="s1">.4g</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">plot_estimates</span><span class="p">(</span><span class="n">T_values_h3</span><span class="p">,</span> <span class="n">mc</span><span class="p">,</span> <span class="n">imp_h3</span><span class="p">,</span> <span class="s1">&#39;$h_3$ 生成&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/ac1185edcd567039c6e8dafd909eb717ca582a71fbac0f45a470eef27185dd38.png" src="_images/ac1185edcd567039c6e8dafd909eb717ca582a71fbac0f45a470eef27185dd38.png" />
+<figure class="align-default" id="fig-imp-estimates-h3">
+<img alt="_images/e25270f0831b4587cae03bf14a2f51247b1ebfed69fa3f98fab069a0136dd5ea.png" src="_images/e25270f0831b4587cae03bf14a2f51247b1ebfed69fa3f98fab069a0136dd5ea.png" />
+<figcaption>
+<p><span class="caption-number">图 25.7 </span><span class="caption-text">使用重要性分布 <span class="math notranslate nohighlight">\(h_3\)</span> 的估计</span><a class="headerlink" href="#fig-imp-estimates-h3" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </div>
 </div>
-<p>然而，<span class="math notranslate nohighlight">\(h_3\)</span>显然是我们这个问题的一个不理想的重要性抽样分布，在<span class="math notranslate nohighlight">\(T = 20\)</span>时，其均值估计与1相差甚远。</p>
-<p>注意，即使在<span class="math notranslate nohighlight">\(T = 1\)</span>时，使用重要性抽样的均值估计比直接用<span class="math notranslate nohighlight">\(g\)</span>进行抽样的偏差更大。</p>
-<p>因此，我们的模拟表明，对于我们的问题，直接使用<span class="math notranslate nohighlight">\(g\)</span>进行蒙特卡洛近似会比使用<span class="math notranslate nohighlight">\(h_3\)</span>作为重要性抽样分布更好。</p>
+<p>然而，<span class="math notranslate nohighlight">\(h_3\)</span> 显然是我们问题的一个较差的重要性抽样分布，在 <span class="math notranslate nohighlight">\(T = 20\)</span> 时其均值估计值与 <span class="math notranslate nohighlight">\(1\)</span> 相差甚远。</p>
+<p>请注意，即使在 <span class="math notranslate nohighlight">\(T = 1\)</span> 时，使用重要性抽样得到的均值估计也比仅使用 <span class="math notranslate nohighlight">\(g\)</span> 抽样时更有偏差。</p>
+<p>因此，我们的模拟结果表明，对于我们的问题，直接在 <span class="math notranslate nohighlight">\(g\)</span> 下使用蒙特卡洛近似，会比使用 <span class="math notranslate nohighlight">\(h_3\)</span> 作为重要性抽样分布效果更好。</p>
 </section>
 </section>
 
@@ -1206,23 +1413,28 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="mccall_risk.html">
+   57. 工作搜寻 V：风险敏感型偏好
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="mccall_persist_trans.html">
-   57. 工作搜寻 V：持续性与暂时性工资冲击
+   58. 工作搜寻 VI：持续性与暂时性工资冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="career.html">
-   58. 工作搜寻 VI：职业选择建模
+   59. 工作搜寻 VII：职业选择建模
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="jv.html">
-   59. 工作搜寻 VII：在职搜索
+   60. 工作搜寻 VIII：在职搜索
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="odu.html">
-   60. 工作搜寻 VIII: 带学习的搜索
+   61. 工作搜寻 IX: 带学习的搜索
   </a>
  </li>
 </ul>
@@ -1234,17 +1446,17 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="inventory_q.html">
-   61. 通过 Q 学习进行库存管理
+   62. 通过 Q 学习进行库存管理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rs_inventory_q.html">
-   62. 通过 Q-Learning 进行风险敏感型库存管理
+   63. 通过 Q-Learning 进行风险敏感型库存管理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mccall_q.html">
-   63. 工作搜寻 IX：McCall劳动者的Q学习
+   64. 工作搜寻 X：McCall劳动者的Q学习
   </a>
  </li>
 </ul>
@@ -1256,64 +1468,64 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="os.html">
-   64. 吃蛋糕问题 I：最优储蓄导论
+   65. 吃蛋糕问题 I：最优储蓄导论
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_numerical.html">
-   65. 最优储蓄 II：数值方法吃蛋糕问题
+   66. 最优储蓄 II：数值方法吃蛋糕问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_stochastic.html">
-   66. 最优储蓄 III：随机回报
+   67. 最优储蓄 III：随机回报
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_time_iter.html">
-   67. 最优储蓄 IV：时间迭代
+   68. 最优储蓄 IV：时间迭代
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_egm.html">
-   68. 最优储蓄 V：内生网格法
+   69. 最优储蓄 V：内生网格法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="os_egm_jax.html">
-   69. 最优储蓄 VI：使用 JAX 的 EGM
+   70. 最优储蓄 VI：使用 JAX 的 EGM
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  家庭问题
+  收入波动问题
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_discrete.html">
-   70. 收入波动问题 I：离散化与 VFI
+   71. 收入波动问题 I：离散化与 VFI
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_opi.html">
-   71. 收入波动问题 II：乐观策略迭代
+   72. 收入波动问题 II：乐观策略迭代
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_egm.html">
-   72. 收入波动问题 III：内生网格法
+   73. 收入波动问题 III：内生网格法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_egm_transient_shocks.html">
-   73. 收入波动问题 IV：暂时性收入冲击
+   74. 收入波动问题 IV：暂时性收入冲击
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ifp_advanced.html">
-   74. 收入波动问题 V：资产随机收益
+   75. 收入波动问题 V：资产随机收益
   </a>
  </li>
 </ul>
@@ -1325,67 +1537,67 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lqcontrol.html">
-   75. LQ控制：基础
+   76. LQ控制：基础
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lagrangian_lqdp.html">
-   76. LQ控制的拉格朗日方法
+   77. LQ控制的拉格朗日方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cross_product_trick.html">
-   77. 消除交叉项
+   78. 消除交叉项
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income.html">
-   78. 永久收入模型
+   79. 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="perm_income_cons.html">
-   79. 永久收入 II：线性二次方法
+   80. 永久收入 II：线性二次方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="robust_permanent_income.html">
-   80. 稳健永久收入与定价
+   81. 稳健永久收入与定价
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="theil_1.html">
-   81. 确定性等价
+   82. 确定性等价
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="theil_2.html">
-   82. 确定性等价与模型不确定性
+   83. 确定性等价与模型不确定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_permanent_income.html">
-   83. LQ 永久收入模型
+   84. LQ 永久收入模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_bewley_complete_markets.html">
-   84. 不完全市场与完全市场下的消费平滑
+   85. 不完全市场与完全市场下的消费平滑
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_robust_smoothing.html">
-   85. 稳健消费平滑与预防性储蓄
+   86. 稳健消费平滑与预防性储蓄
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_robust_bewley.html">
-   86. 稳健 LQ 贝利模型
+   87. 稳健 LQ 贝利模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lq_inventories.html">
-   87. 通过库存实现生产平滑
+   88. 通过库存实现生产平滑
   </a>
  </li>
 </ul>
@@ -1397,32 +1609,37 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="bounded_rationality.html">
-   88. 一种奇特的有限理性定义
+   89. 一种奇特的有限理性定义
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="olg_adaptive_money.html">
-   89. 世代交叠货币经济中的适应性主体
+   90. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="learning_approximation.html">
+   91. 学习、近似与均衡计算
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="exchange_rate_learning.html">
-   90. 汇率不确定性、学习与实验
+   92. 汇率不确定性、学习与实验
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="genetic_classifier.html">
-   91. 遗传算法与分类器系统
+   93. 遗传算法与分类器系统
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="marimon_mcgrattan_sargent.html">
-   92. 人工智能主体中作为交换媒介的货币
+   94. 人工智能主体中作为交换媒介的货币
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="prospects_bounded_rationality.html">
-   93. 1993 年对宏观经济学中有限理性前景的展望
+   95. 1993 年对宏观经济学中有限理性前景的展望
   </a>
  </li>
 </ul>
@@ -1434,57 +1651,57 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_two_stories.html">
-   94. 美国通货膨胀的兴衰
+   96. 美国通货膨胀的兴衰
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_credibility.html">
-   95. 信誉问题
+   97. 信誉问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_credible_policies.html">
-   96. 可信的政府政策
+   98. 可信的政府政策
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_adaptive.html">
-   97. 适应性预期与费尔普斯问题
+   99. 适应性预期与费尔普斯问题
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_misspecified.html">
-   98. 最优错误设定信念
+   100. 最优错误设定信念
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_self_confirming.html">
-   99. 自我确认均衡
+   101. 自我确认均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_learning.html">
-   100. 适应性学习与逃逸动态
+   102. 适应性学习与逃逸动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_escaping_nash.html">
-   101. 逃离纳什通胀
+   103. 逃离纳什通胀
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_priors.html">
-   102. 先验、逃逸与学习循环
+   104. 先验、逃逸与学习循环
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_lost_conquest.html">
-   103. 失落的征服：2020 年代的美联储政策
+   105. 失落的征服：2020 年代的美联储政策
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="phillips_drifts_volatilities.html">
-   104. 漂移与波动率
+   106. 漂移与波动率
   </a>
  </li>
 </ul>
@@ -1496,22 +1713,22 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="cass_koopmans_1.html">
-   105. Cass-Koopmans模型
+   107. Cass-Koopmans模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_koopmans_2.html">
-   106. Cass-Koopmans竞争均衡
+   108. Cass-Koopmans竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_fiscal.html">
-   107. 带扭曲性税收的Cass-Koopmans模型
+   109. 带扭曲性税收的Cass-Koopmans模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="cass_fiscal_2.html">
-   108. 带扭曲性税收的双国模型
+   110. 带扭曲性税收的双国模型
   </a>
  </li>
 </ul>
@@ -1523,57 +1740,57 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="lake_model.html">
-   109. 就业与失业的湖泊模型
+   111. 就业与失业的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="endogenous_lake.html">
-   110. 具有内生工作发现率的湖泊模型
+   112. 具有内生工作发现率的湖泊模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_expectations.html">
-   111. 理性预期均衡
+   113. 理性预期均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="re_with_feedback.html">
-   112. 线性理性预期模型中的稳定性
+   114. 线性理性预期模型中的稳定性
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="markov_perf.html">
-   113. 马尔可夫完美均衡
+   115. 马尔可夫完美均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="uncertainty_traps.html">
-   114. 不确定性陷阱
+   116. 不确定性陷阱
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari.html">
-   115. 艾亚加里模型
+   117. 艾亚加里模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="aiyagari_egm.html">
-   116. 使用内生网格法的Aiyagari模型
+   118. 使用内生网格法的Aiyagari模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak2.html">
-   117. 代际交叠模型中的转型
+   119. 代际交叠模型中的转型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ak_aiyagari.html">
-   118. 长寿、异质性个体、世代交叠模型
+   120. 长寿、异质性个体、世代交叠模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="two_computation.html">
-   119. 为社会保障融资的两种计算方法
+   121. 为社会保障融资的两种计算方法
   </a>
  </li>
 </ul>
@@ -1585,62 +1802,62 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="markov_asset.html">
-   120. 资产定价：有限状态模型
+   122. 资产定价：有限状态模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="hansen_singleton_1983.html">
-   121. 随机消费、风险规避与资产回报的时间行为
+   123. 随机消费、风险规避与资产回报的时间行为
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="hansen_singleton_1982.html">
-   122. 用广义矩方法估计欧拉方程
+   124. 用广义矩方法估计欧拉方程
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ge_arrow.html">
-   123. 带有阿罗证券的竞争均衡
+   125. 带有阿罗证券的竞争均衡
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="harrison_kreps.html">
-   124. 异质信念与泡沫
+   126. 异质信念与泡沫
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="morris_learn.html">
-   125. 贝叶斯学习下的投机行为
+   127. 贝叶斯学习下的投机行为
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="rational_learning_re.html">
-   126. 理性学习与理性预期
+   128. 理性学习与理性预期
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ls_learning.html">
-   127. 自指模型中的最小二乘学习
+   129. 自指模型中的最小二乘学习
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="affine_risk_prices.html">
-   128. 资产价格的仿射模型
+   130. 资产价格的仿射模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ross_recovery.html">
-   129. 恢复定理
+   131. 恢复定理
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="long_run_risk_operator.html">
-   130. 长期风险：一种算子方法
+   132. 长期风险：一种算子方法
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="misspecified_recovery.html">
-   131. 误设定下的恢复
+   133. 误设定下的恢复
   </a>
  </li>
 </ul>
@@ -1652,32 +1869,32 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="pandas_panel.html">
-   132. 用Pandas处理面板数据
+   134. 用Pandas处理面板数据
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="ols.html">
-   133. Python线性回归
+   135. Python线性回归
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mle.html">
-   134. 最大似然估计
+   136. 最大似然估计
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="unemployment_linear.html">
-   135. 失业的线性模型
+   137. 失业的线性模型
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="unemployment_shocks.html">
-   136. 具有非对称冲击的失业动态
+   138. 具有非对称冲击的失业动态
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="sargent_surico.html">
-   137. 货币数量论的两个例证
+   139. 货币数量论的两个例证
   </a>
  </li>
 </ul>
@@ -1689,12 +1906,12 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="two_auctions.html">
-   138. 一价和二价拍卖
+   140. 一价和二价拍卖
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="house_auction.html">
-   139. 多种商品分配机制
+   141. 多种商品分配机制
   </a>
  </li>
 </ul>
@@ -1706,17 +1923,17 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="troubleshooting.html">
-   140. 故障排除
+   142. 故障排除
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="zreferences.html">
-   141. 参考文献
+   143. 参考文献
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="status.html">
-   142. 执行统计
+   144. 执行统计
   </a>
  </li>
 </ul>
@@ -1752,6 +1969,7 @@ E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\o
                     <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
                     <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
                     <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/imp_sample.ipynb" download><i data-feather="download-cloud"></i></a></li>
                     <li class="settings-button" id="settingsButton"><div data-tippy-content="Launch Notebook"><i data-feather="play-circle"></i></div></li>
                         <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
                     <!--

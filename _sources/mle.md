@@ -841,7 +841,7 @@ y_i \log \Phi(\mathbf{x}_i' \boldsymbol{\beta}) +
 (1 - y_i) \log (1 - \Phi(\mathbf{x}_i' \boldsymbol{\beta})) \big]
 $$
 
-根据**微积分基本定理**，累积概率分布的导数是其边际分布
+根据**微积分基本定理**，累积概率分布的导数是其边缘分布
 
 $$
 \frac{ \partial} {\partial s} \Phi(s) = \phi(s)

@@ -11,13 +11,13 @@ translation:
   title: 多元超几何分布
   headings:
     Overview: 概述
-    The Administrator's Problem: 管理员的问题
-    The Administrator's Problem::Details of the Awards Procedure Under Study: 研究中的奖励程序细节
-    The Administrator's Problem::Multivariate Hypergeometric Distribution: 多元超几何分布
+    The administrator's problem: 管理员的问题
+    The administrator's problem::Details of the awards procedure under study: 研究中的奖励程序细节
+    The administrator's problem::Multivariate hypergeometric distribution: 多元超几何分布
     Usage: 使用方法
     Usage::First example: 第一个例子
-    Usage::Back to The Administrator's Problem: 回到管理员的问题
-    Usage::Quality of Normal Approximation: 正态近似的质量
+    Usage::Back to the administrator's problem: 回到管理员的问题
+    Usage::Quality of normal approximation: 正态近似的质量
 ---
 
 (multi_hyper_v7)=
@@ -115,7 +115,7 @@ $$
 
 让我们从一些导入开始。
 
-```{code-cell} ipython
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -165,7 +165,7 @@ $$
 
 为了帮我们完成工作，我们将编写一个`Urn`类。
 
-```{code-cell} python3
+```{code-cell} ipython3
 class Urn:
 
     def __init__(self, K_arr):
@@ -214,20 +214,14 @@ class Urn:
             抽取次数。
         """
 
-        K_arr, N, c = self.K_arr, self.N, self.c
+        K_arr, N = self.K_arr, self.N
 
         # 均值
         μ = n * K_arr / N
 
         # 方差-协方差矩阵
-        Σ = np.full((c, c), n * (N - n) / (N - 1) / N ** 2)
-        for i in range(c-1):
-            Σ[i, i] *= K_arr[i] * (N - K_arr[i])
-            for j in range(i+1, c):
-                Σ[i, j] *= - K_arr[i] * K_arr[j]
-                Σ[j, i] = Σ[i, j]
-
-        Σ[-1, -1] *= K_arr[-1] * (N - K_arr[-1])
+        p = K_arr / N
+        Σ = n * (N - n) / (N - 1) * (np.diag(p) - np.outer(p, p))
 
         return μ, Σ
 
@@ -256,6 +250,7 @@ class Urn:
 
 ## 使用方法
 
+
 ### 第一个例子
 
 将其应用到[wiki](https://en.wikipedia.org/wiki/Hypergeometric_distribution#Multivariate_hypergeometric_distribution)中的一个例子：
@@ -266,7 +261,7 @@ $$
 P(2{\text{ 黑色}},2{\text{ 白色}},2{\text{ 红色}})={{{5 \choose 2}{10 \choose 2}{15 \choose 2}} \over {30 \choose 6}}=0.079575596816976
 $$
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构造罐子
 K_arr = [5, 10, 15]
 urn = Urn(K_arr)
@@ -274,30 +269,30 @@ urn = Urn(K_arr)
 
 现在使用 Urn 类的 `pmf` 方法来计算结果 $X = \begin{bmatrix} 2 & 2 & 2 \end{bmatrix}$ 的概率
 
-```{code-cell} python3
+```{code-cell} ipython3
 k_arr = [2, 2, 2] # 观察到成功次数的数组
 urn.pmf(k_arr)
 ```
 
 我们可以通过构建一个二维数组`k_arr`来计算一系列可能结果的概率，`pmf`将返回一个数组，包含观察到每种情况的概率。
 
-```{code-cell} python3
+```{code-cell} ipython3
 k_arr = [[2, 2, 2], [1, 3, 2]]
 urn.pmf(k_arr)
 ```
 
 现在让我们计算均值向量和方差-协方差矩阵。
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 6
 μ, Σ = urn.moments(n)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 μ
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 Σ
 ```
 
@@ -308,55 +303,55 @@ n = 6
 在这里，罐子里各类物品数量构成的数组是
 $\left(157, 11, 46, 24\right)$。
 
-```{code-cell} python3
+```{code-cell} ipython3
 K_arr = [157, 11, 46, 24]
 urn = Urn(K_arr)
 ```
 
 让我们计算结果 $\left(10, 1, 4, 0 \right)$ 的概率。
 
-```{code-cell} python3
+```{code-cell} ipython3
 k_arr = [10, 1, 4, 0]
 urn.pmf(k_arr)
 ```
 
 我们可以通过构建一个3维数组`k_arr`并使用`Urn`类的`pmf`方法来计算三种可能结果的概率。
 
-```{code-cell} python3
+```{code-cell} ipython3
 k_arr = [[5, 5, 4 ,1], [10, 1, 2, 2], [13, 0, 2, 0]]
 urn.pmf(k_arr)
 ```
 
 现在让我们计算当 $n=6$ 时 $X$ 的均值和方差-协方差矩阵。
 
-```{code-cell} python3
+```{code-cell} ipython3
 n = 6 # 抽取次数
 μ, Σ = urn.moments(n)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 均值
 μ
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 方差-协方差矩阵
 Σ
 ```
 
 我们可以模拟一个大样本，并验证样本均值和协方差与总体均值和协方差非常接近。
 
-```{code-cell} python3
+```{code-cell} ipython3
 size = 10_000_000
 sample = urn.simulate(n, size=size)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 均值
 np.mean(sample, 0)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 方差协方差矩阵
 np.cov(sample.T)
 ```
@@ -367,11 +362,11 @@ np.cov(sample.T)
 
 为了评估多元正态分布对多元超几何分布的近似质量，我们从一个具有相应多元超几何分布的均值向量和协方差矩阵的多元正态分布中抽取一个大样本，并将模拟得到的分布与总体的多元超几何分布进行比较。
 
-```{code-cell} python3
+```{code-cell} ipython3
 sample_normal = np.random.multivariate_normal(μ, Σ, size=size)
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 def bivariate_normal(x, y, μ, Σ, i, j):
 
     μ_x, μ_y = μ[i], μ[j]
@@ -388,7 +383,7 @@ def bivariate_normal(x, y, μ, Σ, i, j):
     return np.exp(-z / (2 * (1 - ρ**2))) / denom
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 @jit
 def count(vec1, vec2, n):
     size = sample.shape[0]
@@ -400,7 +395,7 @@ def count(vec1, vec2, n):
     return count_mat
 ```
 
-```{code-cell} python3
+```{code-cell} ipython3
 c = urn.c
 fig, axs = plt.subplots(c, c, figsize=(14, 14))
 
@@ -431,7 +426,7 @@ for i in range(c):
 plt.show()
 ```
 
-对角线图使用直方图绘制每个$k_i$的边际分布。
+对角线图使用直方图绘制每个$k_i$的边缘分布。
 
 注意超几何分布与近似正态分布之间存在显著差异。
 
@@ -447,7 +442,7 @@ plt.show()
 
 > `normaltest` 返回与每个 $k_i$ 样本测试相关的p值数组。
 
-```{code-cell} python3
+```{code-cell} ipython3
 test_multihyper = normaltest(sample)
 test_multihyper.pvalue
 ```
@@ -456,7 +451,7 @@ test_multihyper.pvalue
 
 相比之下，来自正态分布的样本并不拒绝零假设。
 
-```{code-cell} python3
+```{code-cell} ipython3
 test_normal = normaltest(sample_normal)
 test_normal.pvalue
 ```
