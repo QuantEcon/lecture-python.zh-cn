@@ -10,7 +10,7 @@ kernelspec:
   language: python
   name: python3
 translation:
-  title: 工作搜寻 V：持续性与暂时性工资冲击
+  title: 工作搜寻 VI：持续性与暂时性工资冲击
   headings:
     Overview: 概述
     The model: 模型
@@ -28,7 +28,7 @@ translation:
 </div>
 ```
 
-# 工作搜寻 V：持续性与暂时性工资冲击
+# 工作搜寻 VI：持续性与暂时性工资冲击
 
 ```{include} _admonition/gpu.md
 ```

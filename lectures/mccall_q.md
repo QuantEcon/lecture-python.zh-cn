@@ -10,7 +10,7 @@ kernelspec:
   language: python
   name: python3
 translation:
-  title: 工作搜寻 IX：McCall劳动者的Q学习
+  title: 工作搜寻 X：McCall劳动者的Q学习
   headings:
     Overview: 概述
     Review of McCall model: McCall 模型回顾
@@ -21,7 +21,7 @@ translation:
     Possible extensions: 可能的扩展方向
 ---
 
-# 工作搜寻 IX：McCall劳动者的Q学习
+# 工作搜寻 X：McCall劳动者的Q学习
 
 ## 概述
 
