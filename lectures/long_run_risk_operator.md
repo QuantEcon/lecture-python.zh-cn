@@ -46,6 +46,7 @@ translation:
     Long-run risk prices::Comparison in the affine model: 仿射模型中的比较
     Long-run risk prices::Changing valuation functionals: 改变估值泛函
     Long-run risk prices::Changing cash-flow risk: 改变现金流风险
+    Long-run risk prices::Where the two frontiers come apart: 两个前沿分离之处
     Assumptions behind the scenes: 幕后的假设
     'Assumptions behind the scenes::Issue 1: $\hat M$ might fail to be a martingale': 问题 1：$\hat M$ 可能无法成为一个鞅
     'Assumptions behind the scenes::Issue 2: the twisted process might fail to be stable': 问题 2：扭曲过程可能无法稳定
@@ -146,6 +147,7 @@ mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
 ```
 
 ## 乘性泛函
+
 
 ### 设定
 
@@ -646,7 +648,9 @@ $$
 ```{prf:definition} 扩展生成元
 :label: lrr-def-extended-generator
 
-固定一个博雷尔函数 $\psi$，并寻找第二个博雷尔函数 $\chi$，它将扮演 "$M_t \psi(X_t)$ 在当前状态处的瞬时变化率" 的角色。我们询问是否存在 $\chi$ 使得
+固定一个博雷尔函数 $\psi$，并寻找第二个博雷尔函数 $\chi$，它将扮演 "$M_t \psi(X_t)$ 在当前状态处的瞬时变化率" 的角色。
+
+我们询问是否存在 $\chi$ 使得
 
 $$
     N_t
@@ -770,7 +774,9 @@ $$ (eq:generator-eigen)
 
 为什么 $\mathbb A$ 的一个特征函数会给我们乘性分解 {eq}`eq:hs-factorization`？
 
-离散时间类比指明了方向。如果 $K\phi = \lambda\phi$，那么
+离散时间类比指明了方向。
+
+如果 $K\phi = \lambda\phi$，那么
 
 $$
     \lambda^{-n}\, M_n\, \frac{\phi(X_n)}{\phi(X_0)}
@@ -920,7 +926,7 @@ $$
 
 一个集合可能是可达的，但以趋于零的概率被访问，因此时间平均无法收敛到 $\hat\varsigma$-平均。
 
-哈里斯常返是有限链中 "常返状态" 的连续状态对应物。
+哈里斯常返是有限链中"常返状态"的连续状态对应物。
 
 收集这三个条件：
 
@@ -1111,7 +1117,7 @@ def stationary_distribution(Q):
 
 状态 2 是*衰退*（较低的短期利率 $r_2=0.02$，以速率 $\lambda_2 = 0.50$ 切换到繁荣）。
 
-目前我们将跳跃乘子设为零，所以 SDF 只通过状态内衰减率连续变化。
+目前我们将对数跳跃乘子 $\kappa$ 设为零——等价地说，将跳跃乘子 $\exp[\kappa]$ 设为一——所以 SDF 只通过状态内衰减率连续变化。
 
 ```{code-cell} ipython3
 λ_1 = 0.30
@@ -1249,36 +1255,53 @@ print("\nφ with jumps:")
 print(φ_jump)
 ```
 
-为看清长期率 $\rho$ 如何响应跳跃风险，我们固定繁荣到衰退的乘子，并随着衰退到繁荣乘子的变化描绘出 $\rho$。
+为看清长期率 $\rho$ 如何响应跳跃风险，我们将繁荣到衰退的对数乘子固定在其校准值上，并随着衰退到繁荣的对数乘子的变化描绘出 $\rho$。
+
+因此，用来比较的合适基准是在 $\kappa(\text{衰退} \to \text{繁荣}) = 0$ 处的特征值，此时繁荣到衰退的跳跃仍然开启，黑点标记了这一点。
 
 ```{code-cell} ipython3
 ---
 mystnb:
   figure:
-    caption: 跳跃与长期增长率
+    caption: 跳跃与长期增长率（固定繁荣到衰退的对数乘子）
     name: fig-lrr-jumps-eigenvalue
 ---
+κ_boom_to_rec = κ_jump[1, 0]
+
 κ_grid = np.linspace(-0.5, 0.5, 100)
 ρ_grid = np.empty_like(κ_grid)
 
 for n, k in enumerate(κ_grid):
     κ_temp = np.array([[0.0, k],
-                       [0.30, 0.0]])
+                       [κ_boom_to_rec, 0.0]])
     A_temp = build_generator(U, r, κ_temp)
     ρ_grid[n], _ = principal_eigenpair(A_temp)
 
+ρ_no_up_jump, _ = principal_eigenpair(
+    build_generator(U, r, np.array([[0.0, 0.0],
+                                    [κ_boom_to_rec, 0.0]]))
+)
+
 fig, ax = plt.subplots()
 ax.plot(κ_grid, ρ_grid, lw=2)
-ax.axhline(ρ, color="black", ls="--", lw=1)
+ax.plot([0.0], [ρ_no_up_jump], "o", color="black",
+        label="没有衰退到繁荣的跳跃")
 ax.axvline(0, color="black", ls=":", lw=1)
 ax.set_xlabel("衰退到繁荣的跳跃对数乘子")
 ax.set_ylabel("主特征值")
+ax.legend()
 plt.show()
+
+print(f"ρ at κ(rec -> boom) = 0 = {ρ_no_up_jump:.6f}")
 ```
 
 主特征值关于衰退到繁荣的对数乘子单调递增：随着该乘子上升，$M$ 在好消息时向下跳得更少（或向上跳得更多），这机械地推高了 $\rho$。
 
-经济上合理的 SDF 区域在零的左侧，那里乘子为负。
+黑点位于 $\rho = 0.022934$ 处。
+
+将衰退到繁荣的跳跃在校准值 $\kappa = -0.20$ 处打开后，$\rho$ 下降到 $-0.019067$，即上面打印出的值。
+
+对随机贴现因子而言，经济上合理的区域在零的左侧，那里对数乘子为负，$M$ 在好消息时向下跳跃。
 
 ## 仿射扩散例子
 
@@ -1622,7 +1645,11 @@ $$ (eq:kp-sdf-params)
 
 让我们设定参数并求解主特征对。
 
-我们使用标准长期风险邻域中的参数：一个均值回归波动率因子 $X^f$，均值为 $0.04$，一个移动更慢的可预测增长因子 $X^o$，均值为 $0.02$，风险厌恶 $a=4$，以及时间贴现率 $b=0.03$。
+我们使用大致处于长期风险族的示例参数：一个均值回归波动率因子 $X^f$，均值为 $0.04$，一个更为持久的可预测增长因子 $X^o$，均值为 $0.02$，风险厌恶 $a=4$，以及时间贴现率 $b=0.03$。
+
+选取这些参数是为了使算子计算清晰明了，而非为了匹配资产价格矩。
+
+在时间可分 CRRA 偏好且 $a=4$ 的情况下，它们意味着在状态均值处的瞬时无风险利率约为 $10.6\%$，长期零息收益率为 $9.6\%$（结果打印如下），这体现的是熟悉的无风险利率之谜，而不是对它的解决。
 
 ```{code-cell} ipython3
 params_state = {
@@ -1929,7 +1956,7 @@ plt.show()
 
 但在有随机波动率、非线性动态或跳跃风险时它们可能不同。
 
-我们将在下面的仿射模型中详细讨论这两种类型的例子。
+我们将在下面的仿射模型中详细讨论这两种类型的例子：在 $B^o$ 方向上这两个前沿完全一致，而在 $B^f$ 方向上随机波动率使它们分开。
 
 ### 随机贴现因子分解
 
@@ -2188,24 +2215,42 @@ $$ (eq:growth-functional)
 
 最后一行是使 $\exp(A_t^g-\delta t) = \hat G_t$ 成为一个*局部*鞅的伊藤补偿子，其中 $\delta$ 是常数趋势增长率。
 
-增长-扭曲过程的随机稳定性需要三个条件。
+在这个仿射设定中，{prf:ref}`lrr-def-stochastic-stability` 中的三个抽象条件——平稳分布、不可约骨架和哈里斯常返性——一旦扭曲后的 $X^f$ 均值回归且不触及零，就会全部自动满足。
 
-**Feller 型不可达**不等式
+与它们并列的是一个独立的要求，即 $\hat G$ 本身必须是一个鞅，即增长扭曲的假设 6.1 的类比。
+
+先看不可达性。
+
+在扭曲下，$X^f$ 的漂移变为
 
 $$
-    2(\xi_f+\sigma_f\gamma_f^g)\bar x_f \geq \sigma_f^2
+    \xi_f \bar x_f
+    - \bigl[\xi_f-\sigma_f(\gamma_f+c_f\sigma_f)\bigr] x^f ,
+    \qquad
+    \gamma_f = \gamma_f^s+\gamma_f^g ,
 $$
 
-使扭曲的 $X^f$ 不触及零。
+而 Girsanov 变换不改变扩散系数 $\sqrt{x^f}\sigma_f$。
 
-扭曲的 $X^f$ 的*均值回归*由我们对 SDF 在 {eq}`eq:cf-roots` 中使用的同样的选根论证挑选。
+将该漂移写成规范的平方根形式 $\hat\kappa(\hat\theta-x^f)$，扭曲会重新调整均值回归速度
+$\hat\kappa$ 和长期均值 $\hat\theta$，但保持它们的*乘积* $\hat\kappa\hat\theta=\xi_f\bar x_f$ 不变。
 
-$\hat G$ 本身必须是一个鞅，即增长扭曲的假设 6.1 的类比。
+由于**Feller 型不可达**不等式只涉及该乘积，它与支配原过程的不等式相同，
 
-Feller 不等式是必要的但本身不充分。
+$$
+    2\xi_f\bar x_f \geq \sigma_f^2 ,
+$$
+
+其中根本不含任何暴露参数。
+
+扭曲后的 $X^f$ 的*均值回归*，即 $\hat\kappa>0$，是一个真正独立的要求，它由我们对 SDF 在 {eq}`eq:cf-roots` 中使用的同样的选根论证挑选。
+
+这两个条件单独都不充分。
 
 ```{note}
-这个 Feller 限制是我们之前标示的一个一般观点的具体实例：改变增长风险可能违反稳定性并使长期近似失效，所以 $(\gamma_f^g, \gamma_o^g)$ 的选择不是自由的。
+不可达性在这里是自动满足的，但整体稳定性并非如此：改变增长风险仍可能违反稳定性并使长期近似失效，所以 $(\gamma_f^g, \gamma_o^g)$ 的选择不是自由的。
+
+例如，在此校准下，一个很大的负值 $\gamma_f^g$ 会使 {eq}`eq:cf-roots` 中的判别式变为负数，从而根本不存在真实的指数-仿射特征函数。
 ```
 
 为给现金流 $D_t=D_0G_t\psi(X_t)$ 定价，使用由 $M=GS$ 生成的半群。
@@ -2287,6 +2332,39 @@ finite_difference = (
 print(f"finite-difference slope = {finite_difference:.6f}")
 print(f"formula                 = {long_run_price_o:.6f}")
 ```
+
+### 两个前沿分离之处
+
+我们在上面承诺过，估值泛函前沿和现金流前沿可能不同。
+
+在 $B^o$ 方向上它们没有不同：刚刚计算的两个有限差分在小数点后六位一致，因为 $\gamma_o$ 在特征值 {eq}`eq:affine-rho` 中是线性出现的。
+
+$B^f$ 方向才是有趣的，因为在那里该暴露通过 $c_f$ 起作用，而 $c_f$ 是求解二次方程 {eq}`eq:cf-eq` 的根。
+
+```{code-cell} ipython3
+def central_difference(f, h=1e-5):
+    return (f(h) - f(-h)) / (2 * h)
+
+valuation_price_f = central_difference(
+    lambda g: valuation_eigenvalue_for_exposure(0.0, g)
+)
+cashflow_price_f = central_difference(
+    lambda g: required_return_for_growth_exposure(0.0, g)
+)
+local_price_f = -params_sdf["γ_f"] * params_sdf["xbar_f"]
+
+print(f"B^f local price (at x^f = xbar_f) = {local_price_f:.6f}")
+print(f"B^f valuation-functional frontier = {valuation_price_f:.6f}")
+print(f"B^f cash-flow frontier            = {cashflow_price_f:.6f}")
+```
+
+这三个数字在小数点后第三位有所不同。
+
+在 $x^f=\bar x_f$ 处评估的局部价格最小，估值泛函前沿略大一些，而现金流前沿更大。
+
+原因在于，$B^f$ 暴露以非线性方式移动 $c_f$，而这两个前沿以不同方式承载这种非线性：估值前沿还会通过局部定价约束 {eq}`eq:valuation-local-restriction-affine` 调整 $\beta_f^v$，而现金流前沿则通过 {eq}`eq:growth-functional` 中的伊藤补偿子调整 $\beta_f$。
+
+这正是我们在上文讨论两个前沿时所预期的差异，而在 $B^o$ 方向上不存在这一差异，正是因为 $X^o$ 具有恒定的波动率。
 
 ## 幕后的假设
 
@@ -2370,7 +2448,9 @@ $F_\alpha$ 是由*重新缩放的*乘性泛函 $M_t V(X_t)/V(X_0)$ 生成的半�
 | 长期极限 {eq}`eq:long-run-limit` | 扭曲过程的随机稳定性 |
 | 一个唯一的主特征函数 | 稳定性在正特征函数中选择 |
 
-在有限状态情形中，所有四个都从一次佩龙-弗罗贝尼乌斯计算得出；在仿射模型中，它们约化为挑选一个二次方程的正确根。一般而言，每个都必须单独检查。
+在有限状态情形中，所有四个都从一次佩龙-弗罗贝尼乌斯计算得出；在仿射模型中，它们约化为挑选一个二次方程的正确根。
+
+一般而言，每个都必须单独检查。
 
 {cite:t}`HansenScheinkman2009` 中的完整理论还提供了更强的 $L^p$ 近似结果和随机稳定性的 Lyapunov 判据，我们在这里不复现。
 
@@ -2384,7 +2464,7 @@ Hansen-Scheinkman 方法通过研究估值半群的正特征函数来研究长�
 
 2. 建立半群 $\mathbb M_t\psi(x)=\mathbb{E}[M_t\psi(X_t)\mid X_0=x]$。
 
-3. 当 $M = VS$ 是一个估值泛函和一个 SDF 的乘积时，施加 $VS$ 是一个鞅的局部定价约束；对于现金流估值半群 $\mathbb Q_t = GS$，定价约束仅施加于 $S$，而 $G$ 只作为一个增长扭曲进入。
+3. 当 $V$ 是一个估值泛函时，利用 $VS$ 是一个鞅的局部定价约束，根据其布朗和跳跃暴露来确定 $V$ 的漂移项，然后将特征值问题应用于 $M = V$；对于现金流估值，取 $M = Q = GS$，即生成半群 $\{\mathbb Q_t\}$ 的泛函，其中定价约束仅施加于 $S$，而 $G$ 只作为一个增长扭曲进入。
 
 4. 求解主特征值问题 $\mathbb A\phi=\rho\phi$。
 
@@ -2507,30 +2587,33 @@ $$
 ```{exercise}
 :label: lrr_ex2
 
-在仿射模型中，为
+{numref}`fig-lrr-persistence-risk-prices` 展示了当均值回归速度 $\xi_o$ 上升时，$B^o$ 暴露的长期价格向局部价格下降的过程。
+
+本练习要求你确定它下降的*速率*。
+
+定义**持久性楔子**
 
 $$
-    \xi_o \in \{0.1, 0.2, 0.5, 1, 2, 5\}.
-$$
-
-计算 $B^o$ 暴露的局部和长期价格。
-
-使用公式
-
-$$
-    \text{局部价格} = -\gamma_o^s
-$$
-
-和
-
-$$
-    \text{长期价格}
+    w(\xi_o)
     =
-    -\gamma_o^s
-    - \frac{\beta_o^s}{\xi_o}\sigma_o .
+    B^o \text{ 的长期价格}
+    -
+    B^o \text{ 的局部价格} .
 $$
 
-解释为什么当 $\xi_o \to \infty$ 时两个价格收敛。
+1. 结合 {eq}`eq:long-run-price-o` 与布里登系数 {eq}`eq:breeden-sdf-params`，用解析方法证明
+
+$$
+    w(\xi_o) = \frac{a\sigma_o}{\xi_o} ,
+$$
+
+所以该楔子恰好正比于 $1/\xi_o$，特别地，它不依赖于消费荷载 $\vartheta_o$。
+
+2. 在网格
+$\xi_o \in \{0.1, 0.2, 0.5, 1, 2, 5\}$ 上通过检验乘积
+$\xi_o\, w(\xi_o)$ 在整个网格上恒定并等于 $a\sigma_o$ 来数值验证这一结果。
+
+3. 在双对数坐标轴上绘制 $w$ 关于 $\xi_o$ 的图形，并确认拟合斜率为 $-1$，这是精确双曲衰减的标志。
 ```
 
 ```{solution-start} lrr_ex2
@@ -2539,30 +2622,48 @@ $$
 
 这是一个解答：
 
+*1.* 局部价格是 $-\gamma_o^s$，根据 {eq}`eq:long-run-price-o`，长期价格是 $-\gamma_o^s - (\beta_o^s/\xi_o)\sigma_o$。
+
+作差后，共同项 $-\gamma_o^s$ 抵消，只剩下持久性修正项：
+
+$$
+    w(\xi_o) = -\frac{\beta_o^s}{\xi_o}\sigma_o .
+$$
+
+布里登系数 {eq}`eq:breeden-sdf-params` 设定 $\beta_o^s = -a$，这给出 $w(\xi_o) = a\sigma_o/\xi_o$。
+
+因为 $\vartheta_o$ 仅通过 $\gamma_o^s = -a\vartheta_o$ 进入，而它在两个价格中以相同的方式出现，所以它相互抵消，不会影响该楔子。
+
+*2.* 和 *3.* 数值验证：
+
 ```{code-cell} ipython3
 ξ_vals = np.array([0.1, 0.2, 0.5, 1.0, 2.0, 5.0])
-local_vals = np.full_like(ξ_vals, -params_sdf["γ_o"])
-long_vals = (-params_sdf["γ_o"]
-             - (params_sdf["β_o"] / ξ_vals) * params_sdf["σ_o"])
+wedge = -(params_sdf["β_o"] / ξ_vals) * params_sdf["σ_o"]
 
-for ξ, lp, lrp in zip(ξ_vals, local_vals, long_vals):
-    print(f"ξ_o = {ξ:3.1f}: local = {lp:.4f}, long-run = {lrp:.4f}")
+print(f"a * σ_o = {a * params_sdf['σ_o']:.6f}\n")
+for ξ, w in zip(ξ_vals, wedge):
+    print(f"ξ_o = {ξ:3.1f}: wedge = {w:.6f}, ξ_o * wedge = {ξ * w:.6f}")
+
+slope, _ = np.polyfit(np.log(ξ_vals), np.log(wedge), 1)
+print(f"\nlog-log slope = {slope:.6f}")
 
 fig, ax = plt.subplots()
-ax.plot(ξ_vals, local_vals, "--", lw=2, label="局部")
-ax.plot(ξ_vals, long_vals, "o-", lw=2, label="长期")
-ax.set_xscale("log")
+ax.loglog(ξ_vals, wedge, "o-", lw=2, label="持久性楔子 $w$")
+ax.loglog(ξ_vals, a * params_sdf["σ_o"] / ξ_vals, "--", lw=2,
+          label="$a\\sigma_o/\\xi_o$")
 ax.set_xlabel("$\\xi_o$")
-ax.set_ylabel("风险价格")
+ax.set_ylabel("楔子")
 ax.legend()
 plt.show()
 ```
 
-随着 $\xi_o$ 增加，$X^o$ 更快地均值回归。
+在每个网格点上，乘积 $\xi_o\, w(\xi_o)$ 都打印为 $0.040000$，与 $a\sigma_o = 4 \times 0.01$ 相符，拟合的双对数斜率为 $-1.000000$。
 
-一个对 $B^o$ 的冲击于是对未来期望增长有一个寿命更短的影响。
+所以这两个价格不仅仅是收敛：该楔子以精确的双曲速率 $a\sigma_o/\xi_o$ 衰减。
 
-持久性项 $(\beta_o^s/\xi_o)\sigma_o$ 收敛到零，所以长期价格收敛到局部价格。
+这一速率背后的经济学原理是：一个 $B^o$ 冲击在冲击发生时使 $X^o$ 偏移 $\sigma_o$，该偏移以速率 $\xi_o$ 衰减，因此它对预期增长的累积影响为 $\sigma_o/\xi_o$。
+
+该累积影响的每一单位都由 SDF 对 $X^o$ 的荷载 $a$ 定价。
 
 ```{solution-end}
 ```
@@ -2581,7 +2682,9 @@ U =
 \end{bmatrix},
 $$
 
-衰减率向量 $r = (0.06, 0.04, 0.01)$，乘性泛函中无跳跃。设 $\psi=(3,1,2)$。
+衰减率向量 $r = (0.06, 0.04, 0.01)$，乘性泛函中无跳跃。
+
+设 $\psi=(3,1,2)$。
 
 1. 计算主特征对 $(\rho,\phi)$ 和扭曲平稳分布 $\hat\varsigma$，并报告理论极限
 
@@ -2646,13 +2749,23 @@ ax.semilogy(t_vals, errors, lw=2)
 ax.set_xlabel("$t$")
 ax.set_ylabel("误差")
 plt.show()
+```
 
-print(f"spectral gap = {gap:.6f}")
+对于第 3 部分，我们通过在主导修正项占主导地位的窗口内对 $\log(\text{误差})$ 拟合一条直线来估计经验衰减率，并将拟合斜率与谱隙进行比较。
+
+```{code-cell} ipython3
+mask = (t_vals > 20) & (t_vals < 40)
+fitted_slope, _ = np.polyfit(t_vals[mask], np.log(errors[mask]), 1)
+
+print(f"empirical decay rate = {-fitted_slope:.6f}")
+print(f"spectral gap         = {gap:.6f}")
 ```
 
 归一化半群以由主特征值与其余特征值之间的分离所控制的指数率收敛。
 
-在这个有限状态例子中，那个分离就是上面计算的谱隙。
+在这个有限状态例子中，那个分离就是谱隙，上面打印的两个数字精确到小数点后三位是一致的。
+
+剩余的微小差异来自第三个特征值的贡献，它尚未完全消失；在更晚的窗口上拟合可以进一步减小这一差异。
 
 ```{solution-end}
 ```
@@ -2777,7 +2890,9 @@ $$
     N_t = M_t\phi(X_t) - \phi(X_0) - \int_0^t M_s \chi(X_s)\, ds
 $$
 
-是一个局部鞅，则 $\mathbb A\phi = \chi$。因此任务有两部分：识别 $M_t\phi(X_t)$ 的可预测漂移以读出候选 $\chi$，并验证残差 $N_t$ 确实是一个局部鞅。
+是一个局部鞅，则 $\mathbb A\phi = \chi$。
+
+因此任务有两部分：识别 $M_t\phi(X_t)$ 的可预测漂移以读出候选 $\chi$，并验证残差 $N_t$ 确实是一个局部鞅。
 
 (1) 将伊藤公式应用于跳跃之间的 $Y_t = \exp(A_t)\phi(X_t)$ 并证明 $dY_t$ 的连续部分具有漂移
 
@@ -2832,7 +2947,9 @@ $$
     = N^c_t + N^j_t ,
 $$
 
-这是一个局部鞅。通过 {prf:ref}`lrr-def-extended-generator` 得出结论 $\mathbb A \phi = \chi$。
+这是一个局部鞅。
+
+通过 {prf:ref}`lrr-def-extended-generator` 得出结论 $\mathbb A \phi = \chi$。
 ```
 
 ```{solution-start} lrr_ex4
