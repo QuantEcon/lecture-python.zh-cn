@@ -657,17 +657,17 @@ def y_nonstochastic(y_0=100, y_1=80, α=0.92, β=0.5, γ=10, n=80):
     discriminant = ρ1**2 + 4 * ρ2
 
     if discriminant == 0:
-        roots.append(-ρ1 / 2)
+        roots.append(ρ1 / 2)
         print("单个实根：")
         print("".join(f"{r:.2f}" for r in roots))
     elif discriminant > 0:
-        roots.append((-ρ1 + sqrt(discriminant).real) / 2)
-        roots.append((-ρ1 - sqrt(discriminant).real) / 2)
+        roots.append((ρ1 + sqrt(discriminant).real) / 2)
+        roots.append((ρ1 - sqrt(discriminant).real) / 2)
         print("两个实根：")
         print(" ".join(f"{r:.2f}" for r in roots))
     else:
-        roots.append((-ρ1 + sqrt(discriminant)) / 2)
-        roots.append((-ρ1 - sqrt(discriminant)) / 2)
+        roots.append((ρ1 + sqrt(discriminant)) / 2)
+        roots.append((ρ1 - sqrt(discriminant)) / 2)
         print("两个复根：")
         print(" ".join(f"{r.real:.2f}{r.imag:+.2f}j" for r in roots))
 
@@ -926,7 +926,7 @@ plot_y(y_stochastic_g(g=500, g_t=50, duration="one-off"))
 
 ```{code-cell} ipython3
 class Samuelson:
-    """
+    r"""
     这个类代表萨缪尔森模型，也称为多重加速器模型。
     该模型将凯恩斯乘数与投资加速器理论相结合。
 
@@ -934,7 +934,7 @@ class Samuelson:
 
     .. math::
 
-        Y_t = \alpha (1 + \beta) Y_{t-1} - \alpha \beta Y_{t-2}
+        Y_t = (\alpha + \beta) Y_{t-1} - \beta Y_{t-2} + (\gamma + G_t) + \sigma \epsilon_t
 
     参数
     ----------
