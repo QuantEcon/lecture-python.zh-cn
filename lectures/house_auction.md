@@ -13,30 +13,34 @@ translation:
   title: 多种商品分配机制
   headings:
     Overview: 概述
-    Ascending Bids Auction for Multiple Goods: 多商品递增出价拍卖
-    A Benevolent Planner: 仁慈的规划者
-    Equivalence of Allocations: 分配的等价性
-    Ascending Bid Auction: 递增出价拍卖
-    Ascending Bid Auction::Basic Setting: 基本设置
+    Ascending bids auction for multiple goods: 多商品递增出价拍卖
+    A benevolent planner: 仁慈的规划者
+    Comparing the two mechanisms: 比较两种机制
+    Ascending bid auction: 递增出价拍卖
+    Ascending bid auction::Basic setting: 基本设置
     Pseudocode: 伪代码
-    An Example: 示例
-    An Example::round 1: 第一轮
-    An Example::round 2: 第二轮
-    An Example::round 3: 第三轮
-    An Example::round 4: 第四轮
-    An Example::round 5: 第5轮
-    A Python Class: Python类
-    Robustness Checks: 稳健性检验
-    A Groves-Clarke Mechanism: Groves-Clarke 机制
-    An Example Solved by Hand: 手工解决的示例
-    Another Python Class: 另一个Python类
-    Another Python Class::Elaborations: 详细说明
-    Another Python Class::Social Cost: 社会成本
+    An example: 示例
+    An example::Round 1: 第一轮
+    An example::Round 2: 第二轮
+    An example::Later rounds: 后续轮次
+    A Python class: Python类
+    Robustness checks: 稳健性检验
+    A Groves-Clarke mechanism: Groves-Clarke 机制
+    An example solved by hand: 手工解决的示例
+    Another Python class: 另一个Python类
+    Another Python class::Elaborations: 详细说明
+    Another Python class::Social cost: 社会成本
+    Is the greedy mechanism a VCG mechanism?: 贪婪机制是 VCG 机制吗？
+    Is the greedy mechanism a VCG mechanism?::Does the greedy allocation maximize total value?: 贪婪分配能实现总价值最大化吗？
+    Is the greedy mechanism a VCG mechanism?::Are the prices VCG payments?: 这些价格是 VCG 支付吗？
+    Is the greedy mechanism a VCG mechanism?::Is truthful reporting a dominant strategy?: 如实报告是占优策略吗？
+    Is the greedy mechanism a VCG mechanism?::What about the ascending bid auction?: 那么升价拍卖呢？
+    Exercises: 练习
 ---
 
 # 多种商品分配机制
 
-```{code-cell} ipython
+```{code-cell} ipython3
 ---
 tags: [hide-output]
 ---
@@ -63,7 +67,7 @@ tags: [hide-output]
 
  * 多轮递增出价拍卖
 
- * Groves-Clarke机制{cite}`Groves_73`, {cite}`Clarke_71`的一个特例，其中有一个善意的社会规划者
+ * 由一位善意的社会规划者管理的、受 {cite:t}`Groves_73` 和 {cite:t}`Clarke_71` 思想启发的序贯"贪婪"次价机制
 
 ```{note}
 1994年，斯坦福大学实际使用了多轮递增出价拍卖的方式，将校园内9块地块的租约出售给符合条件的教职员工。
@@ -97,12 +101,9 @@ tags: [hide-output]
 
  - 所有 $n$ 套房屋在最后一轮后都将被分配
 
-- 如果没有潜在买家出价超过 $r_i$，房屋 $i$ 将由拍卖人保留
+- 如果没有潜在买家出价超过 $r_i$，房屋 $i$ 将由拍卖师保留
 
 在这次拍卖中，个人 $j$ 从不向其他人透露他/她的私人估值 $v_{ij}$
-
-
-
 
 ## 仁慈的规划者
 
@@ -112,21 +113,29 @@ tags: [hide-output]
 
 规划者提前告知每个人他/她将如何根据潜在买家报告的估值矩阵来分配房屋。
 
-该机制为每个潜在买家提供动机，使其向规划者透露自己的私人估值向量。
+该机制旨在为每个潜在买家提供动机，使其向规划者透露自己的私人估值向量。
 
 在规划者收到每个人的私人价值向量后，规划者部署一个**顺序**算法来确定房屋的**分配**以及向获得者收取的一系列**费用**，这些费用是为了补偿他们的存在对其他潜在买家造成的负面**外部性**。
 
-## 分配的等价性
+## 比较两种机制
 
-值得注意的是，这两种机制可以产生几乎相同的分配结果。
+值得注意的是，这两种机制可以产生几乎完全相同的分配。
 
-我们用Python代码实现这两种机制。
+但"几乎相同"并不是"相同"，而这些差异恰恰具有启发性。
 
-我们还会手动或半手动计算一些示例。
+我们将会发现：
 
-接下来，让我们深入了解细节。
+* 上升叫价拍卖使分配的总价值最大化，并且，当出价增量 $\epsilon$ 变小时，它所设定的价格会收敛于 **维克里-克拉克-格罗夫斯**（VCG）机制所规定的支付
+* 仁慈规划者的贪婪机制*并不总是*使总价值最大化，它所收取的价格也*不是* VCG 支付，因此如实报告并不总是符合买方的利益
+
+我们将为这两种机制构建 Python 代码。
+
+我们还将手工或近乎手工地演算一些例子。
+
+接下来，让我们深入探讨其中的细节。
 
 ## 递增出价拍卖
+
 
 ### 基本设置
 
@@ -164,7 +173,7 @@ tags: [hide-output]
 
 我们用**伪代码**来描述拍卖规则。
 
-伪代码将为编写实现拍卖的Python代码提供路线图。
+伪代码将为编写实现拍卖的 Python 代码提供路线图。
 
 +++
 
@@ -209,23 +218,33 @@ tags: [hide-output]
 
 **建议的买家策略:**
 
-在以下伪代码和实际Python代码中,我们假设所有买家都选择使用以下策略
-
-   * 该策略对每个买家来说都是最优的
+在以下伪代码和实际Python代码中，我们假设所有买家都选择使用以下策略，这种策略通常被称为**直白出价**（straightforward bidding）：在每一轮中，对当前能给买家带来最大剩余价值的房屋出价。
 
 每个买家 $j = 1, \ldots, m$ 使用相同的策略。
+
+直白出价是*短视的*：买家只关注当前的价格，而不考虑他今天的出价可能如何影响明天的价格。
+
+这种短视性并不像听起来那样具有限制性。
+
+我们所研究的场景是一种 {cite:t}`ShapleyShubik1971` 所研究的**指派市场**（assignment market）：每个买家最多只想要一套房屋，且估值是私有的。
+
+对于这类市场，{cite:t}`CrawfordKnoer1981` 和 {cite:t}`DemangeGaleSotomayor1986` 证明了，像我们这样的升价拍卖——即所有买家都采用直白出价——会收敛到该指派市场的竞争均衡。
+
+具体而言，它会收敛到*最小*竞争均衡价格向量，即对买家最有利的那个均衡。
+
+下面我们将回到这一事实所带来的一个引人注目的结论。
 
 该策略的形式为：
 - 令 $\check p^t$ 为第 $t$ 轮开始时的 $n \times 1$ 最高出价向量
 - 令 $\epsilon>0$ 为卖方规定的最小加价幅度
 - 对于每个潜在买家 $j$，计算在第 $t$ 轮最适合竞价的房屋索引，即
 $\hat i_t = \textrm{argmax}_i\{  [  v_{ij} - \check p^t_i - \epsilon  ]\}$
-- 如果 $\max_i\{  [  v_{ij} - \check p^t_i - \epsilon  ]\} $ $\leq$ $0$，则买家 $j$ 在第 $t$ 轮永久退出拍卖
-- 如果 $v_{\hat i_t, j} - \check p^t_i - \epsilon>0$，则买家 $j$ 对房屋 $j$ 出价 $\check p^t_i + \epsilon$
+- 如果 $\max_i\{  [  v_{ij} - \check p^t_i - \epsilon  ]\} \leq 0$，则买家 $j$ 在第 $t$ 轮永久退出拍卖
+- 如果 $v_{\hat i_t, j} - \check p^t_{\hat i_t} - \epsilon>0$，则买家 $j$ 对房屋 $\hat i_t$ 出价 $\check p^t_{\hat i_t} + \epsilon$
 
 **解决歧义**：我们目前描述的协议存在两个可能的歧义来源。
 
-(1) **买家在每轮中的最优出价选择。** 买家可能对多个房屋有相同的剩余价值。Python中的argmax函数总是返回第一个最大值元素。我们更倾向于在这些获胜者中随机选择。因此，我们在下面编写了自己的argmax函数。
+(1) **买家在每轮中的最优出价选择。** 买家可能对多个房屋有相同的剩余价值。Python中的argmax函数总是返回第一个最大值元素。我们更倾向于在这些房屋中随机选择。因此，我们在下面编写了自己的argmax函数。
 
 (2) **当多个买家出价相同时卖家的获胜者选择。** 为了解决这种模糊性，我们使用下面的np.random.choice函数。
 
@@ -342,6 +361,8 @@ def check_kick_off_condition(v, r, ϵ):
 
     """
 
+    n, m = v.shape
+
     # 我们将价格向量转换为与价值矩阵相同形状的矩阵以便于减法运算
     p_start = (ϵ+r)[:,None] @ np.ones(m)[None,:]
 
@@ -380,6 +401,9 @@ def submit_initial_bid(p_initial, ϵ, v):
     bid_info: 包含竞价信息的字典（房屋编号为键，买家为值）
 
     """
+
+    n, m = v.shape
+    buyer_list = np.arange(m)
 
     p = p_initial.copy()
     p_start_mat = (ϵ + p)[:,None] @ np.ones(m)[None,:]
@@ -434,7 +458,7 @@ present_dict(bid_info)
 因此，最终价格可能是3或4，这取决于最后一轮的赢家。
 
 ```{code-cell} ipython3
-def check_terminal_condition(bid_info, p, v):
+def check_terminal_condition(bid_info, p, v, ϵ):
     """
     检查拍卖是否结束的函数。
 
@@ -449,6 +473,8 @@ def check_terminal_condition(bid_info, p, v):
 
     v：价值矩阵
 
+    ϵ：每轮最小价格增量
+
     返回：
     ----------
     allocation：描述竞价房屋如何分配的字典。
@@ -458,6 +484,9 @@ def check_terminal_condition(bid_info, p, v):
     loser_list：失败者列表
 
     """
+
+    n, m = v.shape
+    buyer_list = np.arange(m)
 
     # 可能有几个买家竞价一个房屋，我们随机选择一个赢家
     winner_list=[np.random.choice(bid_info[ii]) for ii in bid_info.keys()]
@@ -476,13 +505,13 @@ def check_terminal_condition(bid_info, p, v):
     loser_surplus_value = v[:,loser_list] - p_mat
     loser_decision = (loser_surplus_value > 0).any(axis = 0)
 
-    print(~(loser_decision.any()))
+    print('auction ends:', not loser_decision.any())
 
     return allocation,winner_list,loser_list
 ```
 
 ```{code-cell} ipython3
-allocation, winner_list, loser_list = check_terminal_condition(bid_info, p, v)
+allocation, winner_list, loser_list = check_terminal_condition(bid_info, p, v, ϵ)
 ```
 
 ```{code-cell} ipython3
@@ -572,81 +601,35 @@ present_dict(bid_info)
 ```
 
 ```{code-cell} ipython3
-allocation, winner_list, loser_list = check_terminal_condition(bid_info, p, v)
+allocation, winner_list, loser_list = check_terminal_condition(bid_info, p, v, ϵ)
 ```
 
 ```{code-cell} ipython3
 present_dict(allocation)
 ```
 
-### 第三轮
+### 后续轮次
+
+剩下的每一轮都重复完全相同的两个步骤，因此我们不再逐轮列出，而是通过迭代直到价格不再变化为止。
+
+在这些轮次展开的过程中，请留意两点：一个被超越的买家会转而竞标当前能给他带来最大剩余价值的房屋，而当某一轮结束时没有任何失败的买家愿意再抬高任何价格时，拍卖就会立即结束。
 
 ```{code-cell} ipython3
-p,bid_info = submit_bid(loser_list, p, ϵ, v, bid_info)
-```
+round_number = 2
 
-```{code-cell} ipython3
-p
-```
+while True:
+    round_number += 1
+    p_previous = p.copy()
 
-```{code-cell} ipython3
-present_dict(bid_info)
-```
+    p, bid_info = submit_bid(loser_list, p, ϵ, v, bid_info)
+    allocation, winner_list, loser_list = check_terminal_condition(bid_info, p, v, ϵ)
 
-```{code-cell} ipython3
-allocation, winner_list, loser_list = check_terminal_condition(bid_info, p, v)
-```
+    print(f'round {round_number}: prices {p}')
+    present_dict(allocation)
 
-```{code-cell} ipython3
-present_dict(allocation)
-```
-
-### 第四轮
-
-```{code-cell} ipython3
-p,bid_info = submit_bid(loser_list, p, ϵ, v, bid_info)
-```
-
-```{code-cell} ipython3
-p
-```
-
-```{code-cell} ipython3
-present_dict(bid_info)
-```
-
-注意，买家3现在转而竞标房屋1，因为他意识到房屋2不再是他的最佳选择。
-
-```{code-cell} ipython3
-allocation,winner_list,loser_list = check_terminal_condition(bid_info, p, v)
-```
-
-```{code-cell} ipython3
-present_dict(allocation)
-```
-
-### 第5轮
-
-```{code-cell} ipython3
-p,bid_info = submit_bid(loser_list, p, ϵ, v, bid_info)
-```
-
-```{code-cell} ipython3
-p
-```
-
-```{code-cell} ipython3
-present_dict(bid_info)
-```
-
-现在买家1再次对房屋1出价4，挤出了买家3，标志着拍卖的结束。
-
-```{code-cell} ipython3
-allocation,winner_list,loser_list = check_terminal_condition(bid_info, p, v)
-```
-
-```{code-cell} ipython3
-present_dict(allocation)
+    if np.array_equal(p, p_previous):
+        print('no price changed during this round, so the auction ends')
+        break
 ```
 
 ```{code-cell} ipython3
@@ -667,7 +650,7 @@ total_revenue
 
 上面我们逐步模拟了一个递增出价拍卖。
 
-在定义函数时,由于Python函数执行完后会丢失变量,我们反复计算了一些中间对象。
+在定义函数时，由于Python函数执行完后会丢失变量，我们反复计算了一些中间对象。
 
 这当然导致了代码中的冗余
 
@@ -695,11 +678,13 @@ class ascending_bid_auction:
 
         self.v = v.copy()
         self.n,self.m = self.v.shape
-        self.r = r
+        # 价格以浮点数存储，以便允许出价增量ϵ < 1
+        self.r = np.asarray(r, dtype=float)
         self.ϵ = ϵ
-        self.p = r.copy()
+        self.p = self.r.copy()
         self.buyer_list = np.arange(self.m)
         self.house_list = np.arange(self.n)
+        self.log = print          # 当verbose=False时替换为空操作
         self.bid_info_history = []
         self.allocation_history = []
         self.winner_history = []
@@ -746,17 +731,17 @@ class ascending_bid_auction:
             bid_info[house_num] = active_buyer_list[active_buyer_choice == house_num]
         self.bid_info_history.append(bid_info)
 
-        print('出价信息为')
+        self.log('出价信息为')
         ymtb = pt.PrettyTable()
         ymtb.field_names = ['房屋编号', *bid_info.keys()]
         ymtb.add_row(['买家', *bid_info.values()])
-        print(ymtb)
+        self.log(ymtb)
 
-        print('房屋的出价为')
+        self.log('房屋的出价为')
         ymtb = pt.PrettyTable()
         ymtb.field_names = ['房屋编号', *self.house_list]
         ymtb.add_row(['价格', *self.p])
-        print(ymtb)
+        self.log(ymtb)
 
         self.winner_list=[np.random.choice(bid_info[ii]) for ii in bid_info.keys()]
         self.winner_history.append(self.winner_list)
@@ -768,20 +753,20 @@ class ascending_bid_auction:
         self.loser_list = list(loser_set)
         self.loser_history.append(self.loser_list)
 
-        print('获胜者为')
-        print(self.winner_list)
+        self.log('获胜者为')
+        self.log(self.winner_list)
 
-        print('失败者为')
-        print(self.loser_list)
-        print('\n')
+        self.log('失败者为')
+        self.log(self.loser_list)
+        self.log('\n')
 
 
     def check_terminal_condition(self):
         loser_num = len(self.loser_list)
 
         if loser_num == 0:
-            print('拍卖结束因为每个买家都得到了一套房子。')
-            print('\n')
+            self.log('拍卖结束因为每个买家都得到了一套房子。')
+            self.log('\n')
             return True
 
         p_mat = (self.ϵ + self.p)[:,None] @ np.ones(loser_num)[None,:]
@@ -817,17 +802,17 @@ class ascending_bid_auction:
             bid_info[house_num] = bid_info_active_loser[house_num]
         self.bid_info_history.append(bid_info)
 
-        print('出价信息为')
+        self.log('出价信息为')
         ymtb = pt.PrettyTable()
         ymtb.field_names = ['房屋编号', *bid_info.keys()]
         ymtb.add_row(['买家', *bid_info.values()])
-        print(ymtb)
+        self.log(ymtb)
 
-        print('房屋的出价为')
+        self.log('房屋的出价为')
         ymtb = pt.PrettyTable()
         ymtb.field_names = ['房屋编号', *self.house_list]
         ymtb.add_row(['价格', *self.p])
-        print(ymtb)
+        self.log(ymtb)
 
         self.winner_list=[np.random.choice(bid_info[ii]) for ii in bid_info.keys()]
         self.winner_history.append(self.winner_list)
@@ -839,79 +824,81 @@ class ascending_bid_auction:
         self.loser_list = list(loser_set)
         self.loser_history.append(self.loser_list)
 
-        print('获胜者为')
-        print(self.winner_list)
+        self.log('获胜者为')
+        self.log(self.winner_list)
 
-        print('失败者为')
-        print(self.loser_list)
-        print('\n')
+        self.log('失败者为')
+        self.log(self.loser_list)
+        self.log('\n')
 
 
-    def start_auction(self):
-        print('房屋递增出价拍卖')
-        print('\n')
+    def start_auction(self, verbose=True):
+        # 设置verbose=False可以在不打印报告的情况下运行拍卖
+        self.log = print if verbose else (lambda *args, **kwargs: None)
+        self.log('房屋递增出价拍卖')
+        self.log('\n')
 
-        print('基本信息：%d套房屋，%d位买家'%(self.n, self.m))
+        self.log('基本信息：%d套房屋，%d位买家'%(self.n, self.m))
 
-        print('价值矩阵如下')
+        self.log('价值矩阵如下')
         ymtb = pt.PrettyTable()
         ymtb.field_names = ['买家编号', *(np.arange(self.m))]
         for ii in range(self.n):
             ymtb.add_row(['房屋%d'%(ii), *self.v[ii,:]])
-        print(ymtb)
+        self.log(ymtb)
 
-        print('房屋的保留价格为')
+        self.log('房屋的保留价格为')
         ymtb = pt.PrettyTable()
         ymtb.field_names = ['房屋编号', *self.house_list]
         ymtb.add_row(['价格', *self.r])
-        print(ymtb)
-        print('最小出价增量为%.2f' % self.ϵ)
-        print('\n')
+        self.log(ymtb)
+        self.log('最小出价增量为%.2f' % self.ϵ)
+        self.log('\n')
 
         ctr = 1
         if self.check_kick_off_condition():
-            print('拍卖成功开始')
-            print('\n')
-            print('第%d轮'% ctr)
+            self.log('拍卖成功开始')
+            self.log('\n')
+            self.log('第%d轮'% ctr)
 
             self.submit_initial_bid()
 
             while True:
                 if self.check_terminal_condition():
-                    print('拍卖结束')
-                    print('\n')
+                    self.log('拍卖结束')
+                    self.log('\n')
 
-                    print('最终结果如下')
-                    print('\n')
-                    print('分配方案为')
+                    self.log('最终结果如下')
+                    self.log('\n')
+                    self.log('分配方案为')
                     ymtb = pt.PrettyTable()
                     ymtb.field_names = ['房屋编号', *self.allocation.keys()]
                     ymtb.add_row(['买家', *self.allocation.values()])
-                    print(ymtb)
+                    self.log(ymtb)
 
-                    print('房屋的出价为')
+                    self.log('房屋的出价为')
                     ymtb = pt.PrettyTable()
                     ymtb.field_names = ['房屋编号', *self.house_list]
                     ymtb.add_row(['价格', *self.p])
-                    print(ymtb)
+                    self.log(ymtb)
 
-                    print('获胜者为')
-                    print(self.winner_list)
+                    self.log('获胜者为')
+                    self.log(self.winner_list)
 
-                    print('失败者为')
-                    print(self.loser_list)
+                    self.log('失败者为')
+                    self.log(self.loser_list)
 
                     self.house_unsold_list = list(set(self.house_list).difference(set(self.allocation.keys())))
-                    print('未售出的房屋为')
-                    print(self.house_unsold_list)
+                    self.log('未售出的房屋为')
+                    self.log(self.house_unsold_list)
 
                     self.total_revenue = self.p[list(self.allocation.keys())].sum()
-                    print('总收入为%.2f' % self.total_revenue)
+                    self.log('总收入为%.2f' % self.total_revenue)
 
                     break
 
                 ctr += 1
-                print('第%d轮'% ctr)
+                self.log('第%d轮'% ctr)
                 self.submit_bid()
 
             # 我们计算1.1中要求的剩余矩阵S和数量矩阵X
@@ -935,7 +922,7 @@ class ascending_bid_auction:
             self.allocation = dict_temp
 
         else:
-            print('由于保留价格过高，拍卖无法开始')
+            self.log('由于保留价格过高，拍卖无法开始')
 ```
 
 让我们使用我们的类来进行上述示例中描述的拍卖。
@@ -1042,9 +1029,9 @@ auction_6.start_auction()
 
 * 社会规划者不向任何人透露这些信息，而是用它们来分配房屋和设定价格
 
-* 该机制的设计使所有潜在买家都愿意向规划者透露他们的私人估值
+* 该机制*意图*使所有潜在买家都愿意向规划者透露他们的私人估值
 
-   - 对每个潜在买家来说，说真话都是占优策略
+   - 我们将在下文中对这一意图进行检验，并发现它并未实现
 
 * 规划者通过计算找到具有最高私人估值的房屋和买家配对
    $(\tilde i, \tilde j) = \operatorname{argmax} (V_{ij})$
@@ -1266,7 +1253,12 @@ class GC_Mechanism:
         return i, j
 
     def update_status(self, i, j):
-        self.p[i] = np.max(np.delete(self.V[i, :], j))
+        # 价格是同一房屋的竞争买家所放弃的最高价值；
+        # 值为-1的条目表示已处理的买家和房屋，如果没有
+        # 竞争者剩余，则没有竞争出价，此时价格为零
+        rivals = np.delete(self.V[i, :], j)
+        rivals = rivals[rivals >= 0]
+        self.p[i] = rivals.max() if rivals.size > 0 else 0.0
         self.Q[i, j] = 1
         self.V[i, :] = -1
         self.V[:, j] = -1
@@ -1274,18 +1266,19 @@ class GC_Mechanism:
     def calculate_surplus(self):
         self.S = self.V_orig*self.Q - np.diag(self.p)@self.Q
 
-    def start(self):
+    def start(self, verbose=True):
+        log = print if verbose else (lambda *args, **kwargs: None)
         while (np.max(self.V)>=0):
             i, j = self.find_argmax()
             self.update_status(i, j)
-            print("房屋%i以价格%i卖给了买家%i"%(i[0], self.p[i[0]], j[0]))
-            print("\n")
+            log("房屋%i以价格%i卖给了买家%i"%(i[0], self.p[i[0]], j[0]))
+            log("\n")
         self.calculate_surplus()
-        print("房屋价格：\n", self.p)
-        print("\n")
-        print("状态矩阵：\n", self.Q)
-        print("\n")
-        print("剩余价值矩阵：\n", self.S)
+        log("房屋价格：\n", self.p)
+        log("\n")
+        log("状态矩阵：\n", self.Q)
+        log("\n")
+        log("剩余价值矩阵：\n", self.S)
 
 ```
 
@@ -1306,7 +1299,7 @@ gc_mechanism.start()
 
 我们要验证我们的伪代码确实是一个**轴心机制**，也称为**VCG**（Vickrey-Clarke-Groves）机制。
 
-  * 该机制以{cite}`Groves_73`、{cite}`Clarke_71`和{cite}`Vickrey_61`的名字命名。
+  * 该机制以{cite:t}`Groves_73`、{cite:t}`Clarke_71`和{cite:t}`Vickrey_61`的名字命名。
 
 为了准备验证，我们添加一些符号。
 
@@ -1342,9 +1335,11 @@ $$ (eq:GC2)
 
 - 成功的潜在买家支付的金额是：在没有他们存在的情况下社会可以实现的总价值，与在机制下社会中其他人实际实现的总价值之间的差额。
 
-上述伪代码中描述的广义第二价格拍卖确实满足条件(1)。
+我们自然会想问，上面编写的贪婪机制是否满足 {eq}`eq:GC1` 和 {eq}`eq:GC2`。
 
-我们要计算 $\check t_j$ （$j = 1, \ldots, m$）并与第二价格拍卖中的 $p_j$ 进行比较。
+我们将计算 $\check t_j$ （$j = 1, \ldots, m$），并将其与贪婪机制实际收取的价格 $p_j$ 进行比较。
+
+我们将在接下来的两节中给出答案：一般而言，该机制既不满足前者，也不满足后者。
 
 +++
 
@@ -1411,4 +1406,295 @@ gc_mechanism_exc_2.start()
 
 print("\n买家2的社会成本：",
      np.sum(gc_mechanism_exc_2.Q*gc_mechanism_exc_2.V_orig)-np.sum(np.delete(gc_mechanism.Q*gc_mechanism.V_orig, 2, axis=1)))
+```
+
+## 贪婪机制是 VCG 机制吗？
+
+我们仁慈的规划者所运行的机制是**贪婪的**：它反复抓取价值矩阵中剩余的最大条目。
+
+一个真正的 VCG 机制必须做到两件事，即满足 {eq}`eq:GC1` 和 {eq}`eq:GC2`。
+
+让我们逐一检验。
+
+我们需要一种方法来计算价值最大化的分配，这是一个经典的**分配问题**，可以通过线性规划求解。
+
+```{code-cell} ipython3
+from scipy.optimize import linear_sum_assignment
+
+def optimal_assignment(V):
+    """
+    Solve the assignment problem: allocate at most one house to each buyer
+    so as to maximize the total value.
+    Returns the total value and a dictionary mapping buyer -> house.
+    """
+    rows, cols = linear_sum_assignment(-V)
+    return V[rows, cols].sum(), {int(c): int(r) for r, c in zip(rows, cols)}
+
+def greedy_outcome(V):
+    "Run the planner's greedy mechanism quietly and report what it achieves."
+    gc = GC_Mechanism(V.copy())
+    gc.start(verbose=False)
+    return (gc.Q * gc.V_orig).sum(), gc
+```
+
+### 贪婪分配能实现总价值最大化吗？
+
+考虑这个关于两栋房子和两个买家的私人价值的简单矩阵。
+
+```{code-cell} ipython3
+V_trap = np.array([[10, 9],
+                   [9, 1]])
+
+greedy_value, _ = greedy_outcome(V_trap)
+best_value, best_alloc = optimal_assignment(V_trap)
+
+print(f"greedy total value:  {greedy_value:.0f}")
+print(f"optimal total value: {best_value:.0f}   (buyer -> house: {best_alloc})")
+```
+
+贪婪规则从最大条目 $V_{00} = 10$ 开始，将房子 0 分配给买家 0。
+
+这样只剩下 $V_{11} = 1$，总计为 $11$。
+
+但是，如果把房子 0 分配给买家 1、房子 1 分配给买家 0，则可获得 $9 + 9 = 18$。
+
+最大的条目原来是一个陷阱：抓取它破坏了一组更好的分配方案。
+
+因此，贪婪机制*不*满足 {eq}`eq:GC1`。
+
+{ref}`ha_ex1` 要求你研究这种情况发生的频率。
+
+本讲座前面使用的价值矩阵恰好是贪婪算法能够找到最佳分配的矩阵，这就是为什么之前没有出现这个问题的原因。
+
+### 这些价格是 VCG 支付吗？
+
+现在让我们比较一下贪婪机制收取的价格与社会成本 {eq}`eq:GC2`。
+
+```{code-cell} ipython3
+def vcg_payments(V):
+    """
+    The social cost of each buyer:
+    the total value others could achieve without this buyer,
+    minus the total value others do achieve when this buyer is present.
+    """
+    total, alloc = optimal_assignment(V)
+    payments = np.zeros(V.shape[1])
+
+    for j in range(V.shape[1]):
+        total_without_j, _ = optimal_assignment(np.delete(V, j, axis=1))
+        value_of_others = total - (V[alloc[j], j] if j in alloc else 0.0)
+        payments[j] = total_without_j - value_of_others
+
+    return payments
+```
+
+```{code-cell} ipython3
+t_vcg = vcg_payments(V_orig)
+
+print(f"{'buyer':>6}{'house':>7}{'greedy price':>15}{'VCG payment':>14}")
+for j in range(V_orig.shape[1]):
+    house = [i for i in range(V_orig.shape[0]) if gc_mechanism.Q[i, j] == 1]
+    if house:
+        print(f"{j:>6}{house[0]:>7}{gc_mechanism.p[house[0]]:>15.1f}{t_vcg[j]:>14.1f}")
+```
+
+这些价格与 VCG 支付并不相同。
+
+请注意，VCG 支付恰好是我们在前一节中通过每次排除一个买家所计算出的社会成本。
+
+因此，规划者的机制所收取的费用*超过*了获胜买家给他人带来的外部性。
+
+一种以贪婪方式分配物品、并向每位赢家收取该物品次优报价的机制，被称为**广义第二价格**机制。
+
+广义第二价格机制被广泛使用——搜索引擎正是通过这种方式出售广告位——而众所周知，它们*不是* VCG 机制 {cite}`EdelmanOstrovskySchwarz2007`。
+
+### 如实报告是占优策略吗？
+
+由于该机制不是 VCG 机制，使如实报告成为占优策略的论证在此并不适用。
+
+事实上，在这里如实报告*不是*占优策略，{ref}`ha_ex2` 要求你通过找到一个有利可图的谎言来证明这一点。
+
+### 那么升价拍卖呢？
+
+以下是前面所承诺的那个引人注目的事实。
+
+我们所处的情形是一个分配市场，其中每个买家最多想要一栋房子。
+
+对于这样的市场，{cite:t}`Leonard1983` 和 {cite:t}`DemangeGaleSotomayor1986` 证明了**最低竞争均衡价格**与 VCG 机制所规定的支付相一致。
+
+由于采用直接叫价方式的升价拍卖会收敛到那些最低竞争均衡价格，由此可知，当出价增量 $\epsilon$ 变小时，我们的升价拍卖实现的正是 VCG 结果。
+
+在这里，运行 VCG 机制的是拍卖师，而不是仁慈的规划者。
+
+{ref}`ha_ex3` 要求你通过数值方法验证这一点。
+
+## 练习
+
+```{exercise}
+:label: ha_ex1
+
+我们已经看到，贪婪机制可能无法使总价值最大化。
+
+它失败的频率有多高？
+
+绘制许多具有整数条目的随机价值矩阵，同时运行贪婪机制和 `optimal_assignment`，并报告
+
+1. 贪婪机制次优的矩阵所占比例
+1. 你所发现的最大差距百分比
+
+然后用文字解释贪婪规则为什么会出错。
+```
+
+```{solution-start} ha_ex1
+:class: dropdown
+```
+
+```{code-cell} ipython3
+rng_ha = np.random.default_rng(0)
+trials = 200
+failures, worst = 0, 0.0
+
+for _ in range(trials):
+    n_h, m_b = rng_ha.integers(2, 5), rng_ha.integers(2, 6)
+    if m_b < n_h:
+        n_h, m_b = m_b, n_h
+    V_rand = rng_ha.integers(0, 12, size=(n_h, m_b))
+
+    greedy_value, _ = greedy_outcome(V_rand)
+    best_value, _ = optimal_assignment(V_rand)
+
+    if greedy_value < best_value - 1e-9:
+        failures += 1
+        worst = max(worst, (best_value - greedy_value)/best_value)
+
+print(f"greedy was suboptimal in {failures} of {trials} matrices")
+print(f"largest shortfall: {100*worst:.1f} per cent of the attainable total value")
+```
+
+贪婪机制经常失败，有时失败得很严重。
+
+原因在于，价值矩阵中的最大条目未必属于最佳分配方案。
+
+选取该条目会同时将一栋房屋 *和* 一位买家从后续考虑中剔除，而这可能会以牺牲两个良好匹配为代价，来换取一个非常好的匹配。
+
+选择最佳分配方案需要同时权衡所有配对情况，而这正是线性规划例程所做的事情。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: ha_ex2
+
+证明在规划者的贪婪机制下，如实报告并非占优策略。
+
+使用上一节中的价值矩阵 `V_orig`，考虑买家 0，其对三栋房屋的真实价值为 $(10, 9, 8)$。
+
+1. 当所有人都如实报告时，买家 0 获得的剩余是多少？
+1. 在其他所有买家的报告保持不变的情况下，搜索买家 0 可能提交的、条目介于 0 到 10 之间的整数报告 $(a, b, c)$，找出能使买家 0 的 *真实* 剩余最大化的报告。
+1. 解释这种操纵行为实现了什么目的。
+```
+
+```{solution-start} ha_ex2
+:class: dropdown
+```
+
+```{code-cell} ipython3
+def surplus_of_buyer_0(V_true, V_reported):
+    "True surplus of buyer 0 when the mechanism is run on the reported values."
+    gc = GC_Mechanism(V_reported.copy())
+    gc.start(verbose=False)
+    for i in range(V_true.shape[0]):
+        if gc.Q[i, 0] == 1:
+            return V_true[i, 0] - gc.p[i], i, gc.p[i]
+    return 0.0, None, None      # buyer 0 wins nothing
+
+np.random.seed(0)
+truth_surplus, house, price = surplus_of_buyer_0(V_orig, V_orig)
+print(f"truthful report: buyer 0 wins house {house} at price {price:.0f}, "
+      f"surplus {truth_surplus:.0f}")
+
+best = (truth_surplus, None)
+for a in range(11):
+    for b in range(11):
+        for c in range(11):
+            V_lie = V_orig.copy()
+            V_lie[:, 0] = [a, b, c]
+            surplus, h, pr = surplus_of_buyer_0(V_orig, V_lie)
+            if surplus > best[0] + 1e-9:
+                best = (surplus, (a, b, c, h, pr))
+
+report = best[1]
+print(f"best misreport found: {report[:3]} wins house {report[3]} "
+      f"at price {report[4]:.0f}, surplus {best[0]:.0f}")
+```
+
+通过声称自己对两栋昂贵房屋毫无兴趣，买家 0 退出了对它们的竞争。
+
+于是机制将一栋更便宜的房屋分配给他，并向他收取该房屋的最佳放弃报价，而这个价格要比他如实报告时所支付的价格低得多。
+
+他最终获得的房屋对他而言真实价值足够高，因此这种偏离行为是有利可图的。
+
+在真正的 VCG 机制下，这种情况不会发生：买家的支付永远不取决于他自己的报告，而只取决于他给他人造成的损害。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: ha_ex3
+
+验证升价拍卖能够实现 VCG 结果。
+
+使用价值矩阵
+
+$$
+v =\begin{bmatrix} 8 & 5 & 9 & 4 \cr
+                   4 & 11 & 7 & 4 \cr
+                   9 & 7 & 6 & 4 \end{bmatrix}
+$$
+
+保留价均为零，因此价格可以自由地稳定在其竞争性水平上。
+
+1. 计算 VCG 支付以及价值最大化的分配方案。
+1. 对 $\epsilon = 1, 0.5, 0.25, 0.1, 0.05$ 运行升价拍卖，并记录每位获胜买家所支付的价格。
+1. 该拍卖是否实现了总价值最大化？其支付是否趋近于 VCG 支付？
+```
+
+```{solution-start} ha_ex3
+:class: dropdown
+```
+
+```{code-cell} ipython3
+v_ex = np.array([[8, 5, 9, 4],
+                 [4, 11, 7, 4],
+                 [9, 7, 6, 4]])
+
+t_vcg_ex = vcg_payments(v_ex)
+best_value_ex, best_alloc_ex = optimal_assignment(v_ex)
+
+print(f"VCG payments by buyer: {t_vcg_ex}")
+print(f"value-maximizing allocation (buyer -> house): {best_alloc_ex}")
+print(f"maximum total value: {best_value_ex:.0f}\n")
+
+print(f"{'ε':>7}{'total value':>14}   payments by buyer")
+for ϵ_try in (1.0, 0.5, 0.25, 0.1, 0.05):
+    np.random.seed(0)
+    auction = ascending_bid_auction(v_ex, np.zeros(3), ϵ_try)
+    auction.start_auction(verbose=False)
+
+    payments = {j: round(float(auction.p[i]), 3)
+                for i in range(v_ex.shape[0])
+                for j in range(v_ex.shape[1]) if auction.Q[i, j] == 1}
+    total_value = (auction.Q[:, :v_ex.shape[1]] * v_ex).sum()
+    print(f"{ϵ_try:>7}{total_value:>14.0f}   {payments}")
+```
+
+该拍卖始终能够实现总价值最大化。
+
+随着 $\epsilon$ 的缩小，每位获胜者的支付都会趋近于该买家的 VCG 支付。
+
+这说明了 {cite:t}`Leonard1983` 和 {cite:t}`DemangeGaleSotomayor1986` 的定理：在分配市场中，最低的竞争均衡价格恰好就是 VCG 支付。
+
+拍卖人从未要求任何人透露其私人价值，然而升价拍卖却得出了一个正确设计的规划者本应根据完全信息计算出的结果。
+
+```{solution-end}
 ```
