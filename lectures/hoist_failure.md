@@ -21,13 +21,14 @@ translation:
     Approximating continuous distributions: 近似连续分布
     Discretizing the lognormal distribution: 离散化对数正态分布
     Convolving probability mass functions: 概率质量函数的卷积
-    Convolving probability mass functions::The Fast Fourier Transform: 快速傅里叶变换
+    Convolving probability mass functions::The fast Fourier transform: 快速傅里叶变换
     Fault tree analysis: 故障树分析
     Fault tree analysis::The rare event approximation: 稀有事件近似
     Fault tree analysis::System failure probability: 系统故障概率
     Failure rates unknown: 未知的故障率
     'Application: waste hoist failure rate': 应用：废物提升机失效率
     'Application: waste hoist failure rate::Model specification': 模型设定
+    'Application: waste hoist failure rate::Reading the answer': 解读结果
     Exercises: 练习
 ---
 
@@ -189,13 +190,13 @@ h_n = (f*g)_n = \sum_{m=0}^n f_m g_{n-m}, \quad n \geq 0
 考虑两个概率质量函数：
 
 $$
-f_j = \Pr(X = j), \quad j = 0, 1
+f_j = \mathbb{P}\{X = j\}, \quad j = 0, 1
 $$
 
 和
 
 $$
-g_j = \Pr(Y = j), \quad j = 0, 1, 2, 3
+g_j = \mathbb{P}\{Y = j\}, \quad j = 0, 1, 2, 3
 $$
 
 $Z = X + Y$ 的分布由卷积 $h = f * g$ 给出。
@@ -300,6 +301,8 @@ print(f"样本均值: {samp_mean:.3f}")
 
 我们定义辅助函数来创建对数正态概率密度函数的离散化版本。
 
+我们手动写出该密度函数，以便与公式 {eq}`lognormal_pdf` 对照；`scipy.stats.lognorm(s=σ, scale=np.exp(μ)).pdf(x)` 计算的是同样的内容。
+
 ```{code-cell} ipython3
 def lognormal_pdf(x, μ, σ):
     """
@@ -312,7 +315,19 @@ def lognormal_pdf(x, μ, σ):
 
 def discretize_lognormal(μ, σ, I, m):
     """
-    创建离散化的对数正态概率质量函数。
+    在网格 0, m, 2m, ..., 直到 I 上离散化对数正态分布。
+
+    参数
+    ----------
+    μ, σ : 对数正态分布的参数
+    I    : 网格的上限，用于截断右尾
+    m    : 网格点之间的间距，决定分辨率
+
+    返回
+    -------
+    p_array      : 在网格上计算得到的密度
+    p_array_norm : 隐含的概率质量函数，其和为1
+    x            : 网格本身，共有 I / m 个点
     """
     x = np.arange(1e-7, I, m)
     p_array = lognormal_pdf(x, μ, σ)
@@ -320,17 +335,26 @@ def discretize_lognormal(μ, σ, I, m):
     return p_array, p_array_norm, x
 ```
 
-我们将网格长度 $I$ 设置为 2 的幂，以便进行高效的快速傅里叶变换计算。
+有两个独立的选择决定了这一近似的质量，最好将它们分清楚。
+
+* $I$ 决定网格的*终止点*，因此它控制我们舍弃了多少右尾部分
+* $m$ 决定网格点之间的*间距*，因此它控制分辨率
+
+网格共有 $I/m$ 个点，因此在 $m$ 固定时增大 $I$ 会扩大覆盖范围，而在 $I$ 固定时减小 $m$ 会提高精度。
+
+一旦 $I$ 足够大，使得几乎没有概率质量落在其之外，再进一步增大它就不会改变结果，此时只有 $m$ 起作用。
+
+{ref}`hoist_ex1` 要求你验证这一点。
 
 ```{note}
-增大幂次 $p$（例如从12增加到15）可以提高近似质量，但会增加计算成本。
+`scipy.signal.fftconvolve` 会在内部自动将输入填充到合适的长度，因此无需将 $I/m$ 选为 2 的幂。
 ```
 
 ```{code-cell} ipython3
 # 设置网格参数
 p = 15
-I = 2**p  # 截断值（2的幂以提高FFT效率）
-m = 0.1   # 增量大小
+I = 2**p  # 网格的终止点：截断右尾
+m = 0.1   # 网格点之间的间距：决定分辨率
 ```
 
 让我们直观地看一下离散化分布对连续对数正态分布的近似效果：
@@ -371,7 +395,7 @@ print(f"离散化均值: {mean_discrete:.3f}")
 
 现在我们使用卷积定理来计算上面参数化的两个对数正态随机变量之和的概率分布。
 
-我们还将计算上面构造的三个对数正态分布之和的概率。
+我们还将计算上面构造的三个对数正态分布之和的概率分布。
 
 对于长序列，`scipy.signal.fftconvolve` 比 `numpy.convolve` 快得多，因为它使用了快速傅里叶变换。
 
@@ -413,30 +437,39 @@ x_t = T^{-1} \sum_{j=0}^{T-1} x(\omega_j) \exp(i \omega_j t)
 
 让我们做一个预热计算，比较 `numpy.convolve` 和 `scipy.signal.fftconvolve` 所需的时间
 
-```{code-cell} ipython3
-# 离散化三个对数正态分布
-_, pmf1, x = discretize_lognormal(μ, σ, I, m)
-_, pmf2, x = discretize_lognormal(μ, σ, I, m)
-_, pmf3, x = discretize_lognormal(μ, σ, I, m)
+我们的三个分量是同分布的，因此单次离散化就足以适用于所有分量。
 
-# 计时 numpy.convolve
+```{code-cell} ipython3
+# 离散化对数正态分布；三个分量是独立同分布的
+_, pmf1, x = discretize_lognormal(μ, σ, I, m)
+pmf2 = pmf3 = pmf1
+
+# 直接卷积的成本为 O(N²)，因此我们只对一个较短的前缀部分计时
+short = pmf1[:20_000]
+
 with qe.Timer() as timer_numpy:
-    conv_np = np.convolve(pmf1, pmf2)
-    conv_np = np.convolve(conv_np, pmf3)
+    np.convolve(short, short)
 time_numpy = timer_numpy.elapsed
 
-# 计时 fftconvolve
 with qe.Timer() as timer_fft:
-    conv_fft = fftconvolve(pmf1, pmf2)
-    conv_fft = fftconvolve(conv_fft, pmf3)
+    fftconvolve(short, short)
 time_fft = timer_fft.elapsed
 
-print(f"使用 np.convolve 所需时间: {time_numpy:.4f} 秒")
-print(f"使用 fftconvolve 所需时间: {time_fft:.4f} 秒")
-print(f"加速倍数: {time_numpy / time_fft:.1f}x")
+print(f"在 {len(short):,} 个点上：")
+print(f"  np.convolve: {time_numpy:.4f} 秒")
+print(f"  fftconvolve: {time_fft:.4f} 秒")
+print(f"  加速倍数:     {time_numpy / time_fft:.0f}x")
 ```
 
-快速傅里叶变换带来了数量级的加速。
+随着序列长度的增加，这一差距会迅速扩大，因为直接卷积的计算成本为 $O(N^2)$，而 FFT 方法的计算成本为 $O(N \log N)$。
+
+在下面使用的完整网格上，直接方法的速度会更慢。
+
+```{code-cell} ipython3
+# 使用快速方法完成完整计算
+conv_fft = fftconvolve(fftconvolve(pmf1, pmf2), pmf3)
+print(f"每个分量的网格点数: {len(pmf1):,}")
+```
 
 现在让我们将计算得到的两个对数正态随机变量之和的概率质量函数近似值与我们上面形成的样本直方图进行对比绘制
 
@@ -505,7 +538,7 @@ print(f"  计算均值: {mean_conv3:.3f}")
 
 我们即将应用卷积定理来计算故障树分析中**顶事件**的概率。
 
-在应用卷积定理之前，我们首先描述将组成事件与我们要量化其故障率的**顶端**事件连接起来的模型。
+在应用卷积定理之前，我们首先描述将组成事件与我们要量化其故障率的**顶事件**连接起来的模型。
 
 正如 {cite:t}`Ardron_2018` 所描述的，故障树分析是一种广泛使用的评估系统可靠性的技术。
 
@@ -544,7 +577,7 @@ $$
 * 每个组件 $A_i$ 的故障概率 $P(A_i)$ 都很小
 * 组件故障在统计上是独立的
 
-我们反复应用**稀有事件近似**，得到系统故障问题的以下公式：
+我们反复应用**稀有事件近似**，得到系统故障概率问题的以下公式：
 
 $$ 
 P(F) \approx P(A_1) + P (A_2) + \cdots + P (A_n) 
@@ -562,6 +595,14 @@ P(F) \approx \sum_{i=1}^n P(A_i)
 
 每个事件的概率以每年故障率的形式记录。
 
+```{note}
+严格来说，每年的故障**率**与一年内的故障**概率**是不同的概念。
+
+对于稀有事件，两者几乎相等，因为当 $\lambda$ 很小时，$1 - e^{-\lambda} \approx \lambda$。
+
+正是同样让我们能够跨组件相加概率的近似方法，也让我们能够在故障率与概率之间相互转换，因此我们遵循可靠性文献的惯例，在此交替使用这两个术语。
+```
+
 ## 未知的故障率
 
 现在我们来讨论真正感兴趣的问题，遵循 {cite:t}`Ardron_2018` 和
@@ -573,13 +614,25 @@ P(F) \approx \sum_{i=1}^n P(A_i)
 
 因此，我们假设系统分析师对系统组件的故障率 $P(A_i), i =1, \ldots, n$ 存在不确定性。
 
-分析师通过将系统故障概率 $P(F)$ 和每个组件概率 $P(A_i)$ 视为随机变量来应对这种情况。
+分析师通过将系统的故障概率 $P(F)$ 和每个组件概率 $P(A_i)$ 视为随机变量来应对这种情况。
 
   * $P(A_i)$ 概率分布的离散程度表征了分析师对故障概率 $P(A_i)$ 的不确定性
 
   * $P(F)$ 的隐含概率分布的离散程度表征了他对系统故障概率的不确定性
 
 这就是所谓的**层次化**模型，其中分析师对概率 $P(A_i)$ 本身也有概率估计。
+
+```{note}
+该模型中出现了两种截然不同的随机性，值得加以区分。
+
+**偶然性**（Aleatory）不确定性是指某个组件在给定年份内是否发生故障的随机性，它由故障率 $P(A_i)$ 来描述。
+
+**认知性**（Epistemic）不确定性是指分析师对该故障率取值的无知，它由分析师赋予 $P(A_i)$ 的对数正态分布来描述。
+
+我们下面计算的分布是一个认知性对象：它描述的是分析师对某个故障率的了解程度，而不是系统实际发生故障的频率。
+
+将两者区分开来是 {cite:t}`apostolakis1990` 的核心建议。
+```
 
 分析师通过以下假设来形式化他的不确定性：
 
@@ -592,7 +645,17 @@ P(F) \approx \sum_{i=1}^n P(A_i)
 
 分析师假设随机变量 $P(A_i)$ 在统计上是相互独立的。
 
-分析师想要近似系统故障概率 $P(F)$ 的概率质量函数和累积分布函数。
+```{warning}
+独立性是一个很强的假设，也是可靠性分析师最为担心的一点。
+
+设计缺陷、共用的电源、共同的维护团队，或单一的环境冲击，都可能同时使多个组件趋向故障。
+
+这类**共因**故障会使 $P(F)$ 分布的尾部远比独立性假设下计算出的结果更为肥厚，而这恰恰是安全监管者最为关心的区域。
+
+{ref}`hoist_ex5` 对这种差异究竟有多大进行了量化。
+```
+
+分析师想要近似系统的故障概率 $P(F)$ 的概率质量函数和累积分布函数。
 
   * 我们说概率质量函数是因为我们对每个随机变量进行了离散化，正如前文描述的那样。
 
@@ -607,12 +670,6 @@ P(F) \approx \sum_{i=1}^n P(A_i)
 监管机构要求系统的设计能够使顶事件的故障率以高概率保持在较小值。
 
 ### 模型设定
-
-我们以接近实际的例子来说明，假设 $n = 14$。
-
-该例子估计了核废料设施中一个关键提升机的年度故障率。
-
-监管机构希望系统的设计能够使顶事件的故障率以高概率保持在较小值。
 
 这个例子是 {cite:t}`Greenfield_Sargent_1993` 第27页表10中描述的设计方案B-2（案例I）。
 
@@ -647,7 +704,11 @@ params = [
 ```{code-cell} ipython3
 def find_nearest(array, value):
     """
-    查找数组中最接近给定值的元素的索引。
+    数组中最接近给定值的元素的索引。
+
+    应用于累积分布函数时，这会返回累积概率最接近目标值的网格点，
+    对于足够精细离散化的分布而言，这与将分位数定义为满足
+    CDF(x) >= q 的最小 x 值是没有区别的。
     """
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
@@ -683,7 +744,32 @@ with qe.Timer() as timer:
         system_pmf = fftconvolve(system_pmf, pmf)
 
 print(f"13次卷积所需时间: {timer.elapsed:.4f} 秒")
+
+# 卷积结果保持相同的网格间距，但延伸得更远
+system_grid = np.arange(len(system_pmf)) * m
+print(f"结果中的网格点数: {len(system_pmf):,}")
 ```
+
+在绘制累积分布函数之前，我们先来看看密度本身。
+
+```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 系统故障率的密度
+    name: fig-hoist-pdf
+---
+fig, ax = plt.subplots(figsize=(10, 6))
+upper = 2000
+ax.plot(system_grid[:int(upper/m)], system_pmf[:int(upper/m)] / m, 'b-', lw=2)
+ax.set_xlabel(r'故障率 (每年 $\times 10^{-9}$)')
+ax.set_ylabel('密度')
+plt.show()
+```
+
+该密度明显右偏：一条长长的上尾远远延伸至分布主体之外。
+
+正是这种不对称性使得单一的故障率点估计成为一个糟糕的概括，这也是分析者转而报告分位数的原因。
 
 现在我们绘制一个与 {cite:t}`Greenfield_Sargent_1993` 第29页图5中的累积分布函数(CDF)相对应的图
 
@@ -718,136 +804,379 @@ plt.show()
 
 
 ```{code-cell} ipython3
-# 查找分位数
-quantiles = [0.01, 0.05, 0.10, 0.50, 0.665, 0.85, 0.90, 0.95, 0.99, 0.9978]
-quantile_values = [x[find_nearest(cdf, q)] for q in quantiles]
+# Greenfield 和 Sargent (1993) 表11中报告的百分位数，
+# 及其发表的数值，单位为每年 10^-9
+reference = {1.0: 77, 10.0: 130, 50.0: 263, 66.5: 341,
+             85.0: 513, 95.0: 811, 99.0: 1480, 99.78: 2490}
 
-# 创建表格
-table_data = [[f"{100*q:.2f}%", f"{val:.3f}"]
-              for q, val in zip(quantiles, quantile_values)]
+table_data = []
+for pc, published in reference.items():
+    ours = system_grid[find_nearest(cdf, pc/100)]
+    table_data.append([f"{pc}%", f"{ours:.1f}", published,
+                       f"{100*(ours - published)/published:+.1f}%"])
 
 print("\n系统故障率分位数 (×10^-9 每年):")
-print(tabulate(table_data, 
-      headers=['百分位数', '故障率'], tablefmt='grid'))
+print(tabulate(table_data,
+      headers=['百分位数', '本文计算值', 'Greenfield-Sargent', '差异'],
+      tablefmt='grid'))
 ```
 
-计算得到的分位数与 {cite}`Greenfield_Sargent_1993` 第28页表11第2列的数据非常接近。
+我们计算出的分位数与已发表的数值相差在百分之一点五以内，且都略微偏低。
 
-细微的差异可能是由于以下方面的差异所致：
-* 输入参数 $\mu_i, \sigma_i$ 的数值精度
-* 离散化中的网格点数
-* 网格增量大小
+这些微小的差异反映了所报告参数 $\mu_i, \sigma_i$ 的精度、网格间距 $m$ 以及网格截断点的影响。
+
+### 解读结果
+
+这张表中的数字，而非其中任何单一的数值，才是分析的产出。
+
+中位故障率约为每年 $261 \times 10^{-9}$，而第95百分位数约为 $808 \times 10^{-9}$，是中位数的三倍。
+
+这种差异并不是在陈述提升机故障的实际频率；它陈述的是分析者对提升机故障频率所知有多么有限。
+
+再来看看分布的*均值*落在何处。
+
+```{code-cell} ipython3
+mean_rate = np.sum(system_grid * system_pmf)
+mean_percentile = 100 * cdf[find_nearest(system_grid, mean_rate)]
+
+print(f"平均故障率: {mean_rate:.1f} × 10⁻⁹ 每年")
+print(f"均值位于第 {mean_percentile:.1f} 百分位")
+```
+
+由于该分布是偏斜的，均值远高于中位数，大约位于第66百分位处。
+
+这就是为什么 {cite:t}`Greenfield_Sargent_1993` 的表11将均值与第66.5百分位数一并记录的原因。
+
+这一实际意义正是最初激发这项研究的动机。
+
+```{code-cell} ipython3
+# 美国能源部1990年风险评估中使用的点估计值，以相同单位表示
+doe_estimate = 220    # 每年 2.2 × 10^-7
+
+pct = 100 * cdf[find_nearest(system_grid, doe_estimate)]
+print(f"美国能源部的点估计值 {doe_estimate} × 10⁻⁹ 位于"
+      f"第 {pct:.0f} 百分位")
+print(f"因此分析者认为真实故障率超过该值的概率为 {100-pct:.0f}%")
+```
+
+若一项分析仅报告单一数值来代替整个分布，则无法传达上述任何信息。
+
+{cite:t}`Greenfield_Sargent_1993` 正是提出了这一点：根据他们的图，他们将能源部的点估计值定位在第36百分位，并得出结论认为真实故障率高于该值的概率大约为64%。
 
 ## 练习
 
-```{exercise-start}
+```{exercise}
 :label: hoist_ex1
-```
 
-尝试不同的幂参数 $p$ 值（它决定了网格大小 $I = 2^p$）。
+我们的离散化涉及两个独立的选择：网格在哪里截断，$I = 2^p$，以及网格间距有多细，$m$。
 
-尝试 $p \in \{12, 13, 14, 15, 16\}$ 并比较：
-1. 计算时间
-2. 中位数（第50百分位数）与参考值相比的准确性
-3. 内存使用情况的影响
+研究这两者各自控制什么。
 
-你观察到了哪些权衡？
-```{exercise-end}
+1. 固定 $m = 0.05$，对 $p = 10, 11, \ldots, 15$ 计算系统故障率的中位数、第95百分位数和第99.78百分位数。对每个 $p$，还要利用 $\sum_i \mathbb{P}\{P(A_i) > I\}$ 计算截断所丢弃的概率质量。
+1. 固定 $p = 14$，对 $m = 0.4, 0.2, 0.1, 0.05, 0.025$ 重复上述计算。
+1. 哪个统计量对哪个选择敏感，为什么？讲座中使用的 $p = 15$，$m = 0.05$ 选择合理吗？
 ```
 
 ```{solution-start} hoist_ex1
 :class: dropdown
 ```
 
-以下是一种解答：
+```{code-cell} ipython3
+from scipy.stats import norm
+
+def system_distribution(p_grid, m_grid):
+    "在给定网格上计算整个系统的故障率分布。"
+    I_grid = 2**p_grid
+    pmfs = []
+    for μ_i, σ_i in params[:6]:
+        _, pmf_i, _ = discretize_lognormal(μ_i, σ_i, I_grid, m_grid)
+        pmfs.append(pmf_i)
+    μ7, σ7 = params[6]
+    _, pmf7, _ = discretize_lognormal(μ7, σ7, I_grid, m_grid)
+    pmfs.extend([pmf7] * 8)
+
+    total = pmfs[0]
+    for pmf_i in pmfs[1:]:
+        total = fftconvolve(total, pmf_i)
+    return total, np.arange(len(total)) * m_grid
+
+
+def quantiles_of(pmf, grid, levels=(0.5, 0.95, 0.9978)):
+    cdf_local = np.cumsum(pmf)
+    return [grid[find_nearest(cdf_local, q)] for q in levels]
+
+
+def discarded_mass(I_grid):
+    "组件故障率超出网格终点的概率。"
+    lost = sum(norm.sf((np.log(I_grid) - μ_i)/σ_i) for μ_i, σ_i in params[:6])
+    μ7, σ7 = params[6]
+    return lost + 8 * norm.sf((np.log(I_grid) - μ7)/σ7)
+
+
+rows = []
+for p_test in range(10, 16):
+    pmf_t, grid_t = system_distribution(p_test, 0.05)
+    med, q95, q9978 = quantiles_of(pmf_t, grid_t)
+    rows.append([p_test, 2**p_test, f"{discarded_mass(2**p_test):.1e}",
+                 f"{med:.2f}", f"{q95:.2f}", f"{q9978:.2f}"])
+
+print(tabulate(rows, headers=['p', 'I', '丢弃的概率质量',
+                              '中位数', '95th', '99.78th'], tablefmt='grid'))
+```
 
 ```{code-cell} ipython3
-# 测试不同的网格大小
-p_values = [12, 13, 14, 15, 16]
-results = []
+rows = []
+for m_test in (0.4, 0.2, 0.1, 0.05, 0.025):
+    pmf_t, grid_t = system_distribution(14, m_test)
+    med, q95, q9978 = quantiles_of(pmf_t, grid_t)
+    rows.append([m_test, len(grid_t), f"{med:.3f}", f"{q95:.2f}", f"{q9978:.2f}"])
 
-for p_test in p_values:
-    I_test = 2**p_test
-    m_test = 0.05
-
-    # 离散化分布
-    pmfs_test = []
-    for μ, σ in params[:6]:
-        _, pmf, x_test = discretize_lognormal(μ, σ, I_test, m_test)
-        pmfs_test.append(pmf)
-
-    # 添加8份组件类型7的副本
-    μ7, σ7 = params[6]
-    _, pmf7, x_test = discretize_lognormal(μ7, σ7, I_test, m_test)
-    pmfs_test.extend([pmf7] * 8)
-
-    # 记录卷积计算耗时
-    with qe.Timer() as timer_test:
-        system_test = pmfs_test[0]
-        for pmf in pmfs_test[1:]:
-            system_test = fftconvolve(system_test, pmf)
-
-    # 计算中位数
-    cdf_test = np.cumsum(system_test)
-    median = x_test[find_nearest(cdf_test, 0.5)]
-
-    results.append([p_test, I_test,
-        f"{timer_test.elapsed:.4f}", f"{median:.7f}"])
-
-print(tabulate(results,
-               headers=['p', '网格大小 (2^p)', '时间 (秒)', '中位数'],
+print(tabulate(rows, headers=['m', '网格点数', '中位数', '95th', '99.78th'],
                tablefmt='grid'))
 ```
-结果通常显示以下权衡：
 
-- 更大的网格大小可以提供更好的精度，但会增加计算时间
-- 对于基于FFT的卷积，$p$ 与计算时间之间的关系大致是线性的
-- 超过 $p = 13$ 后，精度提升逐渐减小，而计算成本却持续增长
-- 对于这个应用，$p = 13$ 在精度和效率之间提供了良好的平衡
+这两种选择所起的作用截然不同。
+
+截断决定了 *远端尾部*。
+
+在 $p = 10$ 时，第99.78百分位数被严重低估，并且会一直上升，直到大约 $p = 14$ 附近，此时丢弃的概率质量已降至约 $10^{-6}$。
+
+相比之下，中位数在 $p = 12$ 时就已经稳定：舍弃每个组件极端右尾几乎不会移动它们之和的分布中间部分。
+
+分辨率决定了 *整体精度*。
+
+将 $m$ 减半会使每个分位数发生轻微且均匀的移动，且移动幅度很小：从 $m = 0.4$ 变到 $m = 0.025$，中位数大约移动1.5%。
+
+讲座中的选择是合理的。
+
+当 $p = 15$ 时，丢弃的概率质量约为 $10^{-7}$，因此即使是第99.78百分位数也是准确的，而 $m = 0.05$ 已经足够精细，进一步细化几乎不会有什么改变。
+
+这告诉我们一个道理：一个对中位数来说看似足够的网格，对上尾部而言可能严重不足，而上尾部恰恰是安全监管者最关心的区域。
 
 ```{solution-end}
 ```
 
-```{exercise-start}
+```{exercise}
 :label: hoist_ex2
+
+稀有事件近似用 $P(A) + P(B)$ 替代 $P(A \cup B)$，从而舍弃了 $P(A \cap B)$。
+
+评估该近似在这里的效果如何。
+
+1. 以十四个组件各自的 *平均* 故障率作为代表值，比较 $\sum_i p_i$ 与至少一个组件故障的精确概率 $1 - \prod_i (1 - p_i)$。
+1. 将所有故障率分别乘以 $10^3$、$10^6$ 和 $10^7$ 后重复上述计算，并报告每种情况下的相对误差。
+1. 在什么数量级上，该近似开始变得不可忽视？
 ```
-
-稀有事件近似假设 $P(A_i) P(A_j)$ 与 $P(A_i) + P(A_j)$ 相比可以忽略不计。
-
-利用计算得到的分布，计算系统故障率的期望值，并将其与各组件故障率期望值之和进行比较。
-
-在这种情况下，稀有事件近似的效果如何？
-```{exercise-end}
-```
-
 
 ```{solution-start} hoist_ex2
 :class: dropdown
 ```
 
-以下是一种解答：
-
 ```{code-cell} ipython3
-# 为卷积结果创建扩展网格
-x_extended = np.arange(0, len(system_pmf) * m, m)
-E_system = np.sum(x_extended * system_pmf)
-
-# 计算各组件期望值之和
-component_means = [np.exp(μ + 0.5 * σ**2) for μ, σ in params[:6]]
-# 添加8个类型7的组件
+# 十四个组件各自的代表性故障率
+component_means = [np.exp(μ_i + 0.5*σ_i**2) for μ_i, σ_i in params[:6]]
 μ7, σ7 = params[6]
-component_means.extend([np.exp(μ7 + 0.5 * σ7**2)] * 8)
+component_means.extend([np.exp(μ7 + 0.5*σ7**2)] * 8)
+component_means = np.array(component_means)
 
-E_sum = sum(component_means)
+rows = []
+for factor, label in ((1e-9, '按校准值'), (1e-6, '× 10³'),
+                      (1e-3, '× 10⁶'), (1e-2, '× 10⁷')):
+    probs = component_means * factor
+    approx = probs.sum()
+    exact = 1 - np.prod(1 - probs)
+    rows.append([label, f"{approx:.6e}", f"{exact:.6e}",
+                 f"{100*(approx - exact)/exact:.4f}%"])
 
-print(f"系统故障率的期望值: {E_system:.3f} × 10^-9")
-print(f"各组件故障率期望值之和: {E_sum:.3f} × 10^-9")
-print(f"相对差异: {100 * abs(E_system - E_sum) / E_sum:.2f}%")
+print(tabulate(rows, headers=['故障率', 'Σ pᵢ', '1 - Π(1-pᵢ)',
+                              '相对误差'], tablefmt='grid'))
 ```
 
-当故障概率很小时，稀有事件近似效果良好。
+在校准的数量级下，总计每年约 $3 \times 10^{-7}$，该近似在所示精度下是精确的：被忽略的项数量级为 $p_i p_j \approx 10^{-14}$。
 
-由于期望值具有线性性质，和的期望值等于期望值之和，因此无论稀有事件近似如何，这两者都应该非常接近。
+将所有故障率乘以一千后，误差仍只有大约万分之一。
+
+只有当各组件的故障概率达到百分之一的量级时，该近似才开始产生实质影响，此时它会使系统故障概率被高估超过百分之十；而当 $\sum_i p_i$ 接近或超过1时，该近似会彻底失效，甚至可能给出大于1的"概率"。
+
+需要注意的是，一种朴素的检验方式——比较所计算得到的 $\sum_i P(A_i)$ 分布的均值与各组件均值之和——是无法揭示任何问题的，因为根据期望值的线性性质，无论该近似质量如何，这两个量总是相等的。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: hoist_ex3
+
+一位得知故障率第95百分位数过高的监管者会想知道应该改进哪些组件。
+
+请通过计算在完全移除每种组件类型后系统故障率的第95百分位数，来回答这个问题（共七种组件类型）。
+
+按对上尾部的贡献程度对各组件类型进行排序，并将该排序与各组件的平均故障率进行比较。
+```
+
+```{solution-start} hoist_ex3
+:class: dropdown
+```
+
+```{code-cell} ipython3
+def system_without(drop):
+    "移除组件类型 `drop` 后的系统故障率分布。"
+    pmfs = []
+    for k, (μ_i, σ_i) in enumerate(params[:6]):
+        if k == drop:
+            continue
+        _, pmf_i, _ = discretize_lognormal(μ_i, σ_i, I, m)
+        pmfs.append(pmf_i)
+    if drop != 6:
+        μ7, σ7 = params[6]
+        _, pmf7, _ = discretize_lognormal(μ7, σ7, I, m)
+        pmfs.extend([pmf7] * 8)
+
+    total = pmfs[0]
+    for pmf_i in pmfs[1:]:
+        total = fftconvolve(total, pmf_i)
+    return total, np.arange(len(total)) * m
+
+
+base_q95 = system_grid[find_nearest(cdf, 0.95)]
+
+rows = []
+for k in range(7):
+    pmf_k, grid_k = system_without(k)
+    q95 = grid_k[find_nearest(np.cumsum(pmf_k), 0.95)]
+    μ_k, σ_k = params[k]
+    n_units = 8 if k == 6 else 1
+    rows.append([f"类型 {k+1}", n_units, f"{np.exp(μ_k + 0.5*σ_k**2):.1f}",
+                 f"{q95:.1f}", f"{100*(base_q95 - q95)/base_q95:.1f}%"])
+
+rows.sort(key=lambda r: -float(r[4].rstrip('%')))
+print(f"包含所有组件时的第95百分位数: {base_q95:.1f}\n")
+print(tabulate(rows, headers=['移除对象', '数量', '各自平均故障率',
+                              '移除后的第95百分位数', '降幅'],
+               tablefmt='grid'))
+```
+
+组件类型1占主导地位：移除这一个单元就能将第95百分位数降低近一半，远超设计者可采取的任何其他改动。
+
+在此案例中，排序与各组件的平均故障率高度一致，因为七种类型的离散程度相近。
+
+但这一点并非普遍成立：均值适中但 $\sigma$ 较大的组件会对上尾部产生不成比例的贡献，这正是分析者要研究整个分布而非仅仅关注均值的原因。
+
+还需注意，出现8次的类型7的重要性反而不及只出现一次的类型1。
+
+单纯计数组件数量并不能指示风险所在。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: hoist_ex4
+
+除了通过卷积计算，我们也可以通过模拟来计算系统故障率的分布。
+
+对全部十四个组件的故障率进行抽样、求和，并将得到的分位数与卷积方法的结果进行比较，样本量分别取 $10^4$、$10^5$ 和 $10^6$。
+
+比较中位数、第95百分位数和第99.78百分位数。
+
+你会更倾向于使用哪种方法，为什么？
+```
+
+```{solution-start} hoist_ex4
+:class: dropdown
+```
+
+```{code-cell} ipython3
+all_params = list(params[:6]) + [params[6]] * 8
+rng_mc = np.random.default_rng(0)
+levels = (50, 95, 99.78)
+
+rows = []
+for N in (10_000, 100_000, 1_000_000):
+    draws = sum(rng_mc.lognormal(μ_i, σ_i, N) for μ_i, σ_i in all_params)
+    rows.append([f"{N:,}"] + [f"{np.percentile(draws, pc):.1f}" for pc in levels])
+
+rows.append(['卷积法'] +
+            [f"{system_grid[find_nearest(cdf, pc/100)]:.1f}" for pc in levels])
+
+print(tabulate(rows, headers=['方法', '中位数', '95th', '99.78th'],
+               tablefmt='grid'))
+```
+
+模拟结果收敛到相同的答案，这为两种计算方法都提供了有用的检验。
+
+这两种方法的误差所在位置不同。
+
+蒙特卡洛误差恰恰在最关键的地方最大：第99.78百分位数大约由五百次抽样中的一次决定，因此在 $10^4$ 次抽样中只有约二十个观测值用于估计该值，估计结果明显偏离。
+
+相比之下，卷积法一次性计算出整个分布，其误差来自网格本身而非抽样噪声，因此在尾部与中间部分同样精确。
+
+它也是确定性的：换一个随机种子重新运行，答案不会改变。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: hoist_ex5
+
+整个计算假设十四个组件的故障率在统计上是相互独立的。
+
+研究当它们不独立时会发生什么。
+
+假设
+
+$$
+\log P(A_i) = \mu_i + \sigma_i \left( \sqrt{\rho}\, z_0 + \sqrt{1-\rho}\, z_i \right),
+$$
+
+其中 $z_0$ 是所有组件共同承受的冲击，$z_1, \ldots, z_{14}$ 是各自独立的特质冲击，均服从标准正态分布。
+
+每个组件仍然保持其原有的边缘分布，但任意两个组件在对数尺度上现在具有相关系数 $\rho$。
+
+对 $\rho = 0, 0.2, 0.5, 0.8$ 模拟系统故障率，并报告中位数、第95、第99和第99.9百分位数。
+
+解释发生了什么，以及这对安全分析意味着什么。
+```
+
+```{solution-start} hoist_ex5
+:class: dropdown
+```
+
+```{code-cell} ipython3
+μ_vec = np.array([q[0] for q in all_params])
+σ_vec = np.array([q[1] for q in all_params])
+
+N_sim = 400_000
+rng_cc = np.random.default_rng(1)
+
+rows = []
+for ρ in (0.0, 0.2, 0.5, 0.8):
+    z0 = rng_cc.normal(size=(N_sim, 1))
+    zi = rng_cc.normal(size=(N_sim, len(all_params)))
+    logs = μ_vec + σ_vec * (np.sqrt(ρ)*z0 + np.sqrt(1-ρ)*zi)
+    totals = np.exp(logs).sum(axis=1)
+    rows.append([ρ] + [f"{np.percentile(totals, pc):.0f}"
+                       for pc in (50, 95, 99, 99.9)])
+
+print(tabulate(rows, headers=['ρ', '中位数', '95th', '99th', '99.9th'],
+               tablefmt='grid'))
+```
+
+相关性并不改变每个组件各自的边缘分布，也不改变总和的均值。
+
+它改变的是总和分布的形状。
+
+在组件相互独立的情况下，某个组件出现高值通常会被其他组件的普通取值所抵消，十四个组件的平均效应会产生一个相对集中的总量分布。
+
+而共同冲击消除了这种分散化效应：当 $z_0$ 较大时，所有组件会同时变差。
+
+结果是总和的分布中位数 *更低*，而上尾部则 *大幅加重*。
+
+在 $\rho = 0.8$ 时，中位数下降约三分之一，而第99.9百分位数则上升约四分之三。
+
+对于安全分析而言，这正是危险的误差方向。
+
+如果在存在共同致因的情况下仍假设各组件相互独立，就会使系统看起来既比实际更安全（通常情况下），又比实际更不容易遭遇极端糟糕的年份。
+
+这正是可靠性研究之所以如此重视识别共用电源、共用维护流程、共同设计缺陷等破坏独立性假设的机制的原因。
 
 ```{solution-end}
 ```
