@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.4
+    jupytext_version: 1.17.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -354,7 +354,11 @@ NumPyro通过让`TruncatedNormal`经过`ExpTransform`来构造这个分布。
 def truncated_lognormal(μ, σ):
     "截断到单位区间(0, 1]的对数正态分布。"
     base = dist.TruncatedNormal(loc=μ, scale=σ, low=-jnp.inf, high=0.0)
-    return dist.TransformedDistribution(base, dist.transforms.ExpTransform())
+    # 声明(0, 1]这个支撑范围：单独使用ExpTransform会声明支撑为(0, ∞)，
+    # 这会让采样器提议出θ > 1的取值
+    class _UnitLogNormal(dist.TransformedDistribution):
+        support = dist.constraints.interval(0.0, 1.0)
+    return _UnitLogNormal(base, dist.transforms.ExpTransform())
 
 prior_ln = truncated_lognormal(0.0, 1.0)
 mcmc_ln = run_nuts(binomial_model, prior_ln, k, n)
