@@ -50,6 +50,11 @@ Lars Ljungqvist {cite}`ljungqvist1993unified` 分析了受访者是否如实回�
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC', 'DejaVu Sans']
+
 import numpy as np
 ```
 
