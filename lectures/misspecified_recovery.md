@@ -14,8 +14,8 @@ translation:
   headings:
     Overview: 概述
     Three transition matrices: 三个转移矩阵
-    Three transition matrices::Degenerate Martingale Component: 退化的鞅成分
-    Martingale Component: 鞅成分
+    Three transition matrices::Degenerate martingale component: 退化的鞅成分
+    Martingale component: 鞅成分
     From matrices to the general framework: 从矩阵到一般框架
     From matrices to the general framework::Probability space and state: 概率空间和状态
     From matrices to the general framework::Information and $Y$: 信息与 $Y$
@@ -25,12 +25,12 @@ translation:
     From matrices to the general framework::What Perron--Frobenius recovers: 佩龙-弗罗贝尼乌斯恢复了什么
     From matrices to the general framework::Selection and recovery: 选择与恢复
     From matrices to the general framework::Continuous-time version: 连续时间版本
-    When the recovery fails: 恢复何时失败
-    When the recovery fails::Recursive utility: 递归效用
-    When the recovery fails::Permanent Shocks: 永久冲击
-    When the recovery fails::Long-run risk: 长期风险
-    When the recovery fails::Long-run risk::Stationary Densities: 平稳密度
-    When the recovery fails::Long-run risk::Yield implications: 收益率含义
+    When recovery fails: 恢复何时失败
+    When recovery fails::Recursive utility: 递归效用
+    When recovery fails::Permanent shocks: 永久冲击
+    When recovery fails::Long-run risk: 长期风险
+    When recovery fails::Long-run risk::Stationary densities: 平稳密度
+    When recovery fails::Long-run risk::Yield implications: 收益率含义
     Additional state vector: 额外的状态向量
     Measuring the martingale component: 度量鞅成分
     Lessons: 教训
@@ -59,6 +59,8 @@ translation:
 在那里，**转移独立性**让我们能够使用阿罗价格将投资者的信念与定价核分离开来。
 
 本讲座探讨当不施加该限制时，相同的佩龙-弗罗贝尼乌斯方法会给出什么结果。
+
+本讲座使用的特征函数、鞅分解和测度扭曲机制在 {doc}`long_run_risk_operator` 中有详细阐述。
 
 我们将保持三个概率测度相互分离。
 
@@ -257,8 +259,12 @@ $$
 对于趋势平稳消费和幂效用，SDF 为
 
 $$
-s_{ij}=A\left(\frac{c_j}{c_i}\right)^{-\gamma}.
+s_{ij}=A\left(\frac{c_j}{c_i}\right)^{-\gamma},
+\qquad
+A = \exp(-\delta-\gamma g_c),
 $$
+
+其中 $\delta$ 是主观贴现率，$\gamma$ 是风险厌恶，$g_c$ 是趋势消费增长。
 
 这是 Ross 恢复应该返回正确设定的转移矩阵的一个情形。
 
@@ -298,7 +304,7 @@ P_bar, q_bonds = risk_neutral_probs(Q_power)
 
 行归一化矩阵 $\bar{\mathbf{P}}$ 是一个短视界风险中性测度变换：它将单期 SDF 折叠进转移概率中，因此它通常不同于正确设定的矩阵 $\mathbf{P}$。
 
-其逻辑来自 {doc}`ross_recovery` 中的佩龙-弗罗贝尼乌斯构造。
+$\hat{\mathbf{P}}$ 能够等于 $\mathbf{P}$ 的原因来自 {doc}`ross_recovery` 中的佩龙-弗罗贝尼乌斯构造。
 
 在转移独立的情形中，定价核具有形式 $s_{ij}=\exp(\hat\eta)\hat e_i/\hat e_j$。
 
@@ -329,35 +335,9 @@ $$
 
 当对每个转移都有 $\hat h_{ij}=1$ 时，$\hat{\mathbf P}$ 和 $\mathbf P$ 相同。
 
-下一节解释为什么这个比值是单期鞅增量。
+{ref}`mr_martingale_component` 一节在 {eq}`eq-mr-hhat-finite` 中正式定义了这个比值，并解释了为什么它是单期鞅增量。
 
-在幂效用例子中，记
-
-$$
-A = \exp(-\delta-\gamma g_c),
-\qquad
-s_{ij}=A\left(\frac{c_j}{c_i}\right)^{-\gamma}.
-$$
-
-取 $\hat e_i=c_i^\gamma$（相差一个比例因子），得到
-
-$$
-[\mathbf{Q}\hat e]_i
-= \sum_j A\left(\frac{c_j}{c_i}\right)^{-\gamma}p_{ij}c_j^\gamma
-= A c_i^\gamma
-= A\hat e_i,
-$$
-
-因此 $\exp(\hat\eta)=A$。
-
-因此，
-
-$$
-\hat h_{ij}
-= A^{-1}A\left(\frac{c_j}{c_i}\right)^{-\gamma}
-  \frac{c_j^\gamma}{c_i^\gamma}
-=1.
-$$
+我们请你在 {ref}`ex_power_utility_success` 中验证，在这个例子中 $\hat e_i=c_i^\gamma$ 且 $\exp(\hat\eta)=A$，因此 $\hat h_{ij}\equiv 1$。
 
 ```{code-cell} ipython3
 H_power = np.divide(P_hat, P_true, out=np.ones_like(P_true), where=P_true > 0)
@@ -392,6 +372,7 @@ print(f"\nmax |h_hat - 1| = "
 
 在这个例子中，这种抵消耗尽了 SDF，因此鞅成分是退化的。
 
+(mr_martingale_component)=
 ## 鞅成分
 
 设 $(\hat \eta, \hat e)$ 是 $\mathbf{Q}$ 的佩龙-弗罗贝尼乌斯特征值指数和正的右特征向量：
@@ -477,7 +458,7 @@ $$
 
 因此 $\hat{\mathbf{P}}=\mathbf{P}$ 当且仅当对每个可行转移都有 $\hat h_{ij}=1$。
 
-这个条件等同于说 SDF 可以写成 {eq}`eq-mr-finite-sdf-decomposition` 而没有额外的鞅增量。
+这个条件等同于说 SDF 具有 {prf:ref}`prop-misspecified-recovery-martingale-component` 中所展示的形式。
 ```
 
 这个有限状态推论是该论文一般识别结果的一个特例。
@@ -734,7 +715,7 @@ $$
 
 有限状态方程是 {eq}`eq-mr-pf-finite`。
 
-一般状态的替代物是定价算子的特征函数问题：找到标量 $\hat\eta$ 和正函数 $\hat e$，使得对每个视界 $t$，
+一般状态的替代物是 {doc}`long_run_risk_operator` 中研究的那类定价算子的特征函数问题：找到标量 $\hat\eta$ 和正函数 $\hat e$，使得对每个视界 $t$，
 
 ```{math}
 :label: eq-mr-pf-general
@@ -839,6 +820,14 @@ $$
 
 我们在下一节展示排除这种差异的限制条件。
 
+```{note}
+对象 $(\hat e,\hat\eta,\hat H)$ 就是 {doc}`long_run_risk_operator` 中写作 $(\phi,\rho,\hat M)$ 的那些对象，那一讲使用一般的乘性泛函 $M$ 来代替本讲中的随机贴现因子 $S$；那一讲所称的**测度扭曲**正是本讲所称的长期风险中性测度 $\hat{\mathbf P}=P^{\hat H}$。
+
+有一个符号不能直接套用。
+
+这里的 $Q_t$ 是仅由随机贴现因子构造的半群，那一讲将其记为 $\mathbb S_t$；而那一讲中的 $\mathbb Q_t$ 则是由 $Q=GS$ 构造的现金流估值半群，它还携带一个随机增长因子。
+```
+
 ### 选择与恢复
 
 在有限不可约矩阵问题中，佩龙-弗罗贝尼乌斯理论给出一个在相差比例因子意义下唯一的正特征向量，因此恢复的转移矩阵由 $\mathbf Q$ 确定。
@@ -846,6 +835,8 @@ $$
 在一般状态空间中，正特征函数不一定存在，而当它存在时，多个正特征函数可能都能求解相同的定价算子问题。
 
 因此该论文对候选特征函数所诱导的概率测度施加了一个选择条件。
+
+这与 {doc}`long_run_risk_operator` 在"扭曲过程的稳定性"标题下处理的困难相同；参见那里的 {prf:ref}`lrr-def-stochastic-stability`。
 
 ````{prf:assumption} 恢复测度的遍历性
 :label: assumption-mr-ergodicity
@@ -903,7 +894,7 @@ $$
 
 ### 连续时间版本
 
-在讨论恢复失败的例子之前，让我们简要介绍连续时间中的模型。
+在讨论恢复失败的例子之前，让我们简要地用连续时间重述这个框架。
 
 我们引入扩散记号，因为下面的长期风险例子是用连续时间写的。
 
@@ -1132,7 +1123,7 @@ plt.show()
 
 递归效用给出了一个非常数的鞅成分。
 
-永久冲击提供了另一个。
+永久冲击提供了另一个，但这个例子需要仔细解读，因为它所得出的结果取决于恢复所依据的信息集。
 
 假设消费具有永久冲击，
 
@@ -1141,7 +1132,7 @@ $$
 = g + x(X_{t+1})-x(X_t) + \sigma \varepsilon_{t+1},
 $$
 
-其中 $\varepsilon_{t+1}$ 在时间上是独立的。
+其中 $\varepsilon_{t+1}$ 在时间上是独立的，并且独立于马尔可夫状态 $X$。
 
 在幂效用下，SDF 包含
 
@@ -1155,22 +1146,72 @@ $$
 
 它是状态函数之比，因此佩龙-弗罗贝尼乌斯转移公式可以抵消它。
 
-永久冲击项依赖于新的冲击 $\varepsilon_{t+1}$。
+最后一项依赖于新的冲击 $\varepsilon_{t+1}$，它不能由马尔可夫状态概括。
 
-因为在这个构造中该冲击不能由有限马尔可夫状态概括，所以没有状态函数的比值可以抵消它。
-
-除以其条件均值后，冲击项变成一个鞅增量：
+除以其条件均值后，该项变成一个鞅增量：
 
 $$
 \frac{\exp(-\gamma\sigma\varepsilon_{t+1})}
      {E[\exp(-\gamma\sigma\varepsilon_{t+1})]}.
 $$
 
-因此，即使在普通的幂效用下，永久消费冲击也能使恢复的概率测度不同于投资者的信念。
+这个鞅增量是否破坏恢复，取决于特征函数问题所依据的信息集，因此我们依次考察两种情形。
 
-这个陈述是相对于恢复过程中使用的马尔可夫状态而言的。
+首先考虑一位对仅以马尔可夫状态 $X$ 为基础的债权定价的分析师。
 
-扩大状态或信息结构以考虑该冲击可以容纳它，但这样做会导致 {ref}`mr_additional_state` 中讨论的识别问题。
+对 $\varepsilon_{t+1}$ 取期望，$X$ 各状态间的阿罗价格为
+
+$$
+q_{ij}
+= \exp(-\delta-\gamma g)\,
+  E[\exp(-\gamma\sigma\varepsilon_{t+1})]\,
+  \frac{\exp(-\gamma x_j)}{\exp(-\gamma x_i)}\,
+  p_{ij}.
+$$
+
+由于 $\varepsilon_{t+1}$ 独立于 $X$，永久冲击对 $\mathbf{Q}$ 的每个元素贡献相同的常数，并可提出因子。
+
+剩下的部分恰好在 $X$ 上是转移独立的，其中 $\hat e_i=\exp(\gamma x_i)$。
+
+因此，这里对 $X$ 的转移矩阵的佩龙-弗罗贝尼乌斯恢复是精确的：$X$ 各状态之间的鞅增量恒等于一。
+
+下一个单元在一个三状态例子中确认了这一点。
+
+```{code-cell} ipython3
+x_perm = np.array([-0.02, 0.0, 0.02])   # 状态对对数消费的影响
+σ_perm = 0.01                           # 永久冲击的规模
+E_perm = np.exp(0.5 * (γ_power * σ_perm)**2)   # 对于 ε ~ N(0, 1)，E[exp(-γ σ ε)]
+
+# X 上的阿罗价格：永久冲击仅通过常数 E_perm 进入
+S_perm = (np.exp(-δ - γ_power * g_c) * E_perm
+          * np.exp(-γ_power * x_perm)[None, :]
+          / np.exp(-γ_power * x_perm)[:, None])
+Q_perm = S_perm * P_true
+
+H_perm, _, e_perm, P_hat_perm = martingale_increment(Q_perm, P_true)
+
+print("特征函数：数值 vs exp(gamma x)")
+print(np.round(e_perm / e_perm[1], 6))
+print(np.round(np.exp(γ_power * x_perm) / np.exp(γ_power * x_perm[1]), 6))
+print(f"\nmax |P_hat - P| = {np.max(np.abs(P_hat_perm - P_true)):.1e}")
+print(f"max |h_hat - 1| = {np.max(np.abs(H_perm[P_true > 0] - 1)):.1e}")
+```
+
+恢复的特征函数是 $\exp(\gamma x_i)$，两个差异都在机器精度范围内。
+
+现在扩大滤波，使其揭示消费，从而也揭示 $\varepsilon_{t+1}$。
+
+相对于投资者关于 $(X,\varepsilon)$ 的信息而言，上面显示的鞅增量并不恒等于一：它使永久冲击的分布向低实现值倾斜。
+
+因此，即便在普通的幂效用下，恢复出的消费法则也不同于投资者的信念，尽管恢复出的马尔可夫状态法则并非如此。
+
+现在可以精确地陈述这个结论了。
+
+永久消费冲击使恢复的概率测度在揭示这些冲击的滤波上不同于投资者的信念，即使在普通的幂效用下也是如此。
+
+一旦永久冲击不再独立于 $X$，仅对 $X$ 的恢复也会失效，因为此时该冲击不再从 $\mathbf{Q}$ 中以常数形式提出。
+
+扩大状态或信息结构以考虑该冲击并不能修复恢复；它会导致 {ref}`mr_additional_state` 中讨论的识别问题。
 
 ### 长期风险
 
@@ -1197,7 +1238,30 @@ dX_{2t}
 \end{aligned}
 $$
 
-这里 $X_1$ 是可预测的消费增长，$X_2$ 是随机波动率。
+对数消费具有仿射漂移和相同的波动率缩放：
+
+$$
+d\log C_t
+= [\beta_{c0}+\beta_{c1}(X_{1t}-\iota_1)+\beta_{c2}(X_{2t}-\iota_2)]dt
+  + \sqrt{X_{2t}}\,\alpha_c\cdot dW_t .
+$$
+
+这里 $X_1$ 是可预测的消费增长，$X_2$ 是随机波动率状态。
+
+本节通篇使用两个约定，它们对阅读代码都很重要。
+
+第一，每个漂移都相对于长期均值 $(\iota_1,\iota_2)$ 写出，因此系数三元组 $(\beta_0,\beta_1,\beta_2)$ 总是表示
+$\beta_0+\beta_1(x_1-\iota_1)+\beta_2(x_2-\iota_2)$。
+
+第二，每个扩散载荷都按 $\sqrt{X_{2t}}$ 缩放，因此伊藤修正项 $\tfrac12|\alpha|^2$ 进入 $x_2$ 的系数，而不是常数项。
+
+这两个约定是一起起作用的，值得说明其原因，因为下面的代码在 $\log S$ 漂移的 $x_2$ 系数中携带了一项 $-\tfrac12|\alpha_{H^*}|^2$，并在其常数项中携带了一项 $-\tfrac12\iota_2|\alpha_{H^*}|^2$，其中 $\alpha_{H^*}$ 是下面定义的延续值鞅的冲击暴露。
+
+这是一个修正，而非两个。
+
+延续值鞅对 $\log S$ 贡献了漂移 $-\tfrac12 x_2|\alpha_{H^*}|^2$，将这单独一项写成中心化形式，就把它拆分为乘以 $(x_2-\iota_2)$ 的 $-\tfrac12|\alpha_{H^*}|^2$ 以及留在常数项中的 $-\tfrac12\iota_2|\alpha_{H^*}|^2$。
+
+下面的校准设定 $\beta_{c1}=1$，因此 $X_1$ *就是*可预测的消费增长。
 
 代表性行为人具有单位跨期替代弹性的 Epstein-Zin 效用。
 
@@ -1351,14 +1415,23 @@ def solve_pf_lrr(p, v1, v2):
     roots = [(-lin - np.sqrt(disc)) / (2 * quad),
              (-lin + np.sqrt(disc)) / (2 * quad)]
 
-    candidates = []
+    # 选择规则：保留使 X 在所诱导的测度下平稳且遍历的根。
+    # 在这个仿射模型中，这要求被扭曲的波动率过程均值回复
+    # （mu_hat_22 < 0）到一个正的长期均值。
+    selected = []
     for e2 in roots:
-        eta = (β_s0 - β_s11 * ι1 - β_s12 * ι2
-               - e1 * (μ11 * ι1 + μ12 * ι2) - e2 * μ22 * ι2)
-        candidates.append((eta, e2))
+        α_h = α_s + σ1 * e1 + σ2 * e2
+        μ_hat_22 = μ22 + np.dot(σ2, α_h)
+        ι_hat_2 = (μ22 / μ_hat_22) * ι2
+        if μ_hat_22 < 0 and ι_hat_2 > 0:
+            eta = (β_s0 - β_s11 * ι1 - β_s12 * ι2
+                   - e1 * (μ11 * ι1 + μ12 * ι2) - e2 * μ22 * ι2)
+            selected.append((eta, e2))
 
-    # 选择给出较小特征值指数的解。
-    eta, e2 = min(candidates)
+    if len(selected) != 1:
+        raise ValueError("Selection condition does not pin down a unique eigenfunction")
+
+    eta, e2 = selected[0]
     return e1, e2, eta, α_s
 
 
@@ -1418,6 +1491,10 @@ def risk_neutral_lrr_dynamics(p, α_s):
     )
 ```
 
+关于 $e_2$ 的二次方程有两个根，`solve_pf_lrr` 使用 {prf:ref}`assumption-mr-ergodicity` 中所述的准则在两者间进行选择，而 {prf:ref}`prop-mr-uniqueness` 表明这最多只留下一个解。
+
+这里被舍弃的根给出 $\hat\mu_{22}=+0.0115$ 和 $\hat\iota_2=-1.13$，这是一个爆炸性的波动率过程，向负的长期均值回复，因此 $X$ 在它所诱导的测度下显然不是平稳且遍历的。
+
 对于这里使用的校准，恢复的概率测度改变了长期状态分布。
 
 它降低了预期增长的均值并提高了波动率的均值。
@@ -1450,7 +1527,9 @@ print(f"长期        {dyn_hat['ι1']:8.5f}   {dyn_hat['ι2']:8.5f}"
 
 在这个校准中波动率斜率 $v_2$ 为负，因此更高的波动率降低延续值。
 
-特征函数系数 $e_1$ 具有相反的符号：长期测度变换对可预测增长具有负载荷。
+特征函数系数 $e_1$ 具有相反的符号：特征函数随可预测增长而下降。
+
+测度变换本身通过 $\alpha_S+\sigma_1e_1+\sigma_2e_2$ 载入，而特征函数项 $\sigma_1e_1$ 强化了 $\alpha_S$ 中已有的负向倾斜。
 
 因此恢复的概率测度对具有较低预期增长的历史赋予更多的概率。
 
@@ -1482,7 +1561,9 @@ print(f"长期        {dyn_hat['ι1']:8.5f}   {dyn_hat['ι2']:8.5f}"
 
 在这个校准中，单期风险中性和长期风险中性平稳分布彼此接近，且两者都远离正确设定的分布。
 
-因此，鞅成分解释了状态动态中大部分的风险调整。
+$\mathbf{P}$ 和 $\hat{\mathbf{P}}$ 之间的整个差距就是鞅成分 $\hat H$，其冲击暴露为 $\alpha_S+\sigma_1e_1+\sigma_2e_2$。
+
+两个风险中性密度如此接近所揭示的是这个暴露是如何分配的：其中大部分来自单期风险价格 $\alpha_S$，而佩龙-弗罗贝尼乌斯特征函数提供了其余部分，大约是增长冲击载荷的十分之一和波动率冲击载荷的四分之一。
 
 该论文的图 1 报告了模型隐含的平稳密度；下面的模拟是对那些密度的数值近似。
 
@@ -1677,7 +1758,7 @@ mystnb:
   figure:
     caption: >-
       将恢复的概率测度用作信念的收益率含义。
-      虚线消费收益率带使用在恢复的概率测度下的收益预测，价格固定；债券收益率不变，因为零息收益没有预测项。
+      虚线消费收益率带使用在恢复的概率测度下、价格固定时的收益预测；债券收益率不变，因为零息收益没有预测项。
     name: fig-mr-lrr-figure-2
 ---
 def affine_expectation_coeffs(dyn, β0, β1, β2, α, horizons):
@@ -1721,8 +1802,10 @@ def yield_quantiles(log_num, log_den, horizons):
 
 def transform_functional(β0, β1, β2, α, dyn_old, dyn_new, α_h):
     """改变概率后重写乘性泛函。"""
-    # 漂移改变是因为鞅成分改变了用于预测现金流的
-    # 布朗冲击暴露。
+    # 吉尔萨诺夫定理：在新测度下，log M 的漂移获得
+    # x2 * (alpha . alpha_h)，而冲击暴露 alpha 不变。
+    # 因此 x2 的载荷移动了 alpha . alpha_h，常数项则
+    # 围绕新的长期均值重新定心。
     β_level = β0 - β1 * dyn_old["ι1"] - β2 * dyn_old["ι2"]
     β2_new = β2 + np.dot(α, α_h)
     β0_new = β_level + β1 * dyn_new["ι1"] + β2_new * dyn_new["ι2"]
@@ -1817,6 +1900,25 @@ plt.show()
 
 由于在任何测度下 $\log E[1]=0$，实线和虚线债券收益率带重合。
 
+将两幅图相减就得到该论文的核心长视界结果，上面的代码单元已经计算出了它。
+
+```{code-cell} ipython3
+prem_P = 1e4 * (qC_P[1] - qB_P[1])
+prem_H = 1e4 * (qC_H[1] - qB_P[1])
+
+print("相对于期限匹配债券的中位消费溢价，基点")
+print("期限       正确设定        恢复")
+for q in [1, 8, 20, 40, 100]:
+    print(f"{q:6d}季 {prem_P[q - 1]:18.1f} {prem_H[q - 1]:13.1f}")
+
+print(f"\n最大绝对溢价：在 P 下为 {np.max(np.abs(prem_P)):.0f} 个基点，"
+      f"在 P-hat 下为 {np.max(np.abs(prem_H)):.0f} 个基点")
+```
+
+在正确设定的概率测度下，消费债权相对于期限匹配债券多赚取 80 到 336 个基点。
+
+在恢复的概率测度下，该溢价的绝对值从未超过 8 个基点，这正是"相对于期限匹配债券的长视界风险溢价在长期风险中性测度下消失"这一说法的含义。
+
 (mr_additional_state)=
 ## 额外的状态向量
 
@@ -1838,14 +1940,14 @@ X_{t+1}=\phi_x(X_t,\Delta W_{t+1}),
 Y_{t+1}-Y_t=\phi_y(X_t,\Delta W_{t+1}).
 $$
 
-设 $\varepsilon$ 表示一个特征函数候选，它被允许依赖于平稳状态 $X_t$ 和增长成分 $Y_t$。
+设 $\tilde e$ 表示一个特征函数候选，它被允许同时依赖于平稳状态 $X_t$ 和增长成分 $Y_t$。
 
-设 $\zeta$ 是 $Y$ 上的载荷向量，$e_\zeta$ 是 $X$ 的正函数。
+设 $\zeta$ 是 $Y$ 上的载荷向量，$\tilde e_\zeta$ 是 $X$ 的正函数。
 
 那么一个自然的候选是
 
 $$
-\varepsilon(x,y)=\exp(\zeta \cdot y)e_\zeta(x).
+\tilde e(x,y)=\exp(\zeta \cdot y)\tilde e_\zeta(x).
 $$
 
 这种形式很自然，因为 $Y$ 通过增量进入。
@@ -1870,17 +1972,17 @@ $$
 E\left[
     \frac{S_{t+1}}{S_t}
     \exp\{\zeta \cdot (Y_{t+1}-Y_t)\}
-    e_\zeta(X_{t+1})
+    \tilde e_\zeta(X_{t+1})
     \mid X_t=x
 \right]
-=\exp(\eta_\zeta)e_\zeta(x).
+=\exp(\eta_\zeta)\tilde e_\zeta(x).
 $$
 
 改变 $\zeta$ 会改变多少长期增长风险被载入特征函数。
 
 因此，添加 $Y_t$ 可以使主观概率测度成为一个可能的解，但它也创造了一族可能的解。
 
-因此额外的状态变量并不能消除识别问题；它通常使选择问题变得更明确。
+因此额外的状态变量并不能消除识别问题；它使选择问题变得更明确。
 
 该论文还指出了一个相关的实际问题。
 
@@ -1942,7 +2044,7 @@ $$
 
 只有当鞅成分恒等于一时，那个测度才等于投资者的信念。
 
-递归效用、永久冲击和长期风险模型赋予这个鞅一个经济上重要的角色，因此在评估转移独立性对信念恢复的含义时不应忽视它。
+递归效用、永久冲击和长期风险模型赋予这个鞅一个经济上重要的角色，因此转移独立性是一个实质性的经济限制，而不是技术上的便利。
 
 ## 练习
 
