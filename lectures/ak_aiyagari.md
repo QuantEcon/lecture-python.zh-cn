@@ -31,8 +31,9 @@ translation:
     Implementation: 实现
     Computing a steady state: 计算稳态
     Transition dynamics: 转换动态
-    'Experiment 1: Immediate tax cut': 实验1：即时减税
-    'Experiment 2: Preannounced tax cut': 实验2：预先宣布的减税
+    'Experiment 1: an immediate tax cut': 实验一：立即减税
+    'Experiment 2: a preannounced tax cut': 实验2：预先宣布的减税
+    Exercises: 练习
 ---
 
 # 长寿、异质性个体、世代交叠模型
@@ -95,17 +96,21 @@ import jax
 
 ### 人口统计和时间
 
-我们在离散时间中工作,用 $t = 0, 1, 2, ...$ 表示。
+我们在离散时间中工作，用 $t = 0, 1, 2, ...$ 表示。
 
-每个个体存活 $J = 50$ 个时期,不存在死亡风险。
+每个个体存活 $J = 50$ 个时期，不存在死亡风险。
 
-我们用 $j = 0, 1, ..., 49$ 表示年龄,人口规模固定在 $1/J$。
+我们用 $j = 0, 1, ..., 49$ 表示年龄。
+
+每个世代的质量为 $1/J$，总人口为一，因此截面平均值等于各世代平均值的 $\frac{1}{J}\sum_j$。
+
+在整个分析中，我们将每个世代的密度 $\mu_{j,t}$ 归一化为积分等于一，因此人口权重 $1/J$ 会明确出现在加总量中。
 
 ### 个体状态变量
 
-在时间 $t$ 时,年龄为 $j$ 的个体 $i$ 由两个状态变量表征:资产持有量 $a_{i,j,t}$ 和特质劳动生产率 $\gamma_{i,j,t}$。
+在时间 $t$ 时，年龄为 $j$ 的个体 $i$ 由两个状态变量表征：资产持有量 $a_{i,j,t}$ 和特质劳动生产率 $\gamma_{i,j,t}$。
 
-特质劳动生产率过程遵循一个两状态马尔可夫链,取值为 $\gamma_l$ 和 $\gamma_h$,转移矩阵为 $\Pi$。
+特质劳动生产率过程遵循一个两状态马尔可夫链，取值为 $\gamma_l$ 和 $\gamma_h$，转移矩阵为 $\Pi$。
 
 新生个体在这些生产率状态上的初始分布为 $\pi = [0.5, 0.5]$。
 
@@ -123,20 +128,22 @@ $l(j)$ 是一个确定性的年龄特定劳动效率单位曲线。
 
 初始特质生产率从分布 $\pi$ 中抽取。
 
-个体不留遗产,终期价值函数为 $V_J(a) = 0$。
+个体不留遗产，终期价值函数为 $V_J(a) = 0$。
 
 ## 生产
 
-代表性企业采用规模报酬不变的柯布-道格拉斯生产函数:
+代表性企业采用规模报酬不变的柯布-道格拉斯生产函数：
 
 $$Y_t = Z_t K_t^\alpha L_t^{1-\alpha}$$
 
-其中:
+其中：
 - $K_t$ 是总资本
 
 - $L_t$ 是总劳动效率单位
 - $Z_t$ 是全要素生产率
 - $\alpha$ 是资本份额
+
+资本不发生折旧，因此下文中的租赁率 $r_t$ 是净回报率。
 
 ## 政府
 
@@ -157,8 +164,10 @@ $$
 其中总税收 $T_t$ 满足
 
 $$
-T_t = \tau_t w_t L_t + \tau_t r_t(D_t + K_t) + \sum_j \delta_{j,t}
+T_t = \tau_t w_t L_t + \tau_t r_t(D_t + K_t) + \frac{1}{J}\sum_j \delta_{j,t}
 $$
+
+这里所有量都是人均量，这也是为什么针对不同年龄组的定额税收会带有人口权重 $1/J$。
 
 ## 要素市场活动
 
@@ -185,7 +194,9 @@ $$
 
 *生命周期模式*影响不同年龄的经济行为：
 
-  - 劳动生产率根据年龄曲线 $l(j)$ 系统性变化，而资产持有量通常遵循工作年龄段积累、退休年龄段消耗的生命周期模式。
+  - 劳动生产率根据年龄曲线 $l(j)$ 系统性变化，而资产持有量则遵循生命早期积累、生命晚期消耗的生命周期模式。
+
+  - 该模型中不存在退休，因为 $l(j) > 0$ 在任何年龄都成立，所以个体在生命晚期减少资产持有是因为临近生命终点，而不是因为停止工作。
 
   - 特定年龄的财政转移支付 $\delta_{j,t}$ 在代际间重新分配资源。
 
@@ -233,17 +244,21 @@ $$
 c + a' = (1 + r_t(1-\tau_t))a + (1-\tau_t)w_t l(j)\gamma - \delta_{j,t}
 $$
 $$
-c \geq 0
+c \geq 0, \qquad a' \geq 0
 $$
 
 以及终端条件
 $V_{J,t}(a, \gamma) = 0$
 
+约束 $a' \geq 0$ 排除了借贷的可能性，因此主体只能通过积累资产来进行自我保险。
+
+这正是此处市场不完全的含义所在。
+
 ## 人口动态
 
-资产持有量和特质劳动生产率的联合概率密度函数$\mu_{j,t}(a,\gamma)$按如下方式演化：
+资产持有量和特质劳动生产率的联合概率密度函数 $\mu_{j,t}(a,\gamma)$ 按如下方式演化：
 
-- 对于新生人口$(j=0)$：
+- 对于新生人口 $(j=0)$：
   
 $$
 \mu_{0,t+1}(a',\gamma') =\begin{cases}
@@ -252,13 +267,15 @@ $$
 		 \end{cases}
 $$
 
+每个群组的密度积分为一，因此该密度在下文的加总中带有群组权重 $1/J$。
+
 - 对于其他群组：
 
    $$
    \mu_{j+1,t+1}(a',\gamma') = \int {\bf 1}_{\sigma_{j,t}(a,\gamma)=a'}\Pi(\gamma,\gamma')\mu_{j,t}(a,\gamma)d(a,\gamma)
    $$
 
-其中$\sigma_{j,t}(a,\gamma)$是最优储蓄策略函数。
+其中 $\sigma_{j,t}(a,\gamma)$ 是最优储蓄策略函数。
 
 ## 均衡
 
@@ -276,10 +293,10 @@ $$
 
 - 政府预算约束得到满足
 - 市场出清：
-   - 资产市场：$K_t = \sum_j \int a \mu_{j,t}(a,\gamma)d(a,\gamma) - D_t$
-   - 劳动力市场：$L_t = \sum_j \int l(j)\gamma \mu_{j,t}(a,\gamma)d(a,\gamma)$
+   - 资产市场：$K_t = \frac{1}{J}\sum_j \int a \mu_{j,t}(a,\gamma)d(a,\gamma) - D_t$
+   - 劳动力市场：$L_t = \frac{1}{J}\sum_j \int l(j)\gamma \mu_{j,t}(a,\gamma)d(a,\gamma)$
 
-相对于{doc}`Transitions in an Overlapping Generations Model<ak2>`中提出的模型，本模型增加了：
+相对于 {doc}`Transitions in an Overlapping Generations Model<ak2>` 中提出的模型，本模型增加了：
 - 由生产率冲击导致的代内异质性
 - 预防性储蓄动机
 - 更多的再分配效应
@@ -287,7 +304,7 @@ $$
 
 ## 实现
 
-使用{doc}`advanced:discrete_dp`中的工具，我们通过将值函数迭代与均衡价格确定相结合来求解我们的模型。
+使用 {doc}`advanced:discrete_dp` 中的工具，我们通过将值函数迭代与均衡价格确定相结合来求解我们的模型。
 
 一个合理的方法是在寻找市场出清价格的外循环中嵌套一个离散动态规划求解器。
 
@@ -361,7 +378,7 @@ def l(j):
     return l1 + l2 * j + l3 * j ** 2
 ```
 
-让我们定义一个包含控制生产技术参数的`Firm`命名元组。
+让我们定义一个包含控制生产技术参数的 `Firm` 命名元组。
 
 ```{code-cell} ipython3
 Firm = namedtuple("Firm", ("α", "Z"))
@@ -393,7 +410,7 @@ def KL_to_w(K, L, firm):
     return Z * (1 - α) * (K / L) ** α
 ```
 
-我们使用函数`find_τ`来寻找能够平衡政府预算约束的统一税率，这个税率取决于其他政策变量，包括债务水平、政府支出和转移支付。
+我们使用函数 `find_τ` 来寻找能够平衡政府预算约束的统一税率，这个税率取决于其他政策变量，包括债务水平、政府支出和转移支付。
 
 ```{code-cell} ipython3
 @jax.jit
@@ -403,20 +420,22 @@ def find_τ(policy, price, aggs):
     r, w = price
     K, L = aggs
 
-    num = r * D + G - D_next + D - δ.sum(axis=-1)
+    # 每个群组的人口质量为1/J，因此人均转移支付为δ.sum()/J
+    J = δ.shape[-1]
+    num = r * D + G - D_next + D - δ.sum(axis=-1) / J
     denom = w * L + r * (D + K)
 
     return num / denom
 ```
 
-我们使用命名元组`Household`来存储表征家庭问题的参数。
+我们使用命名元组 `Household` 来存储表征家庭问题的参数。
 
 ```{code-cell} ipython3
 Household = namedtuple("Household", ("j_grid", "a_grid", "γ_grid",
                                      "Π", "β", "init_μ", "VJ"))
 
 def create_household(
-        a_min=0., a_max=10, a_size=200,
+        a_min=0., a_max=40, a_size=200,
         Π=[[0.9, 0.1], [0.1, 0.9]],
         γ_grid=[0.5, 1.5],
         β=0.96, J=50
@@ -590,18 +609,34 @@ def popu_dist(σ, household, Q):
 
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 按年龄划分的资产边缘分布
+    name: ak_aiy_asset_dist
+---
 for j in [0, 5, 20, 45, 49]:
     plt.plot(hh.a_grid, jnp.sum(μ[j].reshape((hh.a_grid.size, hh.γ_grid.size)), axis=1), label=f'j={j}')
 
 plt.legend()
 plt.xlabel('a')
-
-plt.title(r'marginal distribution over a, $\sum_\gamma \mu_j(a, \gamma)$')
-plt.xlim([0, 8])
-plt.ylim([0, 0.1])
+plt.ylabel(r'$\sum_\gamma \mu_j(a, \gamma)$')
 
 plt.show()
 ```
+
+如果网格过窄，会使概率质量堆积在最高资产水平处，从而扭曲这些分布。
+
+让我们验证这里没有发生这种情况。
+
+```{code-cell} ipython3
+top_mass = μ.reshape((hh.j_grid.size, hh.a_grid.size,
+                      hh.γ_grid.size))[:, -1, :].sum() / hh.j_grid.size
+print(f"population share at a_max = {hh.a_grid[-1]:.0f}: {top_mass:.3%}")
+```
+
+{ref}`ak_aiy_ex1` 探讨了当上限约束起作用时会发生什么情况。
+
 
 这些边缘分布确认新进入经济体的个体没有任何资产持有。
 
@@ -693,7 +728,7 @@ KL_to_r(K, L, firm), KL_to_w(K, L, firm)
 
 ```{code-cell} ipython3
 @jax.jit
-def find_ss(household, firm, pol_target, Q, tol=1e-6, verbose=False):
+def find_ss(household, firm, pol_target, Q, tol=1e-6, max_iter=200):
 
     j_grid, a_grid, γ_grid, Π, β, init_μ, VJ = household
     J = j_grid.size
@@ -710,17 +745,17 @@ def find_ss(household, firm, pol_target, Q, tol=1e-6, verbose=False):
     def cond_fn(state):
         "收敛标准。"
 
-        V, σ, μ, K, L, r, w, τ, D, G, δ, r_old, w_old = state
+        V, σ, μ, K, L, r, w, τ, D, G, δ, r_old, w_old, i = state
 
         error = (r - r_old) ** 2 + (w - w_old) ** 2
 
-        return error > tol
+        return (error > tol) & (i < max_iter)
 
     def body_fn(state):
         "迭代的主体部分。"
 
-        V, σ, μ, K, L, r, w, τ, D, G, δ, r_old, w_old = state
-        r_old, w_old, τ_old = r, w, τ
+        V, σ, μ, K, L, r, w, τ, D, G, δ, r_old, w_old, i = state
+        r_old, w_old = r, w
 
         # 家庭最优决策和价值
         V, σ = backwards_opt([r, w], [τ, δ], hh, Q)
@@ -744,7 +779,7 @@ def find_ss(household, firm, pol_target, Q, tol=1e-6, verbose=False):
         r = (r + r_old) / 2
         w = (w + w_old) / 2
 
-        return V, σ, μ, K, L, r, w, τ, D, G, δ, r_old, w_old
+        return V, σ, μ, K, L, r, w, τ, D, G, δ, r_old, w_old, i + 1
 
     # 初始状态
     V = jnp.empty((J, num_state), dtype=float)
@@ -752,15 +787,18 @@ def find_ss(household, firm, pol_target, Q, tol=1e-6, verbose=False):
     μ = jnp.empty((J, num_state), dtype=float)
 
     K, L = 1., 1.
-    initial_state = (V, σ, μ, K, L, r, w, τ, D, G, δ, r-1, w-1)
-    V, σ, μ, K, L, r, w, τ, D, G, δ, _, _ = jax.lax.while_loop(
+    initial_state = (V, σ, μ, K, L, r, w, τ, D, G, δ, r-1, w-1, 0)
+    V, σ, μ, K, L, r, w, τ, D, G, δ, _, _, i = jax.lax.while_loop(
                                     cond_fn, body_fn, initial_state)
 
-    return V, σ, μ, K, L, r, w, τ, D, G, δ
+    # 如果循环在收敛前停止，i 将等于 max_iter
+    return V, σ, μ, K, L, r, w, τ, D, G, δ, i
 ```
 
 ```{code-cell} ipython3
-ss1 = find_ss(hh, firm, [0, 0.1, np.zeros(hh.j_grid.size)], Q, verbose=True)
+ss1 = find_ss(hh, firm, [0, 0.1, np.zeros(hh.j_grid.size)], Q)
+
+print(f"iterations used: {ss1[-1]}")
 ```
 
 让我们计时计算过程
@@ -804,17 +842,17 @@ r_ss1, w_ss1
 
 ## 转换动态
 
-我们使用`path_iteration`函数计算转换动态。
+我们使用 `path_iteration` 函数计算转换动态。
 
 在外循环中，我们对价格和税收的猜测值进行迭代。
 
-在内循环中，我们计算每个年龄组$j$在每个时间$t$的最优消费和储蓄选择，然后找出资产和生产力联合分布的隐含演变。
+在内循环中，我们计算每个年龄组 $j$ 在每个时间 $t$ 的最优消费和储蓄选择，然后找出资产和生产力联合分布的隐含演变。
 
 然后，我们根据经济中的总劳动供给和资本存量更新价格和税收的猜测值。
 
-我们使用`solve_backwards`来求解给定价格和税收序列下的最优储蓄选择，并使用`simulate_forward`来计算联合分布的演变。
+我们使用 `solve_backwards` 来求解给定价格和税收序列下的最优储蓄选择，并使用 `simulate_forward` 来计算联合分布的演变。
 
-我们需要两个稳态作为输入：初始稳态为`simulate_forward`提供初始条件，最终稳态为`solve_backwards`提供延续值。
+我们需要两个稳态作为输入：初始稳态为 `simulate_forward` 提供初始条件，最终稳态为 `solve_backwards` 提供延续值。
 
 ```{code-cell} ipython3
 @jax.jit
@@ -943,9 +981,9 @@ def simulate_forwards(σ_seq, D_seq, μ_ss1, K_ss1, L_ss1, household, Q):
 ```{prf:algorithm} AK-Aiyagari过渡路径算法
 :label: ak-aiyagari-algorithm
 
-**输入** 给定初始稳态$ss_1$，最终稳态$ss_2$，时间范围$T$，和政策序列$(D, G, \delta)$
+**输入** 给定初始稳态 $ss_1$，最终稳态 $ss_2$，时间范围 $T$，和政策序列 $(D, G, \delta)$
 
-**输出** 计算价值函数$V$、政策函数$\sigma$、分布$\mu$和价格$(r, w, \tau)$的均衡过渡路径
+**输出** 计算价值函数 $V$、政策函数 $\sigma$、分布 $\mu$ 和价格 $(r, w, \tau)$ 的均衡过渡路径
 
 1. 从稳态初始化：
    - $(V_1, \sigma_1, \mu_1) \leftarrow ss_1$ *(初始稳态)*
@@ -953,7 +991,7 @@ def simulate_forwards(σ_seq, D_seq, μ_ss1, K_ss1, L_ss1, household, Q):
    - $(r, w, \tau) \leftarrow initialize\_prices(T)$ *(线性插值)*
    - $error \leftarrow \infty$, $i \leftarrow 0$
 
-2. **当** $error > \varepsilon$ 或 $i \leq max\_iter$ 时：
+2. **当** $error > \varepsilon$ 且 $i \leq max\_iter$ 时：
 
    1. $i \leftarrow i + 1$
    2. $(r_{\text{old}}, w_{\text{old}}, \tau_{\text{old}}) \leftarrow (r, w, \tau)$
@@ -983,7 +1021,8 @@ def simulate_forwards(σ_seq, D_seq, μ_ss1, K_ss1, L_ss1, household, Q):
 ```
 
 ```{code-cell} ipython3
-def path_iteration(ss1, ss2, pol_target, household, firm, Q, tol=1e-4, verbose=False):
+def path_iteration(ss1, ss2, pol_target, household, firm, Q, tol=1e-4,
+                   max_iter=100, verbose=False):
 
     # 起点：初始稳态
     V_ss1, σ_ss1, μ_ss1 = ss1[:3]
@@ -1017,8 +1056,8 @@ def path_iteration(ss1, ss2, pol_target, household, firm, Q, tol=1e-4, verbose=F
         axs[1].plot(jnp.arange(T), w_seq)
         axs[2].plot(jnp.arange(T), τ_seq, label=f'iter {num_iter}')
 
-    while error > tol:
-        # 重复直到找到不动点
+    while (error > tol) and (num_iter < max_iter):
+        # 重复直到找到不动点，或直到达到 max_iter
 
         r_old, w_old, τ_old = r_seq, w_seq, τ_seq
 
@@ -1058,6 +1097,9 @@ def path_iteration(ss1, ss2, pol_target, household, firm, Q, tol=1e-4, verbose=F
         w_seq = (w_seq + w_old) / 2
         τ_seq = (τ_seq + τ_old) / 2
 
+    if error > tol:
+        print(f"警告：在 {num_iter} 次迭代后停止，误差为 {error:.2e}")
+
     if verbose:
         axs[0].set_xlabel('t')
         axs[1].set_xlabel('t')
@@ -1075,25 +1117,25 @@ def path_iteration(ss1, ss2, pol_target, household, firm, Q, tol=1e-4, verbose=F
 
 现在我们可以计算由财政政策改革引发的均衡转换。
 
-## 实验1：即时减税
+## 实验一：立即减税
 
-假设政府降低税率，并通过发行债务立即平衡其预算。
+在 $t=0$ 时，政府出人意料地宣布将发行债务。
 
-在$t=0$时，政府出人意料地宣布立即减税。
+从 $t=0$ 到 $19$ 期间，债务 $D_{t+1}$ 在 $20$ 期内线性增加，达到新的目标水平 $D_{20} = D_0 + 1 = \bar{D} + 1$。
 
-从$t=0$到$19$，政府发行债务，因此债务$D_{t+1}$在20个周期内呈线性增长。
+政府支出 $\bar{G}$ 和转移支付 $\bar{\delta}_j$ 保持不变。
 
-政府为其新债务水平设定目标$D_{20} =D_0 + 1 = \bar{D} + 1$。
+债务路径即为政策，而统一税率 $\tau_t$ 则在每个时点上取使政府预算达到平衡的值。
 
-政府支出$\bar{G}$和转移支付$\bar{\delta}_j$保持不变。
+在宣布之时，剩余税率大幅降至其初始值以下，这就是我们称之为立即减税的原因。
 
-政府调整$\tau_t$以在转换过程中平衡预算。
+随后，随着债务积累，税率稳步攀升，一旦债务停止增长，税率将永久性地维持在高于初始值的水平，因为政府必须永远为更大规模的债务支付利息。
 
-我们要计算均衡转换路径。
+我们希望计算均衡转移路径。
 
-我们的第一步是准备适当的政策变量数组`D_seq`、`G_seq`、`δ_seq`
+第一步是准备适当的政策变量数组 `D_seq`、`G_seq`、`δ_seq`。
 
-我们将计算一个能平衡政府预算的`τ_seq`。
+我们将计算一个能使政府预算平衡的 `τ_seq`。
 
 ```{code-cell} ipython3
 T = 150
@@ -1107,21 +1149,21 @@ G_seq = jnp.ones(T) * G_ss1
 δ_seq = jnp.repeat(δ_ss1, T).reshape((T, δ_ss1.size))
 ```
 
-为了迭代路径，我们首先需要找到其目标点，也就是在新财政政策下的新稳态。
+为了迭代路径，我们首先需要找到其目的地，即新财政政策下的新稳态。
 
 ```{code-cell} ipython3
 ss2 = find_ss(hh, firm, [D_seq[-1], G_seq[-1], δ_seq[-1]], Q)
 ```
 
-我们可以使用`path_iteration`来寻找均衡转移动态。
+我们可以使用 `path_iteration` 来求解均衡转移动态。
 
-通过设置关键参数`verbose=True`，可以让函数`path_iteration`显示收敛信息。
+将关键参数 `verbose=True` 设置后，`path_iteration` 函数将显示收敛信息。
 
 ```{code-cell} ipython3
 paths = path_iteration(ss1, ss2, [D_seq, G_seq, δ_seq], hh, firm, Q, verbose=True)
 ```
 
-在成功计算了转型动态后，让我们来研究它们。
+成功计算出转移动态后，让我们来研究一下它们。
 
 ```{code-cell} ipython3
 V_seq, σ_seq, μ_seq = paths[:3]
@@ -1156,11 +1198,17 @@ c = inc - ap
 c_mean0 = (c * μ_seq[t]).sum(axis=1)
 ```
 
-我们关注政策变化如何影响不同年龄群体和不同时期的消费。
+我们关心政策变化如何影响不同世代、不同时间的消费。
 
 我们可以研究特定年龄的平均消费水平。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: Change in mean consumption by age
+    name: ak_aiy_cons_change
+---
 for t in [1, 10, 20, 50, 149]:
 
     ap = hh.a_grid[σ_seq[t]]
@@ -1177,19 +1225,19 @@ for t in [1, 10, 20, 50, 149]:
 
 plt.legend()
 plt.xlabel(r'j')
-plt.title(r'$\Delta mean(C(j))$')
+plt.ylabel(r'$\Delta$ mean $C(j)$')
 plt.show()
 ```
 
-为了总结这个转变过程，我们可以像在{doc}`ak2`中那样绘制路径。
+为了总结这一转移过程，我们可以像在 {doc}`ak2` 中那样绘制路径图。
 
-但与那个两期生命的世代交叠模型设置不同，我们现在不再有具有代表性的老年和年轻主体。
+但与该两期世代交叠模型的设置不同，这里我们不再只有具有代表性的老年人和青年人。
 
-* 现在我们在每个时间点都有50个不同年龄的群组
+ * 现在每个时点有 50 个不同年龄的世代
 
-为了继续，我们构建两个规模相等的年龄组 -- 年轻组和老年组。
+为此，我们构建两个人数相等的年龄组——青年人和老年人。
 
-* 在25岁时，一个人从年轻组转变为老年组
+ * 在 25 岁时，一个人将从青年人变为老年人
 
 ```{code-cell} ipython3
 ap = hh.a_grid[σ_ss1]
@@ -1250,14 +1298,14 @@ for i in range(len(names)):
     axs[row_i, col_i].hlines(ss1[i_var], 0, T, color='r', linestyle='--')
     axs[row_i, col_i].set_title(names[i])
 
-# y轴范围
+# ylims
 axs[1, 0].set_ylim([ss1[4]-0.1, ss1[4]+0.1])
 axs[2, 2].set_ylim([ss1[9]-0.1, ss1[9]+0.1])
 
 plt.show()
 ```
 
-现在让我们计算每个时间点$t$下基于年龄的条件消费均值和方差。
+现在让我们计算在每个时点 $t$，基于年龄的消费均值和方差。
 
 ```{code-cell} ipython3
 Cmean_seq = np.empty((T, J))
@@ -1281,19 +1329,19 @@ J_seq, T_range = np.meshgrid(np.arange(J), np.arange(T))
 
 fig = plt.figure(figsize=[20, 20])
 
-# 绘制消费均值随年龄和时间的变化
+# Plot the consumption mean over age and time
 ax1 = fig.add_subplot(121, projection='3d')
 ax1.plot_surface(T_range, J_seq, Cmean_seq, rstride=1, cstride=1,
                 cmap='viridis', edgecolor='none')
-ax1.set_title(r"消费均值")
+ax1.set_title(r"Mean of consumption")
 ax1.set_xlabel(r"t")
 ax1.set_ylabel(r"j")
 
-# 绘制消费方差随年龄和时间的变化
+# plot the consumption variance over age and time
 ax2 = fig.add_subplot(122, projection='3d')
 ax2.plot_surface(T_range, J_seq, Cvar_seq, rstride=1, cstride=1,
                 cmap='viridis', edgecolor='none')
-ax2.set_title(r"消费方差")
+ax2.set_title(r"Variance of consumption")
 ax2.set_xlabel(r"t")
 ax2.set_ylabel(r"j")
 
@@ -1302,11 +1350,13 @@ plt.show()
 
 ## 实验2：预先宣布的减税
 
-现在政府在时间$0$宣布永久性减税，但在20个周期后才实施。
+现在政府在时点 $0$ 宣布，它将发行相同数量的债务，但只会在 20 期之后才开始发行。
 
-我们将使用相同的关键工具`path_iteration`。
+与实验1类似，税率是剩余变量：在债务发行期间（从 $t=20$ 到 $t=40$），税率下降，此后永久地稳定在高于初始水平的位置。
 
-我们必须适当地指定`D_seq`。
+我们将使用相同的关键工具包 `path_iteration`。
+
+我们必须适当地指定 `D_seq`。
 
 ```{code-cell} ipython3
 T = 150
@@ -1357,9 +1407,7 @@ for t in range(T):
     Co_seq[t] = (c[J//2:] * μ_seq[t, J//2:]).sum() / (J // 2)
 ```
 
-下面我们绘制经济的转换路径。
-
-
+下面我们绘制经济体的转移路径。
 
 ```{code-cell} ipython3
 fig, axs = plt.subplots(3, 3, figsize=(14, 10))
@@ -1393,33 +1441,48 @@ axs[2, 2].set_ylim([ss1[9]-0.1, ss1[9]+0.1])
 plt.show()
 ```
 
-注意价格和数量是如何立即对预期的税率上调作出反应的。
+请注意，价格和数量是如何在政策于 $t=20$ 实施之前就立即作出反应的。
 
-让我们仔细观察资本存量是如何反应的。
+那些预见到即将到来的减税，以及随之而来的永久性更高税率的主体，会立即调整他们的储蓄。
+
+让我们放大观察资本存量是如何反应的。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: Capital stock around the tax cut
+    name: ak_aiy_K_zoom
+---
 # K
 i_var = 3
+K_path = paths[i_var][:25]
 
-plt.plot(paths[i_var][:25])
+K_lo = min(float(K_path.min()), float(ss1[i_var]))
+K_hi = max(float(K_path.max()), float(ss1[i_var]))
+pad = 0.1 * (K_hi - K_lo)
+
+plt.plot(K_path)
 plt.hlines(ss1[i_var], 0, 25, color='r', linestyle='--')
-plt.vlines(20, 6, 7, color='k', linestyle='--', linewidth=0.5)
-plt.text(17, 6.56, r'tax cut')
-plt.ylim([6.52, 6.65])
-plt.title("K")
+plt.axvline(20, color='k', linestyle='--', linewidth=0.5)
+plt.text(17, K_lo - 0.5 * pad, r'tax cut')
+plt.ylim([K_lo - pad, K_hi + pad])
+plt.ylabel("K")
 plt.xlabel("t")
 plt.show()
 ```
 
-在t=20实施减税政策后，由于挤出效应，总资本将会减少。
+在减税于 $t=20$ 实施之后，总资本减少，因为政府债务挤出了私人资本。
 
-个人在t=20之前几个时期就已预见到利率将会上升，因此开始增加储蓄。
+而在 $t=20$ 之前的几个时期，个体的储蓄反而增加。
 
-由于储蓄的增加导致资本增加，随之而来的是利率的暂时下降。
+原因在于，减税提高了 $t=20$ 时的 *税后* 回报率 $r_t(1-\tau_t)$，即便此时税前回报率 $r_t$ 正在下降，这使得向 $t=20$ 储蓄变得更具吸引力。
 
-对于生活在更早时期的个体来说，这种较低的利率使他们减少储蓄。
+由于这部分额外储蓄推高了资本存量，税前利率随之下降，并在政策生效前达到最低值。
 
-我们还可以沿着转换路径绘制不同群体消费的均值和方差的演变。
+在宣布之后的最初几期，这两股力量几乎相互抵消，资本存量几乎持平，储蓄反应会随着实施日期的临近而逐渐累积。
+
+我们还可以绘制不同世代在转移路径上消费均值与方差的演变过程。
 
 ```{code-cell} ipython3
 Cmean_seq = np.empty((T, J))
@@ -1444,21 +1507,176 @@ J_seq, T_range = np.meshgrid(np.arange(J), np.arange(T))
 
 fig = plt.figure(figsize=[20, 20])
 
-# 绘制消费均值随年龄和时间的变化
+# Plot the consumption mean over age and time
 ax1 = fig.add_subplot(121, projection='3d')
 ax1.plot_surface(T_range, J_seq, Cmean_seq, rstride=1, cstride=1,
                 cmap='viridis', edgecolor='none')
-ax1.set_title(r"消费均值")
+ax1.set_title(r"Mean of consumption")
 ax1.set_xlabel(r"t")
 ax1.set_ylabel(r"j")
 
-# 绘制消费方差随年龄和时间的变化
+# Plot the consumption variance over age and time
 ax2 = fig.add_subplot(122, projection='3d')
 ax2.plot_surface(T_range, J_seq, Cvar_seq, rstride=1, cstride=1,
                 cmap='viridis', edgecolor='none')
-ax2.set_title(r"消费方差")
+ax2.set_title(r"Variance of consumption")
 ax2.set_xlabel(r"t")
 ax2.set_ylabel(r"j")
 
 plt.show()
+```
+
+## 练习
+
+```{exercise}
+:label: ak_aiy_ex1
+
+我们的资产网格范围是从 $0$ 到 $a_{\max} = 40$。
+
+如果网格的上界被触及，那么计算出的均衡将成为网格本身的产物，而不是模型的性质。
+
+1. 在网格点数固定为 $200$ 的情况下，使用 $a_{\max} \in \{10, 20\}$ 重新求解稳态。
+
+2. 对每种情况报告总资本 $K$、利率 $r$、统一税率 $\tau$，以及位于最高网格点的人口比例。
+
+3. 关于使用 $a_{\max} = 10$，你能得出什么结论？
+```
+
+```{solution-start} ak_aiy_ex1
+:class: dropdown
+```
+
+```{code-cell} ipython3
+def ss_for_a_max(a_max):
+    "Solve the steady state for a given upper bound on assets."
+    h = create_household(a_max=a_max)
+    Q_h = populate_Q(h)
+    out = find_ss(h, firm, [0, 0.1, np.zeros(h.j_grid.size)], Q_h)
+    μ_h = out[2].reshape((h.j_grid.size, h.a_grid.size, h.γ_grid.size))
+    top = float(μ_h[:, -1, :].sum() / h.j_grid.size)
+    return float(out[3]), float(out[5]), float(out[7]), top
+
+print(f"{'a_max':>6}  {'K':>7}  {'r':>7}  {'τ':>7}  {'mass at a_max':>14}")
+for a_max in [10, 20, 40]:
+    K_a, r_a, τ_a, top = ss_for_a_max(a_max)
+    print(f"{a_max:>6}  {K_a:>7.3f}  {r_a:>7.4f}  {τ_a:>7.4f}  {top:>13.1%}")
+```
+
+当 $a_{\max} = 10$ 时，大约百分之三十的人口被固定在上界处。
+
+这些主体本希望持有比网格所允许的更多资产，因此所测得的资本过低，而利率则过高。
+
+将上界提高到 $40$ 可以清空网格顶端，使 $K$ 上升约百分之四十，使 $r$ 下降近两个百分点。
+
+由此得到的经验是：上界必须加以检验而非想当然地假设——只有当几乎没有概率质量到达网格边缘时，网格才算足够宽。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: ak_aiy_ex2
+
+资本存量中有多少是由应对特异性劳动生产率风险的预防性储蓄所构成的？
+
+将 $\gamma$ 的均值固定为一，并收缩其离散程度，比较 $\gamma \in \{0.9, 1.1\}$ 和 $\gamma \in \{0.75, 1.25\}$ 与基准情形 $\gamma \in \{0.5, 1.5\}$。
+
+在每种情况下报告 $K$、$L$、$r$ 和 $\tau$，并解释该效应的方向。
+```
+
+```{solution-start} ak_aiy_ex2
+:class: dropdown
+```
+
+```{code-cell} ipython3
+print(f"{'γ_grid':>16}  {'K':>7}  {'L':>7}  {'r':>7}  {'τ':>7}")
+for γ_grid in [[0.9, 1.1], [0.75, 1.25], [0.5, 1.5]]:
+    h = create_household(γ_grid=γ_grid)
+    Q_h = populate_Q(h)
+    out = find_ss(h, firm, [0, 0.1, np.zeros(h.j_grid.size)], Q_h)
+    print(f"{str(γ_grid):>16}  {float(out[3]):>7.3f}  {float(out[4]):>7.4f}"
+          f"  {float(out[5]):>7.4f}  {float(out[7]):>7.4f}")
+```
+
+总劳动 $L$ 在三种经济体中都相同，因为生产率链是对称的，且其均值在每种情况下均为一。
+
+然而资本随离散程度的扩大而上升，从约 $9.1$ 升至约 $9.5$，利率则下降约二十个基点。
+
+这额外的资本是预防性储蓄：一个无法借贷、无法为劳动收入投保的主体会持有一笔缓冲资产，以应对连续出现低生产率的情况，而离散程度越大，所需的缓冲就越大。
+
+这一效应是非线性的，因为其大部分变化出现在从 $\{0.75, 1.25\}$ 转向 $\{0.5, 1.5\}$ 的过程中。
+
+```{note}
+人们很容易想通过设定 $\gamma_l = \gamma_h$ 来完全关闭风险。
+
+但这样做在数值上是危险的。
+
+在没有特异性风险的情况下，每个给定年龄的主体都会在资产网格上选择同一个点，因此总资产供给会成为关于 $r$ 的阶跃函数，价格迭代可能陷入循环而无法收敛。
+
+这正是 `find_ss` 中设置迭代上限的原因之一。
+```
+
+```{solution-end}
+```
+
+```{exercise}
+:label: ak_aiy_ex3
+
+本练习构建一个无资金积累的社会保障体系，类似于 {ref}`两期模型实验四 <exp-social-security>` 中所研究的体系。
+
+设政府对每个年轻主体征税，并向每个年老主体支付补贴，满足
+
+$$
+\delta_{j} = \begin{cases} d & j < 25 \\ -d & j \geq 25 \end{cases}
+$$
+
+使得 $\sum_j \delta_j = 0$，即该方案在每一期都是收支平衡的。
+
+1. 针对 $d \in \{0, 0.1, 0.25\}$ 计算稳态，并报告 $K$、$r$、$w$ 和 $\tau$。
+
+2. 报告年轻人群和年老人群的平均消费。
+
+3. 将你的发现与两期模型进行比较。
+```
+
+```{solution-start} ak_aiy_ex3
+:class: dropdown
+```
+
+```{code-cell} ipython3
+a_vec = hh.a_grid.reshape((1, hh.a_grid.size, 1))
+γ_vec = hh.γ_grid.reshape((1, 1, hh.γ_grid.size))
+l_vec = l(hh.j_grid).reshape((hh.j_grid.size, 1, 1))
+J = hh.j_grid.size
+
+print(f"{'d':>5}  {'K':>7}  {'r':>7}  {'w':>7}  {'τ':>7}"
+      f"  {'c young':>8}  {'c old':>7}")
+for d in [0.0, 0.1, 0.25]:
+    δ_ss = np.zeros(J)
+    δ_ss[:J//2], δ_ss[J//2:] = d, -d
+    out = find_ss(hh, firm, [0, 0.1, δ_ss], Q)
+    σ_d, μ_d = out[1], out[2]
+    K_d, r_d, w_d, τ_d = (float(out[3]), float(out[5]),
+                          float(out[6]), float(out[7]))
+
+    ap_d = hh.a_grid[σ_d].reshape((J, hh.a_grid.size, hh.γ_grid.size))
+    c_d = ((1 + r_d * (1 - τ_d)) * a_vec
+           + (1 - τ_d) * w_d * l_vec * γ_vec
+           - δ_ss.reshape((J, 1, 1)) - ap_d)
+    c_mean = (c_d * μ_d.reshape(ap_d.shape)).sum(axis=(1, 2))
+
+    print(f"{d:>5.2f}  {K_d:>7.3f}  {r_d:>7.4f}  {w_d:>7.4f}  {τ_d:>7.4f}"
+          f"  {c_mean[:J//2].mean():>8.4f}  {c_mean[J//2:].mean():>7.4f}")
+```
+
+该转移支付方案在每一期都是平衡的，因此不会产生净收入，统一税率 $\tau$ 几乎不变。
+
+尽管如此，它仍使经济收缩：随着 $d$ 升至 $0.25$，资本从 $9.5$ 降至 $8.7$，利率上升，工资下降。
+
+年轻人消费减少是因为他们被征税，老年人消费增加是因为他们获得补贴，但年轻人的储蓄也减少了，这既是因为他们的收入降低，也是因为承诺的转移支付替代了他们自身的储蓄。
+
+这与 {ref}`两期模型实验四 <exp-social-security>` 所展示的挤出效应是相同的。
+
+长寿命模型所补充的发现是：该转移支付恰恰是从预防性储蓄动机最强的主体——也就是持有缓冲劳动收入风险的资产最少的年轻人——身上征收的。
+
+```{solution-end}
 ```

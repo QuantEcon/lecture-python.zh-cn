@@ -12,27 +12,37 @@ kernelspec:
 translation:
   title: 代际交叠模型中的转型
   headings:
-    Introduction: 引言
+    Overview: 概述
     Setting: 设定
     Production: 生产
     Government: 政府
-    Activities in Factor Markets: 要素市场中的活动
+    Activities in factor markets: 要素市场中的活动
     Representative firm's problem: 代表性企业的问题
     Individuals' problems: 个体问题
     Individuals' problems::Initial old person: 初始老年人
     Individuals' problems::Young person: 年轻人
-    Equilbrium: 均衡
+    Equilibrium: 均衡
     Next steps: 后续步骤
     Closed form solution: 封闭形式解
     Closed form solution::Steady states: 稳态
     Closed form solution::Implementation: 实现
     Closed form solution::Transitions: 转型
-    'Closed form solution::Experiment 1: Tax cut': 实验1：减税
-    'Closed form solution::Experiment 2: Government asset accumulation': 实验2：政府资产积累
-    'Closed form solution::Experiment 3: Temporary expenditure cut': 实验3：暂时性支出削减
+    'Closed form solution::Experiment 1: a tax cut': 实验1：减税
+    'Closed form solution::Experiment 2: government asset accumulation': 实验2：政府资产积累
+    'Closed form solution::Experiment 3: temporary expenditure cut': 实验3：暂时性支出削减
     A computational strategy: 计算策略
-    'A computational strategy::Experiment 4: Unfunded Social Security System': 实验4：无基金的社会保障制度
+    'A computational strategy::Experiment 4: an unfunded social security system': 实验4：一个无基金的社会保障制度
+    Exercises: 练习
 ---
+
+(ak2)=
+```{raw} jupyter
+<div id="qe-notebook-header" align="right" style="text-align:right;">
+        <a href="https://quantecon.org/" title="quantecon.org">
+                <img style="width:250px;display:inline;" width="250px" src="https://assets.quantecon.org/img/qe-menubar-logo.svg" alt="QuantEcon">
+        </a>
+</div>
+```
 
 # 代际交叠模型中的转型
 
@@ -42,31 +52,32 @@ translation:
 :tags: [hide-output]
 !pip install --upgrade quantecon
 ```
-## 引言
 
-本讲座介绍了由 Peter Diamond {cite}`diamond1965national` 提出的由”两期寿命人群的代际交叠”组成的生命周期模型。
+## 概述
 
-我们将介绍Auerbach 和 Kotlikoff (1987) {cite}`auerbach1987dynamic`第二章中分析的版本。
+本讲座介绍了由 Peter Diamond {cite}`diamond1965national` 提出的一个由两期生存的世代交叠人群组成的生命周期模型。
 
-Auerbach 和 Kotlikoff (1987)使用他们的两期模型作为预备，用来分析他们书中主要讨论的“长期寿命人群的代际交叠模型”。
+我们将介绍 Auerbach 和 Kotlikoff（1987 年）{cite}`auerbach1987dynamic` 在其著作第 2 章中分析的版本。
 
-他们的“两期寿命的代际交叠模型”是一个有用的起点,因为
+Auerbach 和 Kotlikoff（1987 年）将他们的两期模型作为热身练习，为他们对长寿命人群的世代交叠模型的分析做准备，而后者才是其著作的主要内容。
 
-* 它阐述了在给定日期存活的不同世代个体之间的互动结构
-* 它揭示了政府及相继世代所面临的各种力量与权衡取舍。
-* 它为研究政府税收与补贴政策之间的相互关系，以及政府债务发行与偿还政策，提供了一个良好的实验框架。
-* 一些涉及从一个稳态到另一个稳态转变的有趣实验可以手工计算
-* 它为展示**射击法**提供了一个合适的框架，该方法用于求解同时具有初始条件与终端条件的非线性差分方程组。
+他们的两期生存世代交叠模型是一个有用的起点，原因如下：
+
+* 它阐明了在给定日期存活的不同世代主体之间相互作用的结构
+* 它激活了政府与历代人群所面临的各种力量和权衡取舍
+* 它是研究政府税收与补贴计划，以及发行和偿还政府债务的政策之间联系的良好实验场所
+* 一些涉及从一个稳态过渡到另一个稳态的有趣实验可以手工计算
+* 它是展示用于求解具有初始条件和终端条件的非线性差分方程组的**打靶法**的良好场景
 
 ```{note}
-Auerbach 和 Kotlikoff 使用计算机代码来计算他们的长寿人群模型的转换路径。
+Auerbach 和 Kotlikoff 使用计算机代码来计算他们那些包含长寿命人群的模型的过渡路径。
 ```
 
-我们在 Auerbach 和 Kotlikoff 第二章模型的基础上作出扩展，用以研究跨世代资源再分配的一些制度安排。
+我们斗胆对 Auerbach 和 Kotlikoff 第 2 章的模型加以扩展，以研究一些在各世代之间重新分配资源的安排
 
-  * 这些制度安排表现为一系列与年龄相关的定额税收与转移支付。
+  * 这些安排采取了一系列针对特定年龄的一次性总付税收和转移支付的形式
 
-我们考察这些制度安排如何影响资本积累与政府债务。
+我们将研究这些安排如何影响资本积累和政府债务
 
 ## 设定
 
@@ -81,7 +92,7 @@ Auerbach 和 Kotlikoff 使用计算机代码来计算他们的长寿人群模型
 
 年轻人从事工作，进行储蓄和消费。
 
-老年人进行消费和储蓄，但不再劳动。
+老年人进行消费和储蓄，但不工作。
 
 政府永远存在,即在各期 $t=0, 1, 2, \ldots$ 都存在。
 
@@ -116,7 +127,7 @@ $K_0$ 和 $D_0$ 都以时点 $0$ 的商品单位计量。
 * $K_{t+1} - K_t \equiv I_t $ -- 在时点 $t \geq 0$ 的实物资本投资
 * $G_t$：政府购买
 
-国民收入与产品核算由以下一组等式构成
+国民收入与产品核算由一组等式构成
 * $Y_t = C_{yt} + C_{ot} + (K_{t+1} - K_t) + G_t, \quad t \geq 0$ 
 
 **价格体系**是一对序列 $\{W_t, r_t\}_{t=0}^\infty$，其组成部分为生产要素的租赁价格
@@ -124,12 +135,15 @@ $K_0$ 和 $D_0$ 都以时点 $0$ 的商品单位计量。
 * $W_t$：在时点 $t \geq 0$ 的劳动要素租金
 * $r_t$：在时点 $t \geq 0$ 的资本要素租金
 
-
 ## 生产
 
 生产包含两种要素：实物资本 $K_t$ 和劳动投入 $L_t$。  
 
-资本不会折旧。  
+资本不会折旧，因此下文中的 $r_t$ 是净回报率。
+
+由于每个年轻人无弹性地供给一单位劳动，且人口保持不变，劳动供给满足 $L_t = 1$ 对所有 $t$ 成立。
+
+我们将利用这一事实来简化下文的公式。
 
 初始资本存量 $K_0$ 由一个代表性的初始老年人持有，并在时点 $0$ 出租给企业。
 
@@ -151,13 +165,12 @@ $$
 Y_t  = K_t^\alpha L_t^{1-\alpha}, \quad \alpha \in (0,1)
 $$ (eq:prodfn)
 
-
 ## 政府
 在时点 $t-1$，政府发行一期无风险债务，承诺在时点 $t$ 支付人均 $D_t$ 单位的商品。
 
 时点 $t$ 的年轻人购买将于时点 $t+1$ 到期的政府债券 $D_{t+1}$。
 
-在时点 $t$ 发行的政府债券，其税前净利率为 $r_{t}$，利息支付在时点 $t+1$ 进行。
+在时点 $t$ 发行的政府债券，其税前净利率为 $r_{t+1}$，利息支付在时点 $t+1$ 进行。
 
 政府在时点 $t \geq 0$ 的预算约束为
 
@@ -177,6 +190,7 @@ $$
 T_t = \tau_t W_t L_t + \tau_t r_t (D_t + K_t) + \delta_{yt} + \delta_{ot}
 $$
 
+由于每个时点都恰好存在一个年轻人和一个老年人，这两笔一次性总付税以单位权重计入 $T_t$ 中。
 
 ## 要素市场中的活动
 
@@ -198,8 +212,7 @@ $$
 
 ```{note}
 如果一次性税款为负，意味着政府向个人支付补贴。
-``` 
-
+```
 
 ## 代表性企业的问题 
 
@@ -225,7 +238,7 @@ $$
 $$
 \begin{aligned}
 W_t & = (1-\alpha) K_t^\alpha L_t^{-\alpha} \\
-r_t & = \alpha K_t^\alpha L_t^{1-\alpha}
+r_t & = \alpha K_t^{\alpha-1} L_t^{1-\alpha}
 \end{aligned}
 $$  (eq:firmfonc)
 
@@ -235,18 +248,19 @@ $$  (eq:firmfonc)
 
 ## 个体问题
 
-### 初始老年人
-在时点 $t=0$,一个代表性的初始老年人拥有 $(1 + r_0(1 - \tau_0)) A_0$ 的初始资产。
 
-他必须向政府支付一笔一次性税款（如果为正），或从政府获得补贴（如果为负） $\delta_{ot}$。
+### 初始老年人
+在时点 $t=0$，一个代表性的初始老年人拥有 $(1 + r_0(1 - \tau_0)) A_0$ 的初始资产，其中 $A_0 = K_0 + D_0$。
+
+他必须向政府支付一笔一次性税款（如果为正），或从政府获得补贴（如果为负） $\delta_{o0}$。
 
 老年人的预算约束为
 
 $$
-C_{o0} = (1 + r_0 (1 - \tau_0)) A_0 - \delta_{ot} .
+C_{o0} = (1 + r_0 (1 - \tau_0)) A_0 - \delta_{o0} .
 $$ (eq:hbudgetold)
 
-初始老年人的效用函数为 $C_{o0}$,因此其最优消费计划由方程 {eq}`eq:hbudgetold` 给出。
+初始老年人的效用函数为 $C_{o0}$，因此其最优消费计划由方程 {eq}`eq:hbudgetold` 给出。
 
 ### 年轻人
 
@@ -260,55 +274,55 @@ $$
 U_t  = C_{yt}^\beta C_{o,t+1}^{1-\beta}, \quad \beta \in (0,1)
 $$ (eq:utilfn)
 
-其预算约束在 $t$ 和 $t+1$ 时分别为:
+其预算约束在 $t$ 和 $t+1$ 时分别为：
 
 $$
 \begin{aligned}
 C_{yt} + A_{t+1} & =  W_t (1 - \tau_t) - \delta_{yt} \\
-C_{o,t+1} & = (1+ r_{t+1} (1 - \tau_{t+1}))A_{t+1} - \delta_{ot}
+C_{o,t+1} & = (1+ r_{t+1} (1 - \tau_{t+1}))A_{t+1} - \delta_{o,t+1}
 \end{aligned}
 $$ (eq:twobudgetc)
 
-将{eq}`eq:twobudgetc` 的第二个方程解得的储蓄 $A_{t+1}$ 代入第一个方程，可得现值预算约束
+将 {eq}`eq:twobudgetc` 的第二个方程解得的储蓄 $A_{t+1}$ 代入第一个方程，可得现值预算约束
 
 $$
-C_{yt} + \frac{C_{o,t+1}}{1 + r_{t+1}(1 - \tau_{t+1})} = W_t (1 - \tau_t) - \delta_{yt} - \frac{\delta_{ot}}{1 + r_{t+1}(1 - \tau_{t+1})}
+C_{yt} + \frac{C_{o,t+1}}{1 + r_{t+1}(1 - \tau_{t+1})} = W_t (1 - \tau_t) - \delta_{yt} - \frac{\delta_{o,t+1}}{1 + r_{t+1}(1 - \tau_{t+1})}
 $$ (eq:onebudgetc)
 
 为了求解年轻人的最优问题，构建拉格朗日函数
 
 $$ 
 \begin{aligned}
-{\mathcal L}  & = C_{yt}^\beta C_{o,t+1}^{1-\beta} \\ &  + \lambda \Bigl[ C_{yt} + \frac{C_{o,t+1}}{1 + r_{t+1}(1 - \tau_{t+1})} - W_t (1 - \tau_t) + \delta_{yt} + \frac{\delta_{ot}}{1 + r_{t+1}(1 - \tau_{t+1})}\Bigr],
+{\mathcal L}  & = C_{yt}^\beta C_{o,t+1}^{1-\beta} \\ &  + \lambda \Bigl[ W_t (1 - \tau_t) - \delta_{yt} - \frac{\delta_{o,t+1}}{1 + r_{t+1}(1 - \tau_{t+1})} - C_{yt} - \frac{C_{ot+1}}{1 + r_{t+1}(1 - \tau_{t+1})} \Bigr],
 \end{aligned}
 $$ (eq:lagC)
 
-其中 $\lambda$ 是跨期预算约束 {eq}`eq:onebudgetc` 的拉格朗日乘子。
+其中 $\lambda \geq 0$ 是跨期预算约束 {eq}`eq:onebudgetc` 的拉格朗日乘子。
 
 经过若干代数运算，跨期预算约束 {eq}`eq:onebudgetc` 以及关于 $C_{yt}, C_{o,t+1}$ 最大化 ${\mathcal L}$ 的一阶条件表明，最优消费计划满足
 
 $$
 \begin{aligned}
-C_{yt} & = \beta \Bigl[ W_t (1 - \tau_t) - \delta_{yt} - \frac{\delta_{ot}}{1 + r_{t+1}(1 - \tau_{t+1})}\Bigr] \\
-\frac{C_{o,t+1}}{1 + r_{t+1}(1-\tau_{t+1})  } & = (1-\beta)   \Bigl[ W_t (1 - \tau_t) - \delta_{yt} - \frac{\delta_{ot}}{1 + r_{t+1}(1 - \tau_{t+1})}\Bigr] 
+C_{yt} & = \beta \Bigl[ W_t (1 - \tau_t) - \delta_{yt} - \frac{\delta_{o,t+1}}{1 + r_{t+1}(1 - \tau_{t+1})}\Bigr] \\
+\frac{C_{o,t+1}}{1 + r_{t+1}(1-\tau_{t+1})  } & = (1-\beta)   \Bigl[ W_t (1 - \tau_t) - \delta_{yt} - \frac{\delta_{o,t+1}}{1 + r_{t+1}(1 - \tau_{t+1})}\Bigr] 
 \end{aligned}
 $$ (eq:optconsplan)
 
-最小化拉格朗日函数 {eq}`eq:lagC` 关于拉格朗日乘子 $\lambda$ 的一阶条件可恢复预算约束 {eq}`eq:onebudgetc`，进而利用 {eq}`eq:optconsplan` 得到最优储蓄计划
+关于拉格朗日函数 {eq}`eq:lagC` 对拉格朗日乘子 $\lambda$ 的一阶条件可恢复预算约束 {eq}`eq:onebudgetc`，进而利用 {eq}`eq:optconsplan` 得到最优储蓄计划
 
 $$
-A_{t+1} = (1-\beta) [ (1- \tau_t) W_t - \delta_{yt}] + \beta \frac{\delta_{ot}}{1 + r_{t+1}(1 - \tau_{t+1})} 
+A_{t+1} = (1-\beta) [ (1- \tau_t) W_t - \delta_{yt}] + \beta \frac{\delta_{o,t+1}}{1 + r_{t+1}(1 - \tau_{t+1})} 
 $$ (eq:optsavingsplan)
 
 
 (sec-equilibrium)=
 ## 均衡
-**定义：** 均衡是一个由资源配置、政府政策和价格体系所组成的三元组，满足以下性质：
-* 在给定价格体系与政府政策的条件下，该资源配置能解出：
-    * $t \geq 0$ 时代表性企业的问题
-    * $t \geq 0$时 的个体问题
-* 在给定价格体系与资源配置的条件下，政府预算约束在所有 $t \geq 0$ 时都得到满足。
 
+**定义：** 均衡是一种配置、一项政府政策和一个价格体系，具有以下性质：
+* 给定价格体系和政府政策，该配置能够求解
+    * 代表性企业在 $t \geq 0$ 时的问题
+    * 个人在 $t \geq 0$ 时的问题
+* 给定价格体系和配置，政府预算约束对所有 $t \geq 0$ 都得到满足。
 
 ## 后续步骤
 
@@ -324,7 +338,6 @@ $$ (eq:optsavingsplan)
 具体而言，我们首先会将均衡表述为一个不动点问题：该不动点映射将要素价格与税率序列映射至要素价格与税率序列。
 
 然后我们将通过迭代计算并收敛到该映射的不动点，从而得到均衡。
-
 
 ## 封闭形式解
 
@@ -343,8 +356,10 @@ $$
 使用 {eq}`eq:firmfonc` 和 $A_t = K_t + D_t$，我们得到资本的封闭形式传导方程：
 
 $$
-K_{t+1}=K_{t}^{\alpha}\left(1-\tau_{t}\right)\left(1-\alpha\right)\left(1-\beta\right) - D_{t}\\
+K_{t+1}=K_{t}^{\alpha}\left(1-\tau_{t}\right)\left(1-\alpha\right)\left(1-\beta\right) - D_{t+1}
 $$ (eq:Klawclosed)
+
+之所以债务项的时间下标为 $t+1$，是因为年轻人携带到 $t+1$ 期的资产 $A_{t+1}$ 既包括实物资本 $K_{t+1}$，也包括在 $t+1$ 期到期的政府债券 $D_{t+1}$。
 
 ### 稳态
 
@@ -361,11 +376,16 @@ $$ (eq:steadystates)
 这意味着
 
 $$
-\begin{aligned}
-\hat{K} &= \left[\left(1-\hat{\tau}\right)\left(1-\alpha\right)\left(1-\beta\right)\right]^{\frac{1}{1-\alpha}} \\
-\hat{\tau} &= \frac{\hat{G} + \hat{r} \hat{D}}{\hat{Y} + \hat{r} \hat{D}}
-\end{aligned}
+\hat{\tau} = \frac{\hat{G} + \hat{r} \hat{D}}{\hat{Y} + \hat{r} \hat{D}}
 $$
+
+当 $\hat D = 0$ 时，{eq}`eq:steadystates` 的第一个方程可求得封闭形式解
+
+$$
+\hat{K} = \left[\left(1-\hat{\tau}\right)\left(1-\alpha\right)\left(1-\beta\right)\right]^{\frac{1}{1-\alpha}}
+$$
+
+当 $\hat D \neq 0$ 时，该方程必须通过数值方法求解，这正是 {ref}`ak2_ex1` 所要完成的任务。
 
 示例：考虑以下情况：
 
@@ -381,8 +401,6 @@ $$
 \hat{\tau} &= 0.15 \\
 \end{aligned}
 $$
-
-
 
 ### 实现
 
@@ -451,6 +469,11 @@ def K_to_C(K, D, τ, r, α, β):
 Y_hat, r_hat, W_hat = K_to_Y(K_hat, α), K_to_r(K_hat, α), K_to_W(K_hat, α)
 Y_hat, r_hat, W_hat
 ```
+
+稳态净回报率 $\hat r$ 接近于一，也就是大约 $100$ 个百分点。
+
+这并非失误：本模型中的一期对应一个人一生的一半，因此 $\hat r$ 累积了跨越一代人的回报。
+
 由于政府债务的稳态值 $\hat{D}$ 为 $0$，所有税收都用于支付政府支出
 
 ```{code-cell} ipython3
@@ -606,6 +629,7 @@ class ClosedFormTrans:
             policy_seq[t+1, 1] = D_next
             policy_seq[t, 2] = G
 
+        self.T, self.init_ss = T, init_ss
         self.quant_seq = quant_seq
         self.price_seq = price_seq
         self.policy_seq = policy_seq
@@ -614,6 +638,7 @@ class ClosedFormTrans:
 
     def plot(self):
 
+        T, init_ss = self.T, self.init_ss
         quant_seq = self.quant_seq
         price_seq = self.price_seq
         policy_seq = self.policy_seq
@@ -769,20 +794,34 @@ G_seq = τ_hat * 0.5 * Y_hat * np.ones(T+1)
 closed.simulate(T, init_ss, τ_pol=τ_seq, G_pol=G_seq);
 closed.plot()
 ```
-随着政府积累资产并将其用于生产，资本的租金率下降，私人投资下降。
+随着政府积累资产，它提供了本应由私人储蓄者提供的资金，因此资本存量上升，资本的租金率下降。
 
 因此，政府资产与用于生产的实物资本之比 $-\frac{D_t}{K_t}$ 将随着时间的推移而增加
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 政府资产与资本之比
+    name: ak2_asset_capital_ratio
+---
 plt.plot(range(T+1), -closed.policy_seq[:-1, 1] / closed.quant_seq[:, 0])
 plt.xlabel('t')
-plt.title('-D/K');
+plt.ylabel('-D/K')
+plt.show()
 ```
+
 我们想知道这一政策实验如何影响个体。
 
 从长远来看，未来的世代将在他们的一生中享受更高的消费，因为他们工作时将获得更高的劳动收入。
 
-然而，在短期内，老年人遭受损失，因为劳动收入的增加不足以抵消资本收入的下降。
+而在短期内，早期的世代则会遭受损失。
+
+$t=0$ 时的代表性老年人不受影响，因为 $K_0$、$r_0$ 和 $\tau_0$ 在 $t=0$ 时均未发生变化。
+
+但在 $t=0$ 和 $t=1$ 时年轻的世代，是在该政策尚未提高工资之前进行储蓄的，而他们获得回报时所面对的利率却已被更高的资本存量大幅压低。
+
+{ref}`ak2_ex2` 逐代计算了这些收益与损失。
 
 这种鲜明的长期效应与短期效应促使我们去研究转型路径。
 
@@ -790,12 +829,11 @@ plt.title('-D/K');
 虽然在新的稳态中消费确实更高，但其代价是公共服务与商品供给的减少。
 ```
 
-
 ### 实验3：暂时性支出削减
 
-我们接下来考察一种情形，即政府同样将支出削减一半并积累资产。
+我们接下来考察一种情形，即政府再次通过削减支出来积累资产。
 
-但在此实验中，政府只在 $t=0$ 时削减支出。
+但这次削减仅持续一期：政府将 $G_0$ 设为 $0$，并从 $t=1$ 起将购买恢复为 $\hat G$。
 
 从 $t \geq 1$ 起，政府支出恢复到 $\hat{G}$，而税率 $\tau_t$ 调整以维持资产水平 $-D_t = -D_1$。
 
@@ -816,8 +854,7 @@ closed.plot()
 
 尽管从 $t \geq 1$ 起，政府支出 $G_t$ 恢复到其较高的初始水平，但由于政府在临时削减支出期间积累了资产，从而获得了额外收入 $-r_t D_t$，因此可以在更低的税率下维持预算平衡。
 
-与 {ref}`exp-expen-cut` 相似，转型期初期的老年人会因该政策冲击而受到损失。
-
+与 {ref}`exp-expen-cut` 相似，转型过程初期处于年轻阶段的世代会因该政策冲击而受损，因为他们是在工资上涨之前进行储蓄，随后却只能获得随之而来的较低利率回报。
 
 ## 计算策略
 
@@ -843,7 +880,7 @@ closed.plot()
 * 最优消费序列 $\{C_{yt}, C_{ot}\}$
 * 价格序列 $\{W_t, r_t\}$
 * 资本存量和产出序列 $\{K_t, Y_t\}$
-* 税率、政府资产(债务)、政府购买序列 $\{\tau_t, D_t, G_t\, \delta_{yt}, \delta_{ot}\}$
+* 税率、政府资产(债务)、政府购买以及一次性税收序列 $\{\tau_t, D_t, G_t, \delta_{yt}, \delta_{ot}\}$
 
 并满足以下性质：
 
@@ -852,7 +889,7 @@ closed.plot()
 
 均衡转型路径可以通过“猜测–校验”若干内生序列来计算。
 
-例如，在{ref}`exp-tax-cut`中，序列 $\{D_t\}_{t=0}^{T}$ 和 $\{G_t\}_{t=0}^{T}$ 是外生的。
+例如，在 {ref}`exp-tax-cut` 中，序列 $\{D_t\}_{t=0}^{T}$ 和 $\{G_t\}_{t=0}^{T}$ 是外生的。
 
 此外，我们假设一次性税收 $\{\delta_{yt}, \delta_{ot}\}_{t=0}^{T}$ 是给定的，且模型中的每个个体都知晓。
 
@@ -1016,10 +1053,12 @@ class AK2():
                 # K的传导
                 K_next = A_next - D_next
                 Y_next = K_to_Y(K_next, α)
-                W_next, r_next = K_to_W(K_next, α), K_to_r(K_next, α)
+
+                # 隐含的下一期价格
+                W_imp, r_imp = K_to_W(K_next, α), K_to_r(K_next, α)
 
                 quant_seq[t+1, :2] = K_next, Y_next
-                price_seq[t+1, :] = W_next, r_next
+                price_seq[t+1, :] = W_imp, r_imp
 
             i_iter += 1
 
@@ -1034,6 +1073,7 @@ class AK2():
                     print(f"使用{i_iter}次迭代未能收敛")
                 break
         
+        self.T, self.init_ss = T, init_ss
         self.quant_seq = quant_seq
         self.price_seq = price_seq
         self.policy_seq = policy_seq
@@ -1042,6 +1082,7 @@ class AK2():
 
     def plot(self):
 
+        T, init_ss = self.T, self.init_ss
         quant_seq = self.quant_seq
         price_seq = self.price_seq
         policy_seq = self.policy_seq
@@ -1150,8 +1191,8 @@ for i, name in enumerate(['τ', 'D', 'G']):
 ```
 与 {ref}`exp-tax-cut` 相比，政府提高一次性税收以支付不断增加的债务利息支出，与提高资本所得税税率相比，这种做法的扭曲性更小。
 
-
-### 实验4：无基金的社会保障制度
+(exp-social-security)=
+### 实验4：一个无基金的社会保障制度
 
 在这个实验中，老年人和年轻人的一次性税收数额相等，但符号相反。
 
@@ -1211,12 +1252,181 @@ for i, name in enumerate(['τ', 'D', 'G']):
     ax.legend()
     ax.set_xlabel('t')
 ```
-在社会保障制度启动时，初始老年人尤其受益，因为他获得了转移支付却无需为此支付任何代价。
+在社会保障制度启动时，初始老年人尤其受益，因为他们获得了转移支付却无需为此支付任何代价。
 
-然而，从长期来看，年轻人与老年人的消费率都会下降，因为社会保障制度削弱了储蓄动机。
+然而，从长期来看，年轻人与老年人的消费都会下降，因为社会保障制度削弱了储蓄动机。
 
 这会降低实物资本存量，从而导致产出下降。
 
 为支付其支出，政府必须提高税率。
 
 更高的资本收入税率进一步扭曲了储蓄动机。
+
+## 练习
+
+```{exercise}
+:label: ak2_ex1
+
+本练习研究政府债务如何影响稳态资本存量。
+
+1. 解释为什么运动规律 {eq}`eq:Klawclosed` 中包含的是 $D_{t+1}$ 而不是 $D_t$。
+
+2. 证明具有恒定债务水平 $\hat D$ 的稳态满足
+
+$$
+\hat{K} = c\, \hat{K}^{\alpha} - \hat{D},
+\qquad c \equiv \left(1-\hat{\tau}\right)\left(1-\alpha\right)\left(1-\beta\right)
+$$
+
+3. 保持 $\hat\tau = 0.15$ 不变，针对 $\hat D \in \{0, 0.02, 0.05, 0.07\}$ 计算 $\hat K$。
+
+4. 求出存在稳态的最大 $\hat D$，并在 $0 < \hat D < \hat D_{\max}$ 时计算稳态的数目。
+```
+
+```{solution-start} ak2_ex1
+:class: dropdown
+```
+
+*第1部分。* $t$ 期的年轻人储蓄 $A_{t+1} = (1-\beta)(1-\tau_t) W_t$。
+
+这些储蓄以实物资本 $K_{t+1}$ 和在 $t+1$ 期到期的政府债券 $D_{t+1}$ 的形式持有，因此 $K_{t+1} = A_{t+1} - D_{t+1}$。
+
+*第2部分。* 在 {eq}`eq:Klawclosed` 中令 $K_{t+1} = K_t = \hat K$，$\tau_t = \hat\tau$，$D_{t+1} = \hat D$，并使用 $W_t = (1-\alpha)\hat K^\alpha$。
+
+*第3和第4部分。* 函数 $c K^\alpha - K$ 在 $K$ 上是严格凹的，在 $K=0$ 处等于零，并在 $K^\star = (\alpha c)^{1/(1-\alpha)}$ 处达到最大值。
+
+因此，稳态方程 $c K^\alpha - K = \hat D$ 在 $0 < \hat D < \hat D_{\max} \equiv c (K^\star)^{\alpha} - K^\star$ 时有两个解，在 $\hat D = \hat D_{\max}$ 时有一个解，在 $\hat D > \hat D_{\max}$ 时无解。
+
+```{code-cell} ipython3
+from scipy.optimize import brentq
+
+c = (1 - τ_hat) * (1 - α) * (1 - β)
+K_star = (α * c) ** (1 / (1 - α))
+D_max = c * K_star ** α - K_star
+
+def K_ss(D, high=True):
+    "Steady state K solving c K^α - D - K = 0."
+    f = lambda K: c * K ** α - D - K
+    return brentq(f, K_star, 10) if high else brentq(f, 1e-12, K_star)
+
+print(f"D_max = {D_max:.5f} at K = {K_star:.5f}\n")
+print(f"{'D':>6}  {'K (high)':>9}  {'K (low)':>9}  {'r (high)':>9}")
+for D in [0.0, 0.02, 0.05, 0.07]:
+    K_high = K_ss(D)
+    K_low = K_ss(D, high=False) if D > 0 else 0.0
+    print(f"{D:>6.2f}  {K_high:>9.5f}  {K_low:>9.5f}  {K_to_r(K_high, α):>9.4f}")
+```
+
+政府债务挤出资本：在 $\hat D = 0.05$ 时，高资本稳态所持有的资本仅略多于 $\hat D = 0$ 时的一半。
+
+超过 $\hat D_{\max} \approx 0.074$ 后，年轻人根本无法储蓄足够多来吸收该债务，因此不存在稳态。
+
+{ref}`exp-tax-cut` 中减税所产生的债务水平 $\bar D$ 远在此极限之内。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: ak2_ex2
+
+在 {ref}`exp-expen-cut` 中，政府在保持 $\tau_t = \hat\tau$ 的同时永久性地将其购买量减半，并积累资产。
+
+计算 $t=0$ 时代表性老年人的消费，以及在 $t = 0, 1, \ldots, 7$ 时为年轻人的各世代的终生效用
+
+$$
+U_t = C_{yt}^\beta C_{o,t+1}^{1-\beta}
+$$
+
+每个值均相对于其初始稳态值进行衡量。
+
+哪些世代获益，哪些世代受损，为什么？
+```
+
+```{solution-start} ak2_ex2
+:class: dropdown
+```
+
+```{code-cell} ipython3
+G_seq_ex = τ_hat * 0.5 * Y_hat * np.ones(T+1)
+τ_seq_ex = τ_hat * np.ones(T+1)
+quant_ex, price_ex, policy_ex = closed.simulate(T, init_ss,
+                                                τ_pol=τ_seq_ex,
+                                                G_pol=G_seq_ex)
+
+U = lambda Cy, Co: Cy ** β * Co ** (1 - β)
+U_hat = U(Cy_hat, Co_hat)
+
+print(f"initial old: Co_0 = {quant_ex[0, 3]:.5f}, "
+      f"steady state Co_hat = {Co_hat:.5f}\n")
+print(f"{'cohort young at t':>18}  {'Cy':>7}  {'Co next':>8}  {'r next':>7}  {'U/U_hat - 1':>12}")
+for t in range(8):
+    gain = U(quant_ex[t, 2], quant_ex[t+1, 3]) / U_hat - 1
+    print(f"{t:>18}  {quant_ex[t, 2]:>7.4f}  {quant_ex[t+1, 3]:>8.4f}"
+          f"  {price_ex[t+1, 1]:>7.4f}  {gain:>11.2%}")
+```
+
+在 $t=0$ 时代表性老年人完全不受影响，连最后一位数字都不变。
+
+该人的消费为 $(1 + r_0(1-\tau_0))(K_0 + D_0)$，而该政策没有改变 $K_0$、$r_0$、$\tau_0$ 或 $D_0$ 中的任何一个。
+
+在 $t=0$ 和 $t=1$ 时为年轻人的世代，其终生效用分别损失了约 $3.4$ 和 $1.7$ 个百分点。
+
+他们从几乎没有因该政策而增加的工资中进行储蓄，并获得了由不断上升的资本存量所带来的低得多的利率，$r$ 从 $1.01$ 降至 $0.86$，再降至 $0.67$。
+
+从 $t=2$ 开始，每一代都获益，先是 $4.6$ 个百分点，之后获益持续增加，因为从那时起工资的增长超过了利率的下降。
+
+这正是该政策将财富从早期世代重新分配给后期世代的意义所在。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: ak2_ex3
+
+本练习使用一次性总付税来研究**稳态**下的现收现付社会保障体系，以补充 {ref}`exp-social-security` 中计算的过渡过程。
+
+设对所有 $t$，$\delta_{yt} = -\delta_{ot} = d$，且 $D_t = 0$，$G_t = \hat G$。
+
+1. 利用 {eq}`eq:optsavingsplan` 证明
+
+$$
+A_{t+1} = (1-\beta)\left[(1-\tau_t) W_t - d\right] - \beta \frac{d}{1 + r_{t+1}(1-\tau_{t+1})}
+$$
+
+2. 使用类 `AK2`，针对 $d \in \{0,\ 0.05 \hat C_y,\ 0.1 \hat C_y,\ 0.2 \hat C_y\}$ 计算新的稳态，报告过渡结束时的 $K$、$r$、$\tau$、$C_y$ 和 $C_o$。
+
+3. 该转移支付方案是逐期平衡的。那么为什么它仍然会在稳态下降低两种消费？
+```
+
+```{solution-start} ak2_ex3
+:class: dropdown
+```
+
+*第1部分。* 将 $\delta_{yt} = d$ 和 $\delta_{o,t+1} = -d$ 代入 {eq}`eq:optsavingsplan`。
+
+*第2部分。*
+
+```{code-cell} ipython3
+D_pol_ex = np.zeros(T+2)
+G_pol_ex = np.ones(T+2) * G_hat
+
+print(f"{'d / Cy_hat':>10}  {'K':>8}  {'r':>7}  {'τ':>7}  {'Cy':>7}  {'Co':>7}")
+for frac in [0.0, 0.05, 0.1, 0.2]:
+    d = frac * Cy_hat
+    δy_ex, δo_ex = np.ones(T+2) * d, -np.ones(T+2) * d
+    q_ex, p_ex, pol_ex = ak2.simulate(T, init_ss, δy_ex, δo_ex,
+                                      D_pol=D_pol_ex, G_pol=G_pol_ex)
+    print(f"{frac:>10.2f}  {q_ex[T, 0]:>8.5f}  {p_ex[T, 1]:>7.4f}"
+          f"  {pol_ex[T, 0]:>7.5f}  {q_ex[T, 2]:>7.4f}  {q_ex[T, 3]:>7.4f}")
+```
+
+*第3部分。* 该体系通过对年轻人征税来支付给老年人，它所承诺的老年收入是年轻人不必为获得它而储蓄的部分。
+
+第1部分储蓄规则中的两项都随 $d$ 的增加而减少：年轻人的税后收入减少了，并且老年时获得转移支付的前景降低了他们希望用剩余收入进行的储蓄。
+
+储蓄的减少意味着资本存量的降低，这会压低工资并推高利率。
+
+较低的产出随后需要更高的统一税率 $\tau$ 来支付不变的购买量 $\hat G$，这进一步压低了储蓄。
+
+```{solution-end}
+```
