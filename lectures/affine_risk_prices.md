@@ -32,6 +32,8 @@ translation:
     Distorted beliefs: 扭曲信念
     Distorted beliefs::The subjective measure: 主观测度
     Distorted beliefs::Pricing under distorted beliefs: 扭曲信念下的定价
+    Distorted beliefs::What bond prices can and cannot reveal: 债券价格能揭示什么，不能揭示什么
+    Distorted beliefs::A numerical illustration: 一个数值说明
     Concluding remarks: 结束语
 ---
 
@@ -60,7 +62,7 @@ $$
 m_{t+1} = \exp\left(-r_t - \frac{1}{2}\sigma_c^2 \gamma^2 - \gamma\sigma_c\varepsilon_{t+1}\right)
 $$
 
-其中 $r_t = \rho + \gamma\mu - \frac{1}{2}\sigma_c^2\gamma^2$。
+其中 $\rho$ 为时间偏好率，$\gamma$ 为相对风险厌恶系数，对数消费增长为 $g + \sigma_c \varepsilon_{t+1}$，且 $r_t = \rho + \gamma g - \frac{1}{2}\sigma_c^2\gamma^2$。
 
 该模型断言，对总消费增长的随机部分 $\sigma_c\varepsilon_{t+1}$ 的暴露是*唯一*被定价的风险，是各资产预期回报之间差异的唯一来源。
 
@@ -86,6 +88,10 @@ $$
 3. *风险中性概率*：定价方程的一种测度变换表示。
 4. *扭曲信念*：当行为主体持有系统性偏差的预测时，重新解释风险价格估计（{cite:t}`piazzesi2015trend`）；另见 {doc}`advanced:risk_aversion_or_mistaken_beliefs`。
 
+本讲座使用的对数正态定价工具也出现在 {doc}`markov_asset` 和 {doc}`hansen_singleton_1983` 中。
+
+测度变换的论证依赖于 {doc}`likelihood_ratio_process` 和 {doc}`divergence_measures` 中研究的那类似然比。
+
 我们从以下导入开始：
 
 ```{code-cell} ipython3
@@ -93,9 +99,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import namedtuple
 from numpy.linalg import eigvals
+from scipy.linalg import solve_discrete_lyapunov
+from scipy.stats import norm
 ```
 
 ## 模型
+
 
 ### 状态动态与短期利率
 
@@ -270,7 +279,16 @@ $$
 
 第二个方程表明，SDF 的条件标准差近似等于风险价格向量的大小，这是对整体**市场风险价格**的一种度量。
 
+这个近似来自一个精确公式：由于 $m_{t+1}$ 是条件对数正态的，
+
+$$
+\frac{\text{std}_t(m_{t+1})}{\mathbb{E}_t(m_{t+1})} = \sqrt{\exp(\lambda_t^\top\lambda_t) - 1}
+$$
+
+根据汉森-贾根纳森界 {cite}`Hansen_Jagannathan_1991`，该比率约束了每一种超额收益的条件夏普比率，因此 $\|\lambda_t\|$ 告诉我们夏普比率可以有多大。
+
 ## 对风险资产定价
+
 
 ### 对数正态回报
 
@@ -354,6 +372,70 @@ $\lambda_t$ 的每个分量对 $\varepsilon_{t+1}$ 的相应分量进行定价�
 
 对具有较大风险价格的风险分量有大量载荷的资产会获得相应较高的预期回报。
 
+```{exercise}
+:label: arp_ex3
+
+假设一个代表性行为人具有风险厌恶系数为 $\gamma$、贴现因子为 $\beta = e^{-\rho}$ 的 CRRA 效用，并且对数消费增长为 $\log(c_{t+1}/c_t) = g + \sigma_c^\top \varepsilon_{t+1}$，其中 $\sigma_c$ 是一个 $m \times 1$ 向量。
+
+1. 证明 $m_{t+1} = \beta (c_{t+1}/c_t)^{-\gamma}$ 具有 {eq}`eq_sdf` 的形式，且具有常数风险价格向量 $\lambda_t = \gamma \sigma_c$，并求出 $r_t$。
+2. 将资产 $j$ 上对数回报的条件夏普比率定义为 $(\nu_t(j) - r_t)/\|\alpha_t(j)\|$。利用 {eq}`eq_excess` 和柯西-施瓦茨不等式证明，该夏普比率的最大值为 $\|\lambda_t\|$，并且此最大值在暴露向量与 $\lambda_t$ 成比例的回报处取得。
+3. 假设 $\|\sigma_c\| = 0.02$（按年计），且某资产的年化夏普比率为 $0.4$。利用精确的界 $\sqrt{\exp(\lambda^\top\lambda) - 1} \geq 0.4$，计算与 CRRA 模型相符的最小 $\gamma$，并将其与一阶近似答案 $\gamma \geq 0.4 / 0.02$ 进行比较。
+```
+
+```{solution-start} arp_ex3
+:class: dropdown
+```
+
+*第 1 部分。* 取对数，
+
+$$
+\log m_{t+1} = -\rho - \gamma g - \gamma \sigma_c^\top \varepsilon_{t+1}
+$$
+
+将冲击项与 {eq}`eq_sdf` 相匹配，得到 $\lambda_t = \gamma \sigma_c$。
+
+将常数项相匹配，得到 $-r_t - \frac{1}{2}\gamma^2 \sigma_c^\top\sigma_c = -\rho - \gamma g$，因此
+
+$$
+r_t = \rho + \gamma g - \frac{1}{2}\gamma^2 \sigma_c^\top \sigma_c
+$$
+
+这就是概述中的 CRRA 模型，现在被写成 $\lambda_z = 0$ 时仿射模型的一个特例。
+
+*第 2 部分。* 由 {eq}`eq_excess`，夏普比率为 $\alpha_t(j)^\top\lambda_t / \|\alpha_t(j)\|$。
+
+柯西-施瓦茨不等式给出 $\alpha_t(j)^\top\lambda_t \leq \|\alpha_t(j)\| \, \|\lambda_t\|$，当且仅当 $\alpha_t(j)$ 是 $\lambda_t$ 的正倍数时取等号。
+
+下面的检验在许多随机暴露向量上求最大夏普比率。
+
+```{code-cell} ipython3
+rng = np.random.default_rng(1234)
+λ_example = np.array([0.3, 0.1])
+α_draws = rng.standard_normal((20_000, 2))
+sharpe = α_draws @ λ_example / np.linalg.norm(α_draws, axis=1)
+print(f"largest Sharpe ratio over draws: {sharpe.max():.5f}")
+print(f"||λ||:                           {np.linalg.norm(λ_example):.5f}")
+```
+
+*第 3 部分。*
+
+```{code-cell} ipython3
+σ_c_norm, target_sr = 0.02, 0.4
+λ_norm_required = np.sqrt(np.log(1 + target_sr**2))
+print(f"required ||λ|| (exact bound): {λ_norm_required:.4f}")
+print(f"implied γ (exact bound):      {λ_norm_required / σ_c_norm:.1f}")
+print(f"implied γ (first order):      {target_sr / σ_c_norm:.1f}")
+```
+
+无论哪种方式，CRRA 模型都需要一个接近 $20$ 的相对风险厌恶系数。
+
+这就是用本讲座的语言表述的股权溢价之谜。
+
+仿射模型通过将 $\lambda_t$ 视为待由资产回报估计的自由参数，而不是将其与消费增长绑定，从而回避了这一谜题。
+
+```{solution-end}
+```
+
 ## 收益率的仿射期限结构
 
 最重要的应用之一是 {cite:t}`AngPiazzesi2003` 研究的**仿射期限结构模型**。
@@ -409,7 +491,7 @@ p_t(n) = \exp \bigl(\bar A_n + \bar B_n^\top z_t\bigr)
 初始条件为 $\bar A_1 = -\delta_0$ 和 $\bar B_1 = -\delta_1$。
 
 ```{exercise}
-:label: arp_ex3
+:label: arp_ex4
 
 通过将猜想的债券价格 {eq}`eq_bondprice` 代入定价递归 {eq}`eq_bondrecur` 并匹配系数，推导黎卡提差分方程 {eq}`eq_riccati_a` 和 {eq}`eq_riccati_b`。
 
@@ -420,7 +502,7 @@ p_t(n) = \exp \bigl(\bar A_n + \bar B_n^\top z_t\bigr)
 $\varepsilon_{t+1}$ 表示，然后使用对数正态矩生成函数求条件期望。
 ```
 
-```{solution-start} arp_ex3
+```{solution-start} arp_ex4
 :class: dropdown
 ```
 
@@ -569,7 +651,7 @@ import matplotlib as mpl  # i18n
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"  # i18n
 mpl.font_manager.fontManager.addfont(FONTPATH)  # i18n
 mpl.rcParams['font.family'] = ['Source Han Serif SC', 'DejaVu Sans']  # i18n
-n_max_1f = 60
+n_max_1f = 200
 maturities_1f = np.arange(1, n_max_1f + 1)
 
 z_low  = np.array([-5.0])
@@ -612,7 +694,7 @@ ax.set_xlim(1, n_max_1f)
 
 ax2 = ax.twiny()
 ax2.set_xlim(ax.get_xlim())
-year_ticks = [4, 20, 40, 60]
+year_ticks = [4, 40, 80, 120, 160, 200]
 ax2.set_xticks(year_ticks)
 ax2.set_xticklabels([f"{t/4:.0f}y" for t in year_ticks])
 ax2.set_xlabel("期限（年）")
@@ -624,12 +706,17 @@ plt.show()
 当短期利率较低时，收益率曲线是
 向上倾斜的，而当短期利率较高时，它是向下倾斜的。
 
-所有三条曲线在长期限处收敛到同一个长期收益率 $y_\infty$，
-并且长期收益率位于平均短期利率
-$\delta_0$ 之上。
+所有三条曲线都趋近于同一个长期收益率 $y_\infty$，
+该长期收益率位于平均短期利率 $\delta_0$ 之上。
+
+这一趋近过程是缓慢的。
+
+由于 $\bar B_n$ 收敛到一个有限极限，状态通过 $\bar B_n^\top z_t / n$ 进入 $y_t(n)$，因此曲线之间的差距仅以 $1/n$ 的速率收窄。
+
+这就是为什么我们将期限绘制到 50 年：在 15 年时，三条曲线仍分布在约 3.5% 到 5.0% 之间，而在 50 年时，它们分布在约 4.1% 到 4.6% 之间。
 
 ````{exercise}
-:label: arp_ex4
+:label: arp_ex5
 
 证明长期收益率满足
 
@@ -648,11 +735,12 @@ y_\infty
 然后解释为什么在这种参数化下 $y_\infty > \delta_0$。
 
 *提示：* 使用 {eq}`eq_yield` 和黎卡提方程
-{eq}`eq_riccati_a`--{eq}`eq_riccati_b`。对于不等式，分别考虑
-每个被减去的项。
+{eq}`eq_riccati_a`--{eq}`eq_riccati_b`。
+
+对于不等式，分别考虑每个被减去的项。
 ````
 
-```{solution-start} arp_ex4
+```{solution-start} arp_ex5
 :class: dropdown
 ```
 
@@ -675,7 +763,9 @@ y_\infty
 
 这是来自詹森不等式的**凸性效应**，它将 $y_\infty$ 推低到 $\delta_0$ 以下。
 
-线性项 $\bar B_\infty^\top(\mu - C\lambda_0)$ 是负的，因为 $\bar B_\infty < 0$（由于 $\delta_1 > 0$）而 $\mu - C\lambda_0 > 0$（由于 $\lambda_0 < 0$）。减去这个负量将 $y_\infty$ 提升到 $\delta_0$ 之上。
+线性项 $\bar B_\infty^\top(\mu - C\lambda_0)$ 是负的，因为 $\bar B_\infty < 0$（由于 $\delta_1 > 0$）而 $\mu - C\lambda_0 > 0$（由于 $\lambda_0 < 0$）。
+
+减去这个负量将 $y_\infty$ 提升到 $\delta_0$ 之上。
 
 这是**风险溢价效应**：正的期限溢价将平均收益率曲线向上倾斜。
 
@@ -714,6 +804,21 @@ ax.legend(fontsize=11)
 plt.tight_layout()
 plt.show()
 ```
+
+由于 $r_t$ 是高斯状态的仿射函数，高斯仿射模型会给负的短期利率赋予正概率。
+
+在单因子模型的平稳分布下，$r_t$ 服从均值为 $\delta_0$、标准差为 $\delta_1 \sigma_z$ 的正态分布，这使我们能够计算出该概率。
+
+```{code-cell} ipython3
+σ_z = model_1f.C[0, 0] / np.sqrt(1 - model_1f.φ[0, 0]**2)
+σ_r = model_1f.δ_1[0] * σ_z
+print(f"r_t 的平稳标准差: {σ_r * 4 * 100:.2f}% 年化")
+print(f"P(r_t < 0):            {norm.cdf(-model_1f.δ_0 / σ_r):.2e}")
+```
+
+在此校准下该概率很小，但在拟合低利率时期的校准中可能会相当可观。
+
+诸如 {cite:t}`CIR1985` 的平方根模型和诸如 {cite:t}`Black1995` 的影子利率模型，是保持名义利率非负的两种方法，但代价是牺牲了高斯设定所带来的一些可处理性。
 
 ### 双因子模型
 
@@ -830,7 +935,17 @@ plt.tight_layout()
 plt.show()
 ```
 
-我们可以看到，水平因子在长期限处占主导地位。
+右图显示了不同期限的收益率对两个因子的响应方式。
+
+水平载荷 $B_{n,1}$ 随期限逐渐下降，从一季度时的 $0.002$ 降到 15 年时约为其一半，因此持续性因子会影响所有期限的收益率。
+
+斜率载荷 $B_{n,2}$ 从 $0.001$ 开始，迅速衰减，并在约 30 季度之后转为略微负值。
+
+这一符号变化反映了非对角元素 $\phi_{12} = -0.03$：较高的 $z_{2t}$ 会提高当前的短期利率，但会压低水平因子，进而压低未来的短期利率。
+
+因此，水平因子在长期限处主导收益率，而斜率因子主要在短端起作用。
+
+与单因子情形一样，左图中的曲线在 60 季度时仍在趋近它们共同的长期收益率。
 
 ## 风险溢价
 
@@ -846,6 +961,16 @@ $$
 
 期限溢价等于债券冲击暴露 $\bar B_n^\top C$
 与风险价格向量 $\lambda_t$ 的内积。
+
+该公式以预期总回报的对数来度量溢价。
+
+预期对数超额回报由于詹森不等式项而更小：
+
+$$
+\mathbb{E}_t \log R_{t+1}^{(n+1)} - r_t = \bar B_n^\top C \lambda_t - \tfrac{1}{2}\bar B_n^\top CC^\top \bar B_n
+$$
+
+只有第一项依赖于状态，因此这两种度量之间的差异是一个特定于期限的常数，不影响期限溢价随时间的变化方式。
 
 由于期限溢价等于 $\bar B_n^\top C \lambda_t$，其符号
 取决于*当前*风险价格向量 $\lambda_t$，只要 $\lambda_z \neq 0$，
@@ -868,12 +993,14 @@ $m_{t+1}$ 对 $\varepsilon_{t+1}$ 正向载荷，即在利率上升
 从代数上看，$\bar B_n < 0$ 和 $C\lambda_t < 0$ 结合
 得到 $\bar B_n^\top C \lambda_t > 0$。
 
-然而，在其他状态下，$\lambda_t$ 可能会改变符号（例如，在我们的双状态
-校准的低利率状态下，第一个分量翻转），长期债券期限溢价
-在较长期限处可能变为负值。
+然而，在其他状态下，$\lambda_t$ 的分量可能会改变符号。
+
+当 $\lambda_z < 0$ 时，水平因子 $z_{1t}$ 的低值会将 $\lambda_t$ 的第一个分量推至零以上。
+
+由于长期债券主要承载水平冲击，因此其期限溢价随之转为负值。
 
 ```{exercise}
-:label: arp_ex5
+:label: arp_ex6
 
 通过计算 $(n+1)$ 期债券的单期持有回报并识别其冲击载荷，推导上面的期限溢价公式。
 
@@ -883,7 +1010,7 @@ $\log p_t(n) = \bar A_n + \bar B_n^\top z_t$，代入状态
 {eq}`eq_riccati_a`--{eq}`eq_riccati_b` 进行简化。
 ```
 
-```{solution-start} arp_ex5
+```{solution-start} arp_ex6
 :class: dropdown
 ```
 
@@ -957,7 +1084,12 @@ mystnb:
     name: fig-term-premiums-2f
 ---
 def term_premiums(model, z, n_max):
-    """计算期限 1 到 n_max 的期限溢价。"""
+    """
+    计算期限为 1, ..., n_max 的债券的单期期限溢价。
+
+    一份 n 期债券持有一期后变为 (n-1) 期债券，
+    因此其溢价为 B_bar_{n-1}^⊤ C λ_t（对 n = 1 则为零）。
+    """
     A_bar, B_bar = bond_coefficients(model, n_max + 1)
     λ_t = risk_prices(model, z)
     return np.array([B_bar[n-1] @ model.C @ λ_t
@@ -1020,7 +1152,106 @@ plt.tight_layout()
 plt.show()
 ```
 
-我们看到，在低利率状态下期限溢价在所有期限都为正，但在高利率状态下的较长期限处变为负值。
+左图显示，期限溢价的符号取决于状态。
+
+在高利率状态下，$\lambda_t \approx (-0.025, 0.001)$，期限溢价为正且随期限延长而上升，在 15 年期时达到约每年 0.6%。
+
+在低利率状态下，$\lambda_t$ 的第一个分量已转为正值，$\lambda_t \approx (0.005, -0.011)$，期限溢价在每个期限都为负，在 15 年期时降至约每年 $-0.15$%。
+
+处于低利率状态的投资者接受长期债券相较于滚动短期债券更低的预期回报，因为长期债券在他们最看重的状态下能带来良好回报。
+
+右图分解了 $z_t = 0$ 时的期限溢价，此时 $\lambda_t$ 的两个分量均为负。
+
+在长期限处，水平因子几乎贡献了全部的溢价。
+
+斜率贡献很小，并在约 30 个季度之后转为负值，这与前面所示斜率载荷的符号变化相呼应。
+
+```{exercise}
+:label: arp_ex7
+
+预期假说认为，长期债券的预期超额回报在时间上是恒定的，因此无法通过收益率利差来预测。
+
+1. 对双因子模型 `model_2f` 模拟 $T = 200{,}000$ 个季度。
+   将 20 期债券的单季度超额持有回报
+   $\log p_{t+1}(19) - \log p_t(20) - r_t$
+   对常数项和利差 $y_t(20) - r_t$ 进行回归。
+2. 使用 $\bar B_n$ 和 $z_t$ 的平稳协方差矩阵 $\Sigma_z$，计算该模型所隐含的总体回归斜率，并与你的估计值进行比较。
+3. 令 $\lambda_z = 0$，重复上述两个步骤，并解释结果。
+4. 在美国数据中，{cite:t}`FamaBliss1987` 和 {cite:t}`CampbellShiller1991` 发现，高利差预示着长期债券*高*的超额回报。
+   `model_2f` 能否再现这一模式？如果将 $\lambda_z$ 的符号翻转，会发生什么？
+```
+
+```{solution-start} arp_ex7
+:class: dropdown
+```
+
+根据 {eq}`eq_excess` 和期限溢价公式，20 期债券的对数超额持有回报为
+
+$$
+x_{t+1} = \bar B_{19}^\top C \lambda_t - \tfrac{1}{2}\bar B_{19}^\top CC^\top \bar B_{19} + \bar B_{19}^\top C \varepsilon_{t+1}
+$$
+
+其条件均值为一个常数加上 $a^\top z_t$，其中 $a = \lambda_z^\top C^\top \bar B_{19}$。
+
+利差为 $s_t = y_t(20) - r_t = \text{常数} + b^\top z_t$，其中 $b = -\bar B_{20}/20 - \delta_1$。
+
+由于 $\varepsilon_{t+1}$ 与 $z_t$ 正交，总体斜率为
+
+$$
+\beta = \frac{a^\top \Sigma_z b}{b^\top \Sigma_z b}
+$$
+
+其中 $\Sigma_z$ 满足 $\Sigma_z = \phi \Sigma_z \phi^\top + CC^\top$。
+
+```{code-cell} ipython3
+def eh_regression(model, n=20, T=200_000, seed=1):
+    """超额回报对收益率利差回归的 OLS 斜率和总体斜率。"""
+    A_bar, B_bar = bond_coefficients(model, n)
+    z_bar = np.linalg.solve(np.eye(model.m) - model.φ, model.μ)
+    Z = simulate(model, z_bar, T, rng=np.random.default_rng(seed))
+
+    r = model.δ_0 + Z[:-1] @ model.δ_1
+    log_p = lambda k, z: A_bar[k] + z @ B_bar[k]
+    excess = log_p(n - 1, Z[1:]) - log_p(n, Z[:-1]) - r
+    spread = -log_p(n, Z[:-1]) / n - r
+
+    X = np.column_stack([np.ones(T), spread])
+    coef = np.linalg.lstsq(X, excess, rcond=None)[0]
+    resid = excess - X @ coef
+    se = np.sqrt(resid.var() / (T * spread.var()))
+
+    Σ_z = solve_discrete_lyapunov(model.φ, model.C @ model.C.T)
+    a = model.λ_z.T @ model.C.T @ B_bar[n - 1]
+    b = -B_bar[n] / n - model.δ_1
+    β_pop = (a @ Σ_z @ b) / (b @ Σ_z @ b)
+    return coef[1], se, β_pop
+
+cases = {
+    "λ_z 按校准值":  λ_z_2,
+    "λ_z = 0":       np.zeros((2, 2)),
+    "λ_z 符号翻转":  -λ_z_2,
+}
+print(f"{'情形':>20}  {'OLS 斜率':>10}  {'标准误':>7}  {'总体斜率':>10}")
+for label, lz in cases.items():
+    mod = create_affine_model(μ_2, φ_2, C_2, δ_0_2, δ_1_2, λ_0_2, lz)
+    b_ols, se, b_pop = eh_regression(mod)
+    print(f"{label:>20}  {b_ols:>10.4f}  {se:>7.4f}  {b_pop:>10.4f}")
+```
+
+在校准的 $\lambda_z$ 下，OLS 斜率接近约 $-0.17$ 的总体斜率，且与零相差多个标准误，因此在模拟数据中预期假说不成立。
+
+当 $\lambda_z = 0$ 时，向量 $a$ 为零，因此预期超额回报是恒定的，总体斜率恰好为零。
+
+此时 OLS 估计值在抽样误差范围内接近零。
+
+预期假说在仿射模型中成立，当且仅当风险价格不随状态变化。
+
+校准模型在符号上与 Fama-Bliss 和 Campbell-Shiller 的发现相反：高利差预示着低的超额回报。
+
+翻转 $\lambda_z$ 的符号会反转斜率的符号，这表明该回归证据所反映的是 $\lambda_z$ 的信息，而不仅仅是平均期限溢价的大小。
+
+```{solution-end}
+```
 
 ## 风险中性概率
 
@@ -1057,7 +1288,17 @@ $$
 这是一个均值为 1 的对数正态随机变量，因此它是一个有效的
 似然比，可用于扭曲 $z_{t+1}$ 的条件分布。
 
-将物理条件分布乘以这个似然比
+为了了解这种扭曲对冲击的影响，将 $\varepsilon_{t+1}$ 的标准正态密度乘以 {eq}`eq_rn_ratio`：
+
+$$
+(2\pi)^{-m/2}\exp\!\left(-\tfrac{1}{2}\varepsilon^\top\varepsilon\right)
+\exp\!\left(-\tfrac{1}{2}\lambda_t^\top\lambda_t - \lambda_t^\top\varepsilon\right)
+= (2\pi)^{-m/2}\exp\!\left(-\tfrac{1}{2}(\varepsilon + \lambda_t)^\top(\varepsilon + \lambda_t)\right)
+$$
+
+因此在 $Q$ 下冲击为 $\varepsilon_{t+1} \sim \mathcal{N}(-\lambda_t, I)$：这种扭曲将其均值平移了 $-\lambda_t$，而协方差矩阵保持不变。
+
+将 $\varepsilon_{t+1} = -\lambda_t + \varepsilon^Q_{t+1}$ 代入 {eq}`eq_var` 表明，将物理条件分布乘以这个似然比
 将其转换为**风险中性条件分布**
 
 $$
@@ -1081,6 +1322,87 @@ $\mu + \phi z_t$ 扭曲为 $\mu - C\lambda_0 + (\phi - C\lambda_z)z_t$。
 （状态依赖）编码了定价方程
 $\mathbb{E}^P_t m_{t+1} R_{j,t+1} = 1$ 如何针对
 对风险 $\varepsilon_{t+1}$ 的暴露调整预期回报。
+
+```{exercise}
+:label: arp_ex8
+
+风险中性测度和物理测度有多大差异？
+
+一个自然的度量是相对熵（Kullback–Leibler 散度），在 {doc}`divergence_measures` 中有所讨论。
+
+1. 证明 $Q$ 相对于 $P$ 的条件相对熵 $\mathbb{E}^Q_t\left[\log(\xi^Q_{t+1}/\xi^Q_t)\right]$，以及 $P$ 相对于 $Q$ 的条件相对熵 $\mathbb{E}^P_t\left[-\log(\xi^Q_{t+1}/\xi^Q_t)\right]$，两者都等于 $\tfrac{1}{2}\lambda_t^\top\lambda_t$。
+2. 假设 $z_0$ 是在 $P$ 下从 $z_t$ 的平稳分布中抽取的。证明对于样本 $z_1, \ldots, z_T$，$P$ 相对于 $Q$ 的相对熵等于 $T$ 乘以
+   $$
+   \tfrac{1}{2}\left(\bar\lambda^\top\bar\lambda + \operatorname{tr}(\lambda_z \Sigma_z \lambda_z^\top)\right)
+   $$
+   其中 $\bar z = (I - \phi)^{-1}\mu$，$\bar\lambda = \lambda_0 + \lambda_z \bar z$，且 $\Sigma_z$ 满足 $\Sigma_z = \phi\Sigma_z\phi^\top + CC^\top$。
+3. 对 `model_2f` 计算此公式的值，通过模拟进行验证，并使用平斯克不等式来界定基于 100 年季度 $z_t$ 数据的任何检验能多好地区分 $P$ 和 $Q$。
+```
+
+```{solution-start} arp_ex8
+:class: dropdown
+```
+
+*第 1 部分。* 我们在上面表明，在 $Q$ 下 $\varepsilon_{t+1} \sim \mathcal{N}(-\lambda_t, I)$，而在 $P$ 下 $\varepsilon_{t+1} \sim \mathcal{N}(0, I)$。
+
+因此
+
+$$
+\mathbb{E}^Q_t\left[-\tfrac{1}{2}\lambda_t^\top\lambda_t - \lambda_t^\top\varepsilon_{t+1}\right]
+= -\tfrac{1}{2}\lambda_t^\top\lambda_t + \lambda_t^\top\lambda_t
+= \tfrac{1}{2}\lambda_t^\top\lambda_t
+$$
+
+以及
+
+$$
+\mathbb{E}^P_t\left[\tfrac{1}{2}\lambda_t^\top\lambda_t + \lambda_t^\top\varepsilon_{t+1}\right]
+= \tfrac{1}{2}\lambda_t^\top\lambda_t
+$$
+
+这两个散度相同，因为这两个条件分布是具有相同协方差矩阵的正态分布。
+
+*第 2 部分。* 当 $C$ 可逆时，路径 $z_1, \ldots, z_T$ 和冲击 $\varepsilon_1, \ldots, \varepsilon_T$ 在给定 $z_0$ 的情况下相互确定。
+
+因此路径的对数似然比是各单期对数似然比之和，根据迭代期望定律，其在 $P$ 下的期望为 $\sum_{t=0}^{T-1} \mathbb{E}^P\left[\tfrac{1}{2}\lambda_t^\top\lambda_t\right]$。
+
+在平稳分布下，$\lambda_t = \bar\lambda + \lambda_z(z_t - \bar z)$，其中 $\mathbb{E}(z_t - \bar z) = 0$ 且 $\text{Var}(z_t) = \Sigma_z$。
+
+因此对每个 $t$ 都有 $\mathbb{E}(\lambda_t^\top\lambda_t) = \bar\lambda^\top\bar\lambda + \operatorname{tr}(\lambda_z\Sigma_z\lambda_z^\top)$，这就得到了该公式。
+
+*第 3 部分。* 平斯克不等式指出，两个分布之间的全变差距离最多为 $\sqrt{D/2}$，其中 $D$ 是它们的相对熵。
+
+在 $P$ 和 $Q$ 具有相等先验概率的情况下，选择错误模型的最小可实现概率为 $(1 - \text{TV})/2$，因此它至少为 $(1 - \sqrt{D/2})/2$。
+
+```{code-cell} ipython3
+z_bar_2 = np.linalg.solve(np.eye(2) - model_2f.φ, model_2f.μ)
+Σ_z_2 = solve_discrete_lyapunov(model_2f.φ, model_2f.C @ model_2f.C.T)
+λ_bar_2 = risk_prices(model_2f, z_bar_2)
+entropy = 0.5 * (λ_bar_2 @ λ_bar_2
+                 + np.trace(model_2f.λ_z @ Σ_z_2 @ model_2f.λ_z.T))
+
+Z_sim = simulate(model_2f, z_bar_2, 200_000, rng=np.random.default_rng(7))
+Λ_sim = model_2f.λ_0 + Z_sim @ model_2f.λ_z.T
+entropy_sim = 0.5 * np.mean(np.sum(Λ_sim**2, axis=1))
+
+T_years = 100
+D = 4 * T_years * entropy
+print(f"每季度相对熵（公式）：    {entropy:.6f}")
+print(f"每季度相对熵（模拟）：    {entropy_sim:.6f}")
+print(f"{T_years} 年的相对熵：           {D:.4f}")
+print(f"错误概率的下界：          {(1 - np.sqrt(D / 2)) / 2:.3f}")
+```
+
+即使有一个世纪的季度数据，任何检验也无法将选择错误模型的平均概率降低到约 37% 以下。
+
+然而，这两个难以区分的测度之间的差距，正是上文所绘制的期限溢价的来源。
+
+因此，仅靠状态的时间序列数据几乎无法揭示风险价格，这就是为什么对 $\lambda_0$ 和 $\lambda_z$ 的估计在很大程度上依赖于债券收益率的横截面数据。
+
+这与 {doc}`advanced:doubts_or_variability` 中的检测误差计算相呼应，在那里，合理程度的模型不确定性也是以相同方式校准的。
+
+```{solution-end}
+```
 
 ### 资产定价简述
 
@@ -1124,7 +1446,7 @@ $$
 
 ```{code-cell} ipython3
 def bond_price_mc_Q(model, z0, n, n_sims=50_000, rng=None):
-    """通过 Q 下的蒙特卡洛估计 p_t(n)。"""
+    """通过 Q 下的蒙特卡洛估计 p_t(n)；返回估计值和标准误。"""
     if rng is None:
         rng = np.random.default_rng(0)
     m = len(z0)
@@ -1134,28 +1456,34 @@ def bond_price_mc_Q(model, z0, n, n_sims=50_000, rng=None):
         disc += model.δ_0 + Z @ model.δ_1
         ε = rng.standard_normal((n_sims, m))
         Z = model.μ_rn + Z @ model.φ_rn.T + ε @ model.C.T
-    return np.mean(np.exp(-disc))
+    payoffs = np.exp(-disc)
+    return payoffs.mean(), payoffs.std() / np.sqrt(n_sims)
 
 z_test = np.array([0.01, 0.005])
 p_analytic = bond_prices(model_2f, z_test, 40)
 
 rng = np.random.default_rng(0)
 maturities_check = [4, 12, 24, 40]
-mc_prices = [bond_price_mc_Q(model_2f, z_test, n, n_sims=100_000, rng=rng)
-             for n in maturities_check]
+mc_results = [bond_price_mc_Q(model_2f, z_test, n, n_sims=100_000, rng=rng)
+              for n in maturities_check]
 
-header = (f"{'期限':>10}  {'解析解':>12}"
-          f"  {'蒙特卡洛':>12}  {'误差 (bps)':>12}")
+header = (f"{'期限':>10}  {'解析解':>10}  {'蒙特卡洛':>11}"
+          f"  {'误差 (bps)':>11}  {'标准误 (bps)':>10}  {'z 值':>8}")
 print(header)
-print("-" * 52)
-for n, mc in zip(maturities_check, mc_prices):
+print("-" * len(header))
+for n, (mc, se) in zip(maturities_check, mc_results):
     analytic = p_analytic[n - 1]
-    error_bp = abs(analytic - mc) / analytic * 10_000
-    print(f"{n:>10}  {analytic:>12.6f}  {mc:>12.6f}  {error_bp:>12.2f}")
+    error_bp = (mc - analytic) / analytic * 10_000
+    se_bp = se / analytic * 10_000
+    print(f"{n:>10}  {analytic:>10.6f}  {mc:>11.6f}"
+          f"  {error_bp:>11.2f}  {se_bp:>10.2f}  {error_bp / se_bp:>8.2f}")
 ```
 
-解析债券价格和蒙特卡洛债券价格紧密一致，验证了
-黎卡提递归 {eq}`eq_riccati_a`–{eq}`eq_riccati_b`。
+该表列出了每个蒙特卡洛误差及其标准误，两者都以解析价格的基点表示。
+
+所有 z 值都在 $\pm 2$ 范围内，因此解析价格与模拟价格之间的差异与纯粹的模拟噪声是一致的。
+
+这验证了黎卡提递归 {eq}`eq_riccati_a`–{eq}`eq_riccati_b`。
 
 ## 扭曲信念
 
@@ -1222,25 +1550,39 @@ $$
 $S$ 测度下的条件期望，$m^\star_{t+1}$ 是持有这些信念的
 行为主体的 SDF。
 
-具体来说，行为主体的 SDF 为
+为了表示行为主体的 SDF，定义**主观冲击**
 
 $$
-m^\star_{t+1} = \exp\!\left(-r^\star_t
+\varepsilon^S_{t+1} = \varepsilon_{t+1} + \kappa_t
+$$
+
+由我们用于风险中性测度的同样论证，在 $S$ 下 $\varepsilon^S_{t+1} \sim \mathcal{N}(0, I)$，状态演化为
+
+$$
+z_{t+1} = (\mu - C\kappa_0) + (\phi - C\kappa_z) z_t + C\varepsilon^S_{t+1}
+$$
+
+行为主体的 SDF 在这些主观冲击下是指数二次形式的：
+
+$$
+m^\star_{t+1} = \exp\!\left(-r_t
   - \tfrac{1}{2}\lambda_t^{\star\top}\lambda^\star_t
-  - \lambda_t^{\star\top}\varepsilon_{t+1}\right)
+  - \lambda_t^{\star\top}\varepsilon^S_{t+1}\right)
 $$
 
-其中 $r^\star_t$ 是短期利率，$\lambda^\star_t$ 是行为主体的
+其中 $\lambda^\star_t = \lambda^\star_0 + \lambda^\star_z z_t$ 是行为主体的
 风险价格向量。
+
+因为 $\mathbb{E}^S_t m^\star_{t+1} = \exp(-r_t)$，这个 SDF 中的短期利率就是我们观测到的市场短期利率 $r_t$。
 
 使用 {eq}`eq_srat` 转换到物理测度，主观
 定价方程变为
 
 $$
 \mathbb{E}^P_t\!\left[
-  \exp\!\left(-r^\star_t
+  \exp\!\left(-r_t
     - \tfrac{1}{2}\lambda_t^{\star\top}\lambda^\star_t
-    - \lambda_t^{\star\top}\varepsilon_{t+1}
+    - \lambda_t^{\star\top}(\varepsilon_{t+1} + \kappa_t)
   \right)
   \exp\!\left(
     - \tfrac{1}{2}\kappa_t^\top\kappa_t
@@ -1250,7 +1592,8 @@ $$
 \right] = 1
 $$
 
-合并两个指数得到
+合并指数中的常数项为
+$-r_t - \tfrac{1}{2}\lambda_t^{\star\top}\lambda^\star_t - \lambda_t^{\star\top}\kappa_t - \tfrac{1}{2}\kappa_t^\top\kappa_t = -r_t - \tfrac{1}{2}(\lambda^\star_t + \kappa_t)^\top(\lambda^\star_t + \kappa_t)$，因此两个指数恰好合并为
 
 $$
 \mathbb{E}^P_t\!\left[
@@ -1260,8 +1603,6 @@ $$
   \right) R_{j,t+1}
 \right] = 1
 $$
-
-其中 $r_t = r^\star_t - \lambda_t^{\star\top}\kappa_t$。
 
 将其与理性预期计量经济学家的定价
 方程进行比较
@@ -1276,17 +1617,44 @@ $$
 $$
 
 我们看到，计量经济学家解释为 $\lambda_t$ 的实际上是
-$\lambda^\star_t + \kappa_t$。
 
-因为计量经济学家的估计部分反映了主观信念中的
-系统性扭曲，在这种校准中它们可能高估了代表性
-行为主体真实的风险价格 $\lambda^\star_t$。
+$$
+\hat\lambda_t = \lambda^\star_t + \kappa_t
+$$
 
-下面我们构造一个数值例子来说明这一点。
+### 债券价格能揭示什么，不能揭示什么
 
-我们保持与上面相同的物理状态动态和短期利率设定，但选择一个单独的真实风险价格过程 $(\lambda_t^\star)$ 和一个扭曲信念计量经济学家过程 $(\hat\lambda_t)$ 来说明这一分解。
+这一分解在风险中性测度方面有一个简单的解释。
 
-然后我们设定主观参数 $\check\mu, \check\phi$ 以匹配
+从物理测度出发，计量经济学家通过用 $\hat\lambda_t$ 扭曲达到 $Q$：
+
+$$
+\mu - C\hat\lambda_0 = (\mu - C\kappa_0) - C\lambda^\star_0,
+\qquad
+\phi - C\hat\lambda_z = (\phi - C\kappa_z) - C\lambda^\star_z
+$$
+
+右侧表明，行为主体通过用 $\lambda^\star_t$ 扭曲主观测度也能达到*同一个* $Q$。
+
+由于债券价格仅取决于 $Q$，计量经济学家与行为主体对每一个债券价格的看法都一致。
+
+他们不一致的地方在于预期回报。
+
+计量经济学家测得的期限溢价是 $\bar B_n^\top C\hat\lambda_t$，而行为主体预期的溢价是 $\bar B_n^\top C\lambda^\star_t$。
+
+两者之差 $\bar B_n^\top C\kappa_t$，是测得的超额回报中行为主体并不预期、因而表现为可预测预测误差的部分。
+
+债券价格与 $z_t$ 的数据能识别出 $\hat\lambda_t$，但无法将其拆分为 $\lambda^\star_t$ 和 $\kappa_t$。
+
+拆分它需要关于信念的直接证据，例如 {cite:t}`piazzesi2015trend` 所使用的调查预测。
+
+同样的识别问题也是 {doc}`ross_recovery` 和 {doc}`misspecified_recovery` 的核心内容，这两讲探讨了仅凭风险中性价格何时能够揭示主观信念。
+
+### 一个数值说明
+
+我们保持与上面相同的物理状态动态和短期利率设定，选定行为主体的风险价格 $\lambda^\star_t$，并推导出计量经济学家的风险价格 $\hat\lambda_t = \lambda^\star_t + \kappa_t$。
+
+我们设定主观参数 $\check\mu, \check\phi$ 以匹配
 {cite:t}`piazzesi2015trend` 中的证据，即专家的行为就好像收益率曲线的水平和斜率比物理测度下更持续。
 
 具体来说，我们使用
@@ -1303,43 +1671,63 @@ $$
 φ_S = np.array([[0.985, -0.025], [0.00, 0.94]])
 μ_S = np.array([0.005, 0.0])
 
+# κ_t = κ_0 + κ_z z_t 将 P 扭曲为 S
 κ_z = np.linalg.solve(C_2, φ_P - φ_S)
 κ_0 = np.linalg.solve(C_2, μ_P - μ_S)
 
+# 行为主体的风险价格，为主观冲击 ε^S 定价
 λ_star_0 = np.array([-0.03, -0.015])
 λ_star_z = np.array([[-0.006, 0.0], [0.0, -0.004]])
 
+# 计量经济学家的风险价格，为物理冲击 ε 定价
 λ_hat_0 = λ_star_0 + κ_0
 λ_hat_z = λ_star_z + κ_z
 ```
+
+行为主体的模型将主观动态与 $\lambda^\star_t$ 配对，而计量经济学家的模型将物理动态与 $\hat\lambda_t$ 配对。
+
+我们首先确认这两个模型意味着相同的风险中性动态，从而具有相同的债券价格。
+
+```{code-cell} ipython3
+# 行为主体：主观动态，风险价格 λ*
+model_subj = create_affine_model(
+    μ_S, φ_S, C_2, δ_0_2, δ_1_2, λ_star_0, λ_star_z)
+# 计量经济学家：物理动态，风险价格 λ̂ = λ* + κ
+model_econ = create_affine_model(
+    μ_P, φ_P, C_2, δ_0_2, δ_1_2, λ_hat_0, λ_hat_z)
+
+print("相同的风险中性动态：",
+      np.allclose(model_subj.φ_rn, model_econ.φ_rn)
+      and np.allclose(model_subj.μ_rn, model_econ.μ_rn))
+print("在 z = (1, -1) 处相同的收益率：",
+      np.allclose(compute_yields(model_subj, np.array([1.0, -1.0]), 60),
+                  compute_yields(model_econ, np.array([1.0, -1.0]), 60)))
+```
+
+现在我们比较行为主体预期的期限溢价与计量经济学家测得的期限溢价。
 
 ```{code-cell} ipython3
 ---
 mystnb:
   figure:
-    caption: 真实与扭曲信念期限溢价及高估比率
+    caption: 主观与测得期限溢价及高估比率
     name: fig-distorted-beliefs
 ---
-model_true = create_affine_model(
-    μ_2, φ_2, C_2, δ_0_2, δ_1_2, λ_star_0, λ_star_z)
-model_econ = create_affine_model(
-    μ_2, φ_2, C_2, δ_0_2, δ_1_2, λ_hat_0, λ_hat_z)
-
 z_ref = np.array([0.0, 0.0])
 n_max_db = 60
 maturities_db = np.arange(1, n_max_db + 1)
 
-tp_true = term_premiums(model_true, z_ref, n_max_db) * 4 * 100
+tp_subj = term_premiums(model_subj, z_ref, n_max_db) * 4 * 100
 tp_econ = term_premiums(model_econ, z_ref, n_max_db) * 4 * 100
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5.5))
 
-ax1.plot(maturities_db, tp_true, lw=2.2,
-         label=r"真实风险价格 $\lambda^\star_t$")
+ax1.plot(maturities_db, tp_subj, lw=2.2,
+         label=r"行为主体预期溢价，$\lambda^\star_t$")
 line_econ, = ax1.plot(maturities_db, tp_econ, lw=2.2, ls="--",
-         label=(r"RE 计量经济学家"
+         label=(r"RE 计量经济学家测得，"
                 r" $\hat\lambda_t = \lambda^\star_t + \kappa_t$"))
-ax1.fill_between(maturities_db, tp_true, tp_econ,
+ax1.fill_between(maturities_db, tp_subj, tp_econ,
                  alpha=0.15, color=line_econ.get_color(),
                  label="信念扭曲成分")
 ax1.axhline(0, color="black", lw=0.8, ls=":")
@@ -1348,9 +1736,9 @@ ax1.set_ylabel("期限溢价（年化 %）")
 ax1.legend(fontsize=9.5)
 ax1.set_xlim(1, n_max_db)
 
-mask = np.abs(tp_true) > 1e-8
-ratio = np.full_like(tp_true, np.nan)
-ratio[mask] = tp_econ[mask] / tp_true[mask]
+mask = np.abs(tp_subj) > 1e-8
+ratio = np.full_like(tp_subj, np.nan)
+ratio[mask] = tp_econ[mask] / tp_subj[mask]
 
 ax2.plot(maturities_db[mask], ratio[mask], lw=2.2)
 ax2.axhline(1, color="black", lw=0.8, ls="--",
@@ -1369,14 +1757,35 @@ for ax in (ax1, ax2):
 
 plt.tight_layout()
 plt.show()
+
+for n in [4, 20, 40, 60]:
+    print(f"n = {n:>2}: 行为主体 {tp_subj[n-1]:.3f}%，"
+          f"计量经济学家 {tp_econ[n-1]:.3f}%，"
+          f"比率 {tp_econ[n-1] / tp_subj[n-1]:.2f}")
 ```
 
-当专家信念过度持续（$\check\phi$ 的特征值比 $\phi$
-更大）时，理性预期计量经济学家将过多的
-观测到的风险溢价归因于风险厌恶。
+在 $z_t = 0$ 处，扭曲为 $\kappa_t = \kappa_0 = (-0.005, 0)$，它来自专家在预测水平因子时的向上偏差 $\check\mu_1 = 0.005$。
 
-将信念扭曲与真正的风险价格区分开来需要额外的
-数据，例如 {cite:t}`piazzesi2015trend` 使用的调查预测。
+预期未来利率更高的专家，预期长期债券的回报会低于实际平均实现的回报。
+
+因此，在这种校准下，计量经济学家将高估行为主体所要求的期限溢价 14% 到 18%。
+
+持续性扭曲 $\kappa_z$ 使得这一差距的大小甚至符号都取决于状态。
+
+```{code-cell} ipython3
+for label, z in [("高利率", np.array([3.0, -2.0])),
+                 ("低利率",  np.array([-3.0, 2.0]))]:
+    gap = (term_premiums(model_econ, z, n_max_db)
+           - term_premiums(model_subj, z, n_max_db)) * 4 * 100
+    print(f"{label}：5 年和 15 年期的信念扭曲差距 = "
+          f"{gap[19]:.2f}%，{gap[59]:.2f}%")
+```
+
+当利率较高时，专家将其过度外推到未来，因此计量经济学家测得的溢价在 15 年期时比行为主体的溢价高出近 2 个百分点。
+
+当利率较低时，差距的符号会反转。
+
+因此，理性预期计量经济学家会将测得超额回报中的变动归因于时变风险价格，而这些变动实际上来自行为主体系统性的预测误差。
 
 我们的 {doc}`advanced:risk_aversion_or_mistaken_beliefs` 讲座
 更深入地探讨了这种混淆。
@@ -1397,6 +1806,7 @@ plt.show()
    政策、实际活动、波动率等）。
 4. **信念扭曲：** 该框架通过对物理测度的似然比扭曲，自然地容纳
    非理性信念，如 {cite:t}`piazzesi2015trend` 所示。
+5. **可辨识性的局限：** 债券价格仅揭示风险中性测度，因此要将风险价格与信念扭曲区分开来，需要额外的证据，例如调查预测数据；另请参阅 {doc}`ross_recovery` 和 {doc}`misspecified_recovery`。
 
 该模型还直接连接到 {doc}`advanced:doubts_or_variability` 中研究的
 Hansen–Jagannathan 边界，以及 {cite:t}`Ljungqvist2012` 其他章节中描述的
