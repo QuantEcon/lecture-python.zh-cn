@@ -12,33 +12,33 @@ translation:
   headings:
     Overview: 概述
     Vectors: 向量
-    Vectors::Vector Operations: 向量运算
-    Vectors::Inner Product and Norm: 内积和范数
+    Vectors::Vector operations: 向量运算
+    Vectors::Inner product and norm: 内积和范数
     Vectors::Span: 张成空间
     Vectors::Span::Examples: 示例
-    Vectors::Linear Independence: 线性无关
-    Vectors::Unique Representations: 唯一表示
+    Vectors::Linear independence: 线性无关
+    Vectors::Unique representations: 唯一表示
     Matrices: 矩阵
-    Matrices::Matrix Operations: 矩阵运算
+    Matrices::Matrix operations: 矩阵运算
     Matrices::Matrices in NumPy: NumPy中的矩阵
-    Matrices::Matrices as Maps: 矩阵作为映射
-    Solving Systems of Equations: 求解方程组
-    Solving Systems of Equations::The Square Matrix Case: 方阵的情况
-    Solving Systems of Equations::The Square Matrix Case::Inverse Matrices: 逆矩阵
-    Solving Systems of Equations::The Square Matrix Case::Determinants: 行列式
-    Solving Systems of Equations::More Rows than Columns: 行数多于列数
-    Solving Systems of Equations::More Columns than Rows: 列数多于行数
-    Solving Systems of Equations::Linear Equations with SciPy: 使用SciPy求解线性方程
-    Eigenvalues and Eigenvectors: 特征值和特征向量
-    Eigenvalues and Eigenvectors::Generalized Eigenvalues: 广义特征值
-    Further Topics: 进阶概念
-    Further Topics::Series Expansions: 级数展开
-    Further Topics::Series Expansions::Matrix Norms: 矩阵范数
-    Further Topics::Series Expansions::Neumann's Theorem: 诺伊曼定理
-    Further Topics::Series Expansions::Spectral Radius: 谱半径
-    Further Topics::Positive Definite Matrices: 正定矩阵
-    Further Topics::Differentiating Linear and Quadratic Forms: 线性和二次型的求导
-    Further Topics::Further Reading: 延伸阅读
+    Matrices::Matrices as maps: 矩阵作为映射
+    Solving systems of equations: 求解方程组
+    Solving systems of equations::The square matrix case: 方阵的情况
+    Solving systems of equations::The square matrix case::Inverse matrices: 逆矩阵
+    Solving systems of equations::The square matrix case::Determinants: 行列式
+    Solving systems of equations::More rows than columns: 行数多于列数
+    Solving systems of equations::More columns than rows: 列数多于行数
+    Solving systems of equations::Linear equations with SciPy: 使用SciPy求解线性方程
+    Eigenvalues and eigenvectors: 特征值和特征向量
+    Eigenvalues and eigenvectors::Generalized eigenvalues: 广义特征值
+    Further topics: 进阶概念
+    Further topics::Series expansions: 级数展开
+    Further topics::Series expansions::Matrix norms: 矩阵范数
+    Further topics::Series expansions::Neumann's theorem: 诺伊曼定理
+    Further topics::Series expansions::Spectral radius: 谱半径
+    Further topics::Positive definite matrices: 正定矩阵
+    Further topics::Differentiating linear and quadratic forms: 线性和二次型的求导
+    Further topics::Further reading: 延伸阅读
     Exercises: 练习
 ---
 
@@ -100,7 +100,7 @@ $$
 
 我们将同时关注理论基础和实际计算。
 
-虽然本讲与我们在[之前的讲座](https://python-programming.quantecon.org/numpy.html)中已经介绍过NumPy数组的基本操作有所重合，但这里我们将从更理论的角度来探讨线性代数。
+虽然本讲与 {doc}`programming:numpy` 中已经介绍过 NumPy 数组的基本操作有所重合，但这里我们将从更理论的角度来探讨线性代数。
 
 请注意，本讲比大多数讲座更偏重理论，其中包含的背景知识将在我们后续的应用中逐步用到。
 
@@ -140,12 +140,10 @@ from scipy.linalg import inv, solve, det, eig
 下图以这种方式展示了三个向量
 
 ```{code-cell} ipython
-fig, ax = plt.subplots(figsize=(10, 8))
-# 设置通过原点的轴
-for spine in ['left', 'bottom']:
-    ax.spines[spine].set_position('zero')
-for spine in ['right', 'top']:
-    ax.spines[spine].set_color('none')
+fig, ax = plt.subplots()
+# 绘制通过原点的轴
+ax.axhline(0, color='black', lw=0.8)
+ax.axvline(0, color='black', lw=0.8)
 
 ax.set(xlim=(-5, 5), ylim=(-5, 5))
 ax.grid()
@@ -205,16 +203,14 @@ $$
 
 下图展示了标量乘法
 
-```{code-cell} ipython3
+```{code-cell} python3
 ---
 tags: [output_scroll]
 ---
-fig, ax = plt.subplots(figsize=(10, 8))
-# Set the axes through the origin
-for spine in ['left', 'bottom']:
-    ax.spines[spine].set_position('zero')
-for spine in ['right', 'top']:
-    ax.spines[spine].set_color('none')
+fig, ax = plt.subplots()
+# 绘制通过原点的轴
+ax.axhline(0, color='black', lw=0.8)
+ax.axvline(0, color='black', lw=0.8)
 
 ax.set(xlim=(-5, 5), ylim=(-5, 5))
 x = (2, 2)
@@ -240,17 +236,17 @@ for s in scalars:
 plt.show()
 ```
 
-在Python中，向量可以用列表或元组来表示，例如 `x = (2, 4, 6)`，但更常见的是用[NumPy数组](https://python-programming.quantecon.org/numpy.html#numpy-arrays)来表示。
+在Python中，向量可以用列表或元组来表示，例如 `x = (2, 4, 6)`，但更常见的是用 {ref}`NumPy数组 <programming:numpy_array>` 来表示。
 
 NumPy数组的一个优点是标量乘法和加法具有非常自然的语法
 
-```{code-cell} ipython3
+```{code-cell} python3
 x = np.ones(3)            # 创建一个包含三个1的向量
 y = np.array((2, 4, 6))   # 将元组(2, 4, 6)转换为数组
 x + y
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 4 * x
 ```
 
@@ -265,7 +261,7 @@ x + y
 向量 $x,y \in \mathbb R ^n$ 的*内积*定义为
 
 $$
-x' y := \sum_{i=1}^n x_i y_i
+x^\top y := \sum_{i=1}^n x_i y_i
 $$
 
 如果两个向量的内积为零，则称这两个向量*正交*。
@@ -273,32 +269,32 @@ $$
 向量 $x$ 的*范数*表示其"长度"（即其与零向量的距离），定义为
 
 $$
-\| x \| := \sqrt{x' x} := \left( \sum_{i=1}^n x_i^2 \right)^{1/2}
+\| x \| := \sqrt{x^\top x} := \left( \sum_{i=1}^n x_i^2 \right)^{1/2}
 $$
 
 表达式 $\| x - y\|$ 被理解为 $x$ 和 $y$ 之间的距离。
 
 继续前面的例子，内积和范数可以按如下方式计算
 
-```{code-cell} ipython3
+```{code-cell} python3
 np.sum(x * y)          # x和y的内积，方法1
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 x @ y                  # x和y的内积，方法2（推荐）
 ```
 
 推荐使用`@`运算符，因为它使用了经过优化的BLAS库来实现乘加融合运算，相比分别进行乘法和求和运算，具有更好的性能和数值精度。
 
-```{code-cell} ipython3
+```{code-cell} python3
 np.sqrt(np.sum(x**2))  # x的范数，方法1
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 np.sqrt(x @ x)         # x的范数，方法2（推荐）
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 np.linalg.norm(x)      # x的范数，方法3
 ```
 
@@ -327,11 +323,11 @@ $A$的所有线性组合构成的集合被称为$A$的*张成空间*。
 张成空间是一个通过这两个点和原点的二维平面。
 
 (la_3dvec)=
-```{code-cell} ipython3
+```{code-cell} python3
 ---
 tags: [output_scroll]
 ---
-ax = plt.figure(figsize=(10, 8)).add_subplot(projection='3d')
+ax = plt.figure().add_subplot(projection='3d')
 
 x_min, x_max = -5, 5
 y_min, y_max = -5, 5
@@ -382,7 +378,7 @@ plt.show()
 
 #### 示例
 
-如果 $A$ 只包含一个向量 $a_1 \in \mathbb R ^2$，那么它的张成空间只是 $a_1$ 的标量倍数，即通过 $a_1$ 和原点的唯一直线。
+如果 $A$ 只包含一个非零向量 $a_1 \in \mathbb R ^2$，那么它的张成空间只是 $a_1$ 的标量倍数，即通过 $a_1$ 和原点的唯一直线。
 
 如果 $A = \{e_1, e_2, e_3\}$ 由 $\mathbb R ^3$ 的*标准基向量*组成，即
 
@@ -462,12 +458,12 @@ $$
 具体来说，假设$A := \{a_1, \ldots, a_k\} \subset \mathbb R ^n$是线性独立的，且
 
 $$
-y = \beta_1 a_1 + \cdots \beta_k a_k
+y = \beta_1 a_1 + \cdots + \beta_k a_k
 $$
 
 那么不存在其他系数序列$\gamma_1, \ldots, \gamma_k$能够得到相同的向量$y$。
 
-事实上，如果我们同时有$y = \gamma_1 a_1 + \cdots \gamma_k a_k$，那么
+事实上，如果我们同时有$y = \gamma_1 a_1 + \cdots + \gamma_k a_k$，那么
 
 $$
 (\beta_1 - \gamma_1) a_1 + \cdots + (\beta_k - \gamma_k) a_k = 0
@@ -504,9 +500,9 @@ $$
 
 将每个 $a_{ij}$ 替换为 $a_{ji}$ 所形成的矩阵被称为 $A$ 的*转置*，记作 $A'$ 或 $A^{\top}$。
 
-如果 $A = A'$，则 $A$ 被称为*对称矩阵*。
+如果 $A = A^\top$，则 $A$ 被称为*对称矩阵*。
 
-对于方阵 $A$，形如 $a_{ii}$ 的 $i$ 个元素（其中 $i=1,\ldots,n$）被称为*主对角线*。
+对于 $n \times n$ 矩阵 $A$，$n$ 个元素 $a_{11}, \ldots, a_{nn}$ 构成*主对角线*。
 
 如果只有主对角线上的元素非零，则 $A$ 被称为*对角矩阵*。
 
@@ -608,45 +604,45 @@ A x =
 
 ### NumPy中的矩阵
 
-```{index} single: Matrix; Numpy
+```{index} single: Matrix; NumPy
 ```
 
 NumPy数组也被用作矩阵，并且对所有标准矩阵运算都有快速、高效的函数和方法[^fn_mdt]。
 
 你可以通过元组的元组（或列表的列表）手动创建它们，如下所示
 
-```{code-cell} ipython3
+```{code-cell} python3
 A = ((1, 2),
      (3, 4))
 
 type(A)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 A = np.array(A)
 
 type(A)
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 A.shape
 ```
 
-`shape` 属性是一个表示行数和列数的元组 --- 更多讨论请参见[这里](https://python-programming.quantecon.org/numpy.html#shape-and-dimension)。
+`shape` 属性是一个表示行数和列数的元组 --- 更多讨论请参见 {ref}`这里 <programming:numpy_shape_dim>`。
 
 要获取 `A` 的转置，可以使用 `A.transpose()` 或更简单的 `A.T`。
 
-有许多便捷的函数可用于创建常见矩阵（零矩阵、全1矩阵等）--- 参见[这里](https://python-programming.quantecon.org/numpy.html#creating-arrays)。
+有许多便捷的函数可用于创建常见矩阵（零矩阵、全1矩阵等）--- 参见 {ref}`这里 <programming:creating_arrays>`。
 
 由于运算默认按元素执行，标量乘法和加法的语法具有非常自然
 
-```{code-cell} ipython3
+```{code-cell} python3
 A = np.identity(3)
 B = np.ones((3, 3))
 2 * A
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 A + B
 ```
 
@@ -703,7 +699,7 @@ y = Ax
 
 这两个问题的答案都是否定的，如下图所示
 
-```{code-cell} ipython3
+```{code-cell} python3
 ---
 tags: [output_scroll]
 ---
@@ -716,14 +712,13 @@ x = np.linspace(xmin, xmax, 160)
 y = f(x)
 ya, yb = np.min(y), np.max(y)
 
+# 额外的高度使标签在两个子图中都不会与坐标轴重叠。
 fig, axes = plt.subplots(2, 1, figsize=(10, 10))
 
 for ax in axes:
-    # Set the axes through the origin
-    for spine in ['left', 'bottom']:
-        ax.spines[spine].set_position('zero')
-    for spine in ['right', 'top']:
-        ax.spines[spine].set_color('none')
+    # 使坐标轴穿过原点
+    ax.axhline(0, color='black', lw=0.8)
+    ax.axvline(0, color='black', lw=0.8)
 
     ax.set(ylim=(-0.6, 3.2), xlim=(xmin, xmax),
            yticks=(), xticks=())
@@ -856,7 +851,7 @@ $y$ 落在 $\{a_1, a_2\}$ 的张成空间中（即通过这些点的二维平面
 
 要解决这个问题，可以使用微积分或正交投影理论。
 
-解为 $\hat x = (A'A)^{-1}A'y$ --- 参见[这些笔记](https://python.quantecon.org/_static/lecture_specific/linear_algebra/course_notes.pdf)的第3章。
+解为 $\hat x = (A^\top A)^{-1}A^\top y$ --- 参见[这些笔记](https://python.quantecon.org/_static/lecture_specific/linear_algebra/course_notes.pdf)的第3章。
 
 ### 列数多于行数
 
@@ -895,32 +890,32 @@ $$
 
 所有这些程序都是经过时间检验和高度优化的FORTRAN代码的Python前端接口
 
-```{code-cell} ipython3
+```{code-cell} python3
 A = ((1, 2), (3, 4))
 A = np.array(A)
 y = np.ones((2, 1))  # 列向量
 det(A)  # 检查A是非奇异的，因此是可逆的
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 A_inv = inv(A)  # 计算逆矩阵
 A_inv
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 x = A_inv @ y  # 解
 A @ x          # 应该等于y
 ```
 
-```{code-cell} ipython3
+```{code-cell} python3
 solve(A, y)  # 产生相同的解
 ```
 
 请注意我们可以通过`inv(A) @ y`或使用`solve(A, y)`来求解$x = A^{-1} y$。
 
-后一种方法使用了不同的算法（LU分解），该算法在数值上更加稳定，因此几乎总是应优先选用。
+要求解$Ax = y$，我们通常更倾向于使用`solve(A, y)`，因为它避免了计算$A$的逆矩阵这一不必要的步骤。
 
-如果需要求解最小二乘解$\hat x = (A'A)^{-1}A'y$，可以使用`scipy.linalg.lstsq(A, y)`。
+如果需要求解最小二乘解$\hat x = (A^\top A)^{-1}A^\top y$，可以使用`scipy.linalg.lstsq(A, y)`。
 
 (la_eigen)=
 ## {index}`特征值 <single: Eigenvalues>`和{index}`特征向量 <single: Eigenvectors>`
@@ -957,13 +952,10 @@ A = np.array(A)
 evals, evecs = eig(A)
 evecs = evecs[:, 0], evecs[:, 1]
 
-fig, ax = plt.subplots(figsize=(10, 8))
-
-# 设置通过原点的坐标轴
-for spine in ['left', 'bottom']:
-    ax.spines[spine].set_position('zero')
-for spine in ['right', 'top']:
-    ax.spines[spine].set_color('none')
+fig, ax = plt.subplots()
+# 绘制通过原点的坐标轴
+ax.axhline(0, color='black', lw=0.8)
+ax.axvline(0, color='black', lw=0.8)
 ax.grid(alpha=0.4)
 
 xmin, xmax = -3, 3
@@ -1032,7 +1024,7 @@ evecs
 
 注意 `evecs` 的*列*是特征向量。
 
-由于特征向量的任意标量倍数都是具有相同特征值的特征向量（可以验证），eig 程序会将每个特征向量的长度归一化为1。
+由于特征向量的任意非零标量倍数都是具有相同特征值的特征向量（可以验证），eig 程序会将每个特征向量的长度归一化为1。
 
 ### 广义特征值
 
@@ -1125,8 +1117,8 @@ $$
 
 我们称 $A$ 是
 
-1. 如果对于每个 $x \in \mathbb R ^n \setminus \{0\}$，都有 $x' A x > 0$，则称矩阵为*正定的*
-1. 如果对于每个 $x \in \mathbb R ^n$，都有 $x' A x \geq 0$，则称矩阵为*半正定的*或*非负定的*
+1. 如果对于每个 $x \in \mathbb R ^n \setminus \{0\}$，都有 $x^\top A x > 0$，则称矩阵为*正定的*
+1. 如果对于每个 $x \in \mathbb R ^n$，都有 $x^\top A x \geq 0$，则称矩阵为*半正定的*或*非负定的*
 
 负定和半负定矩阵有类似的定义。
 
@@ -1138,7 +1130,9 @@ $$
 ```{index} single: Linear Algebra; Differentiating Linear and Quadratic Forms
 ```
 
-以下公式在许多经济学场景中都很有用。设
+以下公式在许多经济学场景中都很有用。
+
+设
 
 * $z, x$ 和 $a$ 都是 $n \times 1$ 向量
 * $A$ 是 $n \times n$ 矩阵
@@ -1146,19 +1140,19 @@ $$
 
 则
 
-1. $\frac{\partial a' x}{\partial x} = a$
-1. $\frac{\partial A x}{\partial x} = A'$
-1. $\frac{\partial x'A x}{\partial x} = (A + A') x$
-1. $\frac{\partial y'B z}{\partial y} = B z$
-1. $\frac{\partial y'B z}{\partial B} = y z'$
+1. $\frac{\partial a^\top x}{\partial x} = a$
+1. $\frac{\partial A x}{\partial x} = A^\top$
+1. $\frac{\partial x^\top A x}{\partial x} = (A + A^\top) x$
+1. $\frac{\partial y^\top B z}{\partial y} = B z$
+1. $\frac{\partial y^\top B z}{\partial B} = y z^\top$
 
-下面的{ref}`la_ex1`要求你应用这些公式。
+下面的 {ref}`la_ex1` 要求你应用这些公式。
 
 ### 延伸阅读
 
-`scipy.linalg`子模块的文档可以在[这里](https://docs.scipy.org/doc/scipy/reference/linalg.html)找到。
+`scipy.linalg` 子模块的文档可以在 [这里](https://docs.scipy.org/doc/scipy/reference/linalg.html) 找到。
 
-[计量经济学理论](https://johnstachurski.net/emet.html)的第2章和第3章包含了与上述内容类似的线性代数讨论，并附有已解答的练习题。
+[计量经济学入门](https://johnstachurski.net/emet)的第2章和第3章包含了与上述内容类似的线性代数讨论，并附有已解答的练习题。
 
 如果你不介意稍微抽象的方法，{cite}`Janich1994`是一本不错的中级线性代数教材。
 
@@ -1171,7 +1165,7 @@ $$
 设$x$是一个给定的$n \times 1$向量，考虑以下问题
 
 $$
-v(x) =  \max_{y,u} \left\{ - y'P y - u' Q u \right\}
+v(x) =  \max_{y,u} \left\{ - y^\top P y - u^\top Q u \right\}
 $$
 
 受限于线性约束
@@ -1185,13 +1179,14 @@ $$
 * $P$是一个$n \times n$矩阵，$Q$是一个$m \times m$矩阵
 * $A$是一个$n \times n$矩阵，$B$是一个$n \times m$矩阵
 * $P$和$Q$都是对称且半正定的
+* $H := Q + B^\top P B$ 是正定的
 
 ($y$ 和 $u$ 的维度必须是多少才能使这成为一个合理的问题？)
 
 解决这个问题的一种方法是构建拉格朗日函数
 
 $$
-\mathcal L = - y' P y - u' Q u + \lambda' \left[A x + B u - y\right]
+\mathcal L = - y^\top P y - u^\top Q u + \lambda^\top \left[A x + B u - y\right]
 $$
 
 其中 $\lambda$ 是一个 $n \times 1$ 的拉格朗日乘子向量。
@@ -1201,14 +1196,16 @@ $$
 证明这些条件意味着：
 
 1. $\lambda = - 2 P y$。
-1. $u$ 的最优选择满足 $u = - (Q + B' P B)^{-1} B' P A x$。
-1. 函数 $v$ 满足 $v(x) = - x' \tilde P x$，其中 $\tilde P = A' P A - A'P B (Q + B'P B)^{-1} B' P A$。
+1. $u$ 的最优选择满足 $u = - (Q + B^\top P B)^{-1} B^\top P A x$。
+1. 函数 $v$ 满足 $v(x) = - x^\top \tilde P x$，其中 $\tilde P = A^\top P A - A^\top P B (Q + B^\top P B)^{-1} B^\top P A$。
 
 正如我们将看到的，在经济学背景下，拉格朗日乘子通常是影子价格。
 
 ```{note}
 
-如果我们不关心拉格朗日乘数，我们可以将约束条件代入目标函数，然后仅对$u$最大化$-(Ax + Bu)'P (Ax + Bu) - u' Q u$。你可以验证这会得到相同的最大值。
+如果我们不关心拉格朗日乘数，我们可以将约束条件代入目标函数，然后仅对$u$最大化$-(Ax + Bu)^\top P (Ax + Bu) - u^\top Q u$。
+
+你可以验证这会得到相同的最大值。
 ```
 
 ```{exercise-end}
@@ -1221,7 +1218,7 @@ $$
 我们有一个优化问题：
 
 $$
-v(x) = \max_{y,u} \{ -y'Py - u'Qu \}
+v(x) = \max_{y,u} \{ -y^\top Py - u^\top Qu \}
 $$
 
 满足约束条件：
@@ -1237,10 +1234,12 @@ $$
 - $A$是一个$n \times n$矩阵
 - $B$是一个$n \times m$矩阵
 
+假设 $H := Q + B^\top P B$ 是正定的。
+
 相关的拉格朗日函数是：
 
 $$
-L = -y'Py - u'Qu + \lambda' \lbrack Ax + Bu - y \rbrack
+L = -y^\top Py - u^\top Qu + \lambda^\top \lbrack Ax + Bu - y \rbrack
 $$
 
 **第1步：**
@@ -1248,7 +1247,7 @@ $$
 对拉格朗日方程关于y求导并令其导数等于零得到：
 
 $$
-\frac{ \partial L}{\partial y} = - (P + P') y - \lambda = - 2 P y - \lambda = 0 \:,
+\frac{ \partial L}{\partial y} = - (P + P^\top) y - \lambda = - 2 P y - \lambda = 0 \:,
 $$
 
 因为P是对称的。
@@ -1264,23 +1263,23 @@ $$
 对拉格朗日方程关于u求导并令其导数等于零得到
 
 $$
-\frac{ \partial L}{\partial u} = - (Q + Q') u - B'\lambda = - 2Qu + B'\lambda = 0 \:
+\frac{ \partial L}{\partial u} = - (Q + Q^\top) u + B^\top\lambda = - 2Qu + B^\top\lambda = 0 \:
 $$
 
 代入$\lambda = -2 P y$得到
 
 $$
-Qu + B'Py = 0 \:
+Qu + B^\top Py = 0 \:
 $$
 
 将线性约束$y = Ax + Bu$代入上式得到
 
 $$
-Qu + B'P(Ax + Bu) = 0
+Qu + B^\top P(Ax + Bu) = 0
 $$
 
 $$
-(Q + B'PB)u + B'PAx = 0
+(Q + B^\top PB)u + B^\top PAx = 0
 $$
 
 这是关于u的拉格朗日方程最大化的一阶条件。
@@ -1288,7 +1287,7 @@ $$
 因此，u的最优选择必须满足
 
 $$
-u = -(Q + B'PB)^{-1}B'PAx \:,
+u = -(Q + B^\top PB)^{-1}B^\top PAx \:,
 $$
 
 这是由拉格朗日方程的一阶条件定义得出的。
@@ -1298,65 +1297,64 @@ $$
 将约束代入目标函数，重写我们的问题，得到
 
 $$
-v(x) = \max_{u} \{ -(Ax+ Bu)'P(Ax+Bu) - u'Qu \} \:
+v(x) = \max_{u} \{ -(Ax+ Bu)^\top P(Ax+Bu) - u^\top Qu \} \:
 $$
 
-由于我们知道u的最优选择满足$u = -(Q + B'PB)^{-1}B'PAx$，那么
+由于我们知道u的最优选择满足$u = -(Q + B^\top PB)^{-1}B^\top PAx$，那么
 
 $$
-
-v(x) =  -(Ax+ B u)'P(Ax+B u) - u'Q u  \,\,\,\, 其中 \,\,\,\, u = -(Q + B'PB)^{-1}B'PAx
+v(x) =  -(Ax+ B u)^\top P(Ax+B u) - u^\top Q u \quad \text{其中} \quad u = -(Q + B^\top PB)^{-1}B^\top PAx
 $$
 
 计算函数
 
 $$
 \begin{aligned}
-v(x) &=  -(Ax+ B u)'P(Ax+Bu) - u'Q u \\
-&= -(x'A' + u'B')P(Ax+Bu) - u'Q u \\
-&= - x'A'PAx - u'B'PAx - x'A'PBu - u'B'PBu - u'Qu \\
-&= - x'A'PAx - 2u'B'PAx - u'(Q + B'PB) u
+v(x) &=  -(Ax+ B u)^\top P(Ax+Bu) - u^\top Q u \\
+&= -(x^\top A^\top + u^\top B^\top)P(Ax+Bu) - u^\top Q u \\
+&= - x^\top A^\top PAx - u^\top B^\top PAx - x^\top A^\top PBu - u^\top B^\top PBu - u^\top Qu \\
+&= - x^\top A^\top PAx - 2u^\top B^\top PAx - u^\top(Q + B^\top PB) u
 \end{aligned}
 $$
 
-为简化起见，令 $S := (Q + B'PB)^{-1} B'PA$，则 $u = -Sx$。
+为简化起见，令 $S := (Q + B^\top PB)^{-1} B^\top PA$，则 $u = -Sx$。
 
-对于第二项 $- 2u'B'PAx$，
+对于第二项 $- 2u^\top B^\top PAx$，
 
 $$
 \begin{aligned}
--2u'B'PAx &= -2 x'S'B'PAx  \\
-& = 2 x'A'PB( Q + B'PB)^{-1} B'PAx
+-2u^\top B^\top PAx &= +2 x^\top S^\top B^\top PAx  \\
+& = 2 x^\top A^\top PB( Q + B^\top PB)^{-1} B^\top PAx
 \end{aligned}
 $$
 
-注意到项 $(Q + B'PB)^{-1}$ 是对称的，因为 P 和 Q 都是对称的。
+注意到项 $(Q + B^\top PB)^{-1}$ 是对称的，因为 P 和 Q 都是对称的。
 
-对于第三项 $- u'(Q + B'PB) u$，
+对于第三项 $- u^\top(Q + B^\top PB) u$，
 
 $$
 \begin{aligned}
--u'(Q + B'PB) u &= - x'S' (Q + B'PB)Sx \\
-&= -x'A'PB(Q + B'PB)^{-1}B'PAx
+-u^\top(Q + B^\top PB) u &= - x^\top S^\top (Q + B^\top PB)Sx \\
+&= -x^\top A^\top PB(Q + B^\top PB)^{-1}B^\top PAx
 \end{aligned}
 $$
 
 因此，第二项和第三项的和为
-$x'A'PB(Q + B'PB)^{-1}B'PAx$。
+$x^\top A^\top PB(Q + B^\top PB)^{-1}B^\top PAx$。
 
 这意味着
 
 $$
 \begin{aligned}
- v(x) &= - x'A'PAx - 2u'B'PAx - u'(Q + B'PB) u\\
- &= - x'A'PAx + x'A'PB(Q + B'PB)^{-1}B'PAx \\
- &= -x'[A'PA - A'PB(Q + B'PB)^{-1}B'PA] x
+ v(x) &= - x^\top A^\top PAx - 2u^\top B^\top PAx - u^\top(Q + B^\top PB) u\\
+ &= - x^\top A^\top PAx + x^\top A^\top PB(Q + B^\top PB)^{-1}B^\top PAx \\
+ &= -x^\top[A^\top PA - A^\top PB(Q + B^\top PB)^{-1}B^\top PA] x
 \end{aligned}
 $$
 
 因此，优化问题的解
-$v(x) = -x' \tilde{P}x$ 遵循上述结果，其中
-$\tilde{P} := A'PA - A'PB(Q + B'PB)^{-1}B'PA$
+$v(x) = -x^\top \tilde{P}x$ 遵循上述结果，其中
+$\tilde{P} := A^\top PA - A^\top PB(Q + B^\top PB)^{-1}B^\top PA$
 
 ```{solution-end}
 ```
@@ -1364,4 +1362,10 @@ $\tilde{P} := A'PA - A'PB(Q + B'PB)^{-1}B'PA$
 [^fn_mdt]: 虽然NumPy中定义了专门的矩阵数据类型，但使用普通的NumPy数组更为标准。
 参见[此讨论](https://python-programming.quantecon.org/numpy.html#matrix-multiplication)。
 
-[^cfn]: 假设 $\|S \| < 1$。取任意非零向量 $x$，令 $r := \|x\|$。我们有 $\| Sx \| = r \| S (x/r) \| \leq r \| S \| < r = \| x\|$。因此每个点都被拉向原点。
+[^cfn]: 假设 $\|S \| < 1$。
+
+    取任意非零向量 $x$，令 $r := \|x\|$。
+
+    我们有 $\| Sx \| = r \| S (x/r) \| \leq r \| S \| < r = \| x\|$。
+
+    因此每个点都被拉向原点。
