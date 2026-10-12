@@ -44,6 +44,8 @@ translation:
     'Experiment 1: compensation through debt::Endogenous prices': 内生价格
     'Experiment 2: government capital accumulation': 实验 2：政府资本积累
     Distribution surfaces: 分布曲面
+    Concluding remarks: 结束语
+    Exercises: 练习
 ---
 
 (two_computation)=
@@ -121,11 +123,14 @@ jax.config.update("jax_enable_x64", True)
 
 ## 模型
 
+
 ### 环境
 
 该经济体由有限寿命个人的世代交叠组成，个人最多可存活 $T_0+1$ 年，还有一个无限寿命的政府。
 
-个人消费者和政府可以按恒定的无风险总回报率进行投资。
+个人消费者和政府可以按一个共同的无风险总回报率进行投资。
+
+当我们将该经济体视为小型开放经济时，该回报率是恒定的；而当我们使经济体封闭、让边际产量决定要素价格时，该回报率会随时间变化。
 
 在生命的前 $T_1+1$ 期，消费者获得劳动收入，并将其分配于消费、税收和资产积累。
 
@@ -134,6 +139,20 @@ jax.config.update("jax_enable_x64", True)
 政府对资本和劳动收入征税、发行债务、购买商品并支付退休福利。
 
 对于任何变量 $z$，我们用下标 $t$ 表示年龄，用括号中的参数 $s$ 表示日历时间，用上标 $s-t$ 表示出生日期，因此 $z^{s-t}(s) \equiv z_t(s) \equiv z^{s-t}_t(s)$。
+
+有几个符号容易混淆，我们在此列出以作参考。
+
+| 符号 | 含义 |
+|---|---|
+| $t$、$T_0$、$T_1$ | 年龄、最大年龄、退休年龄 |
+| $s$、$s_1$、$s_2$、$s_3$ | 日历时间以及界定改革时点的日期 |
+| $\alpha_t$ | 从年龄 $t$ 存活到 $t+1$ 的概率 |
+| $\tilde{\alpha}$、$\tilde{A}$ | 生产函数中资本的份额和规模因子 |
+| $\sigma$、$\sigma_d$ | 风险敏感性参数和收入冲击的标准差 |
+| $\gamma_t$ | 单期收益函数中的偏好冲击 |
+| $\varepsilon_t$、$\epsilon_{t+1}$ | 年龄别劳动效率和随机冲击 |
+| $T_t(s)$ | 时间 $s$ 年龄为 $t$ 的人所缴纳的税收 |
+| $\mathcal{T}_t$、$\mathcal{D}_t$、$\mathcal{S}_t$ | 风险敏感性里卡提递归中的三个算子 |
 
 ### 人口结构
 
@@ -221,6 +240,20 @@ $$
 
 其中 $g(s)$ 是人均政府购买，$K(s-1)$ 是实物资本，$R(s-1) = 1 + r(s-1) - \delta$ 是资产总回报，$\varepsilon_t$ 是年龄为 $t$ 的人的外生效率禀赋，$w(s)$ 是基础工资率，$N_0(s) \cdot k_{-1}(s)$ 是新生儿带来的资本，$\delta$ 是折旧率。
 
+除以人口 $N(s)$，并记 $k(s) = K(s)/N(s)$、$\bar{c}(s) = \sum_t \mu_{ct}(s) f_t$、$\bar{\varepsilon} = \sum_t \varepsilon_t f_t$，可将该约束写成我们代码中进行迭代的人均形式：
+
+```{math}
+:label: two_comp_percapita
+
+k(s) = R(s-1)\left[\frac{k(s-1)}{n} + f_0 k_{-1}\right] + w(s)\bar{\varepsilon} - g(s) - \bar{c}(s)
+```
+
+下文我们还会报告两个比率，它们都是基于将 GDP 定义为资本收入与劳动收入之和而构造的，
+
+$$
+\text{GDP}(s) = r(s-1)\left[\frac{k(s-1)}{n} + f_0 k_{-1}\right] + w(s)\bar{\varepsilon}
+$$
+
 ### 要素价格
 
 我们考虑关于要素价格的两种备选假设：
@@ -267,7 +300,13 @@ $$
 
 这种偏好设定给出线性决策规则，同时允许一种诱导某类预防性储蓄的风险敏感性形式。
 
-当 $\sigma < 0$ 时，消费者偏好尽早消除不确定性，决策规则部分依赖于噪声统计量。
+当 $\sigma = 0$ 时，该递归退化为 $U_t = -(\pi c_t - \gamma_t)^2/2 + \beta_t E_t U_{t+1}$，这是一个普通的贴现二次目标函数，其决策规则满足 **确定性等价**：它们不依赖于收入冲击的波动率 $\sigma_d$。
+
+当 $\sigma < 0$ 时，算子 $\mathcal{R}_t$ 对不利的延续结果赋予额外的权重，因此消费者的行为表现得仿佛对未来冲击持悲观态度。
+
+此时确定性等价不再成立，决策规则依赖于噪声统计量 $CC'$，消费者会储蓄得更多。
+
+{ref}`two_comp_ex2` 度量了具体多出多少。
 
 ### 政府
 
@@ -305,9 +344,15 @@ $$
 
 **均衡** 是一个配置、一个价格系统和一个政府政策，使得
 
-1. 给定价格序列和政府政策，该配置求解了家庭的最优问题，并且
+1. 给定价格序列和政府政策，该配置求解了家庭的最优问题，
 
-2. 该配置和政府政策在每个日期 $s$ 满足政府预算约束。
+2. 该配置和政府政策在每个日期 $s$ 满足政府预算约束，
+
+3. 资产市场出清，即家庭资产等于实物资本加政府债务，$\sum_t a_t(s) N^{s-t}_t = K(s) + \sum_t b_t(s) N^{s-t}_t$，并且
+
+4. 商品市场出清，即资源约束 {eq}`two_comp_percapita`。
+
+在封闭经济中，条件 4 连同企业的一阶条件共同决定要素价格；而在小型开放经济中，要素价格是给定的，条件 4 决定该经济体从世界其他地区借入或贷出的数量。
 
 在 **平稳均衡** 中，所有变量都与日历时间 $s$ 无关，这将政府预算约束简化为
 
@@ -337,8 +382,8 @@ birth_range = np.arange(-60, 41, 5)
 ax.hlines(birth_range, birth_range, birth_range + 60, 'k', linewidth=1)
 ax.vlines([0, 40], -60, 40, 'k', linestyle='--', linewidth=0.5)
 
-ax.set_ylabel("出生日期")
-ax.set_xlabel("时间")
+ax.set_ylabel("date born")
+ax.set_xlabel("time")
 
 ax.text(-20, 25, r"$s_1=0$")
 ax.text(43, -50, r"$s_2$")
@@ -377,11 +422,12 @@ plt.show()
 
 在实验 2 中，政府保留社会保障福利，但暂时提高税收以积累实物资本，其回报最终为社会保障支付提供资金。
 
-两种方案都在维持跨世代福利的同时为向完全融资制社会保障的转型提供资金，但它们涉及不同数量的跨世代风险分担。
+两种方案都旨在为向完全融资制社会保障的转型提供资金，同时不使现有世代境况变差，但它们涉及不同数量的跨世代风险分担。
 
 我们在固定和内生要素价格下计算两个实验，并在下文比较结果。
 
 ## 计算策略
+
 
 ### 动态规划
 
@@ -403,20 +449,22 @@ $$
 
 $$
 \begin{gathered}
-T_t(P)=P+\sigma P C_t\left(I-\sigma C_t^{\prime} P C_t\right)^{-1} C_t^{\prime} P \\
-D_t(W)=R_t+A_t^{\prime}\left[\beta_t W-\beta_t^2 W B_t\left(Q_t+\beta_t B_t^{\prime} W B_t\right)^{-1} B_t^{\prime} W\right] A_t \\
+\mathcal{T}_t(P)=P+\sigma P C_t\left(I-\sigma C_t^{\prime} P C_t\right)^{-1} C_t^{\prime} P \\
+\mathcal{D}_t(W)=R_t+A_t^{\prime}\left[\beta_t W-\beta_t^2 W B_t\left(Q_t+\beta_t B_t^{\prime} W B_t\right)^{-1} B_t^{\prime} W\right] A_t \\
 \mathcal{S}_t(k, P)=\beta_t k-\left(\beta_t / \sigma\right) \log \operatorname{det}\left(I-\sigma C_t^{\prime} P C_t\right)
 \end{gathered}
 $$
 
-我们用它们构造值函数递归 $P_t = (D_t \circ T_t) P_{t+1}$，$\xi_t = \mathcal{S}_t(\xi_{t+1}, P_{t+1})$，以及最优控制
+我们用它们构造值函数递归 $P_t = (\mathcal{D}_t \circ \mathcal{T}_t) P_{t+1}$，$\xi_t = \mathcal{S}_t(\xi_{t+1}, P_{t+1})$，以及最优控制
 
 $$
 u_t = -F_t x_t, \qquad
-F_t = \beta_t \left[Q_t + \beta_t B'_t T_t(P_{t+1}) B_t \right]^{-1} B'_t T_t(P_{t+1}) A_t.
+F_t = \beta_t \left[Q_t + \beta_t B'_t \mathcal{T}_t(P_{t+1}) B_t \right]^{-1} B'_t \mathcal{T}_t(P_{t+1}) A_t.
 $$
 
-算子 $T_t$、$D_t$、$\mathcal{S}_t$ 和决策规则 $F_t$ 在 `solve_riccati_step` 中构造。
+算子 $\mathcal{T}_t$ 正是风险敏感性发挥作用的地方：当 $\sigma = 0$ 时，它退化为恒等算子，此时决策规则 $F_t$ 不再依赖于 $C_t$，确定性等价成立。
+
+算子 $\mathcal{T}_t$、$\mathcal{D}_t$、$\mathcal{S}_t$ 和决策规则 $F_t$ 在 `solve_riccati_step` 中构造。
 
 给定下一年龄的值函数参数 $(P_{t+1}, \xi_{t+1})$，它构造状态空间矩阵 $A_t$，应用叉积技巧，评估里卡蒂算子，并返回最优决策规则 $F_t$、闭环矩阵 $A^o_t = A_t - B F_t$ 以及更新后的 $(P_t, \xi_t)$
 
@@ -444,7 +492,7 @@ def solve_riccati_step(
     # 叉积技巧：A* = A - B Q^{-1} H
     A = A - B @ Q_inv @ H
 
-    # T_t 算子
+    # 𝒯_t 算子
     CTP = C.T @ P_next @ C
     PP_scalar = 1.0 - σ * CTP[0, 0]
     PP_inv_scalar = 1.0 / PP_scalar
@@ -452,7 +500,7 @@ def solve_riccati_step(
     CP = C.T @ P_next
     TP = P_next + σ * PP_inv_scalar * (PC @ CP)
 
-    # D_t 算子和决策规则 F_t
+    # 𝒟_t 算子和决策规则 F_t
     BTB_scalar = (B.T @ TP @ B)[0, 0]
     Q_BTB_scalar = Q_scalar + β_t * BTB_scalar
     Q_BTB_inv_scalar = 1.0 / Q_BTB_scalar
@@ -466,7 +514,7 @@ def solve_riccati_step(
               * (TP_B @ BT_TP))
     P = R + A.T @ middle @ A
 
-    # S_t 算子
+    # 𝒮_t 算子
     log_det_PP = jnp.log(PP_scalar)
     ξ = jnp.where(
         σ != 0.0,
@@ -639,11 +687,11 @@ fig, axs = plt.subplots(1, 2, figsize=(10, 6))
 
 axs[0].plot(ε_arr)
 axs[0].set_title("工作效率")
-axs[0].set_xlabel("年龄")
+axs[0].set_xlabel("age")
 
 axs[1].plot(α_arr)
 axs[1].set_title("存活概率")
-axs[1].set_xlabel("年龄")
+axs[1].set_xlabel("age")
 
 plt.tight_layout()
 plt.show()
@@ -745,9 +793,8 @@ mystnb:
 ---
 fig, ax = plt.subplots()
 ax.plot(hh.frac)
-ax.set_xlabel("年龄")
-ax.set_ylabel("人口占比")
-ax.set_title("按年龄的人口分布")
+ax.set_xlabel("age")
+ax.set_ylabel("population fraction")
 plt.show()
 ```
 
@@ -772,6 +819,7 @@ tech = create_Tech()
 ```
 
 ## 个人最优性
+
 
 ### 稳态计算
 
@@ -1176,6 +1224,33 @@ print(f"  利率 r - δ = {ss0.r - tech.δ:.4f}")
 print(f"  资本/GDP = {ss0.k2gdp:.4f}")
 print(f"  债务/GDP = {ss0.debt2gdp:.4f}")
 ```
+
+均衡劳动税率再现了上表所报告的校准目标 $\tau_\ell = 0.3385$，这对稳态求解器而言是一个有用的检验。
+
+该校准还有第二个在后续内容中至关重要的性质。
+
+生产参数 $\tilde{A}$ 和 $\tilde{\alpha}$的选取方式使得，在此初始稳态的资本-劳动比下，科布-道格拉斯边际产量恰好等于小型开放经济所视为给定的外生价格 $(r, w)$。
+
+```{code-cell} ipython3
+ε_bar_check = float(jnp.sum(hh.frac * hh.ε_arr))
+K_eff_check = ss0.k_bar / hh.n + float(hh.frac[0] * hh.x0[0])
+k_per_eff = K_eff_check / ε_bar_check
+
+print(f"由 (r, w, K/L) 隐含的资本份额: "
+      f"{tech.r * K_eff_check / (tech.r * K_eff_check + tech.w * ε_bar_check):.4f}"
+      f"   （校准值 α̃ = {tech.α_tilde}）")
+print(f"由 r 方程隐含的 A:  "
+      f"{tech.r / (tech.α_tilde * k_per_eff ** (tech.α_tilde - 1)):.4f}")
+print(f"由 w 方程隐含的 A:  "
+      f"{tech.w / ((1 - tech.α_tilde) * k_per_eff ** tech.α_tilde):.4f}"
+      f"   （校准值 A = {tech.A}）")
+```
+
+因此，两种价格制度在初始稳态处重合。
+
+这正是使我们的固定价格实验和内生价格实验可比的原因，也是我们在下文构建封闭经济的初始稳态时，能够重复使用在固定价格下计算出的家庭对象的原因。
+
+{ref}`two_comp_ex1` 要求你验证这些参数是由价格目标所隐含的，而非自由选定的。
 
 下图追踪了均衡劳动税率在终端稳态（无社会保障）下如何随政府债务变化
 
@@ -1648,16 +1723,11 @@ def _compute_compensation(
     age_at_0 = T0 - death_time
 
     time_mask = indices < n_periods
-    age_mask = indices >= age_at_0
 
     τ_l_cohort = jnp.where(time_mask, τ_l_seq[:T0 + 1], 0.0)
     τ_a_cohort = jnp.where(time_mask, τ_a_seq[:T0 + 1], 0.0)
     RR_cohort = jnp.where(time_mask, RR_seq[:T0 + 1], 1.0)
     w_cohort = jnp.where(time_mask, w_seq[:T0 + 1], 0.0)
-
-    ε_masked = jnp.where(age_mask, ε_arr, 0.0)
-    benef_masked = jnp.where(age_mask, benef_diff, 0.0)
-    benef_masked = jnp.where(ε_masked != 0, 0.0, benef_masked)
 
     age_idx = jnp.clip(age_at_0 + indices, 0, T0)
     ε_cohort = jnp.where(
@@ -1983,9 +2053,14 @@ plt.show()
 *步骤 4。* 求解转型路径：在 $s = 0 = s_1$，所有存活的队列失去福利，年龄为 $t$ 的队列获得一次性补偿，等于失去福利的现值，以税后回报 $\tilde{R}(s) = R(s)[1-\tau_a(s)]+\tau_a(s)$ 贴现：
 
 $$
-\operatorname{comp}_t = S \sum_{j=\max(T_1-t,\,0)}^{T_0-t}
-  \prod_{i=0}^{j} \tilde{R}(s+i)^{-1}.
+\operatorname{comp}_t = \sum_{j=0}^{T_0-t}
+  \left[S_{t+j} + w \varepsilon_{t+j}\left(\tau_\ell(s+j) - \tau_{\ell,0}\right)\right]
+  \prod_{i=0}^{j} \tilde{R}(s+i)^{-1},
 $$
+
+其中 $S_{t+j}$ 是年龄为 $(t+j)$ 的人在旧制度下本应获得的福利，而当该人仍在工作时该值为零。
+
+方括号中的第二项补偿一个队列在其余生中所面临的劳动税变化，其中 $\tau_\ell(s+j)$ 在 $[s_1, s_2)$ 期间等于 $\tau_{\ell,1}$，此后等于 $\tau_{\ell,2}$，从而使买断使每个队列终生资源的现值保持不变。
 
 政府在 $[s_1, s_2)$ 期间设定 $\tau_{\ell,1}$，从 $s_2$ 起设定 $\tau_{\ell,2}$，在 $s_1$ 时有一次性支出增加 $\sum f_t \operatorname{comp}_t$。
 
@@ -2012,25 +2087,11 @@ benef_diff_exp1 = jnp.zeros(hh.T0 + 1)
 benef_diff_exp1 = benef_diff_exp1.at[hh.T1 + 1:].set(ss0.benef)
 ```
 
-函数 `buyout_compensation_exp1_exo` 为每个在改革日期存活的队列计算现值补偿，并将其加到其初始资产上。
+将 `compensation_data` 传递给 `find_transition_exo` 即可启用买断：该函数将 `comp_mult` 设为一并传递给 `apply_compensation`，后者据此对每个队列的补偿进行缩放。
 
-然后我们求解带买断和不带买断的转型税率，以便比较两条路径。
+我们求解带买断和不带买断的转型税率，以便比较两条路径。
 
 ```{code-cell} ipython3
-def buyout_compensation_exp1_exo(τ_l_trans, policy_seq_base, price_seq):
-    """计算外生价格下的买断补偿。"""
-
-    policy_seq = policy_seq_base.copy()
-    policy_seq[S1 + 1:S2 + 1, 0] = τ_l_trans
-    return apply_compensation(
-        ss0.μx_arr, ss0.Σx_arr,
-        policy_seq[:, 0], policy_seq[:, 1], benef_diff_exp1,
-        price_seq[:, 0], price_seq[:, 1], hh.ε_arr, ss0.τ_l,
-        AGE_INDICES, AGE_INDICES[:-1],
-        hh.x0, hh.Σ0,
-        1.0  # comp_mult = 1.0 表示完全补偿
-    )
-
 # 带买断求解
 τ_l_exp1_exo_bo, results_exp1_exo_bo = find_transition_exo(
     price_seq_exp1_exo, policy_seq_exp1_exo, ss0, ss1_exp1_exo,
@@ -2081,7 +2142,7 @@ axes[0].plot(ages, μa_nb, 'r--', linewidth=2, label='不带买断')
 axes[0].axvline(hh.T1 + 1, color='gray', linestyle=':', label='退休')
 axes[0].set_xlabel('年龄 (t)')
 axes[0].set_ylabel('平均资产')
-axes[0].set_title('s=0 时按年龄的资产持有')
+axes[0].set_title('$s=0$ 时按年龄的资产持有')
 axes[0].legend()
 
 
@@ -2098,8 +2159,8 @@ axes[1].bar(retired_ages, comp_retired,
 axes[1].axhline(0, color='k', linewidth=0.5)
 axes[1].axvline(hh.T1 + 1, color='gray', linestyle=':', label='退休')
 axes[1].set_xlabel('年龄 (t)')
-axes[1].set_ylabel('补偿金额')
-axes[1].set_title('按年龄的补偿（加到初始资产）')
+axes[1].set_ylabel('补偿')
+axes[1].set_title('按年龄的补偿，加到初始资产')
 axes[1].legend()
 
 
@@ -2138,7 +2199,7 @@ axes[0, 0].plot(τ_l_seq_bo, 'b-', linewidth=2, label='带买断')
 axes[0, 0].plot(τ_l_seq_nb, 'r--', linewidth=2, label='不带买断')
 axes[0, 0].axvspan(S1, S2, alpha=0.1, color='yellow')
 axes[0, 0].set_xlabel('时间 (s)')
-axes[0, 0].set_ylabel('劳动税率')
+axes[0, 0].set_ylabel(r'$\tau_\ell$')
 axes[0, 0].set_title('劳动税率路径')
 axes[0, 0].legend()
 
@@ -2148,7 +2209,7 @@ axes[0, 1].plot(Gb_seq_nb, 'r--', linewidth=2, label='不带买断')
 axes[0, 1].axhline(ss1_exp1.Gb, color='k', linestyle=':', alpha=0.7)
 axes[0, 1].axvspan(S1, S2, alpha=0.1, color='yellow')
 axes[0, 1].set_xlabel('时间 (s)')
-axes[0, 1].set_ylabel('政府债务')
+axes[0, 1].set_ylabel(r'$G_b$')
 axes[0, 1].set_title('政府债务路径')
 axes[0, 1].legend()
 
@@ -2157,7 +2218,7 @@ axes[1, 0].plot(k_seq_bo, 'b-', linewidth=2, label='带买断')
 axes[1, 0].plot(k_seq_nb, 'r--', linewidth=2, label='不带买断')
 axes[1, 0].axvspan(S1, S2, alpha=0.1, color='yellow')
 axes[1, 0].set_xlabel('时间 (s)')
-axes[1, 0].set_ylabel('资本存量')
+axes[1, 0].set_ylabel(r'$K$')
 axes[1, 0].set_title('资本积累路径')
 axes[1, 0].legend()
 
@@ -2174,7 +2235,7 @@ axes[1, 1].set_title('总消费路径')
 axes[1, 1].legend()
 
 plt.suptitle(
-    '实验 1：补偿对转型路径的影响',
+    '实验 1：补偿与转型路径',
     fontsize=14, y=1.02
 )
 plt.show()
@@ -2213,7 +2274,7 @@ for idx, age_at_0 in enumerate(selected_ages):
     
 
 plt.suptitle(
-    '按队列的消费路径（实验 1）',
+    '按队列的消费路径，实验 1',
     fontsize=14, y=1.02
 )
 plt.show()
@@ -2553,7 +2614,7 @@ axes[0, 0].plot(τ_l_seq_endo[:len(τ_l_seq_fixed)],
                 label='内生价格')
 axes[0, 0].axvspan(S1, S2, alpha=0.1, color='yellow')
 axes[0, 0].set_xlabel('时间 (s)')
-axes[0, 0].set_ylabel('劳动税率 (τ_l)')
+axes[0, 0].set_ylabel(r'$\tau_\ell$')
 axes[0, 0].set_title('劳动税率路径')
 axes[0, 0].legend()
 
@@ -2568,7 +2629,7 @@ axes[0, 1].plot(
 )
 axes[0, 1].axvspan(S1, S2, alpha=0.1, color='yellow')
 axes[0, 1].set_xlabel('时间 (s)')
-axes[0, 1].set_ylabel('政府债务 (Gb)')
+axes[0, 1].set_ylabel(r'$G_b$')
 axes[0, 1].set_title('政府债务路径')
 axes[0, 1].legend()
 
@@ -2583,7 +2644,7 @@ axes[1, 0].plot(
 )
 axes[1, 0].axvspan(S1, S2, alpha=0.1, color='yellow')
 axes[1, 0].set_xlabel('时间 (s)')
-axes[1, 0].set_ylabel('利率 (r - δ)')
+axes[1, 0].set_ylabel(r'$r - \delta$')
 axes[1, 0].set_title('利率路径')
 axes[1, 0].legend()
 
@@ -2598,12 +2659,12 @@ axes[1, 1].plot(
 )
 axes[1, 1].axvspan(S1, S2, alpha=0.1, color='yellow')
 axes[1, 1].set_xlabel('时间 (s)')
-axes[1, 1].set_ylabel('工资率 (w)')
+axes[1, 1].set_ylabel(r'$w$')
 axes[1, 1].set_title('工资率路径')
 axes[1, 1].legend()
 
 plt.suptitle(
-    '实验 1：固定 vs 内生价格',
+    '实验 1：固定价格与内生价格对比',
     fontsize=14, y=1.02
 )
 plt.show()
@@ -2638,6 +2699,27 @@ plt.show()
 ```
 
 我们首先计算固定价格下的终端稳态，目标是使政府成为净债权人的负债务与GDP之比。
+
+选取该目标的理由是，政府资产所产生的收入应足以永远支付社会保障福利。
+
+在平稳均衡中，政府的人均净资产收入为 $[R/n - 1](-\bar{b})$，而福利支出总额为 $\sum_{t > T_1} S_t f_t$，因此对所需资产头寸的初步猜测可由下式求解
+
+$$
+\left[\frac{R}{n} - 1\right](-\bar{b}) = \sum_{t > T_1} S_t f_t
+$$
+
+```{code-cell} ipython3
+benefit_bill = float(jnp.sum(benef_0 * hh.frac * (1.0 - hh.Ind_work)))
+Rn_net = tech.RR / hh.n - 1.0
+
+print(f"benefit bill per capita        = {benefit_bill:.4f}")
+print(f"net asset income per unit debt = {Rn_net:.4f}")
+print(f"implied asset position b_bar   = {-benefit_bill / Rn_net:.4f}")
+```
+
+下面设定的目标值所要求的资产头寸略大于此计算结果，这为政府继续用扭曲性税收为其购买支出 $g$ 融资留出了一定余地。
+
+{ref}`two_comp_ex3` 对这两个数字进行了比较。
 
 ```{code-cell} ipython3
 debt2gdp_target_exp2_exo = -1.1785
@@ -2780,7 +2862,7 @@ for d, s, l in zip(
 ax.axhline(0, color='k', linestyle=':', alpha=0.5)
 ax.axvspan(0, 40, alpha=0.1, color='yellow')
 ax.set_xlabel('时间 (s)')
-ax.set_ylabel('政府债务 (Gb)')
+ax.set_ylabel(r'$G_b$')
 ax.set_title('政府债务路径')
 ax.legend(fontsize=9)
 
@@ -2795,7 +2877,7 @@ for d, s, l in zip(
     ax.plot(d[:T_plot], s, linewidth=2, label=l)
 ax.axvspan(0, 40, alpha=0.1, color='yellow')
 ax.set_xlabel('时间 (s)')
-ax.set_ylabel('资本存量 (K)')
+ax.set_ylabel(r'$K$')
 ax.set_title('资本积累路径')
 ax.legend(fontsize=9)
 
@@ -2841,7 +2923,7 @@ cases = ['买断\n（固定）', '买断\n（内生）',
               exp2_exo['τ_l_trans'], exp2_endo['τ_l_trans']]
 colors = ['blue', 'lightblue', 'red', 'lightcoral']
 axes[1, 0].bar(cases, τ_l_values, color=colors, edgecolor='black')
-axes[1, 0].set_ylabel('转型税率 (τ_l)')
+axes[1, 0].set_ylabel(r'转型 $\tau_\ell$')
 axes[1, 0].set_title('转型劳动税率')
 axes[1, 0].grid(True, alpha=0.3, axis='y')
 for i, v in enumerate(τ_l_values):
@@ -2866,7 +2948,7 @@ for i, v in enumerate(debt2gdp_values):
 r_values = [exp1_exo['ss1'].r - tech.δ, exp1_endo['ss1'].r - tech.δ,
             exp2_exo['ss1'].r - tech.δ, exp2_endo['ss1'].r - tech.δ]
 axes[1, 2].bar(cases, r_values, color=colors, edgecolor='black')
-axes[1, 2].set_ylabel('终端利率 (r - δ)')
+axes[1, 2].set_ylabel(r'终端 $r - \delta$')
 axes[1, 2].set_title('终端稳态利率')
 axes[1, 2].grid(True, alpha=0.3, axis='y')
 for i, v in enumerate(r_values):
@@ -2882,9 +2964,55 @@ plt.show()
 
 在内生定价下，更大的资本存量降低了资本的边际产量从而降低了利率，如右下图所示。
 
-政府融资方案（实验 2）带来更大的长期效率增益，因为它保留了针对寿命风险和劳动收入波动的保险，而这些在私有化下将会丧失。
+要比较这两种改革，我们需要的是数字，而不仅仅是路径图。
 
-转型期间较高的劳动收入税率也针对收入风险提供隐性保险，在内生价格下放大了效率优势。
+第一份汇总表收集了每种方案的转型税率及其终端稳态。
+
+```{code-cell} ipython3
+summary = [
+    ('buy-out, fixed prices',    exp1_exo['τ_l_buyout'],  exp1_exo['ss1']),
+    ('buy-out, endogenous',      exp1_endo['τ_l_buyout'], exp1_endo['ss1']),
+    ('gov funding, fixed',       exp2_exo['τ_l_trans'],   exp2_exo['ss1']),
+    ('gov funding, endogenous',  exp2_endo['τ_l_trans'],  exp2_endo['ss1']),
+]
+
+print(f"{'scenario':>24}  {'τ_l trans':>9}  {'τ_l final':>9}"
+      f"  {'K/GDP':>7}  {'debt/GDP':>8}  {'r - δ':>7}")
+for name, τ_trans, ss in summary:
+    print(f"{name:>24}  {τ_trans:>9.4f}  {ss.τ_l:>9.4f}"
+          f"  {ss.k2gdp:>7.4f}  {ss.debt2gdp:>8.4f}  {ss.r - tech.δ:>7.4f}")
+```
+
+第二份汇总表则探讨出生于终端稳态的人会更偏好哪种改革。
+
+由于价值函数为 $U_t = x_t' P_t x_t + \xi_t$，新生代的福利可以直接由我们已经计算出的量得出。
+
+```{code-cell} ipython3
+def newborn_welfare(ss):
+    "出生于某稳态的主体的预期终身效用。"
+
+    return float(hh.x0 @ ss.P_arr[0] @ hh.x0 + ss.ξ_arr[0])
+
+print(f"{'steady state':>34}  {'U of a newborn':>14}")
+for name, ss in [
+    ('initial, pay-as-you-go', ss0),
+    ('terminal, buy-out (no benefits)', exp1_exo['ss1']),
+    ('terminal, government funding', exp2_exo['ss1']),
+]:
+    print(f"{name:>34}  {newborn_welfare(ss):>14.2f}")
+```
+
+与我们最初的现收现付制相比，新生代更偏好这两种改革中的任意一种。
+
+这些都是固定价格下的稳态，因此三行中的工资水平是相同的；提升福利的是劳动税率的下降，从 $0.34$ 降至买断方案下的 $0.08$，或降至政府融资方案下的 $0.14$。
+
+在这两种改革之间，新生代更偏好政府融资方案。
+
+该方案对劳动征税的力度高于买断方案，但它持续支付社会保障福利，这些福利继续针对寿命风险提供保险，并对劳动收入风险提供部分保险，而新生代对这些福利的重视程度超过了额外税收的成本。
+
+这一比较是针对稳态进行的。
+
+它并未说明转型期间在世各代的境况如何，那是上面所绘制的各世代消费路径所描述的内容。
 
 ## 分布曲面
 
@@ -3008,7 +3136,9 @@ plot_surface_grid(
 )
 ```
 
-消费方差曲面揭示 LQ 框架的确定性等价性质如何随时间塑造队列内的消费分布。
+消费方差曲面显示队列内的消费离散度如何随收入冲击的累积而随年龄增长，以及它沿转型路径如何被重塑。
+
+请注意，消费离散度并非确定性等价的副产品：当 $\sigma = -0.05$ 时，决策规则本身依赖于收入的波动率，{ref}`two_comp_ex2` 对此予以证实。
 
 ```{code-cell} ipython3
 plot_surface_grid(
@@ -3017,4 +3147,179 @@ plot_surface_grid(
     '按年龄和时间的消费标准差',
     cmap='magma', transform=np.sqrt
 )
+```
+
+## 结束语
+
+我们着手比较从现收现付制转向完全积累制社会保障体系的两种方式，遵循 {cite:t}`huang1997two` 的研究思路。
+
+两种改革都大幅提高了资本存量，使资本与国内生产总值之比在要素价格固定时从约 $3.2$ 提升到约 $4.2$，而在要素价格内生时提升到约 $3.9$。
+
+两者也都降低了均衡劳动税率，从 $0.34$ 降至 $0.08$ 至 $0.23$ 之间，具体数值取决于改革方案和价格机制。
+
+它们的区别在于由谁承担成本，以及保留了什么。
+
+实验一中的买断方案通过发行债务来解决政府对现有世代的义务，这使得这些世代保持完整无损，但使未来世代失去了社会保险。
+
+实验二中的政府融资方案则继续支付福利并转而积累资产，这需要在过渡期间提高税收，但保留了针对寿命风险和劳动收入风险的保险。
+
+在终端稳态中出生的新生儿更倾向于第二种改革方案。
+
+模型的三个特征在这些计算中起到了主要作用。
+
+风险敏感型偏好使储蓄对劳动收入的波动性产生反应，因此是预防性动机，而不仅仅是生命周期动机，塑造了总资本存量。
+
+寿命不确定性赋予了社会保障一种单纯的现收现付式转移支付方案所不具备的保险作用。
+
+而决策规则的线性性使我们能够追踪消费和财富在各世代之间以及跨日历时间的完整分布，这正是上文所绘制的曲面所展示的内容。
+
+希望在更简单的设定中探讨相同问题的读者，可以参阅 {doc}`ak2`（其中的过渡过程可以手工计算）和 {doc}`ak_aiyagari`（其中的预防性储蓄源于借贷约束，而非风险敏感型偏好）。
+
+## 练习
+
+```{exercise}
+:label: two_comp_ex1
+
+校准表针对封闭经济列出了 $\tilde{A} = 2.2625$ 和 $\tilde{\alpha} = 0.40$，针对小型开放经济列出了 $r = 0.1275$ 和 $w = 5.0147$。
+
+本练习说明第一对数值是由第二对数值所蕴含的。
+
+1. 设 $K_{\text{eff}} = \bar{k}/n + f_0 k_{-1}$ 为初始稳态中人均可用于生产的资本，$\bar{\varepsilon} = \sum_t \varepsilon_t f_t$ 为以效率单位衡量的总劳动。
+   解释为什么 $\tilde{\alpha} = r K_{\text{eff}} / (r K_{\text{eff}} + w \bar{\varepsilon})$。
+
+2. 给定 $\tilde{\alpha}$，先从资本边际产量计算 $\tilde{A}$，再从劳动边际产量计算一次。
+
+3. 假设我们转而想要资本份额为 $\tilde{\alpha} = 0.33$，同时保持相同的 $(r, w)$ 目标。会出现什么问题？
+```
+
+```{solution-start} two_comp_ex1
+:class: dropdown
+```
+
+*第 1 部分。* 在科布-道格拉斯技术和规模报酬不变的条件下，对资本和劳动的支付会耗尽产出，因此 $Y = rK + wL$。
+
+资本在收入中的份额为 $rK/Y = rK/(rK + wL)$，对于科布-道格拉斯生产函数而言，该份额恰好等于指数 $\tilde\alpha$。
+
+*第 2 部分和第 3 部分。*
+
+```{code-cell} ipython3
+ε_bar_ex = float(jnp.sum(hh.frac * hh.ε_arr))
+K_eff_ex = ss0.k_bar / hh.n + float(hh.frac[0] * hh.x0[0])
+k_pe_ex = K_eff_ex / ε_bar_ex
+
+α_implied = tech.r * K_eff_ex / (tech.r * K_eff_ex + tech.w * ε_bar_ex)
+print(f"K_eff = {K_eff_ex:.4f},  ε̄ = {ε_bar_ex:.4f},  K/L = {k_pe_ex:.4f}")
+print(f"implied capital share = {α_implied:.4f}  (calibrated {tech.α_tilde})")
+
+for α_try in [tech.α_tilde, 0.33]:
+    A_from_r = tech.r / (α_try * k_pe_ex ** (α_try - 1))
+    A_from_w = tech.w / ((1 - α_try) * k_pe_ex ** α_try)
+    print(f"α̃ = {α_try:.2f}: A from r = {A_from_r:.4f}, "
+          f"A from w = {A_from_w:.4f}")
+```
+
+在 $\tilde\alpha = 0.40$ 时，两种方法得到的 $\tilde{A}$ 相互一致，并且与校准值 $2.2625$ 相符。
+
+在 $\tilde\alpha = 0.33$ 时，二者不一致：没有单一的比例因子能够同时再现两个价格，因为初始稳态的资本劳动比和两个价格目标已经决定了资本份额。
+
+因此，一旦固定了 $(r, w)$ 和稳态资本存量，$(\tilde{A}, \tilde{\alpha})$ 就不再有自由度，这正是小型开放经济和封闭经济从同一起点出发的原因。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: two_comp_ex2
+
+风险敏感性能诱导多少储蓄？
+
+对 $\sigma \in \{0, -0.05, -0.1\}$ 重新计算初始稳态，其余参数保持校准值不变，并报告人均资本存量、均衡劳动税率，以及资本相对于国内生产总值的比例。
+
+解释为什么 $\sigma = 0$ 的情形被称为确定性等价。
+```
+
+```{solution-start} two_comp_ex2
+:class: dropdown
+```
+
+```{code-cell} ipython3
+print(f"{'σ':>7}  {'k_bar':>8}  {'τ_l':>7}  {'K/GDP':>7}")
+for σ_try in [0.0, -0.05, -0.1]:
+    hh_try = create_household(σ=σ_try)
+    ss_try = find_ss_exo(
+        (tech.RR, tech.w),
+        (τ_a_0, τ_0_0, benef_0, G_0, Gb_0),
+        hh_try, tech
+    )
+    print(f"{σ_try:>7.2f}  {ss_try.k_bar:>8.4f}  {ss_try.τ_l:>7.4f}"
+          f"  {ss_try.k2gdp:>7.4f}")
+```
+
+从 $\sigma = 0$ 变为校准值 $\sigma = -0.05$ 时，资本存量上升约三分之一，而风险敏感性再增加一倍又使其再上升约三分之一。
+
+额外的资本拓宽了税基，因此在前两行之间，平衡同一预算所需的劳动税率下降了约四个百分点。
+
+在 $\sigma = 0$ 时，算子 $\mathcal{T}_t$ 是恒等映射，因此 $P_t$ 和决策规则 $F_t$ 永远不会感知到冲击载荷 $C_t$。
+
+此时消费只对未来收入的条件均值作出反应，这正是普通线性二次问题的确定性等价性质。
+
+在 $\sigma < 0$ 时，项 $\sigma P C_t(I - \sigma C_t' P C_t)^{-1} C_t' P$ 使 $F_t$ 依赖于 $C_t C_t'$，消费者由此积累起一道抵御收入风险的缓冲。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: two_comp_ex3
+
+本练习考察实验 2 背后的债务目标，以及两项改革的长期福利排序。
+
+1. 计算人均福利支出账单 $\sum_{t > T_1} S_t f_t$，以及使政府净资产收入 $[R/n - 1](-\bar{b})$ 恰好能支付该账单的资产头寸 $\bar{b}$。
+
+2. 将该数值与讲座中针对债务相对国内生产总值比例所设定目标 $-1.1785$ 实际得到的资产头寸作比较，并报告该稳态下的净资产收入和劳动税率。
+
+3. 在固定价格下，计算新生儿在初始稳态和两个终端稳态中的福利。新生儿更偏好哪项改革？为什么？
+```
+
+```{solution-start} two_comp_ex3
+:class: dropdown
+```
+
+```{code-cell} ipython3
+benefit_bill_ex = float(jnp.sum(benef_0 * hh.frac * (1.0 - hh.Ind_work)))
+Rn_ex = tech.RR / hh.n - 1.0
+
+print(f"benefit bill               = {benefit_bill_ex:.4f}")
+print(f"R/n - 1                    = {Rn_ex:.4f}")
+print(f"b_bar that just funds it   = {-benefit_bill_ex / Rn_ex:.4f}\n")
+
+ss_exp2 = exp2_exo['ss1']
+print(f"lecture target -1.1785 gives b_bar = {ss_exp2.Gb:.4f}")
+print(f"  net asset income = {-Rn_ex * ss_exp2.Gb:.4f}"
+      f"  versus benefits = {benefit_bill_ex:.4f}")
+print(f"  labor tax τ_l = {ss_exp2.τ_l:.4f}"
+      f"  versus {ss0.τ_l:.4f} initially")
+```
+
+恰好能支付福利的资产头寸约为 $-9.1$，而讲座中所用目标所得到的资产头寸约为 $-10.2$。
+
+因此政府积累的资产略多于仅社会保障所需的数量，而盈余使其能够将劳动税率从 $0.34$ 下调至约 $0.14$，尽管它仍在支付福利并仍在购买商品。
+
+```{code-cell} ipython3
+print(f"{'steady state':>34}  {'U of a newborn':>14}")
+for name, ss_w in [
+    ('initial, pay-as-you-go', ss0),
+    ('terminal, buy-out (no benefits)', exp1_exo['ss1']),
+    ('terminal, government funding', exp2_exo['ss1']),
+]:
+    print(f"{name:>34}  {newborn_welfare(ss_w):>14.2f}")
+```
+
+新生儿将政府融资方案排在首位，买断方案排在第二位，初始的现收现付制度排在最后。
+
+由于这些都是固定价格下的稳态，三者中工资水平相同；使福利高于初始稳态的原因在于两项改革都带来了更低的劳动税率。
+
+尽管劳动税率更高，政府融资方案仍优于买断方案，因为它继续支付福利，从而为长寿超出资产积累的风险以及低劳动收入的风险提供了保险。
+
+请记住，这一排序比较的是各个稳态，因而没有计入改革发生时在世各代所承担的过渡成本。
+
+```{solution-end}
 ```
