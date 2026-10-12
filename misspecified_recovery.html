@@ -215,7 +215,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">133.2.1. 退化的鞅成分</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">133.3. 鞅成分</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mr-martingale-component">133.3. 鞅成分</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">133.4. 从矩阵到一般框架</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">133.4.1. 概率空间和状态</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#y">133.4.2. 信息与 <span class="math notranslate nohighlight">\(Y\)</span></a></li>
@@ -294,7 +294,7 @@
 
                     <!-- Last modified / Changelog dropdown -->
                         <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
-                            Last changed: Jul 22, 2026
+                            Last changed: Oct 09, 2026
                             <span class="changelog-icon">▼</span>
                         </button>
 
@@ -302,6 +302,15 @@
                     <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
                         <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/misspecified_recovery.md">full history</a>)</h4>
                         <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/19c6e1c" class="changelog-hash">19c6e1c</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">2 days ago</span>
+                                <span class="changelog-message">Resync ge_arrow and misspecified_recovery to current source (recovers the 2026-09-20 and 2026-10-09 sync failures) (#292)</span>
+                            </li>
                             
                             <li class="changelog-entry">
                                 
@@ -337,7 +346,7 @@
 <ul>
 <li><p><a class="reference internal" href="#id2" id="id31">概述</a></p></li>
 <li><p><a class="reference internal" href="#id4" id="id32">三个转移矩阵</a></p></li>
-<li><p><a class="reference internal" href="#id7" id="id33">鞅成分</a></p></li>
+<li><p><a class="reference internal" href="#mr-martingale-component" id="id33">鞅成分</a></p></li>
 <li><p><a class="reference internal" href="#id8" id="id34">从矩阵到一般框架</a></p></li>
 <li><p><a class="reference internal" href="#id17" id="id35">恢复何时失败</a></p></li>
 <li><p><a class="reference internal" href="#mr-additional-state" id="id36">额外的状态向量</a></p></li>
@@ -353,6 +362,7 @@
 <p>讲座 <a class="reference internal" href="ross_recovery.html"><span class="doc">恢复定理</span></a> 研究了恢复有效的情形。</p>
 <p>在那里，<strong>转移独立性</strong>让我们能够使用阿罗价格将投资者的信念与定价核分离开来。</p>
 <p>本讲座探讨当不施加该限制时，相同的佩龙-弗罗贝尼乌斯方法会给出什么结果。</p>
+<p>本讲座使用的特征函数、鞅分解和测度扭曲机制在 <a class="reference internal" href="long_run_risk_operator.html"><span class="doc">长期风险：一种算子方法</span></a> 中有详细阐述。</p>
 <p>我们将保持三个概率测度相互分离。</p>
 <p>第一个是正确设定的概率测度，它支配着模型中的马尔可夫状态。</p>
 <p>第二个是单期风险中性概率测度，它来自用债券价格对单期阿罗价格进行归一化。</p>
@@ -508,8 +518,11 @@ s_{ij}=\exp(-\delta)\frac{m_j}{m_i}
 <p>对于趋势平稳消费和幂效用，SDF 为</p>
 <div class="math notranslate nohighlight">
 \[
-s_{ij}=A\left(\frac{c_j}{c_i}\right)^{-\gamma}.
+s_{ij}=A\left(\frac{c_j}{c_i}\right)^{-\gamma},
+\qquad
+A = \exp(-\delta-\gamma g_c),
 \]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\delta\)</span> 是主观贴现率，<span class="math notranslate nohighlight">\(\gamma\)</span> 是风险厌恶，<span class="math notranslate nohighlight">\(g_c\)</span> 是趋势消费增长。</p>
 <p>这是 Ross 恢复应该返回正确设定的转移矩阵的一个情形。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -550,7 +563,7 @@ s_{ij}=A\left(\frac{c_j}{c_i}\right)^{-\gamma}.
 </div>
 <p>这两个矩阵不应被期望是一致的。</p>
 <p>行归一化矩阵 <span class="math notranslate nohighlight">\(\bar{\mathbf{P}}\)</span> 是一个短视界风险中性测度变换：它将单期 SDF 折叠进转移概率中，因此它通常不同于正确设定的矩阵 <span class="math notranslate nohighlight">\(\mathbf{P}\)</span>。</p>
-<p>其逻辑来自 <a class="reference internal" href="ross_recovery.html"><span class="doc">恢复定理</span></a> 中的佩龙-弗罗贝尼乌斯构造。</p>
+<p><span class="math notranslate nohighlight">\(\hat{\mathbf{P}}\)</span> 能够等于 <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> 的原因来自 <a class="reference internal" href="ross_recovery.html"><span class="doc">恢复定理</span></a> 中的佩龙-弗罗贝尼乌斯构造。</p>
 <p>在转移独立的情形中，定价核具有形式 <span class="math notranslate nohighlight">\(s_{ij}=\exp(\hat\eta)\hat e_i/\hat e_j\)</span>。</p>
 <p>将其代入佩龙-弗罗贝尼乌斯转移公式得到</p>
 <div class="math notranslate nohighlight">
@@ -573,31 +586,8 @@ s_{ij}=A\left(\frac{c_j}{c_i}\right)^{-\gamma}.
 = \exp(-\hat\eta)s_{ij}\frac{\hat e_j}{\hat e_i}.
 \]</div>
 <p>当对每个转移都有 <span class="math notranslate nohighlight">\(\hat h_{ij}=1\)</span> 时，<span class="math notranslate nohighlight">\(\hat{\mathbf P}\)</span> 和 <span class="math notranslate nohighlight">\(\mathbf P\)</span> 相同。</p>
-<p>下一节解释为什么这个比值是单期鞅增量。</p>
-<p>在幂效用例子中，记</p>
-<div class="math notranslate nohighlight">
-\[
-A = \exp(-\delta-\gamma g_c),
-\qquad
-s_{ij}=A\left(\frac{c_j}{c_i}\right)^{-\gamma}.
-\]</div>
-<p>取 <span class="math notranslate nohighlight">\(\hat e_i=c_i^\gamma\)</span>（相差一个比例因子），得到</p>
-<div class="math notranslate nohighlight">
-\[
-[\mathbf{Q}\hat e]_i
-= \sum_j A\left(\frac{c_j}{c_i}\right)^{-\gamma}p_{ij}c_j^\gamma
-= A c_i^\gamma
-= A\hat e_i,
-\]</div>
-<p>因此 <span class="math notranslate nohighlight">\(\exp(\hat\eta)=A\)</span>。</p>
-<p>因此，</p>
-<div class="math notranslate nohighlight">
-\[
-\hat h_{ij}
-= A^{-1}A\left(\frac{c_j}{c_i}\right)^{-\gamma}
-  \frac{c_j^\gamma}{c_i^\gamma}
-=1.
-\]</div>
+<p><a class="reference internal" href="#mr-martingale-component"><span class="std std-ref">鞅成分</span></a> 一节在 <a class="reference internal" href="#equation-eq-mr-hhat-finite">(133.4)</a> 中正式定义了这个比值，并解释了为什么它是单期鞅增量。</p>
+<p>我们请你在 <a class="reference internal" href="#ex_power_utility_success"><span class="std std-numref">练习 133.2</span></a> 中验证，在这个例子中 <span class="math notranslate nohighlight">\(\hat e_i=c_i^\gamma\)</span> 且 <span class="math notranslate nohighlight">\(\exp(\hat\eta)=A\)</span>，因此 <span class="math notranslate nohighlight">\(\hat h_{ij}\equiv 1\)</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">H_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">P_hat</span><span class="p">,</span> <span class="n">P_true</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">P_true</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">P_true</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
@@ -633,7 +623,7 @@ s_{ij}=A\left(\frac{c_j}{c_i}\right)^{-\gamma}.
 P 下的条件均值
 [1. 1. 1.]
 
-max |h_hat - 1| = 2.22e-15
+max |h_hat - 1| = 1.78e-15
 </pre></div>
 </div>
 </div>
@@ -647,8 +637,8 @@ max |h_hat - 1| = 2.22e-15
 <p>在这个例子中，这种抵消耗尽了 SDF，因此鞅成分是退化的。</p>
 </section>
 </section>
-<section id="id7">
-<h2><a class="toc-backref" href="#id33" role="doc-backlink"><span class="section-number">133.3. </span>鞅成分</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="mr-martingale-component">
+<span id="id7"></span><h2><a class="toc-backref" href="#id33" role="doc-backlink"><span class="section-number">133.3. </span>鞅成分</a><a class="headerlink" href="#mr-martingale-component" title="Link to this heading">#</a></h2>
 <p>设 <span class="math notranslate nohighlight">\((\hat \eta, \hat e)\)</span> 是 <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> 的佩龙-弗罗贝尼乌斯特征值指数和正的右特征向量：</p>
 <div class="math notranslate nohighlight">
 \[
@@ -719,7 +709,7 @@ s_{ij}=\exp(\hat\eta)\frac{\hat e_i}{\hat e_j}.
 =\exp(-\hat\eta)s_{ij}\frac{\hat e_j}{\hat e_i}.
 \]</div>
 <p>因此 <span class="math notranslate nohighlight">\(\hat{\mathbf{P}}=\mathbf{P}\)</span> 当且仅当对每个可行转移都有 <span class="math notranslate nohighlight">\(\hat h_{ij}=1\)</span>。</p>
-<p>这个条件等同于说 SDF 可以写成 <a class="reference internal" href="#equation-eq-mr-finite-sdf-decomposition">(133.5)</a> 而没有额外的鞅增量。</p>
+<p>这个条件等同于说 SDF 具有 <a class="reference internal" href="#prop-misspecified-recovery-martingale-component">命题 133.1</a> 中所展示的形式。</p>
 </div>
 <p>这个有限状态推论是该论文一般识别结果的一个特例。</p>
 <p>如果一对 <span class="math notranslate nohighlight">\((S,P)\)</span> 能解释资产价格，且 <span class="math notranslate nohighlight">\(H\)</span> 是一个正的乘性鞅，那么相同的资产价格也可以由改变后的概率测度 <span class="math notranslate nohighlight">\(P^H\)</span> 连同调整后的随机贴现因子来解释</p>
@@ -901,7 +891,7 @@ s^H_{ij}p^H_{ij}=s_{ij}p_{ij}=q_{ij}.
 <h3><span class="section-number">133.4.6. </span>佩龙-弗罗贝尼乌斯恢复了什么<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <p>现在回到佩龙-弗罗贝尼乌斯步骤。</p>
 <p>有限状态方程是 <a class="reference internal" href="#equation-eq-mr-pf-finite">(133.2)</a>。</p>
-<p>一般状态的替代物是定价算子的特征函数问题：找到标量 <span class="math notranslate nohighlight">\(\hat\eta\)</span> 和正函数 <span class="math notranslate nohighlight">\(\hat e\)</span>，使得对每个视界 <span class="math notranslate nohighlight">\(t\)</span>，</p>
+<p>一般状态的替代物是 <a class="reference internal" href="long_run_risk_operator.html"><span class="doc">长期风险：一种算子方法</span></a> 中研究的那类定价算子的特征函数问题：找到标量 <span class="math notranslate nohighlight">\(\hat\eta\)</span> 和正函数 <span class="math notranslate nohighlight">\(\hat e\)</span>，使得对每个视界 <span class="math notranslate nohighlight">\(t\)</span>，</p>
 <div class="math notranslate nohighlight" id="equation-eq-mr-pf-general">
 <span class="eqno">(133.6)<a class="headerlink" href="#equation-eq-mr-pf-general" title="Link to this equation">#</a></span>\[[Q_t\hat e](x)
 =\exp(\hat\eta t)\hat e(x).\]</div>
@@ -971,12 +961,19 @@ E[S_t\hat e(X_t)\mid\mathcal F_\tau] \\
 <p>对于 <span class="math notranslate nohighlight">\(\mathcal F_t\)</span> 上的无条件测度，拉东-尼科迪姆密度是 <span class="math notranslate nohighlight">\(\hat H_t\)</span>，其中 <span class="math notranslate nohighlight">\(\hat H_0\)</span> 调整初始分布。</p>
 <p>如果 <span class="math notranslate nohighlight">\(\hat H_{t+1}/\hat H_t\)</span> 不恒等于一，恢复的概率测度不同于正确设定的概率测度。</p>
 <p>我们在下一节展示排除这种差异的限制条件。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>对象 <span class="math notranslate nohighlight">\((\hat e,\hat\eta,\hat H)\)</span> 就是 <a class="reference internal" href="long_run_risk_operator.html"><span class="doc">长期风险：一种算子方法</span></a> 中写作 <span class="math notranslate nohighlight">\((\phi,\rho,\hat M)\)</span> 的那些对象，那一讲使用一般的乘性泛函 <span class="math notranslate nohighlight">\(M\)</span> 来代替本讲中的随机贴现因子 <span class="math notranslate nohighlight">\(S\)</span>；那一讲所称的<strong>测度扭曲</strong>正是本讲所称的长期风险中性测度 <span class="math notranslate nohighlight">\(\hat{\mathbf P}=P^{\hat H}\)</span>。</p>
+<p>有一个符号不能直接套用。</p>
+<p>这里的 <span class="math notranslate nohighlight">\(Q_t\)</span> 是仅由随机贴现因子构造的半群，那一讲将其记为 <span class="math notranslate nohighlight">\(\mathbb S_t\)</span>；而那一讲中的 <span class="math notranslate nohighlight">\(\mathbb Q_t\)</span> 则是由 <span class="math notranslate nohighlight">\(Q=GS\)</span> 构造的现金流估值半群，它还携带一个随机增长因子。</p>
+</div>
 </section>
 <section id="id15">
 <h3><span class="section-number">133.4.7. </span>选择与恢复<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
 <p>在有限不可约矩阵问题中，佩龙-弗罗贝尼乌斯理论给出一个在相差比例因子意义下唯一的正特征向量，因此恢复的转移矩阵由 <span class="math notranslate nohighlight">\(\mathbf Q\)</span> 确定。</p>
 <p>在一般状态空间中，正特征函数不一定存在，而当它存在时，多个正特征函数可能都能求解相同的定价算子问题。</p>
 <p>因此该论文对候选特征函数所诱导的概率测度施加了一个选择条件。</p>
+<p>这与 <a class="reference internal" href="long_run_risk_operator.html"><span class="doc">长期风险：一种算子方法</span></a> 在”扭曲过程的稳定性”标题下处理的困难相同；参见那里的 <a class="reference internal" href="long_run_risk_operator.html#lrr-def-stochastic-stability">定义 132.16</a>。</p>
 <div class="proof assumption admonition" id="assumption-mr-ergodicity">
 <p class="admonition-title"><span class="caption-number">假设 133.2 </span> (恢复测度的遍历性)</p>
 <section class="assumption-content" id="proof-content">
@@ -1019,7 +1016,7 @@ S_t=\exp(-\delta t)\frac{m(X_t)}{m(X_0)}
 </section>
 <section id="id16">
 <h3><span class="section-number">133.4.8. </span>连续时间版本<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
-<p>在讨论恢复失败的例子之前，让我们简要介绍连续时间中的模型。</p>
+<p>在讨论恢复失败的例子之前，让我们简要地用连续时间重述这个框架。</p>
 <p>我们引入扩散记号，因为下面的长期风险例子是用连续时间写的。</p>
 <p>对象与之前相同：</p>
 <ul class="simple">
@@ -1221,14 +1218,14 @@ findfont: Failed to find font weight normal, now using 600.
 <section id="id20">
 <h3><span class="section-number">133.5.2. </span>永久冲击<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
 <p>递归效用给出了一个非常数的鞅成分。</p>
-<p>永久冲击提供了另一个。</p>
+<p>永久冲击提供了另一个，但这个例子需要仔细解读，因为它所得出的结果取决于恢复所依据的信息集。</p>
 <p>假设消费具有永久冲击，</p>
 <div class="math notranslate nohighlight">
 \[
 \log C_{t+1}-\log C_t
 = g + x(X_{t+1})-x(X_t) + \sigma \varepsilon_{t+1},
 \]</div>
-<p>其中 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 在时间上是独立的。</p>
+<p>其中 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 在时间上是独立的，并且独立于马尔可夫状态 <span class="math notranslate nohighlight">\(X\)</span>。</p>
 <p>在幂效用下，SDF 包含</p>
 <div class="math notranslate nohighlight">
 \[
@@ -1238,17 +1235,69 @@ findfont: Failed to find font weight normal, now using 600.
 \]</div>
 <p>中间项仅依赖于当前和下一个马尔可夫状态。</p>
 <p>它是状态函数之比，因此佩龙-弗罗贝尼乌斯转移公式可以抵消它。</p>
-<p>永久冲击项依赖于新的冲击 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span>。</p>
-<p>因为在这个构造中该冲击不能由有限马尔可夫状态概括，所以没有状态函数的比值可以抵消它。</p>
-<p>除以其条件均值后，冲击项变成一个鞅增量：</p>
+<p>最后一项依赖于新的冲击 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span>，它不能由马尔可夫状态概括。</p>
+<p>除以其条件均值后，该项变成一个鞅增量：</p>
 <div class="math notranslate nohighlight">
 \[
 \frac{\exp(-\gamma\sigma\varepsilon_{t+1})}
      {E[\exp(-\gamma\sigma\varepsilon_{t+1})]}.
 \]</div>
-<p>因此，即使在普通的幂效用下，永久消费冲击也能使恢复的概率测度不同于投资者的信念。</p>
-<p>这个陈述是相对于恢复过程中使用的马尔可夫状态而言的。</p>
-<p>扩大状态或信息结构以考虑该冲击可以容纳它，但这样做会导致 <a class="reference internal" href="#mr-additional-state"><span class="std std-ref">额外的状态向量</span></a> 中讨论的识别问题。</p>
+<p>这个鞅增量是否破坏恢复，取决于特征函数问题所依据的信息集，因此我们依次考察两种情形。</p>
+<p>首先考虑一位对仅以马尔可夫状态 <span class="math notranslate nohighlight">\(X\)</span> 为基础的债权定价的分析师。</p>
+<p>对 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 取期望，<span class="math notranslate nohighlight">\(X\)</span> 各状态间的阿罗价格为</p>
+<div class="math notranslate nohighlight">
+\[
+q_{ij}
+= \exp(-\delta-\gamma g)\,
+  E[\exp(-\gamma\sigma\varepsilon_{t+1})]\,
+  \frac{\exp(-\gamma x_j)}{\exp(-\gamma x_i)}\,
+  p_{ij}.
+\]</div>
+<p>由于 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span> 独立于 <span class="math notranslate nohighlight">\(X\)</span>，永久冲击对 <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> 的每个元素贡献相同的常数，并可提出因子。</p>
+<p>剩下的部分恰好在 <span class="math notranslate nohighlight">\(X\)</span> 上是转移独立的，其中 <span class="math notranslate nohighlight">\(\hat e_i=\exp(\gamma x_i)\)</span>。</p>
+<p>因此，这里对 <span class="math notranslate nohighlight">\(X\)</span> 的转移矩阵的佩龙-弗罗贝尼乌斯恢复是精确的：<span class="math notranslate nohighlight">\(X\)</span> 各状态之间的鞅增量恒等于一。</p>
+<p>下一个单元在一个三状态例子中确认了这一点。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x_perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">])</span>   <span class="c1"># 状态对对数消费的影响</span>
+<span class="n">σ_perm</span> <span class="o">=</span> <span class="mf">0.01</span>                           <span class="c1"># 永久冲击的规模</span>
+<span class="n">E_perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">γ_power</span> <span class="o">*</span> <span class="n">σ_perm</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>   <span class="c1"># 对于 ε ~ N(0, 1)，E[exp(-γ σ ε)]</span>
+
+<span class="c1"># X 上的阿罗价格：永久冲击仅通过常数 E_perm 进入</span>
+<span class="n">S_perm</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">δ</span> <span class="o">-</span> <span class="n">γ_power</span> <span class="o">*</span> <span class="n">g_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">E_perm</span>
+          <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">γ_power</span> <span class="o">*</span> <span class="n">x_perm</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+          <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">γ_power</span> <span class="o">*</span> <span class="n">x_perm</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">])</span>
+<span class="n">Q_perm</span> <span class="o">=</span> <span class="n">S_perm</span> <span class="o">*</span> <span class="n">P_true</span>
+
+<span class="n">H_perm</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">e_perm</span><span class="p">,</span> <span class="n">P_hat_perm</span> <span class="o">=</span> <span class="n">martingale_increment</span><span class="p">(</span><span class="n">Q_perm</span><span class="p">,</span> <span class="n">P_true</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;特征函数：数值 vs exp(gamma x)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">e_perm</span> <span class="o">/</span> <span class="n">e_perm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">6</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">γ_power</span> <span class="o">*</span> <span class="n">x_perm</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">γ_power</span> <span class="o">*</span> <span class="n">x_perm</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">6</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">max |P_hat - P| = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P_hat_perm</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">P_true</span><span class="p">))</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max |h_hat - 1| = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">H_perm</span><span class="p">[</span><span class="n">P_true</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>特征函数：数值 vs exp(gamma x)
+[0.904837 1.       1.105171]
+[0.904837 1.       1.105171]
+
+max |P_hat - P| = 1.1e-16
+max |h_hat - 1| = 8.9e-16
+</pre></div>
+</div>
+</div>
+</div>
+<p>恢复的特征函数是 <span class="math notranslate nohighlight">\(\exp(\gamma x_i)\)</span>，两个差异都在机器精度范围内。</p>
+<p>现在扩大滤波，使其揭示消费，从而也揭示 <span class="math notranslate nohighlight">\(\varepsilon_{t+1}\)</span>。</p>
+<p>相对于投资者关于 <span class="math notranslate nohighlight">\((X,\varepsilon)\)</span> 的信息而言，上面显示的鞅增量并不恒等于一：它使永久冲击的分布向低实现值倾斜。</p>
+<p>因此，即便在普通的幂效用下，恢复出的消费法则也不同于投资者的信念，尽管恢复出的马尔可夫状态法则并非如此。</p>
+<p>现在可以精确地陈述这个结论了。</p>
+<p>永久消费冲击使恢复的概率测度在揭示这些冲击的滤波上不同于投资者的信念，即使在普通的幂效用下也是如此。</p>
+<p>一旦永久冲击不再独立于 <span class="math notranslate nohighlight">\(X\)</span>，仅对 <span class="math notranslate nohighlight">\(X\)</span> 的恢复也会失效，因为此时该冲击不再从 <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> 中以常数形式提出。</p>
+<p>扩大状态或信息结构以考虑该冲击并不能修复恢复；它会导致 <a class="reference internal" href="#mr-additional-state"><span class="std std-ref">额外的状态向量</span></a> 中讨论的识别问题。</p>
 </section>
 <section id="id21">
 <h3><span class="section-number">133.5.3. </span>长期风险<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
@@ -1269,7 +1318,22 @@ dX_{2t}
    + \sqrt{X_{2t}}\sigma_2 dW_t .
 \end{aligned}
 \end{split}\]</div>
-<p>这里 <span class="math notranslate nohighlight">\(X_1\)</span> 是可预测的消费增长，<span class="math notranslate nohighlight">\(X_2\)</span> 是随机波动率。</p>
+<p>对数消费具有仿射漂移和相同的波动率缩放：</p>
+<div class="math notranslate nohighlight">
+\[
+d\log C_t
+= [\beta_{c0}+\beta_{c1}(X_{1t}-\iota_1)+\beta_{c2}(X_{2t}-\iota_2)]dt
+  + \sqrt{X_{2t}}\,\alpha_c\cdot dW_t .
+\]</div>
+<p>这里 <span class="math notranslate nohighlight">\(X_1\)</span> 是可预测的消费增长，<span class="math notranslate nohighlight">\(X_2\)</span> 是随机波动率状态。</p>
+<p>本节通篇使用两个约定，它们对阅读代码都很重要。</p>
+<p>第一，每个漂移都相对于长期均值 <span class="math notranslate nohighlight">\((\iota_1,\iota_2)\)</span> 写出，因此系数三元组 <span class="math notranslate nohighlight">\((\beta_0,\beta_1,\beta_2)\)</span> 总是表示
+<span class="math notranslate nohighlight">\(\beta_0+\beta_1(x_1-\iota_1)+\beta_2(x_2-\iota_2)\)</span>。</p>
+<p>第二，每个扩散载荷都按 <span class="math notranslate nohighlight">\(\sqrt{X_{2t}}\)</span> 缩放，因此伊藤修正项 <span class="math notranslate nohighlight">\(\tfrac12|\alpha|^2\)</span> 进入 <span class="math notranslate nohighlight">\(x_2\)</span> 的系数，而不是常数项。</p>
+<p>这两个约定是一起起作用的，值得说明其原因，因为下面的代码在 <span class="math notranslate nohighlight">\(\log S\)</span> 漂移的 <span class="math notranslate nohighlight">\(x_2\)</span> 系数中携带了一项 <span class="math notranslate nohighlight">\(-\tfrac12|\alpha_{H^*}|^2\)</span>，并在其常数项中携带了一项 <span class="math notranslate nohighlight">\(-\tfrac12\iota_2|\alpha_{H^*}|^2\)</span>，其中 <span class="math notranslate nohighlight">\(\alpha_{H^*}\)</span> 是下面定义的延续值鞅的冲击暴露。</p>
+<p>这是一个修正，而非两个。</p>
+<p>延续值鞅对 <span class="math notranslate nohighlight">\(\log S\)</span> 贡献了漂移 <span class="math notranslate nohighlight">\(-\tfrac12 x_2|\alpha_{H^*}|^2\)</span>，将这单独一项写成中心化形式，就把它拆分为乘以 <span class="math notranslate nohighlight">\((x_2-\iota_2)\)</span> 的 <span class="math notranslate nohighlight">\(-\tfrac12|\alpha_{H^*}|^2\)</span> 以及留在常数项中的 <span class="math notranslate nohighlight">\(-\tfrac12\iota_2|\alpha_{H^*}|^2\)</span>。</p>
+<p>下面的校准设定 <span class="math notranslate nohighlight">\(\beta_{c1}=1\)</span>，因此 <span class="math notranslate nohighlight">\(X_1\)</span> <em>就是</em>可预测的消费增长。</p>
 <p>代表性行为人具有单位跨期替代弹性的 Epstein-Zin 效用。</p>
 <p>延续值引入了上面鞅成分的连续时间类比。</p>
 <p>我们将该过程记为 <span class="math notranslate nohighlight">\(H^*\)</span>，SDF 满足</p>
@@ -1404,14 +1468,23 @@ v(x) = v_0 + v_1 x_1 + v_2 x_2.
     <span class="n">roots</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="n">lin</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">disc</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">quad</span><span class="p">),</span>
              <span class="p">(</span><span class="o">-</span><span class="n">lin</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">disc</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">quad</span><span class="p">)]</span>
 
-    <span class="n">candidates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># 选择规则：保留使 X 在所诱导的测度下平稳且遍历的根。</span>
+    <span class="c1"># 在这个仿射模型中，这要求被扭曲的波动率过程均值回复</span>
+    <span class="c1"># （mu_hat_22 &lt; 0）到一个正的长期均值。</span>
+    <span class="n">selected</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">e2</span> <span class="ow">in</span> <span class="n">roots</span><span class="p">:</span>
-        <span class="n">eta</span> <span class="o">=</span> <span class="p">(</span><span class="n">β_s0</span> <span class="o">-</span> <span class="n">β_s11</span> <span class="o">*</span> <span class="n">ι1</span> <span class="o">-</span> <span class="n">β_s12</span> <span class="o">*</span> <span class="n">ι2</span>
-               <span class="o">-</span> <span class="n">e1</span> <span class="o">*</span> <span class="p">(</span><span class="n">μ11</span> <span class="o">*</span> <span class="n">ι1</span> <span class="o">+</span> <span class="n">μ12</span> <span class="o">*</span> <span class="n">ι2</span><span class="p">)</span> <span class="o">-</span> <span class="n">e2</span> <span class="o">*</span> <span class="n">μ22</span> <span class="o">*</span> <span class="n">ι2</span><span class="p">)</span>
-        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">eta</span><span class="p">,</span> <span class="n">e2</span><span class="p">))</span>
+        <span class="n">α_h</span> <span class="o">=</span> <span class="n">α_s</span> <span class="o">+</span> <span class="n">σ1</span> <span class="o">*</span> <span class="n">e1</span> <span class="o">+</span> <span class="n">σ2</span> <span class="o">*</span> <span class="n">e2</span>
+        <span class="n">μ_hat_22</span> <span class="o">=</span> <span class="n">μ22</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">σ2</span><span class="p">,</span> <span class="n">α_h</span><span class="p">)</span>
+        <span class="n">ι_hat_2</span> <span class="o">=</span> <span class="p">(</span><span class="n">μ22</span> <span class="o">/</span> <span class="n">μ_hat_22</span><span class="p">)</span> <span class="o">*</span> <span class="n">ι2</span>
+        <span class="k">if</span> <span class="n">μ_hat_22</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ι_hat_2</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">eta</span> <span class="o">=</span> <span class="p">(</span><span class="n">β_s0</span> <span class="o">-</span> <span class="n">β_s11</span> <span class="o">*</span> <span class="n">ι1</span> <span class="o">-</span> <span class="n">β_s12</span> <span class="o">*</span> <span class="n">ι2</span>
+                   <span class="o">-</span> <span class="n">e1</span> <span class="o">*</span> <span class="p">(</span><span class="n">μ11</span> <span class="o">*</span> <span class="n">ι1</span> <span class="o">+</span> <span class="n">μ12</span> <span class="o">*</span> <span class="n">ι2</span><span class="p">)</span> <span class="o">-</span> <span class="n">e2</span> <span class="o">*</span> <span class="n">μ22</span> <span class="o">*</span> <span class="n">ι2</span><span class="p">)</span>
+            <span class="n">selected</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">eta</span><span class="p">,</span> <span class="n">e2</span><span class="p">))</span>
 
-    <span class="c1"># 选择给出较小特征值指数的解。</span>
-    <span class="n">eta</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Selection condition does not pin down a unique eigenfunction&quot;</span><span class="p">)</span>
+
+    <span class="n">eta</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="n">selected</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">α_s</span>
 
 
@@ -1473,6 +1546,8 @@ v(x) = v_0 + v_1 x_1 + v_2 x_2.
 </div>
 </div>
 </div>
+<p>关于 <span class="math notranslate nohighlight">\(e_2\)</span> 的二次方程有两个根，<code class="docutils literal notranslate"><span class="pre">solve_pf_lrr</span></code> 使用 <a class="reference internal" href="#assumption-mr-ergodicity">假设 133.2</a> 中所述的准则在两者间进行选择，而 <a class="reference internal" href="#prop-mr-uniqueness">命题 133.2</a> 表明这最多只留下一个解。</p>
+<p>这里被舍弃的根给出 <span class="math notranslate nohighlight">\(\hat\mu_{22}=+0.0115\)</span> 和 <span class="math notranslate nohighlight">\(\hat\iota_2=-1.13\)</span>，这是一个爆炸性的波动率过程，向负的长期均值回复，因此 <span class="math notranslate nohighlight">\(X\)</span> 在它所诱导的测度下显然不是平稳且遍历的。</p>
 <p>对于这里使用的校准，恢复的概率测度改变了长期状态分布。</p>
 <p>它降低了预期增长的均值并提高了波动率的均值。</p>
 <div class="cell docutils container">
@@ -1517,7 +1592,8 @@ v(x) = v_0 + v_1 x_1 + v_2 x_2.
 <p>这些数值清楚地展示了这个机制。</p>
 <p>正的值斜率 <span class="math notranslate nohighlight">\(v_1\)</span> 表明延续值对可预测的消费增长非常敏感。</p>
 <p>在这个校准中波动率斜率 <span class="math notranslate nohighlight">\(v_2\)</span> 为负，因此更高的波动率降低延续值。</p>
-<p>特征函数系数 <span class="math notranslate nohighlight">\(e_1\)</span> 具有相反的符号：长期测度变换对可预测增长具有负载荷。</p>
+<p>特征函数系数 <span class="math notranslate nohighlight">\(e_1\)</span> 具有相反的符号：特征函数随可预测增长而下降。</p>
+<p>测度变换本身通过 <span class="math notranslate nohighlight">\(\alpha_S+\sigma_1e_1+\sigma_2e_2\)</span> 载入，而特征函数项 <span class="math notranslate nohighlight">\(\sigma_1e_1\)</span> 强化了 <span class="math notranslate nohighlight">\(\alpha_S\)</span> 中已有的负向倾斜。</p>
 <p>因此恢复的概率测度对具有较低预期增长的历史赋予更多的概率。</p>
 <p>正的 <span class="math notranslate nohighlight">\(e_2\)</span> 对波动率具有相反的含义，对更高波动率状态赋予更多的概率。</p>
 <p>该表将那些系数转化为状态动态。</p>
@@ -1534,7 +1610,8 @@ v(x) = v_0 + v_1 x_1 + v_2 x_2.
 <p>这些是具有较低可预测增长 <span class="math notranslate nohighlight">\(X_1\)</span> 和较高波动率 <span class="math notranslate nohighlight">\(X_2\)</span> 的状态。</p>
 <p>虚线轮廓添加了单期风险中性概率测度。</p>
 <p>在这个校准中，单期风险中性和长期风险中性平稳分布彼此接近，且两者都远离正确设定的分布。</p>
-<p>因此，鞅成分解释了状态动态中大部分的风险调整。</p>
+<p><span class="math notranslate nohighlight">\(\mathbf{P}\)</span> 和 <span class="math notranslate nohighlight">\(\hat{\mathbf{P}}\)</span> 之间的整个差距就是鞅成分 <span class="math notranslate nohighlight">\(\hat H\)</span>，其冲击暴露为 <span class="math notranslate nohighlight">\(\alpha_S+\sigma_1e_1+\sigma_2e_2\)</span>。</p>
+<p>两个风险中性密度如此接近所揭示的是这个暴露是如何分配的：其中大部分来自单期风险价格 <span class="math notranslate nohighlight">\(\alpha_S\)</span>，而佩龙-弗罗贝尼乌斯特征函数提供了其余部分，大约是增长冲击载荷的十分之一和波动率冲击载荷的四分之一。</p>
 <p>该论文的图 1 报告了模型隐含的平稳密度；下面的模拟是对那些密度的数值近似。</p>
 <p>下图模拟每个概率测度下的状态过程，并估计 <span class="math notranslate nohighlight">\((X_2, X_1)\)</span> 的平稳联合密度。</p>
 <p>水平线标记 <span class="math notranslate nohighlight">\(X_1=0\)</span>，垂直线标记正确设定的波动率均值 <span class="math notranslate nohighlight">\(X_2=\iota_2\)</span>。</p>
@@ -1745,8 +1822,10 @@ E[M_t \mid X_0=x]
 
 <span class="k">def</span><span class="w"> </span><span class="nf">transform_functional</span><span class="p">(</span><span class="n">β0</span><span class="p">,</span> <span class="n">β1</span><span class="p">,</span> <span class="n">β2</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">dyn_old</span><span class="p">,</span> <span class="n">dyn_new</span><span class="p">,</span> <span class="n">α_h</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;改变概率后重写乘性泛函。&quot;&quot;&quot;</span>
-    <span class="c1"># 漂移改变是因为鞅成分改变了用于预测现金流的</span>
-    <span class="c1"># 布朗冲击暴露。</span>
+    <span class="c1"># 吉尔萨诺夫定理：在新测度下，log M 的漂移获得</span>
+    <span class="c1"># x2 * (alpha . alpha_h)，而冲击暴露 alpha 不变。</span>
+    <span class="c1"># 因此 x2 的载荷移动了 alpha . alpha_h，常数项则</span>
+    <span class="c1"># 围绕新的长期均值重新定心。</span>
     <span class="n">β_level</span> <span class="o">=</span> <span class="n">β0</span> <span class="o">-</span> <span class="n">β1</span> <span class="o">*</span> <span class="n">dyn_old</span><span class="p">[</span><span class="s2">&quot;ι1&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">β2</span> <span class="o">*</span> <span class="n">dyn_old</span><span class="p">[</span><span class="s2">&quot;ι2&quot;</span><span class="p">]</span>
     <span class="n">β2_new</span> <span class="o">=</span> <span class="n">β2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">α</span><span class="p">,</span> <span class="n">α_h</span><span class="p">)</span>
     <span class="n">β0_new</span> <span class="o">=</span> <span class="n">β_level</span> <span class="o">+</span> <span class="n">β1</span> <span class="o">*</span> <span class="n">dyn_new</span><span class="p">[</span><span class="s2">&quot;ι1&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">β2_new</span> <span class="o">*</span> <span class="n">dyn_new</span><span class="p">[</span><span class="s2">&quot;ι2&quot;</span><span class="p">]</span>
@@ -1840,7 +1919,7 @@ E[M_t \mid X_0=x]
 <figure class="align-default" id="fig-mr-lrr-figure-2">
 <img alt="_images/0100a581996d224bca11f65687dddde61628d532f25b8f33bc3f0373757cb444.png" src="_images/0100a581996d224bca11f65687dddde61628d532f25b8f33bc3f0373757cb444.png" />
 <figcaption>
-<p><span class="caption-number">图 133.2 </span><span class="caption-text">将恢复的概率测度用作信念的收益率含义。 虚线消费收益率带使用在恢复的概率测度下的收益预测，价格固定；债券收益率不变，因为零息收益没有预测项。</span><a class="headerlink" href="#fig-mr-lrr-figure-2" title="Link to this image">#</a></p>
+<p><span class="caption-number">图 133.2 </span><span class="caption-text">将恢复的概率测度用作信念的收益率含义。 虚线消费收益率带使用在恢复的概率测度下、价格固定时的收益预测；债券收益率不变，因为零息收益没有预测项。</span><a class="headerlink" href="#fig-mr-lrr-figure-2" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1848,6 +1927,38 @@ E[M_t \mid X_0=x]
 <p>左图是关键：将恢复的概率测度视为信念，对低增长、高波动率状态赋予更多的概率，因此消费的隐含预测更低，当价格保持固定时消费收益率下降。</p>
 <p>债券图验证了零息比较。</p>
 <p>由于在任何测度下 <span class="math notranslate nohighlight">\(\log E[1]=0\)</span>，实线和虚线债券收益率带重合。</p>
+<p>将两幅图相减就得到该论文的核心长视界结果，上面的代码单元已经计算出了它。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prem_P</span> <span class="o">=</span> <span class="mf">1e4</span> <span class="o">*</span> <span class="p">(</span><span class="n">qC_P</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">qB_P</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">prem_H</span> <span class="o">=</span> <span class="mf">1e4</span> <span class="o">*</span> <span class="p">(</span><span class="n">qC_H</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">qB_P</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;相对于期限匹配债券的中位消费溢价，基点&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;期限       正确设定        恢复&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">100</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">q</span><span class="si">:</span><span class="s2">6d</span><span class="si">}</span><span class="s2">季 </span><span class="si">{</span><span class="n">prem_P</span><span class="p">[</span><span class="n">q</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">18.1f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">prem_H</span><span class="p">[</span><span class="n">q</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">13.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">最大绝对溢价：在 P 下为 </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">prem_P</span><span class="p">))</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> 个基点，&quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;在 P-hat 下为 </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">prem_H</span><span class="p">))</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> 个基点&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>相对于期限匹配债券的中位消费溢价，基点
+期限       正确设定        恢复
+     1季               80.2          -1.0
+     8季              130.2          -5.3
+    20季              194.7          -7.7
+    40季              260.6          -7.4
+   100季              336.1          -4.5
+
+最大绝对溢价：在 P 下为 336 个基点，在 P-hat 下为 8 个基点
+</pre></div>
+</div>
+</div>
+</div>
+<p>在正确设定的概率测度下，消费债权相对于期限匹配债券多赚取 80 到 336 个基点。</p>
+<p>在恢复的概率测度下，该溢价的绝对值从未超过 8 个基点，这正是”相对于期限匹配债券的长视界风险溢价在长期风险中性测度下消失”这一说法的含义。</p>
 </section>
 </section>
 </section>
@@ -1865,12 +1976,12 @@ X_{t+1}=\phi_x(X_t,\Delta W_{t+1}),
 \qquad
 Y_{t+1}-Y_t=\phi_y(X_t,\Delta W_{t+1}).
 \]</div>
-<p>设 <span class="math notranslate nohighlight">\(\varepsilon\)</span> 表示一个特征函数候选，它被允许依赖于平稳状态 <span class="math notranslate nohighlight">\(X_t\)</span> 和增长成分 <span class="math notranslate nohighlight">\(Y_t\)</span>。</p>
-<p>设 <span class="math notranslate nohighlight">\(\zeta\)</span> 是 <span class="math notranslate nohighlight">\(Y\)</span> 上的载荷向量，<span class="math notranslate nohighlight">\(e_\zeta\)</span> 是 <span class="math notranslate nohighlight">\(X\)</span> 的正函数。</p>
+<p>设 <span class="math notranslate nohighlight">\(\tilde e\)</span> 表示一个特征函数候选，它被允许同时依赖于平稳状态 <span class="math notranslate nohighlight">\(X_t\)</span> 和增长成分 <span class="math notranslate nohighlight">\(Y_t\)</span>。</p>
+<p>设 <span class="math notranslate nohighlight">\(\zeta\)</span> 是 <span class="math notranslate nohighlight">\(Y\)</span> 上的载荷向量，<span class="math notranslate nohighlight">\(\tilde e_\zeta\)</span> 是 <span class="math notranslate nohighlight">\(X\)</span> 的正函数。</p>
 <p>那么一个自然的候选是</p>
 <div class="math notranslate nohighlight">
 \[
-\varepsilon(x,y)=\exp(\zeta \cdot y)e_\zeta(x).
+\tilde e(x,y)=\exp(\zeta \cdot y)\tilde e_\zeta(x).
 \]</div>
 <p>这种形式很自然，因为 <span class="math notranslate nohighlight">\(Y\)</span> 通过增量进入。</p>
 <p>沿着一条路径，</p>
@@ -1889,14 +2000,14 @@ Y_{t+1}-Y_t=\phi_y(X_t,\Delta W_{t+1}).
 E\left[
     \frac{S_{t+1}}{S_t}
     \exp\{\zeta \cdot (Y_{t+1}-Y_t)\}
-    e_\zeta(X_{t+1})
+    \tilde e_\zeta(X_{t+1})
     \mid X_t=x
 \right]
-=\exp(\eta_\zeta)e_\zeta(x).
+=\exp(\eta_\zeta)\tilde e_\zeta(x).
 \]</div>
 <p>改变 <span class="math notranslate nohighlight">\(\zeta\)</span> 会改变多少长期增长风险被载入特征函数。</p>
 <p>因此，添加 <span class="math notranslate nohighlight">\(Y_t\)</span> 可以使主观概率测度成为一个可能的解，但它也创造了一族可能的解。</p>
-<p>因此额外的状态变量并不能消除识别问题；它通常使选择问题变得更明确。</p>
+<p>因此额外的状态变量并不能消除识别问题；它使选择问题变得更明确。</p>
 <p>该论文还指出了一个相关的实际问题。</p>
 <p>高度持久的平稳过程可能难以与具有平稳增量的过程区分。</p>
 <p>对于每个有限持久度水平，平稳近似可能对佩龙-弗罗贝尼乌斯问题有唯一解，但随着持久度变得极端，极限问题可能有许多近似解。</p>
@@ -1937,7 +2048,7 @@ E\left[
 <p>佩龙-弗罗贝尼乌斯方法在误设定下仍然有用，但它本身不再解决信念恢复问题。</p>
 <p>它给出一个可能包含长视界风险溢价的概率测度。</p>
 <p>只有当鞅成分恒等于一时，那个测度才等于投资者的信念。</p>
-<p>递归效用、永久冲击和长期风险模型赋予这个鞅一个经济上重要的角色，因此在评估转移独立性对信念恢复的含义时不应忽视它。</p>
+<p>递归效用、永久冲击和长期风险模型赋予这个鞅一个经济上重要的角色，因此转移独立性是一个实质性的经济限制，而不是技术上的便利。</p>
 </section>
 <section id="id29">
 <h2><a class="toc-backref" href="#id39" role="doc-backlink"><span class="section-number">133.9. </span>练习</a><a class="headerlink" href="#id29" title="Link to this heading">#</a></h2>
@@ -2071,8 +2182,8 @@ s_{ij}=A\left(\frac{c_j}{c_i}\right)^{-\gamma}.
 归一化的 c^gamma
 [0.328344 0.333313 0.338343]
 
-max |P_hat - P|: 6.661338147750939e-16
-max |h_hat - 1|: 2.220446049250313e-15
+max |P_hat - P|: 4.440892098500626e-16
+max |h_hat - 1|: 1.7763568394002505e-15
 </pre></div>
 </div>
 </div>

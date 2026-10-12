@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.2
+    jupytext_version: 1.16.7
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -20,7 +20,6 @@ translation:
     Exercises: 练习
 ---
 
-(ppd)=
 ```{raw} jupyter
 <div id="qe-notebook-header" align="right" style="text-align:right;">
         <a href="https://quantecon.org/" title="quantecon.org">
@@ -29,18 +28,37 @@ translation:
 </div>
 ```
 
+(ppd)=
 # {index}`用Pandas处理面板数据 <single: Pandas for Panel Data>`
 
 ```{index} single: Python; Pandas
 ```
 
-```{contents} 目录
-:depth: 2
+除了 Anaconda 中已有的内容外，本讲座还需要以下库：
+
+```{code-cell} ipython3
+:tags: [hide-output]
+
+!pip install --upgrade seaborn
+```
+
+我们使用以下导入语句。
+
+```{code-cell} ipython3
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
+import seaborn as sns
+sns.set_theme()
+sns.set(font='Source Han Serif SC')
 ```
 
 ## 概述
 
-在[之前关于pandas的讲座](https://python-programming.quantecon.org/pandas.html)中，我们学习了如何处理简单的数据集。
+在{doc}`之前关于pandas的讲座 <pandas>`中，我们学习了如何处理简单的数据集。
 
 计量经济学家经常需要处理更复杂的数据集，比如面板数据。
 
@@ -69,7 +87,7 @@ translation:
 数据集可通过以下链接访问：
 
 ```{code-cell} ipython3
-url1 = 'https://github.com/QuantEcon/data-lectures/raw/main/lectures/realwage.csv'
+url1 = 'https://raw.githubusercontent.com/QuantEcon/data-lectures/main/lectures/realwage.csv'
 ```
 
 ```{code-cell} ipython3
@@ -135,13 +153,13 @@ realwage['United States'].head()
 `.stack()`将列`MultiIndex`的最低层级旋转到行索引（`.unstack()`执行反向操作 - 你可以试试看）
 
 ```{code-cell} ipython3
-realwage.stack(future_stack=True).head()
+realwage.stack().head()
 ```
 
 我们也可以传入一个参数来选择我们想要堆叠的层级
 
 ```{code-cell} ipython3
-realwage.stack(level='Country', future_stack=True).head()
+realwage.stack(level='Country').head()
 ```
 
 使用`DatetimeIndex`可以轻松选择特定的时间段。
@@ -149,7 +167,7 @@ realwage.stack(level='Country', future_stack=True).head()
 选择一年并堆叠`MultiIndex`的两个较低层级，可以创建我们面板数据的横截面。
 
 ```{code-cell} ipython3
-realwage.loc['2015'].stack(level=(1, 2), future_stack=True).transpose().head()
+realwage.loc['2015'].stack(level=(1, 2)).transpose().head()
 ```
 
 在本讲后续内容中，我们将使用按国家和时间维度统计的每小时实际最低工资数据框（计量单位为2015年不变价美元）。
@@ -171,7 +189,7 @@ realwage_f.head()
 可以通过以下链接访问数据集：
 
 ```{code-cell} ipython3
-url2 = 'https://github.com/QuantEcon/data-lectures/raw/main/lectures/countries.csv'
+url2 = 'https://raw.githubusercontent.com/QuantEcon/data-lectures/main/lectures/countries.csv'
 ```
 
 ```{code-cell} ipython3
@@ -211,7 +229,6 @@ realwage_f.transpose().head()
 这在下图中用红色阴影部分表示
 
 ```{figure} /_static/lecture_specific/pandas_panel/venn_diag.png
-
 ```
 
 我们还需要指定每个数据框中国家名称的位置，这将作为合并数据框的"键（key）"。
@@ -263,14 +280,11 @@ merged[merged['Country'] == 'Korea']
 
 我们把美洲合并成一个大洲 -- 这样可以让我们后面的可视化效果更好。
 
-为此，我们将使用`.replace()`并遍历一个包含我们想要替换的大洲的值的列表
+为此，我们将使用`.replace()`，传入一个包含我们想要替换的大洲值的列表。
 
 ```{code-cell} ipython3
 replace = ['Central America', 'North America', 'South America']
-
-for country in replace:
-    merged.Continent = merged.Continent.replace(to_replace=country,
-                                value='America')
+merged['Continent'] = merged['Continent'].replace(to_replace=replace, value='America')
 ```
 
 现在我们已经将所有想要的数据都放在一个`DataFrame`中，我们将把它重新整形成带有`MultiIndex`的面板形式。
@@ -320,22 +334,10 @@ merged.mean().head(10)
 使用这个数据序列，我们可以绘制数据集中每个国家过去十年的平均实际最低工资
 
 ```{code-cell} ipython3
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
-mpl.font_manager.fontManager.addfont(FONTPATH)
-plt.rcParams['font.family'] = ['Source Han Serif SC']
-
-import seaborn as sns
-sns.set_theme()
-sns.set(font='Source Han Serif SC')
-
 # 导入中文国家名称
-map_url='https://raw.githubusercontent.com/QuantEcon/lecture-python.zh-cn/refs/heads/main/lectures/_static/country_map.csv'
+map_url = 'https://raw.githubusercontent.com/QuantEcon/lecture-python.zh-cn/refs/heads/main/lectures/_static/country_map.csv'
 country_map = pd.read_csv(map_url).set_index('English')['Chinese']
-```
 
-```{code-cell} ipython3
 merged.mean().sort_values(ascending=False).plot(
           kind='bar',
           title="2006-2016年平均实际最低工资")
@@ -369,10 +371,12 @@ plt.xlabel('年份')
 plt.show()
 ```
 
-我们也可以指定`MultiIndex`的一个层级（在列轴上）来进行聚合
+我们也可以指定`MultiIndex`的一个层级（在列轴上）来进行聚合。
+
+对于 `groupby`，我们需要使用 `.T` 将列转置为行，因为 `pandas` 已经移除了对 `groupby` 方法中 `axis=1` 的支持。
 
 ```{code-cell} ipython3
-merged.T.groupby(level='Continent').mean().T.head()
+merged.T.groupby(level='Continent').mean().head()
 ```
 
 我们可以将每个大洲的平均最低工资绘制成时间序列图
@@ -414,7 +418,7 @@ plt.show()
 `.describe()` 可以快速获取一些常见的描述性统计量的汇总结果
 
 ```{code-cell} ipython3
-merged.stack(future_stack=True).describe()
+merged.stack().describe()
 ```
 
 这是使用 `groupby` 的一种简化方式。
@@ -478,7 +482,7 @@ plt.show()
 可以通过以下链接访问数据集：
 
 ```{code-cell} ipython3
-url3 = 'https://github.com/QuantEcon/data-lectures/raw/main/lectures/employ.csv'
+url3 = 'https://raw.githubusercontent.com/QuantEcon/data-lectures/main/lectures/employ.csv'
 ```
 
 读取 CSV 文件会返回一个长格式的面板数据集。使用 `.pivot_table()` 构建一个带有 `MultiIndex` 列的宽格式数据框。
