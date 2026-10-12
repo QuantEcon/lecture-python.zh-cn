@@ -46,8 +46,14 @@ translation:
 
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
+mpl.font_manager.fontManager.addfont(FONTPATH)
+plt.rcParams['font.family'] = ['Source Han Serif SC']
+
 import seaborn as sns
 sns.set_theme()
+sns.set(font='Source Han Serif SC')
 ```
 
 ## 概述
@@ -328,6 +334,10 @@ merged.mean().head(10)
 使用这个数据序列，我们可以绘制数据集中每个国家过去十年的平均实际最低工资
 
 ```{code-cell} ipython3
+# 导入中文国家名称
+map_url = 'https://raw.githubusercontent.com/QuantEcon/lecture-python.zh-cn/refs/heads/main/lectures/_static/country_map.csv'
+country_map = pd.read_csv(map_url).set_index('English')['Chinese']
+
 merged.mean().sort_values(ascending=False).plot(
           kind='bar',
           title="2006-2016年平均实际最低工资")
