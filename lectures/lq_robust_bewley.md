@@ -109,7 +109,9 @@ c_t
 (w_{t+1} + v_{t+1})
 $$ (eq:rbew-law)
 
-目标函数为 $\mathbb{E}_0 \sum_{t=0}^\infty \beta^t\bigl[-(c_t - b)^2/2\bigr]$，这正是 $\sigma = 0$ 且极乐水平为常数 $b_t \equiv b$ 时的 HST 准则。
+目标函数为 $\mathbb{E}_0 \sum_{t=0}^\infty \beta^t\bigl[-(c_t - b)^2\bigr]$，这正是 $\sigma = 0$ 且极乐水平为常数 $b_t \equiv b$ 时的 HST 准则。
+
+这里的期间回报没有写成带有 $\tfrac12$ 因子的形式，这一选择并非无关紧要：它固定了本文始终使用的稳健性参数 $\sigma$ 的尺度，因为对回报进行缩放会使 $\sigma$ 按相同的倍数缩放。
 
 因此，当 $\sigma = 0$ 时，稳健贝尔曼方程恰好简化为 {doc}`lq_permanent_income` 中的 LQ 问题，从而证实 HST 框架内嵌了贝利模型。
 
@@ -155,6 +157,20 @@ $$ (eq:rbew-breakdown)
 
 在 $\underline\sigma$ 以下，个体稳健控制问题无解，因此不存在可描述的经济体。
 
+这一界限从下文推导出的最坏情形动态的角度来看具有明确的含义。
+
+由于 $\zeta(\sigma) = \beta/\hat\beta(\sigma)$ 是代理人 $\sigma$ 所担忧的自身边际效用增长率，崩溃点恰好是使下式成立的 $\sigma$ 值
+
+$$
+\zeta(\underline\sigma) = \frac{1}{\beta} = R,
+\qquad\text{等价地}\qquad
+\beta\,\zeta(\underline\sigma) = 1
+$$ (eq:rbew-breakdown2)
+
+因此，$\underline\sigma$ 是这样一个稳健性水平：在此水平上，所担忧的边际效用增长恰好达到总利率，而代理人的贴现最坏情形目标函数将不再收敛。
+
+若对稳健性的关注再强一些，代理人便会为一个自己无法评估价值的未来而防范。
+
 ## 异质类型下的均衡
 
 现在我们可以让连续统的类型来充实经济体，这些类型在其对稳健性的担忧程度上有所不同。
@@ -173,7 +189,7 @@ $$ (eq:rbew-types)
 那么
 
 1. 每个代理人的最优消费计划都与标准 $(\sigma = 0,\, \beta)$ 代理人的相同，
-2. 均衡总名义利率为 $R = \beta^{-1}$，与 $\Phi$ 无关，且
+2. $R = \beta^{-1}$ 是一个均衡总名义利率，与 $\Phi$ 无关，且
 3. 总量和横截面动态与 {doc}`lq_bewley_complete_markets` 中基准贝利经济的对应内容一致。
 ````
 
@@ -184,7 +200,9 @@ $$ (eq:rbew-types)
 
 由于所有个体规则都与基准规则一致，商品市场出清条件 $\int c_t^i\, di = Y$ 和债券市场条件 $\int a_t^i\, di = 0$ 就是基准条件，因此它们在 $R = \beta^{-1}$ 处得到满足，原因与 {doc}`lq_bewley_complete_markets` 中给出的完全相同。
 
-由于市场出清从不涉及 $\Phi$，均衡利率也不涉及 $\Phi$，由此得到第 2 部分。
+由于市场出清从不涉及 $\Phi$，使市场出清的利率也同样与 $\Phi$ 无关，由此得到第 2 部分。
+
+这一论证是一种验证：轨迹 {eq}`eq:rbew-locus` 本身就是在 $R = \beta^{-1}$ 处构造出来的，因此我们所证明的是，对于任意 $\Phi$，该利率都能作为均衡自我再现，而并非说明不存在其他可能的均衡利率。
 
 第 3 部分成立是因为总量和横截面对象是个体路径的积分，而个体路径正是基准路径。
 ````
@@ -192,6 +210,16 @@ $$ (eq:rbew-types)
 因此，稳健性类型的分布 $\Phi$ 完全无法通过数量数据识别出来。
 
 一位观察到每个代理人在每个日期的 $\{c_t^i, a_t^i\}$ 的计量经济学家无法判断该经济体是完全由 $\sigma_i = 0$ 的代理人组成，还是完全由 $\sigma_i$ 接近 $\underline\sigma$ 的代理人组成，抑或是任何混合。
+
+这一均衡的一个特征值得关注，因为它与一个熟悉的结果相悖。
+
+在一个具有异质贴现因子和共同利率的模型中，最有耐心的类型通常会最终持有全部财富，长期分布也会退化。
+
+在这里，每个 $\sigma_i < 0$ 的类型在市场利率下都满足 $\beta_i R < 1$，因而都缺乏耐心，但没有任何一种类型相对于其他类型而言会出现资产减少。
+
+原因在于，缺乏耐心与预防性动机在每一个日期都相互抵消，而不仅仅是在平均意义上抵消，因此各类型之间的资产路径与消费路径都保持一致。
+
+因此，稳健性类型在任何时间跨度上都与财富无关，通常的分层力量被彻底中和，而不仅仅是被减缓。
 
 ## 代理人之间真正不同之处
 
@@ -204,8 +232,10 @@ $$ (eq:rbew-types)
 $$
 \mu_{s,t+1}^i = \zeta_i\, \mu_{st}^i + \alpha\, w_{t+1},
 \qquad
-\zeta_i = \frac{\beta}{\beta_i} = \left[1 + \frac{\sigma_i\alpha^2}{1-\beta}\right]^{-1} > 1
+\zeta_i = \frac{\beta}{\beta_i} = \left[1 + \frac{\sigma_i\alpha^2}{1-\beta}\right]^{-1} \geq 1
 $$ (eq:rbew-zeta)
+
+只有对于完全信任的类型 $\sigma_i = 0$，等号才成立。
 
 在 $\lambda = \delta_h = 0$ 且极乐点为常数的情况下，我们有 $\mu_{st} = b - c_t$，因此代理人 $i$ 的**最坏情形预期消费路径**为
 
@@ -294,7 +324,96 @@ for σ_i, β_i, ζ_i, dep in zip(σ_types, β_types, ζ_types, dep_types):
 
 我们现在确认，尽管如此，它们的行为仍然完全相同。
 
-每种类型都面对相同的冲击，并从相同的初始消费出发，每种类型都按照基准规则 $c_{t+1} = c_t + h\,w_{t+1}$ 进行消费。
+{prf:ref}`prop-rbew-types` 断言，每种类型在各自的 $(\sigma_i, \beta_i)$ 上求解*自己*的问题，得到的都是基准决策规则。
+
+要检验这一断言，就需要分别求解每种类型自己的稳健性问题，然后比较得出的规则。
+
+如果直接假设共同规则成立，再报告由此得到的路径相互吻合，那将无法证明任何东西。
+
+我们沿用 {doc}`robust_permanent_income` 中的风险敏感型 LQ 求解器，将其状态成本参数重命名为 `Rc`，因为在此处 $R$ 表示总利率。
+
+下面的期内收益为 $-(c_t-b)^2$，与上文固定的 $\sigma$ 的归一化保持一致。
+
+```{code-cell} ipython3
+def solve_rslq(A, B, C, Q, Rc, β, σ, N=None, tol=1e-12, max_iter=50_000):
+    "Risk-sensitive LQ regulator; returns F in the rule c = -F x."
+    A, B, C, Q, Rc = map(np.atleast_2d, (A, B, C, Q, Rc))
+    n, kw = A.shape[0], C.shape[1]
+    if N is None:
+        N = np.zeros((B.shape[1], n))
+    Ω, Iw = -np.eye(n), np.eye(kw)
+    for _ in range(max_iter):
+        M = Iw - σ * C.T @ Ω @ C
+        D = Ω + σ * Ω @ C @ np.linalg.solve(M, C.T @ Ω)
+        F = np.linalg.solve(Q - β * B.T @ D @ B, N - β * B.T @ D @ A)
+        Acl = A - B @ F
+        Ω_new = -Rc - F.T @ Q @ F + (F.T @ N + N.T @ F) + β * Acl.T @ D @ Acl
+        if np.max(np.abs(Ω_new - Ω)) < tol:
+            return F
+        Ω = Ω_new
+    raise RuntimeError('risk-sensitive Riccati iteration did not converge')
+```
+
+将代理人的问题写成状态 $x_t = \begin{pmatrix}1 & a_t & z_{1t} & z_{2t}\end{pmatrix}'$ 和控制变量 $c_t$，与 {eq}`eq:rbew-law` 中的时序保持一致。
+
+常数项携带极乐点，且每个代理人面对的是同样的市场利率 $R = \beta^{-1}$；各类型之间只有 $\beta_i$ 与 $\sigma_i$ 不同。
+
+```{code-cell} ipython3
+def bewley_lq(b, η1, η2, R):
+    "State-space matrices for the agent's problem, period return -(c-b)^2."
+    A_x = np.array([[1, 0, 0, 0],
+                    [0, R, R, R],
+                    [0, 0, 1, 0],
+                    [0, 0, 0, 0]], float)
+    B_x = np.array([[0.], [-R], [0.], [0.]])
+    C_x = np.array([[0, 0], [0, 0], [η1, 0], [0, η2]], float)
+    Q_x = np.array([[1.0]])
+    Rc_x = np.zeros((4, 4))
+    Rc_x[0, 0] = b**2
+    N_x = np.array([[-b, 0, 0, 0]], float)
+    return A_x, B_x, C_x, Q_x, Rc_x, N_x
+
+
+A_x, B_x, C_x, Q_x, Rc_x, N_x = bewley_lq(b, η1, η2, R)
+F_bench = solve_rslq(A_x, B_x, C_x, Q_x, Rc_x, β, 0.0, N_x)
+
+print("benchmark rule  c = "
+      + " + ".join(f"{v:.4f}·{n}" for v, n in
+                   zip(-F_bench.ravel(), ["1", "a", "z1", "z2"])))
+print(f"implied consumption innovation  {np.round((-F_bench @ C_x).ravel(), 6)}")
+print(f"analytic h                      {np.round(h, 6)}")
+```
+
+基准规则重现了解析的创新载荷 $h$，这验证了这套状态空间设定正是代数推导所描述的那一个。
+
+现在求解各类型自己的问题并进行比较。
+
+```{code-cell} ipython3
+F_types = [solve_rslq(A_x, B_x, C_x, Q_x, Rc_x, β_i, σ_i, N_x)
+           for σ_i, β_i in zip(σ_types, β_types)]
+
+print(f"{'σ_i':>10}{'β_i':>10}{'max |F_i - F_bench|':>22}")
+for σ_i, β_i, F_i in zip(σ_types, β_types, F_types):
+    print(f"{σ_i:10.4f}{β_i:10.4f}{np.max(np.abs(F_i - F_bench)):22.2e}")
+```
+
+每种类型的规则系数都与基准规则一致，精确到小数点后十一位甚至更高，这正是 {prf:ref}`prop-rbew-types` 第 1 部分的体现。
+
+为了说明这项检验确实具有区分力，我们将每种类型的贴现因子偏离轨迹线百分之一，保持 $\sigma_i$ 不变，然后重新求解。
+
+```{code-cell} ipython3
+print(f"{'σ_i':>10}{'on locus':>12}{'+1% off':>12}{'-1% off':>12}")
+for σ_i, β_i in zip(σ_types[1:], β_types[1:]):
+    devs = []
+    for mult in (1.0, 1.01, 0.99):
+        F_off = solve_rslq(A_x, B_x, C_x, Q_x, Rc_x, β_i * mult, σ_i, N_x)
+        devs.append(np.max(np.abs(F_off - F_bench)))
+    print(f"{σ_i:10.4f}" + "".join(f"{d:12.1e}" for d in devs))
+```
+
+偏离轨迹线百分之一，就会使规则在小数点第一位上发生变化，因此上面的一致性并非比较方式所导致的假象。
+
+最后，用**各自**求出的规则来模拟每种类型，采用相同的冲击。
 
 ```{code-cell} ipython3
 T = 60
@@ -302,15 +421,20 @@ rng = np.random.default_rng(42)
 shocks = rng.standard_normal((T, 2))          # common shocks for all types
 
 c_paths = np.zeros((len(σ_types), T + 1))
-for i in range(len(σ_types)):
-    for t in range(T):
-        c_paths[i, t + 1] = c_paths[i, t] + h @ shocks[t]
+for i, F_i in enumerate(F_types):
+    x = np.array([1.0, 0.0, 0.0, 0.0])        # [1, a_t, z_1, z_2]
+    for t in range(T + 1):
+        c_paths[i, t] = -(F_i @ x).item()
+        if t < T:
+            x = A_x @ x + B_x.ravel() * c_paths[i, t] + C_x @ shocks[t]
 
 print("max absolute difference across types:"
       f" {np.abs(c_paths - c_paths[0]).max():.2e}")
+print("max deviation from the random walk with innovation h:"
+      f" {np.abs(c_paths[0] - np.concatenate([[0], np.cumsum(shocks @ h)])).max():.2e}")
 ```
 
-各路径完全一致，这正是 {prf:ref}`prop-rbew-types` 第 1 部分的体现。
+各路径完全一致，并且每一条都重现了代数所预测的、以 $h$ 为创新载荷的随机游走。
 
 下图对比了各类型的行为与其信念之间的差异。
 
@@ -364,25 +488,42 @@ $\sigma_i = 0$ 的代理人预期消费将维持在原地不动。
 
 最后我们检验 {prf:ref}`prop-rbew-types` 的第 3 部分，即横截面的行为与基准贝利经济一致。
 
-我们模拟一个大规模的人群，其中每个代理人自行抽取其类型和冲击，并将消费的横截面方差与基准预测 $t\,\alpha^2$ 进行比较。
+我们模拟一个分布在可行类型范围内的大规模人群，每个代理人各自获得自己的冲击并求解自己的问题，并将消费的横截面方差与基准预测 $t\,\alpha^2$ 进行比较。
 
 ```{code-cell} ipython3
-n_agents, T = 20_000, 40
+n_agents, T_pop = 20_000, 40
 rng = np.random.default_rng(1234)
 
-# each agent draws a robustness type; types do not affect behaviour
-σ_i = rng.uniform(σ_lo, 0.0, size=n_agents)
+# a population spread over the admissible range, each solving its own problem
+σ_pop = np.linspace(0.99 * σ_lo, 0.0, 12)
+β_pop = β + σ_pop * α2 * β / (1 - β)
+F_pop = [solve_rslq(A_x, B_x, C_x, Q_x, Rc_x, β_j, σ_j, N_x)
+         for σ_j, β_j in zip(σ_pop, β_pop)]
 
-shocks = rng.standard_normal((n_agents, T, 2))
-c = np.zeros((n_agents, T + 1))
-c[:, 1:] = np.cumsum(shocks @ h, axis=1)
+type_of = rng.integers(0, len(σ_pop), size=n_agents)
+pop_shocks = rng.standard_normal((n_agents, T_pop, 2))
+c_pop = np.zeros((n_agents, T_pop + 1))
+
+for j, F_j in enumerate(F_pop):
+    m = type_of == j
+    x = np.zeros((m.sum(), 4))
+    x[:, 0] = 1.0                                    # the constant
+    for t in range(T_pop + 1):
+        c_pop[m, t] = -(x @ F_j.ravel())
+        if t < T_pop:
+            x = (x @ A_x.T + np.outer(c_pop[m, t], B_x.ravel())
+                 + pop_shocks[m, t] @ C_x.T)
 
 print(f"{'t':>5}{'cross-section var':>20}{'t·α²':>12}")
 for t in [10, 20, 30, 40]:
-    print(f"{t:5d}{c[:, t].var():20.5f}{t * α2:12.5f}")
+    print(f"{t:5d}{c_pop[:, t].var():20.5f}{t * α2:12.5f}")
+print(f"\ncorrelation between σ_i and c_T: "
+      f"{np.corrcoef(σ_pop[type_of], c_pop[:, T_pop])[0, 1]:+.4f}")
 ```
 
-横截面方差以速率 $\alpha^2$ 线性增长，与 {doc}`lq_bewley_complete_markets` 中的结果完全一致，稳健性类型的分布在数据中不留下任何痕迹。
+横截面方差以速率 $\alpha^2$ 线性增长，与 {doc}`lq_bewley_complete_markets` 中的结果完全一致。
+
+稳健性类型与消费之间不存在相关性，因此即便每个代理人确实求解了各不相同的问题，类型的分布在数据中也不会留下任何痕迹。
 
 ## 结语
 
@@ -444,7 +585,7 @@ $$
 
   $B$ 的符号为负，因为更高的 $c_t$ 会减少资产积累。
 
-2. 在 $\sigma = 0$ 时，最小化代理人不存在，扭曲项从贝尔曼方程中消失，目标函数为 $\mathbb{E}_0\sum \beta^t[-(c_t-b)^2/2]$，受限于线性运动规律。
+2. 在 $\sigma = 0$ 时，最小化代理人不存在，扭曲项从贝尔曼方程中消失，目标函数为 $\mathbb{E}_0\sum \beta^t[-(c_t-b)^2]$，受限于线性运动规律。
 
   这正是 LQ 永久收入问题。
 
@@ -559,7 +700,7 @@ $$
 
 本练习探讨在统计上有多少信念异质性是合理的。
 
-将关注范围限制在其最坏情形模型在 $T = 40$ 的样本中检测误差概率至少为 $0.2$ 的类型上。
+将关注范围限制在其最坏情形模型在 $T = 40$ 的样本中检测误差概率至少为 $0.25$ 的类型上。
 
 1. 通过二分法找到最稳健的可行类型 $\sigma^{\min}$。
 
@@ -606,7 +747,7 @@ def σ_for_target_dep(target, T, β, α2, tol=1e-5):
 
 
 for T in [40, 160]:
-    σ_min = σ_for_target_dep(0.2, T, β, α2)
+    σ_min = σ_for_target_dep(0.25, T, β, α2)
     if σ_min is None:
         σ_min = 0.999 * σ_lo        # breakdown binds before detectability
         note = ' (breakdown point binds)'
@@ -618,11 +759,17 @@ for T in [40, 160]:
           f"{np.log(2) / np.log(ζ_min):.1f} quarters{note}")
 ```
 
-在 $T = 40$ 时，检测误差概率在可行范围内从未降至 $0.2$，因此最稳健的合理类型就是崩溃点本身对应的类型。
+在 $T = 40$ 时，统计可检测性先于崩溃点成为约束，因此最稳健的合理类型是一个内部解。
 
-在 $T = 160$ 时，统计可检测性首先成为约束，合理类型集合急剧向 $\sigma = 0$ 收缩。
+在 $T = 160$ 时，这一约束更早地起作用，合理类型集合急剧向 $\sigma = 0$ 收缩。
 
 加倍期限相应地延长了：随着数据的增多，只有那些悲观情绪累积缓慢的代理人在统计上仍然可信。
+
+```{note}
+检测误差概率是通过模拟估计得到的，因此当目标值接近 $\underline\sigma$ 处所达到的值时，结果会对随机种子较为敏感。
+
+在 $T = 40$ 时，崩溃点处的检测误差概率几乎恰好为 $0.2$，这正是此处将目标值设为 $0.25$ 的原因。
+```
 
 ```{solution-end}
 ```

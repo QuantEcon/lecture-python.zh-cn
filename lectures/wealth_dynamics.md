@@ -38,7 +38,7 @@ translation:
 ```
 
 ```{seealso}
-本讲座使用[JAX](https://github.com/jax-ml/jax)的版本可在{doc}`这里 <jax:wealth_dynamics>`找到
+本讲座使用 [JAX](https://github.com/jax-ml/jax) 的版本可在 {doc}`这里 <jax:wealth_dynamics_jax>` 找到
 ```
 
 除了Anaconda中已有的库外，本讲座还需要以下库：
