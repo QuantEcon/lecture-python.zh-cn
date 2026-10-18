@@ -25,12 +25,13 @@ translation:
     Calculation of  bid price in FPSB: FPSB中出价的计算
     $\chi^2$ Distribution: $\chi^2$ 分布
     Code summary: 代码总结
-    References: 参考文献
+    Exercises: 练习
+    Further reading: 延伸阅读
 ---
 
 # 一价和二价拍卖
 
-本讲座旨在为后续关于[多商品分配机制](https://python.quantecon.org/house_auction.html)的讲座做铺垫。
+本讲座旨在为后续关于 {doc}`house_auction` 的讲座做铺垫。
 
 在那个讲座中，规划者或拍卖人同时将多个商品分配给一组人。
 
@@ -79,7 +80,7 @@ Anders Munk-Nielsen 将他的代码放在了[GitHub](https://github.com/GamEconC
 
 **详细设定：**
 
-有$n>2$个潜在买家，编号为$i = 1, 2, \ldots, n$。
+有$n \geq 2$个潜在买家，编号为$i = 1, 2, \ldots, n$。
 
 买家$i$对被拍卖商品的估值为$v_i$。
 
@@ -107,12 +108,20 @@ Anders Munk-Nielsen 将他的代码放在了[GitHub](https://github.com/GamEconC
 
 ### 一价密封拍卖的特征
 
-一价密封拍卖具有唯一的对称贝叶斯纳什均衡。
+我们全文假设：
+
+* 估值在投标者之间是**私有的**且**独立的**
+* 投标者是**对称的**：他们的估值都来自一个共同的分布$F$，该分布在其支撑集上连续且严格递增
+* 投标者是**风险中性的**
+
+在这些假设下，一价密封拍卖具有唯一的对称、严格递增投标策略的贝叶斯纳什均衡。
+
+由于均衡投标策略是严格递增的，估值最高的投标者会提交最高的出价，从而获胜。
 
 买家$i$的最优投标是
 
 $$
-\mathbf{E}[y_{i} | y_{i} < v_{i}]
+\mathbb{E}[y_{i} | y_{i} < v_{i}]
 $$ (eq:optbid1)
 
 其中$v_{i}$是投标者$i$的估值，$y_{i}$是所有其他投标者的最高估值：
@@ -121,7 +130,9 @@ $$
 y_{i} = \max_{j \neq i} v_{j}
 $$ (eq:optbid2)
 
-关于这个论断的证明可以在维基百科的[Vickrey拍卖页面](https://en.wikipedia.org/wiki/Vickrey_auction)找到
+关于这一结果的推导，请参阅维基百科的 [一价密封拍卖页面](https://en.wikipedia.org/wiki/First-price_sealed-bid_auction)，或 {cite:t}`Krishna2009` 第 2 章。
+
+我们将在下面通过模拟来验证这个公式，{ref}`ta_ex2` 要求你推导一个等价的表达式，使其对任意分布$F$都易于计算。
 
 +++
 
@@ -133,11 +144,15 @@ $$ (eq:optbid2)
 
 ## 二价密封拍卖的特征
 
-在SPSB拍卖中，竞标者最优选择是按其真实价值出价。
+在 SPSB 拍卖中，竞标者最优选择是按其真实价值出价。
 
-形式上，在单一不可分物品的SPSB拍卖中，占优策略组合是每个竞标者按其价值出价。
+形式上，在单一不可分物品的 SPSB 拍卖中，按自己的真实价值出价是一种**弱占优**策略。
 
-关于Vickrey拍卖的证明可在[维基百科页面](https://en.wikipedia.org/wiki/Vickrey_auction)找到
+之所以说是*弱*占优，是因为无论其他竞标者如何出价，一个按非真实价值出价的竞标者永远不会做得更好，有时甚至会更糟。
+
+请注意，这比 FPSB 的结果强得多：它根本不需要关于其他竞标者估值分布的任何假设，也不需要关于他们如何出价的假设。
+
+关于 Vickrey 拍卖的证明可在[维基百科页面](https://en.wikipedia.org/wiki/Vickrey_auction)找到
 
 +++
 
@@ -145,15 +160,25 @@ $$ (eq:optbid2)
 
 +++
 
-我们假设竞标者$i$的估值$v_{i}$服从分布$v_{i} \stackrel{\text{i.i.d.}}{\sim} U(0,1)$。
+我们假设竞标者 $i$ 的估值 $v_{i}$ 服从分布 $v_{i} \stackrel{\text{IID}}{\sim} U(0,1)$。
 
-在这个假设下，我们可以分析计算FPSB和SPSB中出价的概率分布。
+在这个假设下，我们可以分析计算 FPSB 和 SPSB 中出价的概率分布。
 
 我们将模拟结果，并通过大数定律验证模拟结果与分析结果一致。
 
 我们可以用我们的模拟来说明**收益等价定理**，该定理断言平均而言，一价和二价密封拍卖为卖家提供相同的收益。
 
-要了解收入等价定理，请参阅[此维基百科页面](https://en.wikipedia.org/wiki/Revenue_equivalence)
+该定理要求我们的两种拍卖都满足以下假设：
+
+* 估值是独立且私人的，竞标者是对称且风险中性的
+* 这两种机制都将商品授予估值最高的竞标者
+* 估值最低的竞标者预期获得零剩余
+
+在这些假设下，任何满足这些条件的两种机制都会为每个竞标者产生相同的预期支付，从而为卖家带来相同的预期收益。
+
+{ref}`ta_ex4` 展示了当其中一个假设——风险中性——不成立时会发生什么。
+
+要了解收入等价定理，请参阅 [此维基百科页面](https://en.wikipedia.org/wiki/Revenue_equivalence)
 
 +++
 
@@ -173,8 +198,8 @@ $$ (eq:optbid2)
 
 $$
 \begin{aligned}
-\tilde{F}_{n-1}(y) = \mathbf{P}(y_{i} \leq y) &= \mathbf{P}(\max_{j \neq i} v_{j} \leq y) \\
-&= \prod_{j \neq i} \mathbf{P}(v_{j} \leq y) \\
+\tilde{F}_{n-1}(y) = \mathbb{P}\{y_{i} \leq y\} &= \mathbb{P}\{\max_{j \neq i} v_{j} \leq y\} \\
+&= \prod_{j \neq i} \mathbb{P}\{v_{j} \leq y\} \\
 &= y^{n-1}
 \end{aligned}
 $$
@@ -185,7 +210,7 @@ $$
 
 $$
 \begin{aligned}
-\mathbf{E}(y_{i} | y_{i} < v_{i}) &= \frac{\int_{0}^{v_{i}} y_{i}\tilde{f}_{n-1}(y_{i})dy_{i}}{\int_{0}^{v_{i}} \tilde{f}_{n-1}(y_{i})dy_{i}} \\
+\mathbb{E}[y_{i} | y_{i} < v_{i}] &= \frac{\int_{0}^{v_{i}} y_{i}\tilde{f}_{n-1}(y_{i})dy_{i}}{\int_{0}^{v_{i}} \tilde{f}_{n-1}(y_{i})dy_{i}} \\
 &= \frac{\int_{0}^{v_{i}}(n-1)y_{i}^{n-1}dy_{i}}{\int_{0}^{v_{i}}(n-1)y_{i}^{n-2}dy_{i}} \\
 &= \frac{n-1}{n}y_{i}\bigg{|}_{0}^{v_{i}} \\
 &= \frac{n-1}{n}v_{i}
@@ -246,13 +271,9 @@ idx = np.argsort(v, axis=0)  # 在每次拍卖中，竞买人的估值按升序�
 v = np.take_along_axis(v, idx, axis=0)  # 与np.sort(v, axis=0)相同，但保留了idx
 b = np.take_along_axis(b, idx, axis=0)
 
-# the id for the bidders is created.
-ii = np.repeat(np.arange(1, N+1)[:, None], R, axis=1)  # 创建竞买人的ID。
-# the id is sorted according to bid price as well.
-ii = np.take_along_axis(ii, idx, axis=0)  # ID也按照出价价格进行排序。
-
-# In FPSB and SPSB, winners are those with highest values.
-winning_player = ii[-1, :]  # 在FPSB和SPSB中，最高估值者为赢家。
+# In FPSB and SPSB the winner is the bidder with the highest valuation,
+# which after sorting is the last row.
+# 在FPSB和SPSB中，赢家是估值最高的竞买人，排序后即为最后一行。
 
 # highest bid
 winner_pays_fpsb = b[-1, :]  # 最高出价
@@ -295,14 +316,14 @@ sns.despine()
 
 **FPSB的预期收入：**
 
-估值为$y$的赢家支付$\frac{n-1}{n}*y$，其中n是投标者数量。
+估值为$y$的赢家支付$\frac{n-1}{n} y$，其中n是投标者数量。
 
 我们之前计算得出CDF为$F_{n}(y) = y^{n}$，PDF为$f_{n} = ny^{n-1}$。
 
 因此，预期收入为
 
 $$
-\mathbf{R} = \int_{0}^{1}\frac{n-1}{n}v_{i}\times n v_{i}^{n-1}dv_{i} = \frac{n-1}{n+1}
+R = \int_{0}^{1}\frac{n-1}{n}v_{i}\times n v_{i}^{n-1}dv_{i} = \frac{n-1}{n+1}
 $$
 
 **SPSB的预期收入：**
@@ -313,10 +334,10 @@ $$
 
 $$
 \begin{aligned}
-\mathbf{TR} &= n\mathbf{E_{v_i}}\left[\mathbf{E_{y_i}}[y_{i}|y_{i} < v_{i}]\mathbf{P}(y_{i} < v_{i}) + 0\times\mathbf{P}(y_{i} > v_{i})\right] \\
-&= n\mathbf{E_{v_i}}\left[\mathbf{E_{y_i}}[y_{i}|y_{i} < v_{i}]\tilde{F}_{n-1}(v_{i})\right] \\
-&= n\mathbf{E_{v_i}}[\frac{n-1}{n} \times v_{i} \times v_{i}^{n-1}] \\
-&= (n-1)\mathbf{E_{v_i}}[v_{i}^{n}] \\
+\mathrm{TR} &= n\mathbb{E}_{v_i}\left[\mathbb{E}_{y_i}[y_{i}|y_{i} < v_{i}]\mathbb{P}\{y_{i} < v_{i}\} + 0\times\mathbb{P}\{y_{i} > v_{i}\}\right] \\
+&= n\mathbb{E}_{v_i}\left[\mathbb{E}_{y_i}[y_{i}|y_{i} < v_{i}]\tilde{F}_{n-1}(v_{i})\right] \\
+&= n\mathbb{E}_{v_i}[\frac{n-1}{n} \times v_{i} \times v_{i}^{n-1}] \\
+&= (n-1)\mathbb{E}_{v_i}[v_{i}^{n}] \\
 &= \frac{n-1}{n+1}
 \end{aligned}
 $$
@@ -366,10 +387,10 @@ sns.despine()
 因此，
 
 $$
-b(v_{i})\mathbf{P}(y_{i} < v_{i}) + 0 * \mathbf{P}(y_{i} \ge v_{i}) = \mathbf{E}_{y_{i}}[y_{i} | y_{i} < v_{i}]\mathbf{P}(y_{i} < v_{i}) + 0 * \mathbf{P}(y_{i} \ge v_{i})
+b(v_{i})\mathbb{P}\{y_{i} < v_{i}\} + 0 \cdot \mathbb{P}\{y_{i} \ge v_{i}\} = \mathbb{E}_{y_{i}}[y_{i} | y_{i} < v_{i}]\mathbb{P}\{y_{i} < v_{i}\} + 0 \cdot \mathbb{P}\{y_{i} \ge v_{i}\}
 $$
 
-由此可得，FPSB拍卖中的最优投标策略是$b(v_{i}) = \mathbf{E}_{y_{i}}[y_{i} | y_{i} < v_{i}]$。
+由此可得，FPSB拍卖中的最优投标策略是$b(v_{i}) = \mathbb{E}_{y_{i}}[y_{i} | y_{i} < v_{i}]$。
 
 +++
 
@@ -380,7 +401,7 @@ $$
 在方程{eq}`eq:optbid1`和{eq}`eq:optbid2`中，我们展示了FPSB拍卖中对称贝叶斯纳什均衡的最优出价公式。
 
 $$
-\mathbf{E}[y_{i} | y_{i} < v_{i}]
+\mathbb{E}[y_{i} | y_{i} < v_{i}]
 $$
 
 其中
@@ -399,22 +420,28 @@ def evaluate_largest(v_hat, array, order=1):
     一个用于估算其他竞标者的最大值（或特定顺序的最大值）的方法，
     条件是玩家1赢得拍卖。
 
+    我们估计E[y | y < v_hat]，其中y是除该参考竞标者外
+    其他竞标者中的最高估值。我们以竞标者1作为参考竞标者
+    （由于估值是独立同分布的，选择哪一个并不重要），
+    去掉她所在的行，然后在其他所有竞标者的估值都低于v_hat的
+    那些拍卖中，对剩余竞标者中的最高估值取平均值。
+
     参数：
     ----------
-    v_hat：float，玩家1的价值。玩家1赢得拍卖时的最大值。
+    v_hat：float，参考竞标者的估值。
 
     array：二维数组，形状为(N,R)的竞标者价值，
           其中N：玩家数量，R：拍卖次数
 
-    order：int。输家中最大数的顺序。
-                例如，除获胜者外最大数的顺序是1。
-                     除获胜者外第二大数的顺序是2。
+    order：int。对输家的哪个顺序统计量取平均值。
+                order=1给出最高的落败估值，
+                order=2给出第二高的估值，以此类推。
 
     """
     N, R = array.shape
 
-    # 删除第一行，因为我们假设第一行是获胜者的出价
-    array_residual = array[1:, :].copy()  # 删除第一行，因为我们假设第一行是获胜者的出价
+    # 去掉参考竞标者所在的行；条件是其余竞标者都落败
+    array_residual = array[1:, :].copy() 
 
     winning_auctions_mask = (array_residual < v_hat).all(axis=0) 
 
@@ -521,11 +548,6 @@ idx = np.argsort(v, axis=0)
 v = np.take_along_axis(v, idx, axis=0)
 b = np.take_along_axis(b, idx, axis=0)
 
-ii = np.repeat(np.arange(1, N + 1)[:, None], R, axis=1)
-ii = np.take_along_axis(ii, idx, axis=0)
-
-winning_player = ii[-1, :]
-
 # highest bid
 winner_pays_fpsb = b[-1, :]  # 最高出价
 # 2nd-highest valuation
@@ -602,7 +624,7 @@ class bid_price_solution:
 
         return np.mean(order_largest_bids)
 
-    def compute_optimal_bid_FPSB(self):
+    def compute_optimal_bid_FPSB(self, plot=True):
         # 我们计算v的分位数作为网格
         pct_quantile = np.linspace(0, 100, 101)[1:-1]
         v_grid = np.percentile(self.value_mat.flatten(), q=pct_quantile)
@@ -616,6 +638,9 @@ class bid_price_solution:
 
         self.b_star_num = interp.interp1d(v_grid, EV,
                                            fill_value="extrapolate")
+
+        if not plot:
+            return None
 
         pct_quantile_fine = np.linspace(0, 100, 1001)[1:-1]
         v_grid_fine = np.percentile(self.value_mat.flatten(),
@@ -635,18 +660,15 @@ class bid_price_solution:
         return None
 
     def plot_winner_payment_distribution(self):
+        if not hasattr(self, 'b_star_num'):     # 出价尚未计算
+            self.compute_optimal_bid_FPSB(plot=False)
+
         self.b = self.b_star_num(self.value_mat)
 
         idx = np.argsort(self.value_mat, axis=0)
         # same as np.sort(v, axis=0), except now we retain the idx
         self.v = np.take_along_axis(self.value_mat, idx, axis=0)  # 与np.sort(v, axis=0)相同，但保留了idx
         self.b = np.take_along_axis(self.b, idx, axis=0)
-
-        N, R = self.value_mat.shape
-        self.ii = np.repeat(np.arange(1, N + 1)[:, None], R, axis=1)
-        self.ii = np.take_along_axis(self.ii, idx, axis=0)
-
-        winning_player = self.ii[-1, :]
 
         # highest bid
         winner_pays_fpsb = self.b[-1, :]  # 最高投标
@@ -691,13 +713,246 @@ chi_squ_case.compute_optimal_bid_FPSB()
 chi_squ_case.plot_winner_payment_distribution()
 ```
 
-## 参考文献
+## 练习
 
-+++
+```{exercise}
+:label: ta_ex1
 
-1. 维基百科关于FPSB的条目：https://en.wikipedia.org/wiki/First-price_sealed-bid_auction
-2. 维基百科关于SPSB的条目：https://en.wikipedia.org/wiki/Vickrey_auction
-3. Chandra Chekuri的算法博弈论讲义：https://chekuri.cs.illinois.edu/teaching/spring2008/Lectures/scribed/Notes20.pdf
-4. Tim Salmon的ECO 4400补充讲义：关于拍卖的一切：https://s2.smu.edu/tsalmon/auctions.pdf
-5. 拍卖理论-收益等价定理：https://michaellevet.wordpress.com/2015/07/06/auction-theory-revenue-equivalence-theorem/
-6. 顺序统计量：https://online.stat.psu.edu/stat415/book/export/html/834
+通过模拟验证收益等价定理。
+
+对于估值独立地从 $U(0,1)$ 中抽取的 $n = 2, 3, 5, 10$ 个竞拍者，模拟多场拍卖并计算
+
+1. FPSB 拍卖中获胜者的平均支付，其中每个竞拍者出价 $\frac{n-1}{n} v_i$
+1. SPSB 拍卖中获胜者的平均支付，其中每个竞拍者出价 $v_i$
+
+将两者与理论预期收益 $\frac{n-1}{n+1}$ 进行比较，并评论卖方收益如何随竞拍者数量变化。
+```
+
+```{solution-start} ta_ex1
+:class: dropdown
+```
+
+```{code-cell} ipython3
+R_ex = 200_000
+rng_ex = np.random.default_rng(1234)
+
+print(f"{'n':>4}{'FPSB':>12}{'SPSB':>12}{'(n-1)/(n+1)':>14}")
+for n in (2, 3, 5, 10):
+    v_ex = np.sort(rng_ex.uniform(0, 1, (n, R_ex)), axis=0)
+    fpsb = (n - 1)/n * v_ex[-1, :]      # winner's own bid
+    spsb = v_ex[-2, :]                  # second highest valuation
+    print(f"{n:>4}{fpsb.mean():>12.4f}{spsb.mean():>12.4f}{(n-1)/(n+1):>14.4f}")
+```
+
+这两种拍卖产生相同的预期收益，并且随着 $n$ 的增长，二者都收敛于估值可能的最高值。
+
+竞拍者越多，竞争就会将获胜支付推向估值支持集的顶端。
+
+请注意，尽管这两种拍卖平均而言产生相同的收益，但获胜者支付的*分布*是不同的：在 FPSB 拍卖中，支付是获胜者估值的确定性函数，而在 SPSB 拍卖中，支付是次高估值，在给定获胜者估值的情况下这是随机的。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: ta_ex2
+
+方程 {eq}`eq:optbid1` 表明，FPSB 拍卖中的最优出价为 $\mathbb{E}[y_i \mid y_i < v_i]$。
+
+1. 证明这可以写成
+
+   $$
+   b(v) = v - \frac{\int_0^{v} F(x)^{n-1} dx}{F(v)^{n-1}}
+   $$
+
+   其中 $F$ 是估值的分布函数。
+
+1. 验证当 $F$ 是 $[0,1]$ 上的均匀分布时，这简化为 $\frac{n-1}{n}v$。
+
+1. 计算估值服从 $\chi^2(2)$ 分布时的公式值，并与讲座中通过模拟计算得到的出价函数进行比较。
+```
+
+```{solution-start} ta_ex2
+:class: dropdown
+```
+
+$y_i = \max_{j \neq i} v_j$ 的分布函数为 $\tilde F_{n-1}(y) = F(y)^{n-1}$。
+
+因此
+
+$$
+\mathbb{E}[y \mid y < v] = \frac{1}{F(v)^{n-1}} \int_0^v y \, d\left[F(y)^{n-1}\right] .
+$$
+
+分部积分，
+
+$$
+\int_0^v y \, d\left[F(y)^{n-1}\right] = v F(v)^{n-1} - \int_0^v F(y)^{n-1} dy ,
+$$
+
+由此得到该公式。
+
+对于 $[0,1]$ 上的 $F(x) = x$，我们得到 $b(v) = v - \frac{v^n/n}{v^{n-1}} = \frac{n-1}{n} v$。
+
+这个公式有一个很好的解读：竞拍者将其出价压低到估值以下的幅度，会随着竞争对手数量的增加而缩小。
+
+```{code-cell} ipython3
+from scipy.integrate import quad
+
+def b_closed_form(v, F, n):
+    "Optimal FPSB bid for a bidder with valuation v when rivals' values ~ F."
+    shading = quad(lambda x: F(x)**(n - 1), 0, v)[0] / F(v)**(n - 1)
+    return v - shading
+
+# check against the analytical solution for the uniform case
+print("uniform check")
+for v0 in (0.3, 0.6, 0.9):
+    print(f"  v = {v0}:  closed form {b_closed_form(v0, lambda x: x, N):.4f}, "
+          f"analytical {b_star(v0, N):.4f}")
+```
+
+```{code-cell} ipython3
+# now the chi-squared case studied in the lecture
+F_chi2 = stats.chi2(df=2).cdf
+v_test = np.percentile(v.flatten(), [10, 30, 50, 70, 90])
+
+print(f"{'v':>8}{'closed form':>14}{'simulated':>12}")
+for v0 in v_test:
+    print(f"{v0:>8.3f}{b_closed_form(v0, F_chi2, N):>14.4f}"
+          f"{float(b_star_num(v0)):>12.4f}")
+```
+
+闭式解与模拟结果高度一致，这为两者都提供了有用的验证。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: ta_ex3
+
+本练习要求你理解为什么诚实出价在 SPSB 拍卖中是弱占优策略，而在 FPSB 拍卖中却不是。
+
+固定 $n = 5$，考虑一个估值为 $v = 0.75$ 的竞拍者，其对手的估值服从 $U(0,1)$。
+
+1. 在 SPSB 拍卖中，对手诚实出价。将该竞拍者的预期剩余计算为她自己出价 $b$ 的函数，并绘制图形。
+1. 在 FPSB 拍卖中，对手出价 $\frac{n-1}{n}v_j$。计算并绘制她的预期剩余作为 $b$ 的函数。
+1. 每条曲线的峰值在哪里？如果她按照自己的估值出价，在 FPSB 拍卖中她能获得多少剩余？
+```
+
+```{solution-start} ta_ex3
+:class: dropdown
+```
+
+在 SPSB 拍卖中，当 $y < b$ 时她获胜，然后支付 $y$，因此她的预期剩余为
+
+$$
+\int_0^b (v - y) \, (n-1) y^{n-2} dy .
+$$
+
+对 $b$ 求导得到 $(v-b)(n-1)b^{n-2}$，当 $b < v$ 时为正，当 $b > v$ 时为负，因此 $b = v$ 是最优的。
+
+在 FPSB 拍卖中，当每个对手的出价都低于 $b$ 时她获胜，这发生的概率为 $\left(\frac{nb}{n-1}\right)^{n-1}$，然后她支付 $b$。
+
+```{code-cell} ipython3
+n_ex, v_own = 5, 0.75
+bids = np.linspace(0, 1, 401)
+
+spsb_surplus = [quad(lambda y: (v_own - y)*(n_ex - 1)*y**(n_ex - 2),
+                     0, min(bb, 1))[0] for bb in bids]
+fpsb_surplus = [(v_own - bb)*min(1, n_ex*bb/(n_ex - 1))**(n_ex - 1)
+                for bb in bids]
+
+fig, ax = plt.subplots(figsize=(6, 4))
+ax.plot(bids, spsb_surplus, label='SPSB')
+ax.plot(bids, fpsb_surplus, label='FPSB')
+ax.axvline(v_own, ls='--', c='k', lw=1, label='own valuation')
+ax.axvline((n_ex - 1)/n_ex*v_own, ls=':', c='r', lw=1, label='FPSB optimal bid')
+ax.set_xlabel('own bid $b$')
+ax.set_ylabel('expected surplus')
+ax.legend()
+plt.show()
+
+print(f"SPSB surplus is maximized at b = {bids[int(np.argmax(spsb_surplus))]:.3f}")
+print(f"FPSB surplus is maximized at b = {bids[int(np.argmax(fpsb_surplus))]:.3f}"
+      f"  (theory: {(n_ex - 1)/n_ex*v_own:.3f})")
+print(f"FPSB surplus from bidding one's valuation: {(v_own - v_own):.3f}")
+```
+
+SPSB 曲线恰好在竞拍者估值处达到峰值。
+
+FPSB 曲线的峰值严格低于该估值，并且在 FPSB 拍卖中按照自己的估值出价所获得的剩余恰好为零：竞拍者获胜的次数更多，但每次获胜时都要支付其全部估值。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: ta_ex4
+
+收益等价定理要求竞拍者是*风险中性*的。
+
+假设每个竞拍者的效用为 $u(x) = x^\rho$，其中 $0 < \rho \leq 1$，因此 $\rho < 1$ 意味着风险厌恶，且估值服从 $U(0,1)$。
+
+可以证明，FPSB 拍卖中的对称均衡出价变为
+
+$$
+b(v) = \frac{n-1}{n-1+\rho} v .
+$$
+
+1. 通过数值方法验证这一点：对于 $n = 5$ 且估值 $v = 0.8$ 的竞拍者，在对手使用此规则的情况下，将预期效用计算为她自己出价的函数，并检查其最大值所在位置。
+1. 计算 $\rho = 1, 0.6, 0.3$ 时 FPSB 和 SPSB 中卖方的预期收益。
+1. 解释其中的直觉。
+```
+
+```{solution-start} ta_ex4
+:class: dropdown
+```
+
+```{code-cell} ipython3
+def expected_utility(b, v_own, n, ρ):
+    "Expected utility of bidding b when rivals bid (n-1)v/(n-1+ρ)."
+    win_prob = np.minimum(1, b*(n - 1 + ρ)/(n - 1))**(n - 1)
+    return win_prob * np.maximum(v_own - b, 0)**ρ
+
+n_ex, v_own = 5, 0.8
+grid = np.linspace(0.001, v_own, 2001)
+
+print(f"{'ρ':>6}{'theory b*':>12}{'numerical':>12}")
+for ρ in (1.0, 0.5, 0.2):
+    theory = (n_ex - 1)*v_own/(n_ex - 1 + ρ)
+    numerical = grid[int(np.argmax(expected_utility(grid, v_own, n_ex, ρ)))]
+    print(f"{ρ:>6}{theory:>12.4f}{numerical:>12.4f}")
+```
+
+```{code-cell} ipython3
+rng_ra = np.random.default_rng(42)
+v_ra = np.sort(rng_ra.uniform(0, 1, (n_ex, 200_000)), axis=0)
+
+print(f"{'ρ':>6}{'FPSB revenue':>15}{'SPSB revenue':>15}")
+for ρ in (1.0, 0.6, 0.3):
+    fpsb = ((n_ex - 1)/(n_ex - 1 + ρ)) * v_ra[-1, :]
+    print(f"{ρ:>6}{fpsb.mean():>15.4f}{v_ra[-2, :].mean():>15.4f}")
+```
+
+在风险中性（$\rho = 1$）的情况下，这两种拍卖产生相同的收益，正如定理所述。
+
+在风险厌恶（$\rho < 1$）的情况下，FPSB 拍卖产生*更高*的收益。
+
+其直觉是：在 FPSB 拍卖中，压低出价是一种赌博：它提高了获胜条件下的剩余，但降低了获胜的概率。
+
+风险厌恶的竞拍者不喜欢这种赌博，因此压低出价的幅度会减小，这将收益转移给了卖方。
+
+在 SPSB 拍卖中，获胜者的支付不依赖于她自己的出价，因此风险厌恶不会改变任何东西：按照自己的估值出价仍然是弱占优的，卖方的收益也不受影响。
+
+```{solution-end}
+```
+
+## 延伸阅读
+
+第二价格密封投标拍卖由 {cite:t}`Vickrey_61` 提出。
+
+有关本讲座内容的教科书式论述，请参阅 {cite:t}`Krishna2009` 和 {cite:t}`Milgrom2004`。
+
+{cite:t}`Klemperer1999` 对相关文献进行了综述。
+
+上文所述一般形式的收益等价定理源自 {cite:t}`Myerson1981` 和 {cite:t}`RileySamuelson1981`。
+
+本讲座所研究的两种拍卖自然地可以用投标人估值的顺序统计量来描述，这一主题在 {cite:t}`DavidNagaraja2003` 中有详尽论述。
