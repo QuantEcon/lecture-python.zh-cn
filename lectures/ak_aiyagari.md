@@ -575,8 +575,8 @@ def popu_dist(σ, household, Q):
 
     j_grid, a_grid, γ_grid, Π, β, init_μ, VJ = household
 
-    J = hh.j_grid.size
-    num_state = hh.a_grid.size * hh.γ_grid.size
+    J = household.j_grid.size
+    num_state = household.a_grid.size * household.γ_grid.size
 
     def update_popu_j(μ_j, j):
         "更新从年龄j到j+1的人口分布"
@@ -691,7 +691,7 @@ def compute_aggregates(μ, household):
 
     J, a_size, γ_size = j_grid.size, a_grid.size, γ_grid.size
 
-    μ = μ.reshape((J, hh.a_grid.size, hh.γ_grid.size))
+    μ = μ.reshape((J, household.a_grid.size, household.γ_grid.size))
 
     # 计算私人储蓄
     a = a_grid.reshape((1, a_size, 1))
@@ -758,13 +758,13 @@ def find_ss(household, firm, pol_target, Q, tol=1e-6, max_iter=200):
         r_old, w_old = r, w
 
         # 家庭最优决策和价值
-        V, σ = backwards_opt([r, w], [τ, δ], hh, Q)
+        V, σ = backwards_opt([r, w], [τ, δ], household, Q)
 
         # 计算稳态分布
-        μ = popu_dist(σ, hh, Q)
+        μ = popu_dist(σ, household, Q)
 
         # 计算总量
-        A, L = compute_aggregates(μ, hh)
+        A, L = compute_aggregates(μ, household)
         K = A - D
 
         # 更新价格
@@ -928,8 +928,8 @@ def population_evolution(σt, μt, household, Q):
 
     j_grid, a_grid, γ_grid, Π, β, init_μ, VJ = household
 
-    J = hh.j_grid.size
-    num_state = hh.a_grid.size * hh.γ_grid.size
+    J = household.j_grid.size
+    num_state = household.a_grid.size * household.γ_grid.size
 
     def population_evolution_j(j):
 
@@ -1066,7 +1066,7 @@ def path_iteration(ss1, ss2, pol_target, household, firm, Q, tol=1e-4,
 
         # 向后求解最优政策
         V_seq, σ_seq = solve_backwards(
-            V_ss2, σ_ss2, hh, firm, price_seq, pol_seq, Q)
+            V_ss2, σ_ss2, household, firm, price_seq, pol_seq, Q)
 
         # 向前计算人口演变
         μ_seq, K_seq, L_seq = simulate_forwards(
