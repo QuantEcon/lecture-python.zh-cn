@@ -292,11 +292,14 @@ def price_single_beliefs(transition, dividend_payoff, β=.75):
     """
     求解单一信念的函数
     """
-    # 首先计算逆矩阵部分
-    imbq_inv = la.inv(np.eye(transition.shape[0]) - β * transition)
+    # 首先计算 (I - βQ)
+    A = np.eye(transition.shape[0]) - β * transition
 
-    # 接下来计算价格
-    prices = β * imbq_inv @ transition @ dividend_payoff
+    # 接下来计算 βQd
+    b = β * (transition @ dividend_payoff)
+
+    # 求解线性方程组
+    prices = la.solve(A, b)
 
     return prices
 ```
