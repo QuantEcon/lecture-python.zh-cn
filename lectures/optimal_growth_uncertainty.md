@@ -76,6 +76,10 @@ translation:
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import namedtuple
+import matplotlib as mpl  # i18n
+FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"  # i18n
+mpl.font_manager.fontManager.addfont(FONTPATH)  # i18n
+mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
 ```
 
 ## 布洛克-米尔曼规划问题
@@ -576,14 +580,9 @@ print(f"当 K < {m_wide.K[first]:.3f} 时，对每个冲击投资都为正")
 ---
 mystnb:
   figure:
-    caption: Law of motion and Tobin's q
+    caption: 运动规律与托宾 q
     name: fig-ogu-policy-q
 ---
-import matplotlib as mpl  # i18n
-FONTPATH = "_fonts/SourceHanSerifSC-SemiBold.otf"  # i18n
-mpl.font_manager.fontManager.addfont(FONTPATH)  # i18n
-mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
-
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
 show = (m.K > 1.5) & (m.K < 9)
 
@@ -595,7 +594,7 @@ for j in range(m.nθ):
 
 axes[0].plot(m.K[show], m.K[show], 'k--', lw=1, label='45度线')
 axes[0].plot(m.K[show], (1-m.δ)*m.K[show], 'k:', lw=1, label=r'$(1-\delta)K$')
-axes[0].set_xlabel('$K$'); axes[0].set_ylabel("$K'$"); axes[0].set_title('运动法则')
+axes[0].set_xlabel('$K$'); axes[0].set_ylabel("$K'$"); axes[0].set_title('运动规律')
 axes[1].axhline(1.0, color='k', ls='--', lw=1)
 axes[1].set_xlabel('$K$'); axes[1].set_ylabel('$q$'); axes[1].set_title("托宾的 $q$")
 axes[0].legend(fontsize=8); axes[1].legend(fontsize=8)
@@ -603,7 +602,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-每当不可逆性约束起作用时，运动法则就会沿着较低的那条虚线 $(1-\delta)K$ 运行。
+每当不可逆性约束起作用时，运动规律就会沿着较低的那条虚线 $(1-\delta)K$ 运行。
 
 恰恰是在这一区域，$q$ 会降到 1 以下。
 
@@ -636,7 +635,7 @@ print(f"访问到的资本范围: [{m.K[p_lo].min():.2f}, {m.K[p_lo].max():.2f}]
 ---
 mystnb:
   figure:
-    caption: Invariant distribution and investment against q
+    caption: 不变分布以及投资与 q 的关系
     name: fig-ogu-invariant-q
 ---
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
