@@ -555,7 +555,7 @@ print(f"score matching:      ρ1 = {res.x[0]:.4f}   σ = {res.x[1]:.4f}")
 ---
 mystnb:
   figure:
-    caption: Criterion with common and fresh shocks
+    caption: 公共随机数与重新抽取扰动项下的准则函数
     name: fig-gt-common-random-numbers
 ---
 rng_fresh = np.random.default_rng(1)
@@ -781,7 +781,7 @@ print(f"standard deviation = {y_sv.std():.3f},  kurtosis = {kurt:.2f}")
 ---
 mystnb:
   figure:
-    caption: Simulated returns from the SV model
+    caption: 随机波动率模型的模拟收益率
     name: fig-gt-sv-returns
 ---
 fig, ax = plt.subplots()
