@@ -698,7 +698,7 @@ print(f"ratio                = {half_life(λ_c)/half_life(λ_micro):.2f}")
 ---
 mystnb:
   figure:
-    caption: Half-lives of industry and firm capital
+    caption: 行业资本与单个企业资本的半衰期
     name: fig-mfg-half-lives
 ---
 η_grid = np.linspace(1.2, 12, 200)
@@ -769,7 +769,7 @@ print(f"nonexistence threshold,         -θ**    = {mθ_2star:.4f}")
 ---
 mystnb:
   figure:
-    caption: Transition paths of capital and investment
+    caption: 资本与投资的过渡路径
     name: fig-mfg-transition
 ---
 t_c = np.linspace(0, 25, 300)
@@ -861,7 +861,7 @@ print("planner eigenvalues:    ", np.linalg.eigvals(JG_planner).real.round(4))
 ---
 mystnb:
   figure:
-    caption: Path of the aggregate state
+    caption: 总量状态的路径
     name: fig-mfg-planner-path
 ---
 X0 = np.array([1.0, 0.5])
@@ -1046,7 +1046,7 @@ print("from the closed-form formula:         ", predicted.round(6))
 ---
 mystnb:
   figure:
-    caption: Industry and store price paths
+    caption: 行业价格与商店价格的路径
     name: fig-mfg-kimball-paths
 ---
 t_K = np.linspace(0, 8, 200)

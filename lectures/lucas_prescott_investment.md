@@ -453,7 +453,7 @@ print(f"grid: {len(m.k)} capital points, {len(m.u)} demand states")
 ---
 mystnb:
   figure:
-    caption: Investment policy and law of motion
+    caption: 投资策略与运动规律
     name: fig-lp-policy
 ---
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
@@ -615,7 +615,7 @@ print(f"user cost δ + r / h'(δ)       = {user_cost:.5f}")
 ---
 mystnb:
   figure:
-    caption: Capital paths under IID demand
+    caption: 需求序列独立时的资本路径
     name: fig-lp-iid-paths
 ---
 def capital_path(m, idx, k0, T=60, u_index=None):
@@ -729,7 +729,7 @@ print(f"ergodic set for capital: ({k_lo_star:.2f}, {k_hi_star:.2f})")
 ---
 mystnb:
   figure:
-    caption: Capital paths entering the ergodic set
+    caption: 进入遍历集的资本路径
     name: fig-lp-ergodic-paths
 ---
 def simulate(m, idx, k0, T=20_000, seed=0):
@@ -766,7 +766,7 @@ plt.show()
 ---
 mystnb:
   figure:
-    caption: Invariant distributions of capital and price
+    caption: 资本与价格的不变分布
     name: fig-lp-invariant
 ---
 burn = 2000
@@ -798,7 +798,7 @@ print(f"range visited: ({k_low[burn:].min():.2f}, {k_low[burn:].max():.2f})")
 ---
 mystnb:
   figure:
-    caption: Time average of capital
+    caption: 资本的时间平均
     name: fig-lp-time-average
 ---
 running_mean = np.cumsum(k_low) / np.arange(1, len(k_low) + 1)
