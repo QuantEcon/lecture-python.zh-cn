@@ -696,7 +696,7 @@ $$
 X = \sigma_1 \begin{bmatrix}U_{11}V_{1}^\top \\U_{21}V_{1}^\top \\\cdots\\U_{m1}V_{1}^\top \\\end{bmatrix} + \sigma_2\begin{bmatrix}U_{12}V_{2}^\top \\U_{22}V_{2}^\top \\\cdots\\U_{m2}V_{2}^\top \\\end{bmatrix}+\ldots + \sigma_p\begin{bmatrix}U_{1p}V_{p}^\top \\U_{2p}V_{p}^\top \\\cdots\\U_{mp}V_{p}^\top \\\end{bmatrix}
 $$ (eq:PCA2)
 
-在时间序列分析的背景下，我们可以这样解释方程{eq}`eq:PCA2`中的对象：
+在时间序列分析的背景下，我们可以这样解释方程 {eq}`eq:PCA2` 中的对象：
 
 * 对于每个$k=1, \ldots, p$，对象 $\lbrace V_{jk} \rbrace_{j=1}^n$（即$V$的第$k$列）是第$k$个**主成分**的时间序列，经过归一化使其具有单位长度；未归一化的主成分为$\sigma_k V_k^\top = U_k^\top X$
 
@@ -733,7 +733,7 @@ $$
 
 * $\Lambda$是$\Omega$的特征值对角矩阵
 
-我们可以将$X$表示为:
+我们可以将 $X$ 表示为：
 
 $$
 X=P\epsilon
@@ -822,7 +822,7 @@ XX^\top &=U\Sigma V^\top V\Sigma^\top  U^\top \cr
 \end{aligned}
 $$  (eq:XXcompare)
 
-将表示式{eq}`eq:XXcompare`与上面的方程{eq}`eq:XXo`进行比较。
+将表示式 {eq}`eq:XXcompare` 与上面的方程 {eq}`eq:XXo` 进行比较。
 
 显然，SVD中的$U$就是$XX^\top$的特征向量矩阵$P$，而$\Sigma \Sigma^\top$就是特征值矩阵$\Lambda$。
 
