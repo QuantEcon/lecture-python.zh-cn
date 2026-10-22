@@ -81,7 +81,7 @@ from scipy.integrate import odeint
 
 假设人口中的所有个体都处于这四种状态之一。
 
-这些状态是：易感（$S$）、暴露（$E$）、感染（$I$）和移除（$R$）。
+这些状态是：易感者（$S$）、暴露者（$E$）、感染者（$I$）和移出者（$R$）。
 
 ```{prf:assumption}
 * 处于 R 状态的人已经被感染，并已康复或死亡。
@@ -91,16 +91,16 @@ from scipy.integrate import odeint
 
 ### 时间路径
 
-跨状态的流动遵循路径 $S \to E \to I \to R$。
+状态之间的流动遵循路径 $S \to E \to I \to R$。
 
 当有效再生数超过 1 时，感染人数最初会增加，但最终会随着易感人群的减少而下降。
 
-我们主要关注以下几点：
+主要关注的是
 
-* 给定时间点的感染人数（这决定了医疗系统是否会不堪重负），以及
-* 病例负担可以推迟多久（希望能推迟到疫苗问世）
+* 在给定时间的感染人数（这决定了医疗系统是否会被压垮）
+* 病例负荷可以推迟多长时间（我们希望能够推迟到疫苗出现）
 
-用小写字母表示每种状态下人口的比例，动态方程为
+使用小写字母表示处于各状态的人口比例，其动态方程为
 
 ```{math}
 :label: sir_system
@@ -114,18 +114,18 @@ from scipy.integrate import odeint
 \end{aligned}
 ```
 
-在这些方程中：
+在这些方程中，
 
 * $\beta(t)$ 称为**传播率**（个体接触他人并使其暴露于病毒的速率）。
 * $\sigma$ 称为**感染率**（暴露者转变为感染者的速率）。
 * $\gamma$ 称为**移除率**（感染者康复或死亡的速率）。
 * 点符号 $\dot y$ 表示时间导数 $dy/dt$。
 
-由于这些状态构成了一个划分，我们不需要单独对处于 R 状态的人口比例 $r$ 建模。
+我们不需要单独建模处于 $R$ 状态的人口比例 $r$，因为这些状态构成一个分区。
 
-具体而言，人口中“已移除”的比例为 $r = 1 - s - e - i$。
+具体来说，“已移除”的人口比例为 $r = 1 - s - e - i$。
 
-我们还将追踪 $c = i + r$，即累计病例数（即所有曾经或正在感染的人）。
+我们还将追踪 $c = i + r$，即累计病例数（即所有已感染或曾经感染的人）。
 
 系统 {eq}`sir_system` 可以写成向量形式：
 
@@ -139,18 +139,18 @@ from scipy.integrate import odeint
 
 ### 参数
 
-$\sigma$ 和 $\gamma$ 都被视为固定的、由生物学决定的参数。
+参数$\sigma$和$\gamma$由病毒的生物学特性决定，因此被视为固定值。
 
-如阿特克森的笔记中所述，我们设定：
+根据Atkeson的笔记，我们采用以下参数值：
 
 * $\sigma = 1/5.2$ 以反映 5.2 天的平均潜伏期。
 * $\gamma = 1/18$ 以匹配 18 天的平均患病持续时间。
 
-传播率建模为：
+传播率被构造为
 
 * $\beta(t) := R(t) \gamma$，其中 $R(t)$ 是时间 $t$ 时的**有效再生数**。
 
-（这个符号稍显混乱，因为 $R(t)$ 与表示移除状态的符号 $R$ 不同。）
+（这个符号表示有点令人困惑，因为$R(t)$与表示已移除状态的符号$R$不同。）
 
 ## 实现
 
@@ -268,7 +268,7 @@ def plot_paths(paths, labels, ylabel, times=t_vec):
     for path, label in zip(paths, labels):
         ax.plot(times, path, lw=2, label=label)
 
-    ax.set_xlabel('days')
+    ax.set_xlabel('天数')
     ax.set_ylabel(ylabel)
     ax.legend(loc='upper left')
 
@@ -278,7 +278,7 @@ def plot_paths(paths, labels, ylabel, times=t_vec):
 让我们绘制当前病例数占人口的比例。
 
 ```{code-cell} ipython3
-plot_paths(i_paths, labels, ylabel='fraction of the population')
+plot_paths(i_paths, labels, ylabel='人口比例')
 ```
 
 正如预期的那样，较低的有效传播率会推迟感染高峰。
@@ -288,7 +288,7 @@ plot_paths(i_paths, labels, ylabel='fraction of the population')
 以下是累计病例数（占总人口的比例）：
 
 ```{code-cell} ipython3
-plot_paths(c_paths, labels, ylabel='fraction of the population')
+plot_paths(c_paths, labels, ylabel='人口比例')
 ```
 
 ### 实验2：改变缓解措施
@@ -326,7 +326,7 @@ fig, ax = plt.subplots()
 for η, label in zip(η_vals, labels):
     ax.plot(t_vec, R0_mitigating(t_vec, η=η), lw=2, label=label)
 
-ax.set_xlabel('days')
+ax.set_xlabel('天数')
 ax.set_ylabel('$R_0$')
 ax.legend()
 plt.show()
@@ -347,13 +347,13 @@ for η in η_vals:
 以下是不同场景下的当前案例：
 
 ```{code-cell} ipython3
-plot_paths(i_paths, labels, ylabel='fraction of the population')
+plot_paths(i_paths, labels, ylabel='人口比例')
 ```
 
 以下是累计病例数（占总人口的比例）：
 
 ```{code-cell} ipython3
-plot_paths(c_paths, labels, ylabel='fraction of the population')
+plot_paths(c_paths, labels, ylabel='人口比例')
 ```
 
 更快实施缓解措施主要会推迟感染高峰，而对高峰的高度影响较小。
