@@ -27,6 +27,7 @@ translation:
     A classical model of measurements initially collected by an agency::Computing  coefficients in a Wold moving average representation: 计算 Wold 移动平均表示中的系数
     A classical model of measurements initially collected by an agency::Gaussian likelihood: 高斯似然
     A classical model of measurements initially collected by an agency::Forecast-error-variance decomposition: 预测误差方差分解
+    A classical model of measurements initially collected by an agency::Granger causality without an ordering: 不依赖排序的格兰杰因果关系
     A classical model of measurements initially collected by an agency::Wold impulse responses: Wold 脉冲响应
     A model of optimal estimates reported by an agency: 一个由机构报告最优估计的模型
     A model of optimal estimates reported by an agency::Innovations representation for filtered data: 滤波数据的新息表示
@@ -36,6 +37,7 @@ translation:
     A model of optimal estimates reported by an agency::Wold impulse responses: Wold 脉冲响应
     Simulation: 模拟
     Summary: 总结
+    Exercises: 练习
 ---
 
 (measurement_models)=
@@ -163,7 +165,7 @@ c_t + k_{t+1} = f k_t + \theta_t, \qquad \beta f^2 > 1.
 :label: shock_process
 a(L)\,\theta_t = \varepsilon_t,
 ```
-其中 $L$ 是后移（或"滞后"）算子，$a(z) = 1 - a_1 z - a_2 z^2 - \cdots - a_r z^r$ 的所有零点都在单位圆之外。
+其中 $L$ 是后移（或"滞后"）算子，$\varepsilon_t$ 是标量白噪声，而 $a(z) = 1 - a_1 z - a_2 z^2 - \cdots - a_r z^r$ 的所有零点都在单位圆之外。
 
 ### 最优决策规则
 
@@ -173,15 +175,17 @@ $c_t$ 的最优决策规则是
 :label: opt_decision
 c_t = \frac{-\alpha}{f-1}
       + \left(1 - \frac{1}{\beta f^2}\right)
+        \left[
         \frac{L - f^{-1} a(f^{-1})^{-1} a(L)}{L - f^{-1}}\,\theta_t
-      + f k_t,
+      + f k_t
+        \right],
 \qquad
 k_{t+1} = f k_t + \theta_t - c_t,
 ```
 
 其中 $\alpha = u_1[1-(\beta f)^{-1}]/u_2$。
 
-方程 {eq}`shock_process` 和 {eq}`opt_decision` 展现了理性预期模型所特有的跨方程约束。
+方程 {eq}`shock_process` 和 {eq}`opt_decision` 展现了理性预期模型所特有的跨方程约束：冲击过程的参数 $a_1, \ldots, a_r$ 也出现在消费的决策规则中。
 
 ### 净收入与加速数
 
@@ -207,12 +211,14 @@ y_{nt} = (f-1)k_t + \theta_t.
 
 假设2不那么重要，只影响各种常数。
 
-在这两个假设下，{eq}`opt_decision` 简化为
+在这两个假设下，$\alpha = 0$，{eq}`opt_decision` 简化为
 
 ```{math}
 :label: simple_crule
-c_t = (1-f^{-1})\,\theta_t + (f-1)\,k_t.
+c_t = (1-f^{-1})\,\theta_t + (f-1)\,k_t,
 ```
+
+从而资本存量遵循 $k_{t+1} = k_t + f^{-1} \theta_t$。
 
 当 {eq}`simple_crule`、{eq}`net_income` 和 {eq}`tech_constraint` 结合起来时，最优计划满足
 
@@ -237,13 +243,17 @@ y_{nt} = \theta_t + (1-\beta)(\theta_{t-1} + \theta_{t-2} + \cdots).
 
 这与 {cite:t}`Chow1968` 实证记录的机制相同（见 {doc}`chow_business_cycles`）。
 
-方程 {eq}`income_process` 表明，可支配收入的一阶差分是一个一阶移动平均过程，其新息等于禀赋冲击 $\theta_t$ 的新息。
+方程 {eq}`income_process` 表明，净收入的一阶差分 $y_{nt} - y_{n,t-1} = \theta_t - \beta \theta_{t-1}$ 是一个一阶移动平均过程，其新息等于禀赋冲击 $\theta_t$ 的新息。
 
 正如 {cite:t}`Muth1960` 所展示的，这样的过程可以通过几何分布滞后或"适应性预期"方案最优地预测。
 
+消费本身是一个鞅：{eq}`simple_crule` 与 $k_t - k_{t-1} = f^{-1}\theta_{t-1}$ 蕴含 $c_t - c_{t-1} = (1 - \beta)\theta_t$，这正是 {cite:t}`Hall1978` 所强调的消费随机游走性质。
+
+因此，消费、资本存量和净收入都具有单位根，而投资 $k_{t+1} - k_t = f^{-1}\theta_t$ 则是序列不相关的。
+
 ### 加速数之谜
 
-当所有变量都被准确测量并由单一冲击 $\theta_t$ 驱动时，$(c_t,\, k_{t+1}-k_t,\, y_{nt})$ 的谱密度矩阵在所有频率上的秩为1。
+当所有变量都被准确测量并由单一冲击 $\theta_t$ 驱动时，协方差平稳向量 $(c_t - c_{t-1},\, k_{t+1}-k_t,\, y_{nt} - y_{n,t-1})$ 的谱密度矩阵在所有频率上的秩为1。
 
 每个变量都是同一白噪声的一个可逆单边分布滞后，因此没有任何变量格兰杰引起任何其他变量。
 
@@ -267,10 +277,7 @@ y_{nt} = \theta_t + (1-\beta)(\theta_{t-1} + \theta_{t-2} + \cdots).
   + (v_{k,t+1} - v_{kt}),
 ```
 
-```{math}
-:label: income_process_ma
-y_{nt} = \theta_t + (1-\beta)(\theta_{t-1} + \theta_{t-2} + \cdots).
-```
+其中 $y_{nt}$ 由 {eq}`income_process` 给出。
 
 在这种情况下，收入格兰杰引起消费和投资，但不被它们格兰杰引起。
 
@@ -280,7 +287,7 @@ y_{nt} = \theta_t + (1-\beta)(\theta_{t-1} + \theta_{t-2} + \cdots).
 
 在这种情况下，每个观测到的序列都将共同信号 $\theta_t$ 与特异性测量噪声混合在一起。
 
-测量误差方差较低的序列更紧密地跟踪 $\theta_t$，因此它的新息包含更多关于其他序列未来值的信息。
+**相对于真实序列的变动而言**测量误差较小的序列更紧密地跟踪 $\theta_t$，因此它的新息包含更多关于其他序列未来值的信息。
 
 因此，在预测误差方差分解中，对测量较好的序列的冲击在其他变量的 $j$ 步向前预测误差中占更大份额。
 
@@ -302,17 +309,19 @@ x_t = \begin{bmatrix} k_t \\ \theta_t \end{bmatrix},
 z_t = \begin{bmatrix} y_{nt} \\ c_t \\ \Delta k_t \end{bmatrix},
 ```
 
-使得无误差数据由状态空间系统描述
+其中 $\Delta k_t \equiv k_{t+1} - k_t$ 表示 $t$ 时刻的投资。
+
+无误差数据由状态空间系统描述
 
 ```{math}
 :label: true_ss
 \begin{aligned}
-x_{t+1} &= A x_t + \varepsilon_t, \\
-z_t &= C x_t.
+x_{t+1} &= A x_t + w_t, \\
+z_t &= C x_t,
 \end{aligned}
 ```
 
-其中 $\varepsilon_t = \begin{bmatrix} 0 \\ \theta_t \end{bmatrix}$ 具有协方差 $E \varepsilon_t \varepsilon_t^\top = Q$，而各矩阵为
+其中 $w_t = \begin{bmatrix} 0 \\ \theta_{t+1} \end{bmatrix}$ 具有协方差 $E w_t w_t^\top = Q$，而各矩阵为
 
 ```{math}
 A = \begin{bmatrix}
@@ -332,7 +341,11 @@ Q = \begin{bmatrix}
 \end{bmatrix}.
 ```
 
+这里我们用 $t$ 来标注在 $t$ 与 $t+1$ 之间到达的冲击 $w_t$；这与下文测量误差的时间约定相匹配。
+
 $Q$ 是奇异的，因为只有一个随机性来源 $\theta_t$；给定 $\theta_t$，资本存量 $k_t$ 确定性地演化。
+
+注意 $C$ 的各行满足 $C_c + C_{\Delta k} = C_y$，这正是国民收入恒等式 $c_t + \Delta k_t = y_{nt}$。
 
 ```{code-cell} ipython3
 # 真实经济的基线结构矩阵
@@ -365,7 +378,7 @@ Q = np.array([
 
 响应清楚地展示了投资加速数：对净收入 $y_n$ 的全部影响发生在滞后0处，而消费仅调整 $1 - f^{-1} \approx 0.048$，投资吸收余下部分。
 
-从滞后1开始，经济处于新的稳态
+从滞后1开始，经济处于新的稳态，拥有永久更高的资本、收入和消费
 
 ```{code-cell} ipython3
 def table2_irf(A, C, n_lags=6):
@@ -395,14 +408,14 @@ display(Latex(df_to_latex_array(table2)))
 v_{t+1} = D v_t + \eta_t,
 ```
 
-其中 $\eta_t$ 是一个向量白噪声，满足 $E \eta_t \eta_t^\top = \Sigma_\eta$ 且对所有 $t, s$ 有 $E \varepsilon_t v_s^\top = 0$。
+其中 $\eta_t$ 是一个向量白噪声，满足 $E \eta_t \eta_t^\top = \Sigma_\eta$ 且对所有 $t, s$ 有 $E w_t v_s^\top = 0$。
 
 参数为
 
 ```{math}
-D = \operatorname{diag}(0.6, 0.7, 0.3),
+D = \operatorname{diag}(\rho_y, \rho_c, \rho_{\Delta k}) = \operatorname{diag}(0.6, 0.7, 0.3),
 \qquad
-\sigma_\eta = (0.05, 0.035, 0.65),
+\Sigma_\eta = \operatorname{diag}(\sigma_{\eta}^2), \quad \sigma_\eta = (0.05, 0.035, 0.65),
 ```
 
 因此 $v_t$ 的无条件协方差为
@@ -411,9 +424,13 @@ D = \operatorname{diag}(0.6, 0.7, 0.3),
 R = \operatorname{diag}\!\left(\frac{\sigma_{\eta,i}^2}{1 - \rho_i^2}\right).
 ```
 
-新息方差对消费最小（$\sigma_\eta = 0.035$），其次是收入（$\sigma_\eta = 0.05$），投资最大（$\sigma_\eta = 0.65$）。
+新息标准差 $\sigma_\eta$ 对消费最小（$0.035$），其次是收入（$0.05$），投资最大（$0.65$）。
 
-正如 {cite:t}`Sargent1989` 以及我们上面的讨论，对于格兰杰因果关系不对称性而言重要的是整个系统中的总体测量质量：产出测量相对较好，而投资测量相对较差。
+然而，对于格兰杰因果关系不对称性而言，重要的是每个测量误差**相对于**相应真实序列中信号的大小。
+
+真实序列的新息为：收入是 $\theta_t$（标准差为 $1$），消费是 $(1-\beta)\theta_t$（标准差为 $0.048$），投资是 $\beta \theta_t$（标准差为 $0.95$）。
+
+相对于这些新息，收入测量得非常好（比率约为 $0.05$），而消费和投资的测量都较差（比率约为 $0.7$）。
 
 ```{code-cell} ipython3
 ρ = np.array([0.6, 0.7, 0.3])
@@ -441,7 +458,7 @@ display(Latex(df_to_latex_matrix(pd.DataFrame(D), 'D')))
 def steady_state_kalman(A, C_obs, Q, R, W=None, tol=1e-13, max_iter=200_000):
     """
     Solve steady-state Kalman equations for
-        x_{t+1} = A x_t + w_{t+1}
+        x_{t+1} = A x_t + w_t
         y_t     = C_obs x_t + v_t
     with cov(w)=Q, cov(v)=R, cov(w,v)=W.
     """
@@ -485,7 +502,7 @@ def steady_state_kalman(A, C_obs, Q, R, W=None, tol=1e-13, max_iter=200_000):
 
 总体向量自回归及其如何依赖于状态空间系统和测量误差过程的参数，为如何解释 $\bar z_t$ 的估计向量自回归提供了洞见。
 
-构造向量自回归作为将 $\bar z_t$ 样本的似然作为自由参数 $\{A, C, D, Q, R\}$ 的函数进行计算的中间步骤也是有用的。
+构造向量自回归作为将 $\bar z_t$ 样本的似然作为自由参数 $\{A, C, D, Q, \Sigma_\eta\}$ 的函数进行计算的中间步骤也是有用的。
 
 用于构造向量自回归表示的特定方法也被证明在构造最优报告机构模型时作为中间步骤是有用的。
 
@@ -504,7 +521,7 @@ def steady_state_kalman(A, C_obs, Q, R, W=None, tol=1e-13, max_iter=200_000):
 ```{math}
 :label: model1_qd
 \tilde z_t = \bar z_{t+1} - D \bar z_t, \qquad
-\bar\nu_t = C \varepsilon_t + \eta_t, \qquad
+\bar\nu_t = C w_t + \eta_t, \qquad
 \bar C = CA - DC.
 ```
 
@@ -513,21 +530,23 @@ def steady_state_kalman(A, C_obs, Q, R, W=None, tol=1e-13, max_iter=200_000):
 ```{math}
 :label: model1_transformed
 \begin{aligned}
-x_{t+1} &= A x_t + \varepsilon_t, \\
+x_{t+1} &= A x_t + w_t, \\
 \tilde z_t &= \bar C\, x_t + \bar\nu_t,
 \end{aligned}
 ```
 
-其中 $(\varepsilon_t, \bar\nu_t)$ 是一个白噪声过程，满足
+其中 $(w_t, \bar\nu_t)$ 是一个白噪声过程，满足
 
 ```{math}
 :label: model1_covs
-E \begin{bmatrix} \varepsilon_t \end{bmatrix}
-\begin{bmatrix} \varepsilon_t^\top & \bar\nu_t^\top \end{bmatrix}
+E \begin{bmatrix} w_t \\ \bar\nu_t \end{bmatrix}
+\begin{bmatrix} w_t \\ \bar\nu_t \end{bmatrix}^\top
 = \begin{bmatrix} Q & W_1 \\ W_1^\top & R_1 \end{bmatrix},
 \qquad
-R_1 = C Q C^\top + R, \quad W_1 = Q C^\top.
+R_1 = C Q C^\top + \Sigma_\eta, \quad W_1 = Q C^\top.
 ```
+
+注意，$R_1$ 涉及测量误差的**新息** $\eta_t$ 的协方差矩阵 $\Sigma_\eta$，而不是测量误差本身的无条件协方差矩阵 $R$：拟差分消除了 $v_t$ 中序列相关的部分。
 
 具有协方差 {eq}`model1_covs` 的系统 {eq}`model1_transformed` 由五个矩阵 $[A, \bar C, Q, R_1, W_1]$ 刻画。
 
@@ -586,12 +605,11 @@ V_1 = E\, u_t u_t^\top = \bar C\, S_1\, \bar C^\top + R_1.
 
 ```{code-cell} ipython3
 C_bar = C @ A - D @ C
-R1 = C @ Q @ C.T + R
+R1 = C @ Q @ C.T + Σ_η
 W1 = Q @ C.T
 
 K1, S1, V1 = steady_state_kalman(A, C_bar, Q, R1, W1)
 ```
-
 
 ### 计算 Wold 移动平均表示中的系数
 
@@ -604,9 +622,9 @@ r_t = \begin{bmatrix} \hat x_{t-1} \\ \bar z_{t-1} \end{bmatrix},
 具有动态
 
 ```{math}
-r_{t+1} = F_1 r_t + G_1 u_t,
+r_{t+1} = F_1 r_t + G_1 u_{t-1},
 \qquad
-\bar z_t = H_1 r_t + u_t,
+\bar z_t = H_1 r_t + u_{t-1},
 ```
 
 其中
@@ -626,6 +644,8 @@ I
 \quad
 H_1 = [\bar C \;\; D].
 ```
+
+（回想一下，$u_{t-1}$ 是 $\bar z_t$ 的新息。）
 
 移动平均系数则为 $\psi_0 = I$ 和 $\psi_j = H_1 F_1^{j-1} G_1$（对 $j \geq 1$）。
 
@@ -674,11 +694,11 @@ decomp1 = fev_contributions(psi1, V1, n_horizons=20)
 
 ```{math}
 :label: model1_loglik
-\mathcal{L}^* = -T\ln 2\pi - \tfrac{1}{2}T\ln|V_1|
+\mathcal{L}^* = -\tfrac{3}{2}T\ln 2\pi - \tfrac{1}{2}T\ln|V_1|
   - \tfrac{1}{2}\sum_{t=0}^{T-1} u_t^\top V_1^{-1} u_t,
 ```
 
-其中 $u_t$ 是由下面 {eq}`model1_recursion` 定义的 $\{\bar z_t\}$ 的函数。
+其中 $u_t$ 是由下面 {eq}`model1_recursion` 定义的 $\{\bar z_t\}$ 的函数，第一项中的 $3$ 是被测量序列的数量。
 
 为了使用 {eq}`model1_innov` 计算 $\{u_t\}$，有用的做法是将其表示为
 
@@ -700,11 +720,15 @@ u_t &= -\bar C\,\hat x_t + \tilde z_t,
 
 为了度量每个新息的相对重要性，我们分解每个测量变量的 $j$ 步向前预测误差方差。
 
-写 $\bar z_{t+j} - E_t \bar z_{t+j} = \sum_{i=0}^{j-1} \psi_i u_{t+j-i}$。
+写 $\bar z_{t+j} - E_t \bar z_{t+j} = \sum_{i=0}^{j-1} \psi_i u_{t+j-i}$，其中为简化记号，此处 $u_{t+j-i}$ 表示 $\bar z_{t+j-i}$ 的新息。
 
 设 $P$ 是 $V_1$ 的下三角 Cholesky 因子，使得正交化的新息为 $e_t = P^{-1} u_t$。
 
 那么正交化新息 $k$ 对变量 $m$ 的 $j$ 步向前方差的贡献为 $\sum_{i=0}^{j-1} (\psi_i P)_{mk}^2$。
+
+我们按 $y_n$、$c$、$\Delta k$ 的顺序排列变量。
+
+在此排序下，第一个正交化新息就是 $y_n$ 的新息，第二个是 $c$ 的新息中与 $y_n$ 新息正交的部分，第三个是 $\Delta k$ 的新息中与前两者都正交的部分。
 
 下表显示了在视界1到20下每个正交化新息对 $y_n$、$c$ 和 $\Delta k$ 预测误差方差的累积贡献。
 
@@ -744,6 +768,10 @@ display(Latex('$' + r' \quad '.join(parts) + '$'))
 
 这与论文的信息相符，即在单一共同指数模型中，测量相对最好的序列具有最强的预测能力。
 
+由于收入被排在第一位，该分解把收入新息与其他新息共享的全部方差都归因于收入新息。
+
+下面我们通过一个不依赖于排序的计算来确认这种格兰杰因果关系模式。
+
 让我们看看新息的协方差矩阵
 
 ```{code-cell} ipython3
@@ -761,6 +789,54 @@ print(np.sort(np.linalg.eigvalsh(V1))[::-1].round(4))
 ```
 
 第一个特征值远大于其他特征值，这与存在一个占主导地位的共同冲击 $\theta_t$ 相一致
+
+### 不依赖排序的格兰杰因果关系
+
+$\bar z_t$ 的总体向量自回归直接展示了格兰杰因果关系。
+
+对 {eq}`model1_recursion` 进行迭代给出
+
+$$
+\tilde z_t = \sum_{j=1}^\infty \bar C (A - K_1 \bar C)^{j-1} K_1 \tilde z_{t-j} + u_t .
+$$
+
+令 $B_j = \bar C (A - K_1 \bar C)^{j-1} K_1$。
+
+代入 $\tilde z_t = \bar z_{t+1} - D \bar z_t$ 并整理各项，得到向量自回归
+
+$$
+\bar z_{t+1} = \sum_{j=1}^\infty \Pi_j \bar z_{t+1-j} + u_t,
+\qquad
+\Pi_1 = D + B_1, \quad \Pi_j = B_j - B_{j-1} D \ \ (j \geq 2).
+$$
+
+变量 $i$ 不格兰杰引起变量 $m$，当且仅当所有 $\Pi_j$ 的 $(m, i)$ 元素都为零。
+
+以下是前两个系数矩阵；行是方程，列是滞后变量。
+
+```{code-cell} ipython3
+M_filter = A - K1 @ C_bar
+print("eigenvalues of A - K1 C_bar:", np.linalg.eigvals(M_filter).round(4))
+
+B_coef = [C_bar @ np.linalg.matrix_power(M_filter, j) @ K1 for j in range(3)]
+Π = [D + B_coef[0]] + [B_coef[j] - B_coef[j-1] @ D for j in range(1, 3)]
+
+eq_labels = [r'\text{eq. } ' + lab for lab in labels]
+for j in range(2):
+    df = pd.DataFrame(Π[j], index=eq_labels, columns=labels)
+    display(Latex(r'$\Pi_' + str(j + 1) + ' = '
+                  + df_to_latex_array(df).strip('$') + '$'))
+```
+
+$A - K_1 \bar C$ 的特征值都在单位圆内，所以该向量自回归是收敛的。
+
+在投资方程中，滞后收入的系数很大（约为 $-0.28$）。
+
+在收入方程中，滞后投资的系数极小（约为 $-0.004$）。
+
+滞后收入有助于预测投资，但滞后投资几乎无助于预测收入，这正是 {cite:t}`Sargent1989` 试图解释的格兰杰因果关系模式。
+
+{ref}`meas_ex2` 计算了 {cite:t}`Geweke1982` 提出的一种不依赖排序的格兰杰因果关系强度度量。
 
 ### Wold 脉冲响应
 
@@ -801,7 +877,7 @@ display(Latex('$' + r' \quad '.join(parts) + '$'))
 
 在后续滞后处，收入新息在所有三个变量中产生持续的响应，因为作为测量最好的序列，它的新息由真实的永久冲击 $\theta_t$ 主导。
 
-消费和投资新息产生的响应根据它们各自测量误差的 AR(1) 结构衰减（$\rho_c = 0.7$，$\rho_{\Delta k} = 0.3$），对其他变量几乎没有溢出。
+消费和投资新息产生的响应以接近它们各自测量误差自回归系数的速率衰减（$\rho_c = 0.7$，$\rho_{\Delta k} = 0.3$），对其他变量几乎没有溢出。
 
 ## 一个由机构报告最优估计的模型
 
@@ -819,9 +895,9 @@ display(Latex('$' + r' \quad '.join(parts) + '$'))
 
 为了准备其估计，报告机构自己计算卡尔曼滤波器以获得新息表示 {eq}`model1_innov`。
 
-报告机构不报告含误差数据 $\bar z_t$，而是报告 $\tilde z_t = G \hat x_t$，其中 $G$ 是一个"选择矩阵"，对于机构所报告的数据可能等于 $C$。
+报告机构不报告含误差数据 $\bar z_t$，而是报告 $\hat z_t = G \hat x_t$，其中 $G$ 是一个"选择矩阵"，对于机构所报告的数据可能等于 $C$。
 
-数据 $G \hat x_t = E[G x_t \mid \bar z_t, \bar z_{t-1}, \ldots, \hat x_0]$。
+报告数据为 $\hat z_t = G \hat x_t = E[G x_t \mid \bar z_t, \bar z_{t-1}, \ldots, \hat x_0]$。
 
 报告数据的状态空间表示则为
 
@@ -829,15 +905,15 @@ display(Latex('$' + r' \quad '.join(parts) + '$'))
 :label: model2_state
 \begin{aligned}
 \hat x_{t+1} &= A \hat x_t + K_1 u_t, \\
-\tilde z_t &= G \hat x_t,
+\hat z_t &= G \hat x_t,
 \end{aligned}
 ```
 
 其中 {eq}`model2_state` 的第一行来自新息表示 {eq}`model1_innov`。
 
-注意 $u_t$ 是 $\bar z_{t+1}$ 的新息，而*不是* $\tilde z_t$ 的新息。
+注意 $u_t$ 是 $\bar z_{t+1}$ 的新息，而*不是* $\hat z_t$ 的新息。
 
-为了得到 $\tilde z_t$ 的 Wold 表示以及 $\tilde z_t$ 样本的似然函数，我们需要为 {eq}`model2_state` 得到一个新息表示。
+为了得到 $\hat z_t$ 的 Wold 表示以及 $\hat z_t$ 样本的似然函数，我们需要为 {eq}`model2_state` 得到一个新息表示。
 
 ### 滤波数据的新息表示
 
@@ -847,18 +923,18 @@ display(Latex('$' + r' \quad '.join(parts) + '$'))
 :label: model2_obs
 \begin{aligned}
 \hat x_{t+1} &= A \hat x_t + K_1 u_t, \\
-\tilde z_t &= G \hat x_t + \eta_t,
+\hat z_t &= G \hat x_t + \zeta_t,
 \end{aligned}
 ```
 
-其中 $\eta_t$ 是一个第二类白噪声测量误差过程（"打字错误"），假定其协方差矩阵 $R_2$ 非常小。
+其中 $\zeta_t$ 是一个第二类白噪声测量误差过程（"打字错误"），假定其协方差矩阵 $R_2$ 非常小。
 
 联合噪声的协方差矩阵为
 
 ```{math}
 :label: model2_Q
-E \begin{bmatrix} K_1 u_t \\ \eta_t \end{bmatrix}
-  \begin{bmatrix} K_1 u_t \\ \eta_t \end{bmatrix}^\top
+E \begin{bmatrix} K_1 u_t \\ \zeta_t \end{bmatrix}
+  \begin{bmatrix} K_1 u_t \\ \zeta_t \end{bmatrix}^\top
 = \begin{bmatrix} Q_2 & 0 \\ 0 & R_2 \end{bmatrix},
 ```
 
@@ -874,7 +950,7 @@ E \begin{bmatrix} K_1 u_t \\ \eta_t \end{bmatrix}
 :label: model2_innov
 \begin{aligned}
 \check{x}_{t+1} &= A \check{x}_t + K_2 a_t, \\
-\tilde z_t &= G \check{x}_t + a_t,
+\hat z_t &= G \check{x}_t + a_t,
 \end{aligned}
 ```
 
@@ -883,14 +959,14 @@ E \begin{bmatrix} K_1 u_t \\ \eta_t \end{bmatrix}
 ```{math}
 :label: model2_innov_defs
 \begin{aligned}
-a_t &= \tilde z_t - E[\tilde z_t \mid \tilde z_{t-1}, \tilde z_{t-2}, \ldots], \\
-\check{x}_t &= E[\hat x_t \mid \tilde z_{t-1}, \tilde z_{t-2}, \ldots, \check{x}_0], \\
+a_t &= \hat z_t - E[\hat z_t \mid \hat z_{t-1}, \hat z_{t-2}, \ldots], \\
+\check{x}_t &= E[\hat x_t \mid \hat z_{t-1}, \hat z_{t-2}, \ldots, \check{x}_0], \\
 S_2 &= E[(\hat x_t - \check{x}_t)(\hat x_t - \check{x}_t)^\top], \\
 [K_2, S_2] &= \text{kalmanfilter}(A, G, Q_2, R_2, 0).
 \end{aligned}
 ```
 
-因此 $\{a_t\}$ 是报告数据 $\tilde z_t$ 的新息过程，其新息协方差为
+因此 $\{a_t\}$ 是报告数据 $\hat z_t$ 的新息过程，其新息协方差为
 
 ```{math}
 :label: model2_V2
@@ -899,11 +975,11 @@ V_2 = E\, a_t a_t^\top = G\, S_2\, G^\top + R_2.
 
 ### Wold 表示
 
-由 {eq}`model2_innov` 得到 $\tilde z_t$ 的 Wold 移动平均表示为
+由 {eq}`model2_innov` 得到 $\hat z_t$ 的 Wold 移动平均表示为
 
 ```{math}
 :label: model2_wold
-\tilde z_t = \bigl[G(I - AL)^{-1} K_2 L + I\bigr] a_t,
+\hat z_t = \bigl[G(I - AL)^{-1} K_2 L + I\bigr] a_t,
 ```
 
 系数为 $\psi_0 = I$ 和 $\psi_j = G A^{j-1} K_2$（对 $j \geq 1$）。
@@ -912,21 +988,21 @@ V_2 = E\, a_t a_t^\top = G\, S_2\, G^\top + R_2.
 
 ### 高斯似然
 
-当使用类似于模型1的方法时，可以通过首先利用下式从 $\tilde z_t$ 的观测中计算一个 $\{a_t\}$ 序列来计算 $\tilde z_t$ 的高斯对数似然
+当使用类似于模型1的方法时，可以通过首先利用下式从 $\hat z_t$ 的观测中计算一个 $\{a_t\}$ 序列来计算 $\hat z_t$ 的高斯对数似然
 
 ```{math}
 :label: model2_recursion
 \begin{aligned}
-\check{x}_{t+1} &= (A - K_2 G)\,\check{x}_t + K_2 \tilde z_t, \\
-a_t &= -G\,\check{x}_t + \tilde z_t.
+\check{x}_{t+1} &= (A - K_2 G)\,\check{x}_t + K_2 \hat z_t, \\
+a_t &= -G\,\check{x}_t + \hat z_t.
 \end{aligned}
 ```
 
-$T$ 个观测样本 $\{\tilde z_t\}$ 的似然函数则为
+$T$ 个观测样本 $\{\hat z_t\}$ 的似然函数则为
 
 ```{math}
 :label: model2_loglik
-\mathcal{L}^{**} = -T\ln 2\pi - \tfrac{1}{2}T\ln|V_2|
+\mathcal{L}^{**} = -\tfrac{3}{2}T\ln 2\pi - \tfrac{1}{2}T\ln|V_2|
   - \tfrac{1}{2}\sum_{t=0}^{T-1} a_t^\top V_2^{-1} a_t.
 ```
 
@@ -941,6 +1017,10 @@ $T$ 个观测样本 $\{\tilde z_t\}$ 的似然函数则为
 机构不需要使用卡尔曼滤波器 {eq}`model2_innov_defs`，因为它不需要滤波数据的 Wold 表示。
 
 在我们的参数化中 $G = C$。
+
+由于 $C$ 的各行满足国民收入恒等式，报告数据精确满足 $\hat c_t + \Delta \hat k_t = \hat y_{nt}$。
+
+因此当 $R_2 = 0$ 时，新息协方差矩阵 $V_2$ 是奇异的，全部三个报告序列的似然 {eq}`model2_loglik` 是退化的；{ref}`meas_ex3` 探讨了这种"随机奇异性"。
 
 ```{code-cell} ipython3
 Q2 = K1 @ V1 @ K1.T
@@ -996,8 +1076,15 @@ display(Latex(df_to_latex_matrix(df_v2)))
 
 ```{code-cell} ipython3
 print('Eigenvalues of covariance matrix:')
-print(np.sort(np.linalg.eigvalsh(V2))[::-1].round(4))
+print(np.array2string(np.sort(np.linalg.eigvalsh(V2))[::-1],
+                      formatter={'float': '{:.2e}'.format}))
 ```
+
+一个特征值很大。
+
+第二个特征值为正但极小：它反映了机构对资本存量估计的修正，这些修正仅通过微小系数 $f - 1$ 进入报告数据。
+
+第三个特征值等于 $\epsilon$，如果 $R_2 = 0$，由于国民收入恒等式，它将恰好为零。
 
 正如 {cite:t}`Sargent1989` 所强调的，尽管两个测量模型共享相同的底层参数，它们却对经济动态产生了截然不同的推断。
 
@@ -1074,7 +1161,7 @@ def simulate_series(seed=7909, T=80, k0=10.0):
 
     # 通过模型1变换滤波器的滤波数据
     xhat_prev = np.array([k0, 0.0])
-    z_prev = np.zeros(3)
+    z_prev = C @ xhat_prev    # 不可观测的 z̄_{-1} 的模型隐含值
     z_filt = np.empty((T, 3))
     k_filt = np.empty(T)
 
@@ -1219,11 +1306,13 @@ plot_true_vs_other(t, sim["k_true"], sim["k_filt"],
 
 事实上，来自模型1的卡尔曼滤波估计消除了大部分测量噪声，并紧密地跟踪真实值。
 
+改善效果最明显的是投资，它的测量误差最大；而收入本来就测量得很好。
+
 在真实模型中，国民收入恒等式 $c_t + \Delta k_t = y_{n,t}$ 精确成立。
 
 独立的测量误差在测量数据中打破了这个会计恒等式。
 
-卡尔曼滤波器近似地恢复了它。
+由于滤波序列都具有 $C \hat x_t$ 的形式，而 $C$ 的各行满足该恒等式，因此滤波数据精确满足它。
 
 下图通过显示测量和滤波数据两者的残差 $c_t + \Delta k_t - y_{n,t}$ 来证实这一点
 
@@ -1250,7 +1339,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-正如我们所预测的，测量数据的残差大而波动，而滤波数据的残差在数值上为0。
+正如我们所预测的，测量数据的残差大而波动，而滤波数据的残差在舍入误差范围内为0。
 
 ## 总结
 
@@ -1262,8 +1351,185 @@ plt.show()
 
 模型1重现了实证加速数文献中记录的**格兰杰因果关系**模式：收入似乎格兰杰引起消费和投资，{cite:t}`Sargent1989` 将这一结果归因于原始报告数据中的测量误差和信号提取。
 
+对这一模式而言，重要的是每个序列的测量误差相对于真实序列变化的大小。
+
 模型2使用滤波数据，将几乎所有方差归因于单个结构冲击 $\theta_t$，并且*无法*重现格兰杰因果关系模式。
 
 {doc}`卡尔曼滤波器 <kalman>` 有效地从数据中剥离了测量噪声，因此滤波序列紧密地跟踪真实值。
 
-原始测量误差打破了国民收入会计恒等式，但接近零的残差表明滤波器近似地恢复了它。
+原始测量误差打破了国民收入会计恒等式，而滤波数据则精确地满足该恒等式，这使得这三个报告序列在随机意义上是退化的（stochastically singular）。
+
+## 练习
+
+```{exercise}
+:label: meas_ex1
+
+在假设 $a(L) = 1$ 且 $\beta f = 1$ 的条件下，使用决策规则 {eq}`simple_crule` 和运动规律 $k_{t+1} = k_t + f^{-1} \theta_t$ 证明：
+
+1. $c_t - c_{t-1} = (1 - \beta)\theta_t$，因此消费是一个鞅
+1. $c_t - \beta c_{t-1} = (1-\beta) y_{nt}$，这就是弗里德曼的消费函数 {eq}`friedman_consumption`
+1. $y_{nt} - y_{n,t-1} = \theta_t - \beta \theta_{t-1}$，这就是方程 {eq}`income_process`
+1. $(k_{t+1} - k_t) - \beta (k_t - k_{t-1}) = \beta (y_{nt} - y_{n,t-1})$，这就是加速数 {eq}`mm_accelerator`
+
+然后使用 `sim` 中的真实序列，通过 $\theta_t = y_{nt} - (f-1)k_t$ 恢复 $\theta_t$，并对这四个恒等式进行数值验证。
+```
+
+```{solution-start} meas_ex1
+:class: dropdown
+```
+
+由 $k_t - k_{t-1} = \beta \theta_{t-1}$ 和 {eq}`simple_crule` 可得：
+
+$$
+c_t - c_{t-1} = (f-1)\beta\theta_{t-1} + (1-\beta)(\theta_t - \theta_{t-1}) = (1-\beta)\theta_t
+$$
+
+这是因为 $(f-1)\beta = 1 - \beta$。
+
+类似地，$y_{nt} - y_{n,t-1} = (f-1)\beta \theta_{t-1} + \theta_t - \theta_{t-1} = \theta_t - \beta\theta_{t-1}$。
+
+对于第二个命题，将 $k_t = k_{t-1} + \beta\theta_{t-1}$ 代入 {eq}`simple_crule` 和 {eq}`net_income`：
+
+$$
+\begin{aligned}
+c_t - \beta c_{t-1} & = (f-1)(1-\beta) k_{t-1} + (1-\beta)\theta_t + \left[(f-1)\beta - \beta(1-\beta)\right]\theta_{t-1} \\
+(1-\beta) y_{nt} & = (1-\beta)(f-1) k_{t-1} + (1-\beta)\theta_t + (1-\beta)(f-1)\beta\,\theta_{t-1}
+\end{aligned}
+$$
+
+利用 $(f-1)\beta = 1 - \beta$ 可知两边相等。
+
+最后，$k_{t+1} - k_t = \beta\theta_t$ 意味着 $(1 - \beta L)(k_{t+1} - k_t) = \beta(\theta_t - \beta\theta_{t-1}) = \beta (y_{nt} - y_{n,t-1})$。
+
+```{code-cell} ipython3
+y, c, dk, k = sim["y_true"], sim["c_true"], sim["dk_true"], sim["k_true"]
+θ = y - (f - 1) * k
+
+print("martingale:  ", np.allclose(np.diff(c), (1 - β) * θ[1:]))
+print("Friedman:    ", np.allclose(c[1:] - β * c[:-1], (1 - β) * y[1:]))
+print("MA(1):       ", np.allclose(np.diff(y), θ[1:] - β * θ[:-1]))
+print("accelerator: ", np.allclose(dk[1:] - β * dk[:-1], β * np.diff(y)))
+```
+
+```{solution-end}
+```
+
+```{exercise}
+:label: meas_ex2
+
+基于 Cholesky 分解的预测误差方差分解取决于变量的排序方式。
+
+{cite:t}`Geweke1982` 提出了一种不依赖于排序的格兰杰因果关系度量方法。
+
+对于被测量的序列 $i$ 和 $j$，令 $\sigma^2_{j}$ 为仅基于其自身历史得到的 $\bar z_{j,t+1}$ 的一步向前预测误差方差，令 $\sigma^2_{j \mid i}$ 为基于 $\bar z_{i}$ 和 $\bar z_{j}$ 两者历史得到的预测误差方差。
+
+那么 $F_{i \to j} = \log(\sigma^2_j / \sigma^2_{j \mid i}) \geq 0$，当且仅当 $\bar z_i$ 不是 $\bar z_j$ 的格兰杰原因时取等号。
+
+由于测量误差是相互独立的 AR(1) 过程，两个方差均可以通过将 `steady_state_kalman` 应用于准差分系统 {eq}`model1_transformed`、仅使用与所包含序列对应的 $\bar C$ 和 $R_1$ 的行以及 $W_1$ 的列来计算。
+
+1. 在基准测量误差参数下，计算 $F_{y \to \Delta k}$、$F_{\Delta k \to y}$、$F_{y \to c}$ 和 $F_{c \to y}$。
+1. 交换收入和投资的测量误差新息标准差后重新计算，使得 $\sigma_\eta = (0.65, 0.035, 0.05)$。
+1. 使用 $\sigma_\eta = (0.3, 0.3, 0.3)$ 重新计算，并解释为什么相等的测量误差方差**不会**产生对称的格兰杰因果关系。
+```
+
+```{solution-start} meas_ex2
+:class: dropdown
+```
+
+以下是一种解法。
+
+```{code-cell} ipython3
+def geweke(σ_η, ρ=np.array([0.6, 0.7, 0.3]), pair=(0, 2)):
+    """
+    Return (F_{i->j}, F_{j->i}) for the measured series pair = (i, j).
+    """
+    D = np.diag(ρ)
+    Σ = np.diag(np.asarray(σ_η)**2)
+    C_bar = C @ A - D @ C
+    R1 = C @ Q @ C.T + Σ
+    W1 = Q @ C.T
+
+    def pev(idx):
+        idx = list(idx)
+        return steady_state_kalman(A, C_bar[idx], Q,
+                                   R1[np.ix_(idx, idx)], W1[:, idx])[2]
+
+    i, j = pair
+    V_i, V_j, V_ij = pev([i])[0, 0], pev([j])[0, 0], pev([i, j])
+    return np.log(V_j / V_ij[1, 1]), np.log(V_i / V_ij[0, 0])
+
+
+cases = {"baseline": (0.05, 0.035, 0.65),
+         "swapped y and Δk": (0.65, 0.035, 0.05),
+         "equal": (0.3, 0.3, 0.3)}
+
+for name, σ in cases.items():
+    F_yk, F_ky = geweke(σ, pair=(0, 2))
+    F_yc, F_cy = geweke(σ, pair=(0, 1))
+    print(f"{name:18s} y→Δk {F_yk:.4f}  Δk→y {F_ky:.4f}  "
+          f"y→c {F_yc:.4f}  c→y {F_cy:.4f}")
+```
+
+在基准情形下，收入是投资和消费的格兰杰原因，而两者都不是收入的格兰杰原因。
+
+交换收入和投资的测量误差会颠倒两者之间格兰杰因果关系的方向。
+
+在测量误差方差相等的情况下，投资作为收入的格兰杰原因的程度超过收入作为投资的格兰杰原因，并且收入强烈地是消费的格兰杰原因。
+
+真正重要的不是测量误差的方差本身，而是其相对于每个序列中**信号**的大小。
+
+真实投资的新息 $\beta \theta_t$ 的标准差为 $0.95$，而真实消费的新息 $(1-\beta)\theta_t$ 的标准差仅为 $0.048$。
+
+因此，新息标准差为 $0.3$ 的测量误差对投资的干扰远小于其对消费的淹没程度。
+
+在基准情形下，消费的测量误差新息（$0.035$）在绝对数值上虽小，但相对于真实消费中极小的新息而言并不小，这正是收入成为消费的格兰杰原因的原因。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: meas_ex3
+
+在模型 2 中，该机构报告 $\hat z_t = C \hat x_t$。
+
+1. 证明对于任意估计值 $\hat x_t$，报告的数据都**精确**满足国民收入恒等式 $\hat c_t + \Delta \hat k_t - \hat y_{nt} = 0$。
+1. 解释为什么这意味着当 $R_2 = 0$ 时，报告数据的新息协方差矩阵 $V_2$ 是奇异的。
+1. 对于 $\epsilon = 10^{-2}, 10^{-4}, 10^{-6}$ 的 $R_2 = \epsilon I$，计算 $V_2$ 的特征值并作出解释。
+1. 这种"随机奇异性"对于想要从全部三个报告序列中计算似然 {eq}`model2_loglik` 的计量经济学家意味着什么？
+```
+
+```{solution-start} meas_ex3
+:class: dropdown
+```
+
+$C$ 的各行满足 $C_{c} + C_{\Delta k} - C_{y} = [(f-1) + 0 - (f-1), \; (1 - f^{-1}) + f^{-1} - 1] = [0, 0]$。
+
+因此，对于每个 $\hat x_t$ 都有 $\hat c_t + \Delta \hat k_t - \hat y_{nt} = (C_c + C_{\Delta k} - C_y)\hat x_t = 0$。
+
+由于向量 $b = [-1, 1, 1]$ 对所有 $t$ 满足 $b\, C \hat x_t = 0$，当 $R_2 = 0$ 时它同样满足 $b\, a_t = 0$，因此 $b V_2 b^\top = 0$，$V_2$ 是奇异的。
+
+```{code-cell} ipython3
+print("C_c + C_Δk - C_y =", C[1] + C[2] - C[0])
+print("max |identity residual| in reported data:",
+      np.max(np.abs(sim['c_filt'] + sim['dk_filt'] - sim['y_filt'])))
+
+for ε_R in (1e-2, 1e-4, 1e-6):
+    _, _, V2_ε = steady_state_kalman(A, C, Q2, ε_R * np.eye(3))
+    print(f"ε = {ε_R:.0e}:  eigenvalues of V2 = "
+          f"{np.array2string(np.sort(np.linalg.eigvalsh(V2_ε))[::-1], formatter={'float': '{:.2e}'.format})}")
+```
+
+$V_2$ 的一个特征值较大：它反映了有关永久性冲击 $\theta_t$ 的新信息。
+
+第二个特征值很小但为正：它反映了该机构对资本存量估计的修正，这一修正仅通过较小的系数 $f - 1$ 进入报告数据。
+
+第三个特征值近似等于 $\epsilon$，并且由于该恒等式的存在，随着 $\epsilon \to 0$ 而趋于零。
+
+试图在 $R_2 = 0$ 的情形下计算全部三个报告序列的高斯似然的计量经济学家将面临一个退化分布：$\ln |V_2| = -\infty$。
+
+在实践中，必须要么舍弃三个序列中的一个，要么如 {eq}`model2_obs` 所示加入 "第二类" 报告误差，使 $R_2 > 0$。
+
+相比之下，在模型 1 的原始数据中，独立的测量误差打破了该恒等式，因此这三个被测量序列具有非奇异的新息协方差矩阵。
+
+```{solution-end}
+```
