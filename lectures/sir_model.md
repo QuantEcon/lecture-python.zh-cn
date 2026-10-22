@@ -11,14 +11,14 @@ translation:
   title: 新冠病毒建模
   headings:
     Overview: 概述
-    The SIR Model: SIR模型
-    The SIR Model::Time Path: 时间路径
-    The SIR Model::Parameters: 参数
+    The SEIR model: SEIR 模型
+    The SEIR model::Time path: 时间路径
+    The SEIR model::Parameters: 参数
     Implementation: 实现
     Experiments: 实验
-    'Experiments::Experiment 1: Constant R0 Case': 实验1：固定R0的情况
-    'Experiments::Experiment 2: Changing Mitigation': 实验2：改变缓解措施
-    Ending Lockdown: 解除封锁
+    'Experiments::Experiment 1: constant R0 case': 实验1：固定R0的情况
+    'Experiments::Experiment 2: changing mitigation': 实验2：改变缓解措施
+    Ending lockdown: 解除封锁
 ---
 
 ```{raw} jupyter
@@ -29,7 +29,7 @@ translation:
 </div>
 ```
 
-# {index}`新冠病毒建模 <single: Modeling COVID 19>`
+# {index}`新冠病毒建模 <single: Modeling COVID-19>`
 
 ```{contents} Contents
 :depth: 2
@@ -37,16 +37,16 @@ translation:
 
 ## 概述
 
-这是由[Andrew Atkeson](https://sites.google.com/site/andyatkeson/)提供的用于分析新冠疫情的Python代码。
+这是由 [Andrew Atkeson](https://sites.google.com/site/andyatkeson/) 提供的用于分析新冠疫情的Python代码。
 
 特别参见
 
 * [NBER工作论文第26867号](https://www.nber.org/papers/w26867)
-* [COVID-19工作论文和代码](https://sites.google.com/site/andyatkeson/home?authuser=0)
+* [COVID-19工作论文和代码](https://sites.google.com/site/andyatkeson/home/covid-work)
 
 他的这些笔记主要是介绍了定量建模传染病动态研究。
 
-疾病传播使用标准SIR（易感者-感染者-移出者）模型进行建模。
+疾病传播使用标准SEIR（易感者-暴露者-感染者-移出者）模型进行建模。
 
 模型动态用常微分方程组表示。
 
@@ -63,7 +63,6 @@ FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
 mpl.font_manager.fontManager.addfont(FONTPATH)
 plt.rcParams['font.family'] = ['Source Han Serif SC']
 
-plt.rcParams["figure.figsize"] = (11, 5)  #设置默认图形大小
 import numpy as np
 from numpy import exp
 ```
@@ -76,32 +75,32 @@ from scipy.integrate import odeint
 
 这个程序调用了FORTRAN库odepack中的编译代码。
 
-## SIR模型
+## SEIR 模型
 
-我们要分析的这个版本的SIR模型包含四个状态。
+在我们将要分析的 SEIR 模型版本中，存在四种状态。
 
-假设人口中的每个人都必须处于这四种状态之一。
+假设人口中的所有个体都处于这四种状态之一。
 
-这些状态是：易感者(S)、暴露者(E)、感染者(I)和移出者(R)。
+这些状态是：易感（$S$）、暴露（$E$）、感染（$I$）和移除（$R$）。
 
-说明：
-
-* 处于R状态的人已经被感染，并且已经康复或死亡。
-* 假设康复者已获得免疫力。
-* 暴露组中的人尚不具有传染性。
+```{prf:assumption}
+* 处于 R 状态的人已经被感染，并已康复或死亡。
+* 假设已康复的人已获得免疫力。
+* 暴露组中的人尚未具有传染性。
+```
 
 ### 时间路径
 
-状态之间的流动遵循路径 $S \to E \to I \to R$。
+跨状态的流动遵循路径 $S \to E \to I \to R$。
 
-当传播率为正且$i(0) > 0$时，人群中的所有个体最终都会被感染。
+当有效再生数超过 1 时，感染人数最初会增加，但最终会随着易感人群的减少而下降。
 
-主要关注的是
+我们主要关注以下几点：
 
-* 在给定时间的感染人数（这决定了医疗系统是否会被压垮）
-* 病例负荷可以推迟多长时间（我们希望能够推迟到疫苗出现）
+* 给定时间点的感染人数（这决定了医疗系统是否会不堪重负），以及
+* 病例负担可以推迟多久（希望能推迟到疫苗问世）
 
-使用小写字母表示处于各状态的人口比例，其动态方程为
+用小写字母表示每种状态下人口的比例，动态方程为
 
 ```{math}
 :label: sir_system
@@ -109,28 +108,26 @@ from scipy.integrate import odeint
 \begin{aligned}
      \dot s(t)  & = - \beta(t) \, s(t) \,  i(t)
      \\
-     \dot e(t)  & = \beta(t) \,  s(t) \,  i(t)  - σ e(t)
+     \dot e(t)  & = \beta(t) \,  s(t) \,  i(t)  - \sigma e(t)
      \\
-     \dot i(t)  & = σ e(t)  - γ i(t)
+     \dot i(t)  & = \sigma e(t)  - \gamma i(t)
 \end{aligned}
 ```
 
-在这些方程中，
+在这些方程中：
 
-* $\beta(t)$ 被称为**传播率**（个体与他人接触并使其暴露于病毒的速率）。
-* $\sigma$ 被称为**感染率**（暴露者转变为感染者的速率）
-* $\gamma$ 被称为**恢复率**（感染者康复或死亡的速率）。
+* $\beta(t)$ 称为**传播率**（个体接触他人并使其暴露于病毒的速率）。
+* $\sigma$ 称为**感染率**（暴露者转变为感染者的速率）。
+* $\gamma$ 称为**移除率**（感染者康复或死亡的速率）。
 * 点符号 $\dot y$ 表示时间导数 $dy/dt$。
 
-我们不需要单独建模处于 $R$ 状态的人口比例 $r$，因为这些状态构成一个分区。
+由于这些状态构成了一个划分，我们不需要单独对处于 R 状态的人口比例 $r$ 建模。
 
-具体来说，"已移除"的人口比例为 $r = 1 - s - e - i$。
+具体而言，人口中“已移除”的比例为 $r = 1 - s - e - i$。
 
-我们还将追踪 $c = i + r$，即累计病例数
+我们还将追踪 $c = i + r$，即累计病例数（即所有曾经或正在感染的人）。
 
-(即所有已感染或曾经感染的人)。
-
-系统{eq}`sir_system`可以用向量形式表示为
+系统 {eq}`sir_system` 可以写成向量形式：
 
 ```{math}
 :label: dfcv
@@ -138,22 +135,22 @@ from scipy.integrate import odeint
 \dot x = F(x, t),  \qquad x := (s, e, i)
 ```
 
-其中$F$的具体定义参见下面的代码。
+其中 $F$ 的适当定义见下文代码。
 
 ### 参数
 
-参数$\sigma$和$\gamma$由病毒的生物学特性决定，因此被视为固定值。
+$\sigma$ 和 $\gamma$ 都被视为固定的、由生物学决定的参数。
 
-根据Atkeson的笔记，我们采用以下参数值：
+如阿特克森的笔记中所述，我们设定：
 
-* $\sigma = 1/5.2$ - 这意味着平均潜伏期为5.2天。
-* $\gamma = 1/18$ - 这表示患者平均需要18天才能康复或死亡。
+* $\sigma = 1/5.2$ 以反映 5.2 天的平均潜伏期。
+* $\gamma = 1/18$ 以匹配 18 天的平均患病持续时间。
 
-传播率被构造为
+传播率建模为：
 
-* $\beta(t) := R(t) \gamma$，其中$R(t)$是时间$t$时的**有效再生数**。
+* $\beta(t) := R(t) \gamma$，其中 $R(t)$ 是时间 $t$ 时的**有效再生数**。
 
-(这个符号表示有点令人困惑，因为$R(t)$与表示已移除状态的符号$R$不同。)
+（这个符号稍显混乱，因为 $R(t)$ 与表示移除状态的符号 $R$ 不同。）
 
 ## 实现
 
@@ -170,7 +167,7 @@ pop_size = 3.3e8
 σ = 1 / 5.2
 ```
 
-现在我们构建一个函数来表示{eq}`dfcv`中的$F$
+现在我们构建一个函数来表示 {eq}`dfcv` 中的 $F$
 
 ```{code-cell} ipython3
 def F(x, t, R0=1.6):
@@ -198,7 +195,11 @@ def F(x, t, R0=1.6):
 
 注意 `R0` 可以是常数或给定的时间函数。
 
-初始条件设置为
+初始条件根据 3.3 亿人口进行校准。
+
+$i_0 = 10^{-7}$ 表示初始时有 33 人被感染，而 $e_0 = 4i_0$ 表示有 132 人处于暴露状态。
+
+设定 $s_0 = 1 - i_0 - e_0$ 将剩余人口分配给易感状态，并将初始移除比例设为零。
 
 ```{code-cell} ipython3
 # 初始条件
@@ -213,7 +214,7 @@ s_0 = 1 - i_0 - e_0
 x_0 = s_0, e_0, i_0
 ```
 
-我们使用odeint在一系列时间点 `t_vec`上通过数值积分求解时间路径。
+我们使用 `odeint` 在一系列时间点 `t_vec` 上通过数值积分求解时间路径。
 
 ```{code-cell} ipython3
 def solve_path(R0, t_vec, x_init=x_0):
@@ -248,7 +249,7 @@ t_vec = np.linspace(0, t_length, grid_size)
 
 ```{code-cell} ipython3
 R0_vals = np.linspace(1.6, 3.0, 6)
-labels = [f'$R0 = {r:.2f}$' for r in R0_vals]
+labels = [f'$R_0 = {r:.2f}$' for r in R0_vals]
 i_paths, c_paths = [], []
 
 for r in R0_vals:
@@ -260,13 +261,15 @@ for r in R0_vals:
 这是一些用于绘制时间路径的代码。
 
 ```{code-cell} ipython3
-def plot_paths(paths, labels, times=t_vec):
+def plot_paths(paths, labels, ylabel, times=t_vec):
 
     fig, ax = plt.subplots()
 
     for path, label in zip(paths, labels):
-        ax.plot(times, path, label=label)
+        ax.plot(times, path, lw=2, label=label)
 
+    ax.set_xlabel('days')
+    ax.set_ylabel(ylabel)
     ax.legend(loc='upper left')
 
     plt.show()
@@ -275,7 +278,7 @@ def plot_paths(paths, labels, times=t_vec):
 让我们绘制当前病例数占人口的比例。
 
 ```{code-cell} ipython3
-plot_paths(i_paths, labels)
+plot_paths(i_paths, labels, ylabel='fraction of the population')
 ```
 
 正如预期的那样，较低的有效传播率会推迟感染高峰。
@@ -285,7 +288,7 @@ plot_paths(i_paths, labels)
 以下是累计病例数（占总人口的比例）：
 
 ```{code-cell} ipython3
-plot_paths(c_paths, labels)
+plot_paths(c_paths, labels, ylabel='fraction of the population')
 ```
 
 ### 实验2：改变缓解措施
@@ -306,7 +309,9 @@ def R0_mitigating(t, r0=3, η=1, r_bar=1.6):
 
 参数 `η` 控制限制措施实施的速率或速度。
 
-我们考虑几个不同的速率：
+由于 $t$ 以天为单位计量，$\eta$ 以每天为单位计量，而其倒数 $1/\eta$ 则是调整周期。
+
+下面的值分别对应于5天、10天、20天、50天和100天的调整周期：
 
 ```{code-cell} ipython3
 η_vals = 1/5, 1/10, 1/20, 1/50, 1/100
@@ -319,8 +324,10 @@ labels = [fr'$\eta = {η:.2f}$' for η in η_vals]
 fig, ax = plt.subplots()
 
 for η, label in zip(η_vals, labels):
-    ax.plot(t_vec, R0_mitigating(t_vec, η=η), label=label)
+    ax.plot(t_vec, R0_mitigating(t_vec, η=η), lw=2, label=label)
 
+ax.set_xlabel('days')
+ax.set_ylabel('$R_0$')
 ax.legend()
 plt.show()
 ```
@@ -340,18 +347,20 @@ for η in η_vals:
 以下是不同场景下的当前案例：
 
 ```{code-cell} ipython3
-plot_paths(i_paths, labels)
+plot_paths(i_paths, labels, ylabel='fraction of the population')
 ```
 
 以下是累计病例数（占总人口的比例）：
 
 ```{code-cell} ipython3
-plot_paths(c_paths, labels)
+plot_paths(c_paths, labels, ylabel='fraction of the population')
 ```
+
+更快实施缓解措施主要会推迟感染高峰，而对高峰的高度影响较小。
 
 ## 解除封锁
 
-以下内容复现了Andrew Atkeson关于解除封锁时机的[附加研究结果](https://drive.google.com/file/d/1uS7n-7zq5gfSgrL3S0HByExmpq4Bn3oh/view)。
+以下内容复现了 Andrew Atkeson 关于解除封锁时机的 [附加研究结果](https://drive.google.com/file/d/1uS7n-7zq5gfSgrL3S0HByExmpq4Bn3oh/view)。
 
 我们对比两种解封方案：
 
@@ -385,15 +394,17 @@ for R0 in R0_paths:
     c_paths.append(c_path)
 ```
 
-这是活跃感染病例数：
+这是具有活跃感染的人口比例：
 
 ```{code-cell} ipython3
-plot_paths(i_paths, labels)
+plot_paths(i_paths, labels, ylabel='人口比例')
 ```
+
+两种场景下的感染高峰大致相同，但较长的封锁会推迟高峰的到来。
 
 在这些场景下，死亡率会是怎样的呢？
 
-假设1%的病例会导致死亡
+假设1%的病例会导致死亡。
 
 ```{code-cell} ipython3
 ν = 0.01
@@ -402,15 +413,16 @@ plot_paths(i_paths, labels)
 这是累计死亡人数：
 
 ```{code-cell} ipython3
-paths = [path * ν * pop_size for path in c_paths]
-plot_paths(paths, labels)
+paths = [(c_path - i_path) * ν * pop_size
+         for c_path, i_path in zip(c_paths, i_paths)]
+plot_paths(paths, labels, ylabel='累计死亡人数')
 ```
 
-这是每日死亡率：
+这是每日死亡人数：
 
 ```{code-cell} ipython3
 paths = [path * ν * γ * pop_size for path in i_paths]
-plot_paths(paths, labels)
+plot_paths(paths, labels, ylabel='每日死亡人数')
 ```
 
-如果我们能够将感染高峰推迟到疫苗研发出来之前，就有可能降低累计死亡人数。
+如果能研制出疫苗，将曲线的峰值进一步推向未来，就可能减少累计死亡人数。
