@@ -1,0 +1,2359 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>115. 不确定性下的投资 &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=d33b6885fb389884ac791c8a9c6b6ea3b92d4477" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=4ee6b0d39d67134a24a514ef2da7c56ba4860b19"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lucas_prescott_investment';</script>
+    <link rel="canonical" href="https://quantecon.github.io/lecture-python.zh-cn/lucas_prescott_investment.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="116. 不确定性下的最优增长与托宾 q" href="optimal_growth_uncertainty.html" />
+    <link rel="prev" title="114. 理性预期均衡" href="rational_expectations.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="不确定性下的投资"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="不确定性下的投资" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://quantecon.github.io/lecture-python.zh-cn/lucas_prescott_investment.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=lucas_prescott_investment>
+
+                
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">115.1. 概述</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">115.2. 行业</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">115.3. 企业与已安装资本的价格</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">115.4. 理性预期均衡</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">115.5. 作为规划问题的均衡</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">115.6. 递归竞争均衡</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">115.7. 一个可计算的版本</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">115.7.1. 已安装资本的价格</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">115.8. 需求序列独立时的长期行为</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">115.9. 需求序列相关时的长期行为</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">115.10. 与理性预期讲座的关系</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">115.11. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" rel="author" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" rel="author" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Oct 21, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/lucas_prescott_investment.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/ec71c89" class="changelog-hash">ec71c89</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">6 hours ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] [lucas_prescott_investment, optimal_growth_uncertainty] Two sequels to rational_expectations (#286)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="toc-backref" href="#id24" role="doc-backlink"><span class="section-number">115. </span>不确定性下的投资</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<nav class="contents" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id24">不确定性下的投资</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id25">概述</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id26">行业</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id27">企业与已安装资本的价格</a></p></li>
+<li><p><a class="reference internal" href="#id11" id="id28">理性预期均衡</a></p></li>
+<li><p><a class="reference internal" href="#id12" id="id29">作为规划问题的均衡</a></p></li>
+<li><p><a class="reference internal" href="#id15" id="id30">递归竞争均衡</a></p></li>
+<li><p><a class="reference internal" href="#id17" id="id31">一个可计算的版本</a></p></li>
+<li><p><a class="reference internal" href="#id19" id="id32">需求序列独立时的长期行为</a></p></li>
+<li><p><a class="reference internal" href="#id20" id="id33">需求序列相关时的长期行为</a></p></li>
+<li><p><a class="reference internal" href="#id21" id="id34">与理性预期讲座的关系</a></p></li>
+<li><p><a class="reference internal" href="#id23" id="id35">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>除了 Anaconda 中已有的库之外，本讲座还需要以下库：</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantecon
+</pre></div>
+</div>
+</div>
+<details class="admonition hide below-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell output</p>
+<p class="expanded admonition-title">Hide code cell output</p>
+</summary>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: quantecon in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (0.13.1)
+Requirement already satisfied: numba&gt;=0.56.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (0.65.1)
+Requirement already satisfied: numpy&gt;=1.17.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (2.4.6)
+Requirement already satisfied: scipy&gt;=1.5.0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from quantecon) (1.18.0)
+Requirement already satisfied: llvmlite&lt;0.48,&gt;=0.47.0dev0 in /home/runner/miniconda3/envs/quantecon/lib/python3.13/site-packages (from numba&gt;=0.56.0-&gt;quantecon) (0.47.0)
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="id2">
+<h2><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">115.1. </span>概述</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>本讲座研究 <span class="bibtex-citation" id="id3">Lucas and Prescott [<a class="reference internal" href="zreferences.html#id56" title="Jr. Lucas, Robert E. and Edward C. Prescott. Investment under uncertainty. Econometrica, 39(5):659–681, 1971.">1971</a>]</span>，这篇论文有助于点燃一场“理性预期革命”。</p>
+<p>卢卡斯和普雷斯科特研究了一个竞争性行业，其中</p>
+<ul class="simple">
+<li><p>需求每期都随机变化</p></li>
+<li><p>企业面临调整资本存量的成本</p></li>
+<li><p>企业必须预测未来价格才能决定投资多少</p></li>
+<li><p>企业用来预测价格的概率分布<em>恰好等于</em>它们的投资决策实际生成的概率分布</p></li>
+</ul>
+<p>最后一点正是 <span class="bibtex-citation" id="id4">Muth [<a class="reference internal" href="zreferences.html#id388" title="John F. Muth. Rational expectations and the theory of price movements. Econometrica, 29(3):315–335, 1961.">1961</a>]</span> 所称的<strong>理性预期</strong>。</p>
+<p>QuantEcon 讲座 <a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a> 呈现的可以说是卢卡斯-普雷斯科特模型的一个“简化版”。</p>
+<p>那篇讲座研究的是<em>没有不确定性</em>的线性二次型行业。</p>
+<p>本讲座则描述了卢卡斯和普雷斯科特实际构建的更加宏大的结构。</p>
+<p>相对于简化版，卢卡斯和普雷斯科特</p>
+<ul class="simple">
+<li><p>让需求由一个马尔可夫过程 <span class="math notranslate nohighlight">\(\{u_t\}\)</span> 来推动，因此均衡是一个随机过程而非确定性路径</p></li>
+<li><p>允许将投资转化为产能的技术是非线性的</p></li>
+<li><p>证明竞争均衡<em>存在</em>且<em>唯一</em></p></li>
+<li><p>证明均衡是一个<em>规划问题</em>的解，该规划问题最大化贴现的消费者剩余</p></li>
+<li><p>证明均衡是状态 <span class="math notranslate nohighlight">\((k_t, u_t)\)</span> 上的<em>马尔可夫过程</em></p></li>
+<li><p>提供了该马尔可夫过程存在<em>不变概率分布</em>且从任意初始条件都收敛于该分布的条件</p></li>
+</ul>
+<p>最后一点正是对后续研究影响最大的部分。</p>
+<p>一个均衡是具有不变分布的马尔可夫过程的模型，就是一个可以用来对照时间序列数据的模型。</p>
+<p>这一观察为拉尔斯·彼得·汉森和托马斯·萨金特随后发展的<em>理性预期计量经济学</em>奠定了基础 <span class="bibtex-citation" id="id5">[<a class="reference internal" href="zreferences.html#id212" title="Lars Peter Hansen and Thomas J Sargent. Formulating and estimating dynamic linear rational expectations models. Journal of Economic Dynamics and control, 2:7–46, 1980.">Hansen and Sargent, 1980</a>]</span>。</p>
+<p>在此过程中，我们将描述 <span class="bibtex-citation" id="id6">Prescott and Mehra [<a class="reference internal" href="zreferences.html#id333" title="Edward C Prescott and Rajnish Mehra. Recursive competitive equilibrium: the case of homogeneous households. Econometrica, 48(6):1365–1379, 1980.">1980</a>]</span> 后来如何将卢卡斯-普雷斯科特的结构提炼成<strong>递归竞争均衡</strong>的一般定义。</p>
+<p>后续讲座 <a class="reference internal" href="optimal_growth_uncertainty.html"><span class="doc">不确定性下的最优增长与托宾 q</span></a> 研究了对一个单部门最优增长模型提出同样问题的论文，即 <span class="bibtex-citation" id="id7">Brock and Mirman [<a class="reference internal" href="zreferences.html#id571" title="William A. Brock and Leonard J. Mirman. Optimal economic growth and uncertainty: the discounted case. Journal of Economic Theory, 4(3):479–513, 1972.">1972</a>]</span>，以及一篇利用该模型思考托宾 <span class="math notranslate nohighlight">\(q\)</span> 的论文，即 <span class="bibtex-citation" id="id8">Sargent [<a class="reference internal" href="zreferences.html#id572" title="Thomas J. Sargent. “Tobin's q” and the rate of investment in general equilibrium. Carnegie-Rochester Conference Series on Public Policy, 12:107–154, 1980.">1980</a>]</span>。</p>
+<p>让我们从一些导入开始：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">quantecon</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">115.2. </span>行业</a><a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<p>一个行业由许多小企业组成。</p>
+<p>每个企业用单一投入品——资本 <span class="math notranslate nohighlight">\(k_t\)</span>——生产单一产出品 <span class="math notranslate nohighlight">\(q_t\)</span>。</p>
+<p>生产具有规模报酬不变的性质，通过适当选取单位，生产函数为</p>
+<div class="math notranslate nohighlight" id="equation-lp-production">
+<span class="eqno">(115.1)<a class="headerlink" href="#equation-lp-production" title="Link to this equation">#</a></span>\[0 \leq q_t \leq k_t .\]</div>
+<p>由于资本是唯一投入，产出以正价格出售，因此每个企业都以满负荷生产，即 <span class="math notranslate nohighlight">\(q_t = k_t\)</span>。</p>
+<p>令 <span class="math notranslate nohighlight">\(x_t\)</span> 表示总投资。</p>
+<p>下一期产能与本期产能及投资的关系为</p>
+<div class="math notranslate nohighlight" id="equation-lp-accumulation">
+<span class="eqno">(115.2)<a class="headerlink" href="#equation-lp-accumulation" title="Link to this equation">#</a></span>\[k_{t+1} = k_t \, h\!\left(\frac{x_t}{k_t}\right),\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(h\)</span> 是有界、连续可微、递增且严格<em>凹</em>的。</p>
+<p><span class="math notranslate nohighlight">\(h\)</span> 的严格凹性正是<strong>调整成本</strong>产生的原因：单位资本的投资率翻倍所带来的产能增量少于原来的两倍。</p>
+<p>调整成本正是企业逐步调整资本存量，而不是立即跳跃到长期目标水平的原因。</p>
+<p>假设 <span class="math notranslate nohighlight">\(\delta = h^{-1}(1)\)</span> 存在且满足 <span class="math notranslate nohighlight">\(0 &lt; \delta &lt; 1\)</span>。</p>
+<p>那么 <span class="math notranslate nohighlight">\(x_t = \delta k_t\)</span> 恰好是维持产能所需的投资率，因此 <span class="math notranslate nohighlight">\(\delta\)</span> 起到折旧率的作用。</p>
+<p>令 <span class="math notranslate nohighlight">\(p_t\)</span> 为产出价格，令 <span class="math notranslate nohighlight">\(\beta = 1/(1+r)\)</span>，其中 <span class="math notranslate nohighlight">\(r &gt; 0\)</span> 是资本成本。</p>
+<p>企业的现值为</p>
+<div class="math notranslate nohighlight" id="equation-lp-value">
+<span class="eqno">(115.3)<a class="headerlink" href="#equation-lp-value" title="Link to this equation">#</a></span>\[V = \sum_{t=0}^\infty \beta^t \left[ p_t q_t - x_t \right].\]</div>
+<p>由于给定行业资本存量在各企业间的分配并不重要，我们可以将 <span class="math notranslate nohighlight">\(k_t, x_t, q_t\)</span> 既用作企业变量，也用作行业变量，二者可互换使用。</p>
+<p>等价地，我们可以把这个行业看作只有一个价格接受者的竞争性企业。</p>
+<p>行业需求受到随机冲击的影响：</p>
+<div class="math notranslate nohighlight" id="equation-lp-demand">
+<span class="eqno">(115.4)<a class="headerlink" href="#equation-lp-demand" title="Link to this equation">#</a></span>\[p_t = D(q_t, u_t),\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(D\)</span> 关于 <span class="math notranslate nohighlight">\(q_t\)</span> 连续且严格递减，关于 <span class="math notranslate nohighlight">\(u_t\)</span> 递增，因此 <span class="math notranslate nohighlight">\(u_t\)</span> 增加会使需求曲线向右移动。</p>
+<p>需求扰动 <span class="math notranslate nohighlight">\(\{u_t\}\)</span> 是一个马尔可夫过程，转移分布为 <span class="math notranslate nohighlight">\(p(\cdot, u)\)</span>，这意味着在 <span class="math notranslate nohighlight">\(u_t = u\)</span> 的条件下，<span class="math notranslate nohighlight">\(u_{t+1} \in A\)</span> 的概率为 <span class="math notranslate nohighlight">\(\int_A p(dz, u)\)</span>。</p>
+</section>
+<section id="id10">
+<h2><a class="toc-backref" href="#id27" role="doc-backlink"><span class="section-number">115.3. </span>企业与已安装资本的价格</a><a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>在研究均衡之前，卢卡斯和普雷斯科特先驻足思考一个富有启发性的问题：单个企业究竟需要知道什么？</p>
+<p>令 <span class="math notranslate nohighlight">\(w_t\)</span> 为一单位已安装资本的当期市场价值，<span class="math notranslate nohighlight">\(w^*_t\)</span> 为预期下一期将占优的单位价值。</p>
+<p>一个在 <span class="math notranslate nohighlight">\(t\)</span> 期初拥有资本 <span class="math notranslate nohighlight">\(k_t\)</span> 并投资 <span class="math notranslate nohighlight">\(x\)</span> 的企业，将在下一期获得价值为 <span class="math notranslate nohighlight">\(\beta k_t h(x/k_t) w^*_t\)</span> 的资本，而其成本为 <span class="math notranslate nohighlight">\(x\)</span>，因此它求解</p>
+<div class="math notranslate nohighlight">
+\[
+\max_x \left[ -x + \beta k_t h(x/k_t) w^*_t \right] .
+\]</div>
+<p>企业的当期价值为</p>
+<div class="math notranslate nohighlight" id="equation-lp-firmvalue">
+<span class="eqno">(115.5)<a class="headerlink" href="#equation-lp-firmvalue" title="Link to this equation">#</a></span>\[w_t k_t = p_t k_t - x + \beta k_t h(x/k_t) w^*_t\]</div>
+<p>一阶条件为</p>
+<div class="math notranslate nohighlight" id="equation-lp-firmfoc">
+<span class="eqno">(115.6)<a class="headerlink" href="#equation-lp-firmfoc" title="Link to this equation">#</a></span>\[0 \geq -1 + \beta h'(x/k_t) w^*_t, \quad \text{当 } x &gt; 0 \text{ 时取等号} .\]</div>
+<p>联立求解 <a class="reference internal" href="#equation-lp-firmvalue">(115.5)</a> 和 <a class="reference internal" href="#equation-lp-firmfoc">(115.6)</a> 中的 <span class="math notranslate nohighlight">\(x\)</span> 与 <span class="math notranslate nohighlight">\(w^*_t\)</span>，可得如下形式的投资函数</p>
+<div class="math notranslate nohighlight" id="equation-lp-investment-fn">
+<span class="eqno">(115.7)<a class="headerlink" href="#equation-lp-investment-fn" title="Link to this equation">#</a></span>\[x_t = k_t \, g(w_t - p_t), \qquad g'(\cdot) &gt; 0 .\]</div>
+<p>卢卡斯和普雷斯科特指出，<a class="reference internal" href="#equation-lp-investment-fn">(115.7)</a> 本质上就是格伦费尔德在实证工作中使用过的投资函数，其中企业的市场价值作为解释变量。</p>
+<p>不过他们的论证比格伦费尔德的更有力：企业根本不需要预测自己未来的收入流。</p>
+<p>它只需要知道证券市场对一单位已安装资本所赋予的价值。</p>
+<p>读者会认出这正是后来被称为托宾 <span class="math notranslate nohighlight">\(q\)</span> 投资理论的一个版本。</p>
+<p>但方程 <a class="reference internal" href="#equation-lp-investment-fn">(115.7)</a> 只是一个<em>一致性要求</em>，还算不上是资本积累理论，因为 <span class="math notranslate nohighlight">\(w_t\)</span> 的路径仍然未知。</p>
+<p>要确定 <span class="math notranslate nohighlight">\(w_t\)</span>，我们必须研究均衡。</p>
+</section>
+<section id="id11">
+<h2><a class="toc-backref" href="#id28" role="doc-backlink"><span class="section-number">115.4. </span>理性预期均衡</a><a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>企业必须预测未来价格。</p>
+<p>卢卡斯和普雷斯科特将常规方法描述为假设一个预测规则——例如“适应性预期”——由此产生投资行为，再结合需求生成实际的价格过程。</p>
+<p>他们反对这种做法，理由是：如果潜在的扰动确实具有规律性的随机特征，那么除非出现巧合，预测价格与实际价格将具有<em>不同的概率分布</em>，而这种差异将是持续的、代价高昂的，同时也是容易被纠正的。</p>
+<p>于是他们走向另一个极端，假设实际价格与预期价格具有<em>相同的概率分布</em>。</p>
+<p>为了精确表述这一点，先固定初始状态 <span class="math notranslate nohighlight">\((k_0, u_0)\)</span>。</p>
+<p>由于价格取决于需求冲击的历史，预期价格过程是关于 <span class="math notranslate nohighlight">\((u_1, \ldots, u_t)\)</span> 的函数序列 <span class="math notranslate nohighlight">\(\{p_t\}\)</span>。</p>
+<p>类似地，投资-产出计划是一对关于 <span class="math notranslate nohighlight">\((u_1, \ldots, u_t)\)</span> 的函数序列 <span class="math notranslate nohighlight">\(\{q_t, x_t\}\)</span>——即一个提前说明企业在每一种可能历史之后将如何行动的相机抉择计划。</p>
+<div class="proof definition admonition" id="lp_equilibrium_def">
+<p class="admonition-title"><span class="caption-number">定义 115.1 </span></p>
+<section class="definition-content" id="proof-content">
+<p>对于固定的初始状态 <span class="math notranslate nohighlight">\((k_0, u_0)\)</span>，一个<strong>行业均衡</strong>是一个三元组序列 <span class="math notranslate nohighlight">\(\{q^0_t, x^0_t, p^0_t\}\)</span>，使得</p>
+<ol class="arabic">
+<li><p>需求曲线 <a class="reference internal" href="#equation-lp-demand">(115.4)</a> 对每一种历史都成立，且</p></li>
+<li><p>计划 <span class="math notranslate nohighlight">\(\{q^0_t, x^0_t\}\)</span> 在给定价格过程 <span class="math notranslate nohighlight">\(\{p^0_t\}\)</span> 的条件下，在满足 <a class="reference internal" href="#equation-lp-production">(115.1)</a> 和 <a class="reference internal" href="#equation-lp-accumulation">(115.2)</a> 的所有计划 <span class="math notranslate nohighlight">\(\{q_t, x_t\}\)</span> 中，最大化预期现值</p>
+<div class="math notranslate nohighlight">
+\[
+   \mathbb{E} \left\{ \sum_{t=0}^\infty \beta^t \left[ p^0_t q_t - x_t \right] \right\}
+   \]</div>
+</li>
+</ol>
+</section>
+</div><p>理性预期的要求就明明白白地隐藏在 <a class="reference internal" href="#lp_equilibrium_def">定义 115.1</a> 之中。</p>
+<p>企业在最大化时视为给定的价格过程 <span class="math notranslate nohighlight">\(\{p^0_t\}\)</span>，恰好<em>就是</em>它们自身决策通过需求曲线所生成的那个价格过程。</p>
+<p>这正是讲座 <a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a> 中不动点思想的翻版：总产出的<strong>感知运动规律</strong> <span class="math notranslate nohighlight">\(H\)</span> 必须等于由所产生的决策规则得出的<strong>实际运动规律</strong>。</p>
+<p>区别在于，这里的不动点是在历史函数序列空间中，而不是在线性决策规则空间中。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>卢卡斯和普雷斯科特对理性假设了什么、没假设什么十分谨慎。</p>
+<p>他们写道，他们“事先放弃了对企业如何将当前信息转化为价格预测这一过程有所启示的任何希望”。</p>
+<p>他们也为这一假设辩护：如果需求变化过程确实具有规律的、平稳的结构，那么在他们意义上的理性预期“肯定比任何简单的适应性方案更为合理”；如果不是这样，那么采用其他某种预期假设“肯定不会改善局面”。</p>
+</div>
+</section>
+<section id="id12">
+<h2><a class="toc-backref" href="#id29" role="doc-backlink"><span class="section-number">115.5. </span>作为规划问题的均衡</a><a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<p>我们该如何计算一个由如此庞大空间中的不动点所定义的对象呢？</p>
+<p>卢卡斯和普雷斯科特的答案，正是讲座 <a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a> 所使用的手法：找到一个<strong>规划问题</strong>，其解就是均衡。</p>
+<p>将<strong>消费者剩余</strong>定义为需求曲线下方的面积</p>
+<div class="math notranslate nohighlight">
+\[
+s(q, u) = \int_0^q D(z, u) \, dz ,
+\]</div>
+<p>并将扣除投资成本后的贴现消费者剩余定义为</p>
+<div class="math notranslate nohighlight" id="equation-lp-surplus">
+<span class="eqno">(115.8)<a class="headerlink" href="#equation-lp-surplus" title="Link to this equation">#</a></span>\[S = \mathbb{E} \left\{ \sum_{t=0}^\infty \beta^t \left[ s(q_t, u_t) - x_t \right] \right\} .\]</div>
+<p>与最大化 <span class="math notranslate nohighlight">\(S\)</span> 的问题相关联的泛函方程为</p>
+<div class="math notranslate nohighlight" id="equation-lp-bellman">
+<span class="eqno">(115.9)<a class="headerlink" href="#equation-lp-bellman" title="Link to this equation">#</a></span>\[v(k, u) = \sup_{x \geq 0} \left\{ s(k, u) - x + \beta \int v\!\left[ k h\!\left(\frac{x}{k}\right), z \right] p(dz, u) \right\} .\]</div>
+<div class="proof theorem admonition" id="lp_theorem1">
+<p class="admonition-title"><span class="caption-number">定理 115.1 </span></p>
+<section class="theorem-content" id="proof-content">
+<p>泛函方程 <a class="reference internal" href="#equation-lp-bellman">(115.9)</a> 具有唯一的有界解 <span class="math notranslate nohighlight">\(v\)</span>，且对每一个 <span class="math notranslate nohighlight">\((k,u)\)</span>，上确界都在唯一的 <span class="math notranslate nohighlight">\(x(k,u)\)</span> 处取得。</p>
+<p>用该策略函数表示，给定 <span class="math notranslate nohighlight">\((k_0, u_0)\)</span> 的唯一行业均衡为</p>
+<div class="math notranslate nohighlight">
+\[
+x_t = x(k_t, u_t), \qquad
+k_{t+1} = k_t h\!\left(\frac{x(k_t,u_t)}{k_t}\right), \qquad
+q_t = k_t, \qquad
+p_t = D(q_t, u_t) .
+\]</div>
+</section>
+</div><p>证明分为两部分，两部分对后续工作都很重要。</p>
+<p>第一部分说明竞争均衡最大化 <span class="math notranslate nohighlight">\(S\)</span>，反之亦然。</p>
+<p>这是对无限维商品空间中福利定理的一种应用，用到了德布鲁的估价均衡以及普雷斯科特和卢卡斯在一篇姊妹论文中发展的价格体系。</p>
+<p>卢卡斯和普雷斯科特明确指出，他们只是把这种联系当作一种计算工具来使用：“<span class="math notranslate nohighlight">\(S\)</span> 的福利意义并不重要。我们只对利用 <span class="math notranslate nohighlight">\(S\)</span> 的最大化与竞争均衡之间的联系来确定后者的性质感兴趣。”</p>
+<p>第二部分说明规划问题由泛函方程 <a class="reference internal" href="#equation-lp-bellman">(115.9)</a> 求解。</p>
+<p>在这里他们使用算子</p>
+<div class="math notranslate nohighlight">
+\[
+Tf(k,u) = \sup_{x \geq 0} \left\{ s(k,u) - x + \beta \int f\!\left[ k h(x/k), z \right] p(dz, u) \right\}
+\]</div>
+<p>并验证 <span class="math notranslate nohighlight">\(T\)</span> 是单调的且满足一个贴现性质，因此根据布莱克韦尔定理 <span class="bibtex-citation" id="id13">[<a class="reference internal" href="zreferences.html#id573" title="David Blackwell. Discounted dynamic programming. Annals of Mathematical Statistics, 36(1):226–235, 1965.">Blackwell, 1965</a>]</span>，它有唯一的不动点，且逐次逼近会收敛到该不动点。</p>
+<p>他们还证明了 <span class="math notranslate nohighlight">\(T\)</span> 保持了关于 <span class="math notranslate nohighlight">\(k\)</span> 的凹性和单调性，这就得到了唯一且连续的策略函数 <span class="math notranslate nohighlight">\(x(k,u)\)</span>。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>这些论证如今已是标准做法，在 <span class="bibtex-citation" id="id14">Stokey <em>et al.</em> [<a class="reference internal" href="zreferences.html#id319" title="N L Stokey, R E Lucas, and E C Prescott. Recursive Methods in Economic Dynamics. Harvard University Press, 1989.">1989</a>]</span> 中有详尽的讨论。</p>
+<p>在 1971 年时它们还不是标准做法，这也是这篇论文难读的原因之一。</p>
+<p>论文中大量篇幅都用于处理可测性方面的细节——贝尔函数、博雷尔集——而在现代处理方式中，这些内容通常会放到附录中。</p>
+</div>
+<p><a class="reference internal" href="#lp_theorem1">定理 115.1</a> 的两个特征值得强调。</p>
+<p>第一，均衡是<strong>递归的</strong>：<span class="math notranslate nohighlight">\((k_t, u_t)\)</span> 二元组是一个马尔可夫过程，均衡价格和数量是关于它的时不变函数。</p>
+<p>第二，均衡的计算<em>完全无需迭代一个从信念到结果的映射</em>。</p>
+<p>讲座 <a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a> 解释了为什么这一点很重要：从感知运动规律到实际运动规律的映射 <span class="math notranslate nohighlight">\(\Phi\)</span> <em>不是一个压缩映射</em>，对它进行迭代可能会发散。</p>
+<p>规划问题用一个是压缩映射的动态规划，取代了一个不可靠的不动点计算。</p>
+</section>
+<section id="id15">
+<h2><a class="toc-backref" href="#id30" role="doc-backlink"><span class="section-number">115.6. </span>递归竞争均衡</a><a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<p><span class="bibtex-citation" id="id16">Prescott and Mehra [<a class="reference internal" href="zreferences.html#id333" title="Edward C Prescott and Rajnish Mehra. Recursive competitive equilibrium: the case of homogeneous households. Econometrica, 48(6):1365–1379, 1980.">1980</a>]</span> 后来提炼出了卢卡斯和普雷斯科特所利用的一般结构。</p>
+<p>他们的目标是用对均衡<em>决策规则</em>的搜索，取代阿罗和德布鲁风格的对均衡<em>相机抉择函数序列</em>的搜索。</p>
+<p>这样的规则将当前行动表述为少数几个<strong>状态变量</strong>的函数，这些状态变量概括了过去决策和当前信息的影响。</p>
+<p>正如普雷斯科特和梅拉所说，这些均衡决策规则“必须是时不变的，才能应用标准的时间序列方法，而这就要求有一个递归结构”。</p>
+<p>这句话正是从卢卡斯-普雷斯科特理论通往计量经济学的桥梁。</p>
+<p>在递归竞争均衡中</p>
+<ul class="simple">
+<li><p>状态变量应具有最小的维数，仅索引那些可能随时间变化的因素</p></li>
+<li><p>状态是可观测的，或者是可观测量的可逆函数</p></li>
+<li><p>在给定当前决策和当前状态的条件下，下一期状态的条件分布是时不变的</p></li>
+<li><p>个体决策规则在给定均衡定价函数的条件下是最优的，且市场出清</p></li>
+</ul>
+<p>普雷斯科特和梅拉指出，他们的结构“涵盖了卢卡斯和普雷斯科特在分析不确定性下均衡投资时所考虑的结构”。</p>
+<p>他们的分析还以“比通过与状态相机抉择均衡等价性来论证更简单、更直接的方式”确立了递归均衡的最优性以及帕累托最优的可支持性。</p>
+<p>对我们而言，重要的一点是 <a class="reference internal" href="#lp_theorem1">定理 115.1</a> 恰好产生了理性预期计量经济学所需要的那些对象：由马尔可夫状态驱动的时不变决策规则，以及将冲击过程参数与决策规则参数联系起来的跨方程约束。</p>
+</section>
+<section id="id17">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink"><span class="section-number">115.7. </span>一个可计算的版本</a><a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<p>现在让我们来计算该模型某个版本的均衡。</p>
+<p>我们采用调整技术</p>
+<div class="math notranslate nohighlight">
+\[
+h(z) = (1 - \delta + z)^\alpha, \qquad 0 &lt; \alpha \leq 1 ,
+\]</div>
+<p>它满足卢卡斯-普雷斯科特的假设：当 <span class="math notranslate nohighlight">\(\alpha &lt; 1\)</span> 时 <span class="math notranslate nohighlight">\(h\)</span> 递增且严格凹，且 <span class="math notranslate nohighlight">\(h(\delta) = 1\)</span>，因此 <span class="math notranslate nohighlight">\(\delta\)</span> 是维持性投资率。</p>
+<p>当 <span class="math notranslate nohighlight">\(\alpha = 1\)</span> 时，我们就得到熟悉的线性积累方程 <span class="math notranslate nohighlight">\(k_{t+1} = (1-\delta) k_t + x_t\)</span>。</p>
+<p>当 <span class="math notranslate nohighlight">\(\alpha &lt; 1\)</span> 时存在调整成本。</p>
+<p>注意 <span class="math notranslate nohighlight">\(h'(\delta) = \alpha\)</span>，我们下面会用到这一事实。</p>
+<p>我们采用线性逆需求曲线</p>
+<div class="math notranslate nohighlight">
+\[
+D(q, u) = a_0 + u - a_1 q ,
+\]</div>
+<p>这与讲座 <a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a> 中的需求曲线一致，只是多了一个由 <span class="math notranslate nohighlight">\(u\)</span> 带来的位移。</p>
+<p>消费者剩余于是为</p>
+<div class="math notranslate nohighlight">
+\[
+s(k, u) = (a_0 + u) k - \frac{a_1}{2} k^2 .
+\]</div>
+<p>需求扰动遵循高斯 AR(1) 过程</p>
+<div class="math notranslate nohighlight">
+\[
+u_{t+1} = \rho u_t + \sigma \epsilon_{t+1}, \qquad \epsilon_{t+1} \sim N(0,1),
+\]</div>
+<p>这正是卢卡斯和普雷斯科特自己给出的一个满足其假设的过程示例。</p>
+<p>我们用陶臣方法对其进行离散化。</p>
+<p>与其直接选择投资 <span class="math notranslate nohighlight">\(x\)</span>，不如让规划者在网格上选择下一期资本 <span class="math notranslate nohighlight">\(k'\)</span> 更为方便，再对 <a class="reference internal" href="#equation-lp-accumulation">(115.2)</a> 求逆，得到所需的投资</p>
+<div class="math notranslate nohighlight">
+\[
+x = k \left[ \left(\frac{k'}{k}\right)^{1/\alpha} - (1 - \delta) \right] .
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Model</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Model&quot;</span><span class="p">,</span> <span class="s2">&quot;r β δ α a0 a1 k u P X feasible s&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_model</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">δ</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span> <span class="n">α</span><span class="o">=</span><span class="mf">0.70</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a1</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+                 <span class="n">ρ</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">σ</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">n_k</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">k_lo</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">k_hi</span><span class="o">=</span><span class="mf">160.0</span><span class="p">):</span>
+    <span class="s2">&quot;Discretize the Lucas-Prescott industry.&quot;</span>
+    <span class="n">β</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span>
+    <span class="n">mc</span> <span class="o">=</span> <span class="n">qe</span><span class="o">.</span><span class="n">markov</span><span class="o">.</span><span class="n">tauchen</span><span class="p">(</span><span class="n">n_u</span><span class="p">,</span> <span class="n">ρ</span><span class="p">,</span> <span class="n">σ</span><span class="p">)</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">state_values</span><span class="p">,</span> <span class="n">mc</span><span class="o">.</span><span class="n">P</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">k_lo</span><span class="p">,</span> <span class="n">k_hi</span><span class="p">,</span> <span class="n">n_k</span><span class="p">)</span>
+    <span class="c1"># investment needed to move from k (rows) to k&#39; (columns)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">k</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">((</span><span class="n">k</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">k</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">α</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">δ</span><span class="p">))</span>
+    <span class="n">feasible</span> <span class="o">=</span> <span class="n">X</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">a0</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">*</span> <span class="n">k</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">k</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">Model</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">β</span><span class="p">,</span> <span class="n">δ</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">feasible</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们通过值函数迭代来求解规划者的贝尔曼方程 <a class="reference internal" href="#equation-lp-bellman">(115.9)</a>，并使用霍华德策略改进步骤来加快收敛速度。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">solve_model</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">maxit</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">howard</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+    <span class="s2">&quot;Solve the planning problem; return value function and policies.&quot;</span>
+    <span class="n">n_k</span><span class="p">,</span> <span class="n">n_u</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">feasible</span><span class="p">,</span> <span class="o">-</span><span class="n">m</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e12</span><span class="p">)</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_k</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_u</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxit</span><span class="p">):</span>
+        <span class="n">EV</span> <span class="o">=</span> <span class="n">v</span> <span class="o">@</span> <span class="n">m</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">T</span>                                 <span class="c1"># EV[k&#39;, u] = E[v(k&#39;, u&#39;) | u]</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">R</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">EV</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>     <span class="c1"># (k, k&#39;, u)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>                       <span class="c1"># choice of k&#39; given (k, u)</span>
+        <span class="n">v_new</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">s</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">idx</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">howard</span><span class="p">):</span>                        <span class="c1"># policy evaluation steps</span>
+            <span class="n">EV</span> <span class="o">=</span> <span class="n">v_new</span> <span class="o">@</span> <span class="n">m</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">v_new</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">s</span> <span class="o">+</span> <span class="n">R</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">EV</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">cols</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v_new</span> <span class="o">-</span> <span class="n">v</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">v_new</span>
+            <span class="k">break</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v_new</span>
+
+    <span class="n">k_next</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">k_next</span><span class="p">,</span> <span class="n">x</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">()</span>
+<span class="n">v</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">k_next</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">solve_model</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;grid: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2"> capital points, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">)</span><span class="si">}</span><span class="s2"> demand states&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>grid: 400 capital points, 9 demand states
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们来看看均衡投资策略以及资本的运动规律。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$u = </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">k_next</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$u = </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">δ</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\delta k$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$k$&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$x(k, u)$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;investment policy&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;45 degree line&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$k$&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$k&#39;(k, u)$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;law of motion for capital&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-lp-policy">
+<img alt="_images/43873af657678ab1fc557dd3cb26662ade8def904a4b31fbcb6eeaad002c9590.png" src="_images/43873af657678ab1fc557dd3cb26662ade8def904a4b31fbcb6eeaad002c9590.png" />
+<figcaption>
+<p><span class="caption-number">图 115.1 </span><span class="caption-text">投资策略与运动规律</span><a class="headerlink" href="#fig-lp-policy" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>当 <span class="math notranslate nohighlight">\(x(k,u)\)</span> 位于维持线 <span class="math notranslate nohighlight">\(\delta k\)</span> 之上时资本上升，位于其下时资本下降。</p>
+<p>需求越高，投资策略就越向上移动，因此需求强劲时行业能够维持的资本存量也更高。</p>
+<section id="id18">
+<h3><span class="section-number">115.7.1. </span>已安装资本的价格<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<p>规划问题还给出了出现在 <a class="reference internal" href="#equation-lp-firmvalue">(115.5)</a> 中的一单位已安装资本的市场价值 <span class="math notranslate nohighlight">\(w\)</span>。</p>
+<p>令 <span class="math notranslate nohighlight">\(z = x/k\)</span> 表示投资率。</p>
+<p>对贝尔曼方程 <a class="reference internal" href="#equation-lp-bellman">(115.9)</a> 求导并运用包络条件，可得</p>
+<div class="math notranslate nohighlight">
+\[
+w(k,u) = v_k(k, u) = D(k,u) + \beta \mathbb{E}\left[ v_k(k', u') \mid u \right] \left[ h(z) - z h'(z) \right],
+\]</div>
+<p>而关于 <span class="math notranslate nohighlight">\(x\)</span> 的一阶条件为</p>
+<div class="math notranslate nohighlight" id="equation-lp-planner-foc">
+<span class="eqno">(115.10)<a class="headerlink" href="#equation-lp-planner-foc" title="Link to this equation">#</a></span>\[\beta \mathbb{E}\left[ v_k(k', u') \mid u \right] = \frac{1}{h'(z)} .\]</div>
+<p>将二者结合起来，就以闭合形式表达出了影子价格，</p>
+<div class="math notranslate nohighlight" id="equation-lp-shadow">
+<span class="eqno">(115.11)<a class="headerlink" href="#equation-lp-shadow" title="Link to this equation">#</a></span>\[w(k,u) = D(k,u) + \frac{h(z)}{h'(z)} - z .\]</div>
+<p>已安装资本的边际价值，等于当前产出价格加上该单位资本带入未来的产能价值。</p>
+<p>注意到 <a class="reference internal" href="#equation-lp-planner-foc">(115.10)</a> 正是企业一阶条件 <a class="reference internal" href="#equation-lp-firmfoc">(115.6)</a> 的规划者对应版本，其中 <span class="math notranslate nohighlight">\(w^* = \mathbb{E}[v_k(k',u') \mid u]\)</span>。</p>
+<p>这种对应关系正是讲座 <a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a> 中“大 <span class="math notranslate nohighlight">\(K\)</span>、小 <span class="math notranslate nohighlight">\(k\)</span>”逻辑在卢卡斯-普雷斯科特形式下的体现。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">δ</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span><span class="o">**</span><span class="n">m</span><span class="o">.</span><span class="n">α</span>
+<span class="n">h_prime</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">α</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">δ</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">α</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">a0</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">a1</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">D</span> <span class="o">+</span> <span class="n">h</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="n">h_prime</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">-</span> <span class="n">z</span>
+
+<span class="c1"># check the first-order condition (up to grid error)</span>
+<span class="n">Ew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">w</span> <span class="o">@</span> <span class="n">m</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">resid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">Ew</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">h_prime</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+<span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">h_prime</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+<span class="n">near</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span> <span class="o">&gt;</span> <span class="mi">70</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span> <span class="o">&lt;</span> <span class="mi">95</span><span class="p">)</span>          <span class="c1"># capital levels the industry actually visits</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;typical size of each side of the FOC: </span><span class="si">{</span><span class="n">scale</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;median residual, all k:               </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">resid</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;median residual, 70 &lt; k &lt; 95:         </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">resid</span><span class="p">[</span><span class="n">near</span><span class="p">])</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>typical size of each side of the FOC: 1.396
+median residual, all k:               5.35e-03
+median residual, 70 &lt; k &lt; 95:         2.39e-03
+</pre></div>
+</div>
+</div>
+</div>
+<p>残差仅为所比较各项量级的十分之几个百分点，这证实了 <a class="reference internal" href="#equation-lp-shadow">(115.11)</a>。</p>
+<p>它没有完全消失，是因为规划者从有限网格中选择 <span class="math notranslate nohighlight">\(k'\)</span>，因此策略函数每次都会跳过一整个网格点。</p>
+<p>在行业从不涉足的那些极端资本水平上，残差要大得多。</p>
+</section>
+</section>
+<section id="id19">
+<h2><a class="toc-backref" href="#id32" role="doc-backlink"><span class="section-number">115.8. </span>需求序列独立时的长期行为</a><a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
+<p>卢卡斯和普雷斯科特接下来探讨了长期会发生什么。</p>
+<p>他们处理了两种情形，第一种是特殊情形，即当 <span class="math notranslate nohighlight">\(s \neq t\)</span> 时 <span class="math notranslate nohighlight">\(u_t\)</span> 与 <span class="math notranslate nohighlight">\(u_s\)</span> 相互独立。</p>
+<p>在 <span class="math notranslate nohighlight">\(p(dz,u)\)</span> 不依赖于 <span class="math notranslate nohighlight">\(u\)</span> 的情况下检视贝尔曼方程 <a class="reference internal" href="#equation-lp-bellman">(115.9)</a>，可以看出最优投资率 <span class="math notranslate nohighlight">\(x(k,u)\)</span> <em>不依赖于 <span class="math notranslate nohighlight">\(u\)</span></em>。</p>
+<p>这时需求变化只是一次纯粹的意外收获：它不告诉企业任何关于未来需求的信息，因此不改变投资。</p>
+<p>于是，资本存量按照 <span class="math notranslate nohighlight">\(k_{t+1} = k_t h(x(k_t)/k_t)\)</span> 的规律<em>确定性地</em>演化，而产出无弹性地供给，需求冲击只改变价格。</p>
+<div class="proof theorem admonition" id="lp_theorem2">
+<p class="admonition-title"><span class="caption-number">定理 115.2 </span></p>
+<section class="theorem-content" id="proof-content">
+<p>在独立性假设下，资本存量存在两种可能性。</p>
+<p>如果</p>
+<div class="math notranslate nohighlight" id="equation-lp-existence-iid">
+<span class="eqno">(115.12)<a class="headerlink" href="#equation-lp-existence-iid" title="Link to this equation">#</a></span>\[\int D(0, u) p(du) &gt; \delta + \frac{r}{h'(\delta)} ,\]</div>
+<p>且 <span class="math notranslate nohighlight">\(k_0 &gt; 0\)</span>，那么 <span class="math notranslate nohighlight">\(k_t\)</span> 会单调收敛到唯一的稳态值 <span class="math notranslate nohighlight">\(k^c\)</span>，该值由下式隐式给出</p>
+<div class="math notranslate nohighlight" id="equation-lp-kc">
+<span class="eqno">(115.13)<a class="headerlink" href="#equation-lp-kc" title="Link to this equation">#</a></span>\[\int D(k^c, u) p(du) = \delta + \frac{r}{h'(\delta)} .\]</div>
+<p>否则资本会单调收敛到零。</p>
+</section>
+</div><p>条件 <a class="reference internal" href="#equation-lp-kc">(115.13)</a> 有一个熟悉的解释。</p>
+<p>左边是资本的预期边际收益产品，这里恰好就是预期产出价格，因为边际实物产品为一。</p>
+<p>右边是<strong>资本的使用者成本</strong>：折旧项 <span class="math notranslate nohighlight">\(\delta\)</span> 加上利息项 <span class="math notranslate nohighlight">\(r/h'(\delta)\)</span>。</p>
+<p>卢卡斯和普雷斯科特指出，这种情形与教科书中短期供给和长期供给之间的二分法非常吻合。</p>
+<p>在短期，产能是固定的，需求决定价格。</p>
+<p>在长期，需求波动完全不起作用：产能完全由<em>平均</em>需求决定。</p>
+<p>让我们通过设定 <span class="math notranslate nohighlight">\(\rho = 0\)</span> 来数值验证这一点。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m_iid</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="n">ρ</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">v_iid</span><span class="p">,</span> <span class="n">idx_iid</span><span class="p">,</span> <span class="n">k_next_iid</span><span class="p">,</span> <span class="n">x_iid</span> <span class="o">=</span> <span class="n">solve_model</span><span class="p">(</span><span class="n">m_iid</span><span class="p">)</span>
+
+<span class="c1"># does the policy depend on u?</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;investment policy independent of u:&quot;</span><span class="p">,</span>
+      <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">x_iid</span><span class="p">,</span> <span class="n">x_iid</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">))</span>
+
+<span class="c1"># stationary capital: where x(k) crosses δ k</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stationary_k</span><span class="p">(</span><span class="n">x_col</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="s2">&quot;Capital where investment just maintains capacity.&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">x_col</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">δ</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">d</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+
+<span class="n">kc</span> <span class="o">=</span> <span class="n">stationary_k</span><span class="p">(</span><span class="n">x_iid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">m_iid</span><span class="p">)</span>
+<span class="n">user_cost</span> <span class="o">=</span> <span class="n">m_iid</span><span class="o">.</span><span class="n">δ</span> <span class="o">+</span> <span class="n">m_iid</span><span class="o">.</span><span class="n">r</span> <span class="o">/</span> <span class="n">h_prime</span><span class="p">(</span><span class="n">m_iid</span><span class="o">.</span><span class="n">δ</span><span class="p">,</span> <span class="n">m_iid</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">stationary capital k^c        = </span><span class="si">{</span><span class="n">kc</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;expected price at k^c         = </span><span class="si">{</span><span class="n">m_iid</span><span class="o">.</span><span class="n">a0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">m_iid</span><span class="o">.</span><span class="n">a1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">kc</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user cost δ + r / h&#39;(δ)       = </span><span class="si">{</span><span class="n">user_cost</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>investment policy independent of u: True
+
+stationary capital k^c        = 82.807
+expected price at k^c         = 0.17193
+user cost δ + r / h&#39;(δ)       = 0.17143
+</pre></div>
+</div>
+</div>
+</div>
+<p>稳态资本存量使预期价格等于资本的使用者成本，正如 <a class="reference internal" href="#equation-lp-kc">(115.13)</a> 所要求的那样。</p>
+<p>现在让我们确认资本是单调地趋近于 <span class="math notranslate nohighlight">\(k^c\)</span> 的，且无论从哪个方向趋近都是如此。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">capital_path</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">u_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="s2">&quot;Simulate capital, holding the demand state fixed if u_index is given.&quot;</span>
+    <span class="n">ki</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="n">k0</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">u_index</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">u_index</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">path</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">ki</span><span class="p">]</span>
+        <span class="n">ki</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="n">ki</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">path</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">k0</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">55.0</span><span class="p">,</span> <span class="mf">110.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">capital_path</span><span class="p">(</span><span class="n">m_iid</span><span class="p">,</span> <span class="n">idx_iid</span><span class="p">,</span> <span class="n">k0</span><span class="p">),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$k_0 = </span><span class="si">{</span><span class="n">k0</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">kc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$k^c$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$t$&#39;</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$k_t$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-lp-iid-paths">
+<img alt="_images/9801382d9a07c7b54ed0ec550148206e5d0be59d75ea13ae5d739041aa411c31.png" src="_images/9801382d9a07c7b54ed0ec550148206e5d0be59d75ea13ae5d739041aa411c31.png" />
+<figcaption>
+<p><span class="caption-number">图 115.2 </span><span class="caption-text">需求序列独立时的资本路径</span><a class="headerlink" href="#fig-lp-iid-paths" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>收敛是单调的，且极限并不依赖于初始资本存量。</p>
+</section>
+<section id="id20">
+<h2><a class="toc-backref" href="#id33" role="doc-backlink"><span class="section-number">115.9. </span>需求序列相关时的长期行为</a><a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
+<p>更有意思的情形是允许需求变化呈正序列相关，此时今天的高需求预示着明天的高需求。</p>
+<p>现在当前的需求状态<em>确实</em>会影响投资，资本存量也变得真正具有随机性。</p>
+<p>为了刻画长期行为，卢卡斯和普雷斯科特对 <span class="math notranslate nohighlight">\(\{u_t\}\)</span> 过程施加了额外的限制，其目的是保证 <span class="math notranslate nohighlight">\((k_t, u_t)\)</span> 的分布最终会稳定下来。</p>
+<p>用文字来说，他们假设</p>
+<ul class="simple">
+<li><p>从任何当前的 <span class="math notranslate nohighlight">\(u\)</span> 出发，下一期的冲击落入任何非退化区间的概率都为正</p></li>
+<li><p><span class="math notranslate nohighlight">\(u_t\)</span> 具有不依赖于初始值 <span class="math notranslate nohighlight">\(u_0\)</span> 的极限分布，并且该分布对每个非退化区间都赋予正概率</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbb{P}\{u_{t+1} \geq x \mid u_t\}\)</span> 关于 <span class="math notranslate nohighlight">\(u_t\)</span> 严格递增，因此今天的高需求总是预示着明天的高需求</p></li>
+<li><p>当 <span class="math notranslate nohighlight">\(u \to \pm\infty\)</span> 时，消费者剩余 <span class="math notranslate nohighlight">\(s(k,u)\)</span> 一致收敛</p></li>
+</ul>
+<p>一个 <span class="math notranslate nohighlight">\(0 &lt; \rho &lt; 1\)</span> 的高斯 AR(1) 过程满足这些条件，这也正是他们给出并且我们进行模拟的示例。</p>
+<p>之后的分析通过界定资本存量的范围来展开。</p>
+<p>令 <span class="math notranslate nohighlight">\(\bar v(k)\)</span> 和 <span class="math notranslate nohighlight">\(\underline v(k)\)</span> 分别为当 <span class="math notranslate nohighlight">\(u \to \infty\)</span> 和 <span class="math notranslate nohighlight">\(u \to -\infty\)</span> 时预期值函数的极限，令 <span class="math notranslate nohighlight">\(\bar x(k)\)</span> 和 <span class="math notranslate nohighlight">\(\underline x(k)\)</span> 为相应的投资策略。</p>
+<p>由于投资关于 <span class="math notranslate nohighlight">\(u\)</span> 递增，这两者对每一个 <span class="math notranslate nohighlight">\(u\)</span> 下的策略都构成了上下界。</p>
+<p>令 <span class="math notranslate nohighlight">\(\bar k\)</span> 满足 <span class="math notranslate nohighlight">\(\bar x(k) = \delta k\)</span>，令 <span class="math notranslate nohighlight">\(\underline k\)</span> 满足 <span class="math notranslate nohighlight">\(\underline x(k) = \delta k\)</span>。</p>
+<p>这两个值分别是在永久性最大需求和永久性最小需求下能够维持的资本存量。</p>
+<p>卢卡斯和普雷斯科特随后证明了</p>
+<ul class="simple">
+<li><p>集合 <span class="math notranslate nohighlight">\((0, \underline k)\)</span> 和 <span class="math notranslate nohighlight">\((\bar k, \infty)\)</span>，与任意需求状态配对，都是<strong>暂态的</strong>：行业一旦离开这些集合就不会返回，且从任何起点出发，以趋近于一的概率进入 <span class="math notranslate nohighlight">\((\underline k, \bar k)\)</span></p></li>
+<li><p>集合 <span class="math notranslate nohighlight">\(B = (\underline k, \bar k) \times E\)</span>（其中 <span class="math notranslate nohighlight">\(E\)</span> 是 <span class="math notranslate nohighlight">\(u\)</span> 可能取值的集合）是一个<strong>单一遍历集</strong></p></li>
+</ul>
+<div class="proof theorem admonition" id="lp_theorem3">
+<p class="admonition-title"><span class="caption-number">定理 115.3 </span></p>
+<section class="theorem-content" id="proof-content">
+<p>如果 <span class="math notranslate nohighlight">\(B\)</span> 非空，那么对所有 <span class="math notranslate nohighlight">\((k,u)\)</span> 以及每个初始状态 <span class="math notranslate nohighlight">\((k_0, u_0)\)</span>，</p>
+<div class="math notranslate nohighlight">
+\[
+\lim_{t \to \infty} \mathbb{P}\{ k_t \leq k, u_t \leq u \mid k_0, u_0 \} = P(k,u)
+\]</div>
+<p>都存在，且<em>不依赖于 <span class="math notranslate nohighlight">\((k_0, u_0)\)</span></em>。</p>
+<p>函数 <span class="math notranslate nohighlight">\(P\)</span> 是一个概率分布，它对暂态集赋予概率零，对 <span class="math notranslate nohighlight">\(B\)</span> 中任何正面积的子集赋予正概率。</p>
+</section>
+</div><div class="proof theorem admonition" id="lp_theorem4">
+<p class="admonition-title"><span class="caption-number">定理 115.4 </span></p>
+<section class="theorem-content" id="proof-content">
+<p>如果 <span class="math notranslate nohighlight">\(B\)</span> 非空，那么对任意初始状态，以概率一有</p>
+<div class="math notranslate nohighlight">
+\[
+\lim_{T \to \infty} \frac{1}{T}\sum_{t=1}^T k_t = k^* ,
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(k^*\)</span> 是 <span class="math notranslate nohighlight">\(k\)</span> 在不变分布 <span class="math notranslate nohighlight">\(P\)</span> 下的均值。</p>
+</section>
+</div><p>遍历集非空——因而这种长期行为才成立——当且仅当</p>
+<div class="math notranslate nohighlight" id="equation-lp-existence">
+<span class="eqno">(115.14)<a class="headerlink" href="#equation-lp-existence" title="Link to this equation">#</a></span>\[\lim_{u \to \infty} D(0, u) &gt; \delta + \frac{r}{h'(\delta)} ,\]</div>
+<p>这说明需求必须有时强劲到足以支撑持有任何数量的资本。</p>
+<p><a class="reference internal" href="#lp_theorem3">定理 115.3</a> 和 <a class="reference internal" href="#lp_theorem4">定理 115.4</a> 正是使这个模型成为计量经济学家可以使用的对象的那些结果。</p>
+<p>第一个结果说明该模型意味着可观测时间序列存在一个良定义的平稳概率分布。</p>
+<p>第二个结果说明由单个长实现计算出的样本均值收敛于该分布相应的总体矩。</p>
+<p>让我们为我们的参数设定计算界限 <span class="math notranslate nohighlight">\(\underline k\)</span> 和 <span class="math notranslate nohighlight">\(\bar k\)</span>，并检验模拟结果是否符合定理所说的那样。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">stationary_k</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">))])</span>
+<span class="n">k_lo_star</span><span class="p">,</span> <span class="n">k_hi_star</span> <span class="o">=</span> <span class="n">bounds</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">bounds</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;conditional stationary capital, lowest demand state:  </span><span class="si">{</span><span class="n">k_lo_star</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;conditional stationary capital, highest demand state: </span><span class="si">{</span><span class="n">k_hi_star</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ergodic set for capital: (</span><span class="si">{</span><span class="n">k_lo_star</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">k_hi_star</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>conditional stationary capital, lowest demand state:  71.23
+conditional stationary capital, highest demand state: 94.39
+ergodic set for capital: (71.23, 94.39)
+</pre></div>
+</div>
+</div>
+</div>
+<p>现在我们用<em>同一</em>需求冲击序列，从两个截然不同的初始资本存量出发，模拟均衡马尔可夫过程。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">20_000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="s2">&quot;Simulate the equilibrium Markov process for (k, u).&quot;</span>
+    <span class="n">mc</span> <span class="o">=</span> <span class="n">qe</span><span class="o">.</span><span class="n">MarkovChain</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">)</span>
+    <span class="n">u_idx</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">simulate_indices</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">ki</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="n">k0</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+    <span class="n">k_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">k_path</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">ki</span><span class="p">]</span>
+        <span class="n">ki</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="n">ki</span><span class="p">,</span> <span class="n">u_idx</span><span class="p">[</span><span class="n">t</span><span class="p">]]</span>
+    <span class="n">p_path</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">a0</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="n">u_idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">a1</span> <span class="o">*</span> <span class="n">k_path</span>
+    <span class="k">return</span> <span class="n">k_path</span><span class="p">,</span> <span class="n">p_path</span>
+
+<span class="n">k_low</span><span class="p">,</span> <span class="n">p_low</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">k0</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">k_high</span><span class="p">,</span> <span class="n">p_high</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">k0</span><span class="o">=</span><span class="mf">150.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">k_low</span><span class="p">[:</span><span class="mi">250</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$k_0 = 30$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">k_high</span><span class="p">[:</span><span class="mi">250</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$k_0 = 150$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">k_lo_star</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">k_hi_star</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ergodic set&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$t$&#39;</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$k_t$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-lp-ergodic-paths">
+<img alt="_images/dc496f5914b71d4a253b8395cc76f4108f03e79d6969e43fd0f2d67a3209457e.png" src="_images/dc496f5914b71d4a253b8395cc76f4108f03e79d6969e43fd0f2d67a3209457e.png" />
+<figcaption>
+<p><span class="caption-number">图 115.3 </span><span class="caption-text">进入遍历集的资本路径</span><a class="headerlink" href="#fig-lp-ergodic-paths" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>两条路径都被吸引进入遍历集，此后便永远在其中波动。</p>
+<p>下图比较了从两次模拟中计算出的资本长期分布，两者都已剔除了预烧样本。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">burn</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">k_low</span><span class="p">[</span><span class="n">burn</span><span class="p">:],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;from $k_0 = 30$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">k_high</span><span class="p">[</span><span class="n">burn</span><span class="p">:],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;from $k_0 = 150$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$k$&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;density&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;invariant distribution of capital&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">p_low</span><span class="p">[</span><span class="n">burn</span><span class="p">:],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$p$&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;density&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;invariant distribution of price&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mean capital from k_0 = 30:  </span><span class="si">{</span><span class="n">k_low</span><span class="p">[</span><span class="n">burn</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mean capital from k_0 = 150: </span><span class="si">{</span><span class="n">k_high</span><span class="p">[</span><span class="n">burn</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;range visited: (</span><span class="si">{</span><span class="n">k_low</span><span class="p">[</span><span class="n">burn</span><span class="p">:]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">k_low</span><span class="p">[</span><span class="n">burn</span><span class="p">:]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-lp-invariant">
+<img alt="_images/01904a0809475e3c1afc1377574f70a6effe4f89335fff8834d6cbc892aa27f4.png" src="_images/01904a0809475e3c1afc1377574f70a6effe4f89335fff8834d6cbc892aa27f4.png" />
+<figcaption>
+<p><span class="caption-number">图 115.4 </span><span class="caption-text">资本与价格的不变分布</span><a class="headerlink" href="#fig-lp-invariant" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mean capital from k_0 = 30:  82.792
+mean capital from k_0 = 150: 82.792
+range visited: (71.23, 94.39)
+</pre></div>
+</div>
+</div>
+</div>
+<p>正如 <a class="reference internal" href="#lp_theorem3">定理 115.3</a> 所保证的那样，两个直方图相互吻合，且资本存量始终停留在遍历集之内。</p>
+<p>最后，这里是 <a class="reference internal" href="#lp_theorem4">定理 115.4</a> 的实际体现：来自单个实现的时间平均值收敛于不变分布的均值。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">running_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">k_low</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">k_low</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">running_mean</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">k_low</span><span class="p">[</span><span class="n">burn</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$k^*$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$T$&#39;</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$T^{-1}\sum_{t \leq T} k_t$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-lp-time-average">
+<img alt="_images/e1b3584d9a76c596e68811914287ae73bc27af29fe8308809687ffcf7d5e8b5f.png" src="_images/e1b3584d9a76c596e68811914287ae73bc27af29fe8308809687ffcf7d5e8b5f.png" />
+<figcaption>
+<p><span class="caption-number">图 115.5 </span><span class="caption-text">资本的时间平均</span><a class="headerlink" href="#fig-lp-time-average" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="id21">
+<h2><a class="toc-backref" href="#id34" role="doc-backlink"><span class="section-number">115.10. </span>与理性预期讲座的关系</a><a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
+<p>值得把本讲座与 <a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a> 之间的对应关系整理一下。</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p><a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a></p></th>
+<th class="head"><p>本讲座</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>不确定性</p></td>
+<td><p>无</p></td>
+<td><p>马尔可夫需求扰动 <span class="math notranslate nohighlight">\(u_t\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>调整成本</p></td>
+<td><p>二次型，<span class="math notranslate nohighlight">\(\gamma (y'-y)^2/2\)</span></p></td>
+<td><p>凹性技术 <span class="math notranslate nohighlight">\(k' = k h(x/k)\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>均衡对象</p></td>
+<td><p>信念 <span class="math notranslate nohighlight">\(H\)</span>，满足 <span class="math notranslate nohighlight">\(Y' = H(Y)\)</span></p></td>
+<td><p>价格过程 <span class="math notranslate nohighlight">\(\{p_t\}\)</span>，等价地为策略 <span class="math notranslate nohighlight">\(x(k,u)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>均衡概念</p></td>
+<td><p><span class="math notranslate nohighlight">\(H\)</span> 是 <span class="math notranslate nohighlight">\(\Phi\)</span> 的不动点</p></td>
+<td><p>预期价格分布等于实际价格分布</p></td>
+</tr>
+<tr class="row-even"><td><p>求解方式</p></td>
+<td><p>规划问题，作为 LQ 问题求解</p></td>
+<td><p>规划问题，用动态规划求解</p></td>
+</tr>
+<tr class="row-odd"><td><p>规划者所最大化的对象</p></td>
+<td><p>消费者剩余加生产者剩余</p></td>
+<td><p>贴现消费者剩余 <a class="reference internal" href="#equation-lp-surplus">(115.8)</a></p></td>
+</tr>
+<tr class="row-even"><td><p>均衡动态</p></td>
+<td><p><span class="math notranslate nohighlight">\(Y_{t+1} = \kappa_0 + \kappa_1 Y_t\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((k_t, u_t)\)</span> 上的马尔可夫过程</p></td>
+</tr>
+<tr class="row-odd"><td><p>长期行为</p></td>
+<td><p>收敛到稳态</p></td>
+<td><p>收敛到不变分布</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>二者最深层的共同点在于计算均衡的策略。</p>
+<p>在两篇讲座中，直接方法——猜测一个运动规律、计算由此引出的最优反应、然后迭代——都是不可靠的，因为这个映射未必是压缩映射。</p>
+<p>在两篇讲座中，解决办法都是找到一个欧拉方程与均衡条件相吻合的规划问题，然后用动态规划求解该规划问题。</p>
+<p>讲座 <a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a> 通过为一个特定的线性二次型例子匹配欧拉方程来验证这种对应关系。</p>
+<p><a class="reference internal" href="#lp_theorem1">定理 115.1</a> 是一般性的陈述：对这一类经济体而言，竞争均衡的集合与规划问题解的集合是重合的，且二者都是单点集。</p>
+<p>简化版所无法展示的——因为它没有不确定性——正是卢卡斯和普雷斯科特所追求的回报：一个作为<em>平稳随机过程</em>的均衡，具有不变分布和遍历时间平均值。</p>
+<p>正是这一点使得用数据检验这样的模型成为可能，并进而催生了理性预期计量经济学。</p>
+<p>姊妹讲座 <a class="reference internal" href="optimal_growth_uncertainty.html"><span class="doc">不确定性下的最优增长与托宾 q</span></a> 在一个单部门增长模型中恰恰延续了这一主题。</p>
+<p><span class="bibtex-citation" id="id22">Brock and Mirman [<a class="reference internal" href="zreferences.html#id571" title="William A. Brock and Leonard J. Mirman. Optimal economic growth and uncertainty: the discounted case. Journal of Economic Theory, 4(3):479–513, 1972.">1972</a>]</span> 在那里证明了 <a class="reference internal" href="#lp_theorem3">定理 115.3</a> 和 <a class="reference internal" href="#lp_theorem4">定理 115.4</a> 的对应结果：资本的分布收敛到一个不依赖于初始条件的不变分布，且沿着单一实现计算的时间平均值收敛于总体矩。</p>
+<p>那篇讲座还展示了这样一个规划问题中资本的影子价格在竞争均衡中会变成什么——即托宾的 <span class="math notranslate nohighlight">\(q\)</span>——并考察了一个关于价值函数可微性的微妙问题，答案就取决于这一点。</p>
+</section>
+<section id="id23">
+<h2><a class="toc-backref" href="#id35" role="doc-backlink"><span class="section-number">115.11. </span>练习</a><a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="lp_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 115.1 </span></p>
+<section id="exercise-content">
+<p><a class="reference internal" href="#equation-lp-kc">(115.13)</a> 中资本的使用者成本通过 <span class="math notranslate nohighlight">\(h'(\delta) = \alpha\)</span> 依赖于调整技术的曲率参数 <span class="math notranslate nohighlight">\(\alpha\)</span>。</p>
+<ol class="arabic simple">
+<li><p>解释为什么<em>较低</em>的 <span class="math notranslate nohighlight">\(\alpha\)</span>——意味着更强的调整成本——应当降低长期资本存量。</p></li>
+<li><p>对于序列独立的情形，为 <span class="math notranslate nohighlight">\(\alpha \in \{0.4, 0.6, 0.8, 1.0\}\)</span> 分别计算稳态资本存量 <span class="math notranslate nohighlight">\(k^c\)</span>，并在每种情形下验证边际条件 <a class="reference internal" href="#equation-lp-kc">(115.13)</a> 是否成立。</p></li>
+<li><p>确认当 <span class="math notranslate nohighlight">\(\alpha = 1\)</span> 时，积累方程为 <span class="math notranslate nohighlight">\(k_{t+1} = (1-\delta)k_t + x_t\)</span>，且使用者成本为教科书式的 <span class="math notranslate nohighlight">\(\delta + r\)</span>。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="lucas_prescott_investment-solution-6">
+
+<p class="admonition-title">解答<a class="reference internal" href="#lp_ex1"> 练习 115.1</a></p>
+<section id="solution-content">
+<p>较低的 <span class="math notranslate nohighlight">\(\alpha\)</span> 使 <span class="math notranslate nohighlight">\(h\)</span> 更凹，因此单位投资在边际上买到的产能更少。</p>
+<p>由于 <span class="math notranslate nohighlight">\(h'(\delta) = \alpha\)</span>，使用者成本中的利息部分 <span class="math notranslate nohighlight">\(r / h'(\delta) = r/\alpha\)</span> 随着 <span class="math notranslate nohighlight">\(\alpha\)</span> 的降低而升高。</p>
+<p>更高的使用者成本必须由更高的预期价格来匹配，而由于需求曲线向下倾斜，这意味着更小的资本存量。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;α&#39;</span><span class="si">:</span><span class="s2">&gt;5</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;k^c&#39;</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;E[price]&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;user cost&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">α</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">):</span>
+    <span class="n">m_α</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="n">ρ</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">α</span><span class="o">=</span><span class="n">α</span><span class="p">,</span> <span class="n">k_lo</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">k_hi</span><span class="o">=</span><span class="mf">160.0</span><span class="p">,</span> <span class="n">n_k</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">x_α</span> <span class="o">=</span> <span class="n">solve_model</span><span class="p">(</span><span class="n">m_α</span><span class="p">)</span>
+    <span class="n">kc_α</span> <span class="o">=</span> <span class="n">stationary_k</span><span class="p">(</span><span class="n">x_α</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">m_α</span><span class="p">)</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">m_α</span><span class="o">.</span><span class="n">a0</span> <span class="o">-</span> <span class="n">m_α</span><span class="o">.</span><span class="n">a1</span> <span class="o">*</span> <span class="n">kc_α</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="n">m_α</span><span class="o">.</span><span class="n">δ</span> <span class="o">+</span> <span class="n">m_α</span><span class="o">.</span><span class="n">r</span> <span class="o">/</span> <span class="n">h_prime</span><span class="p">(</span><span class="n">m_α</span><span class="o">.</span><span class="n">δ</span><span class="p">,</span> <span class="n">m_α</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">α</span><span class="si">:</span><span class="s2">&gt;5.1f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">kc_α</span><span class="si">:</span><span class="s2">&gt;10.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">price</span><span class="si">:</span><span class="s2">&gt;12.5f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cost</span><span class="si">:</span><span class="s2">&gt;12.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    α        k^c     E[price]    user cost
+  0.4     77.454      0.22546      0.22500
+  0.6     81.594      0.18406      0.18333
+  0.8     83.664      0.16336      0.16250
+  1.0     84.958      0.15042      0.15000
+</pre></div>
+</div>
+</div>
+</div>
+<p>更强的调整成本（更低的 <span class="math notranslate nohighlight">\(\alpha\)</span>）确实降低了长期资本存量。</p>
+<p>当 <span class="math notranslate nohighlight">\(\alpha = 1\)</span> 时，我们有 <span class="math notranslate nohighlight">\(h(z) = 1 - \delta + z\)</span>，因此 <span class="math notranslate nohighlight">\(k' = k(1 - \delta + x/k) = (1-\delta)k + x\)</span>，且 <span class="math notranslate nohighlight">\(h'(\delta) = 1\)</span>，因此使用者成本为 <span class="math notranslate nohighlight">\(\delta + r\)</span>。</p>
+</section>
+</div>
+<div class="exercise admonition" id="lp_ex2">
+
+<p class="admonition-title"><span class="caption-number">练习 115.2 </span></p>
+<section id="exercise-content">
+<p><a class="reference internal" href="#lp_theorem1">定理 115.1</a> 说明规划者的策略<em>就是</em>竞争均衡。</p>
+<p>利用讲座 <a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a> 中“大 <span class="math notranslate nohighlight">\(K\)</span>、小 <span class="math notranslate nohighlight">\(k\)</span>”的逻辑，用数值方法验证这一点。</p>
+<p>求解一个价格接受型个体企业的问题，该企业</p>
+<ul class="simple">
+<li><p>拥有资本 <span class="math notranslate nohighlight">\(k_i\)</span>，并在同样的积累技术约束下选择 <span class="math notranslate nohighlight">\(k_i'\)</span></p></li>
+<li><p>将总资本存量 <span class="math notranslate nohighlight">\(K\)</span> 视为给定，<span class="math notranslate nohighlight">\(K\)</span> 按上文计算出的规划者策略演化</p></li>
+<li><p>将价格 <span class="math notranslate nohighlight">\(p = a_0 + u - a_1 K\)</span> 视为给定，该价格取决于总量而非自身资本</p></li>
+</ul>
+<p>然后检验，当企业自身的资本等于总资本时，即 <span class="math notranslate nohighlight">\(k_i = K\)</span> 时，企业所选择的正是规划者所选择的。</p>
+<p>为了减小计算量，为企业自身资本使用一个较粗的网格。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="lucas_prescott_investment-solution-8">
+
+<p class="admonition-title">解答<a class="reference internal" href="#lp_ex2"> 练习 115.2</a></p>
+<section id="solution-content">
+<p>企业的贝尔曼方程为</p>
+<div class="math notranslate nohighlight">
+\[
+v_i(k_i, K, u) = \max_{k_i'} \left\{ p(K,u) k_i - x(k_i, k_i')
+  + \beta \mathbb{E}\left[ v_i(k_i', K', u') \mid u \right] \right\}
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(K' \)</span> 遵循规划者的运动规律。</p>
+<p>注意企业自身的资本会影响其收入，但不会影响价格。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">firm_problem</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx_agg</span><span class="p">,</span> <span class="n">n_i</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">maxit</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">howard</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="s2">&quot;Solve an individual firm&#39;s problem taking the aggregate law of motion as given.&quot;</span>
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>   <span class="c1"># firm grid ⊂ aggregate grid</span>
+    <span class="n">ki</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">sub</span><span class="p">]</span>
+    <span class="n">n_K</span><span class="p">,</span> <span class="n">n_u</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">)</span>
+
+    <span class="n">Xi</span> <span class="o">=</span> <span class="n">ki</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">((</span><span class="n">ki</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">ki</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">m</span><span class="o">.</span><span class="n">α</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">δ</span><span class="p">))</span>
+    <span class="n">Ri</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Xi</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">Xi</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e12</span><span class="p">)</span>                    <span class="c1"># (k_i, k_i&#39;)</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">a0</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">a1</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>     <span class="c1"># (K, u)</span>
+    <span class="n">revenue</span> <span class="o">=</span> <span class="n">ki</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">price</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>       <span class="c1"># (k_i, K, u)</span>
+
+    <span class="n">v_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_i</span><span class="p">,</span> <span class="n">n_K</span><span class="p">,</span> <span class="n">n_u</span><span class="p">))</span>
+    <span class="n">u_cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_u</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxit</span><span class="p">):</span>
+        <span class="n">EV</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">v_i</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">([</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">]))</span>      <span class="c1"># E[v_i(k_i&#39;, K&#39;, u&#39;) | u]</span>
+        <span class="n">cont</span> <span class="o">=</span> <span class="n">EV</span><span class="p">[:,</span> <span class="n">idx_agg</span><span class="p">,</span> <span class="n">u_cols</span><span class="p">]</span>                     <span class="c1"># impose K&#39; = planner&#39;s choice</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">Ri</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">cont</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">pol</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">v_new</span> <span class="o">=</span> <span class="n">revenue</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pol</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">howard</span><span class="p">):</span>
+            <span class="n">EV</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">v_new</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">([</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">cont</span> <span class="o">=</span> <span class="n">EV</span><span class="p">[:,</span> <span class="n">idx_agg</span><span class="p">,</span> <span class="n">u_cols</span><span class="p">]</span>
+            <span class="n">v_new</span> <span class="o">=</span> <span class="p">(</span><span class="n">revenue</span> <span class="o">+</span> <span class="n">Ri</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_i</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">pol</span><span class="p">]</span>
+                     <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">cont</span><span class="p">,</span> <span class="n">pol</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v_new</span> <span class="o">-</span> <span class="n">v_i</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="n">v_i</span> <span class="o">=</span> <span class="n">v_new</span>
+            <span class="k">break</span>
+        <span class="n">v_i</span> <span class="o">=</span> <span class="n">v_new</span>
+
+    <span class="k">return</span> <span class="n">ki</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">pol</span>
+
+<span class="n">ki</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">pol_firm</span> <span class="o">=</span> <span class="n">firm_problem</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+
+<span class="c1"># compare the firm&#39;s choice with the planner&#39;s, evaluated at k_i = K</span>
+<span class="n">gaps</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">K_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sub</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">u</span><span class="p">)):</span>
+        <span class="n">gaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">ki</span><span class="p">[</span><span class="n">pol_firm</span><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">K_i</span><span class="p">,</span> <span class="n">j</span><span class="p">]]</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">K_i</span><span class="p">,</span> <span class="n">j</span><span class="p">]]))</span>
+<span class="n">gaps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gaps</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;firm grid spacing:                   </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ki</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mean |firm choice - planner choice|: </span><span class="si">{</span><span class="n">gaps</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max  |firm choice - planner choice|: </span><span class="si">{</span><span class="n">gaps</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>firm grid spacing:                   1.772
+mean |firm choice - planner choice|: 0.590
+max  |firm choice - planner choice|: 1.404
+</pre></div>
+</div>
+</div>
+</div>
+<p>误差小于企业自身资本网格的间距。</p>
+<p>因此，对规划者的分配所产生的价格过程做出最优反应的价格接受型企业，其选择恰恰是规划者所做的选择。</p>
+<p>这正是 <a class="reference internal" href="#lp_theorem1">定理 115.1</a> 的内容，也是讲座 <a class="reference internal" href="rational_expectations.html"><span class="doc">理性预期均衡</span></a> 中不动点条件 <span class="math notranslate nohighlight">\(H(Y) = h(Y,Y)\)</span> 在卢卡斯-普雷斯科特情形下的对应版本。</p>
+</section>
+</div>
+<div class="exercise admonition" id="lp_ex3">
+
+<p class="admonition-title"><span class="caption-number">练习 115.3 </span></p>
+<section id="exercise-content">
+<p><a class="reference internal" href="#lp_theorem3">定理 115.3</a> 说明不变分布不依赖于初始条件，但它没有说明该分布<em>有多宽</em>。</p>
+<p>探究需求中的序列相关性如何影响遍历集。</p>
+<ol class="arabic simple">
+<li><p>对于 <span class="math notranslate nohighlight">\(\rho \in \{0.0, 0.5, 0.9, 0.98\}\)</span>，计算遍历界限 <span class="math notranslate nohighlight">\(\underline k\)</span> 和 <span class="math notranslate nohighlight">\(\bar k\)</span>。</p></li>
+<li><p>模拟每个经济体，并比较资本的不变分布。</p></li>
+<li><p>解释这一规律。为什么 <span class="math notranslate nohighlight">\(\rho = 0\)</span> 的情形会对资本产生一个退化分布？</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="lucas_prescott_investment-solution-10">
+
+<p class="admonition-title">解答<a class="reference internal" href="#lp_ex3"> 练习 115.3</a></p>
+<section id="solution-content">
+<p>这里给出一种解法。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;ρ&#39;</span><span class="si">:</span><span class="s2">&gt;6</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;k_lo&#39;</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;k_hi&#39;</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;width&#39;</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;std(k)&#39;</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ρ</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">):</span>
+    <span class="n">m_ρ</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="n">ρ</span><span class="o">=</span><span class="n">ρ</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">idx_ρ</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">x_ρ</span> <span class="o">=</span> <span class="n">solve_model</span><span class="p">(</span><span class="n">m_ρ</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">stationary_k</span><span class="p">(</span><span class="n">x_ρ</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">m_ρ</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m_ρ</span><span class="o">.</span><span class="n">u</span><span class="p">))])</span>
+    <span class="n">k_ρ</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">m_ρ</span><span class="p">,</span> <span class="n">idx_ρ</span><span class="p">,</span> <span class="n">k0</span><span class="o">=</span><span class="mf">80.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ρ</span><span class="si">:</span><span class="s2">&gt;6.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">&gt;9.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">&gt;9.2f</span><span class="si">}</span><span class="s2"> &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">-</span><span class="n">b</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">&gt;9.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">k_ρ</span><span class="p">[</span><span class="mi">2000</span><span class="p">:]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">&gt;9.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ρ</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>      <span class="c1"># the ρ = 0 distribution is a spike at k^c, so we omit it here</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">k_ρ</span><span class="p">[</span><span class="mi">2000</span><span class="p">:],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">rho = </span><span class="si">{</span><span class="n">ρ</span><span class="si">}</span><span class="s1">$&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$k$&#39;</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;density&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ρ      k_lo      k_hi     width    std(k)
+  0.00     82.81     82.81      0.00     0.000
+  0.50     80.00     85.61      5.61     0.797
+  0.90     71.23     94.39     23.16     4.156
+  0.98     53.33    112.28     58.95    13.552
+</pre></div>
+</div>
+<img alt="_images/c8791b2637dad3f1b051c758656c388bea29260d50e808defff69cb9731ae23b.png" src="_images/c8791b2637dad3f1b051c758656c388bea29260d50e808defff69cb9731ae23b.png" />
+</div>
+</div>
+<p>需求持续性越强，遍历集就越宽，资本的不变分布也就越分散。</p>
+<p>（图中省略了 <span class="math notranslate nohighlight">\(\rho = 0\)</span> 的情形，因为其分布是在 <span class="math notranslate nohighlight">\(k^c\)</span> 处的一个尖峰，会使其他分布相形见绌。）</p>
+<p>原因正是卢卡斯和普雷斯科特所强调的那一点。</p>
+<p>投资对<em>关于未来需求的消息</em>做出反应，而不是对当前需求本身做出反应。</p>
+<p>当 <span class="math notranslate nohighlight">\(\rho = 0\)</span> 时，需求变化不传递任何关于未来的信息，因此投资完全不做反应，资本收敛到 <a class="reference internal" href="#lp_theorem2">定理 115.2</a> 中那个单一确定性的值 <span class="math notranslate nohighlight">\(k^c\)</span>：即使价格持续波动，资本的不变分布也是退化的。</p>
+<p>随着 <span class="math notranslate nohighlight">\(\rho\)</span> 的升高，高需求状态预示着一段持续的高价格时期，因此企业投资更多，资本存量便继承了需求的持续性。</p>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础工具
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  统计与信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="pricing_information.html">
+   36. 信息的设计与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="market_diffusion.html">
+   37. 双向学习下的市场扩散
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="gallant_tauchen.html">
+   38. 应该匹配哪些矩？
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   39. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   40. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   41. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   42. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   43. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   44. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   45. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   46. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   47. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   48. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   49. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   50. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_subsets.html">
+   51. 变量子集的向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   52. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   53. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   54. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   55. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   56. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   57. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_risk.html">
+   58. 工作搜寻 V：风险敏感型偏好
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   59. 工作搜寻 VI：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   60. 工作搜寻 VII：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   61. 工作搜寻 VIII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   62. 工作搜寻 IX: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  强化学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   63. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   64. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   65. 工作搜寻 X：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  最优储蓄导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   66. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   67. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   68. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   69. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   70. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   71. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  收入波动问题
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   72. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   73. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   74. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   75. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   76. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   77. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   78. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   79. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   80. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   81. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   82. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   83. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   84. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   85. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   86. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   87. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_bewley.html">
+   88. 稳健 LQ 贝利模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   89. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  宏观经济学中的有限理性
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   90. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   91. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="learning_approximation.html">
+   92. 学习、近似与均衡计算
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   93. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   94. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   95. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   96. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  菲利普斯曲线权衡
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   97. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   98. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   99. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   100. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   101. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   102. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   103. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   104. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   105. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   106. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   107. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  最优增长
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   108. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   109. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   110. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   111. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   112. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   113. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   114. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   115. 不确定性下的投资
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="optimal_growth_uncertainty.html">
+   116. 不确定性下的最优增长与托宾 q
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   117. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   118. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   119. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   120. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   121. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   122. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   123. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   124. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="social_security_depletion.html">
+   125. 社会保障信托基金耗竭
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_mean_field_games.html">
+   126. 线性二次平均场博弈
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   127. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   128. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   129. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   130. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   131. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   132. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   133. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   134. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   135. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   136. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   137. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   138. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   139. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   140. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   141. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   142. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   143. 具有非对称冲击的失业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="sargent_surico.html">
+   144. 货币数量论的两个例证
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   145. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   146. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   147. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   148. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   149. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/lucas_prescott_investment.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/lucas_prescott_investment.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="" data-urlpath="" data-branch=>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "lucas_prescott_investment";
+                const repoURL = "";
+                const urlPath = "";
+                const branch = ""
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

@@ -1,0 +1,2171 @@
+
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>116. 不确定性下的最优增长与托宾 q &#8212; Python中级数量经济学</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=d33b6885fb389884ac791c8a9c6b6ea3b92d4477" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=946197a6"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=4ee6b0d39d67134a24a514ef2da7c56ba4860b19"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-J0SMYR4SG3"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-J0SMYR4SG3');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "arg\\,max", "argmin": "arg\\,min"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'optimal_growth_uncertainty';</script>
+    <link rel="canonical" href="https://quantecon.github.io/lecture-python.zh-cn/optimal_growth_uncertainty.html" />
+    <link rel="icon" href="_static/lectures-favicon.ico"/>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="117. 线性理性预期模型中的稳定性" href="re_with_feedback.html" />
+    <link rel="prev" title="115. 不确定性下的投资" href="lucas_prescott_investment.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Thomas J. Sargent &amp; John Stachurski" />
+<meta name="keywords" content="Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski" />
+<meta name="description" content=本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@quantecon" />
+<meta name="twitter:title" content="不确定性下的最优增长与托宾 q"/>
+<meta name="twitter:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。">
+<meta name="twitter:creator" content="@quantecon">
+<meta name="twitter:image" content="https://assets.quantecon.org/img/qe-twitter-logo.png">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="不确定性下的最优增长与托宾 q" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://quantecon.github.io/lecture-python.zh-cn/optimal_growth_uncertainty.html" />
+<meta property="og:image" content="https://assets.quantecon.org/img/qe-og-logo.png" />
+<meta property="og:description" content="本课程是由托马斯·萨金特（Thomas J. Sargent）和约翰·斯塔胡斯基（John Stachurski）设计和编写的数量经济建模讲座。" />
+<meta property="og:site_name" content="Python中级数量经济学" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+
+  </head>
+<body>
+
+<!-- Prevent flash of light theme when dark mode is saved -->
+<script>
+(function() {
+  try {
+    if (localStorage.setContrast === '1') {
+      document.body.classList.add('dark-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<!-- Override QuantEcon theme colors -->
+
+<!-- Color scheme: applies scheme-specific body class -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=optimal_growth_uncertainty>
+
+                
+
+                <div class="qe-page__toc">
+
+                    
+                    
+                    
+
+                    
+                    <div class="inner sticky" data-autoexpand="true">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">116.1. 概览</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">116.2. 布洛克-米尔曼规划问题</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">116.3. 长期行为</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">116.4. 不可逆投资与托宾 q</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">116.5. 价值函数的可微性</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">116.6. 计算模型</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">116.6.1. 策略与已安装资本的价格</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">116.6.2. 不变分布</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">116.7. 练习</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href=https://quantecon.org><img src="_static/qe-logo-large.png" class="logo logo-img" alt="logo"></a>
+                                    
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+
+                    
+                    <a href="#top" class="back-to-top-btn" title="Back to top">↑ Top</a>
+                    
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="intro.html">Python中级数量经济学</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            
+                                
+                                    <a href="http://www.tomsargent.com/" rel="author" target="_blank"><span>托马斯·萨金特（Thomas J. Sargent）</span></a>
+                                
+                            
+                                
+                                    and <a href="https://johnstachurski.net/" rel="author" target="_blank"><span>约翰·斯塔胡斯基（John Stachurski）</span></a>
+                                
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+                        <button class="qe-page__header-changed" id="changelog-toggle" aria-expanded="false">
+                            Last changed: Oct 21, 2026
+                            <span class="changelog-icon">▼</span>
+                        </button>
+
+                    <!-- Changelog dropdown content -->
+                    <div class="qe-page__header-changelog" id="changelog-content" aria-hidden="true">
+                        <h4>Changelog (<a href="https://github.com/QuantEcon/lecture-python.myst/commits/main/optimal_growth_uncertainty.md">full history</a>)</h4>
+                        <ul class="changelog-list">
+                            
+                            <li class="changelog-entry">
+                                
+                                <a href="https://github.com/QuantEcon/lecture-python.myst/commit/ec71c89" class="changelog-hash">ec71c89</a>
+                                
+                                <span class="changelog-author">Matt McKay</span>
+                                <span class="changelog-time">6 hours ago</span>
+                                <span class="changelog-message">🌐 [translation-sync] [lucas_prescott_investment, optimal_growth_uncertainty] Two sequels to rational_expectations (#286)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="q">
+<h1><a class="toc-backref" href="#id25" role="doc-backlink"><span class="section-number">116. </span>不确定性下的最优增长与托宾 q</a><a class="headerlink" href="#q" title="Link to this heading">#</a></h1>
+<nav class="contents" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#q" id="id25">不确定性下的最优增长与托宾 q</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id26">概览</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id27">布洛克-米尔曼规划问题</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id28">长期行为</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id29">不可逆投资与托宾 q</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id30">价值函数的可微性</a></p></li>
+<li><p><a class="reference internal" href="#id17" id="id31">计算模型</a></p></li>
+<li><p><a class="reference internal" href="#id22" id="id32">练习</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="id1">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink"><span class="section-number">116.1. </span>概览</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>本讲座研究两篇论文。</p>
+<p>第一篇是 <span class="bibtex-citation" id="id2">Brock and Mirman [<a class="reference internal" href="zreferences.html#id571" title="William A. Brock and Leonard J. Mirman. Optimal economic growth and uncertainty: the discounted case. Journal of Economic Theory, 4(3):479–513, 1972.">1972</a>]</span>，这是一篇关于生产函数受到随机冲击时单部门最优增长的经典分析。</p>
+<p>第二篇是 <span class="bibtex-citation" id="id3">Sargent [<a class="reference internal" href="zreferences.html#id572" title="Thomas J. Sargent. “Tobin's q” and the rate of investment in general equilibrium. Carnegie-Rochester Conference Series on Public Policy, 12:107–154, 1980.">1980</a>]</span>，它增添了一个微小但关键的要素——<strong>不可逆投资</strong>——并利用这一结果来思考詹姆斯·托宾的 <span class="math notranslate nohighlight">\(q\)</span> 投资理论。</p>
+<p><a class="reference internal" href="lucas_prescott_investment.html"><span class="doc">不确定性下的投资</span></a> 这一讲座研究了一个竞争行业，其均衡是某个规划问题的解，且其均衡是一个具有不变分布的马尔可夫过程。</p>
+<p>布洛克和米尔曼就一个单部门增长模型提出了相同的问题：</p>
+<ul class="simple">
+<li><p>规划问题是否有良好性质的解，具有连续且单调的策略函数？</p></li>
+<li><p>最优策略使资本成为一个马尔可夫过程；该过程是否存在<em>不变分布</em>？</p></li>
+<li><p>资本的分布是否从<em>任意</em>初始条件收敛到该不变分布？</p></li>
+<li><p>从单次实现计算出的<em>时间平均</em>是否收敛到总体矩？</p></li>
+</ul>
+<p>后两个问题正是这两篇论文对计量经济学而言重要的原因。</p>
+<p>一个能对这些问题给出肯定答案的模型，会给出可观测时间序列的平稳、遍历随机过程。</p>
+<p>从一个长实现中计算出的样本矩，随后可用来估计总体矩，这正是 <span class="bibtex-citation" id="id4">Hansen and Sargent [<a class="reference internal" href="zreferences.html#id212" title="Lars Peter Hansen and Thomas J Sargent. Formulating and estimating dynamic linear rational expectations models. Journal of Economic Dynamics and control, 2:7–46, 1980.">1980</a>]</span> 的理性预期计量经济学所要求的。</p>
+<p><span class="bibtex-citation" id="id5">Sargent [<a class="reference internal" href="zreferences.html#id572" title="Thomas J. Sargent. “Tobin's q” and the rate of investment in general equilibrium. Carnegie-Rochester Conference Series on Public Policy, 12:107–154, 1980.">1980</a>]</span> 将布洛克-米尔曼的工具应用于宏观经济学中的一个问题：何时、在何种意义上，存在一条将投资与托宾 <span class="math notranslate nohighlight">\(q\)</span> 联系起来的投资需求曲线？</p>
+<p>在此过程中，本讲座会停下来讨论一个技术性问题，而这个问题最终被证明是核心所在：</p>
+<ul class="simple">
+<li><p>规划者的价值函数相对于资本的导数，<em>就是</em>已安装资本的竞争性价格，也就是说，它本质上就是托宾的 <span class="math notranslate nohighlight">\(q\)</span></p></li>
+<li><p>因此整个分析能否成立，取决于这个导数是否存在</p></li>
+<li><p>不可逆投资产生了一个<strong>角点</strong>，而在角点处，关于可微性的标准论证会失效</p></li>
+</ul>
+<p>我们将描述这一困难，指出已发表论证中的一个缺口，并给出一个修正后的证明。</p>
+<p>让我们从一些导入开始：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>  <span class="c1"># i18n</span>
+<span class="n">FONTPATH</span> <span class="o">=</span> <span class="s2">&quot;fonts/SourceHanSerifSC-SemiBold.otf&quot;</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">FONTPATH</span><span class="p">)</span>  <span class="c1"># i18n</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Source Han Serif SC&#39;</span><span class="p">]</span>  <span class="c1"># i18n</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id27" role="doc-backlink"><span class="section-number">116.2. </span>布洛克-米尔曼规划问题</a><a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>规划者选择消费以最大化</p>
+<div class="math notranslate nohighlight" id="equation-bm-objective">
+<span class="eqno">(116.1)<a class="headerlink" href="#equation-bm-objective" title="Link to this equation">#</a></span>\[\mathbb{E}_0 \sum_{t=0}^\infty \beta^t u(c_t), \qquad 0 &lt; \beta &lt; 1,\]</div>
+<p>约束条件为</p>
+<div class="math notranslate nohighlight">
+\[
+c_t + i_t \leq f(k_t, r_t), \qquad c_t \geq 0, \quad i_t \geq 0 ,
+\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(k_t\)</span> 是人均资本，<span class="math notranslate nohighlight">\(i_t\)</span> 是投资，<span class="math notranslate nohighlight">\(\{r_t\}\)</span> 是对生产造成冲击的独立同分布序列。</p>
+<p>布洛克和米尔曼假设：对冲击的每一个实现值，<span class="math notranslate nohighlight">\(f(\cdot, r)\)</span> 都是递增的、严格凹的，并且满足 Inada 条件</p>
+<div class="math notranslate nohighlight">
+\[
+f(0, r) = 0, \qquad f'(0, r) = +\infty, \qquad f'(\infty, r) = 0 ,
+\]</div>
+<p>并且 <span class="math notranslate nohighlight">\(f\)</span> 关于 <span class="math notranslate nohighlight">\(r\)</span> 递增，这意味着更高的冲击意味着更多的产出。</p>
+<p>期间效用函数 <span class="math notranslate nohighlight">\(u\)</span> 是递增的、严格凹的且可微的。</p>
+<p>在他们的表述中，资本在一期内完全折旧，因此 <span class="math notranslate nohighlight">\(k_{t+1} = i_t\)</span>，当期资源为 <span class="math notranslate nohighlight">\(s_t = f(k_{t-1}, r_{t-1})\)</span>。</p>
+<p>贝尔曼方程为</p>
+<div class="math notranslate nohighlight" id="equation-bm-bellman">
+<span class="eqno">(116.2)<a class="headerlink" href="#equation-bm-bellman" title="Link to this equation">#</a></span>\[v(s) = \max_{0 \leq c \leq s} \left\{ u(c) + \beta \int v\bigl(f(s - c, r)\bigr) \, \nu(dr) \right\} ,\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\nu\)</span> 是冲击的分布。</p>
+<p>标准的论证方法——压缩映射，加上单调性和凹性的保持性——给出了一个唯一的有界解 <span class="math notranslate nohighlight">\(v\)</span>，该解通过唯一的消费策略 <span class="math notranslate nohighlight">\(c = g(s)\)</span> 和投资策略 <span class="math notranslate nohighlight">\(x = h(s) = s - g(s)\)</span> 达到。</p>
+<div class="proof proposition admonition" id="bm_policies">
+<p class="admonition-title"><span class="caption-number">命题 116.1 </span></p>
+<section class="proposition-content" id="proof-content">
+<p>最优策略 <span class="math notranslate nohighlight">\(g\)</span> 和 <span class="math notranslate nohighlight">\(h\)</span> 是递增且连续的，且 <span class="math notranslate nohighlight">\(g(0) = h(0) = 0\)</span>。</p>
+</section>
+</div><p>布洛克和米尔曼从一阶条件</p>
+<div class="math notranslate nohighlight" id="equation-bm-euler">
+<span class="eqno">(116.3)<a class="headerlink" href="#equation-bm-euler" title="Link to this equation">#</a></span>\[u'(g(s)) = \beta \int u'\bigl(g(f(s - g(s), r))\bigr) \, f'(s - g(s), r) \, \nu(dr) ,\]</div>
+<p>证明了单调性，该式是欧拉方程的随机形式对应物。</p>
+<p>如果 <span class="math notranslate nohighlight">\(g\)</span> 不随 <span class="math notranslate nohighlight">\(s\)</span> 增加，<a class="reference internal" href="#equation-bm-euler">(116.3)</a> 的左边将保持不变，而右边则会下降，因为 <span class="math notranslate nohighlight">\(f\)</span> 递增而 <span class="math notranslate nohighlight">\(u'\)</span> 和 <span class="math notranslate nohighlight">\(f'\)</span> 递减。</p>
+</section>
+<section id="id7">
+<h2><a class="toc-backref" href="#id28" role="doc-backlink"><span class="section-number">116.3. </span>长期行为</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>最优策略使资本成为一个马尔可夫过程，</p>
+<div class="math notranslate nohighlight" id="equation-bm-markov">
+<span class="eqno">(116.4)<a class="headerlink" href="#equation-bm-markov" title="Link to this equation">#</a></span>\[k_{t+1} = h\bigl(f(k_t, r_t)\bigr) ,\]</div>
+<p>布洛克和米尔曼在论文中花了大量篇幅研究这个过程的长期行为。</p>
+<p>这一策略与 <a class="reference internal" href="lucas_prescott_investment.html"><span class="doc">不确定性下的投资</span></a> 中所用的方法类似。</p>
+<p>考虑将冲击固定在其可能的最低值 <span class="math notranslate nohighlight">\(\underline r\)</span> 和最高值 <span class="math notranslate nohighlight">\(\bar r\)</span> 时所得到的确定性差分方程：</p>
+<div class="math notranslate nohighlight">
+\[
+k_{t+1} = h(f(k_t, \underline r)), \qquad k_{t+1} = h(f(k_t, \bar r)) .
+\]</div>
+<p>设 <span class="math notranslate nohighlight">\(\underline k\)</span> 为第一个方程的一个正不动点，<span class="math notranslate nohighlight">\(\bar k\)</span> 为第二个方程的一个正不动点。</p>
+<p>由于 <span class="math notranslate nohighlight">\(f\)</span> 对冲击递增且 <span class="math notranslate nohighlight">\(h\)</span> 递增，有 <span class="math notranslate nohighlight">\(\underline k \leq \bar k\)</span>。</p>
+<p>布洛克和米尔曼称，当 <span class="math notranslate nohighlight">\(\underline k\)</span> 和 <span class="math notranslate nohighlight">\(\bar k\)</span> 均为正且 <span class="math notranslate nohighlight">\(\underline k &lt; \bar k\)</span> 时，模型具有<strong>稳定的不动点构型</strong>。</p>
+<p>随后他们证明：</p>
+<ul class="simple">
+<li><p>低于 <span class="math notranslate nohighlight">\(\underline k\)</span> 和高于 <span class="math notranslate nohighlight">\(\bar k\)</span> 的资本存量集合是<strong>暂态的</strong>：该过程会离开这些集合并且不再返回</p></li>
+<li><p>区间 <span class="math notranslate nohighlight">\([\underline k, \bar k]\)</span> 是该过程最终所处的区域</p></li>
+</ul>
+<div class="proof theorem admonition" id="bm_theorem">
+<p class="admonition-title"><span class="caption-number">定理 116.1 </span></p>
+<section class="theorem-content" id="proof-content">
+<p>存在一个分布函数 <span class="math notranslate nohighlight">\(F\)</span>，使得 <span class="math notranslate nohighlight">\(k_t\)</span> 的分布 <span class="math notranslate nohighlight">\(F_t\)</span> 一致收敛到 <span class="math notranslate nohighlight">\(F\)</span>，并且 <span class="math notranslate nohighlight">\(F\)</span> 不依赖于初始资本存量。</p>
+</section>
+</div><p><a class="reference internal" href="#bm_theorem">定理 116.1</a> 是 <a class="reference internal" href="lucas_prescott_investment.html"><span class="doc">不确定性下的投资</span></a> 中不变分布定理的对应物。</p>
+<p>证明的重要一环是关于<strong>逆最优过程</strong>的论证，该过程将马尔可夫过程在时间上反向运行；布洛克和米尔曼用它来证明平稳分布存在且唯一，而无需借助概率论中更重的工具。</p>
+<p>分布的收敛本身对计量经济学而言还不够。</p>
+<p>计量经济学家额外需要的是一个<strong>均值遍历定理</strong>：保证沿单次实现计算出的平均值会收敛到 <span class="math notranslate nohighlight">\(F\)</span> 的矩，</p>
+<div class="math notranslate nohighlight" id="equation-bm-ergodic">
+<span class="eqno">(116.5)<a class="headerlink" href="#equation-bm-ergodic" title="Link to this equation">#</a></span>\[\frac{1}{T}\sum_{t=1}^T \phi(k_t) \to \int \phi \, dF \qquad \text{以概率1成立} .\]</div>
+<p>对于具有唯一不变分布且不动点构型稳定的马尔可夫过程，这样的大数定律是成立的；<span class="bibtex-citation" id="id8">Sargent [<a class="reference internal" href="zreferences.html#id572" title="Thomas J. Sargent. “Tobin's q” and the rate of investment in general equilibrium. Carnegie-Rochester Conference Series on Public Policy, 12:107–154, 1980.">1980</a>]</span> 援引了杜布（Doob）著作中的版本，以此来证明计算其模型总体矩并将其与样本矩进行比较是合理的。</p>
+<p>这正是从布洛克-米尔曼理论通往二十世纪七十年代末、八十年代初发展起来的理性预期计量经济学的桥梁。</p>
+<p>没有 <a class="reference internal" href="#bm_theorem">定理 116.1</a> 和 <a class="reference internal" href="#equation-bm-ergodic">(116.5)</a>，从单一时间序列计算出的似然函数就没有坚实的依据。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><span class="bibtex-citation" id="id9">Brock and Mirman [<a class="reference internal" href="zreferences.html#id571" title="William A. Brock and Leonard J. Mirman. Optimal economic growth and uncertainty: the discounted case. Journal of Economic Theory, 4(3):479–513, 1972.">1972</a>]</span> 研究的是冲击独立同分布的情形。</p>
+<p><a class="reference internal" href="lucas_prescott_investment.html"><span class="doc">不确定性下的投资</span></a> 这一讲座描述了一组平行的结果，针对的是冲击序列相关的模型。</p>
+<p>在这两种情形下，经济学含义是相同的：状态最终必须进入一个紧集中游走，该过程在此集合上表现良好，而该集合的边界就是与最有利和最不利的冲击相关联的平稳点。</p>
+</div>
+</section>
+<section id="id10">
+<h2><a class="toc-backref" href="#id29" role="doc-backlink"><span class="section-number">116.4. </span>不可逆投资与托宾 q</a><a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p><span class="bibtex-citation" id="id11">Sargent [<a class="reference internal" href="zreferences.html#id572" title="Thomas J. Sargent. “Tobin's q” and the rate of investment in general equilibrium. Carnegie-Rochester Conference Series on Public Policy, 12:107–154, 1980.">1980</a>]</span> 对模型做了一处修改：资本一旦安装，就不能被“吃掉”（即消耗掉）。</p>
+<p>产出可以被消费，也可以被加入到资本存量中，但这种转换不能反向进行，</p>
+<div class="math notranslate nohighlight" id="equation-q-irreversible">
+<span class="eqno">(116.6)<a class="headerlink" href="#equation-q-irreversible" title="Link to this equation">#</a></span>\[K_{t+1} = (1 - \delta) K_t + I_t, \qquad I_t \geq 0 ,\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(0 &lt; \delta &lt; 1\)</span> 为折旧率。</p>
+<p>产出为 <span class="math notranslate nohighlight">\(y_t = f(K_t)\theta_t\)</span>，单期效用函数 <span class="math notranslate nohighlight">\(u(c_t, e_t)\)</span> 受到偏好冲击 <span class="math notranslate nohighlight">\(e_t\)</span> 的影响。</p>
+<p>冲击 <span class="math notranslate nohighlight">\((\theta_t, e_t)\)</span> 在时间上独立同分布。</p>
+<p>这个微小的改变为什么重要？</p>
+<p>在投资可逆的模型中，一单位已安装资本的价格总是等于一单位新生产产出的价格，因此托宾的 <span class="math notranslate nohighlight">\(q\)</span> 恒等于 1，企业根本没有投资需求曲线可言。</p>
+<p>不可逆性约束是一种<strong>摩擦</strong>，它使得已安装资本的价格可以低于新资本的价格。</p>
+<p>萨金特描述了一个竞争经济，在该经济中，家庭拥有资本，将资本出租给企业，并以相对价格 <span class="math notranslate nohighlight">\(p_{Kt}\)</span>（即托宾的 <span class="math notranslate nohighlight">\(q\)</span>）交易对已安装资本的索取权。</p>
+<p>按照 <span class="bibtex-citation" id="id12">Lucas and Prescott [<a class="reference internal" href="zreferences.html#id56" title="Jr. Lucas, Robert E. and Edward C. Prescott. Investment under uncertainty. Econometrica, 39(5):659–681, 1971.">1971</a>]</span> 的做法——正是 <a class="reference internal" href="lucas_prescott_investment.html"><span class="doc">不确定性下的投资</span></a> 所使用的策略——他通过产生该均衡的规划问题，间接地研究竞争均衡。</p>
+<p>规划者求解</p>
+<div class="math notranslate nohighlight" id="equation-q-bellman">
+<span class="eqno">(116.7)<a class="headerlink" href="#equation-q-bellman" title="Link to this equation">#</a></span>\[v(K, \theta, e) = \max_{K' \geq (1-\delta)K}
+\left\{ u\bigl(f(K)\theta + (1-\delta)K - K', e\bigr)
++ \beta \mathbb{E}\bigl[v(K', \theta', e')\bigr] \right\} .\]</div>
+<p>设 <span class="math notranslate nohighlight">\(\lambda \geq 0\)</span> 为不可逆性约束所对应的乘子。</p>
+<p>一阶条件为</p>
+<div class="math notranslate nohighlight" id="equation-q-foc">
+<span class="eqno">(116.8)<a class="headerlink" href="#equation-q-foc" title="Link to this equation">#</a></span>\[u_c(c, e) = \beta \mathbb{E}\bigl[v_K(K', \theta', e')\bigr] + \lambda ,
+\qquad \lambda \geq 0, \quad \lambda I = 0 ,\]</div>
+<p>已安装资本的价格为</p>
+<div class="math notranslate nohighlight" id="equation-q-definition">
+<span class="eqno">(116.9)<a class="headerlink" href="#equation-q-definition" title="Link to this equation">#</a></span>\[q = \frac{\beta \mathbb{E}\bigl[v_K(K', \theta', e')\bigr]}{u_c(c,e)} = 1 - \frac{\lambda}{u_c(c,e)} .\]</div>
+<p>因此该模型意味着：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(q \leq 1\)</span> 始终成立</p></li>
+<li><p>当且仅当投资为正时，<span class="math notranslate nohighlight">\(q = 1\)</span></p></li>
+<li><p>当且仅当不可逆性约束起作用（即投资为零）时，<span class="math notranslate nohighlight">\(q &lt; 1\)</span></p></li>
+</ul>
+<p>请注意 <a class="reference internal" href="#equation-q-definition">(116.9)</a> 所说的内容：<em>托宾的 <span class="math notranslate nohighlight">\(q\)</span> 就是规划者价值函数的导数</em>，经边际效用归一化后得到。</p>
+<p>因此一切都取决于 <span class="math notranslate nohighlight">\(v_K\)</span> 是否存在。</p>
+</section>
+<section id="id13">
+<h2><a class="toc-backref" href="#id30" role="doc-backlink"><span class="section-number">116.5. </span>价值函数的可微性</a><a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<p>这里正是困难所在。</p>
+<p>研究价值函数可微性的标准工具是 <span class="bibtex-citation" id="id14">Benveniste and Scheinkman [<a class="reference internal" href="zreferences.html#id244" title="L M Benveniste and J A Scheinkman. On the Differentiability of the Value Function in Dynamic Models of Economics. Econometrica, 47(3):727–732, 1979.">1979</a>]</span> 的定理。</p>
+<div class="proof theorem admonition" id="bs_theorem">
+<p class="admonition-title"><span class="caption-number">定理 116.2 </span> (Benveniste-Scheinkman)</p>
+<section class="theorem-content" id="proof-content">
+<p>设 <span class="math notranslate nohighlight">\(v\)</span> 在开集 <span class="math notranslate nohighlight">\(D\)</span> 上是凹的，<span class="math notranslate nohighlight">\(K_0 \in D\)</span>。</p>
+<p>假设 <span class="math notranslate nohighlight">\(W\)</span> 是凹的，在 <span class="math notranslate nohighlight">\(K_0\)</span> 处可微，并在 <span class="math notranslate nohighlight">\(K_0\)</span> 的某邻域上满足 <span class="math notranslate nohighlight">\(W(K) \leq v(K)\)</span>，且 <span class="math notranslate nohighlight">\(W(K_0) = v(K_0)\)</span>。</p>
+<p>那么 <span class="math notranslate nohighlight">\(v\)</span> 在 <span class="math notranslate nohighlight">\(K_0\)</span> 处可微，且 <span class="math notranslate nohighlight">\(v'(K_0) = W'(K_0)\)</span>。</p>
+</section>
+</div><p>构造这样一个 <span class="math notranslate nohighlight">\(W\)</span> 的通常方法是：取 <span class="math notranslate nohighlight">\(K_0\)</span> 处的最优方案，将下一期资本<em>固定</em>在其最优值 <span class="math notranslate nohighlight">\(K_0'\)</span>，并让消费来吸收 <span class="math notranslate nohighlight">\(K\)</span> 的变化：</p>
+<div class="math notranslate nohighlight" id="equation-q-w1">
+<span class="eqno">(116.10)<a class="headerlink" href="#equation-q-w1" title="Link to this equation">#</a></span>\[W_1(K) = u\bigl(f(K)\theta + (1-\delta)K - K_0', e\bigr) + \beta \mathbb{E}\bigl[v(K_0', \theta', e')\bigr] .\]</div>
+<p>这是一个可行方案，所以 <span class="math notranslate nohighlight">\(W_1 \leq v\)</span>，在 <span class="math notranslate nohighlight">\(K_0\)</span> 处取等，并且它是可微的。</p>
+<p>但可行性要求 <span class="math notranslate nohighlight">\(K_0' \geq (1-\delta)K\)</span>，即 <span class="math notranslate nohighlight">\(K \leq K_0'/(1-\delta)\)</span>。</p>
+<p>当投资为正时，<span class="math notranslate nohighlight">\(K_0' &gt; (1-\delta)K_0\)</span>，该方案在 <span class="math notranslate nohighlight">\(K_0\)</span> 的一个完整邻域上都是可行的。</p>
+<p>当投资<em>为零</em>时，恰好有 <span class="math notranslate nohighlight">\(K_0' = (1-\delta)K_0\)</span>，而该方案对所有 <span class="math notranslate nohighlight">\(K &gt; K_0\)</span> 都不可行。</p>
+<p>在角点处，标准的支撑函数只能从左侧获得。</p>
+<p>这正是已发表论证变得棘手之处，在我们看来，其中存在一些缺口。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>两个具体的困难之处。</p>
+<p>第一，<span class="bibtex-citation" id="id15">Sargent [<a class="reference internal" href="zreferences.html#id572" title="Thomas J. Sargent. “Tobin's q” and the rate of investment in general equilibrium. Carnegie-Rochester Conference Series on Public Policy, 12:107–154, 1980.">1980</a>]</span> 将价值函数的导数写成如下形式</p>
+<div class="math notranslate nohighlight">
+\[
+v_K(K,\theta,e) = u_c(c,e)\bigl[f'(K)\theta + (1-\delta)\bigr] ,
+\]</div>
+<p>这是通过将一阶条件 <a class="reference internal" href="#equation-q-foc">(116.8)</a> <em>以等式形式</em>代入包络条件而得到的。</p>
+<p>这一代换只有在投资为正时才是合理的。</p>
+<p>而当投资为零时，<span class="math notranslate nohighlight">\(\lambda &gt; 0\)</span>，该公式高估了 <span class="math notranslate nohighlight">\(v_K\)</span>；该论文自身随后给出的不等式记录了这一点，因此这两个表述彼此并不一致。</p>
+<p>第二，该论证通过对迭代序列 <span class="math notranslate nohighlight">\(v^j = T^j v^0\)</span> 的归纳来建立价值函数的可微性，然后取极限。</p>
+<p>这一路径需要了解约束恰好起作用处的资本存量集合的结构。</p>
+<p>已发表的证明处理了三种构型，见其图3-5中的描绘，并援引一个附录，该附录假设迭代序列几乎处处二阶可微。</p>
+<p>而该附录又通过对一阶条件求导，并指出“由于右边几乎处处存在，所以左边也存在”来为此辩护，但这一推理并不能按原样成立，并且它未加证明地断言约束起作用点的集合的勒贝格测度为零。</p>
+</div>
+<p>幸运的是，结论是正确的，并且存在一条完全避开对迭代序列进行归纳的路径。</p>
+<p>关键的观察是：在角点处，有一个<em>不同的</em>可行方案能够提供所需的支撑函数：在<em>任何</em>资本存量水平上，不进行任何投资都是可行的，因此它在两侧都适用。</p>
+<div class="proof proposition admonition" id="q_differentiability">
+<p class="admonition-title"><span class="caption-number">命题 116.2 </span></p>
+<section class="proposition-content" id="proof-content">
+<p>假设 <span class="math notranslate nohighlight">\(u\)</span> 和 <span class="math notranslate nohighlight">\(f\)</span> 都是递增的、严格凹的且连续可微的，并且 <span class="math notranslate nohighlight">\(u_c(0,e) = \infty\)</span>，<span class="math notranslate nohighlight">\(f'(0) = \infty\)</span>。</p>
+<p>那么对每个 <span class="math notranslate nohighlight">\((\theta, e)\)</span>，由 <a class="reference internal" href="#equation-q-bellman">(116.7)</a> 定义的价值函数 <span class="math notranslate nohighlight">\(v(\cdot,\theta,e)\)</span> 在 <span class="math notranslate nohighlight">\((0,\infty)\)</span> 上连续可微，且</p>
+<div class="math notranslate nohighlight" id="equation-q-envelope">
+<span class="eqno">(116.11)<a class="headerlink" href="#equation-q-envelope" title="Link to this equation">#</a></span>\[v_K(K,\theta,e) = u_c(c,e) f'(K)\theta + \beta(1-\delta) \mathbb{E}\bigl[v_K(K',\theta',e')\bigr] ,\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(c\)</span> 和 <span class="math notranslate nohighlight">\(K'\)</span> 是在 <span class="math notranslate nohighlight">\((K,\theta,e)\)</span> 处的最优值。</p>
+<p>当投资为正时，<a class="reference internal" href="#equation-q-envelope">(116.11)</a> 化简为 <span class="math notranslate nohighlight">\(v_K = u_c(c,e)[f'(K)\theta + (1-\delta)]\)</span>。</p>
+<p>当投资为零时，<span class="math notranslate nohighlight">\(v_K &lt; u_c(c,e)[f'(K)\theta + (1-\delta)]\)</span>。</p>
+</section>
+</div><div class="proof admonition" id="proof">
+<p>Proof. <strong>第0步。</strong> 与 <a class="reference internal" href="#equation-q-bellman">(116.7)</a> 相关联的算子将有界连续凹函数映射为有界连续严格凹函数，所以 <span class="math notranslate nohighlight">\(v(\cdot,\theta,e)\)</span> 是凹的且连续的，并且最优策略是单值且连续的。</p>
+<p><strong>第1步（投资为正）。</strong> 设 <span class="math notranslate nohighlight">\(I(K_0,\theta,e) &gt; 0\)</span>，令 <span class="math notranslate nohighlight">\(K_0'\)</span> 为最优选择。</p>
+<p>那么 <span class="math notranslate nohighlight">\(K_0' &gt; (1-\delta)K_0\)</span>，于是由连续性，将下一期资本固定在 <span class="math notranslate nohighlight">\(K_0'\)</span> 的方案在 <span class="math notranslate nohighlight">\(K_0\)</span> 的某个邻域内对所有 <span class="math notranslate nohighlight">\(K\)</span> 都是可行的。</p>
+<p>因此 <a class="reference internal" href="#equation-q-w1">(116.10)</a> 中的函数 <span class="math notranslate nohighlight">\(W_1\)</span> 是凹的、连续可微的，被 <span class="math notranslate nohighlight">\(v\)</span> 所支配，且在 <span class="math notranslate nohighlight">\(K_0\)</span> 处等于 <span class="math notranslate nohighlight">\(v\)</span>。</p>
+<p><a class="reference internal" href="#bs_theorem">定理 116.2</a> 给出 <span class="math notranslate nohighlight">\(v\)</span> 在 <span class="math notranslate nohighlight">\(K_0\)</span> 处的可微性，且</p>
+<div class="math notranslate nohighlight">
+\[
+v_K(K_0,\theta,e) = u_c(c,e)\bigl[f'(K_0)\theta + (1-\delta)\bigr] .
+\]</div>
+<p>因为此处一阶条件以等式成立，<span class="math notranslate nohighlight">\(\beta \mathbb{E}[v_K(K_0',\cdot)] = u_c(c,e)\)</span>，代入即得 <a class="reference internal" href="#equation-q-envelope">(116.11)</a>。</p>
+<p><strong>第2步（投资为零，以较小资本存量为条件）。</strong> 设 <span class="math notranslate nohighlight">\(I(K_0,\theta,e) = 0\)</span>，这样 <span class="math notranslate nohighlight">\(K_0' = (1-\delta)K_0\)</span>，且在 <span class="math notranslate nohighlight">\(K_0\)</span> 处不进行投资是最优的。</p>
+<p>转而考虑本期不投资、此后按最优方式行事的方案：</p>
+<div class="math notranslate nohighlight">
+\[
+W_2(K) = u\bigl(f(K)\theta, e\bigr) + \beta \mathbb{E}\bigl[v\bigl((1-\delta)K, \theta', e'\bigr)\bigr] .
+\]</div>
+<p>在<em>任何</em>资本存量水平上不进行投资都是可行的，所以处处有 <span class="math notranslate nohighlight">\(W_2 \leq v\)</span>，且 <span class="math notranslate nohighlight">\(W_2(K_0) = v(K_0)\)</span>，<span class="math notranslate nohighlight">\(W_2\)</span> 是凹的。</p>
+<p>假设对每个 <span class="math notranslate nohighlight">\((\theta',e')\)</span>，<span class="math notranslate nohighlight">\(v(\cdot,\theta',e')\)</span> 在 <span class="math notranslate nohighlight">\((1-\delta)K_0\)</span> 处都可微。</p>
+<p>那么 <span class="math notranslate nohighlight">\(W_2\)</span> 在 <span class="math notranslate nohighlight">\(K_0\)</span> 处可微；在期望内求导是合理的，因为函数 <span class="math notranslate nohighlight">\(v(\cdot,\theta',e')\)</span> 是凹函数，因此在紧邻域上具有共同界的局部利普希茨性。</p>
+<p><a class="reference internal" href="#bs_theorem">定理 116.2</a> 随即给出 <span class="math notranslate nohighlight">\(v\)</span> 在 <span class="math notranslate nohighlight">\(K_0\)</span> 处的可微性，且</p>
+<div class="math notranslate nohighlight">
+\[
+v_K(K_0,\theta,e) = u_c(c,e) f'(K_0)\theta + \beta(1-\delta) \mathbb{E}\bigl[v_K((1-\delta)K_0, \theta', e')\bigr] ,
+\]</div>
+<p>这正是 <a class="reference internal" href="#equation-q-envelope">(116.11)</a>。</p>
+<p><strong>第3步（角点不可能起作用的区域）。</strong> 因为 <span class="math notranslate nohighlight">\(f'(0) = \infty\)</span>，所以存在 <span class="math notranslate nohighlight">\(\eta &gt; 0\)</span>，使得对每个 <span class="math notranslate nohighlight">\(K \leq \eta\)</span> 以及每个 <span class="math notranslate nohighlight">\((\theta,e)\)</span>，都有 <span class="math notranslate nohighlight">\(I(K,\theta,e) &gt; 0\)</span>。</p>
+<p>直观理解是：当资本趋于零时，资本的边际产量会变得无穷大，所以今天放弃一点消费会在明天换来极大的消费量。</p>
+<p>要使这一点精确化，需要比较当 <span class="math notranslate nohighlight">\(K \downarrow 0\)</span> 时 <a class="reference internal" href="#equation-q-foc">(116.8)</a> 两边发散的速率，因为例如在对数效用下，两边都会变得无界。</p>
+<p><span class="bibtex-citation" id="id16">Sargent [<a class="reference internal" href="zreferences.html#id572" title="Thomas J. Sargent. “Tobin's q” and the rate of investment in general equilibrium. Carnegie-Rochester Conference Series on Public Policy, 12:107–154, 1980.">1980</a>]</span> 在其附录A（其命题 A2）中证明了该论断，所依据的是他为此目的而对 <span class="math notranslate nohighlight">\(u\)</span> 和 <span class="math notranslate nohighlight">\(f\)</span> 施加的一个明确限制。</p>
+<p>这一结果是下面论证中唯一借用其附录内容之处，并且它与此处所讨论的可微性问题相互独立。</p>
+<p>由第1步可知，对每个 <span class="math notranslate nohighlight">\((\theta,e)\)</span>，<span class="math notranslate nohighlight">\(v(\cdot,\theta,e)\)</span> 因此在 <span class="math notranslate nohighlight">\((0,\eta]\)</span> 上可微。</p>
+<p><strong>第4步（自助提升）。</strong> 令</p>
+<div class="math notranslate nohighlight">
+\[
+D = \{K &gt; 0 : \text{对每个 } (\theta,e)，v(\cdot,\theta,e) \text{ 在 } K \text{ 处可微}\} .
+\]</div>
+<p>我们断言：若 <span class="math notranslate nohighlight">\((0, A) \subseteq D\)</span>，则 <span class="math notranslate nohighlight">\((0, A/(1-\delta)) \subseteq D\)</span>。</p>
+<p>取 <span class="math notranslate nohighlight">\(K &lt; A/(1-\delta)\)</span> 及任意 <span class="math notranslate nohighlight">\((\theta,e)\)</span>。</p>
+<p>若 <span class="math notranslate nohighlight">\(I(K,\theta,e) &gt; 0\)</span>，第1步可直接应用。</p>
+<p>若 <span class="math notranslate nohighlight">\(I(K,\theta,e) = 0\)</span>，则 <span class="math notranslate nohighlight">\((1-\delta)K &lt; A\)</span>，所以对每个 <span class="math notranslate nohighlight">\((\theta',e')\)</span>，<span class="math notranslate nohighlight">\(v(\cdot,\theta',e')\)</span> 在 <span class="math notranslate nohighlight">\((1-\delta)K\)</span> 处可微，第2步可以应用。</p>
+<p>由第3步，我们可以从 <span class="math notranslate nohighlight">\(A = \eta\)</span> 开始归纳。</p>
+<p>因为 <span class="math notranslate nohighlight">\(1/(1-\delta) &gt; 1\)</span>，反复应用该断言得到对每个 <span class="math notranslate nohighlight">\(n\)</span> 都有 <span class="math notranslate nohighlight">\((0, \eta (1-\delta)^{-n}) \subseteq D\)</span>，因此 <span class="math notranslate nohighlight">\(D = (0,\infty)\)</span>。</p>
+<p><strong>第5步（连续性）。</strong> 在开区间上可微的凹函数在该区间上具有连续导数，所以 <span class="math notranslate nohighlight">\(v(\cdot,\theta,e)\)</span> 是连续可微的。</p>
+<p>最后，在投资为零之处，一阶条件以 <span class="math notranslate nohighlight">\(\lambda &gt; 0\)</span> 成立，所以 <span class="math notranslate nohighlight">\(\beta \mathbb{E}[v_K(K',\cdot)] &lt; u_c\)</span>，<a class="reference internal" href="#equation-q-envelope">(116.11)</a> 给出 <span class="math notranslate nohighlight">\(v_K &lt; u_c[f'(K)\theta + (1-\delta)]\)</span>。</p>
+</div>
+<p>这个修正后的公式有一个自然的解读。</p>
+<p>将 <a class="reference internal" href="#equation-q-envelope">(116.11)</a> 向前迭代可得</p>
+<div class="math notranslate nohighlight" id="equation-q-envelope-sum">
+<span class="eqno">(116.12)<a class="headerlink" href="#equation-q-envelope-sum" title="Link to this equation">#</a></span>\[v_K(K_t,\theta_t,e_t) = \mathbb{E}_t \sum_{j=0}^\infty \beta^j (1-\delta)^j \,
+u_c(c_{t+j}, e_{t+j}) \, f'(K_{t+j})\theta_{t+j} .\]</div>
+<p>今天安装的一单位边际资本会在其存续期间持续产生边际产量，而每一期的边际产量都按产出到来那一天的消费边际效用来估值。</p>
+<p>当投资为正时，市场会以新产出的成本为整条流定价，<a class="reference internal" href="#equation-q-envelope-sum">(116.12)</a> 就化简为 <span class="math notranslate nohighlight">\(u_c[f'(K)\theta + (1-\delta)]\)</span>。</p>
+<p>当投资为零时，情况并非如此，这一差异恰恰是使 <span class="math notranslate nohighlight">\(q\)</span> 低于 1 的原因。</p>
+</section>
+<section id="id17">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink"><span class="section-number">116.6. </span>计算模型</a><a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<p>现在我们用下式来求解 <a class="reference internal" href="#equation-q-bellman">(116.7)</a> 的模型：</p>
+<div class="math notranslate nohighlight">
+\[
+u(c,e) = e \ln c, \qquad f(K) = K^a .
+\]</div>
+<p>冲击 <span class="math notranslate nohighlight">\(\theta\)</span> 和 <span class="math notranslate nohighlight">\(e\)</span> 各自以等概率取两个值，并且彼此之间以及随时间都是独立的。</p>
+<p>有一个数值细节非常重要。</p>
+<p>不可逆性约束要求 <span class="math notranslate nohighlight">\(K' \geq (1-\delta)K\)</span>，所以我们希望只要 <span class="math notranslate nohighlight">\(K\)</span> 是资本网格上的一点，<span class="math notranslate nohighlight">\((1-\delta)K\)</span> 也是网格上的一点。</p>
+<p>按照 <span class="bibtex-citation" id="id18">Sargent [<a class="reference internal" href="zreferences.html#id572" title="Thomas J. Sargent. “Tobin's q” and the rate of investment in general equilibrium. Carnegie-Rochester Conference Series on Public Policy, 12:107–154, 1980.">1980</a>]</span> 的做法，我们使用一个比率为 <span class="math notranslate nohighlight">\((1-\delta)^{1/z}\)</span>（<span class="math notranslate nohighlight">\(z\)</span> 为整数）的<em>几何</em>网格，使得 <span class="math notranslate nohighlight">\((1-\delta)K_i = K_{i-z}\)</span> 精确成立。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Model</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Model&quot;</span><span class="p">,</span> <span class="s2">&quot;β δ a z K θ e W nθ ne&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_model</span><span class="p">(</span><span class="n">β</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">δ</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_K</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">K_hi</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>
+                 <span class="n">θ_vals</span><span class="o">=</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">),</span> <span class="n">e_vals</span><span class="o">=</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">)):</span>
+    <span class="s2">&quot;几何资本网格，使得 (1-δ)K 本身也是网格点。&quot;</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">δ</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">K_hi</span> <span class="o">*</span> <span class="n">ratio</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_K</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">θ</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">θ_vals</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e_vals</span><span class="p">)</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">θ</span><span class="p">))</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">θ</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">))</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Model</span><span class="p">(</span><span class="n">β</span><span class="p">,</span> <span class="n">δ</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">θ</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">θ</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+<span class="n">f</span>  <span class="o">=</span> <span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">K</span><span class="p">:</span> <span class="n">K</span><span class="o">**</span><span class="n">m</span><span class="o">.</span><span class="n">a</span>
+<span class="n">f_prime</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">K</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">a</span> <span class="o">*</span> <span class="n">K</span><span class="o">**</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>规划者从网格中选择下一期的资本，需满足消费为正以及不可逆性约束。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">solve_model</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">irreversible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">maxit</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">howard</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="s2">&quot;带有霍华德策略改进步骤的价值函数迭代。&quot;</span>
+    <span class="n">nK</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">θ</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>                       <span class="c1"># 产出 (K, θ)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">C</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span><span class="o">*</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">ok</span> <span class="o">=</span> <span class="n">C</span> <span class="o">&gt;</span> <span class="mf">1e-12</span>                                              <span class="c1"># (K, K&#39;, θ)</span>
+
+    <span class="k">if</span> <span class="n">irreversible</span><span class="p">:</span>                                            <span class="c1"># K&#39; ≥ (1-δ)K</span>
+        <span class="n">irr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nK</span><span class="p">,</span> <span class="n">nK</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nK</span><span class="p">):</span>
+            <span class="n">irr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="mi">0</span><span class="p">):]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">ok</span> <span class="o">=</span> <span class="n">ok</span> <span class="o">&amp;</span> <span class="n">irr</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+
+    <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ok</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span>
+                 <span class="n">m</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ok</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span>
+                 <span class="o">-</span><span class="mf">1e12</span><span class="p">)</span>
+
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nK</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">nθ</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">ne</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxit</span><span class="p">):</span>
+        <span class="n">EV</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>        <span class="c1"># E v(K&#39;) 对 (θ&#39;, e&#39;) 求期望</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">U</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">EV</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">v_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">idx</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">howard</span><span class="p">):</span>
+            <span class="n">EV</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">v_new</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+            <span class="n">v_new</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">idx</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+                     <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">EV</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v_new</span> <span class="o">-</span> <span class="n">v</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">v_new</span>
+            <span class="k">break</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v_new</span>
+
+    <span class="n">K_next</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">K_next</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">C_pol</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">θ</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+             <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">K_next</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">K_next</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">C_pol</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>为了计算 <span class="math notranslate nohighlight">\(q\)</span>，我们需要 <span class="math notranslate nohighlight">\(v_K\)</span>，而 <a class="reference internal" href="#q_differentiability">命题 116.2</a> 告诉我们如何得到它：给定最优策略，方程 <a class="reference internal" href="#equation-q-envelope">(116.11)</a> 是关于 <span class="math notranslate nohighlight">\(v_K\)</span> 的一个线性不动点问题，并且它是模为 <span class="math notranslate nohighlight">\(\beta(1-\delta)\)</span> 的压缩映射。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">marginal_value</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">C_pol</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-13</span><span class="p">,</span> <span class="n">maxit</span><span class="o">=</span><span class="mi">50_000</span><span class="p">):</span>
+    <span class="s2">&quot;求解包络方程 v_K = u_c f&#39;(K)θ + β(1-δ) E v_K(K&#39;)。&quot;</span>
+    <span class="n">vK</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">C_pol</span><span class="p">)</span>
+    <span class="n">direct</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span><span class="o">/</span><span class="n">C_pol</span><span class="p">)</span> <span class="o">*</span> <span class="n">f_prime</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">θ</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxit</span><span class="p">):</span>
+        <span class="n">EvK</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">vK</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">direct</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span> <span class="o">*</span> <span class="n">EvK</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">new</span> <span class="o">-</span> <span class="n">vK</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">new</span>
+        <span class="n">vK</span> <span class="o">=</span> <span class="n">new</span>
+    <span class="k">return</span> <span class="n">vK</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">()</span>
+<span class="n">v</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">K_next</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">C_pol</span> <span class="o">=</span> <span class="n">solve_model</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">vK</span> <span class="o">=</span> <span class="n">marginal_value</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">C_pol</span><span class="p">)</span>
+
+<span class="n">u_c</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">C_pol</span>
+<span class="n">E_vK</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">vK</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">E_vK</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">/</span> <span class="n">u_c</span>
+<span class="n">corner</span> <span class="o">=</span> <span class="n">I</span> <span class="o">&lt;=</span> <span class="mf">1e-12</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;投资为零的状态占比: </span><span class="si">{</span><span class="n">corner</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>投资为零的状态占比: 0.567
+</pre></div>
+</div>
+</div>
+</div>
+<p>让我们通过将包络公式与所计算价值函数的有限差分导数进行比较，从数值上检验一下 <a class="reference internal" href="#q_differentiability">命题 116.2</a>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vK_fd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">naive</span> <span class="o">=</span> <span class="n">u_c</span> <span class="o">*</span> <span class="p">(</span><span class="n">f_prime</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">θ</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">δ</span><span class="p">))</span>
+<span class="n">mid</span> <span class="o">=</span> <span class="p">((</span><span class="n">m</span><span class="o">.</span><span class="n">K</span> <span class="o">&gt;</span> <span class="mf">2.2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span> <span class="o">&lt;</span> <span class="mf">7.0</span><span class="p">))[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">corner</span><span class="p">)</span>
+
+<span class="n">rel</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">vK_fd</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vK_fd</span><span class="p">))[</span><span class="n">mid</span> <span class="o">&amp;</span> <span class="n">sel</span><span class="p">])</span>
+
+<span class="n">sel</span> <span class="o">=</span> <span class="o">~</span><span class="n">corner</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;投资为正: 包络公式误差 </span><span class="si">{</span><span class="n">rel</span><span class="p">(</span><span class="n">vK</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;朴素公式误差 </span><span class="si">{</span><span class="n">rel</span><span class="p">(</span><span class="n">naive</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">sel</span> <span class="o">=</span> <span class="n">corner</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;投资为零: 包络公式误差 </span><span class="si">{</span><span class="n">rel</span><span class="p">(</span><span class="n">vK</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;朴素公式误差 </span><span class="si">{</span><span class="n">rel</span><span class="p">(</span><span class="n">naive</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>投资为正: 包络公式误差 0.0005, 朴素公式误差 0.0066
+投资为零: 包络公式误差 0.0001, 朴素公式误差 0.3856
+</pre></div>
+</div>
+</div>
+</div>
+<p>在投资为正之处，两个公式都与数值导数一致。</p>
+<p>在投资为零之处，包络公式 <a class="reference internal" href="#equation-q-envelope">(116.11)</a> 依然准确，而公式 <span class="math notranslate nohighlight">\(u_c[f'(K)\theta + (1-\delta)]\)</span> 则会偏离百分之几十。</p>
+<p>这正是这一修正的实际意义所在：在角点处，这两个表达式确实是不同的对象，而给出已安装资本价格的是包络公式。</p>
+<p>我们还可以验证证明中的第3步，该步骤断言存在一个小资本存量区域，在该区域内角点永远不会起作用。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m_wide</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="n">n_K</span><span class="o">=</span><span class="mi">700</span><span class="p">)</span>        <span class="c1"># 一个能达到更低资本存量的网格</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">idx_w</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">I_w</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">solve_model</span><span class="p">(</span><span class="n">m_wide</span><span class="p">)</span>
+<span class="n">frac_corner</span> <span class="o">=</span> <span class="p">(</span><span class="n">I_w</span> <span class="o">&lt;=</span> <span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m_wide</span><span class="o">.</span><span class="n">K</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">first</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">frac_corner</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;网格范围始于 K = </span><span class="si">{</span><span class="n">m_wide</span><span class="o">.</span><span class="n">K</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;当 K &lt; </span><span class="si">{</span><span class="n">m_wide</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">first</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> 时，对每个冲击投资都为正&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>网格范围始于 K = 0.555
+当 K &lt; 1.058 时，对每个冲击投资都为正
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id19">
+<h3><span class="section-number">116.6.1. </span>策略与已安装资本的价格<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">show</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span> <span class="o">&gt;</span> <span class="mf">1.5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">nθ</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">ne</span><span class="p">):</span>
+        <span class="n">lab</span> <span class="o">=</span> <span class="sa">rf</span><span class="s1">&#39;$\theta=</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">θ</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s1">, e=</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="si">}</span><span class="s1">$&#39;</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">show</span><span class="p">],</span> <span class="n">K_next</span><span class="p">[</span><span class="n">show</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">lab</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">show</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="n">show</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">lab</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">show</span><span class="p">],</span> <span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">show</span><span class="p">],</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;45度线&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">show</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">m</span><span class="o">.</span><span class="n">δ</span><span class="p">)</span><span class="o">*</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">show</span><span class="p">],</span> <span class="s1">&#39;k:&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$(1-\delta)K$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$K$&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$K&#39;$&quot;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;运动规律&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$K$&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$q$&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;托宾的 $q$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+findfont: Failed to find font weight normal, now using 600.
+</pre></div>
+</div>
+<figure class="align-default" id="fig-ogu-policy-q">
+<img alt="_images/76bc9ba8e01057fa942be2e24cc1bf4c8e6af7c3dac3757944c557cc84b4d2ee.png" src="_images/76bc9ba8e01057fa942be2e24cc1bf4c8e6af7c3dac3757944c557cc84b4d2ee.png" />
+<figcaption>
+<p><span class="caption-number">图 116.1 </span><span class="caption-text">运动规律与托宾 q</span><a class="headerlink" href="#fig-ogu-policy-q" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>每当不可逆性约束起作用时，运动规律就会沿着较低的那条虚线 <span class="math notranslate nohighlight">\((1-\delta)K\)</span> 运行。</p>
+<p>恰恰是在这一区域，<span class="math notranslate nohighlight">\(q\)</span> 会降到 1 以下。</p>
+</section>
+<section id="id20">
+<h3><span class="section-number">116.6.2. </span>不变分布<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<p>与 <a class="reference internal" href="lucas_prescott_investment.html"><span class="doc">不确定性下的投资</span></a> 中一样，我们要检验长期分布是否不依赖于经济体的起点。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">K0</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">burn</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+    <span class="s2">&quot;模拟均衡马尔可夫过程。&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">j_idx</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">nθ</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+    <span class="n">l_idx</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">ne</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span> <span class="o">-</span> <span class="n">K0</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">path</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j_idx</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">l_idx</span><span class="p">[</span><span class="n">t</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">path</span><span class="p">[</span><span class="n">burn</span><span class="p">:],</span> <span class="n">j_idx</span><span class="p">[</span><span class="n">burn</span><span class="p">:],</span> <span class="n">l_idx</span><span class="p">[</span><span class="n">burn</span><span class="p">:]</span>
+
+<span class="n">p_lo</span><span class="p">,</span> <span class="n">j_lo</span><span class="p">,</span> <span class="n">l_lo</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">K0</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">p_hi</span><span class="p">,</span> <span class="n">j_hi</span><span class="p">,</span> <span class="n">l_hi</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">K0</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;从 K0 = 2 起始的平均资本:  </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">p_lo</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;从 K0 = 15 起始的平均资本: </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">p_hi</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;访问到的资本范围: [</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">p_lo</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">p_lo</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>从 K0 = 2 起始的平均资本:  4.5395
+从 K0 = 15 起始的平均资本: 4.5395
+访问到的资本范围: [2.06, 7.24]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">p_lo</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;起始于 $K_0 = 2$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">p_hi</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;起始于 $K_0 = 15$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$K$&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;密度&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;资本的不变分布&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">q_sim</span><span class="p">,</span> <span class="n">I_sim</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="n">p_lo</span><span class="p">,</span> <span class="n">j_lo</span><span class="p">,</span> <span class="n">l_lo</span><span class="p">],</span> <span class="n">I</span><span class="p">[</span><span class="n">p_lo</span><span class="p">,</span> <span class="n">j_lo</span><span class="p">,</span> <span class="n">l_lo</span><span class="p">]</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">q_sim</span><span class="p">,</span> <span class="n">I_sim</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$q$&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$I$&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;投资与托宾的 $q$&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<figure class="align-default" id="fig-ogu-invariant-q">
+<img alt="_images/5e4cf674d1356394a36344d8b78ed2db6daf53b62d0438f4c42a78563ba25a58.png" src="_images/5e4cf674d1356394a36344d8b78ed2db6daf53b62d0438f4c42a78563ba25a58.png" />
+<figcaption>
+<p><span class="caption-number">图 116.2 </span><span class="caption-text">不变分布以及投资与 q 的关系</span><a class="headerlink" href="#fig-ogu-invariant-q" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>正如 <a class="reference internal" href="#bm_theorem">定理 116.1</a> 所预示的那样，这两个直方图是重合的。</p>
+<p>右侧的散点图再现了 <span class="bibtex-citation" id="id21">Sargent [<a class="reference internal" href="zreferences.html#id572" title="Thomas J. Sargent. “Tobin's q” and the rate of investment in general equilibrium. Carnegie-Rochester Conference Series on Public Policy, 12:107–154, 1980.">1980</a>]</span> 的核心图景。</p>
+<p>只有当 <span class="math notranslate nohighlight">\(q\)</span> 等于 1 时投资才为正；当 <span class="math notranslate nohighlight">\(q\)</span> 低于 1 时，投资恰好为零。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;I &gt; 0 时的 q: [</span><span class="si">{</span><span class="n">q_sim</span><span class="p">[</span><span class="n">I_sim</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">1e-12</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">q_sim</span><span class="p">[</span><span class="n">I_sim</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">1e-12</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;I = 0 时的 q: [</span><span class="si">{</span><span class="n">q_sim</span><span class="p">[</span><span class="n">I_sim</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">1e-12</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">q_sim</span><span class="p">[</span><span class="n">I_sim</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">1e-12</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>I &gt; 0 时的 q: [0.9851, 1.0148]
+I = 0 时的 q: [0.4619, 1.0040]
+</pre></div>
+</div>
+</div>
+</div>
+<p>与 1 之间的微小偏差反映了资本网格的离散性。</p>
+<p>萨金特的观点此刻变得清晰可见。</p>
+<p>在这些数据中，投资与 <span class="math notranslate nohighlight">\(q\)</span> 之间<em>的确</em>存在正相关关系，计量经济学家当然可以去跑这样一个回归。</p>
+<p>但这个关系并不是一条投资需求曲线。</p>
+<p>它是一种<strong>混杂关系</strong>，将偏好、技术以及冲击的分布混合在一起，而且只要其中任何一项发生变化，它就会随之改变。</p>
+<p><a class="reference internal" href="#ogu_ex3"><span class="std std-numref">练习 116.3</span></a> 要求你演示这一点。</p>
+</section>
+</section>
+<section id="id22">
+<h2><a class="toc-backref" href="#id32" role="doc-backlink"><span class="section-number">116.7. </span>练习</a><a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
+<div class="exercise admonition" id="ogu_ex1">
+
+<p class="admonition-title"><span class="caption-number">练习 116.1 </span></p>
+<section id="exercise-content">
+<p><span class="bibtex-citation" id="id23">Brock and Mirman [<a class="reference internal" href="zreferences.html#id571" title="William A. Brock and Leonard J. Mirman. Optimal economic growth and uncertainty: the discounted case. Journal of Economic Theory, 4(3):479–513, 1972.">1972</a>]</span> 之所以著名，部分原因在于存在一个可以手算求解的特例。</p>
+<p>设 <span class="math notranslate nohighlight">\(u(c) = \ln c\)</span>，<span class="math notranslate nohighlight">\(f(k, r) = r k^\alpha\)</span>，其中 <span class="math notranslate nohighlight">\(0 &lt; \alpha &lt; 1\)</span>，并设资本每期完全折旧，使得 <span class="math notranslate nohighlight">\(k_{t+1} = f(k_t, r_t) - c_t\)</span>。</p>
+<ol class="arabic simple">
+<li><p>验证最优策略为 <span class="math notranslate nohighlight">\(k_{t+1} = \alpha\beta\, r_t k_t^\alpha\)</span>。</p></li>
+<li><p>证明 <span class="math notranslate nohighlight">\(\ln k_t\)</span> 服从 AR(1) 过程，并在 <span class="math notranslate nohighlight">\(\ln r_t \sim N(\mu, \sigma^2)\)</span> 时推导其不变分布的均值和方差。</p></li>
+<li><p>模拟该模型，并检验其不变分布以及均值遍历性质 <a class="reference internal" href="#equation-bm-ergodic">(116.5)</a>。</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="optimal_growth_uncertainty-solution-5">
+
+<p class="admonition-title">解答<a class="reference internal" href="#ogu_ex1"> 练习 116.1</a></p>
+<section id="solution-content">
+<p>猜测资源中有一个固定比例被储蓄，即 <span class="math notranslate nohighlight">\(k_{t+1} = s\, r_t k_t^\alpha\)</span>。</p>
+<p>该问题的欧拉方程为</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{c_t} = \beta \mathbb{E}_t \left[ \frac{1}{c_{t+1}} \alpha r_{t+1} k_{t+1}^{\alpha - 1} \right] .
+\]</div>
+<p>将 <span class="math notranslate nohighlight">\(c_t = (1-s) r_t k_t^\alpha\)</span> 和 <span class="math notranslate nohighlight">\(k_{t+1} = s r_t k_t^\alpha\)</span> 代入，右边变为</p>
+<div class="math notranslate nohighlight">
+\[
+\beta \mathbb{E}_t \left[\frac{\alpha r_{t+1}k_{t+1}^{\alpha-1}}{(1-s) r_{t+1} k_{t+1}^{\alpha}}\right]
+= \frac{\beta \alpha}{(1-s) k_{t+1}}
+= \frac{\beta\alpha}{(1-s) s r_t k_t^{\alpha}} ,
+\]</div>
+<p>而左边是 <span class="math notranslate nohighlight">\(1/[(1-s) r_t k_t^\alpha]\)</span>。</p>
+<p>令两者相等，得到 <span class="math notranslate nohighlight">\(s = \alpha\beta\)</span>。</p>
+<p>对策略取对数，</p>
+<div class="math notranslate nohighlight">
+\[
+\ln k_{t+1} = \ln(\alpha\beta) + \alpha \ln k_t + \ln r_t ,
+\]</div>
+<p>这是一个系数为 <span class="math notranslate nohighlight">\(\alpha\)</span> 的 AR(1) 过程。</p>
+<p>当 <span class="math notranslate nohighlight">\(\ln r_t \sim N(\mu, \sigma^2)\)</span> 时，<span class="math notranslate nohighlight">\(\ln k\)</span> 的不变分布是正态分布，其</p>
+<div class="math notranslate nohighlight">
+\[
+\text{均值} = \frac{\ln(\alpha\beta) + \mu}{1 - \alpha},
+\qquad
+\text{方差} = \frac{\sigma^2}{1 - \alpha^2} .
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">α</span><span class="p">,</span> <span class="n">β_d</span><span class="p">,</span> <span class="n">μ</span><span class="p">,</span> <span class="n">σ</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">200_000</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ln_r</span> <span class="o">=</span> <span class="n">μ</span> <span class="o">+</span> <span class="n">σ</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+
+<span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+    <span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">α</span> <span class="o">*</span> <span class="n">β_d</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln_r</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">**</span><span class="n">α</span>
+
+<span class="n">ln_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="mi">1000</span><span class="p">:])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ln k 的均值: 模拟值 </span><span class="si">{</span><span class="n">ln_k</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;理论值 </span><span class="si">{</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">α</span><span class="o">*</span><span class="n">β_d</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">μ</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ln k 的方差: 模拟值 </span><span class="si">{</span><span class="n">ln_k</span><span class="o">.</span><span class="n">var</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;理论值 </span><span class="si">{</span><span class="n">σ</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ln k 的均值: 模拟值 -1.6126, 理论值 -1.6126
+ln k 的方差: 模拟值 0.0119, 理论值 0.0119
+</pre></div>
+</div>
+</div>
+</div>
+<p>时间平均值与不变分布的总体矩相匹配，这正是均值遍历性质 <a class="reference internal" href="#equation-bm-ergodic">(116.5)</a> 在起作用。</p>
+</section>
+</div>
+<div class="exercise admonition" id="ogu_ex2">
+
+<p class="admonition-title"><span class="caption-number">练习 116.2 </span></p>
+<section id="exercise-content">
+<p>本练习考察上文讨论的两个 <span class="math notranslate nohighlight">\(v_K\)</span> 候选公式之间的差异。</p>
+<p>对于基准模型，在每个状态上计算：</p>
+<ul class="simple">
+<li><p>包络公式 <a class="reference internal" href="#equation-q-envelope">(116.11)</a></p></li>
+<li><p>公式 <span class="math notranslate nohighlight">\(u_c(c,e)[f'(K)\theta + (1-\delta)]\)</span></p></li>
+<li><p>价值函数的有限差分导数</p></li>
+</ul>
+<p>然后：</p>
+<ol class="arabic simple">
+<li><p>确认在投资为正之处，三者是一致的。</p></li>
+<li><p>确认在投资为零之处，第二个公式与另外两者不一致，并报告差异大小。</p></li>
+<li><p>利用 <a class="reference internal" href="#equation-q-foc">(116.8)</a>，解释为什么第二个公式是 <span class="math notranslate nohighlight">\(v_K\)</span> 的一个上界。</p></li>
+<li><p>如果在所有地方都使用第二个公式，计算出的 <span class="math notranslate nohighlight">\(q\)</span> 会出什么问题？</p></li>
+</ol>
+</section>
+</div>
+<div class="solution dropdown admonition" id="optimal_growth_uncertainty-solution-7">
+
+<p class="admonition-title">解答<a class="reference internal" href="#ogu_ex2"> 练习 116.2</a></p>
+<section id="solution-content">
+<p>第二个公式的得来方式是：<em>仿佛</em> <span class="math notranslate nohighlight">\(\lambda = 0\)</span> 一样，将一阶条件 <a class="reference internal" href="#equation-q-foc">(116.8)</a> 代入包络条件。</p>
+<p>由于 <span class="math notranslate nohighlight">\(\lambda \geq 0\)</span>，略去它只会使该表达式增大，因此</p>
+<div class="math notranslate nohighlight">
+\[
+v_K = u_c f'(K)\theta + (1-\delta)\bigl[u_c - \lambda\bigr]
+\leq u_c\bigl[f'(K)\theta + (1-\delta)\bigr] ,
+\]</div>
+<p>当且仅当 <span class="math notranslate nohighlight">\(\lambda = 0\)</span>（即投资为正）时取等号。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">naive</span> <span class="o">-</span> <span class="n">vK_fd</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vK_fd</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vK</span> <span class="o">-</span> <span class="n">vK_fd</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vK_fd</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sel</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;投资为正&quot;</span><span class="p">,</span> <span class="o">~</span><span class="n">corner</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;投资为零&quot;</span><span class="p">,</span> <span class="n">corner</span><span class="p">)):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">&amp;</span> <span class="n">sel</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">20</span><span class="si">}</span><span class="s2">: 包络公式 </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="n">s</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">   &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;朴素公式 </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">gap</span><span class="p">[</span><span class="n">s</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">   最大朴素误差 </span><span class="si">{</span><span class="n">gap</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">q_naive</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">naive</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))[</span><span class="n">idx</span><span class="p">]</span> <span class="o">/</span> <span class="n">u_c</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">使用朴素公式，最大 q = </span><span class="si">{</span><span class="n">q_naive</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;（理论要求 q ≤ 1）&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;q &gt; 1 的状态占比: </span><span class="si">{</span><span class="p">(</span><span class="n">q_naive</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1e-8</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>投资为正                : 包络公式 0.0005   朴素公式 0.0066   最大朴素误差 0.0134
+投资为零                : 包络公式 0.0001   朴素公式 0.3856   最大朴素误差 1.0175
+
+使用朴素公式，最大 q = 1.863 （理论要求 q ≤ 1）
+q &gt; 1 的状态占比: 0.578
+</pre></div>
+</div>
+</div>
+</div>
+<p>在所有地方都使用第二个公式会产生超过 1 的 <span class="math notranslate nohighlight">\(q\)</span> 值，而理论排除了这种可能。</p>
+<p>原因是经济学上的，而非数值上的：在角点处，市场并不会按照新资本的成本为已安装资本定价，这恰恰是因为家庭想要出售资本而又无法这样做。</p>
+</section>
+</div>
+<div class="exercise admonition" id="ogu_ex3">
+
+<p class="admonition-title"><span class="caption-number">练习 116.3 </span></p>
+<section id="exercise-content">
+<p>证明投资对 <span class="math notranslate nohighlight">\(q\)</span> 的回归并非结构性关系。</p>
+<p>针对在以下方面有所不同的若干经济体求解并模拟该模型：</p>
+<ul class="simple">
+<li><p>偏好风险的大小（<span class="math notranslate nohighlight">\(e\)</span> 的离散程度）</p></li>
+<li><p>技术风险的大小（<span class="math notranslate nohighlight">\(\theta\)</span> 的离散程度）</p></li>
+<li><p>折旧率 <span class="math notranslate nohighlight">\(\delta\)</span></p></li>
+</ul>
+<p>对于每个经济体，报告 <span class="math notranslate nohighlight">\(I\)</span> 对 <span class="math notranslate nohighlight">\(q\)</span> 回归的斜率和 <span class="math notranslate nohighlight">\(R^2\)</span>，以及投资为零的频率。</p>
+<p>评论这对于一位估计将投资与 <span class="math notranslate nohighlight">\(q\)</span> 联系起来的“投资需求曲线”的计量经济学家意味着什么。</p>
+</section>
+</div>
+<div class="solution dropdown admonition" id="optimal_growth_uncertainty-solution-9">
+
+<p class="admonition-title">解答<a class="reference internal" href="#ogu_ex3"> 练习 116.3</a></p>
+<section id="solution-content">
+<p>以下是一种解法。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">q_regression</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="s2">&quot;求解一个经济体，模拟它，并对 I 关于 q 做回归。&quot;</span>
+    <span class="n">mm</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">vv</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">II</span><span class="p">,</span> <span class="n">CC</span> <span class="o">=</span> <span class="n">solve_model</span><span class="p">(</span><span class="n">mm</span><span class="p">)</span>
+    <span class="n">vvK</span> <span class="o">=</span> <span class="n">marginal_value</span><span class="p">(</span><span class="n">mm</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="n">CC</span><span class="p">)</span>
+    <span class="n">uu_c</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span><span class="o">/</span><span class="n">CC</span>
+    <span class="n">qq</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">β</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">vvK</span><span class="p">,</span> <span class="n">mm</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))[</span><span class="n">ii</span><span class="p">]</span> <span class="o">/</span> <span class="n">uu_c</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="n">simulate</span><span class="p">(</span><span class="n">mm</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="n">K0</span><span class="o">=</span><span class="mf">3.5</span><span class="p">)</span>
+    <span class="n">q_s</span><span class="p">,</span> <span class="n">I_s</span> <span class="o">=</span> <span class="n">qq</span><span class="p">[</span><span class="n">p</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">],</span> <span class="n">II</span><span class="p">[</span><span class="n">p</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span>
+    <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">q_s</span><span class="p">,</span> <span class="n">I_s</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">corr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">I_s</span><span class="p">,</span> <span class="n">q_s</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">slope</span><span class="p">,</span> <span class="n">corr</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">I_s</span> <span class="o">&lt;=</span> <span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="n">cases</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;基准经济&quot;</span><span class="p">,</span>              <span class="p">{}),</span>
+         <span class="p">(</span><span class="s2">&quot;偏好风险较小&quot;</span><span class="p">,</span>  <span class="nb">dict</span><span class="p">(</span><span class="n">e_vals</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">))),</span>
+         <span class="p">(</span><span class="s2">&quot;偏好风险较大&quot;</span><span class="p">,</span>  <span class="nb">dict</span><span class="p">(</span><span class="n">e_vals</span><span class="o">=</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">))),</span>
+         <span class="p">(</span><span class="s2">&quot;技术风险较小&quot;</span><span class="p">,</span>  <span class="nb">dict</span><span class="p">(</span><span class="n">θ_vals</span><span class="o">=</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">))),</span>
+         <span class="p">(</span><span class="s2">&quot;技术风险较大&quot;</span><span class="p">,</span>  <span class="nb">dict</span><span class="p">(</span><span class="n">θ_vals</span><span class="o">=</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">))),</span>
+         <span class="p">(</span><span class="s2">&quot;更快的折旧率&quot;</span><span class="p">,</span>   <span class="nb">dict</span><span class="p">(</span><span class="n">δ</span><span class="o">=</span><span class="mf">0.10</span><span class="p">))]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;经济体&#39;</span><span class="si">:</span><span class="s2">24</span><span class="si">}{</span><span class="s1">&#39;斜率&#39;</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}{</span><span class="s1">&#39;R^2&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}{</span><span class="s1">&#39;零投资比例&#39;</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">cases</span><span class="p">:</span>
+    <span class="n">slope</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">zero</span> <span class="o">=</span> <span class="n">q_regression</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">24</span><span class="si">}{</span><span class="n">slope</span><span class="si">:</span><span class="s2">9.3f</span><span class="si">}{</span><span class="n">r2</span><span class="si">:</span><span class="s2">8.3f</span><span class="si">}{</span><span class="n">zero</span><span class="si">:</span><span class="s2">9.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>经济体                            斜率     R^2    零投资比例
+基准经济                        1.127   0.594    0.500
+偏好风险较小                      1.094   0.283    0.279
+偏好风险较大                      1.131   0.780    0.501
+技术风险较小                      1.308   0.904    0.501
+技术风险较大                      0.780   0.234    0.529
+更快的折旧率                      1.271   0.436    0.456
+</pre></div>
+</div>
+</div>
+</div>
+<p>在那些偏好和技术参数相同、但冲击分布或折旧率不同的经济体之间，回归的斜率和拟合优度都发生了很大变化。</p>
+<p>回归中没有任何东西是不变的，因此它无法用来预测在改变这些特征中的任何一项的政策下，投资会如何变化。</p>
+<p>这正是 <span class="bibtex-citation" id="id24">Sargent [<a class="reference internal" href="zreferences.html#id572" title="Thomas J. Sargent. “Tobin's q” and the rate of investment in general equilibrium. Carnegie-Rochester Conference Series on Public Policy, 12:107–154, 1980.">1980</a>]</span> 所传达的信息，也是卢卡斯批判的一个具体实例：正是那种使 <span class="math notranslate nohighlight">\(q\)</span> 变得有意义的摩擦——偶尔起作用的不可逆性约束——同时也使得 <span class="math notranslate nohighlight">\(I\)</span> 与 <span class="math notranslate nohighlight">\(q\)</span> 之间的关系成为一种简化形式的产物，而非一条决策规则。</p>
+</section>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础工具
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="sir_model.html">
+   1. 新冠病毒建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_algebra.html">
+   2. 线性代数
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="qr_decomp.html">
+   3. QR分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="eig_circulant.html">
+   4. 循环矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="svd_intro.html">
+   5. 奇异值分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_dmd.html">
+   6. 向量自回归和动态模态分解
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="newton_method.html">
+   7. 使用牛顿法求解经济模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  基础统计学
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_matrix.html">
+   8. 基础概率论与矩阵
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stats_examples.html">
+   9. 一些概率分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lln_clt.html">
+   10. 大数定律 和 中心极限定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prob_meaning.html">
+   11. 概率的两种含义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multi_hyper.html">
+   12. 多元超几何分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="multivariate_normal.html">
+   13. 多元正态分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hoist_failure.html">
+   14. 故障树不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="back_prop.html">
+   15. 人工神经网络简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rand_resp.html">
+   16. 随机化回应调查
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="util_rand_resp.html">
+   17. 随机回答的期望效用
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  贝叶斯定律
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bayes_nonconj.html">
+   18. 非共轭先验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_bayes.html">
+   19. AR(1)参数的后验分布
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ar1_turningpts.html">
+   20. 预测 AR(1) 过程
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  统计与信息论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="divergence_measures.html">
+   21. 统计散度度量
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process.html">
+   22. 似然比过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_ratio_process_2.html">
+   23. 异质信念与金融市场
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_var.html">
+   24. VAR模型的似然过程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imp_sample.html">
+   25. 似然比过程的均值
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman.html">
+   26. 让弥尔顿·弗里德曼困惑的问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wald_friedman_2.html">
+   27. 用贝叶斯方法解决弗里德曼和瓦尔德问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchangeable.html">
+   28. 可交换性和贝叶斯更新
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="likelihood_bayes.html">
+   29. 似然比过程和贝叶斯学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="blackwell_kihlstrom.html">
+   30. 布莱克韦尔的实验比较定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="information_market_equilibrium.html">
+   31. 信息与市场均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mix_model.html">
+   32. 错误模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="navy_captain.html">
+   33. 贝叶斯与频率主义决策规则的比较
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="merging_of_opinions.html">
+   34. 观点的融合：布莱克韦尔-杜宾斯定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="survival_recursive_preferences.html">
+   35. 递归偏好下的生存与长期动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="pricing_information.html">
+   36. 信息的设计与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="market_diffusion.html">
+   37. 双向学习下的市场扩散
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="gallant_tauchen.html">
+   38. 应该匹配哪些矩？
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  线性规划
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="opt_transport.html">
+   39. 最优传输
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="von_neumann_model.html">
+   40. 冯·诺依曼增长模型（及其推广）
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动态系统导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="finite_markov.html">
+   41. 有限马尔可夫链
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_dynamics.html">
+   42. 库存动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="linear_models.html">
+   43. 线性状态空间模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="samuelson.html">
+   44. 萨缪尔森乘数-加速器模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="chow_business_cycles.html">
+   45. 加速原理与商业周期的本质
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kesten_processes.html">
+   46. Kesten过程与企业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="wealth_dynamics.html">
+   47. 财富分布动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman.html">
+   48. 初见卡尔曼滤波器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_2.html">
+   49. 卡尔曼滤波器进阶
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="kalman_filter_var.html">
+   50. 卡尔曼滤波器与向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="var_subsets.html">
+   51. 变量子集的向量自回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="organization_capital.html">
+   52. 组织资本
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="measurement_models.html">
+   53. 两种测量模型与投资加速数
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  搜索
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model.html">
+   54. 工作搜寻 I: McCall搜寻模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_separation.html">
+   55. 工作搜寻 II：搜寻与离职
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_model_with_sep_markov.html">
+   56. 工作搜寻 III：带分离和马尔可夫工资的搜寻
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_fitted_vfi.html">
+   57. 工作搜寻 IV: 拟合值函数迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_risk.html">
+   58. 工作搜寻 V：风险敏感型偏好
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_persist_trans.html">
+   59. 工作搜寻 VI：持续性与暂时性工资冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="career.html">
+   60. 工作搜寻 VII：职业选择建模
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="jv.html">
+   61. 工作搜寻 VIII：在职搜索
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="odu.html">
+   62. 工作搜寻 IX: 带学习的搜索
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  强化学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="inventory_q.html">
+   63. 通过 Q 学习进行库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rs_inventory_q.html">
+   64. 通过 Q-Learning 进行风险敏感型库存管理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mccall_q.html">
+   65. 工作搜寻 X：McCall劳动者的Q学习
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  最优储蓄导论
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="os.html">
+   66. 吃蛋糕问题 I：最优储蓄导论
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_numerical.html">
+   67. 最优储蓄 II：数值方法吃蛋糕问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_stochastic.html">
+   68. 最优储蓄 III：随机回报
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_time_iter.html">
+   69. 最优储蓄 IV：时间迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm.html">
+   70. 最优储蓄 V：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="os_egm_jax.html">
+   71. 最优储蓄 VI：使用 JAX 的 EGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  收入波动问题
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_discrete.html">
+   72. 收入波动问题 I：离散化与 VFI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_opi.html">
+   73. 收入波动问题 II：乐观策略迭代
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm.html">
+   74. 收入波动问题 III：内生网格法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_egm_transient_shocks.html">
+   75. 收入波动问题 IV：暂时性收入冲击
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ifp_advanced.html">
+   76. 收入波动问题 V：资产随机收益
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  LQ控制
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lqcontrol.html">
+   77. LQ控制：基础
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lagrangian_lqdp.html">
+   78. LQ控制的拉格朗日方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cross_product_trick.html">
+   79. 消除交叉项
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income.html">
+   80. 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="perm_income_cons.html">
+   81. 永久收入 II：线性二次方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="robust_permanent_income.html">
+   82. 稳健永久收入与定价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_1.html">
+   83. 确定性等价
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="theil_2.html">
+   84. 确定性等价与模型不确定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_permanent_income.html">
+   85. LQ 永久收入模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_bewley_complete_markets.html">
+   86. 不完全市场与完全市场下的消费平滑
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_smoothing.html">
+   87. 稳健消费平滑与预防性储蓄
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_robust_bewley.html">
+   88. 稳健 LQ 贝利模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_inventories.html">
+   89. 通过库存实现生产平滑
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  宏观经济学中的有限理性
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bounded_rationality.html">
+   90. 一种奇特的有限理性定义
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="olg_adaptive_money.html">
+   91. 世代交叠货币经济中的适应性主体
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="learning_approximation.html">
+   92. 学习、近似与均衡计算
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exchange_rate_learning.html">
+   93. 汇率不确定性、学习与实验
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="genetic_classifier.html">
+   94. 遗传算法与分类器系统
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="marimon_mcgrattan_sargent.html">
+   95. 人工智能主体中作为交换媒介的货币
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="prospects_bounded_rationality.html">
+   96. 1993 年对宏观经济学中有限理性前景的展望
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  菲利普斯曲线权衡
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_two_stories.html">
+   97. 美国通货膨胀的兴衰
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credibility.html">
+   98. 信誉问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_credible_policies.html">
+   99. 可信的政府政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_adaptive.html">
+   100. 适应性预期与费尔普斯问题
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_misspecified.html">
+   101. 最优错误设定信念
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_self_confirming.html">
+   102. 自我确认均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_learning.html">
+   103. 适应性学习与逃逸动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_escaping_nash.html">
+   104. 逃离纳什通胀
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_priors.html">
+   105. 先验、逃逸与学习循环
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_lost_conquest.html">
+   106. 失落的征服：2020 年代的美联储政策
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="phillips_drifts_volatilities.html">
+   107. 漂移与波动率
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  最优增长
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_1.html">
+   108. Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_koopmans_2.html">
+   109. Cass-Koopmans竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal.html">
+   110. 带扭曲性税收的Cass-Koopmans模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cass_fiscal_2.html">
+   111. 带扭曲性税收的双国模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  多主体模型
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="lake_model.html">
+   112. 就业与失业的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="endogenous_lake.html">
+   113. 具有内生工作发现率的湖泊模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_expectations.html">
+   114. 理性预期均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lucas_prescott_investment.html">
+   115. 不确定性下的投资
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   116. 不确定性下的最优增长与托宾 q
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="re_with_feedback.html">
+   117. 线性理性预期模型中的稳定性
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_perf.html">
+   118. 马尔可夫完美均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="uncertainty_traps.html">
+   119. 不确定性陷阱
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari.html">
+   120. 艾亚加里模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="aiyagari_egm.html">
+   121. 使用内生网格法的Aiyagari模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak2.html">
+   122. 代际交叠模型中的转型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ak_aiyagari.html">
+   123. 长寿、异质性个体、世代交叠模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_computation.html">
+   124. 为社会保障融资的两种计算方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="social_security_depletion.html">
+   125. 社会保障信托基金耗竭
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="lq_mean_field_games.html">
+   126. 线性二次平均场博弈
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  资产定价与金融
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="markov_asset.html">
+   127. 资产定价：有限状态模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1983.html">
+   128. 随机消费、风险规避与资产回报的时间行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="hansen_singleton_1982.html">
+   129. 用广义矩方法估计欧拉方程
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ge_arrow.html">
+   130. 带有阿罗证券的竞争均衡
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="harrison_kreps.html">
+   131. 异质信念与泡沫
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morris_learn.html">
+   132. 贝叶斯学习下的投机行为
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="rational_learning_re.html">
+   133. 理性学习与理性预期
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ls_learning.html">
+   134. 自指模型中的最小二乘学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="affine_risk_prices.html">
+   135. 资产价格的仿射模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ross_recovery.html">
+   136. 恢复定理
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="long_run_risk_operator.html">
+   137. 长期风险：一种算子方法
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misspecified_recovery.html">
+   138. 误设定下的恢复
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  数据与实证
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="pandas_panel.html">
+   139. 用Pandas处理面板数据
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ols.html">
+   140. Python线性回归
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mle.html">
+   141. 最大似然估计
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_linear.html">
+   142. 失业的线性模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="unemployment_shocks.html">
+   143. 具有非对称冲击的失业动态
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="sargent_surico.html">
+   144. 货币数量论的两个例证
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拍卖
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="two_auctions.html">
+   145. 一价和二价拍卖
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="house_auction.html">
+   146. 多种商品分配机制
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  其他
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   147. 故障排除
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="zreferences.html">
+   148. 参考文献
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="status.html">
+   149. 执行统计
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="https://quantecon.org" title=""><span class="show-for-sr">QuantEcon</span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                    <li data-tippy-content="Download Notebook"><a href="/_notebooks/optimal_growth_uncertainty.ipynb" download><i data-feather="download-cloud"></i></a></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst/optimal_growth_uncertainty.md" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/QuantEcon/lecture-python.myst" download><i data-feather="github"></i></a></li>
+                    
+                    
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="" data-urlpath="" data-branch=>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "optimal_growth_uncertainty";
+                const repoURL = "";
+                const urlPath = "";
+                const branch = ""
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

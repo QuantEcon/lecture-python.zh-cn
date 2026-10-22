@@ -14,7 +14,7 @@ translation:
     Overview::The big Y, little y trick: 大 Y，小 y 技巧
     Overview::The big Y, little y trick::A simple static example of the big Y, little y trick: 大 Y，小 y 技巧的简单静态示例
     Overview::Related planning problem: 相关的规划问题
-    Overview::Further Reading: 延伸阅读
+    Overview::Further reading: 延伸阅读
     Rational expectations equilibrium: 理性预期均衡
     Rational expectations equilibrium::Competitive equilibrium with adjustment costs: 带调整成本的竞争均衡
     Rational expectations equilibrium::Competitive equilibrium with adjustment costs::The firm's problem: 企业的问题
@@ -31,6 +31,7 @@ translation:
     Computing an equilibrium::Solution of planning problem: 规划问题的求解
     Computing an equilibrium::Key insight: 关键洞见
     Computing an equilibrium::Key insight::Structure of the law of motion: 动态规律的结构
+    Concluding remarks: 总结性评论
     Exercises: 练习
 ---
 
@@ -53,9 +54,9 @@ translation:
 "如果你真的那么聪明，为什么不富有？"
 ```
 
-除了Anaconda自带的库外，本讲义还需要以下库：
+除了 Anaconda 自带的库外，本讲义还需要以下库：
 
-```{code-cell} ipython
+```{code-cell} ipython3
 ---
 tags: [hide-output]
 ---
@@ -69,6 +70,14 @@ tags: [hide-output]
 为加以说明，我们描述了一个由Lucas和Prescott提出的线性二次模型的版本{cite}`Lucas_Prescott_1971`。
 
 这篇1971年的论文是引发*理性预期革命*的少数几篇研究文章之一。
+
+你可以将本讲义视为该论文的"简化版"，也可以将其视为介绍两篇后续讲义在更一般情形下所研究思想的入门。
+
+{doc}`lucas_prescott_investment` 描述了Lucas和Prescott实际构建的模型，其中需求由马尔可夫过程驱动，因此均衡是一个随机过程，而非确定性路径。
+
+{doc}`optimal_growth_uncertainty` 研究了一个带有生产随机冲击的单部门最优增长模型，并用它来思考托宾的 $q$。
+
+这两篇后续讲义都提出了一个在本讲义中无法出现的问题（因为本讲义不涉及不确定性）：均衡是否存在一个不变的概率分布，使得从任意初始条件出发都会收敛到该分布？
 
 我们遵循Lucas和Prescott的思路，采用一个易于"贝尔曼化"的设置（即，可以被表述为动态规划问题）。
 
@@ -89,7 +98,7 @@ tags: [hide-output]
 
 让我们从一些标准导入开始：
 
-```{code-cell} ipython
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 FONTPATH = "fonts/SourceHanSerifSC-SemiBold.otf"
@@ -102,7 +111,7 @@ import numpy as np
 
 我们还将使用`QuantEcon.py`中的LQ类。
 
-```{code-cell} ipython
+```{code-cell} ipython3
 from quantecon import LQ
 ```
 
@@ -234,6 +243,8 @@ $$
 * {cite}`Lucas_Prescott_1971`
 * {cite}`Sargent1987`, 第XIV章
 * {cite}`Ljungqvist2012`, 第7章
+
+本讲义的两篇后续讲义是 {doc}`lucas_prescott_investment` 和 {doc}`optimal_growth_uncertainty`。
 
 ## 理性预期均衡
 
@@ -589,6 +600,30 @@ y_{t+1} = h_0 + h_1 y_t + h_2 Y_t
 
 因此，理性预期均衡将由 {eq}`ree_hlom2`--{eq}`ree_ex5` 中的参数 $(\kappa_0, \kappa_1, h_0, h_1, h_2)$ 来定义。
 
+## 总结性评论
+
+本讲座中的三个思想贯穿于整个宏观经济学。
+
+第一个思想是均衡概念本身：对市场层面对象的*感知到的*运动规律必须与由由此产生的决策所生成的*实际*运动规律相吻合。
+
+第二个思想是“大 $Y$、小 $y$”这一手法，它使得一个价格接受型企业能够成为代表性企业。
+
+第三个思想是计算策略：由于从感知运动规律到实际运动规律的映射并非压缩映射，我们转而通过求解一个*计划问题*来找到均衡，然后将均衡价格解读为影子价格。
+
+接下来的两篇后续内容将这些思想引入具有不确定性的场景中。
+
+{doc}`lucas_prescott_investment` 回到 {cite:t}`Lucas_Prescott_1971` 本身。
+
+在那里，需求由一个马尔可夫过程驱动变化，企业面临将投资转化为产能的非线性技术，并且证明了均衡的存在性、唯一性，以及该均衡可求解一个使贴现消费者剩余最大化的计划问题。
+
+由于均衡是一个马尔可夫过程，我们可以追问它是否收敛到一个不变分布，以及从单次实现中计算出的时间平均值是否收敛到总体矩。
+
+肯定的答案正是使这类模型在计量经济学中可用的关键。
+
+{doc}`optimal_growth_uncertainty` 在 {cite:t}`BrockMirman1972` 的单部门最优增长模型中探讨了同样的问题，然后遵循 {cite:t}`Sargent1980q` 的做法加入了不可逆投资。
+
+这一微小的改变使得已安装资本的影子价格——托宾的 $q$——偏离了新资本的价格，并使计划者的价值函数成为投资理论所依赖的对象。
+
 ## 练习
 
 ```{exercise}
@@ -671,7 +706,7 @@ $$
 
 参考代码：
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 模型参数
 
 a0 = 100
@@ -770,7 +805,7 @@ $$
 
 以下代码实现了这个检验
 
-```{code-cell} python3
+```{code-cell} ipython3
 candidates = ((94.0886298678, 0.923409232937),
               (93.2119845412, 0.984323478873),
               (95.0818452486, 0.952459076301))
@@ -861,7 +896,7 @@ $$
 
 解决此问题的Python代码如下：
 
-```{code-cell} python3
+```{code-cell} ipython3
 # 构建规划者的LQ问题
 
 A = np.array([[1, 0], [0, 1]])
@@ -923,7 +958,7 @@ $$
 
 问题可以按如下方式求解：
 
-```{code-cell} python3
+```{code-cell} ipython3
 A = np.array([[1, 0], [0, 1]])
 B = np.array([[1], [0]])
 R = np.array([[a1, -a0 / 2], [-a0 / 2, 0]])
@@ -954,4 +989,4 @@ $Y_{t+1} = 95.0818 + 0.9525 Y_t$。
 ```{solution-end}
 ```
 
-[^fn_im]: 有一类文献研究：当模型中的个体具有学习行为时，这些个体是否能收敛到理性预期均衡。该文献探讨的核心是对映射 $\Phi$ 的修正型迭代，其可近似表示为 $\gamma \Phi + (1-\gamma)I$。这里 $I$ 是恒等算子，$\gamma \in (0,1)$ 是一个*松弛参数*。参见 {cite}`MarcetSargent1989` 和 {cite}`EvansHonkapohja2001` 中关于这种方法的阐述和应用，该方法用于确定在什么条件下使用最小二乘学习的自适应代理群体会收敛到理性预期均衡。
+[^fn_im]: 有一类文献研究：当模型中的个体具有学习行为时，这些个体是否能收敛到理性预期均衡。该文献探讨的核心是对映射 $\Phi$ 的修正型迭代，其可近似表示为 $\gamma \Phi + (1-\gamma)I$。这里 $I$ 是恒等算子，$\gamma \in (0,1)$ 是一个*松弛参数*。参见 {cite:t}`MarcetSargent1989` 和 {cite:t}`EvansHonkapohja2001` 中关于这种方法的阐述和应用，该方法用于确定在什么条件下使用最小二乘学习的自适应代理群体会收敛到理性预期均衡。
