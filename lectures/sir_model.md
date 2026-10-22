@@ -37,7 +37,7 @@ translation:
 
 ## 概述
 
-这是由[Andrew Atkeson](https://sites.google.com/site/andyatkeson/)提供的用于分析新冠疫情的Python代码。
+这是由 [Andrew Atkeson](https://sites.google.com/site/andyatkeson/) 提供的用于分析新冠疫情的Python代码。
 
 特别参见
 
@@ -167,7 +167,7 @@ pop_size = 3.3e8
 σ = 1 / 5.2
 ```
 
-现在我们构建一个函数来表示{eq}`dfcv`中的$F$
+现在我们构建一个函数来表示 {eq}`dfcv` 中的 $F$
 
 ```{code-cell} ipython3
 def F(x, t, R0=1.6):
@@ -360,7 +360,7 @@ plot_paths(c_paths, labels, ylabel='fraction of the population')
 
 ## 解除封锁
 
-以下内容复现了 Andrew Atkeson 关于解除封锁时机的[附加研究结果](https://drive.google.com/file/d/1uS7n-7zq5gfSgrL3S0HByExmpq4Bn3oh/view)。
+以下内容复现了 Andrew Atkeson 关于解除封锁时机的 [附加研究结果](https://drive.google.com/file/d/1uS7n-7zq5gfSgrL3S0HByExmpq4Bn3oh/view)。
 
 我们对比两种解封方案：
 
