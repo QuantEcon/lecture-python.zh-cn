@@ -426,4 +426,4 @@ paths = [path * ν * γ * pop_size for path in i_paths]
 plot_paths(paths, labels, ylabel='每日死亡人数')
 ```
 
-如果我们能够将感染高峰推迟到疫苗研发出来之前，就有可能降低累计死亡人数。
+如果能研制出疫苗，将曲线的峰值进一步推向未来，就可能减少累计死亡人数。
