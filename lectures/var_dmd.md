@@ -87,7 +87,7 @@ $$ (eq:Xvector)
 
 例如，{cite}`SSY_CEX_2026` 从每个对数分位数中减去对数私人收入的横截面均值，使用该均值的增长率作为一个附加变量，然后从所有变量中减去时间序列均值。
 
-我们的数据被组织成一个 $m \times (n+1)$ 矩阵 $\tilde X$
+我们的数据被组织成一个 $m \times (n+1)$ 的矩阵 $\tilde X$
 
 $$
 \tilde X =  \begin{bmatrix} X_1 \mid X_2 \mid \cdots \mid X_n \mid X_{n+1} \end{bmatrix}
@@ -95,7 +95,7 @@ $$
 
 其中对于 $t = 1, \ldots, n+1$，$m \times 1$ 向量 $X_t$ 由 {eq}`eq:Xvector` 给出。
 
-由 $\tilde X$，我们构造两个 $m \times n$ 矩阵
+由 $\tilde X$，我们构造两个 $m \times n$ 的矩阵
 
 $$
 X =  \begin{bmatrix} X_1 \mid X_2 \mid \cdots \mid X_{n}\end{bmatrix}
@@ -137,16 +137,16 @@ $$
 \hat A = X' X^+
 $$ (eq:commonA)
 
-其中 $X^+$ 是 $X$ 的 [摩尔-彭若斯伪逆](https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse)。
+其中 $X^+$ 是 $X$ 的 [穆尔-彭罗斯广义逆矩阵](https://baike.baidu.com/item/穆尔-彭罗斯广义逆矩阵/22770999?fr=aladdin)。<!-- 中文语境下使用广义逆矩阵的语料远多于伪逆，所以后文统一使用广义逆矩阵 -->
 
 我们关注两种情形
 
 * $n \gg m$，即时间序列观测值 $n$ 远多于变量数 $m$
 * $m \gg n$，即变量数 $m$ 远多于时间序列观测值 $n$
 
-**矮胖情形：**
+**短胖型情况：**
 
-当 $n \gg m$ 且 $X$ 的**行**线性无关时，$X X^\top$ 具有逆矩阵，伪逆 $X^+$ 为
+当 $n \gg m$ 且 $X$ 的**行**线性无关时，$X X^\top$ 具有逆矩阵，广义逆矩阵 $X^+$ 为
 
 $$
 X^+ = X^\top  (X X^\top )^{-1}
@@ -164,9 +164,9 @@ $$ (eq:Ahatform101)
 
 公式 {eq}`eq:Ahatform101` 的右边正比于 $X_{t+1}$ 和 $X_t$ 的经验交叉二阶矩矩阵，乘以 $X_t$ 的二阶矩矩阵的逆。
 
-**瘦高情形：**
+**高瘦型情况：**
 
-当 $m \gg n$ 且 $X$ 的**列**线性无关时，$X^\top X$ 具有逆矩阵，伪逆 $X^+$ 为
+当 $m \gg n$ 且 $X$ 的**列**线性无关时，$X^\top X$ 具有逆矩阵，广义逆矩阵 $X^+$ 为
 
 $$
 X^+ = (X^\top  X)^{-1} X^\top
@@ -200,20 +200,20 @@ $$
 
 ### 用 SVD 计算 $X^+$
 
-计算伪逆 $X^+$ 的一种高效方法是从**约化**奇异值分解开始
+计算广义逆矩阵 $X^+$ 的一种高效方法是从**简化**奇异值分解开始
 
 $$
 X =  U \Sigma  V^\top
 $$ (eq:SVDDMD)
 
-其中 $U$ 是 $m \times p$ 矩阵，$\Sigma$ 是由正奇异值 $\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_p > 0$ 构成的 $p \times p$ 对角矩阵，$V$ 是 $n \times p$ 矩阵。
+其中 $U$ 是 $m \times p$ 的矩阵，$\Sigma$ 是由正奇异值 $\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_p > 0$ 构成的 $p \times p$ 对角矩阵，$V$ 是 $n \times p$ 的矩阵。
 
-正如我们在 {doc}`奇异值分解 <svd_intro>` 中所看到的，对于约化 SVD
+正如我们在 {doc}`奇异值分解 <svd_intro>` 中所看到的，对于简化 SVD
 
 * $U^\top U = I_{p \times p}$ 且 $V^\top V = I_{p \times p}$，但是
 * 除非 $p = m$，否则 $U U^\top \neq I_{m \times m}$；除非 $p = n$，否则 $V V^\top \neq I_{n \times n}$。
 
-对于任意秩 $p$，$X$ 的摩尔-彭若斯伪逆为
+对于任意秩 $p$，$X$ 的穆尔-彭罗斯广义逆矩阵为
 
 $$
 X^{+} =  V \Sigma^{-1}  U^\top
@@ -249,7 +249,7 @@ $$ (eq:AhatSVDformula)
 
 一种补救方法是只保留 $r < p$ 个最大的奇异值。
 
-设 $U_r$ 为由 $U$ 的前 $r$ 列组成的 $m \times r$ 矩阵，设 $\Sigma_r$ 为 $\Sigma$ 左上角的 $r \times r$ 分块，设 $V_r$ 为由 $V$ 的前 $r$ 列组成的 $n \times r$ 矩阵。
+设 $U_r$ 为由 $U$ 的前 $r$ 列组成的 $m \times r$ 的矩阵，设 $\Sigma_r$ 为 $\Sigma$ 左上角的 $r \times r$ 分块，设 $V_r$ 为由 $V$ 的前 $r$ 列组成的 $n \times r$ 的矩阵。
 
 我们对 $A$ 的 **秩-$r$ 估计量** 为
 
@@ -257,9 +257,9 @@ $$
 \hat A_r = X' V_r \Sigma_r^{-1} U_r^\top
 $$ (eq:Ahat_r)
 
-$m \times m$ 矩阵 $\hat A_r$ 的秩至多为 $r$。
+$m \times m$ 的矩阵 $\hat A_r$ 的秩至多为 $r$。
 
-注意，$V_r \Sigma_r^{-1} U_r^\top$ 是 $\hat X_r = U_r \Sigma_r V_r^\top$ 的伪逆，而 $\hat X_r$ 正是 {doc}`奇异值分解 <svd_intro>` 中埃卡特-杨定理所描述的 $X$ 的最佳秩-$r$ 近似。
+注意，$V_r \Sigma_r^{-1} U_r^\top$ 是 $\hat X_r = U_r \Sigma_r V_r^\top$ 的广义逆矩阵，而 $\hat X_r$ 正是 {doc}`奇异值分解 <svd_intro>` 中埃卡特-杨定理所描述的 $X$ 的最佳秩-$r$ 近似。
 
 于是 $\hat A_r = X' \hat X_r^+$：我们通过在最小二乘公式 $\hat A = X' X^+$ 中用 $X$ 的埃卡特-杨近似代替 $X$，得到了秩-$r$ 估计量。
 
@@ -303,7 +303,7 @@ $$
 
 其各分量是截面数据 $X_t$ 的前 $r$ 个 **主成分**（参见 {doc}`奇异值分解 <svd_intro>` 中关于主成分分析的讨论）。
 
-将它们堆叠起来可得到 $r \times n$ 矩阵 $F = U_r^\top X = \Sigma_r V_r^\top$。
+将它们堆叠起来可得到 $r \times n$ 的矩阵 $F = U_r^\top X = \Sigma_r V_r^\top$。
 
 $X_{t+1}$ 对 $f_t$ 的最小二乘回归具有系数矩阵
 
@@ -352,14 +352,14 @@ $$ (eq:Atilde)
 
 1. 计算约简奇异值分解 $X = U \Sigma V^\top$。
 1. 保留 $r$ 个最大的奇异值，从而构成 $U_r$、$\Sigma_r$ 和 $V_r$。
-1. 构成 $r \times r$ 矩阵 $\tilde A = U_r^\top X' V_r \Sigma_r^{-1}$ 并计算其特征分解
+1. 构成 $r \times r$ 的矩阵 $\tilde A = U_r^\top X' V_r \Sigma_r^{-1}$ 并计算其特征分解
 
    $$
    \tilde A W = W \Lambda
    $$ (eq:tildeAeigenred)
 
    其中 $\Lambda$ 是由特征值 $\lambda_1, \ldots, \lambda_r$ 组成的对角矩阵，$W$ 的列是对应的特征向量。
-1. 构成 $m \times r$ 矩阵 $\Phi$ 和 $r \times m$ 矩阵 $\Psi$
+1. 构成 $m \times r$ 的矩阵 $\Phi$ 和 $r \times m$ 的矩阵 $\Psi$
 
    $$
    \Phi = X' V_r \Sigma_r^{-1} W, \qquad \Psi = (W \Lambda)^{-1} U_r^\top
@@ -369,9 +369,9 @@ $\Lambda$ 对角线上的特征值 $\lambda_i$ 称为 **DMD 特征值**，$\Phi$
 
 我们将在下文看到，$\Psi$ 的行 $\psi_i$ 是与之匹配的**左**特征向量。
 
-请注意，其中的主要计算工作在于对 $m \times n$ 矩阵 $X$ 进行奇异值分解，以及对较小的 $r \times r$ 矩阵 $\tilde A$ 进行特征分解。
+请注意，其中的主要计算工作在于对 $m \times n$ 的矩阵 $X$ 进行奇异值分解，以及对较小的 $r \times r$ 的矩阵 $\tilde A$ 进行特征分解。
 
-我们完全不需要构造或分解 $m \times m$ 矩阵。
+我们完全不需要构造或分解 $m \times m$ 的矩阵。
 
 在整个过程中，我们假设 $\tilde A$ 具有 $r$ 个线性无关的特征向量和非零特征值，这是一般情形。
 
@@ -420,11 +420,11 @@ $$
 
 我们还可以进一步说明。
 
-将 $\hat A_r$ 写为 $B U_r^\top$，其中 $B = X' V_r \Sigma_r^{-1}$ 是 $m \times r$ 矩阵。
+将 $\hat A_r$ 写为 $B U_r^\top$，其中 $B = X' V_r \Sigma_r^{-1}$ 是 $m \times r$ 的矩阵。
 
 因为 $B U_r^\top$ 的非零特征值与 $U_r^\top B = \tilde A$ 的特征值一致，所以 $\hat A_r$ 的特征值为 $\lambda_1, \ldots, \lambda_r$，再加上 $m - r$ 个零特征值。
 
-因此，估计的 VAR {eq}`eq:reducedVAR` 稳定当且仅当 $\max_i |\lambda_i| < 1$，该条件可以通过一个 $r \times r$ 矩阵来验证。
+因此，估计的 VAR {eq}`eq:reducedVAR` 稳定当且仅当 $\max_i |\lambda_i| < 1$，该条件可以通过一个 $r \times r$ 的矩阵来验证。
 
 （另见 {cite}`DDSE_book`，第 238 页。）
 
@@ -489,7 +489,7 @@ $$
 b_t = \Psi X_t = (W \Lambda)^{-1} U_r^\top X_t
 $$ (eq:modalcoords)
 
-计算 $b_t$ 只需要主成分 $f_t = U_r^\top X_t$ 以及一个 $r \times r$ 矩阵。
+计算 $b_t$ 只需要主成分 $f_t = U_r^\top X_t$ 以及一个 $r \times r$ 的矩阵。
 
 由于 $\Psi \Phi = I$，对 $\hat A_r = \Phi \Lambda \Psi$ 进行迭代可得
 
@@ -517,7 +517,7 @@ $$ (eq:modalforecast)
 
 ### 一个看似可行但实际不可行的替代方案
 
-摩尔-彭若斯伪逆 $\Phi^+ = (\Phi^* \Phi)^{-1} \Phi^*$ 也满足 $\Phi^+ \Phi = I$。
+穆尔-彭罗斯广义逆矩阵 $\Phi^+ = (\Phi^* \Phi)^{-1} \Phi^*$ 也满足 $\Phi^+ \Phi = I$。
 
 向量 $\check b_t = \Phi^+ X_t$ 是 $X_t$ 对 $\Phi$ 各列进行最小二乘回归所得的系数向量，而 $\Phi \check b_t$ 则是 $X_t$ 在 $\Phi$ 的列空间上的正交投影。
 
@@ -620,11 +620,11 @@ $$
 g = e_1 \Phi \Lambda (I - \Lambda)^{-1} \Psi
 $$
 
-因此计算 $g$ 和 $H$ 不需要对 $m \times m$ 矩阵求逆。
+因此计算 $g$ 和 $H$ 不需要对 $m \times m$ 的矩阵求逆。
 
 ## 模拟示例
 
-为了观察这些对象的实际作用，我们模拟了一个瘦高型数据集，该数据集与 {cite}`SSY_CEX_2026` 中的 CEX 数据具有一些共同特征。
+为了观察这些对象的实际作用，我们模拟了一个高瘦型数据集，该数据集与 {cite}`SSY_CEX_2026` 中的 CEX 数据具有一些共同特征。
 
 该数据集有 $m = 300$ 个横截面变量，我们可以将其视为由 $q \in [0, 1]$ 索引的分位数，以及 $n + 1 = 134$ 个季度观测值。
 
