@@ -83,6 +83,7 @@ from math import gamma
 from scipy.integrate import quad
 from scipy.optimize import brentq, minimize_scalar
 from scipy.stats import beta as beta_dist
+from scipy.special import betaln, digamma
 import pandas as pd
 from IPython.display import display, Math
 import quantecon as qe
@@ -200,7 +201,7 @@ def plot_likelihood_paths(l_seq, title="Likelihood ratio paths",
     
     plt.figure(figsize=(10, 6))
     for i in range(n_show):
-        plt.plot(range(T), l_seq[i, :], color='b', lw=0.8, alpha=0.5)
+        plt.plot(np.arange(1, T+1), l_seq[i, :], color='b', lw=0.8, alpha=0.5)
     
     if ylim:
         plt.ylim(ylim)
@@ -223,8 +224,7 @@ plot_likelihood_paths(l_seq_g,
                      ylim=[0, 3])
 ```
 
-显然，随着样本长度 $T$ 的增长，大部分概率质量
-向零靠近
+显然，随着样本长度 $T$ 的增长，大部分概率质量向零靠近。
 
 为了更清楚地看到这一点，我们绘制了随时间变化的
 路径 $L\left(w^{t}\right)$ 落在区间
@@ -232,7 +232,8 @@ $\left[0, 0.01\right]$ 内的比例。
 
 ```{code-cell} ipython3
 N, T = l_arr_g.shape
-plt.plot(range(T), np.sum(l_seq_g <= 0.01, axis=0) / N)
+plt.plot(np.arange(1, T+1), np.sum(l_seq_g <= 0.01, axis=0) / N)
+plt.xlabel('t')
 plt.show()
 ```
 
@@ -257,7 +258,7 @@ E\left[L\left(w^{1}\right)\bigm|q=g\right]  &=E\left[\ell \left(w_{1}\right)\big
 \end{aligned}
 $$
 
-因为$L(w^t) = \ell(w_t) L(w^{t-1})$且$\{w_t\}_{t=1}^t$是独立同分布序列，我们有
+因为$L(w^t) = \ell(w_t) L(w^{t-1})$且$\{w_t\}_{t=1}^\infty$是独立同分布序列，我们有
 
 $$
 \begin{aligned}
@@ -278,6 +279,18 @@ $$
 
 答案是，当 $t \rightarrow + \infty$ 时，$L_t$ 的分布变得越来越厚尾：足够多的质量向 $L_t$ 的更大值移动，使得尽管大部分概率质量堆积在 $0$ 附近，$L_t$ 的均值仍然保持为1。
 
+在 $g$ 下，过程 $\{L_t\}$ 是一个均值为 $1$ 的非负鞅。
+
+根据强大数定律，$\frac{1}{t} \log L_t \rightarrow E_g \log \ell(w) = -D_{KL}(g\|f) < 0$ 几乎必然成立，因此 $L_t \rightarrow 0$ 几乎必然成立。
+
+因此，对于每个 $t$ 都有 $E[L_t \mid q=g] = 1$，而 $E[\lim_{t \rightarrow \infty} L_t \mid q=g] = 0$。
+
+鞅 $\{L_t\}$ 几乎必然收敛，但不依均值收敛，因为它不是一致可积的。
+
+{doc}`merging_of_opinions` 研究了这个似然比鞅。
+
+该讲座中的角谷定理指出，当 $\int \sqrt{f g} \, dw < 1$ 时，来自 $f$ 和来自 $g$ 的独立同分布序列的无穷分布是互相奇异的，这是另一种表达 $L_t \rightarrow 0$ 在 $g$ 下几乎必然成立的方式。
+
 为了说明这个特殊性质，我们模拟多条路径，并通过在每个时刻 $t$ 对这些路径取平均来计算 $L\left(w^t\right)$ 的无条件均值。
 
 ```{code-cell} ipython3
@@ -297,13 +310,15 @@ l_arr_g, l_seq_g = simulate_sequences('g',
 
 在那里我们描述了一种通过从不同的概率分布中采样来计算不同随机变量的均值，从而计算似然比均值的替代方法。
 
+
+(nature_likeli_f)=
 ## 自然永久从密度f中抽样
 
-现在假设在时间0之前,自然界永久决定反复从密度f中抽样。
+现在假设在时间0之前，自然界永久决定反复从密度f中抽样。
 
-虽然似然比$\ell \left(w_{t}\right)$在密度$g$下的均值是1,但在密度$f$下的均值超过1。
+虽然似然比$\ell \left(w_{t}\right)$在密度$g$下的均值是1，但在密度$f$下的均值超过1。
 
-为了说明这一点,我们计算:
+为了说明这一点，我们计算：
 
 $$
 \begin{aligned}
@@ -317,11 +332,23 @@ E\left[\ell \left(w_{t}\right)\bigm|q=f\right]  &=\int\frac{f\left(w_{t}\right)}
        \end{aligned}
 $$
 
-这反过来意味着似然比过程$L(w^t)$的无条件均值将趋向于$+ \infty$。
+对于我们例子中的$f$和$g$，$E\left[\ell \left(w_{t}\right)\bigm|q=f\right]$是无穷大。
 
-下面的模拟验证了这个结论。
+因为$f$是均匀密度，$E\left[\ell \left(w_{t}\right)\bigm|q=f\right] = \int_0^1 1/g(w) \, dw$。
 
-请注意$y$轴的刻度。
+当$w \rightarrow 0$时，$g(w)$以$w^{G_a - 1} = w^2$的速度趋于零，因此该积分发散。
+
+{ref}`lr_ex_lmean` 表明，当$G_a < 2$且$G_b < 2$时，$E\left[\ell \left(w_{t}\right)\bigm|q=f\right] = B(G_a, G_b) B(2-G_a, 2-G_b)$，其中$B$是贝塔函数，否则该值为无穷大。
+
+因为$w_t$是独立同分布的，所以对于每个$t \geq 1$，都有$E\left[L\left(w^{t}\right)\bigm|q=f\right] = +\infty$。
+
+因此，随着模拟路径数量的增加，$L\left(w^{t}\right)$在各模拟路径上的样本均值并不会趋于稳定。
+
+{doc}`imp_sample` 遇到了与$\ell(w_t)$在$g$下方差无穷大相同的发散积分问题，因为$E\left[\ell \left(w_{t}\right)^2\bigm|q=g\right] = E\left[\ell \left(w_{t}\right)\bigm|q=f\right]$。
+
+$L\left(w^{t}\right)$的对数则表现良好。
+
+在$f$下，$E\left[\log L\left(w^{t}\right)\bigm|q=f\right] = t \, D_{KL}(f\|g)$，并且根据强大数定律，$\frac{1}{t} \log L\left(w^{t}\right) \rightarrow D_{KL}(f\|g) > 0$几乎必然成立，因此$L\left(w^{t}\right) \rightarrow + \infty$几乎必然成立。
 
 ```{code-cell} ipython3
 # 模拟当自然从f中抽取时
@@ -329,16 +356,29 @@ l_arr_f, l_seq_f = simulate_sequences('f', f, g, rng,
                         (F_a, F_b), (G_a, G_b), N=50000)
 ```
 
+下图绘制了各路径上$\log L\left(w^{t}\right)$的均值和中位数，以及直线$t \, D_{KL}(f\|g)$。
+
 ```{code-cell} ipython3
 N, T = l_arr_f.shape
-plt.plot(range(T), np.mean(l_seq_f, axis=0))
+t_grid = np.arange(1, T+1)
+KL_fg, _ = quad(lambda w: f(w) * np.log(f(w) / g(w)), 0, 1)
+log_l_seq_f = np.log(l_seq_f)
+
+plt.plot(t_grid, np.mean(log_l_seq_f, axis=0), label=r'mean of $\log L_t$')
+plt.plot(t_grid, np.median(log_l_seq_f, axis=0), label=r'median of $\log L_t$')
+plt.plot(t_grid, KL_fg * t_grid, 'k--', label=r'$t \, D_{KL}(f\|g)$')
+plt.xlabel('t')
+plt.legend()
 plt.show()
+
+print(f"D_KL(f||g) = {KL_fg:.4f}")
 ```
 
-我们还绘制了 $L\left(w^t\right)$ 落入区间 $[10000, \infty)$ 的概率随时间的变化图，观察概率质量向 $+\infty$ 发散的速度。
+我们还绘制了$L\left(w^t\right)$落入区间$[10000, \infty)$的概率随时间的变化图，观察概率质量向$+\infty$发散的速度。
 
 ```{code-cell} ipython3
-plt.plot(range(T), np.sum(l_seq_f > 10000, axis=0) / N)
+plt.plot(t_grid, np.sum(l_seq_f > 10000, axis=0) / N)
+plt.xlabel('t')
 plt.show()
 ```
 
@@ -364,9 +404,11 @@ Neyman 和 Pearson 证明了检验这个假设的最佳方法是使用**似然�
 
 设置 $c=1$ 是一个常见的选择。
 
+当 $f$ 和 $g$ 具有相同的先验概率时，$c = 1$ 会选择后验概率较大的模型，从而使选错模型的概率最小化。
+
 我们将在下面讨论其他 $c$ 值选择的影响。
 
-这个检验是*最佳的*，因为它是**一致最优检验**。
+这个检验是*最佳的*，因为它是**最优效能的**。
 
 为了理解这一点，我们需要定义两个重要事件的概率，这些概率可以帮助我们描述与给定阈值 $c$ 相关的检验。
 
@@ -384,19 +426,9 @@ Neyman 和 Pearson 证明了检验这个假设的最佳方法是使用**似然�
   \beta \equiv \Pr\left\{ L\left(w^{t}\right)>c\mid q=g\right\}
   $$
 
-这两个概率是以下两个概念的基础：
+概率 $\alpha$ 也被称为虚警概率或显著性水平。
 
-- 虚警概率（=显著性水平=第一类错误概率）：
-
-  $$
-  \alpha \equiv  \Pr\left\{ L\left(w^{t}\right)<c\mid q=f\right\}
-  $$
-
-- 检测概率（=检验力=1减去第二类错误概率）：
-
-  $$
-  1-\beta \equiv \Pr\left\{ L\left(w^{t}\right)<c\mid q=g\right\}
-  $$
+概率 $1-\beta = \Pr\left\{ L\left(w^{t}\right)<c\mid q=g\right\}$ 被称为检测概率或检验的检验力。
 
 [奈曼-皮尔逊引理](https://en.wikipedia.org/wiki/Neyman–Pearson_lemma)指出，在所有可能的检验中，似然比检验在给定虚警概率的情况下能最大化检测概率。
 
@@ -411,6 +443,12 @@ Neyman 和 Pearson 证明了检验这个假设的最佳方法是使用**似然�
 如果不指定第一类和第二类错误的具体损失，我们很难说应该如何权衡这两种错误的概率。
 
 我们知道增加样本量 $t$ 可以改善统计推断。
+
+从布莱克韦尔的意义上说，揭示 $w^t$ 的实验比揭示 $w^s$（$t > s$）的实验信息量更大，因为统计学家总是可以丢弃最后 $t-s$ 个观测值。
+
+当只有两个假设时，一个实验在布莱克韦尔意义上比另一个实验信息量更大，当且仅当它的接收者操作特征曲线（定义见下文）处处位于另一条曲线之上。
+
+{doc}`blackwell_kihlstrom` 描述了布莱克韦尔对实验的排序；其中关于{ref}`贝叶斯似然比学习 <bk_lr_learning>`的部分将这一思想应用于本讲座的背景之中。
 
 下面我们将绘制一些说明性图表来展示这一点。
 
@@ -442,18 +480,19 @@ def plot_log_histograms(l_seq_f, l_seq_g, c=1, time_points=[1, 7, 14, 21]):
         
         axs[nr, nc].axvline(np.log(c), color="k", ls="--")
         
-        hist_f, x_f = np.histogram(np.log(l_seq_f[:, t]), 200, density=True)
-        hist_g, x_g = np.histogram(np.log(l_seq_g[:, t]), 200, density=True)
+        # l_seq的第t-1列保存L(w^t)
+        hist_f, x_f = np.histogram(np.log(l_seq_f[:, t-1]), 200, density=True)
+        hist_g, x_g = np.histogram(np.log(l_seq_g[:, t-1]), 200, density=True)
         
-        axs[nr, nc].plot(x_f[1:], hist_f, label="f下的分布")
-        axs[nr, nc].plot(x_g[1:], hist_g, label="g下的分布")
+        axs[nr, nc].plot(x_f[1:], hist_f, color="C0", label="f下的分布")
+        axs[nr, nc].plot(x_g[1:], hist_g, color="C1", label="g下的分布")
         
         # 填充错误区域
         for j, (x, hist, label) in enumerate(
             zip([x_f, x_g], [hist_f, hist_g], 
             ["第一类错误", "第二类错误"])):
             ind = x[1:] <= np.log(c) if j == 0 else x[1:] > np.log(c)
-            axs[nr, nc].fill_between(x[1:][ind], hist[ind], 
+            axs[nr, nc].fill_between(x[1:][ind], hist[ind], color=f"C{j}",
                                     alpha=0.5, label=label)
         
         axs[nr, nc].legend()
@@ -465,10 +504,10 @@ plot_log_histograms(l_seq_f, l_seq_g, c=c)
 ```
 
 在上述图表中，
-  * 蓝色区域与第一类错误的概率 $\alpha$ 相关但不相等，因为
-它们是在拒绝域 $L_t < 1$ 上 $\log L_t$ 的积分，而不是 $L_t$ 的积分
-* 橙色区域与第二类错误的概率 $\beta$ 相关但不相等，因为
-它们是在接受域 $L_t > 1$ 上 $\log L_t$ 的积分，而不是 $L_t$ 的积分
+  * 蓝色区域等于第一类错误的概率 $\alpha$（在直方图分箱的精度范围内）
+  * 橙色区域等于第二类错误的概率 $\beta$（在直方图分箱的精度范围内）
+
+由于对数是单调的，事件 $\{L_t < 1\}$ 就是事件 $\{\log L_t < 0\}$，因此 $\log L_t$ 的密度曲线在 $0$ 左侧的面积就是 $\Pr\{L_t < 1\}$。
 
 当我们将 $c$ 固定在 $c=1$ 时，下图显示：
   * 检测概率随着 $t$ 的增加单调增加
@@ -500,9 +539,10 @@ def compute_error_probabilities(l_seq_f, l_seq_g, c=1):
 
 def plot_error_probabilities(error_dict, T, c=1, title_suffix=""):
     """绘制随时间变化的错误概率。"""
+    t_grid = np.arange(1, T+1)
     plt.figure(figsize=(10, 6))
-    plt.plot(range(T), error_dict['PD'], label="检测概率")
-    plt.plot(range(T), error_dict['PFA'], label="虚警概率")
+    plt.plot(t_grid, error_dict['PD'], label="检测概率")
+    plt.plot(t_grid, error_dict['PFA'], label="虚警概率")
     plt.xlabel("t")
     plt.ylabel("概率")
     plt.title(f"错误概率 (c={c}){title_suffix}")
@@ -532,8 +572,9 @@ def plot_roc_curves(l_seq_f, l_seq_g, t_values=[1, 5, 9, 13], N=None):
     
     plt.figure(figsize=(10, 6))
     for t in t_values:
-        percentile = np.percentile(l_seq_f[:, t], PFA)
-        PD = [np.sum(l_seq_g[:, t] < p) / N for p in percentile]
+        # l_seq的第t-1列保存L(w^t)
+        percentile = np.percentile(l_seq_f[:, t-1], PFA)
+        PD = [np.sum(l_seq_g[:, t-1] < p) / N for p in percentile]
         plt.plot(PFA / 100, PD, label=f"t={t}")
     
     plt.scatter(0, 1, label="完美检测")
@@ -583,7 +624,8 @@ for t in range(T):
     c = np.percentile(l_seq_f[:, t], PFA * 100)
     PD[t] = np.sum(l_seq_g[:, t] < c) / N
 
-plt.plot(range(T), PD)
+# PD[t]对应的样本量为t+1
+plt.plot(np.arange(1, T+1), PD)
 plt.axhline(0.9, color="k", ls="--")
 
 plt.xlabel("t")
@@ -595,6 +637,8 @@ plt.show()
 美国海军显然在第二次世界大战期间使用类似这样的程序来选择质量控制测试的样本大小 $t$。
 
 一位被命令执行此类测试的海军上校对此产生了疑虑，他向米尔顿·弗里德曼提出了这些疑虑，我们在 {doc}`这篇讲座 <wald_friedman>` 中对此进行了描述。
+
+{doc}`wald_friedman_2` 将这位上校的问题表述为一个贝叶斯序贯决策问题，而 {doc}`navy_captain` 比较了海军的频率派规则与贝叶斯决策规则。
 
 (llr_h)=
 ### 第三个分布 $h$
@@ -627,23 +671,21 @@ K_{g} = D_{KL}\bigl(h\|g\bigr) = KL(h, g)
 \end{aligned}
 $$
 
-让我们使用 {doc}`divergence_measures` 中的相同代码来计算库尔贝克-莱布勒差异。
+让我们使用 {doc}`divergence_measures` 中 Beta 密度函数的闭式解来计算库尔贝克-莱布勒差异。
 
 ```{code-cell} ipython3
-def compute_KL(f, g):
-    """
-    计算KL散度 KL(f, g)
-    """
-    integrand = lambda w: f(w) * np.log(f(w) / g(w))
-    val, _ = quad(integrand, 1e-5, 1-1e-5)
-    return val
+def KL_beta(a1, b1, a2, b2):
+    """以闭式计算 KL(Beta(a1, b1) ‖ Beta(a2, b2))。"""
+    return (betaln(a2, b2) - betaln(a1, b1)
+            + (a1 - a2) * digamma(a1) + (b1 - b2) * digamma(b1)
+            + (a2 - a1 + b2 - b1) * digamma(a1 + b1))
 
-def compute_KL_h(h, f, g):
+def compute_KL_h(h_params, F_params=(F_a, F_b), G_params=(G_a, G_b)):
     """
-    计算相对于参考分布h的KL散度
+    计算 Beta 密度函数 h、f、g 的 K_f = KL(h, f) 和 K_g = KL(h, g)
     """
-    Kf = compute_KL(h, f)
-    Kg = compute_KL(h, g)
+    Kf = KL_beta(*h_params, *F_params)
+    Kg = KL_beta(*h_params, *G_params)
     return Kf, Kg
 ```
 
@@ -678,7 +720,9 @@ def compute_likelihood_ratios(sequences, f, g):
     return l_ratios, L_cumulative
 ```
 
-我们考虑三种情况：(1) $h$ 更接近 $f$，(2) $f$ 和 $g$ 与 $h$ 的距离大致相等，以及 (3) $h$ 更接近 $g$。
+我们考虑三种情况：(1) $h$ 更接近 $f$，(2) $f$ 和 $g$ 与 $h$ 的距离相等，以及 (3) $h$ 更接近 $g$。
+
+在情况 (2) 中，我们设定 $h = \text{Beta}(2.1035, 1.35)$，此时 $K_f$ 和 $K_g$ 在小数点后四位上一致。
 
 ```{code-cell} ipython3
 :tags: [hide-input]
@@ -691,9 +735,9 @@ scenarios = [
         "expected": r"$L_t \to \infty$"
     },
     {
-        "name": "KL(h,g) ≈ KL(h,f)",
-        "h_params": (2, 1.35),
-        "expected": "$L_t$ fluctuates"
+        "name": "KL(h,g) = KL(h,f)",
+        "h_params": (2.1035, 1.35),
+        "expected": r"$\log L_t$ has no drift"
     },
     {
         "name": "KL(h,g) < KL(h,f)", 
@@ -710,12 +754,13 @@ for i, scenario in enumerate(scenarios):
                     scenario["h_params"][1])
     
     # Compute KL divergences
-    Kf, Kg = compute_KL_h(h, f, g)
+    Kf, Kg = compute_KL_h(scenario["h_params"])
     kl_diff = Kg - Kf
     
     # Simulate paths
     N_paths = 100
     T = 150
+    t_grid = np.arange(1, T+1)
 
     # Generate data from h
     h_data = rng.beta(scenario["h_params"][0], 
@@ -740,14 +785,15 @@ for i, scenario in enumerate(scenarios):
     # Plot log likelihood ratio paths
     ax = axes[1, i]
     for j in range(min(20, N_paths)):
-        ax.plot(log_l_cumulative[j, :], alpha=0.3, color='purple')
+        ax.plot(t_grid, log_l_cumulative[j, :], alpha=0.3, color='purple')
     
     # Plot theoretical expectation
-    theory_line = kl_diff * np.arange(1, T+1)
-    ax.plot(theory_line, 'k--', linewidth=2, label=r'$t \times (K_g - K_f)$')
+    theory_line = kl_diff * t_grid
+    ax.plot(t_grid, theory_line, 'k--', linewidth=2, 
+            label=r'$t \times (K_g - K_f)$')
     
     ax.set_xlabel('t')
-    ax.set_ylabel('$log L_t$')
+    ax.set_ylabel(r'$\log L_t$')
     ax.set_title(f'KL(h,f)={Kf:.3f}, KL(h,g)={Kg:.3f}\n{scenario["expected"]}', 
                  fontsize=16)
     ax.legend(fontsize=16)
@@ -759,9 +805,9 @@ plt.show()
 请注意
 
 - 在第一张图中，由于 $K_g > K_f$，$\log L(w^t)$ 发散到 $\infty$。
-- 在第二张图中，虽然仍然有 $K_g > K_f$，但差值较小，所以 $L(w^t)$ 发散到无穷的速度较慢。
+- 在第二张图中，$K_g = K_f$，所以 $\log L(w^t)$ 是一个均值为零、增量独立同分布的随机游走；其路径会向两个方向偏离零点，散布程度按 $\sqrt{t}$ 的速度增长。
 - 在最后一张图中，由于 $K_g < K_f$，$\log L(w^t)$ 发散到 $-\infty$。
-- 黑色虚线 $t \left(D_{KL}(h\|g) - D_{KL}(h\|f)\right)$ 与验证 {eq}`eq:kl_likelihood_link` 的路径紧密吻合。
+- 黑色虚线 $t \left(D_{KL}(h\|g) - D_{KL}(h\|f)\right)$ 穿过路径的中心，正如 {eq}`eq:kl_likelihood_link` 所预测的那样。
 
 这些观察结果与理论相符。
 
@@ -797,7 +843,7 @@ $$
 
 **时序协议1：** 自然只在 $t=-1$ 时刻**一次性**掷硬币，以概率 $\pi_{-1}$ 从 $f$ 生成一个 IID 序列 $\{w_t\}_{t=1}^T$，以概率 $1-\pi_{-1}$ 从 $g$ 生成一个 IID 序列 $\{w_t\}_{t=1}^T$。
 
-**时序协议2：** 自然**频繁**掷硬币。在每个时刻 $t \geq 0$，自然掷一次硬币，以概率 $\pi_{-1}$ 从 $f$ 中抽取 $w_t$，以概率 $1-\pi_{-1}$ 从 $g$ 中抽取 $w_t$。
+**时序协议2：** 自然**频繁**掷硬币。在每个时刻 $t \geq 1$，自然掷一次硬币，以概率 $\pi_{-1}$ 从 $f$ 中抽取 $w_t$，以概率 $1-\pi_{-1}$ 从 $g$ 中抽取 $w_t$。
 
 以下是我们用来实现时序协议1和2的Python代码
 
@@ -847,6 +893,10 @@ def protocol_2(π_minus_1, T, rng, N=1000, F_params=(1, 1), G_params=(3, 1.2)):
 
 **注释：** 在时序协议2下，$\{w_t\}_{t=1}^T$ 是从 $h(w)$ 中独立同分布(IID)抽取的序列。在时序协议1下，$\{w_t\}_{t=1}^T$ 不是独立同分布的。它是**条件独立同分布**的 -- 意味着以概率 $\pi_{-1}$ 它是从 $f(w)$ 中独立同分布抽取的序列，以概率 $1-\pi_{-1}$ 它是从 $g(w)$ 中独立同分布抽取的序列。关于这一点的更多信息，请参见 {doc}`这篇关于可交换性的讲座 <exchangeable>`。
 
+{doc}`likelihood_bayes` 研究了一位知道数据由时序协议1支配并了解自然选择了哪种密度的贝叶斯学习者。
+
+{doc}`mix_model` 研究了一位错误地相信时序协议1、而数据实际上由时序协议2生成的贝叶斯学习者。
+
 我们再次部署一个**似然比过程**，其时间 $t$ 分量是似然比
 
 $$
@@ -861,6 +911,7 @@ $$
 
 为简便起见，我们将写作 $L_t = L(w^t)$。
 
+(lrp_model_selection)=
 ### 模型选择错误概率
 
 我们首先研究假设时序协议1的问题。
@@ -883,7 +934,7 @@ $$
 p_g = {\rm Prob}\left(L_T \geq 1 \Big|g \right) = \beta_T.
 $$
 
-我们可以通过赋予自然选择模型 $f$ 的贝叶斯先验概率 $\pi_{-1} = .5$，然后对 $p_f$ 和 $p_g$ 取平均值来构造似然比选择错误模型的概率，从而得到检测错误的贝叶斯后验概率等于
+我们可以通过赋予自然选择模型 $f$ 的贝叶斯先验概率 $\pi_{-1} = .5$，然后对 $p_f$ 和 $p_g$ 取平均值来构造似然比选择错误模型的概率，从而得到检测错误的先验（事前）概率等于
 
 $$ 
 p(\textrm{wrong decision}) = {1 \over 2} (\alpha_T + \beta_T) .
@@ -985,8 +1036,8 @@ result_p1 = analyze_protocol_1(π_minus_1, T_max, N_simulations,
 
 $$
 \begin{aligned}
-w_t  & \ {\rm 来自 \ }  f  \ {\rm 如果 \ } l_t > 1 \\
-w_t  & \ {\rm 来自 \ } g  \ {\rm 如果 \ } l_t \leq 1 . 
+w_t  & \ {\rm 来自 \ }  f  \ {\rm 如果 \ } l_t \geq 1 \\
+w_t  & \ {\rm 来自 \ } g  \ {\rm 如果 \ } l_t < 1 . 
 \end{aligned}
 $$
 
@@ -1030,8 +1081,16 @@ def compute_protocol_2_errors(π_minus_1, T_max, N_simulations, f_func, g_func,
 由于对于每个 $t$，决策边界都是相同的，因此可以通过以下方式计算决策边界
 
 ```{code-cell} ipython3
-root = brentq(lambda w: f(w) / g(w) - 1, 0.001, 0.999)
+root = brentq(lambda w: f(w) / g(w) - 1, 0.001, 0.99)
+root_2 = brentq(lambda w: f(w) / g(w) - 1, 0.99, 1 - 1e-12)
+print(f"f/g = 1 at w = {root:.4f} and at w = {root_2:.5f}")
 ```
+
+似然比 $f/g$ 在两个点上等于 $1$，这是因为 $g$ 在 $(0,1)$ 的两端都趋于零。
+
+该规则将 $w_t$ 落在两个根之间时归类为来自 $g$，否则归类为来自 $f$。
+
+第二个根非常靠近 $1$，以至于其右侧的区间在 $f$ 和 $g$ 下的概率都低于 $0.001$。
 
 我们可以绘制$f$和$g$的分布以及决策边界
 
@@ -1050,17 +1109,17 @@ ax.plot(w_range, f_values, 'b-',
 ax.plot(w_range, g_values, 'r-', 
         label=r'$g(w) \sim Beta(3,1.2)$', linewidth=2)
 
-type1_prob = 1 - beta_dist.cdf(root, F_a, F_b)
-type2_prob = beta_dist.cdf(root, G_a, G_b)
+# P(将f分类为g) 和 P(将g分类为f)
+type1_prob = beta_dist.cdf(root_2, F_a, F_b) - beta_dist.cdf(root, F_a, F_b)
+type2_prob = beta_dist.cdf(root, G_a, G_b) + beta_dist.sf(root_2, G_a, G_b)
 
-w_type1 = w_range[w_range >= root]
-f_type1 = [f(w) for w in w_type1]
-ax.fill_between(w_type1, 0, f_type1, alpha=0.3, color='blue', 
+in_g_region = (w_range > root) & (w_range < root_2)
+f_type1 = [f(w) if inside else 0 for w, inside in zip(w_range, in_g_region)]
+ax.fill_between(w_range, 0, f_type1, alpha=0.3, color='blue', 
                 label=fr'$\tilde \alpha_t = {type1_prob:.2f}$')
 
-w_type2 = w_range[w_range <= root]
-g_type2 = [g(w) for w in w_type2]
-ax.fill_between(w_type2, 0, g_type2, alpha=0.3, color='red', 
+g_type2 = [0 if inside else g(w) for w, inside in zip(w_range, in_g_region)]
+ax.fill_between(w_range, 0, g_type2, alpha=0.3, color='red', 
                 label=fr'$\tilde \beta_t = {type2_prob:.2f}$')
 
 ax.axvline(root, color='green', linestyle='--', alpha=0.7, 
@@ -1076,27 +1135,20 @@ plt.show()
 
 在绿色垂直线的左侧，$g < f$，所以 $l_t > 1$；因此，落在绿线左侧的 $w_t$ 被归类为 $f$ 类型个体。
 
- * 红色阴影区域等于 $\beta$ -- 将实际为 $f$ 类型的个体错误分类为 $g$ 类型的概率。
+ * 红色阴影区域等于 $\tilde \beta_t$ -- 将实际为 $g$ 类型的个体错误分类为 $f$ 类型的概率。
 
-在绿色垂直线的右侧，$g > f$，所以 $l_t < 1$；因此，落在绿线右侧的 $w_t$ 被归类为 $g$ 类型个体。
+在绿色垂直线右侧、第二个根 $w = 0.99925$ 左侧的区间内，$g > f$，所以 $l_t < 1$；因此，落在这个区间内的 $w_t$ 被归类为 $g$ 类型个体。
 
- * 蓝色阴影区域等于 $\alpha$ -- 将实际为 $g$ 类型的个体错误分类为 $f$ 类型的概率。
+ * 蓝色阴影区域等于 $\tilde \alpha_t$ -- 将实际为 $f$ 类型的个体错误分类为 $g$ 类型的概率。
 
 这给了我们计算理论分类错误概率的线索
 
 ```{code-cell} ipython3
-# 计算理论 tilde α_t 和 tilde β_t
-def α_integrand(w):
-    """用于计算 tilde α_t = P(l_t < 1 | f) 的积分"""
-    return f(w) if f(w) / g(w) < 1 else 0
+# tilde α_t = P(l_t < 1 | f) = P(root < w < root_2 | f)
+α_theory = beta_dist.cdf(root_2, F_a, F_b) - beta_dist.cdf(root, F_a, F_b)
 
-def β_integrand(w):
-    """用于计算 tilde β_t = P(l_t >= 1 | g) 的积分"""
-    return g(w) if f(w) / g(w) >= 1 else 0
-
-# 计算积分
-α_theory, _ = quad(α_integrand, 0, 1, limit=100)
-β_theory, _ = quad(β_integrand, 0, 1, limit=100)
+# tilde β_t = P(l_t >= 1 | g) = P(w <= root or w >= root_2 | g)
+β_theory = beta_dist.cdf(root, G_a, G_b) + beta_dist.sf(root_2, G_a, G_b)
 
 theory_error = 0.5 * (α_theory + β_theory)
 
@@ -1169,6 +1221,7 @@ compare_protocols(result_p1, result_p2)
 
 **注意：**思考一下大数定律是如何应用于计算模型选择问题和分类问题的误差概率的。
 
+(lrp_chernoff)=
 ### 误差概率和散度度量
 
 一个合理的猜测是，似然比区分分布$f$和$g$的能力取决于它们有多"不同"。
@@ -1180,99 +1233,129 @@ compare_protocols(result_p1, result_p2)
 回顾一下，概率密度$f$和$g$之间的Chernoff熵定义为：
 
 $$
-C(f,g) = - \log \min_{\phi \in (0,1)} \int f^\phi(x) g^{1-\phi}(x) dx
+C(f,g) = - \log \min_{\phi \in (0,1)} \rho(\phi), \qquad \rho(\phi) = \int f^\phi(x) g^{1-\phi}(x) dx
 $$
 
-模型选择误差概率的上界是
+设 $f_T(w^T) = \prod_{t=1}^T f(w_t)$ 和 $g_T(w^T) = \prod_{t=1}^T g(w_t)$ 为两个模型下 $w^T$ 的联合密度。
+
+似然比检验在 $f_T \geq g_T$ 时选择 $f$，在 $f_T < g_T$ 时选择 $g$。
+
+因此，其模型选择错误概率 {eq}`eq:detectionerrorprob` 为
 
 $$
-e^{-C(f,g)T} .
+\frac{1}{2} (\alpha_T + \beta_T) 
+= \frac{1}{2} \int_{f_T < g_T} f_T \, dw^T + \frac{1}{2} \int_{f_T \geq g_T} g_T \, dw^T
+= \frac{1}{2} \int \min\{f_T, g_T\} \, dw^T .
 $$
 
-让我们用Python代码来数值计算Chernoff熵
+对于 $x, y \geq 0$ 和 $\phi \in [0,1]$，有 $\min\{x, y\} \leq x^\phi y^{1-\phi}$。
+
+由于 $w_t$ 是独立同分布的，
+
+$$
+\frac{1}{2} (\alpha_T + \beta_T) \leq \frac{1}{2} \int f_T^\phi \, g_T^{1-\phi} \, dw^T = \frac{1}{2} \rho(\phi)^T 
+$$
+
+对每个 $\phi \in [0,1]$ 都成立。
+
+对右侧关于 $\phi$ 取最小值，可得模型选择错误概率的上界：
+
+$$
+\frac{1}{2} (\alpha_T + \beta_T) \leq \frac{1}{2} e^{-C(f,g)T} .
+$$ (eq:chernoff_bound)
+
+更弱的界 $e^{-C(f,g)T}$ 也成立。
+
+{cite:t}`chernoff1952` 证明了界 {eq}`eq:chernoff_bound` 给出了正确的指数速率：
+
+$$
+-\frac{1}{T} \log \frac{1}{2} (\alpha_T + \beta_T) \rightarrow C(f,g) .
+$$
+
+逼近这一极限的速度较慢，因为错误概率中含有一个在 $T$ 中以多项式速率衰减的因子，而该界并未考虑这个因子。
+
+对于Beta密度，Chernoff系数 $\rho(\phi)$ 具有闭式表达式，我们在 {doc}`divergence_measures` 中推导过。
+
+让我们用Python代码来计算Chernoff熵
 
 ```{code-cell} ipython3
-def chernoff_integrand(ϕ, f, g):
-    """
-    计算Chernoff熵的被积函数
-    """
-    def integrand(w):
-        return f(w)**ϕ * g(w)**(1-ϕ)
-    
-    result, _ = quad(integrand, 1e-5, 1-1e-5)
-    return result
+def log_chernoff_coef_beta(ϕ, a1, b1, a2, b2):
+    """Beta(a1, b1)和Beta(a2, b2)的闭式log ρ(ϕ)。"""
+    return (betaln(ϕ * a1 + (1 - ϕ) * a2, ϕ * b1 + (1 - ϕ) * b2)
+            - ϕ * betaln(a1, b1) - (1 - ϕ) * betaln(a2, b2))
 
-def compute_chernoff_entropy(f, g):
-    """
-    计算Chernoff熵C(f,g)
-    """
-    def objective(ϕ):
-        return chernoff_integrand(ϕ, f, g)
-    
-    # 在(0,1)区间内找到最小值
-    result = minimize_scalar(objective, 
-                             bounds=(1e-5, 1-1e-5), 
-                             method='bounded')
-    min_value = result.fun
-    ϕ_optimal = result.x
-    
-    chernoff_entropy = -np.log(min_value)
-    return chernoff_entropy, ϕ_optimal
-C_fg, ϕ_optimal = compute_chernoff_entropy(f, g)
+def chernoff_beta(a1, b1, a2, b2):
+    """两个Beta密度的Chernoff熵C(f, g)及最小化的ϕ。"""
+    res = minimize_scalar(log_chernoff_coef_beta, bounds=(0, 1),
+                          args=(a1, b1, a2, b2), method='bounded')
+    return -res.fun, res.x
+
+C_fg, ϕ_optimal = chernoff_beta(F_a, F_b, G_a, G_b)
 print(f"Chernoff熵C(f,g) = {C_fg:.4f}")
 print(f"最优ϕ = {ϕ_optimal:.4f}")
 ```
 
-现在让我们来研究 $e^{-C(f,g)T}$ 作为 $T$ 的函数时的表现，并将其与模型选择错误概率进行比较
+现在让我们将时序协议1下模拟得到的模型选择错误概率与界 $\frac{1}{2} e^{-C(f,g)T}$ 和 $e^{-C(f,g)T}$ 进行比较。
+
+右边的图绘制了模拟错误概率的 $-\frac{1}{T} \log$ 随 $T$ 的变化。
 
 ```{code-cell} ipython3
 T_range = np.arange(1, T_max+1)
-chernoff_bound = np.exp(-C_fg * T_range)
+chernoff_bound = 0.5 * np.exp(-C_fg * T_range)
 
-# 绘制比较图
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
 
-ax.semilogy(T_range, chernoff_bound, 'r-', linewidth=2, 
-           label=f'$e^{{-C(f,g)T}}$')
-ax.semilogy(T_range, result_p1['error_prob'], 'b-', linewidth=2, 
-           label='模型选择错误概率')
+ax1.semilogy(T_range, 2 * chernoff_bound, 'r--', linewidth=2, 
+             label=f'$e^{{-C(f,g)T}}$')
+ax1.semilogy(T_range, chernoff_bound, 'r-', linewidth=2, 
+             label=r'$\frac{1}{2} e^{-C(f,g)T}$')
+ax1.semilogy(T_range, result_p1['error_prob'], 'b-', linewidth=2, 
+             label='模型选择错误概率')
+ax1.set_xlabel('T')
+ax1.set_ylabel('错误概率（对数刻度）')
+ax1.legend()
 
-ax.set_xlabel('T')
-ax.set_ylabel('错误概率（对数刻度）')
-ax.legend()
+ax2.plot(T_range, -np.log(result_p1['error_prob']) / T_range, 'b-', 
+         linewidth=2, label=r'$-\frac{1}{T}\log \frac{1}{2}(\alpha_T + \beta_T)$')
+ax2.axhline(C_fg, color='r', linestyle='-', linewidth=2, label='$C(f,g)$')
+ax2.set_xlabel('T')
+ax2.set_ylim(0, None)
+ax2.legend()
+
 plt.tight_layout()
 plt.show()
 ```
 
-显然，$e^{-C(f,g)T}$是误差率的上界。
+模拟的错误概率低于 $\frac{1}{2} e^{-C(f,g)T}$，这符合 {eq}`eq:chernoff_bound` 的要求。
+
+它的负对数除以 $T$ 会缓慢地趋近于 $C(f,g)$。
 
 在 {doc}`divergence_measures` 中，我们还研究了**Jensen-Shannon散度**作为分布之间的对称距离度量。
 
 我们可以使用Jensen-Shannon散度来测量分布$f$和$g$之间的距离，并计算它与模型选择错误概率的协方差。
 
-我们还可以通过一些Python代码来数值计算Jensen-Shannon散度
+我们还可以通过一些Python代码来数值计算Jensen-Shannon散度。
+
+我们在 $(0,1)$ 的整个区间上积分，并在 $1/2$ 处将区间分开，因为U形的Beta密度在端点处会发散。
 
 ```{code-cell} ipython3
 def compute_JS(f, g):
     """
     计算Jensen-Shannon散度
     """
-    def m(w):
-        return 0.5 * (f(w) + g(w))
+    def integrand(w):
+        fw, gw = f(w), g(w)
+        mw = 0.5 * (fw + gw)
+        return 0.5 * fw * np.log(fw / mw) + 0.5 * gw * np.log(gw / mw)
     
-    js_div = 0.5 * compute_KL(f, m) + 0.5 * compute_KL(g, m)
-    return js_div
+    left, _ = quad(integrand, 0, 0.5, limit=200)
+    right, _ = quad(integrand, 0.5, 1, limit=200)
+    return left + right
 ```
 
 现在让我们回到我们的猜想，即在大样本量情况下的错误概率与两个分布之间的Chernoff熵有关。
 
 我们通过计算时序协议1下$T=50$时错误概率的对数与散度度量之间的相关性来验证这一点。
-
-在下面的模拟中，自然界从$g$中抽取$N/2$个序列，从$f$中抽取$N/2$个序列。
-
-```{note}
-自然界采用这种方式，而不是在每次长度为$T$的模拟之前抛一次公平硬币来决定是从$g$还是$f$中抽取。
-```
 
 我们使用以下Beta分布对作为$f$和$g$的测试用例
 
@@ -1296,13 +1379,73 @@ distribution_pairs = [
 ]
 ```
 
-现在让我们运行模拟
+对于差异最明显的一对分布，Chernoff界 {eq}`eq:chernoff_bound` 将 $T = 50$ 时的错误概率限制在 $\frac{1}{2} e^{-0.443 \times 50} \approx 1.2 \times 10^{-10}$ 以下。
+
+对这类分布对，从$f$和$g$各模拟几千条序列通常根本不会记录到任何错误。
+
+我们改用重要性抽样来计算错误概率，这是 {doc}`imp_sample` 介绍的一种技术。
+
+我们从**倾斜密度**中抽取 $w^T$
+
+$$
+q(w) = \frac{f(w)^{\phi^*} g(w)^{1-\phi^*}}{\rho(\phi^*)} ,
+$$
+
+其中 $\phi^*$ 是 $C(f,g)$ 定义中取得最小值的点。
+
+对于Beta密度 $f$ 和 $g$，$q$ 同样是Beta密度，如 {doc}`divergence_measures` 所示。
+
+由于 $f/q = \rho(\phi^*)\, \ell^{1-\phi^*}$ 和 $g/q = \rho(\phi^*)\, \ell^{-\phi^*}$，
+
+$$
+\frac{1}{2} (\alpha_T + \beta_T) 
+= \frac{1}{2} \int \min\left\{\frac{f_T}{q_T}, \frac{g_T}{q_T}\right\} q_T \, dw^T
+= \frac{1}{2} e^{-C(f,g)T} \, E_q\left[\min\left\{L_T^{1-\phi^*}, L_T^{-\phi^*}\right\}\right] ,
+$$
+
+其中 $q_T(w^T) = \prod_{t=1}^T q(w_t)$。
+
+期望内部的随机变量位于 $0$ 和 $1$ 之间。
+
+这一事实再次给出了界 {eq}`eq:chernoff_bound`，并使得 $\min\{L_T^{1-\phi^*}, L_T^{-\phi^*}\}$ 的样本均值具有较小的方差。
+
+```{code-cell} ipython3
+def log_beta_pdf(w, a, b):
+    """Beta(a, b)的对数密度。"""
+    return (a - 1) * np.log(w) + (b - 1) * np.log1p(-w) - betaln(a, b)
+
+def error_prob_tilted(f_params, g_params, T, N, rng):
+    """
+    通过从Chernoff倾斜密度中进行重要性抽样，
+    计算模型选择错误概率 (α_T + β_T) / 2。
+    """
+    (f_a, f_b), (g_a, g_b) = f_params, g_params
+    C, ϕ = chernoff_beta(f_a, f_b, g_a, g_b)
+    q_a, q_b = ϕ * f_a + (1 - ϕ) * g_a, ϕ * f_b + (1 - ϕ) * g_b
+    
+    # 使抽取值远离边界，因为在边界处对数密度为无穷大
+    w = np.clip(rng.beta(q_a, q_b, (N, T)), 1e-300, 1 - 1e-16)
+    log_L = np.sum(log_beta_pdf(w, f_a, f_b) 
+                   - log_beta_pdf(w, g_a, g_b), axis=1)
+    weights = np.exp(np.minimum((1 - ϕ) * log_L, -ϕ * log_L))
+    return 0.5 * np.exp(-C * T) * np.mean(weights)
+```
+
+作为检验，我们将重要性抽样估计器应用于我们的 $f$ 和 $g$（在 $T = 30$ 时），并将其与上面时序协议1的模拟结果进行比较。
+
+```{code-cell} ipython3
+is_estimate = error_prob_tilted((F_a, F_b), (G_a, G_b), T_max, 5000, rng)
+print(f"在T={T_max}时的重要性抽样估计值: {is_estimate:.5f}")
+print(f"在T={T_max}时模拟的协议1误差:   "
+      f"{result_p1['error_prob'][-1]:.5f}")
+```
+
+现在我们计算每一对分布在 $T = 50$ 时的散度度量和错误概率
 
 ```{code-cell} ipython3
 # 模拟参数
 T_large = 50
 N_sims = 5000
-N_half = N_sims // 2
 
 # 初始化数组
 n_pairs = len(distribution_pairs)
@@ -1315,30 +1458,18 @@ pair_names = []
 
 for i, ((f_a, f_b), (g_a, g_b)) in enumerate(distribution_pairs):
     # 创建密度函数
-    f = jit(lambda x, a=f_a, b=f_b: p(x, a, b))
-    g = jit(lambda x, a=g_a, b=g_b: p(x, a, b))
+    f_pair = jit(lambda x, a=f_a, b=f_b: p(x, a, b))
+    g_pair = jit(lambda x, a=g_a, b=g_b: p(x, a, b))
 
     # 计算散度度量
-    kl_fg_vals[i] = compute_KL(f, g)
-    kl_gf_vals[i] = compute_KL(g, f)
-    js_vals[i] = compute_JS(f, g)
-    chernoff_vals[i], _ = compute_chernoff_entropy(f, g)
+    kl_fg_vals[i] = KL_beta(f_a, f_b, g_a, g_b)
+    kl_gf_vals[i] = KL_beta(g_a, g_b, f_a, f_b)
+    js_vals[i] = compute_JS(f_pair, g_pair)
+    chernoff_vals[i], _ = chernoff_beta(f_a, f_b, g_a, g_b)
 
-    # 生成样本
-    sequences_f = rng.beta(f_a, f_b, (N_half, T_large))
-    sequences_g = rng.beta(g_a, g_b, (N_half, T_large))
-
-    # 计算似然比和累积乘积
-    _, L_cumulative_f = compute_likelihood_ratios(sequences_f, f, g)
-    _, L_cumulative_g = compute_likelihood_ratios(sequences_g, f, g)
-    
-    # 获取最终值
-    L_cumulative_f = L_cumulative_f[:, -1]
-    L_cumulative_g = L_cumulative_g[:, -1]
-
-    # 计算错误概率
-    error_probs[i] = 0.5 * (np.mean(L_cumulative_f < 1) + 
-                            np.mean(L_cumulative_g >= 1))
+    # 通过重要性抽样计算错误概率
+    error_probs[i] = error_prob_tilted((f_a, f_b), (g_a, g_b), 
+                                       T_large, N_sims, rng)
     pair_names.append(f"Beta({f_a},{f_b}) and Beta({g_a},{g_b})")
 
 cor_data =  {
@@ -1351,7 +1482,9 @@ cor_data =  {
     'T': T_large}
 ```
 
-现在让我们来可视化这些相关性
+现在让我们来可视化这些相关性。
+
+左边的图绘制了对数误差概率与 $-C(f,g)T$ 的关系，并附有Chernoff界 $\log \frac{1}{2} - C(f,g)T$。
 
 ```{code-cell} ipython3
 :tags: [hide-input]
@@ -1360,11 +1493,10 @@ def plot_error_divergence(data):
     """
     绘制误差概率和散度测量之间的相关性。
     """
-    # 过滤掉接近零的误差概率以适应对数刻度
-    nonzero_mask = data['error_prob'] > 1e-6
-    log_error = np.log(data['error_prob'][nonzero_mask])
-    js_vals = data['js'][nonzero_mask]
-    chernoff_vals = data['chernoff'][nonzero_mask]
+    T = data['T']
+    log_error = np.log(data['error_prob'])
+    neg_CT = -data['chernoff'] * T
+    js_vals = data['js']
 
     # 创建图形和坐标轴
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
@@ -1373,20 +1505,24 @@ def plot_error_divergence(data):
     def plot_correlation(ax, x_vals, x_label, color):
         ax.scatter(x_vals, log_error, alpha=0.7, s=60, color=color)
         ax.set_xlabel(x_label)
-        ax.set_ylabel(f'T={data["T"]}时的对数误差概率')
+        ax.set_ylabel(f'T={T}时的对数误差概率')
         
-        # 计算相关性和趋势线
+        # 计算相关性和线性趋势线
         corr = np.corrcoef(x_vals, log_error)[0, 1]
-        z = np.polyfit(x_vals, log_error, 2)
+        z = np.polyfit(x_vals, log_error, 1)
         x_trend = np.linspace(x_vals.min(), x_vals.max(), 100)
         ax.plot(x_trend, np.poly1d(z)(x_trend), 
-                "r--", alpha=0.8, linewidth=2)
+                "r--", alpha=0.8, linewidth=2, label='线性拟合')
         ax.set_title(f'对数误差概率与{x_label}的关系\n'
                      f'相关性 = {corr:.3f}')
     
     # 绘制两个相关性图
-    plot_correlation(ax1, js_vals, 'JS散度', 'C0')
-    plot_correlation(ax2, chernoff_vals, 'Chernoff熵', 'C1')
+    plot_correlation(ax1, neg_CT, r'$-C(f,g) \, T$', 'C1')
+    x_line = np.linspace(neg_CT.min(), neg_CT.max(), 100)
+    ax1.plot(x_line, np.log(0.5) + x_line, 'k-', linewidth=1,
+             label=r'Chernoff界 $\log \frac{1}{2} - C(f,g)T$')
+    ax1.legend()
+    plot_correlation(ax2, js_vals, 'JS散度', 'C0')
 
     plt.tight_layout()
     plt.show()
@@ -1394,7 +1530,11 @@ def plot_error_divergence(data):
 plot_error_divergence(cor_data)
 ```
 
-显然，Chernoff熵和Jensen-Shannon熵都与模型选择错误概率密切相关。
+所有十四个点都位于Chernoff界之下。
+
+显然，Chernoff熵和Jensen-Shannon散度都与模型选择错误概率密切相关。
+
+这些点与Chernoff界之间的垂直距离是 $E_q\left[\min\left\{L_T^{1-\phi^*}, L_T^{-\phi^*}\right\}\right]$ 的对数，这个量在各个分布对之间的变化远小于 $C(f,g) T$ 的变化。
 
 我们很快将在 {doc}`wald_friedman` 中遇到相关概念。
 
@@ -1431,7 +1571,7 @@ $$ (eq:llr_markov)
 
 ### KL散度率
 
-根据不可约非周期马尔可夫链的遍历定理，我们有
+根据不可约马尔可夫链的遍历定理，我们有
 
 $$
 \frac{N_{ij}}{T} \xrightarrow{a.s.} \pi_i^{(f)}P_{ij}^{(f)} \quad \text{当 } T \to \infty
@@ -1470,6 +1610,8 @@ $$
 $$
 
 在这里我们邀请读者停下来比较这个结果与{eq}`eq:kl_likelihood_link`。
+
+{doc}`likelihood_var` 将这些计算扩展到了向量自回归模型。
 
 让我们在下面的模拟中验证这一点。
 
@@ -1561,6 +1703,10 @@ def analyze_markov_chains(P_f, P_g, rng,
     print(f"\nKL散度率 h(f, g): {kl_rate_fg:.4f}")
     print(f"KL散度率 h(g, f): {kl_rate_gf:.4f}")
     
+    # 初始分布之间的KL散度
+    kl_initial = np.sum(π_f * np.log(π_f / π_g))
+    print(f"KL(π_f, π_g): {kl_initial:.4f}")
+    
     if plot_paths:
         # 模拟并绘制路径
         paths_from_f = simulate_markov_chain(P_f, π_f, T, rng, N_paths)
@@ -1573,10 +1719,10 @@ def analyze_markov_chains(P_f, P_g, rng,
         for i in range(min(n_show, N_paths)):
             plt.plot(np.log(L_ratios_f[i, :]), alpha=0.3, color='blue', lw=0.8)
         
-        # 绘制理论期望
-        theory_line = kl_rate_fg * np.arange(T+1)
+        # 绘制当x_0从π_f中抽取时的理论期望
+        theory_line = kl_initial + kl_rate_fg * np.arange(T+1)
         plt.plot(theory_line, 'k--', linewidth=2.5, 
-                label=r'$T \times h_{KL}(f,g)$')
+                label=r'$D_{KL}(\pi^{(f)}\|\pi^{(g)}) + T \times h_{KL}(f,g)$')
         
         # 绘制经验平均值
         avg_log_L = np.mean(np.log(L_ratios_f), axis=0)
@@ -1626,7 +1772,17 @@ def compute_markov_selection_error(T_values, P_f, P_g, π_0_f, π_0_g, rng, N_si
 
 我们现在准备模拟路径并可视化似然比是如何演变的。
 
-我们通过绘制经验平均值和理论预测线来验证从平稳分布开始的 $\frac{1}{T}E_f\left[\log \frac{L_T^{(f)}}{L_T^{(g)}}\right] = h_{KL}(f, g)$
+我们从平稳分布 $\pi^{(f)}$ 中抽取 $x_0$，并设定 $\pi_0^{(f)} = \pi^{(f)}$ 和 $\pi_0^{(g)} = \pi^{(g)}$。
+
+因此该链在 $f$ 下是平稳的，所以 $E_f N_{ij} = T \pi_i^{(f)} P_{ij}^{(f)}$，并且 {eq}`eq:llr_markov` 意味着
+
+$$
+E_f\left[\log \frac{L_T^{(f)}}{L_T^{(g)}}\right] = D_{KL}\bigl(\pi^{(f)}\|\pi^{(g)}\bigr) + T \, h_{KL}(f, g)
+$$
+
+对任意 $T$ 均成立。
+
+我们通过绘制经验平均值和理论预测线来验证这个公式
 
 ```{code-cell} ipython3
 # 定义示例马尔可夫链转移矩阵
@@ -1643,11 +1799,11 @@ markov_results = analyze_markov_chains(P_f, P_g, rng)
 
 ## 相关讲座
 
-似然过程在贝叶斯学习中扮演重要角色，正如在{doc}`likelihood_bayes`中所描述的，并在{doc}`odu`中得到应用。
+似然过程在贝叶斯学习中扮演重要角色，正如在 {doc}`likelihood_bayes` 中所描述的，并在 {doc}`odu` 中得到应用。
 
-似然比过程是Lawrence Blume和David Easley回答他们提出的问题"如果你那么聪明，为什么不富有？" {cite}`Blume_Easley2006`的核心，这是讲座{doc}`likelihood_ratio_process_2`的主题。
+似然比过程是 Lawrence Blume 和 David Easley 回答他们提出的问题"如果你那么聪明，为什么不富有？" {cite}`Blume_Easley2006` 的核心，这是讲座 {doc}`likelihood_ratio_process_2` 的主题。
 
-似然比过程也出现在{doc}`advanced:additive_functionals`中，其中包含了另一个关于上述似然比过程**特殊性质**的说明。
+似然比过程也出现在 {doc}`advanced:additive_functionals` 中，其中包含了另一个关于上述似然比过程**特殊性质**的说明。
 
 ## 练习
 
@@ -1658,13 +1814,13 @@ markov_results = analyze_markov_chains(P_f, P_g, rng)
 
 设$\{w_t\}_{t=1}^T$是从$h$中独立同分布抽取的样本，且$L_t = L(w^t)$是如讲座中定义的似然比过程。
 
+假设$K_f$和$K_g$有限，且$E_h |\log f(W)| < \infty$，$E_h |\log g(W)| < \infty$。
+
 证明：
 
 $$
 \frac{1}{t} E_h[\log L_t] = K_g - K_f
 $$
-
-其中$K_g, K_f$有限，$E_h |\log f(W)| < \infty$且$E_h |\log g(W)| < \infty$。
 
 *提示：* 首先将$\log L_t$表示为$\log \ell(w_i)$项的和，并与$K_f$和$K_g$的定义进行比较。
 ```
@@ -1762,7 +1918,7 @@ $$
 E_h[\log L_t] = t \cdot (K_g - K_f) \to +\infty \text{ 当 } t \to \infty
 $$
 
-根据大数定律，$\frac{1}{t} \log L_t \to K_g - K_f > 0$ 几乎必然成立。
+根据强大数定律，$\frac{1}{t} \log L_t \to K_g - K_f > 0$ 几乎必然成立。
 
 因此 $L_t \to +\infty$ 几乎必然成立。
 
@@ -1775,6 +1931,192 @@ E_h[\log L_t] = t \cdot (K_g - K_f) \to -\infty \text{ 当 } t \to \infty
 $$
 
 因此通过类似的推理 $L_t \to 0$ 几乎必然成立。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: lr_ex_markov
+
+本练习将切尔诺夫界 {eq}`eq:chernoff_bound` 推广到 {ref}`本节 <lrp_markov>` 中的马尔可夫链。
+
+设$x_0$在模型$f$下从$\pi_0^{(f)}$中抽取，在模型$g$下从$\pi_0^{(g)}$中抽取。
+
+似然比检验在$L_T^{(f)}/L_T^{(g)} \geq 1$时选择$f$，否则选择$g$；设$\alpha_T$和$\beta_T$为其两种错误概率。
+
+对于$\phi \in [0,1]$，设$Q_\phi$为$n \times n$矩阵，其元素为$Q_\phi(i,j) = \bigl(P^{(f)}_{ij}\bigr)^\phi \bigl(P^{(g)}_{ij}\bigr)^{1-\phi}$，并设$\lambda(\phi)$为其最大特征值(佩龙根)。
+
+1. 证明
+
+   $$
+   \frac{1}{2}(\alpha_T + \beta_T) \leq \frac{1}{2} v_\phi^\top Q_\phi^T \mathbf{1} ,
+   $$
+
+   其中$v_\phi(i) = \bigl(\pi^{(f)}_{0,i}\bigr)^\phi \bigl(\pi^{(g)}_{0,i}\bigr)^{1-\phi}$，$\mathbf{1}$是全1向量。
+2. 利用佩龙-弗罗贝尼乌斯定理推出错误概率至少以指数速率$C_M = -\log \min_{\phi \in [0,1]} \lambda(\phi)$衰减。
+3. 针对讲座中的矩阵$P^{(f)}$和$P^{(g)}$，计算$C_M$和使其最小化的$\phi$，并将$C_M$与KL散度速率$h_{KL}(f,g)$和$h_{KL}(g,f)$进行比较。
+4. 设$\pi_0^{(f)} = \pi^{(f)}$且$\pi_0^{(g)} = \pi^{(g)}$。使用 `compute_markov_selection_error` 对若干个$T$值模拟错误概率，并将其与第1部分中的界一起绘制。
+```
+
+```{solution-start} lr_ex_markov
+:class: dropdown
+```
+
+**第1部分。** 设$p_f(x^T) = \pi^{(f)}_{0,x_0} \prod_{t=1}^T P^{(f)}_{x_{t-1} x_t}$，并以同样方式定义$p_g(x^T)$。
+
+与独立同分布情形相同，错误概率等于$\frac{1}{2} \sum_{x^T} \min\{p_f(x^T), p_g(x^T)\}$。
+
+由于$\min\{x, y\} \leq x^\phi y^{1-\phi}$，
+
+$$
+\frac{1}{2}(\alpha_T + \beta_T) 
+\leq \frac{1}{2} \sum_{x_0, \ldots, x_T} v_\phi(x_0) \prod_{t=1}^T Q_\phi(x_{t-1}, x_t)
+= \frac{1}{2} v_\phi^\top Q_\phi^T \mathbf{1} .
+$$
+
+**第2部分。** 矩阵$Q_\phi$的元素全为正。
+
+根据佩龙-弗罗贝尼乌斯定理，当$T \rightarrow \infty$时，$Q_\phi^T = \lambda(\phi)^T \bigl(r_\phi \ell_\phi^\top + o(1)\bigr)$，其中$r_\phi$和$\ell_\phi$是正的右、左特征向量，且归一化满足$\ell_\phi^\top r_\phi = 1$。
+
+因此$\frac{1}{T} \log \bigl(v_\phi^\top Q_\phi^T \mathbf{1}\bigr) \rightarrow \log \lambda(\phi)$，对于任意$\phi$，错误概率至少以速率$-\log \lambda(\phi)$衰减。
+
+最优速率来自使$\lambda(\phi)$最小化的$\phi$。
+
+由于$P^{(f)}$和$P^{(g)}$都是随机矩阵，所以$\lambda(0) = \lambda(1) = 1$。
+
+马尔可夫链的大偏差理论表明$C_M$就是精确速率{cite}`DemboZeitouni1998`。
+
+**第3部分。**
+
+```{code-cell} ipython3
+def perron_root(ϕ, P_f, P_g):
+    """矩阵元素为 P_f^ϕ P_g^(1-ϕ) 的最大特征值。"""
+    Q = P_f**ϕ * P_g**(1 - ϕ)
+    return np.max(np.abs(np.linalg.eigvals(Q)))
+
+res = minimize_scalar(perron_root, bounds=(0, 1), args=(P_f, P_g),
+                      method='bounded')
+C_M, ϕ_M = -np.log(res.fun), res.x
+
+print(f"C_M = {C_M:.5f} at ϕ = {ϕ_M:.4f}")
+print(f"h_KL(f, g) = {markov_results['kl_rate_fg']:.4f}, "
+      f"h_KL(g, f) = {markov_results['kl_rate_gf']:.4f}")
+```
+
+切尔诺夫速率$C_M = 0.0143$大约是任一KL散度速率的四分之一。
+
+因此错误概率下降的速度要比$\log L_T^{(f)}/L_T^{(g)}$的漂移速度慢得多。
+
+**第4部分。**
+
+```{code-cell} ipython3
+π_f = markov_results['stationary_f']
+π_g = markov_results['stationary_g']
+T_values = np.array([25, 50, 100, 150, 200, 250, 300])
+
+errors = compute_markov_selection_error(T_values, P_f, P_g, π_f, π_g, 
+                                        rng, N_sim=4000)
+
+Q_M = P_f**ϕ_M * P_g**(1 - ϕ_M)
+v_M = π_f**ϕ_M * π_g**(1 - ϕ_M)
+bound = [0.5 * v_M @ np.linalg.matrix_power(Q_M, T) @ np.ones(3) 
+         for T in T_values]
+
+plt.figure(figsize=(10, 6))
+plt.semilogy(T_values, errors, 'bo-', label='模拟错误概率')
+plt.semilogy(T_values, bound, 'r-', 
+             label=r'界 $\frac{1}{2} v_\phi^\top Q_\phi^T \mathbf{1}$')
+plt.semilogy(T_values, 0.5 * np.exp(-C_M * T_values), 'r--', 
+             label=r'$\frac{1}{2} e^{-C_M T}$')
+plt.xlabel('T')
+plt.ylabel('错误概率(对数坐标)')
+plt.legend()
+plt.show()
+```
+
+第1部分给出的界几乎与$\frac{1}{2} e^{-C_M T}$重合。
+
+模拟的错误概率位于该界之下。
+
+在对数坐标上，它们的下降速度大致与该界平行，但因该界省略了一个多项式因子，所以下降得略快一些。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: lr_ex_lmean
+
+设$f = \text{Beta}(1,1)$，$g = \text{Beta}(G_a, G_b)$。
+
+1. 证明
+
+   $$
+   E\left[\ell(w_t) \mid q = f\right] = \int_0^1 \frac{f(w)^2}{g(w)} dw = B(G_a, G_b) \, B(2 - G_a, 2 - G_b)
+   $$
+
+   在$G_a < 2$且$G_b < 2$时成立，否则$E\left[\ell(w_t) \mid q = f\right] = +\infty$。
+2. 对于$g = \text{Beta}(1.5, 1.2)$和讲座中的$g = \text{Beta}(3, 1.2)$，计算$E\left[\ell(w_t) \mid q = f\right]$。
+3. 对于每个$g$，从$f$中抽取$w_1, w_2, \ldots, w_N$，并绘制滚动样本均值$\frac{1}{n} \sum_{i=1}^n \ell(w_i)$随$n$变化的图形。解释两幅图之间的差异。
+```
+
+```{solution-start} lr_ex_lmean
+:class: dropdown
+```
+
+**第1部分。** 由于在$(0,1)$上$f = 1$，
+
+$$
+\int_0^1 \frac{f(w)^2}{g(w)} dw = B(G_a, G_b) \int_0^1 w^{1 - G_a} (1-w)^{1 - G_b} dw .
+$$
+
+该积分收敛当且仅当$1 - G_a > -1$且$1 - G_b > -1$，即当且仅当$G_a < 2$且$G_b < 2$。
+
+当其收敛时，等于$B(2 - G_a, 2 - G_b)$。
+
+**第2部分。**
+
+```{code-cell} ipython3
+def mean_ell_under_f(G_a, G_b):
+    """对于 f = Beta(1, 1) 和 g = Beta(G_a, G_b)，计算 E[ℓ(w) | q=f]。"""
+    if G_a < 2 and G_b < 2:
+        return np.exp(betaln(G_a, G_b) + betaln(2 - G_a, 2 - G_b))
+    return np.inf
+
+for G_params in [(1.5, 1.2), (3, 1.2)]:
+    print(f"g = Beta{G_params}: E[ℓ | f] = {mean_ell_under_f(*G_params):.4f}")
+```
+
+**第3部分。**
+
+```{code-cell} ipython3
+N = 1_000_000
+n_grid = np.arange(1, N+1)
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+for ax, (g_a, g_b) in zip(axes, [(1.5, 1.2), (3, 1.2)]):
+    w = rng.uniform(size=N)
+    ℓ = np.exp(-log_beta_pdf(w, g_a, g_b))
+    ax.plot(n_grid, np.cumsum(ℓ) / n_grid, lw=1.5, 
+            label='滚动样本均值')
+    mean = mean_ell_under_f(g_a, g_b)
+    if np.isfinite(mean):
+        ax.axhline(mean, color='k', ls='--', label=r'$E[\ell \mid q=f]$')
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlabel('n')
+    ax.set_title(f'g = Beta({g_a}, {g_b})')
+    ax.legend()
+plt.tight_layout()
+plt.show()
+```
+
+对于$g = \text{Beta}(1.5, 1.2)$，$\ell$在$f$下的均值是有限的，强大数定律使滚动均值趋向$1.2112$。
+
+对于$g = \text{Beta}(3, 1.2)$，该均值是无限的。
+
+在$w = 0$附近出现的罕见抽样会产生极大的$\ell = 1/g$值，使滚动均值不断向上跳跃而无法稳定下来。
+
+正因如此，我们在{ref}`自然从f中抽取数据的那一节 <nature_likeli_f>`中绘制了$\log L_t$。
 
 ```{solution-end}
 ```
