@@ -69,14 +69,20 @@ translation:
 
 第二，当信念偏悲观时，均衡实验是**过度**的；当信念偏乐观时，均衡实验是**不足**的，中间存在唯一的交叉点。
 
-第三，成功的新产品的扩散路径呈**S形**，这与一个悠久的经验传统相符，而拐点恰好出现在我们可以精确确定的某个信念处。
+第三，成功的新产品的无噪声扩散路径呈**S形**，这与一个悠久的经验传统相符，其拐点出现在我们可以精确确定的某个信念处。
 
 ```{note}
 与本节其余内容的联系是通过*信息的价值*建立的。
 
-{doc}`blackwell_kihlstrom` 表明，当决策问题的价值函数在信念上是凸的时，决策者恰好会从更具信息性的实验中获益，因为更具信息性的实验会以凸序展开后验分布。
+{doc}`blackwell_kihlstrom` 表明，更具信息性的实验会以凸序展开后验分布。
 
-在这里，信念是一个鞅，而实验决定了信念展开的速度，因此每个企业从实验中获得的收益取决于其价值函数的凸性。
+单个决策者的价值函数是若干在信念上为线性函数的最大值，因此是凸的，于是每个决策者都会从更具信息性的实验中弱获益。
+
+而在博弈中，参与者的均衡价值函数未必是凸的，因为其他参与者的策略也会随信念变化。
+
+在这里，信念是一个鞅，而实验决定了信念展开的速度，因此每个企业从实验中获得的收益取决于其均衡价值函数的凸性。
+
+而本模型中两家企业的均衡价值函数都是凸的。
 
 信念本身由一个对数似然比过程驱动，这与 {doc}`likelihood_ratio_process` 中研究的过程类似，只是现在运行在连续时间中。
 ```
@@ -186,6 +192,8 @@ $$ (eq:md_variance)
 
 这是通过扩散过程观察到的两点先验的标准滤波结果；参见 {cite:t}`LiptserShiryaev1977`。
 
+{doc}`likelihood_bayes` 和 {doc}`wald_friedman_2` 在离散时间中研究了同样的两点学习问题。
+
 {eq}`eq:md_variance` 的两个特征驱动了一切。
 
 方差**与 $n$ 呈线性关系**，因此信息的到达速率与实验规模成比例，而只有新企业的销售才能产生信息。
@@ -205,7 +213,7 @@ $$
 = \frac{(\mu_H - \mu_L)\,\Delta X - \tfrac12 n \Delta (\mu_H^2 - \mu_L^2)}{\sigma^2} .
 $$ (eq:md_loglr)
 
-信念随后遵循贝叶斯法则的对数比形式，与离散时间讲座中完全相同，
+信念随后遵循贝叶斯法则的对数比形式，与 {doc}`likelihood_bayes` 中完全相同，
 
 $$
 \log\frac{\alpha_{t+\Delta}}{1 - \alpha_{t+\Delta}}
@@ -285,6 +293,10 @@ $$ (eq:md_bellman)
 
 由于信念是一个鞅，因此不会出现一阶导数项。
 
+我们所考虑的每一个策略都使 $n$ 保持远离零，因此信息会无限积累。
+
+先验对 $\mu$ 的两个可能取值均赋予正概率，因此真实值相对于先验预测分布是绝对连续的，后验几乎必然收敛到真实值；参见 {doc}`merging_of_opinions` 中关于有限参数空间下贝叶斯学习的讨论。
+
 由于 $\mu$ 最终会被了解，因此 $v$ 恰好是两个完全信息值的线性插值，
 
 $$
@@ -343,14 +355,36 @@ for a, mu_i in [(0.0, mkt.mu_L), (1.0, mkt.mu_H)]:
 
 A = np.linspace(1e-6, 1 - 1e-6, 4001)          # full grid, for plotting
 A_int = np.linspace(0.05, 0.95, 1801)          # strictly interior grid
-
-gap_myopic = n_star(mkt, A_int) - m_star(mkt, A_int)
-print(f'\nn*(alpha) - m*(alpha) on [0.05, 0.95]:  '
-      f'min {gap_myopic.min():.5f},  at alpha = 0.5 it is '
-      f'{float(n_star(mkt, 0.5) - m_star(mkt, 0.5)):.5f}')
 ```
 
-规划者总是比短视基准**多**进行实验，这体现了信息价值的跨期性，其表现形式为新产品销售量的额外增加。
+规划者总是比短视基准**多**进行实验。
+
+设 $m_i = (\mu_i - s + h)/(2h)$ 为 $\mu = \mu_i$ 时完全信息下的高效份额，并设 $E_\alpha$ 表示对 $i \in \{L, H\}$ 以权重 $1 - \alpha$ 和 $\alpha$ 取平均。
+
+将 $m_i$ 代入 {eq}`eq:md_vsocial` 可得
+$v(\alpha) - s - \frac h2 = h E_\alpha[m_i^2]$，因此
+
+$$
+n^*(\alpha) = \sqrt{E_\alpha[m_i^2]} \geq E_\alpha[m_i] = m^*(\alpha)
+$$
+
+由詹森不等式可得，且当 $\alpha \in (0, 1)$ 时由于 $m_L \neq m_H$，不等号严格成立。
+
+这个差距正是信息价值的跨期性，其表现形式为新产品销售量的额外增加。
+
+```{code-cell} ipython3
+def E_alpha(f_L, f_H, a):
+    """Average of full-information quantities under belief a."""
+    return (1 - a) * f_L + a * f_H
+
+
+m_L, m_H = [(mu_i - mkt.s + mkt.h) / (2 * mkt.h) for mu_i in (mkt.mu_L, mkt.mu_H)]
+print(f'max |n*(alpha)^2 - E[m_i^2]|  '
+      f'{np.abs(n_star(mkt, A) ** 2 - E_alpha(m_L ** 2, m_H ** 2, A)).max():.1e}')
+print(f'max |m*(alpha) - E[m_i]|      '
+      f'{np.abs(m_star(mkt, A) - E_alpha(m_L, m_H, A)).max():.1e}')
+print(f'n*(0.5) - m*(0.5) = {float(n_star(mkt, 0.5) - m_star(mkt, 0.5)):.5f}')
+```
 
 ## 均衡
 
@@ -416,11 +450,30 @@ def n_myopic(mkt, a):
 
 将动态均衡与逐期博弈的静态均衡进行比较，揭示了本文核心的不对称性。
 
+在信念 $\alpha$ 下的静态博弈中，新企业的市场份额为
+$(\mu(\alpha) - s + h + p_1 - p_2)/(2h)$，而两家以收入最大化为目标的企业的一阶条件构成了关于 $(p_1, p_2)$ 的线性方程组。
+
+我们直接求解该方程组，并将其解与动态均衡进行比较。
+
 ```{code-cell} ipython3
+def static_equilibrium(mkt, a):
+    """Prices and share in the one-shot Hotelling game at belief a."""
+    d = mkt.mu(a) - mkt.s
+    # firm 1:  -2 p1 + p2 = d - h;   firm 2:  p1 - 2 p2 = -(d + h)
+    coef = np.array([[-2.0, 1.0], [1.0, -2.0]])
+    p1_s, p2_s = np.linalg.solve(coef, np.stack([d - mkt.h, -(d + mkt.h)]))
+    n_s = (d + mkt.h + p1_s - p2_s) / (2 * mkt.h)
+    return p1_s, p2_s, n_s
+
+
+p1_s, p2_s, n_s = static_equilibrium(mkt, A_int)
+print('checking the static formulas, on [0.05, 0.95]')
+print(f'  max |p1_myopic - p1_static|  {np.abs(p1_myopic(mkt, A_int) - p1_s).max():.1e}')
+print(f'  max |n_myopic - n_static|    {np.abs(n_myopic(mkt, A_int) - n_s).max():.1e}')
 print('comparing the dynamic equilibrium with the static one, on [0.05, 0.95]')
-print(f'  max |p2 - p2_myopic|   {np.abs(p2(mkt, A_int) - p2(mkt, A_int)).max():.2e}')
-print(f'  min (p1 - p1_myopic)   {(p1(mkt, A_int) - p1_myopic(mkt, A_int)).min():.5f}')
-print(f'  min (n_eq - n_myopic)  {(n_eq(mkt, A_int) - n_myopic(mkt, A_int)).min():.5f}')
+print(f'  max |p2 - p2_static|         {np.abs(p2(mkt, A_int) - p2_s).max():.1e}')
+print(f'  min (p1 - p1_static)         {(p1(mkt, A_int) - p1_s).min():.5f}')
+print(f'  min (n_eq - n_static)        {(n_eq(mkt, A_int) - n_s).min():.5f}')
 ```
 
 新企业的价格*恰好*等于它的短视价格，这是线性偏好结构和无贴现假设的一个边缘性结果。
@@ -447,9 +500,35 @@ print(f'ratio voi_1 / voi_2:  min {np.min(voi_1 / voi_2):.6f}, '
 
 这正是 {doc}`blackwell_kihlstrom` 的逻辑在起作用：信念是一个鞅，更多的实验会使其进一步展开，而拥有凸值函数的企业会从这种展开中获益。
 
-更令人意外的是，这个比值在任何信念下都恰好等于 $2$。
+更令人意外的是，这个比值在任何信念下都恰好等于 $2$：**老牌**企业对信息的重视程度是进入者的两倍。
 
-**老牌**企业对信息的重视程度是进入者的两倍，因为在均衡中，正是老牌企业相对于不确定性消解后本可获得的收入，放弃了当前的收入。
+设 $n_i$ 为当 $\mu = \mu_i$ 时完全信息均衡下的市场份额，并设
+$\bar n(\alpha) = E_\alpha[n_i]$，这等于静态均衡份额 `n_myopic`。
+
+完全信息下的价格为 $p_{1,i} = 2h(1 - n_i)$ 和 $p_{2,i} = 2h n_i$，因此
+$v_2 = 2h E_\alpha[n_i^2] = 2h n^2$，$v_1 = 2h E_\alpha[(1 - n_i)^2] = 2h(1 - 2\bar n + n^2)$。
+
+进入者按其静态价格 $p_2 = 2h\bar n$ 定价，而老牌企业的定价为
+$p_1 = 2h(1 - \bar n) + 2h(n - \bar n)$，高出其静态价格 $2h(n - \bar n)$。
+
+代入可得：
+
+$$
+v_2 - n p_2 = 2h\, n (n - \bar n),
+\qquad
+v_1 - (1 - n) p_1 = 4h\, n (n - \bar n) .
+$$
+
+由延森不等式，当 $\alpha \in (0, 1)$ 时 $n = \sqrt{E_\alpha[n_i^2]} > E_\alpha[n_i] = \bar n$，
+这使得两个差距都为正。
+
+```{code-cell} ipython3
+n_bar = n_myopic(mkt, A)
+print(f'max |voi_2 - 2h n (n - n_bar)|  '
+      f'{np.abs(voi_2 - 2 * mkt.h * n_eq(mkt, A) * (n_eq(mkt, A) - n_bar)).max():.1e}')
+print(f'max |voi_1 - 4h n (n - n_bar)|  '
+      f'{np.abs(voi_1 - 4 * mkt.h * n_eq(mkt, A) * (n_eq(mkt, A) - n_bar)).max():.1e}')
+```
 
 ## 先过度实验，后不足实验
 
@@ -487,9 +566,18 @@ axes[1].set(xlabel=r'$\alpha$', ylabel=r'$n^*(\alpha) - n(\alpha)$',
 fig.tight_layout()
 plt.show()
 
-print(f'gap is monotone increasing: {np.all(np.diff(gap) > 0)}')
-print(f'number of sign changes:     {int(np.sum(np.diff(np.sign(gap)) != 0))}')
+n_L, n_H = n_eq(mkt, 0.0), n_eq(mkt, 1.0)
+print(f'n*^2 - n^2 at alpha = 0:  m_L^2 - n_L^2 = {m_L ** 2 - n_L ** 2:+.4f}')
+print(f'n*^2 - n^2 at alpha = 1:  m_H^2 - n_H^2 = {m_H ** 2 - n_H ** 2:+.4f}')
 ```
+
+单次交叉性来自我们之前已经使用过的仿射结构。
+
+$n^*(\alpha)^2 = E_\alpha[m_i^2]$ 与 $n(\alpha)^2 = E_\alpha[n_i^2]$ 都是关于 $\alpha$ 的仿射函数，因此 $n^*(\alpha)^2 - n(\alpha)^2$ 也是仿射的，至多改变一次符号。
+
+差值 $n^* - n$ 的符号与之相同。
+
+条件 {eq}`eq:md_condition4` 使得 $m_L < n_L$ 且 $m_H > n_H$，因此该差值在 $\alpha = 0$ 处为负，在 $\alpha = 1$ 处为正，恰好穿越零点一次。
 
 这里的直觉在于谁必须降价来争取一个买家。
 
@@ -512,11 +600,30 @@ d\alpha = \frac{n(\alpha)(\mu_H - \mu_L)^2 \alpha (1-\alpha)^2}{\sigma^2}\, dt
 + \frac{(\mu_H - \mu_L)\alpha(1-\alpha)\sqrt{n(\alpha)}}{\sigma}\, dB .
 $$ (eq:md_conditional)
 
-去除噪声后，得到平均信念的确定性路径。
+等价地，对数比率 $\log(\alpha/(1-\alpha))$ 以速率 $n(\alpha)(\mu_H - \mu_L)^2/(2\sigma^2)$ 向上漂移。
+
+因子 $(\mu_H - \mu_L)^2/(2\sigma^2)$ 是在 $\mu_H$ 与 $\mu_L$ 下信号分布之间单位时间的 Kullback–Leibler 散度（参见 {ref}`rel_entropy`），而 $n(\alpha)$ 则根据实验规模对其进行缩放；{ref}`md_ex5` 推导了这一漂移，并用它来界定学习所需的期望时间。
+
+遵循 {cite:t}`BergemannValimaki1997`，我们略去噪声项。
+
+信念路径 $\hat\alpha(t)$ 随后满足如下常微分方程
+
+$$
+\frac{d\hat\alpha}{dt} = \frac{n(\hat\alpha)(\mu_H - \mu_L)^2 \hat\alpha (1-\hat\alpha)^2}{\sigma^2},
+\qquad \hat\alpha(0) = \alpha_0 ,
+$$ (eq:md_ode)
+
+而 $\hat n(t) = n(\hat\alpha(t))$ 则是相应的市场份额。
+
+{cite:t}`BergemannValimaki1997` 将 $\hat\alpha$ 称为平均后验。
+
+由于 {eq}`eq:md_conditional` 中的漂移项在 $\alpha$ 中是非线性的，所以 $\hat\alpha(t)$ 并非条件均值 $E[\alpha_t \mid \mu = \mu_H]$，而 $\hat n(t)$ 也并非 $E[n(\alpha_t) \mid \mu = \mu_H]$。
+
+我们将 $\hat\alpha$ 和 $\hat n$ 称为无噪声路径。
 
 ```{code-cell} ipython3
-def mean_belief_path(mkt, alpha0, T, dt, policy):
-    """Deterministic path of the mean posterior when mu = mu_H."""
+def noise_free_belief_path(mkt, alpha0, T, dt, policy):
+    """Euler solution of the noise-free belief equation when mu = mu_H."""
     steps = int(T / dt)
     a = np.empty(steps + 1)
     a[0] = alpha0
@@ -530,14 +637,32 @@ def mean_belief_path(mkt, alpha0, T, dt, policy):
 ```{prf:proposition} S形扩散
 :label: md_prop_sshape
 
-在产品确实优质的条件下，平均市场份额 $\hat n(t)$ 随时间递增。
+设 $\hat\alpha(t)$ 在 $\alpha_0 \in (0, 1)$ 条件下求解 {eq}`eq:md_ode`，并令
+$\hat n(t) = n(\hat\alpha(t))$。
 
-当 $\hat\alpha(t) \leq 1/3$ 时，其增长速率本身是递增的；此后则是递减的。
+无噪声市场份额 $\hat n(t)$ 随时间递增。
+
+当 $\hat\alpha(t) < 1/3$ 时，其增长速率本身是递增的；此后则是递减的。
 ```
+
+证明再次利用了仿射结构。
+
+由于 $n(\alpha)^2 = n_L^2 + (n_H^2 - n_L^2)\alpha$，乘积 $n(\alpha)n'(\alpha)$ 等于常数 $(n_H^2 - n_L^2)/2$，并且
+
+$$
+\frac{d\hat n}{dt} = n'(\hat\alpha)\frac{d\hat\alpha}{dt}
+= \frac{(n_H^2 - n_L^2)(\mu_H - \mu_L)^2}{2\sigma^2}\, \hat\alpha (1 - \hat\alpha)^2 .
+$$
+
+由于 $\hat\alpha$ 随 $t$ 递增，且 $\alpha(1-\alpha)^2$ 恰好在 $\alpha < 1/3$ 时随 $\alpha$ 递增，因此 $d\hat n/dt$ 在 $\hat\alpha = 1/3$ 之前上升，此后下降。
 
 两种力量的结合产生了S形曲线。
 
 随着信念远离零，学习会加速，从而加快进入者份额的增长；但均衡份额 $n(\alpha)$ 是凹的，因此信念的进一步改善所带来的份额增益会越来越小。
+
+S形曲线及其在 $\hat\alpha = 1/3$ 处的拐点是无噪声路径的性质。
+
+{ref}`md_ex4` 通过蒙特卡洛方法计算 $E[\alpha_t \mid \mu = \mu_H]$ 和 $E[n_t \mid \mu = \mu_H]$，并将它们与 $\hat\alpha$ 和 $\hat n$ 进行比较。
 
 ```{code-cell} ipython3
 ---
@@ -549,8 +674,8 @@ mystnb:
 T, dt, alpha0 = 8.0, 1e-3, 0.03
 policy = lambda a: n_eq(mkt, a)
 
-a_mean = mean_belief_path(mkt, alpha0, T, dt, policy)
-t_grid = np.linspace(0, T, len(a_mean))
+a_hat = noise_free_belief_path(mkt, alpha0, T, dt, policy)
+t_grid = np.linspace(0, T, len(a_hat))
 
 rng = np.random.default_rng(12)
 paths = simulate_beliefs(mkt, alpha0, T, dt, np.full(6, mkt.mu_H), rng, policy)
@@ -558,14 +683,14 @@ paths = simulate_beliefs(mkt, alpha0, T, dt, np.full(6, mkt.mu_H), rng, policy)
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
 for pth in paths:
     axes[0].plot(t_grid, pth, lw=0.7, alpha=0.55, color='C0')
-axes[0].plot(t_grid, a_mean, lw=2.5, color='C3', label='mean path')
+axes[0].plot(t_grid, a_hat, lw=2.5, color='C3', label='noise-free path')
 axes[0].axhline(1 / 3, color='0.5', ls=':', lw=1.5)
 axes[0].set(xlabel='time', ylabel=r'$\alpha(t)$', title='beliefs')
 axes[0].legend(fontsize=9)
 
 for pth in paths:
     axes[1].plot(t_grid, n_eq(mkt, pth), lw=0.7, alpha=0.55, color='C0')
-axes[1].plot(t_grid, n_eq(mkt, a_mean), lw=2.5, color='C3', label='mean path')
+axes[1].plot(t_grid, n_eq(mkt, a_hat), lw=2.5, color='C3', label='noise-free path')
 axes[1].set(xlabel='time', ylabel=r'$n(t)$',
             title='market share of the new firm')
 axes[1].legend(fontsize=9)
@@ -573,14 +698,14 @@ fig.tight_layout()
 plt.show()
 ```
 
-拐点恰好出现在 {prf:ref}`md_prop_sshape` 所说的位置。
+无噪声路径的拐点恰好出现在 {prf:ref}`md_prop_sshape` 所说的位置。
 
 ```{code-cell} ipython3
-n_mean = n_eq(mkt, a_mean)
-growth = np.gradient(n_mean, t_grid)
+n_hat = n_eq(mkt, a_hat)
+growth = np.gradient(n_hat, t_grid)
 k = np.argmax(growth)
-print(f'share grows fastest at t = {t_grid[k]:.3f}, '
-      f'where alpha = {a_mean[k]:.4f}   (theory: 1/3)')
+print(f'noise-free share grows fastest at t = {t_grid[k]:.3f}, '
+      f'where alpha_hat = {a_hat[k]:.4f}   (theory: 1/3)')
 
 drift = policy(A) * (mkt.mu_H - mkt.mu_L) ** 2 * A * (1 - A) ** 2
 print(f'belief drift peaks at alpha = {A[np.argmax(drift)]:.4f}   '
@@ -600,9 +725,10 @@ fig, ax = plt.subplots()
 for pth in paths:
     ax.plot(t_grid, p1(mkt, pth), lw=0.7, alpha=0.5, color='C0')
     ax.plot(t_grid, p2(mkt, pth), lw=0.7, alpha=0.5, color='C1')
-ax.plot(t_grid, p1(mkt, a_mean), lw=2.5, color='C0',
-        label=r'$p_1$, established firm')
-ax.plot(t_grid, p2(mkt, a_mean), lw=2.5, color='C1', label=r'$p_2$, new firm')
+ax.plot(t_grid, p1(mkt, a_hat), lw=2.5, color='C0',
+        label=r'$p_1$, established firm (noise-free path)')
+ax.plot(t_grid, p2(mkt, a_hat), lw=2.5, color='C1',
+        label=r'$p_2$, new firm (noise-free path)')
 ax.set(xlabel='time', ylabel='price',
        title='the incumbent retreats as the entrant is vindicated')
 ax.legend()
@@ -653,7 +779,9 @@ for name, x0, xT, pred in rows:
 
 在这里，没有人为信息定价，而有趣的经济学源自这样一个事实：只有一家企业的销售能够产生信息。
 
-两者都建立在 {doc}`blackwell_kihlstrom` 提出的同一基础之上：对决策者而言，信息恰好在决策问题的价值函数在信念上是凸的这一程度上才具有价值。
+两者都建立在 {doc}`blackwell_kihlstrom` 提出的同一基础之上：信息量更大的实验会以凸序扩散后验信念，而价值函数在信念上是凸的决策者会从这种扩散中获益。
+
+单个决策者的价值函数总是在信念上是凸的，但博弈中的均衡价值函数未必如此。
 
 {cite:t}`BergemannValimaki1997` 的独特之处在于，这种凸性是由*竞争对手*共同分享的。
 
@@ -822,18 +950,42 @@ $\mu_H - \mu_L < 2h$。
 
 提高 $h$ 则会产生相反的效果，因为强烈依附于自身偏好的买家会削弱价格这一竞争工具的作用，从而使进入者比规划者所选择的更为自由地扩张。
 
-这种对称性是关键所在。
+这个对称公式在中点发生偏移时并不成立，但存在一个一般的封闭形式。
+
+设 $d_i = (\mu_i - s)/h$。
+
+高效份额与完全信息下的均衡份额分别为 $m_i = (1 + d_i)/2$ 和
+$n_i = (1 + d_i/3)/2$，因此 $m_i^2 - n_i^2 = \varphi(d_i)/9$，其中
+$\varphi(d) = d(3 + 2d)$。
+
+由于 $n^*(\alpha)^2 - n(\alpha)^2 = E_\alpha[m_i^2 - n_i^2]$ 是 $\alpha$ 的仿射函数，它在以下点取零值：
+
+$$
+\alpha^{\mathrm{cross}} = \frac{\varphi(d_L)}{\varphi(d_L) - \varphi(d_H)} .
+$$
+
+条件 {eq}`eq:md_condition4` 给出 $d_L \in (-1, 0)$ 和 $d_H \in (0, 1)$，因此
+$\varphi(d_L) < 0 < \varphi(d_H)$，从而 $\alpha^{\mathrm{cross}} \in (0, 1)$。
+
+当 $d_H = -d_L = (\mu_H - \mu_L)/(2h)$ 时，该公式化简为
+$\frac12 - (\mu_H - \mu_L)/(6h)$。
 
 ```{code-cell} ipython3
+def crossing_formula(mkt):
+    φ = lambda d: d * (3 + 2 * d)
+    d_L, d_H = (mkt.mu_L - mkt.s) / mkt.h, (mkt.mu_H - mkt.s) / mkt.h
+    return φ(d_L) / (φ(d_L) - φ(d_H))
+
+
 print('moving the quality midpoint away from s, with mu = (3.4, 4.6), h = 1')
 for s_ in [3.9, 4.0, 4.1]:
     m_ = Market(s=s_, h=1, mu_L=3.4, mu_H=4.6)
-    mid = (3.4 + 4.6) / 2
-    print(f'   s = {s_}  (midpoint {mid}):  crossing = {crossing(m_):.6f}'
-          f'   formula = {0.5 - 1.2 / 6:.6f}')
+    print(f'   s = {s_}:  bisection = {crossing(m_):.6f}'
+          f'   general formula = {crossing_formula(m_):.6f}'
+          f'   symmetric formula = {0.5 - 1.2 / 6:.6f}')
 ```
 
-一旦中点不再等于 $s$，这个公式就会失效，因此它是一个边缘性的结果，而非一般性结论。
+一般公式在每个 $s$ 处都与二分法结果相符；而对称公式只在 $s = 4$ 处才相符。
 
 ```{solution-end}
 ```
@@ -844,9 +996,9 @@ for s_ in [3.9, 4.0, 4.1]:
 
 本练习将与 {doc}`blackwell_kihlstrom` 的联系精确化。
 
-在那一讲中，决策者恰好在决策问题的价值函数在信念上是凸的时才能从更具信息性的实验中获益，因为更具信息性的实验会产生后验分布的均值保持展开。
+在那一讲中，更具信息性的实验会产生后验分布的均值保持展开，而价值函数在信念上为凸的决策者能从中获益。
 
-在这里，信念是一个鞅，而实验决定了它展开的速度，因此同样的逻辑适用于每一家企业。
+在这里，信念是一个鞅，而实验决定了它展开的速度，因此同样的逻辑适用于每一家企业，只要其均衡价值函数是凸的。
 
 1. 绘制每家企业的信息价值（即 $v_i(\alpha)$ 减去当前均衡收入）对 $\alpha$ 的曲线图。
 
@@ -903,8 +1055,293 @@ print(f'minimum of V1\'\'  {V1pp.min():.4f}    minimum of V2\'\'  {V2pp.min():.4
 
 而且学习速度 $\Sigma^2(\alpha) \propto \alpha^2(1-\alpha)^2$ 同样趋于零，因此即便价值函数是凸的，一个不再揭示任何信息的实验也不会带来任何收益。
 
-而两个二阶导数在端点处却*并不*趋于零，这恰恰是
-{doc}`blackwell_kihlstrom` 所强调的要点：为信息付费的*意愿*一直保持为正，但当信念趋于退化时，信息的*供给*却枯竭了。
+而两个二阶导数在端点处并不趋于零，反而发散。
+
+在 $\alpha = 0$ 附近，新企业的信息价值近似为
+$h(n_H - n_L)^2\alpha$，而 $\Sigma^2(\alpha) \approx (\mu_H - \mu_L)^2\alpha^2/\sigma^2$。
+
+因此 $V_2''(\alpha) \approx 2h(n_H - n_L)^2\sigma^2/\bigl(n_L(\mu_H - \mu_L)^2\alpha\bigr)$，
+所以 $\alpha V_2''(\alpha)$ 收敛于一个正常数，在 $\alpha = 1$ 附近用 $1 - \alpha$ 代替 $\alpha$，同样的结论对 $V_1''$ 也成立。
+
+信念展开的影子价值 $V_i''$ 以 $1/\alpha$ 的速度增长，但实验使信念展开的速度 $\Sigma^2$ 却以 $\alpha^2$ 的速度下降。
+
+两者的乘积——即信息价值——因而呈线性方式趋于零。
+
+```{code-cell} ipython3
+n_L, n_H = n_eq(mkt, 0.0), n_eq(mkt, 1.0)
+limit = 2 * mkt.h * (n_H - n_L) ** 2 * mkt.sigma ** 2 / (
+    n_L * (mkt.mu_H - mkt.mu_L) ** 2)
+for a in [1e-2, 1e-3, 1e-4]:
+    voi_2a = v2(mkt, a) - n_eq(mkt, a) * p2(mkt, a)
+    V2pp_a = 2 * voi_2a / (n_eq(mkt, a) * Sigma2(mkt, a))
+    print(f'alpha = {a:.0e}:  alpha * V2\'\' = {a * V2pp_a:.4f}')
+print(f'limit:            {limit:.4f}')
+```
+
+```{solution-end}
+```
+
+```{exercise-start}
+:label: md_ex4
+```
+
+{prf:ref}`md_prop_sshape` 描述的是无噪声路径 $\hat\alpha(t)$，而不是信念的条件均值。
+
+1. 使用 `simulate_beliefs` 估计 $E[\alpha_t \mid \mu = \mu_H]$ 和
+   $E[n(\alpha_t) \mid \mu = \mu_H]$，取 $t \in [0, 8]$，初始值为
+   $\alpha_0 = 0.03$，并将它们与 $\hat\alpha(t)$ 和 $\hat n(t)$ 一起绘图比较。
+
+2. 找出 $E[n(\alpha_t) \mid \mu = \mu_H]$ 增长最快的时间，以及该时刻 $E[\alpha_t \mid \mu = \mu_H]$ 的值。
+
+3. 解释为何无噪声路径会领先于条件均值。
+
+*提示：* 对蒙特卡洛平均值关于时间求导会放大抽样噪声。
+
+应改用 $\frac{d}{dt}E[n(\alpha_t)] = E[\mathcal{G}n(\alpha_t)]$，其中
+$\mathcal{G}n = n' \times \text{漂移} + \frac12 n'' \times \text{方差}$ 是信念过程
+{eq}`eq:md_conditional` 作用于 $n$ 的生成元。
+
+```{exercise-end}
+```
+
+```{solution-start} md_ex4
+:class: dropdown
+```
+
+以下是一种解法。
+
+设 $n(\alpha)^2 = n_L^2 + b\alpha$，其中 $b = n_H^2 - n_L^2$，令
+$k = (\mu_H - \mu_L)^2/\sigma^2$。
+
+那么 $n' = b/(2n)$，$n'' = -b^2/(4n^3)$，代入 {eq}`eq:md_conditional` 的系数得到
+
+$$
+\mathcal{G}n(\alpha) = \frac{bk}{2}\,\alpha(1-\alpha)^2\left[1 - \frac{b\alpha}{4n(\alpha)^2}\right] .
+$$
+
+第一项是沿无噪声路径的变化率 $d\hat n/dt$；第二项是源自 $n$ 的凹性的伊藤修正项。
+
+为节省内存，我们分五批模拟共10,000条路径。
+
+```{code-cell} ipython3
+alpha0, T4, dt4 = 0.03, 8.0, 5e-3
+n_L, n_H = n_eq(mkt, 0.0), n_eq(mkt, 1.0)
+b = n_H ** 2 - n_L ** 2
+k2 = (mkt.mu_H - mkt.mu_L) ** 2 / mkt.sigma ** 2
+
+
+def generator_n(a):
+    """Generator of the belief process under mu_H applied to n(alpha)."""
+    n = n_eq(mkt, a)
+    return 0.5 * b * k2 * a * (1 - a) ** 2 * (1 - b * a / (4 * n ** 2))
+
+
+rng = np.random.default_rng(2024)
+M_batch, n_batches = 2_000, 5
+sum_a = sum_n = sum_g = 0.0
+for _ in range(n_batches):
+    pth = simulate_beliefs(mkt, alpha0, T4, dt4, np.full(M_batch, mkt.mu_H),
+                           rng, policy)
+    sum_a = sum_a + pth.sum(axis=0)
+    sum_n = sum_n + n_eq(mkt, pth).sum(axis=0)
+    sum_g = sum_g + generator_n(pth).sum(axis=0)
+M_total = M_batch * n_batches
+E_a, E_n, E_g = sum_a / M_total, sum_n / M_total, sum_g / M_total
+
+t4 = np.linspace(0, T4, len(E_a))
+a_hat4 = noise_free_belief_path(mkt, alpha0, T4, dt4, policy)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
+axes[0].plot(t4, a_hat4, lw=2, color='C3', label=r'noise-free $\hat\alpha(t)$')
+axes[0].plot(t4, E_a, lw=2, color='C0', label=r'$E[\alpha_t \mid \mu_H]$')
+axes[0].axhline(1 / 3, color='0.5', ls=':', lw=1.5)
+axes[0].set(xlabel='time', ylabel='belief', title='beliefs')
+axes[0].legend(fontsize=9)
+axes[1].plot(t4, n_eq(mkt, a_hat4), lw=2, color='C3',
+             label=r'noise-free $\hat n(t)$')
+axes[1].plot(t4, E_n, lw=2, color='C0', label=r'$E[n(\alpha_t) \mid \mu_H]$')
+axes[1].set(xlabel='time', ylabel='market share of the new firm',
+            title='market shares')
+axes[1].legend(fontsize=9)
+fig.tight_layout()
+plt.show()
+
+print(f'{"t":>4}{"alpha_hat":>11}{"E[alpha]":>10}{"n_hat":>8}{"E[n]":>8}')
+for t in [2, 4, 6, 8]:
+    j = int(round(t / dt4))
+    print(f'{t:>4}{a_hat4[j]:11.3f}{E_a[j]:10.3f}'
+          f'{n_eq(mkt, a_hat4[j]):8.3f}{E_n[j]:8.3f}')
+
+j = np.argmax(E_g)
+near = t4[E_g > 0.99 * E_g.max()]
+print(f'\nE[n_t] grows fastest at t = {t4[j]:.2f}, where E[alpha_t] = {E_a[j]:.3f}')
+print(f'its growth rate is within 1% of the maximum for t in '
+      f'[{near.min():.2f}, {near.max():.2f}]')
+
+A_c = np.linspace(1e-3, 1 - 1e-3, 9_999)
+drift_c = n_eq(mkt, A_c) * A_c * (1 - A_c) ** 2
+curv = np.gradient(np.gradient(drift_c, A_c), A_c)
+print(f'the belief drift is concave for alpha below {A_c[np.argmax(curv > 0)]:.2f}')
+```
+
+无噪声路径明显领先于条件均值：在 $t = 4$ 时，它给出的信念为0.64、份额为0.561，而条件均值分别约为0.38和0.48。
+
+条件均值份额同样呈S形。
+
+它在与无噪声份额大致相同的时间点——约 $t = 2.4$——增长最快，但此时条件均值信念约为0.21，而非1/3。
+
+$E[n_t \mid \mu_H]$ 的增长率在 $t \approx 2.0$ 到 $t \approx 2.8$ 之间都处于最大值的百分之一以内，因此增长最快的确切日期难以精确定位。
+
+有两种力量在拖慢均值。
+
+{eq}`eq:md_conditional` 中的漂移项在 $\alpha$ 小于约0.72时是凹的，因此只要大多数路径都处于该区域，各路径漂移的平均值就会低于平均信念处的漂移。
+
+那些早期收到坏消息的路径会沉向 $\alpha = 0$，在那里漂移和波动率都趋于消失，学习几乎停滞；这些路径拉低了均值。
+
+```{solution-end}
+```
+
+```{exercise-start}
+:label: md_ex5
+```
+
+设 $\ell_t = \log\bigl(\alpha_t/(1-\alpha_t)\bigr)$，
+$\kappa = (\mu_H - \mu_L)^2/(2\sigma^2)$。
+
+1. 利用 {eq}`eq:md_signal` 和 {eq}`eq:md_loglr` 证明，在 $\mu = \mu_H$ 条件下
+
+   $$
+   d\ell = \kappa\, n(\alpha)\, dt + \frac{\mu_H - \mu_L}{\sigma}\sqrt{n(\alpha)}\, dB ,
+   $$
+
+   而在 $\mu = \mu_L$ 条件下漂移为 $-\kappa\, n(\alpha)$。
+   将 $\kappa$ 解释为一个库尔贝克-莱布勒散度率。
+
+2. 当 $\mu = \mu_H$ 时，设 $\tau$ 为信念从 $\alpha_0 = 0.03$ 出发首次到达0.9的时刻。
+   利用第1部分的结论、可选停止定理以及 $n(\alpha) \in (1/3, 2/3)$，给出
+   $E[\tau]$ 的上下界，并通过模拟进行验证。
+
+3. 对 $\mu = \mu_L$ 的情形重复上述过程。
+   解释为何此时信念从0.03上升到0.9的期望时间为无穷大，转而给出信念从0.97下降到0.1的期望时间的上下界。
+   解释为何这两个模拟得到的期望时间不同，尽管上下界是相同的。
+
+```{exercise-end}
+```
+
+```{solution-start} md_ex5
+:class: dropdown
+```
+
+以下是一种解法。
+
+*第1部分。*
+在连续时间下，{eq}`eq:md_loglr` 变为
+$d\ell = \bigl[(\mu_H - \mu_L)\,dX - \frac12 n(\mu_H^2 - \mu_L^2)\,dt\bigr]/\sigma^2$。
+
+在 $\mu = \mu_H$ 条件下，$dX = n\mu_H\,dt + \sigma\sqrt{n}\,dB$，因此 $\ell$ 的漂移为
+
+$$
+\frac{n}{\sigma^2}\left[(\mu_H - \mu_L)\mu_H - \tfrac12(\mu_H - \mu_L)(\mu_H + \mu_L)\right]
+= \frac{n(\mu_H - \mu_L)^2}{2\sigma^2} = \kappa n
+$$
+
+其扩散系数为 $(\mu_H - \mu_L)\sqrt{n}/\sigma$。
+
+在 $\mu = \mu_L$ 条件下，将括号第一项中的 $\mu_H$ 替换为 $\mu_L$，得到漂移为 $-\kappa n$。
+
+在长度为 $\Delta$、$n = 1$ 的区间内，增量 $\Delta X$ 在 $\mu_H$ 下服从
+$N(\mu_H\Delta, \sigma^2\Delta)$，在 $\mu_L$ 下服从 $N(\mu_L\Delta, \sigma^2\Delta)$。
+
+这两个分布之间的库尔贝克-莱布勒散度，无论方向如何，
+都是 $(\mu_H - \mu_L)^2\Delta/(2\sigma^2) = \kappa\Delta$（参见 {ref}`rel_entropy`）。
+
+所以对数几率以 $n$ 倍的KL散度率向真值漂移，这正是
+{doc}`likelihood_ratio_process` 中期望对数似然比与KL散度之间联系的连续时间版本。
+
+*第2部分。*
+过程 $\ell_t - \ell_0 - \kappa\int_0^t n(\alpha_s)\,ds$ 是一个鞅。
+
+由于 $n \geq n_L > 0$，$\ell$ 的漂移以一个正常数为下界，
+因此 $E[\tau] < \infty$，可选停止定理适用。
+
+由于 $\ell$ 的路径是连续的，$\ell_\tau = \ell^* = \log 9$。
+
+因此
+
+$$
+\kappa\, E\left[\int_0^\tau n(\alpha_s)\,ds\right] = \ell^* - \ell_0 ,
+$$
+
+而 $\frac13 E[\tau] < E\left[\int_0^\tau n(\alpha_s)\,ds\right] < \frac23 E[\tau]$ 给出
+
+$$
+\frac{3}{2}\,\frac{\ell^* - \ell_0}{\kappa} < E[\tau] < 3\,\frac{\ell^* - \ell_0}{\kappa} .
+$$
+
+在本讲参数下，$n$ 实际上始终保持在 $[n_L, n_H] = [0.35, 0.65]$ 之内，这进一步将上下界收紧为
+$(\ell^* - \ell_0)/(\kappa n_H) \le E[\tau] \le (\ell^* - \ell_0)/(\kappa n_L)$。
+
+*第3部分。*
+在 $\mu = \mu_L$ 条件下，由伊藤引理及第1部分的结论可知，几率
+$e^{\ell_t} = \alpha_t/(1-\alpha_t)$ 构成一个鞅：$\ell$ 的漂移 $-\kappa n$
+恰为其瞬时方差 $2\kappa n$ 的负二分之一。
+
+这些几率等于先验几率乘以
+{doc}`likelihood_ratio_process` 中研究的那类似然比过程。
+
+当信念首次到达0.9时停止，此时几率被限制在9以内，而在那些永远达不到该点的路径上 $\ell_t \to -\infty$。
+
+可选停止定理给出信念从0.03达到0.9的概率为
+$(0.03/0.97)/9 \approx 0.0034$，因此几乎可以肯定它永远不会达到，期望命中时间为无穷大。
+
+信念从0.97下降到0.1所需的时间遵循第2部分中对 $-\ell$ 应用的论证，其中距离
+$|\ell^* - \ell_0| = \log 9 + \log(0.97/0.03)$ 相同，因此上下界也相同。
+
+```{code-cell} ipython3
+def first_passage_times(mkt, alpha0, alpha_target, mu_true, M, dt, T, rng):
+    """First times at which the belief reaches alpha_target (nan if not by T)."""
+    dmu, half = mkt.mu_H - mkt.mu_L, (mkt.mu_H ** 2 - mkt.mu_L ** 2) / 2
+    ell = np.full(M, np.log(alpha0 / (1 - alpha0)))
+    ell_target = np.log(alpha_target / (1 - alpha_target))
+    up = alpha_target > alpha0
+    tau = np.full(M, np.nan)
+    alive = np.ones(M, dtype=bool)
+    for j in range(int(T / dt)):
+        n = policy(1 / (1 + np.exp(-ell[alive])))
+        dX = (n * mu_true * dt
+              + mkt.sigma * np.sqrt(n * dt) * rng.standard_normal(alive.sum()))
+        ell[alive] += (dmu * dX - n * dt * half) / mkt.sigma ** 2
+        hit = alive & ((ell >= ell_target) if up else (ell <= ell_target))
+        tau[hit] = (j + 1) * dt
+        alive &= ~hit
+        if not alive.any():
+            break
+    return tau
+
+
+κ = (mkt.mu_H - mkt.mu_L) ** 2 / (2 * mkt.sigma ** 2)
+rng = np.random.default_rng(7)
+cases = [('good product, 0.03 -> 0.9', 0.03, 0.9, mkt.mu_H),
+         ('bad product,  0.97 -> 0.1', 0.97, 0.1, mkt.mu_L)]
+print(f'{"":27}{"bounds (1/3, 2/3)":>20}{"bounds (n_L, n_H)":>20}{"simulated":>16}')
+for name, a_start, a_end, mu_true in cases:
+    dist = abs(np.log(a_end / (1 - a_end)) - np.log(a_start / (1 - a_start)))
+    tau = first_passage_times(mkt, a_start, a_end, mu_true, 4_000, 5e-3, 100.0, rng)
+    print(f'{name:27}{1.5 * dist / κ:9.2f},{3 * dist / κ:9.2f} '
+          f'{dist / (κ * n_H):9.2f},{dist / (κ * n_L):9.2f} '
+          f'{np.nanmean(tau):9.2f} ({np.nanstd(tau) / np.sqrt(len(tau)):.2f})')
+```
+
+两个模拟均值都落在上下界之内。
+
+可选停止定理所确定的是期望累积实验规模
+$E\left[\int_0^\tau n(\alpha_s)\,ds\right]$，而非 $E[\tau]$ 本身。
+
+一个从悲观信念出发的好产品，在市场对其进行了解的过程中，只卖给一小部分买家，接近 $n_L$。
+
+而一个从乐观信念出发的坏产品，则卖给了大部分买家，接近 $n_H$。
+
+因此，市场发现一个受欢迎的产品是坏产品，要比发现一个不受欢迎的产品是好产品来得更快。
 
 ```{solution-end}
 ```
