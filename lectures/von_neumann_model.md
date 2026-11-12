@@ -3,10 +3,12 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.2
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 translation:
   title: 冯·诺依曼增长模型（及其推广）
   headings:
@@ -31,6 +33,7 @@ translation:
                 <img style="width:250px;display:inline;" width="250px" src="https://assets.quantecon.org/img/qe-menubar-logo.svg" alt="QuantEcon">
         </a>
 </div>
+
 ```
 
 ```{index} single: python
@@ -51,6 +54,8 @@ translation:
 - 零和双人博弈
 - 线性规划
 - Perron-Frobenius定理
+
+关于活动分析和线性规划的另一个应用，请参阅 {doc}`houthakker_aggregation`，该讲座展示了许多固定比例的生产单位如何汇总形成一个平滑的行业生产函数。
 
 让我们从一些导入开始：
 
