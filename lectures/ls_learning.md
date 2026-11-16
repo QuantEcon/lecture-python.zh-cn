@@ -1292,7 +1292,6 @@ plt.show()
 
 与贝叶斯学习不同，它不需要关于经济统计结构的强先验假设。
 
-
 ## 总结
 
 本讲座研究了 {cite:t}`MarcetSargent1989jet` 自指模型中的最小二乘学习。
@@ -1304,6 +1303,8 @@ plt.show()
 当相关的 ODE $\dot\beta = T(\beta)-\beta$ 局部稳定且学习过程保持在模型有良好定义的区域内时，递归最小二乘收敛到那个不动点。
 
 它补充了在 {doc}`rational_learning_re` 中研究的理性学习，在那里贝叶斯主体在一个已经设定好的均衡结构 *内* 进行学习。
+
+菲利普斯曲线系列讲座将这套机制应用于一个进行学习的政府：{doc}`phillips_credibility` 中的标量情形、{doc}`phillips_self_confirming` 中作为静止点的自我确认均衡、{doc}`phillips_learning` 与 {doc}`phillips_escaping_nash` 中的恒定增益均值动态与逃逸现象，以及 {doc}`phillips_priors` 中使 E-稳定性不再保证收敛的先验。
 
 ## 练习
 

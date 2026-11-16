@@ -3,8 +3,10 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.2
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 translation:
@@ -57,9 +59,11 @@ translation:
 
 后续讲座在更具应用性和计量经济学的背景下使用相同的递归逻辑。
 
-参见{doc}`kalman_2`，其中讨论了一个企业推断工人隐藏的人力资本和努力程度的经济学应用。
+参见 {doc}`kalman_2`，其中讨论了一个企业推断工人隐藏的人力资本和努力程度的经济学应用。
 
-参见{doc}`intermediate:kalman_filter_var`，其中推导了新息表示及其与向量自回归的联系。
+参见 {doc}`intermediate:kalman_filter_var`，其中推导了新息表示及其与向量自回归的联系。
+
+{doc}`phillips_priors` 介绍了一个利用该滤波器追踪漂移回归系数的政府，{doc}`phillips_drifts_volatilities` 则介绍了一位对向量自回归做同样处理的计量经济学家。
 
 关于卡尔曼滤波的更多（进阶）阅读材料，请参见：
 
