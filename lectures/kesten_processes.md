@@ -53,7 +53,8 @@ translation:
 ```{code-cell} ipython3
 :tags: [hide-output]
 
-!pip install --upgrade quantecon yfinance jax
+!pip install quantecon yfinance
+!pip install jax
 ```
 
 ## 概述

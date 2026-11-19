@@ -39,7 +39,7 @@ translation:
 ```{code-cell} ipython3
 :tags: [hide-output]
 
-!pip install --upgrade seaborn
+!pip install seaborn
 ```
 
 我们使用以下导入语句。

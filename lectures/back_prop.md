@@ -27,29 +27,24 @@ translation:
 ```{include} _admonition/gpu.md
 ```
 
-除了基础Anaconda中包含的内容外，我们还需要安装以下包
+除了基础 Anaconda 中包含的内容外，我们还需要安装以下包
 
 ```{code-cell} ipython3
 :tags: [hide-output]
 
-!pip install -U kaleido plotly
-!conda install -y -c plotly plotly-orca
+!pip install "kaleido>=1" "plotly>=6.1"
 
 # kaleido需要chrome来构建图像
 import kaleido
 kaleido.get_chrome_sync()
 ```
 
-```{note}
-如果您在Google Colab上运行此代码，上述单元格将出现错误。这是因为Google Colab不使用Anaconda来管理Python包。但是本讲座仍然可以执行，因为Google Colab已安装了`plotly`。
-```
-
-我们还需要安装JAX来运行本讲座
+我们还需要安装 JAX 来运行本讲座
 
 ```{code-cell} ipython3
 :tags: [skip-execution]
 
-!pip install --upgrade jax
+!pip install jax
 ```
 
 ```{code-cell} ipython3
