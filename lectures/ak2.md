@@ -50,7 +50,7 @@ translation:
 
 ```{code-cell} ipython3
 :tags: [hide-output]
-!pip install --upgrade quantecon
+!pip install quantecon
 ```
 
 ## 概述
@@ -247,7 +247,6 @@ $$  (eq:firmfonc)
 因此，企业将产出出售给老年人、年轻人和政府。
 
 ## 个体问题
-
 
 ### 初始老年人
 在时点 $t=0$，一个代表性的初始老年人拥有 $(1 + r_0(1 - \tau_0)) A_0$ 的初始资产，其中 $A_0 = K_0 + D_0$。
