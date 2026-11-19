@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.17.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -46,8 +46,8 @@ translation:
 ```{code-cell} ipython3
 :tags: [hide-output]
 
-!pip install --upgrade quantecon
-!pip install --upgrade POT
+!pip install quantecon
+!pip install POT
 ```
 
 让我们从一些导入语句开始。
@@ -131,13 +131,9 @@ $$ (sumconstraints)
 
 稍后会详细讨论这一点。
 
-
-
-
 ## 线性规划方法
 
 在本节中，我们讨论使用标准线性规划求解器来求解最优传输问题。
-
 
 ### 决策变量矩阵的向量化
 
@@ -253,7 +249,6 @@ $$
             q \\
         \end{bmatrix}
 $$
-
 
 ### 应用实例
 
@@ -467,7 +462,6 @@ res.x
 
 最优运输方案的最小成本由变量 $fun$ 给出。
 
-
 ### 使用即时编译器
 
 我们也可以使用 QuantEcon 中的一个强大工具来求解最优运输问题，即 `quantecon.optimize.linprog_simplex`。
@@ -527,7 +521,6 @@ res.x.reshape((m, n), order='F')
 如您所见，`quantecon.optimize.linprog_simplex` 的速度要快得多。
 
 (但请注意，SciPy 版本可能比 QuantEcon 版本更稳定，因为它经过了更长时间的广泛测试。)
-
 
 ## 对偶问题
 
@@ -626,9 +619,6 @@ $$
 
 这种相等性由**互补松弛**条件保证，该条件规定当 $x_{ij} > 0$ 时，即当从工厂 $i$ 到地点 $j$ 有正向运输量时，必须满足 $u_i + v_j = c_{ij}$。
 
-
-
-
 ## Python最优传输包
 
 有一个优秀的[Python包](https://pythonot.github.io/)专门用于最优传输，它简化了我们上面采取的一些步骤。
@@ -636,7 +626,6 @@ $$
 特别是，这个包会在把数据交给线性规划求解器之前，先处理好向量化步骤。
 
 （话虽如此，上面关于向量化的讨论仍然很重要，因为我们想要了解其内部运作原理。）
-
 
 ### 复现之前的结果
 
