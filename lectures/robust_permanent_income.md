@@ -52,7 +52,7 @@ translation:
 
 ```{code-cell} ipython3
 :tags: [hide-output]
-!pip install --upgrade quantecon
+!pip install quantecon
 ```
 
 ## 概述
