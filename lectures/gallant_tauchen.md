@@ -260,7 +260,7 @@ GMM 通常需要结构参数的初步估计来构建有效的权重矩阵，而�
 (gt_why_score)=
 ## 为什么得分是正确的匹配对象
 
-{doc}`divergence_measures` 表明，最大似然法最小化了数据的经验分布到参数化模型的 KL 散度。
+{doc}`divergence_measures` 表明，最大似然法最小化了参数化模型相对于数据的经验分布的交叉熵，即数据生成分布到模型的 KL 散度的样本类似量。
 
 第一步通过最小化 KL 散度将数据投影到辅助族上。
 
@@ -276,6 +276,8 @@ $$
 [^gt_cond]: 这里 $p(\cdot \mid \rho)$ 和 $f(\cdot \mid \theta)$ 是给定 $x_t$ 时 $y_t$ 的条件密度。该散度对 $\int p(y \mid x, \rho) \ln \bigl[ p(y \mid x, \rho) / f(y \mid x, \theta) \bigr] \, dy$ 在 $p(x \mid \rho)$ 的平稳密度上取平均。
 
 函数 $\theta^0(\cdot)$ 将结构参数映射为辅助参数。
+
+用 {doc}`information_projections` 中的语言来说，$\theta^0(\rho)$ 是结构模型分布到辅助族上的 m-投影。
 
 随着 $n$ 增大，$\tilde\theta_n$ 收敛到 $\theta^0 = \theta^0(\rho^0)$。
 
@@ -372,6 +374,8 @@ Gallant 和 Tauchen 将此解读为关于如何选择辅助模型的指示：让
 {cite:t}`GourierouxMonfortRenault1993` 和 {cite:t}`Smith1993` 匹配辅助参数。
 
 {cite:t}`GourierouxMonfortRenault1993` 称 $\theta^0(\rho)$ 为**约束函数**。
+
+{doc}`turbulence_inference` 针对一个经过校准的搜寻模型计算了约束函数，并以收入的高斯随机效应模型作为辅助模型。
 
 他们的估计量是
 
@@ -893,6 +897,8 @@ print(f"constant volatility model: J = {J_cv:.1f}, "
 Gallant 和 Tauchen 强调这套方法的第二种用途。
 
 一个能很好地逼近数据的辅助模型，使检验对结构模型误差具有更强的检验力，而各个得分分量能说明一个被拒绝的模型未能匹配数据的*哪些*特征。
+
+{doc}`specification_tests` 描述了比较两种投影的其他检验方法。
 
 Gallant 和 Tauchen 的**拟 t 比率**将 $\sqrt{n}\, m(\hat\rho_n, \tilde\theta_n)$ 的每个分量除以其标准误。
 
