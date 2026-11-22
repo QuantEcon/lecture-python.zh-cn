@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.17.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -23,6 +23,7 @@ translation:
     The Python Optimal Transport Package: Python最优传输包
     The Python Optimal Transport Package::Replicating Previous Results: 复现之前的结果
     The Python Optimal Transport Package::A Larger Application: 更大的应用
+    The Python Optimal Transport Package::Entropic regularization: 熵正则化
 ---
 
 # 最优传输
@@ -31,16 +32,26 @@ translation:
 
 **运输**或**最优传输**问题之所以有趣，不仅是因为它有许多应用，还因为它在经济理论历史中扮演着重要角色。
 
-在本讲座中，我们将描述这个问题，说明{doc}`线性规划 <intro:lp_intro>`是解决它的关键工具，然后提供一些示例。
+在本讲座中，我们将描述这个问题，说明 {doc}`线性规划 <intro:lp_intro>` 是解决它的关键工具，然后提供一些示例。
 
 我们将在后续讲座中提供其他应用。
 
-最优传输问题在早期关于线性规划的研究中就被研究过，例如在{cite}`DoSSo`中有总结。关于经济学应用的现代参考文献是{cite}`Galichon_2016`。
+{doc}`information_transfer` 使用了一个带有额外平均约束的运输问题，来检验一个统计实验是否是另一个统计实验的模糊化。
+
+{doc}`information_projections` 在运输问题中加入了一个熵项，使用辛克霍恩算法求解这个新问题，并说明其拉格朗日乘子收敛于我们在下文中计算的影子价格。
+
+最优传输通过比较两个分布之间移动质量所需的距离来进行比较，因此它需要一个在不同位置之间移动质量的成本。
+
+{doc}`divergence_measures` 中的 Kullback-Leibler 散度是逐位置比较两个分布，并不需要这样的成本；对于本讲座中的问题，这个散度将会是无穷大，因为工厂和它们所供应的地点是不同的点。
+
+{doc}`exponential_families` 对比了这两种比较方式。
+
+最优传输问题在早期关于线性规划的研究中就被研究过，例如在 {cite}`DoSSo` 中有总结。关于经济学应用的现代参考文献是 {cite}`Galichon_2016`。
 
 下面，我们将展示如何使用几种线性规划的实现方法来解决最优传输问题，包括：
 
-1. 来自SciPy的求解器[linprog](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html)，
-2. 来自QuantEcon的求解器[linprog_simplex](https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html)，以及
+1. 来自 SciPy 的求解器 [linprog](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html)，
+2. 来自 QuantEcon 的求解器 [linprog_simplex](https://quanteconpy.readthedocs.io/en/latest/optimize/linprog_simplex.html)，以及
 3. [Python Optimal Transport](https://pythonot.github.io/) 包中的基于单纯形法的求解器。
 
 ```{code-cell} ipython3
@@ -131,13 +142,9 @@ $$ (sumconstraints)
 
 稍后会详细讨论这一点。
 
-
-
-
 ## 线性规划方法
 
 在本节中，我们讨论使用标准线性规划求解器来求解最优传输问题。
-
 
 ### 决策变量矩阵的向量化
 
@@ -254,7 +261,6 @@ $$
         \end{bmatrix}
 $$
 
-
 ### 应用实例
 
 
@@ -361,7 +367,7 @@ print("X:", res.x.reshape((m,n), order='F'))
 
 这里的 `'F'` 代表"Fortran"，我们使用的是Fortran风格的列优先顺序。
 
-（关于使用Python默认的行优先顺序的另一种方法，请参见[Alfred Galichon的这个讲座](https://www.math-econ-code.org/dynamic-programming)。）
+（关于使用Python默认的行优先顺序的另一种方法，请参见 [Alfred Galichon的这个讲座](https://www.math-econ-code.org/dynamic-programming)。）
 
 **解释求解器的行为：**
 
@@ -381,7 +387,7 @@ np.linalg.matrix_rank(A) < min(A.shape)
 A
 ```
 
-$A$ 的奇异性反映了前三个约束和后五个约束都要求{eq}`sumconstraints`中表达的"总需求等于总容量"。
+$A$ 的奇异性反映了前三个约束和后五个约束都要求 {eq}`sumconstraints` 中表达的"总需求等于总容量"。
 
 这里有一个冗余的等式约束。
 
@@ -467,7 +473,6 @@ res.x
 
 最优运输方案的最小成本由变量 $fun$ 给出。
 
-
 ### 使用即时编译器
 
 我们也可以使用 QuantEcon 中的一个强大工具来求解最优运输问题，即 `quantecon.optimize.linprog_simplex`。
@@ -498,7 +503,7 @@ res_qe = linprog_simplex(-c, A_eq=A_eq, b_eq=b_eq)
 
 尽管这两个线性规划（LP）求解器采用的算法不同（HiGHS 与单纯形法），它们都应当能找到最优解。
 
-两个求得的解之所以不同，是因为最优解不唯一，但目标函数值相同。
+两个求得的解之所以不同，是因为存在多个最优解，但目标函数值相同。
 
 ```{code-cell} ipython3
 np.allclose(-res_qe.fun, res.fun)
@@ -528,12 +533,11 @@ res.x.reshape((m, n), order='F')
 
 (但请注意，SciPy 版本可能比 QuantEcon 版本更稳定，因为它经过了更长时间的广泛测试。)
 
-
 ## 对偶问题
 
 设 $u, v$ 表示对偶决策变量的向量，其分量为 $(u_i), (v_j)$。
 
-**最小化**问题{eq}`plannerproblem`的**对偶**是以下**最大化**问题：
+**最小化**问题 {eq}`plannerproblem` 的**对偶**是以下**最大化**问题：
 
 $$
 \begin{aligned}
@@ -582,7 +586,7 @@ print("u:", res_dual.x[:m])
 print("v:", res_dual.x[-n:])
 ```
 
-`quantecon.optimize.linprog_simplex`会在给出原问题解的同时计算并返回对偶变量。
+`quantecon.optimize.linprog_simplex` 会在给出原问题解的同时计算并返回对偶变量。
 
 这些对偶变量（影子价格）可以直接从原问题的解中提取：
 
@@ -622,12 +626,34 @@ $$
 
 强对偶性表明总运输成本等于总出货成本**加上**总进货成本。
 
-对于一个单位的产品，出货成本 $u_i$ **加上**进货成本 $v_j$ 应该等于运输成本$c_{ij}$，这是合理的。
+对于一个单位的产品，出货成本 $u_i$ **加上**进货成本 $v_j$ 应该等于运输成本 $c_{ij}$，这是合理的。
 
 这种相等性由**互补松弛**条件保证，该条件规定当 $x_{ij} > 0$ 时，即当从工厂 $i$ 到地点 $j$ 有正向运输量时，必须满足 $u_i + v_j = c_{ij}$。
 
+对偶约束与互补松弛条件一起，由向量 $v$ 决定每一个 $u_i$。
 
+由于对每个 $j$ 都有 $u_i + v_j \leq c_{ij}$，且对工厂 $i$ 向其运货的某个地点等号成立，因此
 
+$$
+u_i = \min_j \left( c_{ij} - v_j \right) .
+$$ (ctransform)
+
+最优运输理论将 {eq}`ctransform` 所定义的从 $v$ 到 $u$ 的映射称为 **c-变换**。
+
+当成本为 $c(x, y) = -x \cdot y$ 时，c-变换在正负号的差异下即为 {doc}`exponential_families` 所使用的勒让德变换 {cite}`KhanZhang2022`。
+
+从工厂 $i$ 到地点 $j$ 这条路线的**约化成本** $c_{ij} - u_i - v_j$ 是非负的，并且在最优方案所使用的每条路线上都为零。
+
+```{code-cell} ipython3
+u, v = res_dual.x[:m], res_dual.x[-n:]
+print("约化成本 c_ij - u_i - v_j:\n", np.round(C - u[:, None] - v[None, :], 2))
+print("u:", u)
+print("min_j (c_ij - v_j):", np.min(C - v[None, :], axis=1))
+```
+
+上面我们找到的两个最优方案都只使用约化成本为零的路线。
+
+{doc}`information_projections` 表明，当在目标函数中加入一个熵项后，解会沿着每条路线以 $\exp(-(c_{ij} - \alpha_i - \beta_j)/\varepsilon)$ 的数量进行运输，在对 $\alpha$ 加上一个常数并从 $\beta$ 减去相同常数后，当 $\varepsilon \to 0$ 时，$\alpha$ 和 $\beta$ 收敛于 $u$ 和 $v$。
 
 ## Python最优传输包
 
@@ -636,7 +662,6 @@ $$
 特别是，这个包会在把数据交给线性规划求解器之前，先处理好向量化步骤。
 
 （话虽如此，上面关于向量化的讨论仍然很重要，因为我们想要了解其内部运作原理。）
-
 
 ### 复现之前的结果
 
@@ -793,6 +818,61 @@ nx.draw_networkx_edges(g,
 plt.show()
 ```
 
-```{code-cell} ipython3
+### 熵正则化
 
+最优方案只沿着少数几条路径运输。
+
+这个线性规划有 $n_p + n_q = 64$ 个等式约束（其中一个是冗余的），求解器返回的是可行方案集合的一个顶点，它最多沿着 $1024$ 条路径中的 $n_p + n_q - 1 = 63$ 条路径进行运输。
+
+```{code-cell} ipython3
+print("routes used by the optimal plan:", np.sum(pi > 1e-12))
 ```
+
+{doc}`information_projections` 描述了该问题的熵正则化版本，
+
+$$
+\min_{X} \sum_{i, j} c_{ij} x_{ij} + \varepsilon \sum_{i, j} x_{ij} \log x_{ij}
+$$
+
+其约束条件与之前相同，其解会沿着每一条路径都运输正数量的货物。
+
+{cite:t}`Cuturi2013` 指出 Sinkhorn 算法能够快速求解该问题，而 {cite:t}`PeyreCuturi2019` 描述了由此开辟出来的计算方法。
+
+函数 `ot.sinkhorn` 实现了 Sinkhorn 算法；其参数 `reg` 就是我们这里的 $\varepsilon$。
+
+当 $\varepsilon$ 较小时，选项 `method="sinkhorn_log"` 会以对数形式进行计算。
+
+```{code-cell} ipython3
+p_arr, q_arr = np.array(p_probs), np.array(q_probs)
+plans = {"linear program": pi}
+for ε in (0.1, 0.01):
+    plans[f"ε = {ε}"] = ot.sinkhorn(p_arr, q_arr, c, reg=ε,
+                                    method="sinkhorn_log", numItermax=20_000)
+
+for name, plan in plans.items():
+    mass = np.sort(plan.ravel())[::-1]
+    routes_99 = np.searchsorted(np.cumsum(mass), 0.99) + 1
+    print(f"{name:15}: cost {np.vdot(plan, c):.4f}, "
+          f"routes carrying 99% of the mass {routes_99}")
+```
+
+```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 最优方案与熵正则化运输方案
+    name: fig-ot-entropic
+---
+fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+for ax, (name, plan) in zip(axes, plans.items()):
+    ax.imshow(plan, cmap="Greys")
+    ax.set_title(name)
+    ax.set_xlabel("location $j$")
+    ax.set_ylabel("factory $i$")
+plt.tight_layout()
+plt.show()
+```
+
+随着 $\varepsilon$ 减小，正则化方案集中在越来越少的路径上，其成本也逐渐逼近最小成本。
+
+熵项会把运输方案分散到许多路径上，同时也使正则化问题变为严格凸且光滑的问题，因而易于求解 {cite}`KhanZhang2022`。
