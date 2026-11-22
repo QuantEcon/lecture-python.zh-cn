@@ -4,11 +4,11 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.1
+    jupytext_version: 1.17.2
 kernelspec:
-  name: python3
   display_name: Python 3 (ipykernel)
   language: python
+  name: python3
 translation:
   title: 工作搜寻 II：搜寻与离职
   headings:
@@ -159,7 +159,6 @@ from myst_nb import glue
 
 正如我们接下来将展示的，得到这些函数是求解该模型的关键。
 
-
 ### 贝尔曼方程
 
 我们回忆一下，在{doc}`最初的工作搜寻模型 <mccall_model>`中，价值函数（在给定工资报价下失业的价值）满足一个贝尔曼方程。
@@ -216,7 +215,6 @@ from myst_nb import glue
 
 一旦得到这两个函数，我们就能够做出最优选择。
 
-
 ### 保留工资
 
 
@@ -243,12 +241,9 @@ $$
     v_e(w) \geq h
 $$
 
-
-
 ## 代码
 
 现在让我们基于两个贝尔曼方程{eq}`bell2_mccall`和{eq}`bell1_mccall`实现一个求解方法。
-
 
 ### 设置
 
@@ -281,7 +276,6 @@ class Model(NamedTuple):
     q: jnp.ndarray = q_default  # 工资报价上的概率
 ```
 
-
 ### 算子
 
 我们将采用与{doc}`第一个工作搜寻讲座 <mccall_model>`中类似的迭代方法来求解贝尔曼方程。
@@ -312,7 +306,6 @@ def T_e(model, v_u, v_e):
     v_e_new = u(w, γ) + β * ((1 - α) * v_e + α * (v_u @ q))
     return v_e_new
 ```
-
 
 ### 迭代
 
@@ -347,8 +340,6 @@ def solve_full_model(
 
     return v_u, v_e
 ```
-
-
 
 ### 计算保留工资
 
@@ -435,7 +426,6 @@ h = u(c) + \beta \sum_{w'} \max \left\{ v_e(w'), \,  h \right\} q(w')
 
 但我们还可以更进一步，即从上述方程中消去$v_e$。
 
-
 ### 简化为单一方程
 
 第一步，我们对定义$h$的表达式（见{eq}`defh_mm`）进行重新整理，得到
@@ -491,7 +481,6 @@ h = u(c) + \beta \sum_{w' \in \mathbb W} \max \left\{ \frac{u(w') + \alpha(h - u
 
 然后我们就有足够的信息来计算保留工资。
 
-
 ### 求解贝尔曼方程
 
 为了求解{eq}`bell_scalar`，我们使用如下迭代规则
@@ -507,8 +496,6 @@ h_{n+1} = u(c) + \beta \sum_{w' \in \mathbb W}
 
 
 （可以通过巴拿赫压缩映射定理证明{eq}`bell_iter`是收敛的。）
-
-
 
 ## 实现
 
@@ -598,7 +585,6 @@ print(f"差异：{abs(w_bar_simplified - w_bar_full):.6f}")
 
 接下来我们将研究保留工资如何随参数变化。
 
-
 ## 参数的影响
 
 在下面的每个例子中，我们会先展示一幅图，然后在练习中让你自己重现它。
@@ -647,6 +633,8 @@ print(f"差异：{abs(w_bar_simplified - w_bar_full):.6f}")
 如果离职率高，那么等待更高工资的收益就会下降。
 
 因此保留工资较低。
+
+{doc}`turbulence_inference` 研究了一个搜寻模型，在该模型中，离职也可能摧毁技能，并探讨了关于收入的证据能否区分更高的离职率和更大的技能损失。
 
 ## 练习
 
