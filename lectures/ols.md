@@ -546,6 +546,8 @@ print(reg2.summary())
 
 输出结果显示残差系数具有统计显著性，表明 $avexpr_i$ 是内生的。
 
+$\hat \upsilon_i$ 上的 $t$ 统计量的平方是 {doc}`specification_tests` 中吴检验的统计量 $T_2$，即一个直角三角形两条直角边长度平方之比，该三角形的勾股定理对应于 m-投影的情形。
+
 ```{solution-end}
 ```
 
