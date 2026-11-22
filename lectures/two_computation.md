@@ -123,7 +123,6 @@ jax.config.update("jax_enable_x64", True)
 
 ## 模型
 
-
 ### 环境
 
 该经济体由有限寿命个人的世代交叠组成，个人最多可存活 $T_0+1$ 年，还有一个无限寿命的政府。
@@ -428,7 +427,6 @@ plt.show()
 
 ## 计算策略
 
-
 ### 动态规划
 
 个人消费者的问题可以表述为一个贴现风险敏感线性控制问题（参见 {doc}`lqcontrol`）。
@@ -685,11 +683,11 @@ mystnb:
 
 fig, axs = plt.subplots(1, 2, figsize=(10, 6))
 
-axs[0].plot(ε_arr)
+axs[0].plot(ε_arr, lw=2)
 axs[0].set_title("工作效率")
 axs[0].set_xlabel("age")
 
-axs[1].plot(α_arr)
+axs[1].plot(α_arr, lw=2)
 axs[1].set_title("存活概率")
 axs[1].set_xlabel("age")
 
@@ -792,7 +790,7 @@ mystnb:
     name: two_comp_pop_dist
 ---
 fig, ax = plt.subplots()
-ax.plot(hh.frac)
+ax.plot(hh.frac, lw=2)
 ax.set_xlabel("age")
 ax.set_ylabel("population fraction")
 plt.show()
@@ -1271,7 +1269,7 @@ for i, Gb in enumerate(Gb_arr):
     debt2gdp_arr[i] = ss.debt2gdp
 
 fig, ax = plt.subplots()
-ax.plot(τl_arr, debt2gdp_arr)
+ax.plot(τl_arr, debt2gdp_arr, lw=2)
 ax.hlines(ss0.debt2gdp, τl_arr.min(),
           np.maximum(τl_arr.max(), ss0.τ_l), linestyle='--', color='r')
 ax.scatter(ss0.τ_l, ss0.debt2gdp)
@@ -2121,6 +2119,12 @@ exp1_exo = {
 下图显示买断如何重塑跨队列的初始资产持有量。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 改革时按年龄划分的资产与补偿
+    name: two_comp_exp1_compensation
+---
 # 提取结果
 _, μx_seq_bo, μc_seq_bo, k_seq_bo, Gb_seq_bo, _, _ = exp1_exo['results_buyout']
 results_nb = exp1_exo['results_no_buyout']
@@ -2177,6 +2181,12 @@ plt.show()
 我们现在绘制两种方案下劳动税、政府债务、资本和消费的总量转型路径。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 带买断与不带买断的实验 1 路径
+    name: two_comp_exp1_paths
+---
 # hh, tech, ss0, ss1 已在作用域中——只是为了可读性从字典中别名
 ss0_exp1 = exp1_exo['ss0']
 ss1_exp1 = exp1_exo['ss1']
@@ -2248,6 +2258,12 @@ plt.show()
 我们现在检查改革发生时不同年龄队列的消费路径。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 实验 1 中各队列的消费路径
+    name: two_comp_exp1_cohorts
+---
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 
 selected_ages = [0, 20, 40, 60]  # s=0 时不同年龄的队列
@@ -2585,6 +2601,12 @@ exp1_endo = {
 下图比较固定和内生要素价格下的转型路径，显示一般均衡效应如何改变税收、债务、利率和工资路径。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 固定价格与内生价格下的实验 1
+    name: two_comp_exp1_prices
+---
 # 获取内生价格序列
 price_seq_endo = exp1_endo['price_seq']
 S_endo = price_seq_endo.shape[0] - 2
@@ -2828,6 +2850,12 @@ exp2_endo = {
 我们现在比较所有四种改革方案：买断方案和政府融资方案，每种都在固定和内生要素价格下。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 四种改革方案的比较
+    name: two_comp_four_scenarios
+---
 # 获取所有情形的债务序列
 Gb_buyout_fixed = Gb_seq_bo
 Gb_buyout_endo = exp1_endo['Gb_seq']
@@ -3107,6 +3135,12 @@ def plot_surface_grid(
 平均资产曲面显示资产持有的驼峰形生命周期剖面，随着工作世代响应改革增加储蓄，峰值资产发生移动。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 按年龄和时间的平均资产
+    name: two_comp_surf_assets
+---
 plot_surface_grid(
     [μa_bf, μa_be, μa_af, μa_ae],
     case_names, '平均资产',
@@ -3117,6 +3151,12 @@ plot_surface_grid(
 资产方差曲面显示累积收入冲击如何导致离散度随年龄增加，转型可能改变离散度增长的速率。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 按年龄和时间的资产离散度
+    name: two_comp_surf_asset_sd
+---
 plot_surface_grid(
     [Va_bf, Va_be, Va_af, Va_ae],
     case_names, '资产标准差',
@@ -3128,6 +3168,12 @@ plot_surface_grid(
 平均消费曲面反映最优消费路径，由于模型基础的持久收入假设，该路径应在各年龄间平滑。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 按年龄和时间的平均消费
+    name: two_comp_surf_cons
+---
 plot_surface_grid(
     [μc_bf, μc_be, μc_af, μc_ae],
     case_names, '平均消费',
@@ -3141,6 +3187,12 @@ plot_surface_grid(
 请注意，消费离散度并非确定性等价的副产品：当 $\sigma = -0.05$ 时，决策规则本身依赖于收入的波动率，{ref}`two_comp_ex2` 对此予以证实。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 按年龄和时间的消费离散度
+    name: two_comp_surf_cons_sd
+---
 plot_surface_grid(
     [Vc_bf, Vc_be, Vc_af, Vc_ae],
     case_names, '消费标准差',

@@ -248,7 +248,6 @@ $$  (eq:firmfonc)
 
 ## 个体问题
 
-
 ### 初始老年人
 在时点 $t=0$，一个代表性的初始老年人拥有 $(1 + r_0(1 - \tau_0)) A_0$ 的初始资产，其中 $A_0 = K_0 + D_0$。
 
@@ -648,7 +647,7 @@ class ClosedFormTrans:
         # 数量变量
         for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
             ax = axs[i//3, i%3]
-            ax.plot(range(T+1), quant_seq[:T+1, i], label=name)
+            ax.plot(range(T+1), quant_seq[:T+1, i], label=name, lw=2)
             ax.hlines(init_ss[i], 0, T+1, color='r', linestyle='--')
             ax.legend()
             ax.set_xlabel('t')
@@ -656,7 +655,7 @@ class ClosedFormTrans:
         # 价格变量
         for i, name in enumerate(['W', 'r']):
             ax = axs[(i+4)//3, (i+4)%3]
-            ax.plot(range(T+1), price_seq[:T+1, i], label=name)
+            ax.plot(range(T+1), price_seq[:T+1, i], label=name, lw=2)
             ax.hlines(init_ss[i+4], 0, T+1, color='r', linestyle='--')
             ax.legend()
             ax.set_xlabel('t')
@@ -664,7 +663,7 @@ class ClosedFormTrans:
         # 政策变量
         for i, name in enumerate(['τ', 'D', 'G']):
             ax = axs[(i+6)//3, (i+6)%3]
-            ax.plot(range(T+1), policy_seq[:T+1, i], label=name)
+            ax.plot(range(T+1), policy_seq[:T+1, i], label=name, lw=2)
             ax.hlines(init_ss[i+6], 0, T+1, color='r', linestyle='--')
             ax.legend()
             ax.set_xlabel('t')
@@ -720,6 +719,12 @@ D_seq[0] = D_hat
 请注意，我们将 `τ_pol` 保留为 `None`，因为需要确定税率以满足政府预算约束。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 减税后的转型
+    name: ak2_exp1_tax_cut
+---
 quant_seq1, price_seq1, policy_seq1 = closed.simulate(T, init_ss,
                                                       D_pol=D_seq,
                                                       G_pol=G_seq)
@@ -741,13 +746,19 @@ quant_seq2, price_seq2, policy_seq2 = closed.simulate(T, init_ss,
                                                       G_pol=G_seq)
 ```
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 两种减税率下的转型路径
+    name: ak2_exp1_two_rates
+---
 fig, axs = plt.subplots(3, 3, figsize=(14, 10))
 
 # 数量
 for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
     ax = axs[i//3, i%3]
-    ax.plot(range(T+1), quant_seq1[:T+1, i], label=f'{name}, 1/3')
-    ax.plot(range(T+1), quant_seq2[:T+1, i], label=f'{name}, 0.2')
+    ax.plot(range(T+1), quant_seq1[:T+1, i], label=f'{name}, 1/3', lw=2)
+    ax.plot(range(T+1), quant_seq2[:T+1, i], label=f'{name}, 0.2', lw=2)
     ax.hlines(init_ss[i], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -755,8 +766,8 @@ for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
 # 价格
 for i, name in enumerate(['W', 'r']):
     ax = axs[(i+4)//3, (i+4)%3]
-    ax.plot(range(T+1), price_seq1[:T+1, i], label=f'{name}, 1/3')
-    ax.plot(range(T+1), price_seq2[:T+1, i], label=f'{name}, 0.2')
+    ax.plot(range(T+1), price_seq1[:T+1, i], label=f'{name}, 1/3', lw=2)
+    ax.plot(range(T+1), price_seq2[:T+1, i], label=f'{name}, 0.2', lw=2)
     ax.hlines(init_ss[i+4], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -764,8 +775,8 @@ for i, name in enumerate(['W', 'r']):
 # 政策
 for i, name in enumerate(['τ', 'D', 'G']):
     ax = axs[(i+6)//3, (i+6)%3]
-    ax.plot(range(T+1), policy_seq1[:T+1, i], label=f'{name}, 1/3')
-    ax.plot(range(T+1), policy_seq2[:T+1, i], label=f'{name}, 0.2')
+    ax.plot(range(T+1), policy_seq1[:T+1, i], label=f'{name}, 1/3', lw=2)
+    ax.plot(range(T+1), policy_seq2[:T+1, i], label=f'{name}, 0.2', lw=2)
     ax.hlines(init_ss[i+6], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -785,6 +796,12 @@ for i, name in enumerate(['τ', 'D', 'G']):
 为了进行该实验，我们将 `τ_seq` 和 `G_seq` 作为输入，并让 `D_pol` 沿转型路径由政府预算约束自动决定。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 永久性支出削减后的转型
+    name: ak2_exp2_expenditure_cut
+---
 # 政府支出减半
 G_seq = τ_hat * 0.5 * Y_hat * np.ones(T+1)
 
@@ -805,7 +822,7 @@ mystnb:
     caption: 政府资产与资本之比
     name: ak2_asset_capital_ratio
 ---
-plt.plot(range(T+1), -closed.policy_seq[:-1, 1] / closed.quant_seq[:, 0])
+plt.plot(range(T+1), -closed.policy_seq[:-1, 1] / closed.quant_seq[:, 0], lw=2)
 plt.xlabel('t')
 plt.ylabel('-D/K')
 plt.show()
@@ -838,6 +855,12 @@ $t=0$ 时的代表性老年人不受影响，因为 $K_0$、$r_0$ 和 $\tau_0$ �
 从 $t \geq 1$ 起，政府支出恢复到 $\hat{G}$，而税率 $\tau_t$ 调整以维持资产水平 $-D_t = -D_1$。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 暂时性支出削减后的转型
+    name: ak2_exp3_temporary_cut
+---
 # 政府购买序列
 G_seq = τ_hat * Y_hat * np.ones(T+1)
 G_seq[0] = 0
@@ -1010,11 +1033,11 @@ class AK2():
             if verbose:
                 # 在第i次迭代时绘制当前价格
                 for i, name in enumerate(['W', 'r']):
-                    axs[i].plot(range(T+1), price_seq[:T+1, i])
+                    axs[i].plot(range(T+1), price_seq[:T+1, i], lw=2)
                     axs[i].set_title(name)
                     axs[i].set_xlabel('t')
                 axs[2].plot(range(T+1), policy_seq[:T+1, 0],
-                            label=f'第{i_iter}次迭代')
+                            label=f'第{i_iter}次迭代', lw=2)
                 axs[2].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
                 axs[2].set_title('τ')
                 axs[2].set_xlabel('t')
@@ -1092,7 +1115,7 @@ class AK2():
         # 数量
         for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
             ax = axs[i//3, i%3]
-            ax.plot(range(T+1), quant_seq[:T+1, i], label=name)
+            ax.plot(range(T+1), quant_seq[:T+1, i], label=name, lw=2)
             ax.hlines(init_ss[i], 0, T+1, color='r', linestyle='--')
             ax.legend()
             ax.set_xlabel('t')
@@ -1100,7 +1123,7 @@ class AK2():
         # 价格
         for i, name in enumerate(['W', 'r']):
             ax = axs[(i+4)//3, (i+4)%3]
-            ax.plot(range(T+1), price_seq[:T+1, i], label=name)
+            ax.plot(range(T+1), price_seq[:T+1, i], label=name, lw=2)
             ax.hlines(init_ss[i+4], 0, T+1, color='r', linestyle='--')
             ax.legend()
             ax.set_xlabel('t')
@@ -1108,7 +1131,7 @@ class AK2():
         # 政策
         for i, name in enumerate(['τ', 'D', 'G']):
             ax = axs[(i+6)//3, (i+6)%3]
-            ax.plot(range(T+1), policy_seq[:T+1, i], label=name)
+            ax.plot(range(T+1), policy_seq[:T+1, i], label=name, lw=2)
             ax.hlines(init_ss[i+6], 0, T+1, color='r', linestyle='--')
             ax.legend()
             ax.set_xlabel('t')
@@ -1134,12 +1157,24 @@ D_pol[0] = D_hat
 D_pol[1:] = D1
 ```
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 不动点算法的价格迭代
+    name: ak2_fixed_point_iterations
+---
 quant_seq3, price_seq3, policy_seq3 = ak2.simulate(T, init_ss,
                                                    δy_seq, δo_seq,
                                                    D_pol=D_pol, G_pol=G_pol,
                                                    verbose=True)
 ```
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 使用AK2计算的减税转型
+    name: ak2_exp1_ak2
+---
 ak2.plot()
 ```
 接下来,我们引入一次性税收。
@@ -1160,13 +1195,19 @@ quant_seq4, price_seq4, policy_seq4 = ak2.simulate(T, init_ss,
 注意："挤出效应"已经得到缓解。
 
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 有无一次性税收下的转型
+    name: ak2_exp1_lump_sum
+---
 fig, axs = plt.subplots(3, 3, figsize=(14, 10))
 
 # 数量
 for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
     ax = axs[i//3, i%3]
-    ax.plot(range(T+1), quant_seq3[:T+1, i], label=rf"{name}, $\delta$s=0")
-    ax.plot(range(T+1), quant_seq4[:T+1, i], label=rf"{name}, $\delta$s=0.005")
+    ax.plot(range(T+1), quant_seq3[:T+1, i], label=rf"{name}, $\delta$s=0", lw=2)
+    ax.plot(range(T+1), quant_seq4[:T+1, i], label=rf"{name}, $\delta$s=0.005", lw=2)
     ax.hlines(init_ss[i], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -1174,8 +1215,8 @@ for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
 # 价格
 for i, name in enumerate(['W', 'r']):
     ax = axs[(i+4)//3, (i+4)%3]
-    ax.plot(range(T+1), price_seq3[:T+1, i], label=rf"{name}, $\delta$s=0")
-    ax.plot(range(T+1), price_seq4[:T+1, i], label=rf"{name}, $\delta$s=0.005")
+    ax.plot(range(T+1), price_seq3[:T+1, i], label=rf"{name}, $\delta$s=0", lw=2)
+    ax.plot(range(T+1), price_seq4[:T+1, i], label=rf"{name}, $\delta$s=0.005", lw=2)
     ax.hlines(init_ss[i+4], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -1183,8 +1224,8 @@ for i, name in enumerate(['W', 'r']):
 # 政策
 for i, name in enumerate(['τ', 'D', 'G']):
     ax = axs[(i+6)//3, (i+6)%3]
-    ax.plot(range(T+1), policy_seq3[:T+1, i], label=rf"{name}, $\delta$s=0")
-    ax.plot(range(T+1), policy_seq4[:T+1, i], label=rf"{name}, $\delta$s=0.005")
+    ax.plot(range(T+1), policy_seq3[:T+1, i], label=rf"{name}, $\delta$s=0", lw=2)
+    ax.plot(range(T+1), policy_seq4[:T+1, i], label=rf"{name}, $\delta$s=0.005", lw=2)
     ax.hlines(init_ss[i+6], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -1223,13 +1264,19 @@ quant_seq5, price_seq5, policy_seq5 = ak2.simulate(T, init_ss,
                                                    D_pol=D_pol, G_pol=G_pol)
 ```
 ```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 减税与社会保障转移支付的比较
+    name: ak2_exp4_social_security
+---
 fig, axs = plt.subplots(3, 3, figsize=(14, 10))
 
 # 数量
 for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
     ax = axs[i//3, i%3]
-    ax.plot(range(T+1), quant_seq3[:T+1, i], label=f'{name}, 减税')
-    ax.plot(range(T+1), quant_seq5[:T+1, i], label=f'{name}, 转移支付')
+    ax.plot(range(T+1), quant_seq3[:T+1, i], label=f'{name}, 减税', lw=2)
+    ax.plot(range(T+1), quant_seq5[:T+1, i], label=f'{name}, 转移支付', lw=2)
     ax.hlines(init_ss[i], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -1237,8 +1284,8 @@ for i, name in enumerate(['K', 'Y', 'Cy', 'Co']):
 # 价格
 for i, name in enumerate(['W', 'r']):
     ax = axs[(i+4)//3, (i+4)%3]
-    ax.plot(range(T+1), price_seq3[:T+1, i], label=f'{name}, 减税')
-    ax.plot(range(T+1), price_seq5[:T+1, i], label=f'{name}, 转移支付')
+    ax.plot(range(T+1), price_seq3[:T+1, i], label=f'{name}, 减税', lw=2)
+    ax.plot(range(T+1), price_seq5[:T+1, i], label=f'{name}, 转移支付', lw=2)
     ax.hlines(init_ss[i+4], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
@@ -1246,8 +1293,8 @@ for i, name in enumerate(['W', 'r']):
 # 政策
 for i, name in enumerate(['τ', 'D', 'G']):
     ax = axs[(i+6)//3, (i+6)%3]
-    ax.plot(range(T+1), policy_seq3[:T+1, i], label=f'{name}, 减税')
-    ax.plot(range(T+1), policy_seq5[:T+1, i], label=f'{name}, 转移支付')
+    ax.plot(range(T+1), policy_seq3[:T+1, i], label=f'{name}, 减税', lw=2)
+    ax.plot(range(T+1), policy_seq5[:T+1, i], label=f'{name}, 转移支付', lw=2)
     ax.hlines(init_ss[i+6], 0, T+1, color='r', linestyle='--')
     ax.legend()
     ax.set_xlabel('t')
