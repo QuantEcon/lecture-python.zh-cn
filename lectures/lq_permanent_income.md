@@ -272,6 +272,8 @@ $$ (eq:sprob13)
 因此，消费是一个**随机游走**，其新息为
 $(1-\beta)d(\beta)w_{t+1}$。
 
+{doc}`approximation_errors` 描述了 {cite:t}`Sims1993` 如何利用这一公式表明，一个设定错误的收入季节性模型会使推断出的消费对收入的响应产生偏差。
+
 将 {eq}`eq:sprob13` 与 {eq}`eq:sprob7` 结合，得到
 
 $$
