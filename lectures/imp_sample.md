@@ -15,10 +15,10 @@ translation:
     Overview: 概述
     Mathematical expectation of likelihood ratio: 似然比的数学期望
     Importance sampling: 重要性采样
-    Selecting a sampling distribution: 选择抽样分布
     Approximating a cumulative likelihood ratio: 近似累积似然比
     Distribution of sample mean: 样本均值的分布
     Choosing a sampling distribution: 选择抽样分布
+    Exercises: 练习
 ---
 
 # 似然比过程的均值
@@ -76,7 +76,7 @@ $$
 \ell \left( \omega_t \right) = \frac{f\left(\omega_t\right)}{g\left(\omega_t\right)}
 $$
 
-其中 $f$ 和 $g$ 是参数为 $F_a$、$F_b$、$G_a$、$G_b$ 的Beta分布的密度函数。
+其中 $f$ 是 Beta$(F_a, F_b) = $ Beta$(1, 1)$ 密度，即 $[0,1]$ 上的均匀密度，而 $g$ 是 Beta$(G_a, G_b) = $ Beta$(3, 1.2)$ 密度。
 
 假设独立同分布的随机变量 $\omega_t \in \Omega$ 由 $g$ 生成。
 
@@ -88,7 +88,7 @@ $$
 
 我们的目标是很好地近似数学期望 $E \left[ L\left(\omega^t\right) \right]$。
 
-在 {doc}`likelihood_ratio_process` 中，我们证明了对所有 $t$，$E \left[ L\left(\omega^t\right) \right]$ 等于1。
+在 {doc}`likelihood_ratio_process` 的 {ref}`这一节 <nature_likeli>` 中，我们证明了对所有 $t$，$E \left[ L\left(\omega^t\right) \right]$ 等于1。
 
 我们想要检验当用模拟的样本均值替代 $E$ 时，这个结论的准确程度如何。
 
@@ -180,6 +180,8 @@ $L\left(\omega^t\right)$ 中的每一个因子都以同样的方式发生了扭�
 
 在模拟过程中，我们不从 $g$ 中抽取数据，而是使用另一个分布 $h$ 来生成 $\omega$ 的抽样。
 
+在 {doc}`likelihood_ratio_process` 中，$h$ 表示生成数据的第三个密度；而在这里，$h$ 表示我们所选择的重要性分布。
+
 这个想法是设计 $h$ 使其对 $\Omega$ 中那些 $\ell \left(\omega_t\right)$ 取值较大但在 $g$ 下密度较低的区域进行过采样。
 
 用这种方式构造样本后，当我们计算似然比的经验均值时，必须用 $g$ 和 $h$ 的似然比对每个实现值进行加权。
@@ -210,11 +212,11 @@ $$
 E^g\left[\ell\left(\omega\right)\right] = \int_\Omega \ell(\omega) g(\omega) d\omega = \int_\Omega \ell(\omega) \frac{g(\omega)}{h(\omega)} h(\omega) d\omega = E^h\left[\ell\left(\omega\right) \frac{g(\omega)}{h(\omega)}\right]
 $$
 
-## 选择抽样分布
+第二个等式要求只要 $\ell(\omega) g(\omega) = f(\omega) > 0$，就有 $h(\omega) > 0$。
 
-由于我们必须使用一个$h$，它在$g$赋予低概率的分布部分具有更大的质量，我们使用$h=Beta(0.5, 0.5)$作为我们的重要性分布。
+由于我们必须使用一个在 $g$ 分布质量较低的部分具有更大质量的 $h$，我们选用 $h=Beta(0.5, 0.5)$ 作为我们的重要性分布。
 
-这些图比较了$g$和$h$。
+下面的图比较了 $g$ 和 $h$。
 
 ```{code-cell} ipython3
 g_a, g_b = params.G_a, params.G_b
@@ -225,7 +227,7 @@ h_a, h_b = 0.5, 0.5
 ---
 mystnb:
   figure:
-    caption: '数据分布与重要性抽样分布'
+    caption: '数据分布与重要性采样分布'
     name: fig-imp-real
 ---
 w_range = np.linspace(1e-5, 1-1e-5, 1000)
@@ -243,6 +245,12 @@ plt.show()
 
 我们现在研究如何使用重要性抽样来近似
 ${E} \left[L\left(\omega^t\right)\right] = E \left[\prod_{i=1}^t \ell \left(\omega_i\right)\right]$。
+
+为了编写适用于一般贝塔密度的代码，我们用 $p$ 表示我们想要求期望所依据的密度，用 $q$ 表示我们实际抽样所依据的密度。
+
+在我们的应用中，$p = g$，而 $q$ 是一个重要性分布，例如 $h$。
+
+在 {doc}`likelihood_ratio_process` 中，$q$ 表示自然选择的密度；而在这里，$q$ 表示重要性分布。
 
 如上所述，我们的计划是从 $q$ 中抽取序列 $\omega^t$，然后对似然比进行适当的重新加权。
 
@@ -365,11 +373,25 @@ $$
 
 所以 $\ell\left(\omega\right)$ 没有有限的方差，并且由于各次抽取是独立的，对于任意 $t$，$L\left(\omega^t\right)$ 同样没有有限的方差。
 
-这正是标准蒙特卡洛方法在此失效的确切含义：其样本均值不满足任何中心极限定理，因此不具备通常的 $\sqrt{N}$ 收敛保证。
+{doc}`likelihood_ratio_process` 中遇到的发散积分与 $\ell(\omega)$ 在 $f$ 下的均值相同，因为 $E^g\left[\ell(\omega)^2\right] = E^f\left[\ell(\omega)\right]$。
+
+均值 $E^g\left[\ell(\omega)\right] = 1$ 是有限的，因此强大数定律仍然适用：随着抽取次数 $N$ 的增长，蒙特卡洛平均值几乎必然收敛到 $1$。
+
+但普通的中心极限定理并不适用，其 $N^{-1/2}$ 的收敛速率也会失效。
+
+在原点附近，$g(\omega) \approx k \omega^2$，其中 $k = 1/B(3, 1.2)$，$B$ 为贝塔函数。
+
+对于较大的 $x$，事件 $\ell(\omega) > x$ 主要发生在 $\omega < (k x)^{-1/2}$ 时，在 $g$ 下该事件的概率约为 $\frac{1}{3} k^{-1/2} x^{-3/2}$。
+
+以 $x^{-3/2}$ 速度衰减的尾部使 $\ell(\omega)$ 落入指数为 $3/2$ 的稳定律的吸引域。
+
+根据广义中心极限定理，由 $N$ 次抽取构成的样本均值的误差以 $N^{-1/3}$ 的速度缩小，其极限分布是偏斜的，具有较长的右尾。
+
+{ref}`imp_ex2` 通过数值方式验证了该尾指数以及 $N^{-1/3}$ 的收敛速率。
 
 随着 $T$ 的增加，这个问题会不断恶化，使标准蒙特卡洛方法变得越来越不可靠。
 
-使用 $q = h$ 的重要性采样通过更均匀地从对 $f$ 和 $g$ 都重要的区域采样来解决这个问题。
+使用 $q = h$ 的重要性采样通过在 $\ell$ 取值较大的 $\omega = 0$ 附近更频繁地采样，解决了方差无穷大的问题。
 
 ## 样本均值的分布
 
@@ -496,19 +518,31 @@ plot_estimates(T_values, mc, imp_h1, '$h$ generating',
 
 中位数随$T$稳步下降，而报告的均值$\hat{μ}$则是一个不可靠的统计量——回想一下，其潜在方差是无穷的，因此每个面板中打印的$\hat{σ}^2$所估计的量根本不存在，并且换一个不同的随机种子就可能使$\hat{μ}$发生很大的变化。
 
-重要性抽样恰恰弥补了这一缺陷。
+使用$h$进行重要性抽样消除了无穷方差的问题，但并不能阻止方差随$T$的增大而增长。
+
+从$h$中抽取一条路径并进行重加权，会使该路径获得值$\prod_{i=1}^T \ell(\omega_i) g(\omega_i)/h(\omega_i) = \prod_{i=1}^T f(\omega_i)/h(\omega_i)$。
+
+其二阶矩为$\left(\int_0^1 f^2/h \, d\omega\right)^T = \left(1 + \chi^2(f\|h)\right)^T$，其中$\chi^2(f\|h) = \int_0^1 (f-h)^2/h \, d\omega$是$f$相对于$h$的$\chi^2$散度（参见 {doc}`divergence_measures`）。
+
+对于$h = $ 贝塔分布$(0.5, 0.5)$，每个权重$f(\omega)/h(\omega) = \pi \sqrt{\omega(1-\omega)}$至多为$\pi/2$，并且$\int_0^1 f^2/h \, d\omega = \pi^2/8 \approx 1.234$。
+
+单条路径贡献的方差$(\pi^2/8)^T - 1$是有限的，但会呈几何级数增长：在$T = 20$时等于$66$，在$T = 50$时约为$3.6 \times 10^4$。
 
 ## 选择抽样分布
 
-上面，我们任意选择 $h = Beta(0.5,0.5)$ 作为重要性分布。
+上文中，我们任意选择了 $h = Beta(0.5,0.5)$ 作为重要性分布。
 
-是否存在最优的重要性分布？
+是否存在一个最优的重要性分布？
 
-在我们这个特定的情形中，由于我们事先知道 $E \left[ L\left(\omega^t\right) \right] = 1$，我们可以利用这个信息。
+当重要性密度与被积函数（此处为 $\ell g$）成比例时，重要性抽样估计量的方差为零。
 
-因此，假设我们简单地使用 $h = f$。
+由于 $\ell g = f$，对于单次抽取，零方差重要性密度就是 $f$ 本身；对于长度为 $T$ 的路径，它是乘积密度 $f(\omega_1) f(\omega_2) \cdots f(\omega_T)$。
 
-在估计似然比的均值时（T=1），我们得到：
+要使用它，我们只需要能够从 $f$ 中抽样即可；我们不需要事先知道 $E \left[ L\left(\omega^t\right) \right] = 1$。
+
+因此，假设我们直接使用 $h = f$。
+
+在估计似然比的均值时（$T=1$），我们得到：
 
 $$
 \hat{E}^f \left[\ell(\omega) \frac{g(\omega)}{f(\omega)} \right] = \hat{E}^f \left[\frac{f(\omega)}{g(\omega)} \frac{g(\omega)}{f(\omega)} \right] = \frac{1}{N} \sum_{i=1}^{N} \ell\left(\omega_i^f\right) \frac{g\left(\omega_i^f\right)}{f\left(\omega_i^f\right)} = 1
@@ -520,13 +554,13 @@ $$
 ```
 
 ```{code-cell} ipython3
-# 重要性抽样（均值和方差）
+# importance sampling (mean and variance)
 jnp.mean(μ_L_f), jnp.var(μ_L_f)
 ```
 
 我们也可以使用其他分布作为我们的重要性分布。
 
-下面我们选择其中几个，并比较它们的抽样特性。
+下面我们选取几个分布，并比较它们的抽样特性。
 
 ```{code-cell} ipython3
 a_list = [0.5, 1., 2.]
@@ -537,7 +571,7 @@ b_list = [0.5, 1.2, 5.]
 ---
 mystnb:
   figure:
-    caption: '重要性抽样分布比较'
+    caption: '重要性抽样分布的比较'
     name: fig-imp-sampling-distributions
 ---
 w_range = np.linspace(1e-5, 1-1e-5, 1000)
@@ -557,41 +591,53 @@ plt.show()
 
 我们再考虑另外两个分布。
 
-提醒一下，$h_1$ 是我们上面使用的原始 $Beta(0.5,0.5)$ 分布。
+提醒一下，$h_1$ 就是我们上面使用的原始 $Beta(0.5,0.5)$ 分布。
 
 $h_2$ 是 $Beta(1,1.2)$ 分布。
 
-注意 $h_2$ 在 $\omega$ 取较大值时与 $g$ 的形状相似，但在较小值时具有更多质量。
+注意 $h_2$ 在 $\omega$ 较大的取值处与 $g$ 的形状相似，但在较小的取值处有更多的质量。
 
-我们的直觉是，$h_2$ 应该是一个很好的重要性抽样分布。
+我们的直觉是 $h_2$ 应该是一个很好的重要性抽样分布。
 
 $h_3$ 是 $Beta(2,5)$ 分布。
 
 注意 $h_3$ 在接近 0 和接近 1 的取值处几乎没有质量。
 
-我们的直觉是，$h_3$ 将会是一个较差的重要性抽样分布。
+我们的直觉是 $h_3$ 会是一个较差的重要性抽样分布。
 
-上面的方差计算能让我们把这些直觉表述得更精确。
+上面的方差计算可以让我们精确地验证这些直觉。
 
-从 $h$ 中抽样并重新加权，会为每个观测值赋予 $\ell\left(\omega\right) g\left(\omega\right) / h\left(\omega\right) = f\left(\omega\right) / h\left(\omega\right)$ 的值，因此该估计量恰好在以下条件下具有有限方差：
+从 $h$ 中抽样并重新加权，会使每个观测值获得权重 $\ell\left(\omega\right) g\left(\omega\right) / h\left(\omega\right) = f\left(\omega\right) / h\left(\omega\right)$，因此估计量具有有限方差，当且仅当
 
 $$
 \int_0^1 \frac{f\left(\omega\right)^2}{h\left(\omega\right)} d\omega < \infty
 $$
 
-对于 $h_1$ 和 $h_2$，该积分是收敛的。
+对于一个 Beta$(a, b)$ 重要性密度 $h$ 和均匀分布 $f$，
 
-对于 $h_3$，该积分在**两个**端点都发散，因为 $h_3$ 在原点附近以 $\omega$ 的速率趋于零，而在 1 附近以 $\left(1-\omega\right)^4$ 的速率趋于零。
+$$
+\int_0^1 \frac{f\left(\omega\right)^2}{h\left(\omega\right)} d\omega 
+= B(a, b) \int_0^1 \omega^{1-a} (1-\omega)^{1-b} d\omega 
+= B(a, b) \, B(2-a, 2-b)
+$$
 
-因此，使用 $h_3$ 进行重要性抽样具有无限方差，这与标准蒙特卡洛方法一样——这正是它成为较差选择的原因。
+当 $a < 2$ 且 $b < 2$ 时成立，否则该积分为无穷大。
 
-我们首先模拟并绘制使用 $h_2$ 作为重要性抽样分布时，$\hat{E} \left[L\left(\omega^t\right)\right]$ 的估计分布。
+该积分对 $h_1$ 等于 $\pi^2/8 \approx 1.234$，对 $h_2$ 等于 $1/0.96 \approx 1.042$，对 $h = f$ 等于 $1$。
+
+候选分布 $h_2$ 之所以优良，是因为它与 $f$ 很接近。
+
+对于 $h_3$，该积分在**两个**端点处都是发散的，因为 $h_3$ 在原点处以 $\omega$ 的速度趋于零，在 1 处以 $\left(1-\omega\right)^4$ 的速度趋于零。
+
+因此使用 $h_3$ 进行重要性抽样具有无穷方差，这和标准蒙特卡洛方法一样，正是这一点使其成为一个糟糕的选择。
+
+我们首先模拟并绘制使用 $h_2$ 作为重要性抽样分布时，$\hat{E} \left[L\left(\omega^t\right)\right]$ 估计值的分布。
 
 ```{code-cell} ipython3
 ---
 mystnb:
   figure:
-    caption: '使用重要性分布 $h_2$ 的估计'
+    caption: '使用重要性分布 $h_2$ 的估计结果'
     name: fig-imp-estimates-h2
 ---
 T_values_h2 = [1, 20]
@@ -599,18 +645,18 @@ imp_h2 = simulate_multiple_T(jax.random.key(9), g_a, g_b,
                              a_list[1], b_list[1],
                              T_values_h2, N_simu)
 
-plot_estimates(T_values_h2, mc, imp_h2, '$h_2$ 生成')
+plot_estimates(T_values_h2, mc, imp_h2, '$h_2$ generating')
 ```
 
-我们的模拟结果表明，$h_2$ 确实是我们问题的一个相当好的重要性抽样分布。
+我们的模拟结果表明，$h_2$ 确实是我们这个问题的一个相当好的重要性抽样分布。
 
-即使在 $T=20$ 时，均值也非常接近 $1$，并且方差很小。
+即使在 $T=20$ 时，均值也非常接近 $1$，而且方差很小。
 
 ```{code-cell} ipython3
 ---
 mystnb:
   figure:
-    caption: '使用重要性分布 $h_3$ 的估计'
+    caption: '使用重要性分布 $h_3$ 的估计结果'
     name: fig-imp-estimates-h3
 ---
 T_values_h3 = [1, 20]
@@ -618,11 +664,303 @@ imp_h3 = simulate_multiple_T(jax.random.key(10), g_a, g_b,
                              a_list[2], b_list[2],
                              T_values_h3, N_simu)
 
-plot_estimates(T_values_h3, mc, imp_h3, '$h_3$ 生成')
+plot_estimates(T_values_h3, mc, imp_h3, '$h_3$ generating')
 ```
 
-然而，$h_3$ 显然是我们问题的一个较差的重要性抽样分布，在 $T = 20$ 时其均值估计值与 $1$ 相差甚远。
+然而，对于我们的这个问题，$h_3$ 显然是一个较差的重要性抽样分布，在 $T = 20$ 时其均值估计远离 $1$。
 
-请注意，即使在 $T = 1$ 时，使用重要性抽样得到的均值估计也比仅使用 $g$ 抽样时更有偏差。
+由于 $h_3 > 0$ 在 $(0,1)$ 上成立，使用 $h_3$ 的重要性抽样估计量对任意 $T$ 都是无偏的，正如在 $g$ 之下的蒙特卡洛估计量一样。
 
-因此，我们的模拟结果表明，对于我们的问题，直接在 $g$ 下使用蒙特卡洛近似，会比使用 $h_3$ 作为重要性抽样分布效果更好。
+问题出在其抽样分布的形状上。
+
+即使在 $T = 1$ 时，使用 $h_3$ 得到的估计值也比在 $g$ 之下的蒙特卡洛估计值更加分散，并且中位数估计值更明显地低于 $1$。
+
+在 $\omega = 1$ 附近，$h_3$ 以 $(1-\omega)^4$ 的速度趋于零，而 $f = 1$，因此在 $h_3$ 之下，权重 $f/h_3$ 的尾指数为 $5/4$，小于在 $g$ 之下 $f/g$ 的尾指数 $3/2$。
+
+因此，由 $N$ 次抽取构成的样本均值的误差，在 $h_3$ 之下按 $N^{-1/5}$ 的速度缩小，而在 $g$ 之下则按 $N^{-1/3}$ 的速度缩小（参见 {ref}`imp_ex2`）。
+
+因此，我们的模拟结果表明，对于我们的这个问题，直接在 $g$ 之下使用蒙特卡洛近似，要比使用 $h_3$ 作为重要性抽样分布更好。
+
+## 练习
+
+```{exercise}
+:label: imp_ex1
+
+考虑通过从 Beta$(a, b)$ 重要性密度 $q$ 中抽取长度为 $T$ 的路径来估计 $E^g\left[L\left(\omega^T\right)\right] = 1$。
+
+1. 证明每条路径对估计量的贡献为 $\prod_{i=1}^T f(\omega_i)/q(\omega_i)$，并且该贡献的二阶矩为 $M(a,b)^T$，其中当 $a, b < 2$ 时 $M(a,b) = \int_0^1 f^2/q \, d\omega = B(a,b) B(2-a, 2-b)$，否则 $M(a,b) = +\infty$。
+2. 使用柯西-施瓦茨不等式证明 $M(a,b) \geq 1$，且仅在 $(a,b) = (1,1)$ 处取等号。在 $(0,2) \times (0,2)$ 上绘制 $\log M(a,b)$ 的等高线图。
+3. $N$ 条加权路径的有效样本量约为 $N / M(a,b)^T$。绘制 $h_1$ 和 $h_2$ 的有效样本量与 $N$ 的比值随 $T$ 变化的图像。在 $T = 20$ 和 $T = 50$ 时，$h_1$ 需要多少条路径才能使有效样本量达到 $1000$？
+```
+
+```{solution-start} imp_ex1
+:class: dropdown
+```
+
+**第 1 部分。** 每条路径贡献 $\prod_{i=1}^T \ell(\omega_i) g(\omega_i)/q(\omega_i) = \prod_{i=1}^T f(\omega_i)/q(\omega_i)$。
+
+因为 $\omega_i$ 是来自 $q$ 的独立同分布抽样，二阶矩为 $\left(E^q\left[(f/q)^2\right]\right)^T = M(a,b)^T$，其中 $M(a,b) = \int_0^1 f^2/q \, d\omega$。
+
+由于 $f = 1$，$M(a,b) = B(a,b) \int_0^1 \omega^{1-a} (1-\omega)^{1-b} d\omega$，当 $a < 2$ 且 $b < 2$ 时该值等于 $B(a,b) B(2-a, 2-b)$，否则为无穷大。
+
+**第 2 部分。** 由柯西-施瓦茨不等式，
+
+$$
+1 = \left(\int_0^1 f \, d\omega\right)^2 
+= \left(\int_0^1 \frac{f}{\sqrt{q}} \sqrt{q} \, d\omega\right)^2 
+\leq \int_0^1 \frac{f^2}{q} d\omega \int_0^1 q \, d\omega = M(a,b) ,
+$$
+
+当且仅当 $f/\sqrt{q}$ 与 $\sqrt{q}$ 成比例时取等号，即 $q = f$。
+
+单个权重的方差为 $M(a,b) - 1 = \chi^2(f\|q)$。
+
+```{code-cell} ipython3
+from scipy.special import betaln
+
+def M(a, b):
+    """q = Beta(a, b) 时重要性权重 f/q 的二阶矩。"""
+    if a < 2 and b < 2:
+        return np.exp(betaln(a, b) + betaln(2 - a, 2 - b))
+    return np.inf
+
+grid = np.linspace(0.05, 1.95, 191)
+log_M = np.array([[np.log(M(a, b)) for a in grid] for b in grid])
+
+fig, ax = plt.subplots(figsize=(7, 6))
+cs = ax.contourf(grid, grid, np.minimum(log_M, 2), 
+                 levels=np.linspace(0, 2, 21), cmap='viridis')
+fig.colorbar(cs, label=r'$\log M(a, b)$ (capped at 2)')
+lines = ax.contour(grid, grid, log_M, levels=[0.01, 0.05, 0.2, 0.5, 1],
+                   colors='w', linewidths=0.8)
+ax.clabel(lines, fmt='%.2f', fontsize=8)
+for (a, b), name in zip([(0.5, 0.5), (1.0, 1.2), (1.0, 1.0)],
+                        ['$h_1$', '$h_2$', '$f$']):
+    ax.plot(a, b, 'wo')
+    ax.annotate(name, (a, b), xytext=(5, 5), textcoords='offset points',
+                color='w')
+ax.set_xlabel('$a$')
+ax.set_ylabel('$b$')
+plt.show()
+
+i_b, i_a = np.unravel_index(np.argmin(log_M), log_M.shape)
+print(f"Minimum of M on the grid at (a, b) = ({grid[i_a]:.2f}, {grid[i_b]:.2f})")
+print(f"M(h_1) = {M(0.5, 0.5):.4f}, M(h_2) = {M(1, 1.2):.4f}")
+```
+
+**第 3 部分。**
+
+```{code-cell} ipython3
+T_grid = np.arange(1, 51)
+plt.figure(figsize=(8, 5))
+for (a, b), name in zip([(0.5, 0.5), (1.0, 1.2)], ['$h_1$', '$h_2$']):
+    plt.semilogy(T_grid, M(a, b)**(-T_grid), lw=2, label=name)
+plt.xlabel('$T$')
+plt.ylabel('effective sample size / $N$')
+plt.legend()
+plt.show()
+
+for T in [20, 50]:
+    print(f"T = {T}: h_1 needs N = {1000 * M(0.5, 0.5)**T:,.0f} paths, "
+          f"h_2 needs N = {1000 * M(1, 1.2)**T:,.0f} paths")
+```
+
+在 $h_1$ 下，有效样本量每增加一期都会按因子 $8/\pi^2$ 缩小。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: imp_ex2
+
+1. 设 $\omega \sim g$。证明 $\Pr\{\ell(\omega) > x\}$ 在 $x$ 较大时大致正比于 $x^{-3/2}$，因此 $\ell(\omega)$ 在 $g$ 下的尾指数为 $3/2$。
+2. 设 $\omega \sim h_3 = $ Beta$(2, 5)$。证明权重 $f(\omega)/h_3(\omega)$ 在 $h_3$ 下的尾指数为 $5/4$。$(0,1)$ 的哪个端点决定了尾指数？
+3. 用希尔估计量 {cite}`hill1975` 确认这两个尾指数，该估计量使用 $n$ 个抽样中最大的 $k$ 个值 $X_{(1)} \geq X_{(2)} \geq \cdots \geq X_{(k+1)}$ 来估计尾指数：
+
+   $$
+   \hat \alpha_k = \left(\frac{1}{k} \sum_{i=1}^k \log \frac{X_{(i)}}{X_{(k+1)}}\right)^{-1} .
+   $$
+
+4. 设 $T = 1$。对于 $N = 10^2, 10^3, 10^4, 10^5$，当 $q$ 分别为 $g$（标准蒙特卡洛）、$h_2$ 和 $h_3$ 时，计算从 $q$ 中抽取 $N$ 个样本得到的 $f/q$ 的 $500$ 次重复样本均值。在对数-对数坐标上绘制重复样本均值的四分位距与 $N$ 的关系，并将斜率与 $-1/3$、$-1/2$ 和 $-1/5$ 进行比较。
+```
+
+```{solution-start} imp_ex2
+:class: dropdown
+```
+
+**第 1 部分。** 在原点附近，$g(\omega) \approx k \omega^2$，其中 $k = 1/B(3, 1.2)$。
+
+当 $x$ 较大时，$\ell(\omega) = 1/g(\omega) > x$ 主要在 $\omega < (kx)^{-1/2}$ 时发生。
+
+由于当 $u$ 较小时 $\Pr_g\{\omega < u\} \approx k u^3/3$，
+
+$$
+\Pr_g\{\ell(\omega) > x\} \approx \frac{k}{3} (kx)^{-3/2} = \frac{1}{3} k^{-1/2} x^{-3/2} .
+$$
+
+在 $\omega = 1$ 附近，$g$ 以 $(1-\omega)^{0.2}$ 的速度趋于零，这贡献了一个正比于 $x^{-6}$ 的尾部，太薄而不足为虑。
+
+**第 2 部分。** 密度 $h_3(\omega) = 30\, \omega (1-\omega)^4$ 在两个端点都趋于零。
+
+在 $\omega = 0$ 附近，$1/h_3 > x$ 在 $\omega < 1/(30x)$ 时发生，其概率约为 $15/(30x)^2$，正比于 $x^{-2}$。
+
+在 $\omega = 1$ 附近，$1/h_3 > x$ 在 $1 - \omega < (30x)^{-1/4}$ 时发生，其概率约为 $6 (30x)^{-5/4}$，正比于 $x^{-5/4}$。
+
+尾指数为 $5/4$ 的较重尾部来自右端点。
+
+根据广义中心极限定理，尾指数 $\alpha \in (1,2)$ 使样本均值的误差按 $N^{1/\alpha - 1}$ 的速度缩小：当 $\alpha = 3/2$ 时为 $N^{-1/3}$，当 $\alpha = 5/4$ 时为 $N^{-1/5}$。
+
+**第 3 部分。**
+
+```{code-cell} ipython3
+def log_beta_pdf(w, a, b):
+    """Beta(a, b) 的对数密度。"""
+    return (a - 1) * np.log(w) + (b - 1) * np.log1p(-w) - betaln(a, b)
+
+def hill(x, k):
+    """由 x 中最大的 k 个值得到的尾指数希尔估计量。"""
+    x_sorted = np.sort(x)[::-1]
+    return 1 / np.mean(np.log(x_sorted[:k] / x_sorted[k]))
+
+rng = np.random.default_rng(0)
+n = 1_000_000
+w_g = rng.beta(g_a, g_b, n)
+w_h3 = rng.beta(2, 5, n)
+weights = {'f/g under g': np.exp(-log_beta_pdf(w_g, g_a, g_b)),
+           'f/h_3 under h_3': np.exp(-log_beta_pdf(w_h3, 2, 5))}
+
+for name, x in weights.items():
+    estimates = [f"{hill(x, k):.3f}" for k in (500, 1000, 2000, 5000)]
+    print(f"{name}: Hill estimates for k = 500, 1000, 2000, 5000: {estimates}")
+```
+
+希尔估计值接近 $3/2$ 和 $5/4$。
+
+**第 4 部分。**
+
+```{code-cell} ipython3
+N_values = np.array([10**2, 10**3, 10**4, 10**5])
+R = 500
+proposals = {'$g$ (standard Monte Carlo)': (g_a, g_b, 1/3),
+             '$h_2$': (1.0, 1.2, 1/2),
+             '$h_3$': (2.0, 5.0, 1/5)}
+
+plt.figure(figsize=(8, 5))
+for name, (a, b, rate) in proposals.items():
+    iqr = []
+    for N in N_values:
+        means = np.empty(R)
+        for r in range(R):
+            w = np.clip(rng.beta(a, b, N), 1e-16, 1 - 1e-16)
+            means[r] = np.mean(np.exp(-log_beta_pdf(w, a, b)))
+        q75, q25 = np.quantile(means, [0.75, 0.25])
+        iqr.append(q75 - q25)
+    slope = np.polyfit(np.log(N_values), np.log(iqr), 1)[0]
+    line, = plt.loglog(N_values, iqr, 'o-', 
+                       label=f'{name}: slope {slope:.2f}')
+    plt.loglog(N_values, iqr[0] * (N_values / N_values[0])**(-rate), 
+               '--', color=line.get_color(), lw=1)
+plt.xlabel('$N$')
+plt.ylabel('interquartile range of replicate means')
+plt.legend()
+plt.show()
+```
+
+虚线的斜率分别为 $-1/3$、$-1/2$ 和 $-1/5$。
+
+拟合的斜率与之接近。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: imp_ex3
+
+在 {doc}`likelihood_ratio_process` 的 {ref}`这一节 <lrp_chernoff>` 中，第一类错误的概率 $\alpha_T = \Pr_f\{L(\omega^T) < 1\}$ 随 $T$ 呈指数衰减，因此标准蒙特卡洛方法无法在 $T$ 较大时对其进行估计。
+
+设 $\phi^*$ 使切尔诺夫系数 $\rho(\phi) = \int_0^1 f^\phi g^{1-\phi} d\omega$ 最小化，并设 $q = f^{\phi^*} g^{1-\phi^*}/\rho(\phi^*)$ 为倾斜密度。
+
+1. 证明 $q$ 是 Beta$(\phi^* F_a + (1-\phi^*) G_a, \ \phi^* F_b + (1-\phi^*) G_b)$ 密度，并计算 $\phi^*$ 以及 $q$ 的参数。
+2. 证明 
+
+   $$
+   \alpha_T = \rho(\phi^*)^T \, E^q\left[\mathbf{1}\{L(\omega^T) < 1\} \, L(\omega^T)^{1-\phi^*}\right] .
+   $$
+
+3. 对于 $T = 30, 60, 100$，用从 $f$ 中抽取的 $N = 20{,}000$ 条路径进行标准蒙特卡洛估计 $\alpha_T$，并用从 $q$ 中抽取的 $N = 20{,}000$ 条路径进行重要性抽样估计。报告重要性抽样估计量的相对标准误差。
+```
+
+```{solution-start} imp_ex3
+:class: dropdown
+```
+
+**第 1 部分。** 对于 Beta 密度，
+
+$$
+f(\omega)^\phi g(\omega)^{1-\phi} \propto \omega^{\phi F_a + (1-\phi) G_a - 1} (1-\omega)^{\phi F_b + (1-\phi) G_b - 1} ,
+$$
+
+这与所述的 Beta 密度成比例。
+
+**第 2 部分。** 由于 $f/q = \rho(\phi^*) (f/g)^{1-\phi^*}$，
+
+$$
+\alpha_T = E^q\left[\mathbf{1}\{L(\omega^T) < 1\} \prod_{i=1}^T \frac{f(\omega_i)}{q(\omega_i)}\right]
+= \rho(\phi^*)^T \, E^q\left[\mathbf{1}\{L(\omega^T) < 1\} \, L(\omega^T)^{1-\phi^*}\right] .
+$$
+
+在事件 $L(\omega^T) < 1$ 上，权重 $\rho(\phi^*)^T L(\omega^T)^{1-\phi^*}$ 至多为 $\rho(\phi^*)^T = e^{-C(f,g) T}$，因此该估计量的方差较小。
+
+在 $\phi^*$ 处，$\log \rho(\phi)$ 的导数（等于 $E^q \log \ell(\omega)$）为零。
+
+因此 $\log L(\omega^T)$ 在 $q$ 下均值为零，而在 $f$ 下的罕见事件 $L(\omega^T) < 1$ 在 $q$ 下大约有一半的概率发生。
+
+以这种方式选取 $q$ 被称为指数倾斜 {cite}`Bucklew_2004`。
+
+**第 3 部分。**
+
+```{code-cell} ipython3
+from scipy.optimize import minimize_scalar
+
+F_a, F_b = params.F_a, params.F_b
+
+def log_ρ(ϕ):
+    """f = Beta(F_a, F_b) 且 g = Beta(g_a, g_b) 时的对数切尔诺夫系数。"""
+    return (betaln(ϕ * F_a + (1 - ϕ) * g_a, ϕ * F_b + (1 - ϕ) * g_b)
+            - ϕ * betaln(F_a, F_b) - (1 - ϕ) * betaln(g_a, g_b))
+
+res = minimize_scalar(log_ρ, bounds=(0, 1), method='bounded')
+ϕ_star, log_ρ_star = res.x, res.fun
+q_a = ϕ_star * F_a + (1 - ϕ_star) * g_a
+q_b = ϕ_star * F_b + (1 - ϕ_star) * g_b
+print(f"ϕ* = {ϕ_star:.4f}, C(f, g) = {-log_ρ_star:.4f}, "
+      f"q = Beta({q_a:.4f}, {q_b:.4f})")
+
+rng = np.random.default_rng(1)
+N = 20_000
+
+for T in [30, 60, 100]:
+    # Standard Monte Carlo under f
+    w = rng.uniform(size=(N, T))
+    log_L = np.sum(log_beta_pdf(w, F_a, F_b) - log_beta_pdf(w, g_a, g_b), axis=1)
+    α_mc = np.mean(log_L < 0)
+
+    # Importance sampling under the tilted density q
+    w = np.clip(rng.beta(q_a, q_b, (N, T)), 1e-300, 1 - 1e-16)
+    log_L = np.sum(log_beta_pdf(w, F_a, F_b) - log_beta_pdf(w, g_a, g_b), axis=1)
+    X = np.where(log_L < 0, np.exp(T * log_ρ_star + (1 - ϕ_star) * log_L), 0.0)
+    α_is = np.mean(X)
+    rel_se = np.std(X) / np.sqrt(N) / α_is
+
+    print(f"T = {T:>3}: standard MC = {α_mc:.2e}, "
+          f"importance sampling = {α_is:.3e} (relative s.e. {rel_se:.3f})")
+```
+
+在 $T = 30$ 时，两种估计值一致。
+
+在 $T = 60$ 时，标准蒙特卡洛仅依赖于少数几条满足 $L(\omega^T) < 1$ 的路径，而重要性抽样的相对标准误差接近 $1$ 个百分点。
+
+在 $T = 100$ 时，标准蒙特卡洛没有记录到任何满足 $L(\omega^T) < 1$ 的路径，而重要性抽样仍能给出相对标准误差接近 $1.5$ 个百分点的估计值。
+
+```{solution-end}
+```

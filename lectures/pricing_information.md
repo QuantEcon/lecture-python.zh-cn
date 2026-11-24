@@ -132,11 +132,13 @@ $$ (eq:pi_thetastar)
 高于 $\theta^*$ 的类型自己会选择 $a_1$，低于此值的类型会选择 $a_2$。
 
 ```{note}
-买方的信念 $\theta$ 可以由一个共同先验和一个私下观察到的信号共同生成，正如 {doc}`likelihood_bayes` 中那样。
+买方的信念 $\theta$ 可以由一个共同先验和一个私下观察到的信号共同生成，正如 {doc}`likelihood_bayes` 和 {doc}`exchangeable` 中那样。
 
-拥有非常精确私人信号的买方的 $\theta$ 接近 $0$ 或 $1$；一个什么都没学到的买方的 $\theta$ 接近 $\theta^*$。
+拥有非常精确私人信号的买方的 $\theta$ 接近 $0$ 或 $1$；一个什么都没学到的买方处于共同先验的位置，而共同先验仅在巧合情况下才等于 $\theta^*$。
 
-因此本讲座中的"高类型"意味着*信息不佳*，而信息不佳的买方恰恰是最愿意支付的人。
+本讲座中的"高类型"是指信念接近 $\theta^*$ 的买方，他正是最愿意支付的人。
+
+当共同先验恰好等于 $\theta^*$ 时，高类型就是信息不佳的买方。
 ```
 
 ## 实验及其价值
@@ -211,7 +213,11 @@ print(f'largest gap where pi1 + pi2 >= 1:  {worst_ok:.2e}')
 print(f'largest gap where pi1 + pi2 <  1:  {worst_bad:.4f}')
 ```
 
-从此我们使用一般形式 {eq}`eq:pi_value`，因为一个*谎报*自己类型的买方通常不会想要服从内置于别人实验中的推荐。
+在该归一化下，反转推荐——在信号 $s_1$ 后采取 $a_2$，在信号 $s_2$ 后采取 $a_1$——的效果劣于直接忽略信号，因此每种类型要么服从，要么忽略。
+
+这就是为什么这两个公式对每一个 $\theta$ 都完全一致，包括那些谎报类型、购买为他人设计的实验的买方。
+
+从此我们使用一般形式 {eq}`eq:pi_value`，因为它不依赖于该归一化。
 
 以下是信息价值作为买方类型的函数。
 
@@ -249,13 +255,17 @@ plt.show()
 
 ## 布莱克韦尔的序只是偏序
 
-{doc}`blackwell_kihlstrom` 确立了实验 $E$ 在布莱克韦尔意义上至少与 $E'$ 一样具有信息量，当且仅当 $E'$ 是 $E$ 的**信息降级**（garbling），意味着存在一个随机矩阵 $M$ 满足
+{doc}`blackwell_kihlstrom` 确立了实验 $E$ 在布莱克韦尔意义上至少与 $E'$ 一样具有信息量，当且仅当 $E'$ 是 $E$ 的**信息降级**（garbling）。
+
+按照 {prf:ref}`def-sufficiency` 中的记号，令 $\mu = E$ 且 $\nu = E'$，则存在一个马尔可夫矩阵 $Q$ 满足
 
 $$
-E' = E M .
+E' = E Q .
 $$ (eq:pi_garbling)
 
-当 $E$ 可逆时，这很容易检验：求解 $M = E^{-1}E'$ 并检查 $M$ 是否为随机矩阵。
+当 $E$ 可逆时，这很容易检验：求解 $Q = E^{-1}E'$ 并检查 $Q$ 的每个元素是否都非负。
+
+$Q$ 的各行之和自动为一：$E Q \mathbf{1} = E' \mathbf{1} = \mathbf{1} = E \mathbf{1}$，而 $E$ 是可逆的，所以 $Q \mathbf{1} = \mathbf{1}$。
 
 ```{code-cell} ipython3
 def experiment(pi1, pi2):
@@ -263,12 +273,12 @@ def experiment(pi1, pi2):
 
 
 def garbling(E, Ep, tol=1e-9):
-    """Return M with Ep = E @ M if Ep is a garbling of E, else None."""
+    """Return Q with Ep = E @ Q if Ep is a garbling of E, else None."""
     if abs(np.linalg.det(E)) < tol:
         return None
-    M = np.linalg.solve(E, Ep)
-    if (M > -tol).all() and np.allclose(M.sum(axis=1), 1, atol=tol):
-        return M
+    Q = np.linalg.solve(E, Ep)           # rows of Q sum to one automatically
+    if (Q > -tol).all():
+        return Q
     return None
 
 
@@ -315,9 +325,13 @@ for t in [0.2, 0.35, 0.65, 0.8]:
           f'  V(E_b) = {value(1, 0.8, t):.4f}   prefers {pref}')
 ```
 
-$E_a$ 更擅长排除状态 $\omega_2$，而 $E_b$ 更擅长排除状态 $\omega_1$。
+$E_a$ 的信号 $s_1$ 只在状态 $\omega_1$ 下出现，因此它能排除 $\omega_2$；$E_b$ 的信号 $s_2$ 只在状态 $\omega_2$ 下出现，因此它能排除 $\omega_1$。
 
-一个已经认为 $\omega_1$ 更可能的买方想要帮助自己区分尚未排除的各种可能性，因此他重视 $E_b$；而倾向于另一方向的买方则重视 $E_a$。
+一个倾向于认为 $\omega_1$ 更可能的买方会自行选择 $a_1$，只有在出现有力证据支持 $\omega_2$ 时才转而选择 $a_2$。
+
+$E_b$ 恰好能为 $\omega_2$ 提供确凿的证据，因此他重视 $E_b$。
+
+出于同样的原因，倾向于 $\omega_2$ 的买方则重视 $E_a$。
 
 这就是信息的**横向**维度。
 
@@ -345,21 +359,21 @@ V(\theta) \geq V(E(\theta'), \theta) - t(\theta') \ \ \forall \theta, \theta',
 V(\theta) \geq 0 \ \ \forall \theta .
 $$ (eq:pi_icir)
 
-{cite:t}`BergemannBonattiSmolin2018` 建立了两个结构性结果，我们将在计算的每一份菜单中看到它们得到证实。
+{cite:t}`BergemannBonattiSmolin2018` 建立了一些结构性结果，我们计算的每一份菜单都证实了这些结果。
 
 ```{prf:proposition}
 :label: pi_prop_structure
 
-在任何最优菜单中：
-
-1. 提供完全信息实验 $\overline{E}$；
-2. 每个实验都是**非分散的**，意味着对某个 $i \neq j$ 有 $\pi_{ij} = 0$；
-3. 在匹配情形下，每个实验都是**集中的**，意味着对某个 $i$ 有 $\pi_{ii} = 1$。
+1. 完全信息实验 $\overline{E}$ 是最优菜单的一部分。
+2. 任何最优菜单中的每个实验都是**非分散的**，意味着对某个 $i \neq j$ 有 $\pi_{ij} = 0$。
+3. 在匹配情形下，任何最优菜单中的每个实验都是**集中的**，意味着对某个 $i$ 有 $\pi_{ii} = 1$。
 ```
 
 第3点是说，在我们的二元设置中，菜单中的每个实验都有 $\pi_1 = 1$ 或 $\pi_2 = 1$。
 
-最优的降级从不是在各处添加无偏噪声；它使一个状态完全可检测，而使另一个状态模糊化。
+在两个状态和两个信号的情形下，某个非对角元素为零会迫使同一行的对角元素为一，因此“非分散的”与“集中的”这两个概念是一致的。
+
+最优实验保留一个能完全揭示某一状态的信号；另一个信号则带有噪声。
 
 ## 两种类型
 
@@ -379,15 +393,20 @@ $$
 
 一旦选定低类型的实验，这三个事实就确定了两个价格。
 
+要在*所有*低类型实验上进行搜索，我们还需要为那些高类型比低类型更不看重的实验确定价格。
+
+对于这些实验，使高类型激励约束绑定的价格会超过他对 $\overline{E}$ 的价值，因此这时绑定的是他的参与约束。
+
+下面的函数会向高类型收取这两个价格中较小的一个。
+
 ```{code-cell} ipython3
 def two_type_revenue(pi1, pi2, tL, tH, gamma, u1=1.0, u2=1.0):
     """Revenue when the high type buys E_bar and the low type buys (pi1, pi2)."""
     VbarH, VbarL = value(1, 1, tH, u1, u2), value(1, 1, tL, u1, u2)
     VL_L, VL_H = value(pi1, pi2, tL, u1, u2), value(pi1, pi2, tH, u1, u2)
     t_low = VL_L                                  # low type's IR binds
-    t_high = VbarH - VL_H + t_low                 # high type's IC binds
-    if t_high > VbarH + 1e-12:                    # high type must participate
-        return -np.inf
+    t_high = min(VbarH - VL_H + t_low,            # high type's IC
+                 VbarH)                           # high type's IR
     if VbarL - t_high > 1e-12:                    # low type must not deviate
         return -np.inf
     return gamma * t_high + (1 - gamma) * t_low
@@ -405,7 +424,7 @@ $$
 \pi_1' = \frac{u_1 \theta^H - u_2 (1 - \theta^H)}{u_1 \theta^H}
 $$ (eq:pi_zerovalue)
 
-使高类型在信号 $s_1$ 后对他的两个行动恰好无差异，因此该实验对他毫无价值，而低类型则严格地重视它。
+使高类型在信号 $s_2$ 后对他的两个行动恰好无差异，因此该实验对他毫无价值，而低类型则严格地重视它。
 
 这是可行的但不是最优的。
 
@@ -427,7 +446,13 @@ print(f'  V(E_opt,  theta_L) = {value(pi1_opt, 1, tL):.4f}'
       f'    V(E_opt, theta_H) = {value(pi1_opt, 1, tH):.4f}')
 ```
 
-第二个实验给*两种*类型带来相同的总价值，因此卖方可以向每种类型收取恰好等于信息价值的费用，不留下任何租金。
+第二个实验给*两种*类型带来相同的信息净价值，即 $0.16$。
+
+卖方向低类型收取 $0.16$ 作为这个实验的价格，而向高类型收取他对 $\overline{E}$ 的全部价值。
+
+高类型的激励约束绑定，两种类型的参与约束也都绑定。
+
+卖方从两种类型那里榨取了全部剩余；筛选的唯一代价是对低类型实验的扭曲。
 
 ```{code-cell} ipython3
 ---
@@ -477,7 +502,7 @@ def brute_force(tL, tH, gamma, n=301, u1=1.0, u2=1.0):
 
 
 print(f'{"gamma":>7s}{"brute force":>13s}{"argmax":>18s}'
-      f'{"eq (20) menu":>14s}{"E_bar to both":>15s}')
+      f'{"closed form":>14s}{"E_bar to both":>15s}')
 for gamma in [0.10, 0.25, 0.30, 0.50, 0.90]:
     best, arg = brute_force(tL, tH, gamma)
     closed = two_type_revenue(pi1_opt, 1.0, tL, tH, gamma)
@@ -499,13 +524,17 @@ print(f'\nthe paper: discriminate iff gamma > theta_L / theta_H = {tL / tH:.4f}'
 
 现在设 $\theta$ 分布在 $[0,1]$ 上，密度为 $f$，分布函数为 $F$。
 
-关键的简化在于：一个实验的价值仅通过标量
+关键的简化在于：一个*集中*实验的价值仅通过标量
 
 $$
 q = \pi_1 u_1 - \pi_2 u_2 \in [-u_2,\ u_1] ,
 $$ (eq:pi_q)
 
 来依赖于 $(\pi_1, \pi_2)$，{cite:t}`BergemannBonattiSmolin2018` 称之为该实验的**差异性信息量**。
+
+根据 {prf:ref}`pi_prop_structure` 的第3部分，将卖方限制为只提供集中实验不会造成任何损失。
+
+对于其他实验，$q$ 并不能决定其价值：当 $u_1 = u_2 = 1$ 时，实验 $(0.8, 0.8)$、$(0.9, 0.9)$ 和 $(1, 1)$ 都有 $q = 0$，但在 $\theta = 1/2$ 处，它们的价值分别为 $0.3$、$0.4$ 和 $0.5$。
 
 用 $q$ 表示，该价值变为
 
@@ -581,8 +610,8 @@ def solve_menu(theta, f, u1=1.0, u2=1.0):
     """Solve the seller's problem on a grid of types by linear programming."""
     N = len(theta)
     dth = theta[1] - theta[0]
+    f = f / (np.sum(f) * dth)                               # density on the grid
     F = np.cumsum(f) * dth
-    F = F / F[-1]
     w = np.full(N, dth)
     d = u1 - u2
 
@@ -615,7 +644,19 @@ $$ (eq:pi_virtual)
 用它们积分的凸包的导数来替换它们，然后找到 {eq}`eq:pi_integral` 上乘数的值（参见 {cite:t}`Myerson1981` 和
 {cite:t}`Toikka2011`）。
 
+把熨平后的虚拟值记为 $\bar\phi^-$ 和 $\bar\phi^+$。
+
+{cite:t}`BergemannBonattiSmolin2018` 证明，菜单 $q^*$ 是最优的，当且仅当它满足 {eq}`eq:pi_integral`，在相关熨平虚拟值为常数的每个区间上它也为常数，并且存在某个乘数 $\lambda^* > 0$，使得对每个 $\theta$，$q^*(\theta)$ 在 $q \in [-u_2, u_1]$ 范围内使以下表达式最大化
+
+$$
+\bar\phi^-(\theta) \min\{q, d\} + \bar\phi^+(\theta) \max\{0, q - d\} - \lambda^* q
+$$ (eq:pi_pointwise)
+
+当 $\bar\phi^+(\theta) \leq \bar\phi^-(\theta)$ 时，若 $\bar\phi^-(\theta) < \lambda^*$，最大化者为 $q^* = -u_2$；若 $\bar\phi^+(\theta) < \lambda^* < \bar\phi^-(\theta)$，最大化者为 $q^* = d$；若 $\bar\phi^+(\theta) > \lambda^*$，最大化者为 $q^* = u_1$。
+
 这个线性规划隐式地完成了所有这些工作。
+
+{eq}`eq:pi_integral` 上的乘数 $\lambda^*$ 就是该等式约束的对偶值，即 `-res.eqlin.marginals[0]`；取负号是因为 `linprog` 最小化的是负收入。
 
 我们还需要价格，这来自于要求处于两个项目边界处的买方对两者无差异。
 
@@ -699,17 +740,59 @@ plt.show()
 
 {cite:t}`BergemannBonattiSmolin2018` 中的推论1说，只有当虚拟值需要熨平时才会提供第二个实验。
 
-由于类型是*信念*，打破正则性的一种自然方式是使大多数买方已经信息充分，从而使密度在两端都堆积。
+对 {eq}`eq:pi_virtual` 求导，得到
+
+$$
+\phi^{-\prime}(\theta) = 2 f(\theta) + \theta f'(\theta),
+\qquad
+\phi^{+\prime}(\theta) = 2 f(\theta) - (1 - \theta) f'(\theta) .
+$$ (eq:pi_virtual_slopes)
+
+因此 $\phi^-$ 递增当且仅当 $\theta^2 f(\theta)$ 递增，$\phi^+$ 递增当且仅当 $(1-\theta)^2 f(\theta)$ 递减。
+
+正则性失效的地方正是密度下降速度快于 $\theta^{-2}$ 或上升速度快于 $(1-\theta)^{-2}$ 的地方，也就是密度陡峭的地方。
+
+{cite:t}`BergemannBonattiSmolin2018` 非正式地指出，当大多数买方事先已信息充分，且大多数类型接近 $0$ 或 $1$ 时，就需要熨平。
+
+这一说法需要加以限定。
+
+对于 $\text{Beta}(a, b)$ 密度，两个虚拟值都递增当且仅当 $a \leq 1$ 且 $b \leq 1$（见 {ref}`pi_ex4`），因此呈U形分布的信息充分买方群体是正则的，只会被提供一个项目。
+
+无论位于 $[0, 1]$ 的两端附近还是内部，信念的陡峭聚集都是不正则的，而 {ref}`pi_ex4` 给出了一个这样的信息充分群体的例子，它被提供了两个项目。
+
+不正则性是第二个项目存在的必要条件，但不是充分条件。
+
+$\text{Beta}(30, 30)$ 是不正则的，但它关于 $1/2$ 对称，而在 $u_1 = u_2$ 的情况下，{cite:t}`BergemannBonattiSmolin2018` 的推论1随即给出单一项目的结果。
 
 我们遵循论文的做法，取 $\text{Beta}(8, 30)$ 和 $\text{Beta}(60, 30)$ 的等权混合。
+
+每个成分都将信念集中在一个狭窄的范围内，因此该混合分布有两个陡峭的聚集点，分别在 $\theta \approx 0.2$ 和 $\theta \approx 0.67$ 附近。
 
 ```{code-cell} ipython3
 f_bimodal = (0.5 * stats.beta(8, 30).pdf(theta_g)
              + 0.5 * stats.beta(60, 30).pdf(theta_g))
+
+def falling_intervals(theta, phi, min_width=0.01):
+    """Intervals of types on which phi decreases."""
+    down = np.concatenate([[0], (np.diff(phi) < 0).astype(int), [0]])
+    edges = np.flatnonzero(np.diff(down))
+    return [(theta[a], theta[b]) for a, b in zip(edges[::2], edges[1::2])
+            if theta[b] - theta[a] >= min_width]
+
+
+dth = theta_g[1] - theta_g[0]
+F_bi = np.cumsum(f_bimodal) * dth
+for name, phi in [('phi-', theta_g * f_bimodal + F_bi),
+                  ('phi+', (theta_g - 1) * f_bimodal + F_bi)]:
+    print(f'{name} decreases on',
+          ', '.join(f'[{a:.3f}, {b:.3f}]'
+                    for a, b in falling_intervals(theta_g, phi)))
+
 q_bi, res_bi = solve_menu(theta_g, f_bimodal)
 
-print('LP status:', res_bi.message)
+print('\nLP status:', res_bi.message)
 print('distinct values of q:', np.unique(np.round(q_bi, 3)))
+print(f'multiplier lambda* = {-res_bi.eqlin.marginals[0]:.4f}')
 print()
 for v, lo, hi, p in menu_items(theta_g, q_bi):
     p1, p2 = q_to_experiment(v)
@@ -719,11 +802,23 @@ for v, lo, hi, p in menu_items(theta_g, q_bi):
           f'   types [{lo:.3f}, {hi:.3f}]   price {p:.4f}   {label}')
 ```
 
-现在菜单包含**两个**信息项目，这与 {prf:ref}`pi_prop_structure` 以及最优菜单不超过两个项目的结果相符。
+$\phi^-$ 在每个聚集点的上侧翼递减，那里密度陡峭下降；$\phi^+$ 在每个聚集点的下侧翼递减，那里密度陡峭上升。
+
+两个虚拟值都需要熨平。
+
+现在菜单包含**两个**信息项目，这与 {prf:ref}`pi_prop_structure` 以及 {cite:t}`BergemannBonattiSmolin2018` 中某个最优菜单最多包含两个项目的结果相符。
 
 部分项目具有 $\pi_2 = 1$，因此信号 $s_1$ 只在状态 $\omega_1$ 中出现，能够完美揭示该状态，而信号 $s_2$ 则使买方保持不确定。
 
-它被一系列相对信息充分的类型购买，这些类型不愿意支付卖方想要向 $\theta \approx 0.7$ 附近大量买方收取的价格。
+类型 $\theta \in [0.175, 0.550]$ 购买它。
+
+该区间包含 $\theta^* = 1/2$，这是最不确定该怎么做、最看重信息的类型。
+
+在两个信息项目之间无差异的类型大约是 $\theta \approx 0.55$。
+
+如果向 $\theta^*$ 出售 $\overline{E}$，就需要对部分项目进一步扭曲并降低其价格，这将损失来自 $\theta \approx 0.2$ 附近众多类型的收入。
+
+部分项目使卖方能够对 $\theta \approx 0.7$ 附近的大量买方以高价出售 $\overline{E}$。
 
 ```{code-cell} ipython3
 ---
@@ -738,7 +833,7 @@ fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 axes[0].plot(theta_g, f_bimodal, lw=2, color='C2')
 axes[0].fill_between(theta_g, f_bimodal, alpha=0.2, color='C2')
 axes[0].set(xlabel=r'$\theta$', ylabel='density',
-            title='most buyers are already well informed')
+            title='beliefs packed into two steep clusters')
 
 axes[1].step(theta_g, q_bi, lw=2, where='mid')
 axes[1].set(xlabel=r'$\theta$', ylabel=r'$q^*(\theta)$', ylim=(-1.15, 1.15),
@@ -753,6 +848,10 @@ plt.show()
 
 我们可以直接看出为什么卖方要费这个功夫。
 
+每个类型对 $\overline{E}$ 的评价都不低于任何其他实验，因此最佳的单一项目菜单是以一个挂牌价格 $p$ 出售 $\overline{E}$。
+
+当 $u_1 = u_2 = 1$ 时，$V(\overline{E}, \theta) = \min\{\theta, 1 - \theta\}$，因此类型 $\theta \in [p, 1 - p]$ 会购买，收入为 $p\,[F(1 - p) - F(p)]$。
+
 ```{code-cell} ipython3
 def revenue(theta, q, f, u1=1.0, u2=1.0):
     """Expected revenue from the menu q under density f."""
@@ -763,13 +862,23 @@ def revenue(theta, q, f, u1=1.0, u2=1.0):
     return np.sum(price * f) * dth / (np.sum(f) * dth)
 
 
-q_single = np.where(q_bi < -0.5, -1.0, np.where(q_bi > 0.5, 1.0, 0.0))
-print(f'revenue, optimal two-item menu   {revenue(theta_g, q_bi, f_bimodal):.5f}')
-print(f'revenue, best single-item menu   '
-      f'{revenue(theta_g, q_single, f_bimodal):.5f}')
+def F_mix(x):
+    """Distribution function of the bimodal mixture."""
+    return 0.5 * stats.beta(8, 30).cdf(x) + 0.5 * stats.beta(60, 30).cdf(x)
+
+
+p_post = np.linspace(0, 0.5, 5001)
+rev_post = p_post * (F_mix(1 - p_post) - F_mix(p_post))
+k = rev_post.argmax()
+rev_two = revenue(theta_g, q_bi, f_bimodal)
+
+print(f'revenue, optimal two-item menu      {rev_two:.4f}')
+print(f'revenue, best posted price for E_bar {rev_post[k]:.4f}'
+      f'   at p = {p_post[k]:.3f}')
+print(f'gain from versioning                {100 * (rev_two / rev_post[k] - 1):.1f}%')
 ```
 
-去掉部分项目而只出售完全信息，会使卖方损失收入。
+增加部分项目使收入比全信息的最佳挂牌价格提高了约8%。
 
 部分实验不是同一产品的加噪版本，它是一个*位置不同*的产品，价格足够低以吸引信息充分的类型，同时又足够无用以至于不会对信息不充分的类型冲击高价格。
 
@@ -783,17 +892,23 @@ print(f'revenue, best single-item menu   '
 
 有两个教训超越了这个模型。
 
-第一，信息的最优降级是结构化的而非随机的：菜单上的每个实验都保持一个状态完全可检测，同时使另一个状态模糊化，因此数据产品不应通过向数据库添加无偏噪声来构建。
+第一，信息的最优降级是结构化的而非随机的：菜单上的每个实验都有一个能完全揭示某一状态的信号。
 
-第二，版本化恰恰在买方已经信息充分时才变得值得，因为那正是支付意愿的分布足够不规则，需要熨平的时候。
+{cite:t}`BergemannBonattiSmolin2018` 得出结论，最优菜单上的产品都不应向卖方的数据添加无偏噪声，除非买方在下游相互竞争，或数据必须匿名化。
+
+第二，版本化需要熨平的虚拟价值，而陡峭的信念密度恰恰会产生这种虚拟价值。
+
+买方信息充分与否并不能决定一切：一个呈 U 形贝塔分布的信息充分买方群体会得到单一产品的供应，而信念在 $[0, 1]$ 两端附近或其内部呈陡峭聚集的群体，则可以得到两种产品的供应。
 
 向信息不完全的买方出售信息有着悠久的历史。
 
 {cite:t}`AdmatiPfleiderer1986` 研究了一个卖方面对一个*事前相同*的连续交易者群体，这些交易者随后交易一个共同价值资产，他们发现卖方想要提供带噪声且*个性化*的信息，从而使每个交易者对自己所知的信息保持局部垄断。
 
+他们模型中的交易者在下游相互竞争，因此第一个教训并不适用于他们。
+
 那里的异质性是由卖方创造的；而在这里，异质性是买方自己的先验信息，正是这一点使问题变成了筛选问题。
 
-{cite:t}`BergemannBonatti2015` 研究了同一市场的另一面，即当数据价格由竞争决定时，买方决定购买哪些查询。
+{cite:t}`BergemannBonatti2015` 研究了一个数据提供商，该提供商为每个“cookie”（关于单个消费者的记录）设定价格，并面对一个没有私人信息的广告商，由其选择购买哪些 cookie。
 
 一个有用的对比是 {cite:t}`KamenicaGentzkow2011`，其中发送方也承诺一个信息结构，但没有货币转移，而是直接关心接收方的行动；这里的卖方只关心收入，且不能以状态、信号或买方的行动为条件设定支付。
 
@@ -891,6 +1006,13 @@ $\pi_2 \in \{0, 1\}$，且切换点确切地发生在 $\gamma = 1/3$，正如预
 
 3. 确认所提供的项目始终是完全信息实验，正如 {prf:ref}`pi_prop_structure` 所要求的那样。
 
+4. 利用 {eq}`eq:pi_pointwise` 和 {eq}`eq:pi_integral` 从解析上证明乘子为
+   $\lambda^* = \theta^*$，被服务的类型为
+   $\theta \in [\theta^*/2,\ (1 + \theta^*)/2]$，且价格为
+   $u_1 u_2 / \bigl(2 (u_1 + u_2)\bigr)$。
+
+   将这些值与线性规划得到的结果并列打印出来。
+
 ```{exercise-end}
 ```
 
@@ -901,16 +1023,22 @@ $\pi_2 \in \{0, 1\}$，且切换点确切地发生在 $\gamma = 1/3$，正如预
 这里给出一种解法：
 
 ```{code-cell} ipython3
-print(f'{"u1":>4s}{"u2":>4s}{"theta*":>9s}{"q offered":>12s}'
-      f'{"types served":>22s}{"price":>9s}')
+print(f'{"u1":>3s}{"u2":>3s}{"theta*":>8s}{"q":>6s}{"":3s}'
+      f'{"served (LP)":<16s}{"served (theory)":<17s}'
+      f'{"price":>7s}{"theory":>8s}{"lambda*":>9s}{"theory":>8s}')
 for u1_, u2_ in [(1, 1), (2, 1), (1, 3), (5, 1)]:
-    q_a, _ = solve_menu(theta_g, np.ones(N), u1_, u2_)
+    q_a, res_a = solve_menu(theta_g, np.ones(N), u1_, u2_)
     star = u2_ / (u1_ + u2_)
     served = [it for it in menu_items(theta_g, q_a, u1_, u2_) if it[3] > 1e-9]
+    assert len(served) == 1                     # a single informative item
     v, lo, hi, p = served[0]
-    print(f'{u1_:4d}{u2_:4d}{star:9.4f}{v:12.4f}'
-          f'{f"[{lo:.3f}, {hi:.3f}]":>22s}{p:9.4f}')
     assert abs(v - (u1_ - u2_)) < 1e-3          # the item is fully informative
+    lam = -res_a.eqlin.marginals[0]
+    print(f'{u1_:3d}{u2_:3d}{star:8.4f}{v:6.1f}{"":3s}'
+          f'{f"[{lo:.3f}, {hi:.3f}]":<16s}'
+          f'{f"[{star / 2:.3f}, {(1 + star) / 2:.3f}]":<17s}'
+          f'{p:7.4f}{u1_ * u2_ / (2 * (u1_ + u2_)):8.4f}'
+          f'{lam:9.4f}{star:8.4f}')
 print('\nevery menu contains exactly one informative item, '
       'and it is the fully informative one')
 ```
@@ -920,6 +1048,29 @@ print('\nevery menu contains exactly one informative item, '
 两者都严格递增，因此不需要熨平，单一项目就是最优的。
 
 支付函数确实会移动 $\theta^*$，从而影响哪些类型被服务以及以什么价格服务，但它们从不会使均匀密度下的版本化变得值得。
+
+对于解析基准，由于不需要熨平，{eq}`eq:pi_pointwise` 给出：当 $\theta < \lambda^*/2$ 时 $q^* = -u_2$，当
+$\lambda^*/2 < \theta < (1 + \lambda^*)/2$ 时 $q^* = u_1 - u_2$，当
+$\theta > (1 + \lambda^*)/2$ 时 $q^* = u_1$。
+
+代入 {eq}`eq:pi_integral` 得到
+
+$$
+-u_2 \frac{\lambda^*}{2} + (u_1 - u_2) \frac{1}{2} + u_1 \frac{1 - \lambda^*}{2}
+= u_1 - u_2 ,
+$$
+
+因此 $\lambda^* (u_1 + u_2) = u_2$，即 $\lambda^* = \theta^*$。
+
+被服务的最低类型 $\theta^*/2$ 在 $\overline{E}$ 和不购买之间是无差异的。
+
+对于 $\theta \leq \theta^*$，我们有 $V(\overline{E}, \theta) = \theta u_1$，因此价格为
+$u_1 \theta^* / 2 = u_1 u_2 / \bigl(2(u_1 + u_2)\bigr)$。
+
+被服务的最高类型 $(1 + \theta^*)/2$ 对 $\overline{E}$ 的估值为
+$(1 - \theta) u_2 = u_1 u_2 / \bigl(2(u_1 + u_2)\bigr)$，与价格相同。
+
+线性规划的结果在类型网格的离散化精度范围内与这三个量完全一致。
 
 ```{solution-end}
 ```
@@ -934,11 +1085,17 @@ print('\nevery menu contains exactly one informative item, '
 
 1. 抽取许多满足 $\pi_1 + \pi_2 \geq 1$ 的随机二元实验对。
 
-2. 对于每一对，使用 `garbling` 来判断一个是否是另一个的信息降级，并单独计算在精细网格上的每个类型中，一个是否在价值上支配另一个。
+2. 对于每一对，使用 `garbling` 来判断一个是否是另一个的信息降级，并单独计算在每个类型中，一个是否在价值上支配另一个。
+
+   因为 $V(E, \theta)$ 在 $\theta$ 上是分段线性的，所以只需要在 $\theta \in \{0, 1\}$ 以及任一价值函数存在拐点的类型处比较这两个值即可。
 
 3. 确认信息降级蕴含一致的偏好，并报告布莱克韦尔的序无法排序的随机对所占的比例。
 
 4. 在无法排序的对中，验证确实有些类型偏好一个实验，而有些类型偏好另一个。
+
+5. 解释为什么对于二状态实验，布莱克韦尔的序无法排序的那些对，恰好应该是类型存在分歧的那些对。
+
+   如果仅在有限的类型网格上检验支配关系，会出现什么问题？
 
 ```{exercise-end}
 ```
@@ -950,21 +1107,33 @@ print('\nevery menu contains exactly one informative item, '
 这里给出一种解法：
 
 ```{code-cell} ipython3
+def kinks(pi1, pi2, u1=1.0, u2=1.0):
+    """Endpoints and types at which V(E, theta) can change slope."""
+    k = [0.0, 1.0, u2 / (u1 + u2)]
+    for a, b in [(pi1 * u1, (1 - pi2) * u2), ((1 - pi1) * u1, pi2 * u2)]:
+        if a + b > 0:
+            k.append(b / (a + b))       # indifference after one of the signals
+    return np.array(k)
+
+
 rng = np.random.default_rng(0)
 grid_t = np.linspace(0.001, 0.999, 999)
 
-n_pairs, n_garble, n_unranked, n_disagree, violations = 4000, 0, 0, 0, 0
+n_pairs, n_garble, n_unranked, violations = 4000, 0, 0, 0
+n_disagree, n_disagree_grid, n_unanimous_unranked = 0, 0, 0
 for _ in range(n_pairs):
     (a1, a2), (b1, b2) = rng.uniform(0, 1, 2), rng.uniform(0, 1, 2)
     if a1 + a2 < 1 or b1 + b2 < 1:
         continue
     Ea, Eb = experiment(a1, a2), experiment(b1, b2)
-    va, vb = value(a1, a2, grid_t), value(b1, b2, grid_t)
+    t = np.concatenate([kinks(a1, a2), kinks(b1, b2)])
+    va, vb = value(a1, a2, t), value(b1, b2, t)
+    va_g, vb_g = value(a1, a2, grid_t), value(b1, b2, grid_t)
 
     a_garbles_b = garbling(Ea, Eb) is not None      # Eb is a garbling of Ea
     b_garbles_a = garbling(Eb, Ea) is not None
-    a_dominates = np.all(va >= vb - 1e-9)
-    b_dominates = np.all(vb >= va - 1e-9)
+    a_dominates = np.all(va >= vb - 1e-12)
+    b_dominates = np.all(vb >= va - 1e-12)
 
     if a_garbles_b:
         n_garble += 1
@@ -978,21 +1147,279 @@ for _ in range(n_pairs):
         n_unranked += 1
         if not (a_dominates or b_dominates):
             n_disagree += 1
+        if not (np.all(va_g >= vb_g - 1e-9) or np.all(vb_g >= va_g - 1e-9)):
+            n_disagree_grid += 1
+    if (a_dominates and not a_garbles_b) or (b_dominates and not b_garbles_a):
+        n_unanimous_unranked += 1
 
-print(f'garbling relations found        {n_garble}')
-print(f'violations of Blackwell         {violations}')
-print(f'pairs unranked by Blackwell     {n_unranked}')
-print(f'  of which types disagree       {n_disagree} '
-      f'({100 * n_disagree / n_unranked:.1f}%)')
+print(f'garbling relations found              {n_garble}')
+print(f'violations of Blackwell               {violations}')
+print(f'unanimous rankings without garbling   {n_unanimous_unranked}')
+print(f'pairs unranked by Blackwell           {n_unranked}')
+print(f'  of which types disagree (kinks)     {n_disagree}')
+print(f'  of which types disagree (grid)      {n_disagree_grid}')
 ```
 
 布莱克韦尔定理从未被违反：只要一个实验降级为另一个，每种类型都偏好作为降级源的那个实验。
 
-大部分随机对都未被排序，而对于其中几乎所有的对，类型确实存在分歧，有些偏好一个实验，有些偏好另一个。
+其逆命题在每次抽取中也都成立：只要所有类型对两个实验的排序一致，其中一个就是另一个的信息降级。
+
+大部分随机对都未被排序，而对于每一个这样的对，确实都存在某些类型偏好一个实验，而某些类型偏好另一个实验。
 
 这个未被排序的区域正是数据卖方所需要的空间。
 
 如果布莱克韦尔的序是完全的，那么每个买方都会对所有信息产品的排序达成一致，卖方的问题将退化为对单一质量指标的标准非线性定价，而本讲座所描述的横向筛选也就不可能存在。
+
+对于二状态实验，信息降级与一致偏好之间的对应关系是精确的。
+
+固定一个参照先验 $c \in (0, 1)$，令 $x$ 表示在 $c$ 下某个信号所诱导出的 $\omega_1$ 的后验概率。
+
+在 $u_1 = u_2 = 1$ 的情况下，$E$ 对类型 $\theta$ 的毛价值等于在 $c$ 下，凸函数
+$k_\theta(x) = \max\{\theta x / c,\ (1 - \theta)(1 - x)/(1 - c)\}$ 的期望值，该函数只有一个拐点。
+
+当 $\theta$ 在 $(0, 1)$ 上变化时，拐点也在 $(0, 1)$ 上变化。
+
+$[0, 1]$ 上的每个凸函数都可以表示为一个仿射函数加上这类单拐点函数的非负混合，而仿射部分在所有实验下的期望值相同。
+
+根据 {prf:ref}`thm-kihlstrom`，当且仅当对每个 $\theta$ 都有
+$V(E, \theta) \geq V(E', \theta)$ 时，$E'$ 才是 $E$ 的信息降级。
+
+在有限的类型网格上进行检验，可能会遗漏局限在两个网格点之间的一段短区间内的分歧。
+
+在上述抽取中，由999个类型组成的网格恰好遗漏了一次这样的分歧。
+
+在拐点处进行评估则是精确的，因为两个分段线性函数之差在拐点或端点处取得最大值和最小值。
+
+```{solution-end}
+```
+
+```{exercise-start}
+:label: pi_ex4
+```
+
+本练习刻画了使虚拟值 {eq}`eq:pi_virtual` 不需要熨平的类型密度。
+
+1. 利用 {eq}`eq:pi_virtual_slopes` 证明，在 $(0, 1)$ 上，$\phi^-$ 严格递增当且仅当
+   $\theta^2 f(\theta)$ 严格递增，而 $\phi^+$ 严格递增当且仅当
+   $(1 - \theta)^2 f(\theta)$ 严格递减。
+
+2. 由此推出，对于 $\text{Beta}(a, b)$ 密度，两个虚拟值都严格递增当且仅当
+   $a \leq 1$ 且 $b \leq 1$。
+
+3. 在 $(a, b)$ 对的网格上数值验证该条件。
+
+4. 用 `solve_menu` 证明，呈U形的密度 $\text{Beta}(0.5, 0.5)$、
+   $\text{Beta}(0.3, 0.3)$ 和 $\text{Beta}(0.5, 0.8)$ 都只被提供单一项目，不规则的
+   $\text{Beta}(30, 30)$ 同样只被提供单一项目，而不规则的 $\text{Beta}(60, 30)$ 则被提供两个信息性项目。
+
+5. 证明 $\text{Beta}(2, 60)$ 和 $\text{Beta}(40, 4)$ 的等权混合——即大多数买方都信息充分的总体——是不规则的，并被提供两个信息性项目。
+
+```{exercise-end}
+```
+
+```{solution-start} pi_ex4
+:class: dropdown
+```
+
+这里给出一种解法。
+
+对于 $\theta \in (0, 1)$，
+
+$$
+\frac{d}{d\theta}\bigl[\theta^2 f(\theta)\bigr]
+= \theta \bigl[2 f(\theta) + \theta f'(\theta)\bigr] = \theta\, \phi^{-\prime}(\theta),
+\qquad
+\frac{d}{d\theta}\bigl[(1 - \theta)^2 f(\theta)\bigr]
+= -(1 - \theta)\, \phi^{+\prime}(\theta) .
+$$
+
+所以 $\phi^{-\prime}$ 的符号与 $\theta^2 f$ 的导数符号相同，而 $\phi^{+\prime}$
+的符号与 $(1-\theta)^2 f$ 的导数符号相反。
+
+对于 $f(\theta) \propto \theta^{a-1}(1 - \theta)^{b-1}$，
+
+$$
+\frac{d}{d\theta} \log\bigl[\theta^2 f(\theta)\bigr]
+= \frac{a + 1}{\theta} - \frac{b - 1}{1 - \theta},
+\qquad
+\frac{d}{d\theta} \log\bigl[(1 - \theta)^2 f(\theta)\bigr]
+= \frac{a - 1}{\theta} - \frac{b + 1}{1 - \theta} .
+$$
+
+第一个表达式在整个 $(0, 1)$ 上都为正当且仅当 $b \leq 1$，因为当 $b > 1$ 时，
+当 $\theta \to 1$ 时它会发散到 $-\infty$。
+
+第二个表达式在整个 $(0, 1)$ 上都为负当且仅当 $a \leq 1$，因为当
+$a > 1$ 时，当 $\theta \to 0$ 时它会发散到 $+\infty$。
+
+```{code-cell} ipython3
+th_in = theta_g[1:-1]                   # Beta densities can be infinite at 0 and 1
+
+
+def mixture(components):
+    """Density and distribution function of an equal mixture of Beta laws."""
+    f_c = np.mean([stats.beta(a, b).pdf(th_in) for a, b in components], axis=0)
+    F_c = np.mean([stats.beta(a, b).cdf(th_in) for a, b in components], axis=0)
+    return f_c, F_c
+
+
+def regular(f_c, F_c):
+    """True if both virtual values increase on the grid."""
+    return (np.all(np.diff(th_in * f_c + F_c) > 0)
+            and np.all(np.diff((th_in - 1) * f_c + F_c) > 0))
+
+
+ab_grid = [0.3, 0.5, 0.8, 1.0, 1.2, 2.0, 5.0]
+mismatch = [(a, b) for a in ab_grid for b in ab_grid
+            if regular(*mixture([(a, b)])) != (a <= 1 and b <= 1)]
+print(f'(a, b) pairs checked: {len(ab_grid)**2},  mismatches: {mismatch}')
+
+for comps in [[(0.5, 0.5)], [(0.3, 0.3)], [(0.5, 0.8)], [(30, 30)], [(60, 30)],
+              [(2, 60), (40, 4)]]:
+    f_c, F_c = mixture(comps)
+    near_ends = np.mean([stats.beta(a, b).cdf(0.15) + stats.beta(a, b).sf(0.85)
+                         for a, b in comps])
+    q_c, _ = solve_menu(th_in, f_c)
+    informative = [it for it in menu_items(th_in, q_c) if it[3] > 1e-9]
+    print('\n' + ' + '.join(f'Beta{ab}' for ab in comps)
+          + f':  regular = {regular(f_c, F_c)},'
+          f'  mass within 0.15 of 0 or 1 = {near_ends:.2f},'
+          f'  informative items = {len(informative)}')
+    for v, lo, hi, p in informative:
+        print(f'   q = {v:+.3f}   types [{lo:.3f}, {hi:.3f}]   price {p:.4f}')
+```
+
+数值检验在每一个 $(a, b)$ 组合处都与 $a \leq 1$、$b \leq 1$ 的条件一致。
+
+这三个U形密度都是规则的，都只被提供 $\overline{E}$。
+
+$\text{Beta}(30, 30)$ 是不规则的，但它关于 $\theta^* = 1/2$ 对称，因此它也只被提供 $\overline{E}$。
+
+陡峭且非对称的 $\text{Beta}(60, 30)$ 除了 $\overline{E}$ 之外，还被提供了一个 $q < 0$ 的部分项目。
+
+$\text{Beta}(2, 60)$ 和 $\text{Beta}(40, 4)$ 的混合，其质量落在距 $0$ 或 $1$ 的 $0.15$ 范围内的比例比任何一个U形密度都高。
+
+它的两个簇都很陡峭，是不规则的，被提供了两个信息性项目。
+
+这两类总体中买方大多都信息充分；密度的陡峭程度将它们区分开来。
+
+```{solution-end}
+```
+
+```{exercise-start}
+:label: pi_ex5
+```
+
+本练习手工熨平双峰例子中的虚拟值，并检验线性规划找到的菜单。
+
+设 $u_1 = u_2 = 1$，使得 $d = 0$，并使用密度 `f_bimodal`。
+
+1. 在网格上计算 $\Phi^\pm(\theta) = \int_0^\theta \phi^\pm(x)\, dx$、它们的最大凸下界，以及作为凸下界斜率的熨平虚拟值 $\bar\phi^\pm$。
+
+2. 由 {eq}`eq:pi_pointwise`，$\bar\phi^- < \lambda^*$ 的类型得到 $q = -1$，
+   $\bar\phi^+ < \lambda^* < \bar\phi^-$ 的类型得到 $q = 0$，
+   $\bar\phi^+ > \lambda^*$ 的类型得到 $q = 1$，而在 $\bar\phi^- = \lambda^*$
+   的区间上，类型共享一个共同的 $q_m \in [-1, 0]$。
+
+   由积分约束 {eq}`eq:pi_integral` 求出 $\lambda^*$ 和 $q_m$。
+
+3. 将 $\lambda^*$、$q_m$、购买部分项目的类型区间，以及不购买任何项目的类型下界，与线性规划的解进行比较。
+
+4. 绘制 $\phi^\pm$、$\bar\phi^\pm$ 以及 $\lambda^*$ 的图形。
+
+```{exercise-end}
+```
+
+```{solution-start} pi_ex5
+:class: dropdown
+```
+
+这里给出一种解法。
+
+```{code-cell} ipython3
+def ironed(theta, phi):
+    """Slopes of the greatest convex minorant of the integral of phi."""
+    dth = theta[1] - theta[0]
+    Phi = np.concatenate([[0.0], np.cumsum((phi[1:] + phi[:-1]) / 2) * dth])
+    hull = [0]                                       # lower convex hull
+    for i in range(1, len(theta)):
+        while len(hull) >= 2:
+            j, k = hull[-2], hull[-1]
+            if ((Phi[k] - Phi[j]) * (theta[i] - theta[j])
+                    >= (Phi[i] - Phi[j]) * (theta[k] - theta[j])):
+                hull.pop()
+            else:
+                break
+        hull.append(i)
+    phi_bar = np.empty_like(phi)
+    for j, k in zip(hull[:-1], hull[1:]):
+        phi_bar[j:k + 1] = (Phi[k] - Phi[j]) / (theta[k] - theta[j])
+    return phi_bar
+
+
+dth = theta_g[1] - theta_g[0]
+f_n = f_bimodal / (np.sum(f_bimodal) * dth)
+F_n = np.cumsum(f_n) * dth
+phi_m, phi_p = theta_g * f_n + F_n, (theta_g - 1) * f_n + F_n
+bar_m, bar_p = ironed(theta_g, phi_m), ironed(theta_g, phi_p)
+print('phi_bar+ <= phi_bar- everywhere:', np.all(bar_p <= bar_m + 1e-12))
+
+
+def integral_q(lam):
+    """Integral of q when types with bar_m = lam are assigned q = 0."""
+    return (-(bar_m < lam).sum() + (bar_p > lam).sum()) * dth
+
+
+lo, hi = bar_m.min(), bar_m.max()                   # integral_q decreases in lam
+for _ in range(200):
+    mid = (lo + hi) / 2
+    lo, hi = (mid, hi) if integral_q(mid) > 0 else (lo, mid)
+lam_star = hi
+
+pooled = np.abs(bar_m - lam_star) < 1e-9
+th_a, th_b = theta_g[pooled].min(), theta_g[pooled].max()
+th_c = theta_g[bar_p > lam_star].min()
+q_m = (th_a - (1 - th_c)) / (th_b - th_a)
+
+lp_items = [it for it in menu_items(theta_g, q_bi) if it[3] > 1e-9]
+(q_lp, a_lp, b_lp, _), (_, _, c_lp, _) = lp_items
+print(f'\n{"":24s}{"by hand":>10s}{"LP":>10s}')
+print(f'{"multiplier lambda*":24s}{lam_star:10.4f}{-res_bi.eqlin.marginals[0]:10.4f}')
+print(f'{"partial item q_m":24s}{q_m:10.4f}{q_lp:10.4f}')
+print(f'{"lowest buyer":24s}{th_a:10.4f}{a_lp:10.4f}')
+print(f'{"partial / full cutoff":24s}{th_b:10.4f}{b_lp:10.4f}')
+print(f'{"highest buyer":24s}{th_c:10.4f}{c_lp:10.4f}')
+```
+
+```{code-cell} ipython3
+fig, ax = plt.subplots()
+ax.plot(theta_g, phi_m, lw=1, color='C0', alpha=0.5, label=r'$\phi^-$')
+ax.plot(theta_g, bar_m, lw=2, color='C0', label=r'$\bar\phi^-$')
+ax.plot(theta_g, phi_p, lw=1, color='C1', alpha=0.5, label=r'$\phi^+$')
+ax.plot(theta_g, bar_p, lw=2, color='C1', label=r'$\bar\phi^+$')
+ax.axhline(lam_star, color='0.3', ls='--', lw=1, label=r'$\lambda^*$')
+ax.axvspan(th_a, th_b, color='C2', alpha=0.15, label='partial item')
+ax.set(xlabel=r'$\theta$', ylim=(-4, 4),
+       title='ironed virtual values for the bimodal density')
+ax.legend(fontsize=9, ncol=2)
+fig.tight_layout()
+plt.show()
+```
+
+乘子就是使 $q$ 的积分跨越零点而发生跳跃的那个水平。
+
+刚好在 $\lambda^*$ 之下，被合并的类型得到 $q = 0$，积分为正；刚好在 $\lambda^*$
+之上，它们得到 $q = -1$，积分为负。
+
+在合并区间 $[\theta_a, \theta_b]$ 上，积分约束写作
+$-\theta_a + q_m (\theta_b - \theta_a) + (1 - \theta_c) = 0$，由此得到
+$q_m = \bigl(\theta_a - (1 - \theta_c)\bigr) / (\theta_b - \theta_a)$。
+
+合并区间就是熨平操作将 $\phi^-$ 拉平至水平 $\lambda^*$ 的那个区间。
+
+其上端，约 $\theta \approx 0.55$，是在部分项目和 $\overline{E}$ 之间感到无差异的类型。
+
+手工计算与线性规划的结果在网格间距范围内一致。
 
 ```{solution-end}
 ```

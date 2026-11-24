@@ -46,17 +46,17 @@ translation:
 
 ## 概述
 
-这是关于一个统计决策问题的两个讲座中的第一个。这个问题是二战期间，当弥尔顿·弗里德曼和W·艾伦·沃利斯在哥伦比亚大学的美国政府统计研究组担任分析师时，一位美国海军上尉向他们提出的。
+这是关于一个统计决策问题的三个讲座中的第一个。这个问题是二战期间，当弥尔顿·弗里德曼和W·艾伦·沃利斯在哥伦比亚大学的美国政府统计研究组担任分析师时，一位美国海军上尉向他们提出的。
 
-这个问题促使亚伯拉罕·瓦尔德{cite}`Wald47`提出了**序贯分析**，这是一种与动态规划密切相关的统计决策问题处理方法。
+这个问题促使亚伯拉罕·瓦尔德 {cite}`Wald47` 提出了**序贯分析**，这是一种与动态规划密切相关的统计决策问题处理方法。
 
 本讲座及其{doc}`续篇 <wald_friedman_2>`延续了{doc}`之前讲座 <prob_meaning>`的精神，从频率主义和贝叶斯两个不同的角度来处理这个问题。
 
-在本讲中，我们从一位统计学家的角度描述Wald的问题表述，这位统计学家遵循Neyman-Pearson的频率派统计学传统，关注假设检验，并因此使用大数定律来研究在给定**假设**下特定统计量的极限性质，即，一个**参数**向量确定了统计学家感兴趣的统计模型簇中的某个特定成员。
+在本讲中，我们从一位频率派统计学家的角度描述 Wald 的问题表述，这位统计学家遵循 Neyman-Pearson 传统，关注假设检验，并因此使用大数定律来研究在给定**假设**下特定统计量的极限性质，即，一个**参数**向量确定了统计学家感兴趣的统计模型簇中的某个特定成员。
 
-  * 从{doc}`这节关于频率派和贝叶斯统计的讲座<prob_meaning>`中，请记住频率派统计学家经常计算随机变量序列的函数，以参数向量为条件。
+  * 从 {doc}`这节关于频率派和贝叶斯统计的讲座<prob_meaning>` 中，请记住频率派统计学家经常计算随机变量序列的函数，以参数向量为条件。
 
-在{doc}`这个相关讲座<wald_friedman_2>`中，我们将讨论另一种表述方法，它采用**贝叶斯统计学家**的视角，将参数视为与他所关心的可观测变量共同分布的随机变量。
+在 {doc}`这个相关讲座<wald_friedman_2>` 中，我们将讨论另一种表述方法，它采用**贝叶斯统计学家**的视角，将参数视为与他所关心的可观测变量共同分布的随机变量。
 
 因为我们采用的是关注在不同参数值（即不同**假设**）条件下相对频率的频率派视角，本讲的关键概念包括：
 
@@ -66,7 +66,7 @@ translation:
 - 频率派统计检验的**检验效能**
 - 频率派统计检验的**显著性水平**
 - 统计检验的**临界区域**
-- **一致最优检验**
+- **最优检验**
 - 大数定律(LLN)在解释频率统计检验的**功效**和**规模**中的作用
 - 亚伯拉罕·瓦尔德的**序贯概率比检验**
 
@@ -83,14 +83,14 @@ plt.rcParams['font.family'] = ['Source Han Serif SC']
 from numba import njit, prange, vectorize, jit
 from numba.experimental import jitclass
 from math import gamma
-from scipy.integrate import quad
+from scipy.special import betaln, digamma
 from scipy.stats import beta
 from collections import namedtuple
 import pandas as pd
 import scipy as sp
 ```
 
-本讲座运用了{doc}`似然比过程讲座<likelihood_ratio_process>`和{doc}`贝叶斯学习讲座<likelihood_bayes>`中研究的概念。
+本讲座运用了 {doc}`似然比过程讲座<likelihood_ratio_process>` 和 {doc}`贝叶斯学习讲座<likelihood_bayes>` 中研究的概念。
 
 ## 问题的来源
 
@@ -116,9 +116,9 @@ Friedman和Wallis研究了这个问题一段时间但没有完全解决它。
 
 ## Neyman-Pearson公式
 
-从描述美国海军告诉G. S. Schuyler上尉使用的测试背后的理论开始会很有帮助。
+从描述美国海军告诉Garret L. Schuyler上尉使用的测试背后的理论开始会很有帮助。
 
-Schuyler上尉的疑虑促使他向Milton Friedman和Allen Wallis表达了他的推测,即存在更好的实践程序。
+Schuyler上尉的疑虑促使他向Milton Friedman和Allen Wallis表达了他的推测，即存在更好的实践程序。
 
 显然，海军当时要求Schuyler上校使用当时最先进的Neyman-Pearson假设检验。
 
@@ -156,7 +156,7 @@ Wald将问题框定为对部分已知的概率分布做出决策。
 > Neyman和Pearson提出了以下选择临界区域的考虑因素：在接受或拒绝$H_0$时，
 > 我们可能犯两种错误。当$H_0$为真而我们拒绝它时，我们犯第一类错误；当
 > $H_1$为真而我们接受$H_0$时，我们犯第二类错误。在选定特定的临界区域
-> $W$之后，犯第一类错误的概率以及犯第二类错误的概率是唯一确定的。第一类错误的概率等于在假设$H_0$为真的条件下，观察到的样本落入临界区域$W$的概率。第二类错误的概率等于在假设$H_1$为真的条件下，概率落在临界区域$W$之外的概率。对于任何给定的临界区域$W$，我们用$\alpha$表示第一类错误的概率，用$\beta$表示第二类错误的概率。
+> $W$之后，犯第一类错误的概率以及犯第二类错误的概率是唯一确定的。第一类错误的概率等于在假设$H_0$为真的条件下，观察到的样本落入临界区域$W$的概率。第二类错误的概率等于在假设$H_1$为真的条件下，观察到的样本落在临界区域$W$之外的概率。对于任何给定的临界区域$W$，我们用$\alpha$表示第一类错误的概率，用$\beta$表示第二类错误的概率。
 
 让我们仔细听听Wald如何运用大数定律来解释$\alpha$和$\beta$：
 
@@ -180,6 +180,8 @@ Wald总结了Neyman和Pearson的设置如下：
 > 是检验假设$H_0$对抗备择假设$H_1$的最优势检验区域。右边的项$k$是一个常数，选择它使得该区域具有所需的大小$\alpha$。
 
 Wald继续讨论了Neyman和Pearson的*一致最优势*检验的概念。
+
+我们的$H_0$和$H_1$各自都指定了单一的分布，因此上述最优势检验就是我们所需要的全部。
 
 以下是Wald如何引入序贯检验的概念
 
@@ -207,7 +209,9 @@ $A$和$B$表征了瓦尔德用来确定随机变量$n$作为随机结果函数�
 
 我们使用贝塔分布作为例子。
 
-我们还将使用在 {doc}`divergence_measures` 中介绍的 Jensen-Shannon 散度。
+我们还将使用在 {doc}`divergence_measures` 中介绍的 Kullback-Leibler 散度。
+
+对于两个贝塔密度，Kullback-Leibler 散度具有闭式解。
 
 ```{code-cell} ipython3
 @vectorize
@@ -220,19 +224,11 @@ def create_beta_density(a, b):
     """创建具有指定参数的贝塔密度函数。"""
     return jit(lambda x: p(x, a, b))
 
-def compute_KL(f, g):
-    """计算KL散度 KL(f, g)"""
-    integrand = lambda w: f(w) * np.log(f(w) / g(w))
-    val, _ = quad(integrand, 1e-5, 1-1e-5)
-    return val
-
-def compute_JS(f, g):
-    """计算Jensen-Shannon散度"""
-    def m(w):
-        return 0.5 * (f(w) + g(w))
-    
-    js_div = 0.5 * compute_KL(f, m) + 0.5 * compute_KL(g, m)
-    return js_div
+def compute_KL(a1, b1, a2, b2):
+    """对于 f = Beta(a1, b1) 和 g = Beta(a2, b2)，计算KL散度 KL(f, g)。"""
+    return (betaln(a2, b2) - betaln(a1, b1)
+            + (a1 - a2) * digamma(a1) + (b1 - b2) * digamma(b1)
+            + (a2 - a1 + b2 - b1) * digamma(a1 + b1))
 ```
 
 下图显示了两个贝塔分布
@@ -246,7 +242,7 @@ fig, ax = plt.subplots()
 ax.plot(grid, f0(grid), lw=2, label="$f_0$")
 ax.plot(grid, f1(grid), lw=2, label="$f_1$")
 ax.legend()
-ax.set(xlabel="$z$ 值", ylabel="$z_k$ 的概率")
+ax.set(xlabel="$z$ 值", ylabel="密度")
 plt.tight_layout()
 plt.show()
 ```
@@ -257,7 +253,7 @@ plt.show()
 
 但是观察者并不知道序列是由这两个分布中的哪一个生成的。
 
-由[可交换性和贝叶斯更新](https://python.quantecon.org/exchangeable.html)中解释的原因，这意味着观察者认为该序列不是IID的。
+由 {doc}`exchangeable` 中解释的原因，这意味着观察者认为该序列不是IID的。
 
 因此，观察者有需要学习的内容，即观测值是来自$f_0$还是来自$f_1$。
 
@@ -290,9 +286,11 @@ Wald定义
 - $p_{1m} = f_1(z_1) \cdots f_1(z_m)$
 - $L_{m} = \frac{p_{1m}}{p_{0m}}$
 
+对于$m \geq 1$，并设$L_0 = 1$。
+
 这里$\{L_m\}_{m=0}^\infty$是一个**似然比过程**。
 
-Wald的序贯决策规则由实数$B < A$参数化。
+Wald的序贯决策规则由实数$0 < B < 1 < A$参数化。
 
 对于给定的一对$A, B$，决策规则是
 
@@ -303,6 +301,12 @@ $$
 \textrm { 再抽取一个 }  z \textrm{ 如果 }  B < L_m < A
 \end{aligned}
 $$
+
+```{note}
+后续内容 {doc}`wald_friedman_2` 使用$A$和$B$表示后验概率$\pi_k$（即$f = f_1$的后验概率）的阈值，并使用$L_0$和$L_1$表示错误决策所带来的损失。
+
+在那里，我们用$\Lambda_k$表示似然比，用$A_\Lambda$和$B_\Lambda$表示与此处瓦尔德的$A$和$B$相对应的似然比阈值。
+```
 
 下图说明了Wald程序的各个方面。
 
@@ -321,6 +325,32 @@ $$
 \end{aligned}
 $$
 
+这些不等式源自一种测度变换。
+
+设 $P_i$ 和 $E_i$ 分别表示在假设 $f_i$ 生成数据的情况下计算的概率和数学期望。
+
+设 $N$ 为检验停止时的随机抽样次数，并假设 $P_0\{N < \infty\} = P_1\{N < \infty\} = 1$。
+
+在事件 $\{N = n\}$ 上，因子 $L_n^{-1} = p_{0n}/p_{1n}$ 将 $z_1, \ldots, z_n$ 的联合密度 $p_{1n}$ 转换为联合密度 $p_{0n}$。
+
+当 $L_N \geq A$ 时检验拒绝 $H_0$，所以
+
+$$
+\alpha = P_0\{L_N \geq A\} = E_1\left[L_N^{-1} \mathbf{1}\{L_N \geq A\}\right] \leq \frac{1}{A} P_1\{L_N \geq A\} = \frac{1-\beta}{A}
+$$
+
+当 $L_N \leq B$ 时检验接受 $H_0$，所以
+
+$$
+\beta = P_1\{L_N \leq B\} = E_0\left[L_N \mathbf{1}\{L_N \leq B\}\right] \leq B \, P_0\{L_N \leq B\} = B (1-\alpha)
+$$
+
+同样的测度变换也是 {doc}`imp_sample` 中重要性抽样的基础。
+
+当 $L_N$ 恰好落在 $A$ 或 $B$ 上时，这两个不等式都取等号。
+
+当 $L_N$ 在停止时刻可能跳过 $A$ 或 $B$ 时，这两个不等式则严格成立。
+
 他对这些不等式的分析导致Wald推荐以下近似作为设置$A$和$B$的规则，这些规则接近于达到决策者对第I类错误概率$\alpha$和第II类错误概率$\beta$的目标值：
 
 $$
@@ -337,11 +367,33 @@ $$ (eq:Waldrule)
 > $\ldots$ 不会导致 $\alpha$ 或 $\beta$ 的值有任何显著增加。换句话说，
 > 就实际目的而言，对应于 $A = a(\alpha, \beta), B = b(\alpha,\beta)$ 的检验
 > 至少提供了与对应于 $A = A(\alpha, \beta)$ 和 
-> $B = b(\alpha, \beta)$ 的检验相同的防错决策保护。
+> $B = B(\alpha, \beta)$ 的检验相同的防错决策保护。
 
 > 因此，使用 $ a(\alpha, \beta),  b(\alpha,\beta)$ 而不是
 > $ A(\alpha, \beta),  B(\alpha,\beta)$ 可能产生的唯一缺点是，
 > 这可能会导致检验所需的观测数量显著增加。
+
+Wald的论证如下。
+
+设 $\alpha'$ 和 $\beta'$ 是设定 $A = a(\alpha,\beta)$ 和 $B = b(\alpha,\beta)$ 的检验的错误概率。
+
+将上述不等式应用于该检验，可得
+
+$$
+\frac{\alpha'}{1-\beta'} \leq \frac{\alpha}{1-\beta}, \quad \frac{\beta'}{1-\alpha'} \leq \frac{\beta}{1-\alpha}
+$$
+
+由此可以推出
+
+$$
+\alpha' \leq \frac{\alpha}{1-\beta}, \quad \beta' \leq \frac{\beta}{1-\alpha}, \quad \alpha' + \beta' \leq \alpha + \beta
+$$ (eq:Wald_bounds)
+
+第三个不等式是通过将上述两个不等式交叉相乘并相加得到的。
+
+当 $\alpha$ 和 $\beta$ 较小时，$\alpha/(1-\beta)$ 和 $\beta/(1-\alpha)$ 接近于 $\alpha$ 和 $\beta$。
+
+只有当 $L_N$ 从不跳过 $A$ 或 $B$ 时，该检验才能达到 $\alpha' = \alpha$ 和 $\beta' = \beta$。
 
 我们将编写一些Python代码来帮助我们说明Wald关于 $\alpha$ 和 $\beta$ 如何与表征其序贯概率比检验的参数 $A$ 和 $B$ 相关的论断。
 
@@ -482,6 +534,12 @@ print(f"经验第二类错误: {results['type_II']:.3f} (目标 = {params.β})")
 
 正如在上文中 Wald 讨论近似式 {eq}`eq:Waldrule` 中给出的 $a(\alpha, \beta), b(\alpha, \beta)$ 的质量时所预期的那样，我们发现该算法实际上给出了比目标值**更低**的第一类和第二类错误率。
 
+经验错误率满足Wald的界 {eq}`eq:Wald_bounds`，此处为 $\alpha' \leq 0.05/0.90 \approx 0.056$，$\beta' \leq 0.10/0.95 \approx 0.105$，以及 $\alpha' + \beta' \leq 0.15$。
+
+由于 $f_0 = \text{Beta}(2,5)$ 和 $f_1 = \text{Beta}(5,2)$ 相距很远，这些界远不是紧的。
+
+单次抽样往往会使 $\log L_m$ 远远超过 $\log A$ 或 $\log B$，而这种超调会使 $\alpha'$ 和 $\beta'$ 低于 $\alpha$ 和 $\beta$。
+
 ```{note}
 关于近似式 {eq}`eq:Waldrule` 质量的最新研究，请参见 {cite}`fischer2024improving`。
 ```
@@ -490,13 +548,6 @@ print(f"经验第二类错误: {results['type_II']:.3f} (目标 = {params.β})")
 
 ```{code-cell} ipython3
 :tags: [hide-input]
-
-@njit
-def compute_wald_thresholds(α, β):
-    """计算 Wald 推荐的阈值。"""
-    A = (1 - β) / α
-    B = β / (1 - α)
-    return A, B, np.log(A), np.log(B)
 
 def plot_sprt_results(results, params, title=""):
     """绘制 SPRT 结果。"""
@@ -522,7 +573,7 @@ def plot_sprt_results(results, params, title=""):
     
     # 停止时间
     max_n = min(results['stopping_times'].max(), 101)
-    bins = np.arange(1, max_n) - 0.5
+    bins = np.arange(1, max_n + 2) - 0.5
     axes[1].hist(results['stopping_times'], bins=bins, 
                  color="steelblue", alpha=0.8, edgecolor="black")
     axes[1].set_title(f'stopping times (μ={results["stopping_times"].mean():.1f})', 
@@ -573,7 +624,7 @@ def plot_confusion_matrix(results, ax):
 plot_sprt_results(results, params)
 ```
 
-在这个例子中，停止时间保持在10以下。
+在这个例子中，停止时间从未超过10，平均停止时间为1.59。
 
 我们可以构建一个$2 \times 2$的"混淆矩阵"，其对角线元素统计了Wald决策规则正确接受和正确拒绝原假设的次数。
 
@@ -619,75 +670,119 @@ plot_sprt_results(results_3, params_3)
 
 当两个分布"相近"时，判断哪个分布在产生数据应该需要更长时间。
 
-我们很容易想到将这种模式与我们在{doc}`likelihood_ratio_process`中讨论的[Kullback–Leibler散度](rel_entropy)联系起来。
+{doc}`divergence_measures` 中描述的[Kullback–Leibler散度](rel_entropy)衡量了两个分布相距多远。
 
-虽然当两个分布差异更大时KL散度更大，但KL散度并不是对称的，这意味着分布$f$相对于分布$g$的KL散度不一定等于$g$相对于$f$的KL散度。
+Wald将其与他的检验所需的预期抽样次数联系起来。
 
-如果我们想要一个真正具有度量性质的对称散度，我们可以使用[Jensen-Shannon距离](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.jensenshannon.html)。
+在 $H_0$ 下，$\log L_N = \sum_{i=1}^N \log \frac{f_1(z_i)}{f_0(z_i)}$ 是随机数量 $N$ 个独立同分布项的和，每一项的均值为 $E_0 \log \frac{f_1(z)}{f_0(z)} = -KL(f_0, f_1)$。
 
-这就是我们现在要做的。
+在 $H_1$ 下，每一项的均值为 $E_1 \log \frac{f_1(z)}{f_0(z)} = KL(f_1, f_0)$。
 
-我们将计算Jensen-Shannon距离，并绘制它与平均停止时间的关系图。
+由于 $N$ 是一个均值有限的停止时间，**Wald等式**给出
+
+$$
+E_0 [\log L_N] = - E_0[N] \, KL(f_0, f_1), \qquad E_1 [\log L_N] = E_1[N] \, KL(f_1, f_0)
+$$ (eq:Wald_identity)
+
+{doc}`likelihood_ratio_process` 中的{ref}`这一节 <KL_link>` 描述了KL散度与固定抽样次数下预期对数似然比之间的联系。
+
+Wald忽略了超调：当检验拒绝 $H_0$ 时，他用 $\log A$ 近似 $\log L_N$；当检验接受 $H_0$ 时，他用 $\log B$ 近似 $\log L_N$。
+
+在{eq}`eq:Wald_identity`中设 $P_0\{L_N \geq A\} \approx \alpha$ 和 $P_1\{L_N \leq B\} \approx \beta$，就得到了Wald对**平均样本数**的近似
+
+$$
+E_0[N] \approx \frac{(1-\alpha)\log(1/B) - \alpha \log A}{KL(f_0, f_1)}, \qquad
+E_1[N] \approx \frac{(1-\beta)\log A - \beta \log(1/B)}{KL(f_1, f_0)}
+$$ (eq:ASN)
+
+KL散度不是对称的，所以{eq}`eq:ASN`在 $H_0$ 下除以 $KL(f_0, f_1)$，而在 $H_1$ 下除以 $KL(f_1, f_0)$。
+
+在下面的实验中，$f_0 = \text{Beta}(a, b)$ 且 $f_1 = \text{Beta}(b, a)$，因此 $f_1(z) = f_0(1-z)$ 且 $KL(f_0, f_1) = KL(f_1, f_0)$。
+
+我们一半的重复从 $f_0$ 中抽样，另一半从 $f_1$ 中抽样，因此{eq}`eq:ASN`使平均停止时间与 $1/KL(f_0, f_1)$ 成正比。
+
+我们计算100对这样的分布对的 $KL(f_0, f_1)$ 和平均停止时间，并将平均停止时间与{eq}`eq:ASN`进行比较。
 
 ```{code-cell} ipython3
-def js_dist(a0, b0, a1, b1):
-    """Jensen–Shannon距离"""
-    f0 = create_beta_density(a0, b0)
-    f1 = create_beta_density(a1, b1)
-
-    # 混合
-    m = lambda w: 0.5*(f0(w) + f1(w))
-    return np.sqrt(0.5*compute_KL(m, f0) + 0.5*compute_KL(m, f1))
-    
 def generate_β_pairs(N=100, T=10.0, d_min=0.5, d_max=9.5):
     ds = np.linspace(d_min, d_max, N)
     a0 = (T - ds) / 2
     b0 = (T + ds) / 2
     return list(zip(a0, b0, b0, a0))
 
+def wald_asn(α, β, KL_01, KL_10):
+    """Wald对E_0[N]和E_1[N]的近似。"""
+    A, B, logA, logB = compute_wald_thresholds(α, β)
+    E0_N = ((1 - α) * (-logB) - α * logA) / KL_01
+    E1_N = ((1 - β) * logA - β * (-logB)) / KL_10
+    return E0_N, E1_N
+
 param_comb = generate_β_pairs()
 
-# 为每个参数组合运行模拟
-js_dists = []
+KL_divs = []
 mean_stopping_times = []
+asn_approx = []
 param_list = []
 
 for a0, b0, a1, b1 in param_comb:
-    # 计算KL散度
-    js_div = js_dist(a1, b1, a0, b0)
+    KL_01 = compute_KL(a0, b0, a1, b1)
+    KL_10 = compute_KL(a1, b1, a0, b0)
     
-    # 用固定参数集运行SPRT模拟
-    params = SPRTParams(α=0.05, β=0.10, a0=a0, b0=b0, 
-                        a1=a1, b1=b1, N=5000, seed=42)
-    results = run_sprt(params)
+    params_d = SPRTParams(α=0.05, β=0.10, a0=a0, b0=b0, 
+                          a1=a1, b1=b1, N=5000, seed=42)
+    results_d = run_sprt(params_d)
+    E0_N, E1_N = wald_asn(params_d.α, params_d.β, KL_01, KL_10)
     
-    js_dists.append(js_div)
-    mean_stopping_times.append(results['stopping_times'].mean())
+    KL_divs.append(KL_01)
+    mean_stopping_times.append(results_d['stopping_times'].mean())
+    asn_approx.append(0.5 * (E0_N + E1_N))
     param_list.append((a0, b0, a1, b1))
 
-# 创建图表
+KL_divs = np.array(KL_divs)
+mean_stopping_times = np.array(mean_stopping_times)
+asn_approx = np.array(asn_approx)
+
 fig, ax = plt.subplots()
-
-scatter = ax.scatter(js_dists, mean_stopping_times, 
-                    s=80, alpha=0.7, linewidth=0.5)
-
-ax.set_xlabel('Jensen–Shannon距离', fontsize=14)
-ax.set_ylabel('平均停止时间', fontsize=14)
-
+ax.scatter(KL_divs, mean_stopping_times, s=40, alpha=0.7, 
+           label='simulated mean stopping time')
+ax.plot(KL_divs, asn_approx, color='C1', lw=2, 
+        label="Wald's approximation")
+ax.axhline(1, color='black', linestyle='--', lw=1, label='$N = 1$')
+ax.set_xscale('log')
+ax.set_yscale('log')
+ax.set_xlabel('$KL(f_0, f_1)$', fontsize=14)
+ax.set_ylabel('mean stopping time', fontsize=14)
+ax.legend()
 plt.tight_layout()
 plt.show()
+
+ratio = mean_stopping_times / asn_approx
+print(f"corr(mean stopping time, 1/KL) = "
+      f"{np.corrcoef(mean_stopping_times, 1 / KL_divs)[0, 1]:.4f}")
+print(f"simulated / approximate mean stopping time: "
+      f"{ratio.min():.2f} (closest pair) to {ratio.max():.1f} (farthest pair)")
 ```
 
-该图显示了相对熵与平均停止时间之间存在明显的负相关关系。
+在对数坐标下，Wald的近似是一条斜率为 $-1$ 的直线。
 
-随着Jensen-Shannon散度的增加（分布之间的差异增大），平均停止时间呈指数下降。
+在这100对分布中，平均停止时间与 $1/KL(f_0, f_1)$ 之间的相关系数为0.9999。
+
+平均停止时间接近于 $1/KL(f_0, f_1)$ 的线性函数。
+
+模拟得到的平均停止时间高于Wald近似值，原因有两个。
+
+超调使得 $|\log L_N|$ 比 $\log A$ 或 $\log(1/B)$ 更大，因此根据{eq}`eq:Wald_identity`，它使 $E_0[N]$ 和 $E_1[N]$ 比{eq}`eq:ASN`更大。
+
+检验至少需要一次抽样，因此平均停止时间不能低于1，而{eq}`eq:ASN`在 $KL(f_0, f_1)$ 增大时趋于零。
+
+{ref}`wald_friedman_ex4` 要求你研究这两个差异来源。
 
 以下是我们上述实验的采样示例
 
 ```{code-cell} ipython3
-def plot_beta_distributions_grid(param_list, js_dists, mean_stopping_times, 
+def plot_beta_distributions_grid(param_list, KL_divs, mean_stopping_times, 
                                 selected_indices=None):
-    """绘制贝塔分布网格，包含JS距离和停止时间。"""
+    """绘制贝塔分布网格，包含KL散度和停止时间。"""
     if selected_indices is None:
         selected_indices = [0, len(param_list)//6, len(param_list)//3, 
                           len(param_list)//2, 2*len(param_list)//3, -1]
@@ -708,7 +803,7 @@ def plot_beta_distributions_grid(param_list, js_dists, mean_stopping_times,
                                   np.minimum(f0(z_grid), f1(z_grid)), 
                                   alpha=0.3, color='purple')
         
-        axes[row, col].set_title(f'JS距离: {js_dists[idx]:.3f}'
+        axes[row, col].set_title(f'KL散度: {KL_divs[idx]:.3f}'
                                f'\n平均时间: {mean_stopping_times[idx]:.1f}', 
                                fontsize=12)
         axes[row, col].set_xlabel('z', fontsize=10)
@@ -719,10 +814,10 @@ def plot_beta_distributions_grid(param_list, js_dists, mean_stopping_times,
     plt.tight_layout()
     plt.show()
 
-plot_beta_distributions_grid(param_list, js_dists, mean_stopping_times)
+plot_beta_distributions_grid(param_list, KL_divs, mean_stopping_times)
 ```
 
-再次发现，当分布之间的差异越大（用Jensen-Shannon距离衡量），停止时间就越短。
+再次发现，当分布之间的差异越大（用KL散度衡量），停止时间就越短。
 
 让我们可视化单个似然比过程，看看它们是如何向决策边界演变的。
 
@@ -888,7 +983,7 @@ df
 
 这增加了第二类错误的概率。
 
-表格证实了这种直觉：当$A$减小且$B$增加超出其最优Wald值时，第一类和第二类错误率都会增加，而平均停止时间会减少。
+表格证实了这种直觉：当 $A$ 减小且 $B$ 增加超出 Wald 的近似值 {eq}`eq:Waldrule` 时，第一类和第二类错误率都会增加，而平均停止时间会减少。
 
 ## 相关讲座
 
@@ -902,7 +997,7 @@ df
 
 ## 练习
 
-在下面的两个练习中，请尝试重写本讲座中的整个SPRT套件。
+在下面的前两个练习中，请尝试重写本讲座中的整个SPRT套件。
 
 ```{exercise}
 :label: wald_friedman_ex1
@@ -1111,7 +1206,7 @@ $$
 任务:
 1. 使用VAR讲座中的函数实现VAR似然比
 2. 实现Wald的序贯检验，其中 $\alpha = 0.05$ 且 $\beta = 0.10$
-3. 分析在两个假设下以及模型错误设定情况下的表现
+3. 分析在两个假设下以及当第三个VAR(1)模型生成数据从而导致模型错误设定情况下的表现
 4. 在停止时间和准确性方面与马尔可夫链情况进行比较
 
 ```
@@ -1261,6 +1356,285 @@ ax2.legend()
 plt.tight_layout() 
 plt.show()
 ```
+
+两个检验的经验错误率都保持在目标值以下，而且VAR检验比马尔可夫链检验停止得更快。
+
+现在我们转向模型错误设定的问题。
+
+假设有一个具有如下参数的第三个VAR(1)模型$h$：
+
+$$
+A^{(h)} = (1-\lambda) A^{(0)} + \lambda A^{(1)}, \quad C^{(h)} = (1-\lambda) C^{(0)} + \lambda C^{(1)}, \quad \lambda \in [0, 1]
+$$
+
+生成了数据。
+
+设$f_i(x_{t+1} | x_t)$为模型$i$的条件密度。
+
+在$h$下，$\log L_t$每期的期望增量为
+
+$$
+E_h\left[\log \frac{f_1(x_{t+1} | x_t)}{f_0(x_{t+1} | x_t)}\right] = KL(h, f_0) - KL(h, f_1)
+$$
+
+其中$KL(h, f_i)$是$f_i(\cdot | x_t)$相对于$h$的条件密度的KL散度，并在$h$下$x_t$的平稳分布上求平均。
+
+这是{doc}`likelihood_ratio_process`中{ref}`本节 <KL_link>`里的公式，应用于条件密度的情形。
+
+当$KL(h, f_0) > KL(h, f_1)$时，$\log L_t$向上漂移，检验倾向于拒绝$H_0$。
+
+当$KL(h, f_0) < KL(h, f_1)$时，$\log L_t$向下漂移，检验倾向于接受$H_0$。
+
+无论哪种情况，检验都倾向于选择在KL散度意义上更接近$h$的模型。
+
+设$\Sigma_i = C^{(i)} C^{(i)\top}$，并设$V_h$为$h$下$x_t$的平稳协方差矩阵。
+
+对于我们的高斯模型，
+
+$$
+E_h[\log f_i(x_{t+1} | x_t)] = -\frac{1}{2}\left[ 2 \log 2\pi + \log\det \Sigma_i + \operatorname{tr}(\Sigma_i^{-1} \Sigma_h) + \operatorname{tr}\left((A^{(h)} - A^{(i)})^\top \Sigma_i^{-1} (A^{(h)} - A^{(i)}) V_h\right) \right]
+$$
+
+下面的代码用这个公式计算$KL(h, f_0) - KL(h, f_1)$，并对若干$\lambda$值在由$h$生成的1000条路径上运行该检验。
+
+```{code-cell} ipython3
+def var_drift(A_h, C_h, model_0, model_1):
+    """在h的平稳律下，每期的KL(h, f_0) - KL(h, f_1)。"""
+    n = A_h.shape[0]
+    Σ_h = C_h @ C_h.T
+    V_h = sp.linalg.solve_discrete_lyapunov(A_h, Σ_h)
+    
+    def expected_loglik(model):
+        D = A_h - model['A']
+        quad_form = (np.trace(model['CC_inv'] @ Σ_h) 
+                     + np.trace(D.T @ model['CC_inv'] @ D @ V_h))
+        return -0.5 * (n * np.log(2 * np.pi) + model['log_det_CC'] 
+                       + quad_form)
+    
+    return expected_loglik(model_1) - expected_loglik(model_0)
+
+model_0 = create_var_model(A_0, C_0)
+model_1 = create_var_model(A_1, C_1)
+_, _, logA, logB = compute_wald_thresholds(0.05, 0.10)
+
+rows = []
+for λ in [0.0, 0.25, 0.4, 0.5, 0.75, 1.0]:
+    A_h = (1 - λ) * A_0 + λ * A_1
+    C_h = (1 - λ) * C_0 + λ * C_1
+    model_h = create_var_model(A_h, C_h)
+    runs = [var_sprt_single_run(model_0, model_1, model_h, 
+                                logA, logB, 42 + i) 
+            for i in range(1000)]
+    n_stop = np.array([run[0] for run in runs])
+    accept_h0 = np.array([run[1] for run in runs])
+    rows.append([λ, var_drift(A_h, C_h, model_0, model_1), 
+                 1 - accept_h0.mean(), n_stop.mean()])
+
+df_misspec = pd.DataFrame(rows, columns=['λ', 'KL(h,f0) - KL(h,f1)', 
+                                         'share rejecting H0', 
+                                         'mean stop time'])
+df_misspec.set_index('λ').round(3)
+```
+
+在$\lambda = 0$和$\lambda = 1$时，$h$与两个模型之一重合。
+
+随着$\lambda$的增加，$KL(h, f_0) - KL(h, f_1)$上升，并在$\lambda = 0.25$与$\lambda = 0.4$之间变号；拒绝$H_0$的运行比例也随之上升。
+
+在符号变化附近，$\log L_t$几乎没有漂移，检验所需的抽样次数最多。
+
+一个步长很小的无漂移随机游走，在到达$\log B$之前先到达$\log A$的概率接近$\log(1/B)/(\log A - \log B) = 0.44$，这与$\lambda = 0.4$时拒绝$H_0$的运行比例相近。
+
+```{solution-end}
+```
+
+
+```{exercise}
+:label: wald_friedman_ex3
+
+{cite:t}`WaldWolfowitz1948`证明了，在所有I类和II类错误概率不超过某个SPRT对应值的检验（无论是否为序贯检验）中，该SPRT同时最小化了$E_0[N]$和$E_1[N]$。
+
+本练习将SPRT与海军要求Schuyler船长使用的固定样本奈曼-皮尔逊检验进行比较。
+
+使用我们上面针对$f_0 = \text{Beta}(4, 5)$和$f_1 = \text{Beta}(5, 4)$计算得到的`results_2`。
+
+1. 计算SPRT的经验错误概率$\hat \alpha$和$\hat \beta$，以及它在$f_0$和$f_1$下的平均停止时间。
+2. 对于每个$n = 1, \ldots, 40$，基于固定的$n$次抽样构造大小为$\hat \alpha$的最优势检验，并计算其II类错误概率$\beta(n)$。
+3. 找出满足$\beta(n) \leq \hat \beta$的最小$n$，并将其与SPRT的平均停止时间进行比较。
+
+提示：对于这两个密度，$\log \left( f_1(z)/f_0(z) \right) = \log \left( z/(1-z) \right)$。
+```
+
+```{solution-start} wald_friedman_ex3
+:class: dropdown
+```
+
+根据奈曼-皮尔逊引理，基于$n$次抽样的最优势检验在$S_n = \sum_{i=1}^n \log \left( f_1(z_i)/f_0(z_i) \right) \geq k_n$时拒绝$H_0$，其中$k_n$使得$P_0\{S_n \geq k_n\} = \hat \alpha$。
+
+我们通过蒙特卡洛方法计算$S_n$在$f_0$和$f_1$下的分布。
+
+```{code-cell} ipython3
+truth_h0 = results_2['truth_h0']
+stops = results_2['stopping_times']
+α_hat, β_hat = results_2['type_I'], results_2['type_II']
+E0_N_sprt = stops[truth_h0].mean()
+E1_N_sprt = stops[~truth_h0].mean()
+
+print(f"SPRT: α̂ = {α_hat:.3f}, β̂ = {β_hat:.3f}, "
+      f"E_0[N] = {E0_N_sprt:.1f}, E_1[N] = {E1_N_sprt:.1f}")
+
+rng = np.random.default_rng(1234)
+M, n_max = 100_000, 40
+
+def llr_partial_sums(a, b):
+    """S_n = sum of log(f_1/f_0)的路径，n = 1, ..., n_max。"""
+    z = rng.beta(a, b, size=(M, n_max))
+    return np.cumsum(np.log(z / (1 - z)), axis=1)
+
+S0 = llr_partial_sums(params_2.a0, params_2.b0)
+S1 = llr_partial_sums(params_2.a1, params_2.b1)
+
+ns = np.arange(1, n_max + 1)
+k_n = np.quantile(S0, 1 - α_hat, axis=0)   # 临界值
+β_n = (S1 < k_n).mean(axis=0)              # II类错误概率
+n_star = ns[np.argmax(β_n <= β_hat)]
+
+print(f"满足β(n) <= β̂的最小固定n: {n_star}")
+
+fig, ax = plt.subplots()
+ax.plot(ns, β_n, 'o-', lw=2, label=r'固定样本检验: $\beta(n)$')
+ax.axhline(β_hat, color='C1', linestyle='--', label=r'SPRT: $\hat\beta$')
+ax.axvline(E0_N_sprt, color='C2', linestyle=':', label='SPRT: $E_0[N]$')
+ax.axvline(E1_N_sprt, color='C3', linestyle=':', label='SPRT: $E_1[N]$')
+ax.set_xlabel('$n$')
+ax.set_ylabel('II类错误概率')
+ax.legend()
+plt.tight_layout()
+plt.show()
+```
+
+要达到SPRT的错误概率，固定样本检验需要23次抽样。
+
+而SPRT在$f_0$下平均需要10.1次抽样，在$f_1$下平均需要12.0次。
+
+平均而言，在$f_0$下SPRT使用的抽样次数仅为固定样本检验的44%，在$f_1$下为52%。
+
+Wald和Wolfowitz的定理表明，在错误概率不超过$\hat \alpha$和$\hat \beta$的所有检验中，没有任何检验在这两方面都能做得更好。
+
+```{solution-end}
+```
+
+
+```{exercise}
+:label: wald_friedman_ex4
+
+Wald的近似{eq}`eq:ASN`忽略了超调量，也忽略了$N \geq 1$这一事实。
+
+1. 修改`sprt_single_run`，使其同时返回$\log L_N$。
+2. 对于`generate_β_pairs`生成的每隔五个贝塔分布参数对，在$f_0$下模拟50000次重复，在$f_1$下也模拟50000次重复，并估计$E_0[N]$、$E_1[N]$、$E_0[\log L_N]$和$E_1[\log L_N]$。
+3. 验证Wald等式{eq}`eq:Wald_identity`。
+4. 绘制模拟得到的$E_0[N]$和$E_1[N]$与Wald近似{eq}`eq:ASN`之比随$KL(f_0, f_1)$变化的图形，并解释其中的规律。
+```
+
+```{solution-start} wald_friedman_ex4
+:class: dropdown
+```
+
+我们使用对数密度进行计算，以避免当某个形状参数较小时出现下溢。
+
+```{code-cell} ipython3
+from math import lgamma
+
+@njit
+def log_p(z, a, b):
+    """贝塔密度的对数。"""
+    return (lgamma(a + b) - lgamma(a) - lgamma(b) 
+            + (a - 1) * np.log(z) + (b - 1) * np.log(1 - z))
+
+@njit
+def sprt_single_run_log_L(a0, b0, a1, b1, logA, logB, true_f0, seed):
+    """运行单次SPRT并返回N和log L_N。"""
+    log_L = 0.0
+    n = 0
+    np.random.seed(seed)
+    
+    while True:
+        z = np.random.beta(a0, b0) if true_f0 else np.random.beta(a1, b1)
+        n += 1
+        log_L += log_p(z, a1, b1) - log_p(z, a0, b0)
+        if log_L >= logA or log_L <= logB:
+            return n, log_L
+
+@njit(parallel=True)
+def simulate_N_log_L(a0, b0, a1, b1, α, β, M, true_f0, seed):
+    """从某一假设下M次重复中得到的N和log L_N的抽样。"""
+    A, B, logA, logB = compute_wald_thresholds(α, β)
+    N_draws = np.empty(M)
+    log_L_draws = np.empty(M)
+    for i in prange(M):
+        n, log_L = sprt_single_run_log_L(a0, b0, a1, b1, 
+                                         logA, logB, true_f0, seed + i)
+        N_draws[i] = n
+        log_L_draws[i] = log_L
+    return N_draws, log_L_draws
+
+def t_stat(d):
+    """d的样本均值除以其标准误。"""
+    return d.mean() / (d.std() / np.sqrt(len(d)))
+
+α, β, M = 0.05, 0.10, 50_000
+rows, t_stats = [], []
+for a0, b0, a1, b1 in param_comb[::5]:
+    KL_01 = compute_KL(a0, b0, a1, b1)
+    KL_10 = compute_KL(a1, b1, a0, b0)
+    N0, log_L0 = simulate_N_log_L(a0, b0, a1, b1, α, β, M, True, 0)
+    N1, log_L1 = simulate_N_log_L(a0, b0, a1, b1, α, β, M, False, M)
+    E0_N_asn, E1_N_asn = wald_asn(α, β, KL_01, KL_10)
+    rows.append([KL_01, N0.mean(), -log_L0.mean() / KL_01, E0_N_asn, 
+                 N1.mean(), log_L1.mean() / KL_10, E1_N_asn])
+    # Wald等式说明这些差值的均值为零
+    t_stats += [t_stat(N0 + log_L0 / KL_01), t_stat(N1 - log_L1 / KL_10)]
+
+cols = ['KL', 'E0_N', 'E0_N_identity', 'E0_N_asn', 
+        'E1_N', 'E1_N_identity', 'E1_N_asn']
+df_asn = pd.DataFrame(rows, columns=cols)
+
+print(f"在{len(t_stats)}次检验中，Wald等式的最大|t|统计量为: "
+      f"{np.max(np.abs(t_stats)):.2f}")
+
+fig, ax = plt.subplots()
+ax.plot(df_asn['KL'], df_asn['E0_N'] / df_asn['E0_N_asn'], 'o-', lw=2,
+        label=r'$E_0[N]$ / 近似值')
+ax.plot(df_asn['KL'], df_asn['E1_N'] / df_asn['E1_N_asn'], 's-', lw=2,
+        label=r'$E_1[N]$ / 近似值')
+ax.axhline(1, color='black', linestyle='--', lw=1)
+ax.set_xscale('log')
+ax.set_yscale('log')
+ax.set_xlabel('$KL(f_0, f_1)$')
+ax.set_ylabel('模拟值 / 近似值')
+ax.legend()
+plt.tight_layout()
+plt.show()
+
+df_asn.iloc[[0, 5, 10, 15, 19]].round(3)
+```
+
+`E0_N_identity`和`E1_N_identity`这两列是根据模拟得到的$E_i[\log L_N]$以及{eq}`eq:Wald_identity`计算出的$E_0[N]$和$E_1[N]$。
+
+它们在蒙特卡洛误差范围内与直接估计值一致：40个$t$统计量中绝对值最大的为1.61。
+
+因此，模拟得到的$E_i[N]$与{eq}`eq:ASN`之间的全部差距都来自Wald对$E_i[\log L_N]$的近似，该近似忽略了超调量。
+
+在停止时刻，$\log L_N$已经越过了它所穿越的那个阈值。
+
+超调量还会使实际错误概率低于$\alpha$和$\beta$。
+
+这两种效应都使得$|E_i[\log L_N]|$比Wald近似赋予它的值更大，因此{eq}`eq:ASN`低估了$E_i[N]$。
+
+对于最接近的那对参数，每次抽样对$\log L_m$的影响都很小，超调量相对于$\log A$和$\log(1/B)$来说很小，此时比值约为1.1。
+
+随着$KL(f_0, f_1)$增大，单次抽样常常会使$\log L_m$移动的幅度超过$\log B$与$\log A$之间的距离。
+
+此时检验在一两次抽样后就会停止，超调量占主导地位，而由于$N \geq 1$，{eq}`eq:ASN`趋于零，因此该比值会不断增大。
 
 ```{solution-end}
 ```

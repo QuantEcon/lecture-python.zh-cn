@@ -24,15 +24,14 @@ translation:
     Kihlstrom's Bayesian interpretation: 基尔斯特罗姆的贝叶斯解释
     Kihlstrom's Bayesian interpretation::Posteriors and standard experiments: 后验与标准实验
     Kihlstrom's Bayesian interpretation::Mean-preserving spreads and Blackwell's order: 均值保持展开与布莱克韦尔序
+    Kihlstrom's Bayesian interpretation::Convex order and second-order stochastic dominance: 凸序与二阶随机占优
     Simulating the Blackwell order with many states: 用多状态模拟布莱克韦尔序
     The DeGroot uncertainty function: 德格鲁特不确定性函数
     The DeGroot uncertainty function::Concave uncertainty functions and the value of information: 凹不确定性函数与信息的价值
     The DeGroot uncertainty function::Shannon entropy as a special case: 作为特例的香农熵
     The DeGroot uncertainty function::Value of information as a function of experiment quality: 作为实验质量函数的信息价值
-    Connection to second-order stochastic dominance: 与二阶随机占优的关系
-    'Application 1: product quality information': 应用 1：产品质量信息
+    'Application 1: demand for information about product quality': 应用1：对产品质量信息的需求
     'Application 2: sequential experimental design': 应用 2：序贯实验设计
-    Summary: 小结
     The Data Processing Inequality and Coarse-Graining: 数据处理不等式与粗粒化
     The Data Processing Inequality and Coarse-Graining::The DPI for f-divergences: f-散度的 DPI
     The Data Processing Inequality and Coarse-Graining::Connection to Blackwell's sufficiency condition: 与布莱克韦尔充分性条件的联系
@@ -41,6 +40,8 @@ translation:
     The Data Processing Inequality and Coarse-Graining::Summary of the DPI–Blackwell correspondence: DPI-布莱克韦尔对应的小结
     Relation to Bayesian likelihood-ratio learning: 与贝叶斯似然比学习的关系
     Relation to Bayesian likelihood-ratio learning::Summary table: 小结表
+    Summary: 小结
+    Exercises: 练习
 ---
 
 (blackwell_kihlstrom)=
@@ -97,14 +98,17 @@ translation:
 
 在两状态情形下，这就变成了在 $[0, 1]$ 上的均值保持展开比较，可以用检验二阶随机占优的积分 CDF 检验来验证。
 
-本讲座的进行方式如下：
+{doc}`information_market_equilibrium` 和 {doc}`pricing_information` 以本讲座的结果为基础。
 
-1. 建立记号并将实验定义为马尔可夫矩阵。
-2. 用马尔可夫核定义随机变换。
-3. 陈述三个等价标准。
-4. 陈述主定理并勾勒其证明。
-5. 通过标准实验和均值保持展开建立贝叶斯解释。
-6. 用 Python 模拟来阐释每个概念。
+本讲座的进行方式如下。
+
+1. 我们将实验定义为马尔可夫矩阵，并将信息扭曲（garbling）定义为随机变换。
+2. 我们陈述对实验进行排序的三个等价标准以及布莱克韦尔定理。
+3. 我们通过标准实验、均值保持展开和凸序，发展基尔斯特罗姆的贝叶斯解释。
+4. 我们研究德格鲁特的不确定性函数及其两个应用。
+5. 我们将布莱克韦尔序与数据处理不等式以及 {doc}`likelihood_bayes` 中的似然比学习联系起来。
+
+Python 模拟将阐释每一个步骤。
 
 我们先进行一些导入。
 
@@ -119,6 +123,7 @@ mpl.rcParams['font.family'] = ['Source Han Serif SC']  # i18n
 ```
 
 ## 实验与随机变换
+
 
 ### 状态空间与实验
 
@@ -173,11 +178,15 @@ $$
 $$
 
 则称实验 $\mu$  *对*  $\nu$ *充分*，这意味着一个观测到 $\tilde{x}_\mu$ 的观察者可以通过将其信号传递给 $Q$ 来生成 $\tilde{x}_\nu$ 的分布。
+
+对于一般的信号空间， $Q$ 是一个马尔可夫核，此时该条件可写为：对 $\nu$ 的信号空间中的每个可测集合 $E$ 以及每个状态 $s_i$ ，都有 $\nu_i(E) = \int Q(x, E) \, \mu_i(dx)$ 。
 ```
+
+当 $\mu$ 对 $\nu$ 充分时，我们记作 $\mu \geq \nu$ ，并称 $\nu$ 为 $\mu$ 的 **粗化**（garbling）。
 
 如果你观测到更具信息量的信号 $\tilde{x}_\mu$ ，那么你总是可以 *丢弃* 信息来重现一个信息量较少的信号。
 
-反过来则不可能：一个信息量较少的信号无法被丰富到恢复出所丢失的信息。
+反过来通常行不通：粗化无法恢复其所舍弃的信息。
 
 我们可以用上面定义的两个实验 $\mu$ 和 $\nu$ 来进行数值验证。
 
@@ -238,11 +247,9 @@ print(f"  存在精确变换：{res_rev < 1e-6}")
 
 反向残差很大：没有任何随机变换能从 $\nu$ 恢复出 $\mu$ 。
 
-没有任何随机变换能够撤销这种信息损失。
+{ref}`bk_ex1` 证明了不存在能将 $\nu$ 映射到 $\mu$ 的随机变换。
 
-关键在于，随机变换的逆一般来说并不是一个随机变换。
-
-事实上，唯一其逆也是随机变换的随机变换是置换矩阵，它仅仅重新标记信号而不损失任何信息。
+粗化只能将后验信念拉向先验，而 $\mu$ 所生成的后验比 $\nu$ 所能达到的后验离先验更远。
 
 ## 三个等价标准
 
@@ -252,9 +259,11 @@ print(f"  存在精确变换：{res_rev < 1e-6}")
 
 第一个标准通过实验对决策者的价值来比较实验。
 
-设 $A$ 为一个紧凸的行动集合， $u: A \times S \to \mathbb{R}$ 为一个有界效用函数。
+设 $A$ 为一个紧的行动集合， $u: A \times S \to \mathbb{R}$ 为一个有界连续效用函数。
 
-决策者观测到 $x \in X$ ，通过贝叶斯规则更新对 $\tilde{s}$ 的信念，并选择 $d(x) \in A$ 以最大化期望效用。
+决策者观测到 $x \in X$ ，然后选择一个行动，该行动可能是随机的。
+
+**决策规则** $\delta$ 为每个信号 $x$ 指定一个行动上的概率分布 $\delta(\cdot \mid x)$ 。
 
 设 $p = (p_1, \ldots, p_N)$ 为状态上的先验，并记
 
@@ -268,14 +277,20 @@ $$
 
 $$
 B(\mu, A, u) = \Bigl\{v \in \mathbb{R}^N :
-  v_i = \textstyle\int_X u(f(x), s_i)\,\mu_i(dx)
-  \text{ for some measurable } f: X \to A \Bigr\}.
+  v_i = \textstyle\int_X \int_A u(a, s_i)\, \delta(da \mid x)\,\mu_i(dx)
+  \text{ for some decision rule } \delta \Bigr\}.
 $$
+
+每个 $v \in B(\mu, A, u)$ 都列出了某个决策规则在每个状态下所能带来的期望效用。
+
+随机化规则使得 $B(\mu, A, u)$ 是凸集。
+
+它们也使得下面的复制论证变得精确：一个看到 $\tilde{x}_\mu$ 的决策者可以生成一个合成的 $\tilde{x}_\nu$ ，然后遵循为 $\nu$ 设计的任何规则。
 
 ```{prf:definition} 经济学标准
 :label: def-economic-criterion
 
-如果对每个紧凸行动集 $A$ 和每个有界效用函数 $u: A \times S \to \mathbb{R}$ 都有
+如果对每个紧行动集 $A$ 和每个有界连续效用函数 $u: A \times S \to \mathbb{R}$ 都有
 
 $$
 B(\mu, A, u) \supseteq B(\nu, A, u)
@@ -292,26 +307,15 @@ $$
 
 因此 $B(\mu, A, u) \supseteq B(\nu, A, u)$ 意味着 $\mu$ 给决策者提供的可行期望效用结果至少与 $\nu$ 一样多。
 
-等价地，对每个先验 $p \in P$ ，每个贝叶斯决策者用 $\tilde{x}_\mu$ 都能获得弱高于用 $\tilde{x}_\nu$ 的期望效用。
+下面的布莱克韦尔定理意味着一个等价的价值比较。
+
+对每个先验 $p \in P$ 、每个 $A$ 和每个 $u$ ，在 $\mu$ 下最大化的期望效用 $\max_{v \in B(\mu, A, u)} \sum_i p_i v_i$ 至少与在 $\nu$ 下一样大。
+
+贝叶斯决策者通过一个确定性规则（该规则在每个后验下都选择最优行动）来达到该最大值；随机化只在集合的比较中起作用。
 
 ### 标准 2：充分性标准
 
-第二个标准使用了上面引入的随机变换思想。
-
-```{prf:definition} 布莱克韦尔充分性
-:label: def-blackwell-sufficiency
-
-如果存在一个从 $\mu$ 的信号空间到 $\nu$ 的信号空间的随机变换 $Q$ ，使得
-
-$$
-\nu_i(E) = (Q \circ \mu_i)(E)
-\quad \forall\, E \in \mathscr{G},\; i = 1, \ldots, N.
-$$
-
-则称 $\mu \geq \nu$ 在布莱克韦尔意义下成立。
-```
-
-对有限实验，用矩阵记号表示： $\nu = \mu \, Q$ 。
+第二个标准就是 {prf:ref}`def-sufficiency` 中的充分性关系：如果存在某个随机变换 $Q$ 使得 $\nu = \mu Q$ ，则 $\mu \geq \nu$ 。
 
 ### 标准 3：不确定性标准
 
@@ -339,18 +343,20 @@ $$
 其中 $\hat\mu^p$ 是实验 $\mu$ 在先验 $p$ 下诱导的后验信念分布，则称 $\mu$ **至少与** $\nu$ **一样地降低了期望不确定性**。
 ```
 
-为看清这一点，设 $Q = p^\mu(X)$ 表示由实验 $\mu$ 诱导的随机后验。
+任何实验都会弱地降低期望不确定性。
 
-那么 $Q$ 服从分布 $\hat\mu^p$ ，因此
+为看清这一点，设 $\tilde{\pi} = p^\mu(\tilde{x}_\mu)$ 表示由实验 $\mu$ 诱导的随机后验。
 
-$$
-\mathbb{E}[U(Q)] = \int_P U(q)\,\hat\mu^p(dq).
-$$
-
-由于 $U$ 是凹的，詹森不等式给出
+那么 $\tilde{\pi}$ 服从分布 $\hat\mu^p$ ，因此
 
 $$
-\mathbb{E}[U(Q)] \leq U(\mathbb{E}[Q]) = U(p).
+\mathbb{E}[U(\tilde{\pi})] = \int_P U(q)\,\hat\mu^p(dq).
+$$
+
+后验的均值为 $p$ （见下面的 {prf:ref}`prop-mean-preservation`），因此詹森不等式给出
+
+$$
+\mathbb{E}[U(\tilde{\pi})] \leq U(\mathbb{E}[\tilde{\pi}]) = U(p).
 $$
 
 因此
@@ -361,7 +367,11 @@ $$
 
 所以任何实验都会弱地降低期望不确定性。
 
-基尔斯特罗姆的标准实验构造稍后会让我们在均匀先验 $c = (1 / N, \ldots, 1 / N)$ 下比较后验分布。
+标准 3 对每个先验 $p$ 都进行了量化。
+
+布莱克韦尔定理表明，一个具有全支撑的先验就足够了：如果该不等式在某一个这样的先验下对每个凹函数 $U$ 都成立，那么它在每个先验下都成立。
+
+下面基尔斯特罗姆的构造正是利用了这一事实，使用一个固定的先验 $c$ ，通常取均匀先验 $(1/N, \ldots, 1/N)$ 。
 
 ## 主定理
 
@@ -370,11 +380,11 @@ $$
 
 以下三个条件等价：
 
-(i) 经济学标准：对每个紧凸 $A$ 和每个有界效用函数 $u$ 都有 $B(\mu, A, u) \supseteq B(\nu, A, u)$ 。
+(i) 经济学标准：对每个紧集 $A$ 和每个有界连续效用函数 $u$ 都有 $B(\mu, A, u) \supseteq B(\nu, A, u)$ 。
 
-(ii) 充分性标准：存在一个从 $\mu$ 的信号空间到 $\nu$ 的信号空间的随机变换 $Q$ ，使得 $\nu = Q \circ \mu$ 。
+(ii) 充分性标准：存在一个从 $\mu$ 的信号空间到 $\nu$ 的信号空间的随机变换 $Q$ ，使得 $\nu = \mu Q$ 。
 
-(iii) 不确定性标准：对每个先验 $p \in P$ 和每个凹函数 $U$ 都有 $\int_P U(q)\,\hat\mu^p(dq) \leq \int_P U(q)\,\hat\nu^p(dq)$ 。
+(iii) 不确定性标准：对每个凹函数 $U$ ，在每个先验 $p \in P$ 处，或者等价地在一个具有完全支持的先验处，都有 $\int_P U(q)\,\hat\mu^p(dq) \leq \int_P U(q)\,\hat\nu^p(dq)$ 。
 ```
 
 另见 {cite:t}`blackwell1951` 、 {cite:t}`bonnenblust1949` 和 {cite:t}`degroot1962` 。
@@ -383,13 +393,14 @@ $$
 
 *概要（ii $\Rightarrow$ i）：* 如果 $\nu = \mu Q$ ，那么任何基于 $\tilde{x}_\nu$ 的决策规则都可以通过如下方式复现：先观测 $\tilde{x}_\mu$ ，再从 $Q$ 中抽取一个合成的 $\tilde{x}_\nu$ ，然后应用同样的规则。
 
-*概要（i $\Rightarrow$ ii）：* 由于对每个 $A$ 和 $u$ 都有 $B(\mu, A, u) \supseteq B(\nu, A, u)$ ，一个分离超平面（对偶）论证意味着存在一个后验空间中的均值保持核 $D$ ，将 $\nu$ 的标准实验送入 $\mu$ 的标准实验。再从这些后验律回到原始信号空间就得到所需的混淆 $Q$ ，满足 $\nu = \mu Q$ 。因此 $D$ 是后验信念上的中间随机化，而非字面意义上的信号空间核 $Q$ 。
+*概要（i $\Rightarrow$ ii）：* 由于对每个 $A$ 和 $u$ 都有 $B(\mu, A, u) \supseteq B(\nu, A, u)$ ，一个分离超平面（对偶）论证意味着 $\mu$ 的后验分布是 $\nu$ 的后验分布的均值保持展开，而斯特拉森定理 {cite}`strassen1965` 随后给出一个后验空间中的均值保持核 $D$ ，将 $\nu$ 的标准实验送入 $\mu$ 的标准实验。再从这些后验律回到原始信号空间就得到所需的混淆 $Q$ ，满足 $\nu = \mu Q$ 。因此 $D$ 是后验信念上的中间随机化，而非字面意义上的信号空间核 $Q$ 。
 
 *概要（ii $\Rightarrow$ iii）：* 在混淆之下，较粗实验的后验是较细实验后验的条件期望，因此詹森不等式对每个凹函数 $U$ 都给出该结果。
 
 *概要（iii $\Rightarrow$ ii）：* 其逆命题，即对所有凹函数 $U$ 的不等式迫使 $Q$ 存在，在 {cite}`blackwell1953` 中得到证明。基尔斯特罗姆基于后验的表示使这一几何变得透明。
 
 ## 基尔斯特罗姆的贝叶斯解释
+
 
 ### 后验与标准实验
 
@@ -447,6 +458,8 @@ $$
 ```
 
 等价地， $\hat\mu^c$ 在凸序意义下大于 $\hat\nu^c$ 。
+
+先验 $c$ 可以是任何具有完全支撑的先验；比较结果并不依赖于具体选择哪一个。
 
 一个更好的实验会将后验信念推向离先验更远的地方，同时保持它们的均值不变。
 
@@ -605,6 +618,105 @@ _ = check_mps_convex_functions(μ_info, ν_info, prior)
 
 差值 $E[g_t(p^\mu)] - E[g_t(p^\nu)]$ 对每个阈值 $t$ 都是非负的，这证实了 $\hat\mu^c$ 是 $\hat\nu^c$ 的均值保持展开，因此在布莱克韦尔序中 $\mu \geq \nu$ 。
 
+### 凸序与二阶随机占优
+
+如果对每个凹函数 $u$ 都有 $E[u(X)] \geq E[u(Y)]$ ，则称随机变量 $X$ 在 **凹序** 意义下占优于 $Y$ 。
+
+取 $u(x) = x$ 与 $u(x) = -x$ 表明两者的均值必须相等。
+
+$X$ 在凹序意义下占优于 $Y$ ，当且仅当 $Y$ 是 $X$ 的均值保持展开。
+
+**二阶随机占优** 仅使用递增凹函数 $u$ ，并允许均值不同；当均值相等时，它与凹序一致。
+
+由于不确定性函数是凹函数，条件
+
+$$
+\mathbb{E}[U(p^\mu)] \leq \mathbb{E}[U(p^\nu)] \quad \text{对所有凹函数 } U
+$$
+
+表明 $\nu$ 下的后验在凹序意义下占优于 $\mu$ 下的后验，因此 $\hat\mu^c$ 在 $P$ 上的凸序意义下占优于 $\hat\nu^c$ 。
+
+当 $N = 2$ 时，后验信念是 $[0, 1]$ 中的标量，此时比较可归结为经典的累积分布函数积分检验。
+
+在均值相等的情况下， $\hat\mu^c$ 是 $\hat\nu^c$ 的均值保持展开，当且仅当对所有 $t \in [0,1]$ 都有 $\int_0^t F_\mu(s)\,ds \geq \int_0^t F_\nu(s)\,ds$ ，其中 $F_\mu$ 和 $F_\nu$ 分别是每个实验下状态 $s_1$ 上后验的累积分布函数。
+
+两个后验分布的均值均等于先验，因此该检验适用。
+
+我们对上面的两状态示例进行验证。
+
+```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 两状态情形下的累积分布函数积分检验
+    name: fig-blackwell-integrated-cdf
+---
+def cdf_data_1d(weights, values):
+    """对离散分布的支撑点排序并计算累积质量。"""
+    idx = np.argsort(values)
+    sorted_vals = values[idx]
+    sorted_wts = weights[idx]
+    cum_mass = np.cumsum(sorted_wts)
+    return sorted_vals, cum_mass
+
+
+def plot_sosd_posteriors(μ_matrix, ν_matrix, prior):
+    """绘制状态 s1 上后验分布的累积分布函数及其积分。"""
+    posts_μ, probs_μ = compute_posteriors(μ_matrix, prior)
+    posts_ν, probs_ν = compute_posteriors(ν_matrix, prior)
+
+    p_μ = posts_μ[:, 0]
+    p_ν = posts_ν[:, 0]
+
+    sv_μ, cm_μ = cdf_data_1d(probs_μ, p_μ)
+    sv_ν, cm_ν = cdf_data_1d(probs_ν, p_ν)
+
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+
+    ax = axes[0]
+    for sv, cm, lbl, c in [(sv_μ, cm_μ, "μ", "steelblue"),
+                           (sv_ν, cm_ν, "ν", "darkorange")]:
+        xs = np.concatenate([[0], sv, [1]])
+        ys = np.concatenate([[0], cm, [1]])
+        ax.step(xs, ys, where="post", label=lbl, color=c, linewidth=2)
+    ax.axvline(prior[0], linestyle="--", color="gray", alpha=0.6, linewidth=2,
+               label="先验")
+    ax.set_xlabel(r"后验 $p(s_1 \mid x)$", fontsize=12)
+    ax.set_ylabel("累积概率", fontsize=12)
+    ax.text(0.03, 0.94, "累积分布函数", transform=ax.transAxes, va="top")
+    ax.legend(fontsize=11)
+
+    ax2 = axes[1]
+    grid = np.linspace(0, 1, 200)
+
+    def integrated_cdf(sorted_vals, cum_mass, grid):
+        cdf = np.array([cum_mass[sorted_vals <= t].max()
+                        if np.any(sorted_vals <= t) else 0.0
+                        for t in grid])
+        return np.cumsum(cdf) * (grid[1] - grid[0])
+
+    int_μ = integrated_cdf(sv_μ, cm_μ, grid)
+    int_ν = integrated_cdf(sv_ν, cm_ν, grid)
+
+    ax2.plot(grid, int_μ, label=r"$\int F_\mu$", color="steelblue", linewidth=2)
+    ax2.plot(grid, int_ν, color="darkorange",
+             label=r"$\int F_\nu$", linewidth=2)
+    ax2.fill_between(grid, int_ν, int_μ,
+                     where=int_μ >= int_ν,
+                     alpha=0.2, color="steelblue",
+                     label=(r"$\int F_\mu \geq \int F_\nu$"
+                            r"（$\mu$ 是 $\nu$ 的均值保持展开）"))
+    ax2.set_xlabel(r"$t$", fontsize=12)
+    ax2.set_ylabel("累积分布函数的积分", fontsize=12)
+    ax2.text(0.03, 0.94, "累积分布函数的积分", transform=ax2.transAxes, va="top")
+    ax2.legend(fontsize=10)
+
+    plt.tight_layout()
+    plt.show()
+
+plot_sosd_posteriors(μ_info, ν_info, prior)
+```
+
 ## 用多状态模拟布莱克韦尔序
 
 我们现在转到一个三状态的例子。
@@ -636,61 +748,41 @@ print(np.round(ν3, 3))
 
 对三个状态，后验信念存在于一个 2-单纯形中。
 
-让我们可视化在 $\mu$ 和 $\nu$ 下采样的后验点
+让我们绘制 $\mu$ 和 $\nu$ 下的后验原子，标记面积与概率成正比
 
 ```{code-cell} ipython3
 ---
 mystnb:
   figure:
-    caption: 2-单纯形上采样的后验点
+    caption: 2-单纯形上的后验原子
     name: fig-blackwell-simplex-clouds
 ---
-def sample_posteriors(μ_matrix, prior, n_draws=3000, rng=None):
-    """
-    从实验中模拟 n_draws 个观测并计算
-    由此得到的后验信念。
-    返回形状为 (n_draws, N) 的数组。
-    """
-    if rng is None:
-        rng = np.random.default_rng()
-    N, M = μ_matrix.shape
-    states = rng.choice(N, size=n_draws, p=prior)
-    signals = np.array([rng.choice(M, p=μ_matrix[s]) for s in states])
-    posteriors, _ = compute_posteriors(μ_matrix, prior)
-    return posteriors[signals]
-
-
 def simplex_to_cart(pts):
-    """将 3-单纯形重心坐标转换为二维笛卡尔坐标。"""
+    """将 2-单纯形上的重心坐标转换为二维笛卡尔坐标。"""
     corners = np.array([[0.0, 0.0],
                         [1.0, 0.0],
                         [0.5, np.sqrt(3)/2]])
     return pts @ corners
 
 
-def plot_simplex_posteriors(μ_matrix, ν_matrix, prior3, n_draws=3000, seed=0):
-    rng = np.random.default_rng(seed)
-    posts_μ = sample_posteriors(μ_matrix, prior3, n_draws, rng=rng)
-    posts_ν = sample_posteriors(ν_matrix, prior3, n_draws, rng=rng)
-
-    cart_μ = simplex_to_cart(posts_μ)
-    cart_ν = simplex_to_cart(posts_ν)
+def plot_simplex_posteriors(μ_matrix, ν_matrix, prior3):
+    """绘制 2-单纯形上的后验原子，面积与概率成正比。"""
+    corners = simplex_to_cart(np.eye(3))
     prior_cart = simplex_to_cart(prior3[None, :])[0]
-
-    corners = np.array([[0.0, 0.0],
-                        [1.0, 0.0],
-                        [0.5, np.sqrt(3)/2]])
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     panel_labels = ["μ（更具信息量）", "ν（被混淆）"]
-    data = [(cart_μ, "steelblue"), (cart_ν, "darkorange")]
+    colors = ["steelblue", "darkorange"]
     labels = ["$s_1$", "$s_2$", "$s_3$"]
     offsets = [(-0.07, -0.05), (0.02, -0.05), (-0.02, 0.03)]
 
-    for ax, (cart, c), panel_label in zip(axes, data, panel_labels):
+    for ax, m, c, panel_label in zip(axes, [μ_matrix, ν_matrix],
+                                     colors, panel_labels):
+        posts, probs = compute_posteriors(m, prior3)
+        cart = simplex_to_cart(posts)
         tri = plt.Polygon(corners, fill=False, edgecolor="black", linewidth=2)
         ax.add_patch(tri)
-        ax.scatter(cart[:, 0], cart[:, 1], s=4, alpha=0.25, color=c)
+        ax.scatter(cart[:, 0], cart[:, 1], s=3000 * probs, alpha=0.6, color=c)
         ax.scatter(*prior_cart, s=120, color="red", zorder=5,
                    label="先验", marker="*")
         for i, (lbl, off) in enumerate(zip(labels, offsets)):
@@ -710,23 +802,26 @@ def plot_simplex_posteriors(μ_matrix, ν_matrix, prior3, n_draws=3000, seed=0):
 plot_simplex_posteriors(μ3, ν3, prior3)
 ```
 
-由于这个例子只有三个信号，每个面板由重复采样的三个后验原子构成，而非一个连续的点云。
+在 $\mu$ 下，后验原子位于更靠近顶点的位置。
 
-在 $\mu$ 下，采样的后验点向顶点延伸得更远。
+在被混淆的实验 $\nu$ 下，它们则更靠近先验。
 
-在被混淆的实验 $\nu$ 下，采样的后验点更靠近中心。
+看涨期权检验无法推广到单纯形的情形。
+
+混淆矩阵 $Q_3$ 本身就证明了 $\mu_3 \geq \nu_3$，下一节将在这个例子中检验若干凹不确定性函数。
 
 ## 德格鲁特不确定性函数
+
 
 ### 凹不确定性函数与信息的价值
 
 {cite}`degroot1962` 通过 **不确定性函数**  $U: P \to \mathbb{R}$ 将信息的价值形式化。
 
-在德格鲁特的公理化中，不确定性函数是：
+德格鲁特的定义只要求凹性，使得观测任何信号都弱地降低期望不确定性。
 
-- *凹的*：由詹森不等式，观测任何信号都弱地降低期望不确定性。
-- *对称的*：它依赖于 $p$ 的各分量，而不依赖于它们的标记。
-- *归一化的*：它在 $p = (1/N, \ldots, 1/N)$ 处取最大值，在顶点处取最小值。
+常见的例子，例如香农熵，还在 $p$ 的各分量上是对称的，并在均匀先验处取最大值。
+
+布莱克韦尔等价性使用每个凹函数 $U$，无论其是否对称；{ref}`bk_ex2` 说明了为何非对称函数也很重要。
 
 *在给定先验 $p$ 下实验 $\mu$ 的价值* 为
 
@@ -747,23 +842,29 @@ $$
 U_H(p) = -\sum_{i=1}^{N} p_i \log p_i.
 $$
 
-在均匀先验 $c = (1/N, \ldots, 1/N)$ 下，德格鲁特的价值公式变为
+对任意先验 $p$，德格鲁特的价值公式变为
 
 $$
-I(\tilde{x}_\mu, c;\, U_H)
-= \log N - H(\tilde{s} \mid \tilde{x}_\mu),
+I(\tilde{x}_\mu, p;\, U_H)
+= H(\tilde{s}) - H(\tilde{s} \mid \tilde{x}_\mu),
 $$
 
-其中 $H(\tilde{s} \mid \tilde{x}_\mu)$ 是给定信号时状态的条件熵。
+其中 $H(\tilde{s}) = U_H(p)$ 是先验的熵，$H(\tilde{s} \mid \tilde{x}_\mu)$ 是给定信号时状态的条件熵。
+
+在均匀先验下，$H(\tilde{s}) = \log N$ 。
 
 要看清原因，将 $H(\tilde{s} \mid \tilde{x}_\mu) = \sum_x \Pr(\tilde{x}_\mu = x) \, H(\tilde{s} \mid \tilde{x}_\mu = x)$ 写出，其中每个条件熵项等于 $-\sum_i p_i^\mu(x) \log p_i^\mu(x) = U_H(p^\mu(x))$ 。
 
-代入德格鲁特公式得到 $I = U_H(c) - \mathbb{E}[U_H(p^\mu)] = \log N - H(\tilde{s} \mid \tilde{x}_\mu)$ ，这正是 $\tilde{x}_\mu$ 与 $\tilde{s}$ 之间的 *互信息*。
+代入德格鲁特公式得到 $I = U_H(p) - \mathbb{E}[U_H(p^\mu)] = H(\tilde{s}) - H(\tilde{s} \mid \tilde{x}_\mu)$ ，这正是 $\tilde{x}_\mu$ 与 $\tilde{s}$ 之间的 *互信息*。
 
 ```{note}
-布莱克韦尔序蕴含基于熵的不等式，但 *其逆命题不成立*：仅凭熵无法确定完整的布莱克韦尔序。
+布莱克韦尔序蕴含基于熵的不等式。
 
-两个实验可以具有相同的互信息却在布莱克韦尔排序中不同，因为单个凹函数无法检测出后验分散度上的所有差异。
+由于熵是严格凹的，严格的布莱克韦尔改进会严格提升互信息。
+
+但其逆命题不成立：按互信息排序并不意味着按布莱克韦尔序排序。
+
+两个实验在布莱克韦尔序下可能不可比，而其中一个具有更高的互信息，或者两者具有相同的互信息，如 {ref}`bk_ex2` 所示。
 
 完整的布莱克韦尔序要求不等式对 *每个* 凹函数 $U$ 都成立，而不仅仅是香农熵。
 ```
@@ -824,9 +925,17 @@ for name, U in uncertainty_functions.items():
     I_μ = degroot_value(μ_info, prior, U)
     I_ν = degroot_value(ν_info, prior, U)
     print(f"{name:<22}  {I_μ:<10.4f}  {I_ν:<10.4f}  {I_μ >= I_ν - 1e-10}")
+
+print("\n三状态示例（μ3、ν3，均匀先验）：")
+print(header)
+print("-" * 58)
+for name, U in uncertainty_functions.items():
+    I_μ = degroot_value(μ3, prior3, U)
+    I_ν = degroot_value(ν3, prior3, U)
+    print(f"{name:<22}  {I_μ:<10.4f}  {I_ν:<10.4f}  {I_μ >= I_ν - 1e-10}")
 ```
 
-正如定理所预测的那样，一旦我们知道 $\mu \geq \nu$ 在布莱克韦尔意义下成立，那么对每个凹不确定性函数都有 $I(\mu) \geq I(\nu)$ 。
+正如定理所预测的那样，在这两个例子中对每个凹不确定性函数都有 $I(\mu) \geq I(\nu)$ ，因为 $\mu \geq \nu$ 在布莱克韦尔意义下成立。
 
 ### 作为实验质量函数的信息价值
 
@@ -841,6 +950,8 @@ $$
 $$
 
 第一项是完全混合的矩阵， $I_2$ 是单位矩阵。
+
+这个族按布莱克韦尔准则排序：对 $\theta' < \theta$ ，有 $\mu(\theta') = \mu(\theta) \, \mu(\theta' / \theta)$ ，因此质量较低的实验是质量较高实验的混淆。
 
 ```{code-cell} ipython3
 ---
@@ -874,182 +985,87 @@ plt.show()
 
 每个凹不确定性函数都会给更具信息量的实验赋予弱更高的价值。
 
-## 与二阶随机占优的关系
-
-如果对每个凹函数 $u$ 都有 $E[u(X)] \geq E[u(Y)]$ ，则称随机变量 $X$ **二阶随机占优**
-$Y$ （记作 $X \succeq_{\text{SOSD}} Y$ ）。
-等价地， $Y$ 是 $X$ 的一个均值保持展开。
-
-不确定性函数表示使得与 SOSD 的联系变得明确。
-
-由于 $U$ 是凹的， $-U$ 是凸的，因此条件
-
-$$
-\mathbb{E}[U(p^\mu)] \leq \mathbb{E}[U(p^\nu)] \quad \text{for all concave } U
-$$
-
-正是 $\hat\mu^c$ 在 $P$ 上以凸序占优 $\hat\nu^c$ 的陈述。
-
-当 $N = 2$ 时，后验信念是 $[0, 1]$ 中的标量，SOSD 比较简化为经典的积分 CDF 检验。
-
-具体地， $\hat\mu^c$ 是 $\hat\nu^c$ 的均值保持展开，当且仅当对所有 $t \in [0,1]$ 都有 $\int_0^t F_\mu(s)\,ds \geq \int_0^t F_\nu(s)\,ds$ ，其中 $F_\mu$ 和 $F_\nu$ 是每个实验下 $s_1$ 后验的 CDF。等价地，用 SOSD 的语言来说，$\nu$ 下信息量较少的后验占优于 $\mu$ 下更为分散的后验。
-
-我们可以对上面的两状态例子在图形上验证这一点
-
-```{code-cell} ipython3
----
-mystnb:
-  figure:
-    caption: 两状态情形下的积分 CDF 检验
-    name: fig-blackwell-integrated-cdf
----
-def cdf_data_1d(weights, values):
-    """对离散分布排序支撑点和累积质量。"""
-    idx = np.argsort(values)
-    sorted_vals = values[idx]
-    sorted_wts = weights[idx]
-    cum_mass = np.cumsum(sorted_wts)
-    return sorted_vals, cum_mass
-
-
-def plot_sosd_posteriors(μ_matrix, ν_matrix, prior):
-    """为 s1 上的后验分布绘制 CDF 和积分 CDF。"""
-    posts_μ, probs_μ = compute_posteriors(μ_matrix, prior)
-    posts_ν, probs_ν = compute_posteriors(ν_matrix, prior)
-
-    p_μ = posts_μ[:, 0]
-    p_ν = posts_ν[:, 0]
-
-    sv_μ, cm_μ = cdf_data_1d(probs_μ, p_μ)
-    sv_ν, cm_ν = cdf_data_1d(probs_ν, p_ν)
-
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
-
-    ax = axes[0]
-    for sv, cm, lbl, c in [(sv_μ, cm_μ, "μ", "steelblue"),
-                           (sv_ν, cm_ν, "ν", "darkorange")]:
-        xs = np.concatenate([[0], sv, [1]])
-        ys = np.concatenate([[0], cm, [1]])
-        ax.step(xs, ys, where="post", label=lbl, color=c, linewidth=2)
-    ax.axvline(prior[0], linestyle="--", color="gray", alpha=0.6, linewidth=2,
-               label="先验")
-    ax.set_xlabel(r"后验 $p(s_1 \mid x)$", fontsize=12)
-    ax.set_ylabel("累积概率", fontsize=12)
-    ax.text(0.03, 0.94, "CDF", transform=ax.transAxes, va="top")
-    ax.legend(fontsize=11)
-
-    ax2 = axes[1]
-    grid = np.linspace(0, 1, 200)
-
-    def integrated_cdf(sorted_vals, cum_mass, grid):
-        cdf = np.array([cum_mass[sorted_vals <= t].max()
-                        if np.any(sorted_vals <= t) else 0.0
-                        for t in grid])
-        return np.cumsum(cdf) * (grid[1] - grid[0])
-
-    int_μ = integrated_cdf(sv_μ, cm_μ, grid)
-    int_ν = integrated_cdf(sv_ν, cm_ν, grid)
-
-    ax2.plot(grid, int_μ, label=r"$\int F_\mu$", color="steelblue", linewidth=2)
-    ax2.plot(grid, int_ν, color="darkorange",
-             label=r"$\int F_\nu$", linewidth=2)
-    ax2.fill_between(grid, int_ν, int_μ,
-                     where=int_μ >= int_ν,
-                     alpha=0.2, color="steelblue",
-                     label=(r"$\int F_\mu \geq \int F_\nu$"
-                            r" （$\mu$ 是 $\nu$ 的 MPS）"))
-    ax2.set_xlabel(r"$t$", fontsize=12)
-    ax2.set_ylabel("积分 CDF", fontsize=12)
-    ax2.text(0.03, 0.94, "积分 CDF", transform=ax2.transAxes, va="top")
-    ax2.legend(fontsize=10)
-
-    plt.tight_layout()
-    plt.show()
-
-plot_sosd_posteriors(μ_info, ν_info, prior)
-```
-
-## 应用 1：产品质量信息
+## 应用1：对产品质量信息的需求
 
 {cite:t}`kihlstrom1974a` 将布莱克韦尔定理应用于消费者对产品质量信息的需求。
 
-- 未知状态 $\tilde{s}$ 是一个产品参数 $\theta$ 。
-- 消费者可以以成本 $c(\lambda)$ 购买 $\lambda$ 单位的信息。
-- 随着 $\lambda$ 上升，实验在布莱克韦尔意义下变得更具信息量。
+- 未知状态 $\tilde{s}$ 是产品的质量。
+- 消费者可以花费 $c \lambda^2$ 的成本购买 $\lambda$ 单位的信息。
+- 随着 $\lambda$ 增大，实验在布莱克韦尔意义上变得更具信息性。
 
-布莱克韦尔序表明，在不考虑成本的情况下，对每个期望效用最大化者来说，更多的信息总是更好的。
+在没有成本的情况下，布莱克韦尔序表明，对于每个期望效用最大化者来说，更多的信息总是更好的。
 
-在考虑成本时，消费者选择质量投资 $\theta$ 以最大化 *净价值*。
+在存在成本的情况下，消费者选择 $\lambda$ 以最大化信息的净价值。
 
-如果质量投资以递减的收益转化为实验精度——比如，对某个速率参数 $a$ ，精度为 $\phi(\theta) = 1 - e^{-a\theta}$ ——那么信息的边际价值最终会随 $\theta$ 递减。
+我们让实验的准确度随 $\phi(\lambda) = 1 - e^{-a \lambda}$ 递增但呈边际递减，并将其代入上述族 $\mu(\phi)$ 中。
 
-在凸成本 $c(\theta) = c \, \theta^2$ 下，递增的边际成本最终会超越递减的边际价值，从而产生一个内部最优。
+我们用德格鲁特熵值来衡量信息的总价值，它在 {cite:t}`kihlstrom1974a` 中代表消费者期望效用的增益。
+
+{doc}`pricing_information` 研究了向对信息价值评估不同的买家出售信息的问题。
 
 ```{code-cell} ipython3
 ---
 mystnb:
   figure:
-    caption: 具有二次成本的信息需求
+    caption: Demand for information with a quadratic cost
     name: fig-blackwell-information-demand
 ---
-def gross_value(θ, prior2, U=entropy, rate=2):
-    """质量投资 θ 的总价值（收益递减）。"""
-    accuracy = 1 - np.exp(-rate * θ)
-    μ_t = (1 - accuracy) * np.ones((2, 2)) / 2 + accuracy * np.eye(2)
-    return degroot_value(μ_t, prior2, U)
+def gross_value(λ, prior2, U=entropy, rate=2):
+    """Gross value of buying λ units of information."""
+    accuracy = 1 - np.exp(-rate * λ)
+    return degroot_value(make_experiment(accuracy), prior2, U)
 
 
-θ_fine = np.linspace(0, 1, 200)
+λ_grid = np.linspace(0, 1, 200)
 c = 0.6
 
-gross_vals = np.array([gross_value(θ, prior2) for θ in θ_fine])
-cost_vals = c * θ_fine**2
+gross_vals = np.array([gross_value(λ, prior2) for λ in λ_grid])
+cost_vals = c * λ_grid**2
 net_vals = gross_vals - cost_vals
-marginal_vals = np.gradient(gross_vals, θ_fine)
-marginal_cost = 2 * c * θ_fine
+marginal_vals = np.gradient(gross_vals, λ_grid)
+marginal_cost = 2 * c * λ_grid
 opt_idx = int(np.argmax(net_vals))
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 
 ax = axes[0]
-ax.plot(θ_fine, gross_vals,
-        label="总价值 I(θ)",
+ax.plot(λ_grid, gross_vals, label="Gross value I(λ)",
         color="steelblue", linewidth=2)
-ax.plot(θ_fine, cost_vals,
-        label=r"成本 $c\theta^2$",
+ax.plot(λ_grid, cost_vals, label=r"Cost $c\lambda^2$",
         color="tomato", linestyle="--", linewidth=2)
-ax.plot(θ_fine, net_vals,
-        label="净价值", color="green", linewidth=2)
-ax.axvline(θ_fine[opt_idx], color="green",
-           linestyle=":", linewidth=2,
-           label=f"θ* ≈ {θ_fine[opt_idx]:.2f}")
-ax.set_xlabel("质量投资 θ", fontsize=11)
-ax.set_ylabel("价值（熵单位）", fontsize=11)
+ax.plot(λ_grid, net_vals, label="Net value", color="green", linewidth=2)
+ax.axvline(λ_grid[opt_idx], color="green", linestyle=":", linewidth=2,
+           label=f"λ* ≈ {λ_grid[opt_idx]:.2f}")
+ax.set_xlabel("information purchased λ", fontsize=11)
+ax.set_ylabel("value (entropy units)", fontsize=11)
 ax.legend(fontsize=10)
 
 ax2 = axes[1]
-ax2.plot(θ_fine, marginal_vals,
-         label="边际价值 I'(θ)",
+ax2.plot(λ_grid, marginal_vals, label="Marginal value I'(λ)",
          color="steelblue", linewidth=2)
-ax2.plot(θ_fine, marginal_cost,
-         label=r"边际成本 $2c\theta$",
+ax2.plot(λ_grid, marginal_cost, label=r"Marginal cost $2c\lambda$",
          color="tomato", linestyle="--", linewidth=2)
-ax2.axvline(θ_fine[opt_idx], color="green",
-            linestyle=":", linewidth=2,
-            label=f"θ* ≈ {θ_fine[opt_idx]:.2f}")
-ax2.set_xlabel("质量投资 θ", fontsize=11)
-ax2.set_ylabel("边际价值 / 成本", fontsize=11)
+ax2.axvline(λ_grid[opt_idx], color="green", linestyle=":", linewidth=2,
+            label=f"λ* ≈ {λ_grid[opt_idx]:.2f}")
+ax2.set_xlabel("information purchased λ", fontsize=11)
+ax2.set_ylabel("marginal value / cost", fontsize=11)
 ax2.legend(fontsize=10)
 
 plt.tight_layout()
 plt.show()
 ```
 
-最优投资 $\theta^*$ 出现在边际价值等于边际成本的地方。
+最优购买量 $\lambda^*$ 出现在边际价值等于边际成本的地方。
 
-由于实验精度在 $\theta$ 上具有收益递减，投资的边际价值最终会降到上升的边际成本以下，从而产生一个真正的内部最优。
+边际价值先上升后下降。
 
-提高 $c$ 会使边际成本曲线上移并减小 $\theta^*$ ，而更不对称的先验会使边际价值曲线移动并改变最优。
+在 $\lambda = 0$ 附近，信息的价值是凸的：它仅随实验准确度呈二次方增长。
+
+{cite:t}`radner_stiglitz1984` 表明，这种信息价值的非凹性是普遍存在的，因此随着价格下降，对信息的需求可能从零跳跃到一个正值。
+
+由于准确度存在边际递减效应，边际价值最终会低于不断上升的边际成本，这在此处产生了一个内部最优解。
+
+提高 $c$ 会使边际成本曲线上移，从而降低 $\lambda^*$，而更不对称的先验分布会使边际价值曲线发生变化，从而改变最优解。
 
 ## 应用 2：序贯实验设计
 
@@ -1060,6 +1076,8 @@ plt.show()
 问题是哪一个实验序列最小化累积期望不确定性。
 
 如果一个实验在每一阶段都比另一个更具信息量，那么布莱克韦尔序倾向于在每一时期都使用更好的实验。
+
+{doc}`wald_friedman` 和 {doc}`wald_friedman_2` 研究了一个互补的问题：何时停止从一个固定实验中抽样。
 
 我们现在为不同质量的实验模拟序贯信念更新。
 
@@ -1116,6 +1134,8 @@ plot_sequential_beliefs([0.2, 0.5, 0.9], prior2, T=30)
 
 更具信息量的实验使信念更快地收敛到真相。
 
+{doc}`likelihood_ratio_process` 表明，对数似然比以一个等于实验两行之间库尔贝克-莱布勒散度的速率漂移，并且该散度随 $\theta$ 的增大而上升。
+
 在正确的先验下，后验过程是一个鞅。
 
 ```{code-cell} ipython3
@@ -1167,27 +1187,9 @@ check_martingale_mean(μ_info, prior, T=20, n_paths=5000)
 
 这是后验鞅性质的无条件蕴含。
 
-## 小结
+{doc}`merging_of_opinions` 研究了此类信念鞅的几乎必然收敛性，以及关于意见融合的布莱克韦尔-杜宾斯定理。
 
-布莱克韦尔定理在统计实验上确定了一个 *偏序*，具有三个等价的刻画：
-
-| 标准 | 条件 |
-|-----------|-----------|
-| 经济学 | 每个决策者弱地偏好 $\mu$ 甚于 $\nu$ ： $B(\mu, A, u) \supseteq B(\nu, A, u)$ |
-| 充分性 | $\nu$ 是 $\mu$ 的混淆：对某个马尔可夫矩阵 $Q$ 有 $\nu = \mu Q$ |
-| 不确定性 | 对每个先验 $p$ 和每个凹函数 $U$ ， $\mu$ 更多地降低期望不确定性 |
-
-基尔斯特罗姆的贝叶斯阐述将 *后验分布* 置于中心。
-
-一个更具信息量的实验会生成一个更为分散、但均值与先验相同的后验分布。
-
-恰当的概率语言是后验信念单纯形上的凸序。
-
-在两状态情形下，这简化为 $[0, 1]$ 上熟悉的 SOSD / 积分 CDF 检验。
-
-德格鲁特的贡献在于将比较从特定效用函数扩展到全部凹不确定性函数类。
-
-
+(bk_data_processing)=
 ## 数据处理不等式与粗粒化
 
 布莱克韦尔的条件——对某个马尔可夫核 $Q$ 有 $\nu = \mu Q$ ——与信息论、信息几何和机器学习中支撑 **数据处理不等式**（DPI）和 **粗粒化定理** 的数学操作是同一个。
@@ -1212,6 +1214,8 @@ $$
 | 卡方 $\chi^2$ | $(t-1)^2$ |
 
 f-散度这一类别是由 {cite:t}`ali1966` 、 {cite:t}`csiszar1963` 和 {cite:t}`morimoto1963` 独立引入的；另见 {cite:t}`liese2012` 。
+
+{doc}`divergence_measures` 针对连续分布研究了其中若干种散度。
 
 ```{prf:theorem} 数据处理不等式
 :label: thm-data-processing
@@ -1247,6 +1251,10 @@ $$
 
 只要 $\mu \geq \nu$ 在布莱克韦尔序中成立。
 
+对两个状态而言，逆命题也成立（采用关于零概率的通常约定）：如果对每个凸函数 $f$ 都有 $D_f(\mu_1 \| \mu_2) \geq D_f(\nu_1 \| \nu_2)$ ，那么 $\mu \geq \nu$ 。
+
+当状态数多于两个时，各行之间的散度并不能刻画布莱克韦尔序。
+
 因此一个更具信息量的实验总是会产生 *更分离的* 条件信号分布，在每个 f-散度的意义下同时如此。
 
 由此，DPI 是关于状态 *可区分性* 的一个陈述：混淆一个实验会使得在每种统计可分性度量下，状态都更难被区分。
@@ -1259,7 +1267,9 @@ $$
 
 DPI 有一个无穷小的、微分几何的伴侣。
 
-**陈氏定理**  {cite}`chentsov1981` 断言， **Fisher 信息矩阵**  $I_F(\theta)$ 至多相差一个常数重缩放，是统计流形上在每个马尔可夫态射（粗粒化）下都收缩的 *唯一* 黎曼度量：
+**陈氏定理**  {cite}`chentsov1981` 断言， **Fisher 信息度量** 至多相差一个常数因子，是概率单纯形上在马尔可夫嵌入（由充分统计量诱导的变换）下不变的 *唯一* 黎曼度量。
+
+Fisher 信息矩阵 $I_F(\theta)$ 还在每个马尔可夫核下收缩：
 
 $$
 I_F(\theta;\, \mu) \succeq I_F(\theta;\, \mu\kappa)
@@ -1268,7 +1278,9 @@ $$
 
 等式成立当且仅当 $\kappa$ 是关于 $\theta$ 的充分统计量。
 
-唯一性条款意义深远：它说 Fisher 信息不仅仅是碰巧在粗粒化下收缩的 *某一个* 度量，而是具有该性质的 *唯一一个* 度量。
+唯一性条款说明，在所有黎曼度量中，唯有 Fisher 度量在充分统计量下保持不变。
+
+在 {doc}`gallant_tauchen` 中，当辅助模型嵌套结构模型时，结构模型的 Fisher 信息设定了得分匹配所能达到的效率界限。
 
 关于信息几何及其与充分性联系的详尽处理，参见 {cite:t}`amari_nagaoka2000` 。
 
@@ -1292,7 +1304,7 @@ $$
 I(T;\, Y) \leq I(X;\, Y),
 $$
 
-等式成立当且仅当 $T$ 是给定 $X$ 时关于 $Y$ 的 **充分统计量**。
+等式成立当且仅当 $T$ 是 $X$ 关于 $Y$ 的 **充分统计量**，也就是说，如果 $Y - T - X$ 也构成一个马尔可夫链。
 
 布莱克韦尔序解释了为什么对 $X$ 的任何确定性或随机后处理都无法增加与 $Y$ 的互信息：应用于 $X$ 的任何马尔可夫核都是布莱克韦尔意义下的混淆，而 DPI 是粗粒化定理的互信息形式。
 
@@ -1325,11 +1337,12 @@ DPI 反过来说的是同一件事：混淆（降低 $\theta$ ）只会收缩这
 | 充分性（ $Q$ 不丢弃任何东西） | DPI 中的等式；在二元模型中，一个严格凸的 $f$ 就已刻画充分性 |
 | 德格鲁特价值 $I(\mu; U_H)$ | 互信息 $I(\tilde{x}_\mu;\, \tilde{s})$ （香农 DPI） |
 | $\mu$ 与 $\nu$ 下的后验展开 | $\mu$ 下各行之间的 $D_f$ 更大 |
-| 布莱克韦尔定理（经济学 $\Leftrightarrow$ 混淆） | 对所有 $f$ 的 DPI $\Leftrightarrow$ 单个马尔可夫核见证占优 |
-| 陈氏唯一性定理 | Fisher 信息是唯一在粗粒化下收缩的度量 |
+| 两状态下的布莱克韦尔定理 | 对所有 $f$ 的 $D_f$ 占优 $\Leftrightarrow$ 单个马尔可夫核见证占优 |
+| 陈氏唯一性定理 | Fisher 信息是在马尔可夫嵌入（充分统计量）下唯一不变的度量；它也在马尔可夫核下收缩 |
 | 信息瓶颈 $I(T;Y) \leq I(X;Y)$ | 应用于马尔可夫链 $Y{-}X{-}T$ 的互信息 DPI |
 
 
+(bk_lr_learning)=
 ## 与贝叶斯似然比学习的关系
 
 讲座 {doc}`likelihood_bayes` 是这里所发展框架的一个动态的两状态特例。
@@ -1337,6 +1350,8 @@ DPI 反过来说的是同一件事：混淆（降低 $\theta$ ）只会收缩这
 设 $S = \{s_1, s_2\}$ ，其中 $s_1 \leftrightarrow f$ 且 $s_2 \leftrightarrow g$ ，其中 $f$ 和 $g$ 是两个候选的数据生成密度。
 
 那么单个观测是一个具有行 $f(\cdot)$ 和 $g(\cdot)$ 的布莱克韦尔实验，而历史 $w^t = (w_1, \ldots, w_t)$ 定义了一个更丰富的实验 $\mu_t$ 。
+
+这里我们将第一次抽取的时间标为 $t = 1$ ，并把先验写为 $\pi_0$ ，与 {doc}`likelihood_ratio_process` 中一致；而 {doc}`likelihood_bayes` 将第一次抽取的时间标为 $t = 0$ ，并把先验写为 $\pi_{-1}$ 。
 
 由于总是可以丢弃最后 $t-s$ 个观测，对每个 $t > s$ ， $\mu_t$ 都布莱克韦尔占优 $\mu_s$ 。
 
@@ -1375,6 +1390,276 @@ $$
 | $\pi_t$ 在各历史上的分布 | $\hat{\mu}^c$ （基尔斯特罗姆的后验分布） |
 | 鞅性质 $E[\pi_t] = \pi_0$ | $\hat{\mu}^c$ 的均值保持 |
 | $\pi_t \to 0$ 或 $1$ 几乎必然 | 后验向顶点展开（极限中的 MPS） |
-| 互信息 $I(\mu_t; U_H)$ | 德格鲁特信息价值 |
+| $\pi_t$ 的熵的期望下降 | 德格鲁特价值 $I(\mu_t; U_H)$ ，即互信息 |
 | 更多抽取 $\Rightarrow$ 对所有决策者更好 | 布莱克韦尔序 $\mu_t \geq \mu_s$ |
 | 混淆（丢弃最后 $t - s$ 次抽取） | 满足 $\mu_s = \mu_t Q$ 的随机变换 $Q$ |
+
+## 小结
+
+布莱克韦尔定理在统计实验上确定了一个 *偏序*，具有三个等价的刻画：
+
+| 标准 | 条件 |
+|-----------|-----------|
+| 经济学 | 每个决策者弱地偏好 $\mu$ 甚于 $\nu$ ： $B(\mu, A, u) \supseteq B(\nu, A, u)$ |
+| 充分性 | $\nu$ 是 $\mu$ 的混淆：对某个马尔可夫矩阵 $Q$ 有 $\nu = \mu Q$ |
+| 不确定性 | 对每个先验 $p$ 和每个凹函数 $U$ ， $\mu$ 更多地降低期望不确定性 |
+
+基尔斯特罗姆的贝叶斯阐述将 *后验分布* 置于中心。
+
+一个更具信息量的实验会生成一个更为分散、但均值与先验相同的后验分布。
+
+恰当的概率语言是后验信念单纯形上的凸序。
+
+在两状态情形下，这简化为 $[0, 1]$ 上熟悉的 SOSD / 积分 CDF 检验。
+
+德格鲁特的贡献在于将比较从特定效用函数扩展到全部凹不确定性函数类。
+
+布莱克韦尔序蕴含了每个 f-散度的数据处理不等式，而 {doc}`likelihood_bayes` 中的似然比学习则是该框架的一个动态特例。
+
+## 练习
+
+```{exercise}
+:label: bk_ex1
+
+第一节发现没有随机变换能将 $\nu = \mu Q$ 映射回 $\mu$，但该节只提供了一个数值残差作为证据。
+
+本练习提供一个证明。
+
+假设 $\mu = \nu Q'$ 对于某个马尔可夫矩阵 $Q'$ 成立，即 $\tilde{x}_\mu$ 是通过一个不依赖于 $\tilde{s}$ 的随机化从 $\tilde{x}_\nu$ 生成的。
+
+1. 证明 $\mu$ 下的每个后验都是 $\nu$ 下后验的加权平均：
+
+$$
+p^\mu(x) = \sum_{y} \Pr(\tilde{x}_\nu = y \mid \tilde{x}_\mu = x) \, p^\nu(y) .
+$$
+
+2. 在均匀先验下，计算第一节中 $\mu$ 和 $\nu$ 生成的 $s_1$ 的后验概率。
+
+3. 得出 $\mu$ 不是 $\nu$ 的模糊化这一结论。
+```
+
+```{solution-start} bk_ex1
+:class: dropdown
+```
+
+对于第 1 部分，状态和两个信号构成一个马尔可夫链 $\tilde{s} \to \tilde{x}_\nu \to \tilde{x}_\mu$，因为 $Q'$ 不依赖于状态。
+
+因此 $\Pr(\tilde{s} = s_i \mid \tilde{x}_\nu = y, \tilde{x}_\mu = x) = \Pr(\tilde{s} = s_i \mid \tilde{x}_\nu = y)$，并且
+
+$$
+p_i^\mu(x)
+= \sum_{y} \Pr(\tilde{x}_\nu = y \mid \tilde{x}_\mu = x) \, \Pr(\tilde{s} = s_i \mid \tilde{x}_\nu = y)
+= \sum_{y} \Pr(\tilde{x}_\nu = y \mid \tilde{x}_\mu = x) \, p_i^\nu(y) .
+$$
+
+因此，被模糊化的实验的每个后验都落在原始实验后验的凸包内。
+
+```{code-cell} ipython3
+c2 = np.array([0.5, 0.5])
+post_μ1, _ = compute_posteriors(μ, c2)
+post_ν1, _ = compute_posteriors(ν, c2)
+
+lo, hi = post_ν1[:, 0].min(), post_ν1[:, 0].max()
+outside = (post_μ1[:, 0] < lo - 1e-12) | (post_μ1[:, 0] > hi + 1e-12)
+
+print("posteriors on s1 under μ:", post_μ1[:, 0].round(4))
+print("posteriors on s1 under ν:", post_ν1[:, 0].round(4))
+print(f"interval spanned by ν's posteriors: [{lo:.4f}, {hi:.4f}]")
+print("μ's posteriors outside that interval:", post_μ1[outside, 0].round(4))
+```
+
+在 $\nu$ 下，$s_1$ 的后验为 $3/4$ 和 $1/4$。
+
+在 $\mu$ 下，它们为 $6/7$、$1/2$ 和 $1/7$。
+
+后验 $6/7$ 和 $1/7$ 落在 $[1/4, 3/4]$ 之外，因此没有马尔可夫矩阵 $Q'$ 能从 $\nu$ 产生 $\mu$。
+
+这一论证解释了第一节中出现的较大残差：模糊化只能将后验拉向先验，而 $\mu$ 使后验远离先验的程度超出了 $\nu$ 所能达到的范围。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: bk_ex2
+
+布莱克韦尔的序是一个偏序，{doc}`pricing_information` 正是建立在这一事实之上。
+
+考虑两个具有两个状态和两个信号的实验，
+
+$$
+\mu_a = \begin{bmatrix} 1 & 0 \\ 0.5 & 0.5 \end{bmatrix} ,
+\qquad
+\mu_b = \begin{bmatrix} 0.5 & 0.5 \\ 0 & 1 \end{bmatrix} ,
+$$
+
+以及均匀先验。
+
+1. 计算每个实验下 $s_1$ 后验概率的分布，以及信号与状态之间的互信息。
+
+2. 使用看涨期权检验 $\mathbb{E}[\max(p - t, 0)]$ 证明这两个后验分布均不是对方的均值保持展开。
+
+3. 对于凹的不确定性函数 $U_t(p) = -\max(p_1 - t, 0)$，取 $t = 0.2$ 和 $t = 0.6$，计算每个实验的德格鲁特价值，并解释结果。
+```
+
+```{solution-start} bk_ex2
+:class: dropdown
+```
+
+在 $\mu_a$ 下，信号 $x_2$ 只在状态 $s_2$ 中出现，因此它揭示了 $s_2$。
+
+在 $\mu_b$ 下，信号 $x_1$ 只在状态 $s_1$ 中出现，因此它揭示了 $s_1$。
+
+```{code-cell} ipython3
+μ_a = np.array([[1.0, 0.0],
+                [0.5, 0.5]])
+μ_b = np.array([[0.5, 0.5],
+                [0.0, 1.0]])
+
+for name, m in [("μ_a", μ_a), ("μ_b", μ_b)]:
+    posts, probs = compute_posteriors(m, c2)
+    print(f"{name}: posteriors on s1 = {posts[:, 0].round(4)}, "
+          f"probabilities = {probs.round(4)}, "
+          f"mutual information = {degroot_value(m, c2, entropy):.4f}")
+```
+
+这两个后验分布互为镜像。
+
+重新标记状态和信号可以将一个实验映射为另一个实验，因此两者具有相同的互信息。
+
+```{code-cell} ipython3
+def call_values(m, prior, ts):
+    "E[max(p_1 - t, 0)] under experiment m for each threshold t."
+    posts, probs = compute_posteriors(m, prior)
+    return np.array([(np.maximum(posts[:, 0] - t, 0) * probs).sum() for t in ts])
+
+ts = np.linspace(0, 1, 201)
+diff_ab = call_values(μ_a, c2, ts) - call_values(μ_b, c2, ts)
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(ts, diff_ab, linewidth=2)
+ax.axhline(0, color="black", linewidth=1)
+ax.set_xlabel("threshold $t$")
+ax.set_ylabel(r"$E[\max(p - t, 0)]$ under $\mu_a$ minus under $\mu_b$")
+plt.show()
+```
+
+该差值出现了符号变化。
+
+这两个后验分布都不是对方的均值保持展开，因此根据基尔斯特罗姆定理，这两个实验互相都不是布莱克韦尔充分的。
+
+```{code-cell} ipython3
+def U_call(t):
+    "The concave uncertainty function -max(p_1 - t, 0)."
+    return lambda p: -max(p[0] - t, 0.0)
+
+for t in (0.2, 0.6):
+    print(f"t = {t}:  I(μ_a) = {degroot_value(μ_a, c2, U_call(t)):.4f},  "
+          f"I(μ_b) = {degroot_value(μ_b, c2, U_call(t)):.4f}")
+```
+
+当 $t = 0.2$ 时，$\mu_a$ 的价值为 $0.05$，$\mu_b$ 的价值为零。
+
+当 $t = 0.6$ 时，排名发生了反转。
+
+除符号和一个仿射项外，$U_t$ 是一个在两种行动间选择、并在信念为 $t$ 处切换行动的决策者的价值函数。
+
+在 $t = 0.2$ 处切换的决策者只看重那些将后验推低于 $0.2$ 的信号，而 $\mu_b$ 从未做到这一点。
+
+在 $t = 0.6$ 处切换的决策者认为 $\mu_b$ 中揭示 $s_1$ 的信号比 $\mu_a$ 中将后验提高到 $2/3$ 的信号更有价值。
+
+互信息对两个实验的排名相同，但决策者对它们的看法却存在分歧。
+
+单一的不确定性函数无法确定布莱克韦尔比较的结果。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: bk_ex3
+
+本练习将布莱克韦尔的序与 {doc}`likelihood_bayes` 中的学习动态联系起来。
+
+设单次抽取来自实验 `make_experiment(θ)`，其中 $\theta = 0.3$，因此信号与状态匹配的概率为 $(1 + \theta) / 2$。
+
+观察 $t$ 次独立抽取。
+
+1. 解释为什么等于 $x_1$ 的抽取次数 $k$ 是一个充分统计量，并写出 $k$ 对应的 $2 \times (t + 1)$ 实验矩阵 $\mu_t$。
+
+2. 构造丢弃 $t + 1$ 次抽取中最后一次的马尔可夫矩阵 $Q_t$，并通过数值方法验证 $\mu_t = \mu_{t+1} Q_t$。
+
+3. 在均匀先验下，使用看涨期权检验来验证对于 $t = 1, \ldots, 29$，$t + 1$ 次抽取后的后验分布是 $t$ 次抽取后的后验分布的均值保持展开。
+
+4. 绘制 $k$ 与状态之间的互信息随 $t$ 变化的图像，并将其与上界 $\log 2$ 进行比较。
+```
+
+```{solution-start} bk_ex3
+:class: dropdown
+```
+
+记 $a = (1 + \theta)/2$ 以及 $b = (1 - \theta)/2$。
+
+在状态 $s_1$ 中，$t$ 次抽取中含有 $k$ 个 $x_1$ 的似然为 $a^k b^{t-k}$，在状态 $s_2$ 中为 $b^k a^{t-k}$。
+
+似然比仅通过 $k$ 依赖于数据，因此 $k$ 是充分的。
+
+$\mu_t$ 的各行是二项分布 $\text{Bin}(t, a)$ 和 $\text{Bin}(t, b)$。
+
+这些抽取是可交换的，正如 {doc}`exchangeable` 中所讨论的那样。
+
+给定 $t + 1$ 次抽取中有 $k'$ 个 $x_1$，无论在哪种状态下，最后一次抽取等于 $x_1$ 的概率均为 $k' / (t + 1)$。
+
+丢弃它会以该概率将 $k'$ 移动到 $k' - 1$，否则 $k'$ 保持不变。
+
+该核不依赖于状态，因此它是一个模糊化。
+
+```{code-cell} ipython3
+from scipy.stats import binom
+
+def draws_experiment(θ, t):
+    "Experiment matrix for the number of x_1 signals in t independent draws."
+    a, b = (1 + θ) / 2, (1 - θ) / 2
+    k = np.arange(t + 1)
+    return np.vstack([binom.pmf(k, t, a), binom.pmf(k, t, b)])
+
+def discard_last(t):
+    "Markov matrix from k' in {0, ..., t+1} to k in {0, ..., t}."
+    Q_t = np.zeros((t + 2, t + 1))
+    for kp in range(t + 2):
+        if kp >= 1:
+            Q_t[kp, kp - 1] = kp / (t + 1)
+        if kp <= t:
+            Q_t[kp, kp] = 1 - kp / (t + 1)
+    return Q_t
+
+θ_ex = 0.3
+for t in (1, 4, 9):
+    err = np.abs(draws_experiment(θ_ex, t + 1) @ discard_last(t)
+                 - draws_experiment(θ_ex, t)).max()
+    print(f"t = {t}:  max |μ_(t+1) Q_t - μ_t| = {err:.1e}")
+
+is_mps = all(
+    (call_values(draws_experiment(θ_ex, t + 1), c2, ts)
+     - call_values(draws_experiment(θ_ex, t), c2, ts)).min() >= -1e-12
+    for t in range(1, 30))
+print(f"\nposteriors after t + 1 draws are an MPS of those after t draws: {is_mps}")
+```
+
+```{code-cell} ipython3
+t_grid = np.arange(1, 81)
+mi = [degroot_value(draws_experiment(θ_ex, t), c2, entropy) for t in t_grid]
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(t_grid, mi, linewidth=2, label="mutual information")
+ax.axhline(np.log(2), color="black", linestyle="--", linewidth=1, label=r"$\log 2$")
+ax.set_xlabel("number of draws $t$")
+ax.set_ylabel("mutual information")
+ax.legend()
+plt.show()
+```
+
+每多一次抽取就会使后验分布更加分散，而其均值始终保持在先验处，这正是 {doc}`likelihood_bayes` 中研究的鞅性质。
+
+随着后验集中于真实状态，互信息逐渐上升，趋向于均匀先验的熵 $\log 2$。
+
+```{solution-end}
+```

@@ -21,6 +21,7 @@ translation:
     Price revelation::Two interpretations: 两种解释
     Price revelation::Two interpretations::Insider trading in a stock market: 股票市场中的内幕交易
     Price revelation::Two interpretations::Price as a quality signal: 价格作为质量信号
+    Price revelation::Uninformed traders who learn from prices: 从价格中学习的不知情交易者
     Invertibility and the elasticity of substitution: 可逆性与替代弹性
     Invertibility and the elasticity of substitution::The two-state first-order condition: 两状态一阶条件
     Invertibility and the elasticity of substitution::CES utility: CES 效用
@@ -31,6 +32,7 @@ translation:
     Bayesian price expectations in a dynamic economy::The identification problem: 识别问题
     Bayesian price expectations in a dynamic economy::Bayesian updating: 贝叶斯更新
     Bayesian price expectations in a dynamic economy::The convergence theorem: 收敛定理
+    Bayesian price expectations in a dynamic economy::Connection to merging of opinions: 与观点融合的联系
     Simulating Bayesian learning from prices: 从价格中模拟贝叶斯学习
     Simulating Bayesian learning from prices::Price expectations vs. rational expectations: 价格预期 vs. 理性预期
     Simulating Bayesian learning from prices::Learning the reduced form without identifying the structure: 学到简约形式而不识别结构
@@ -80,11 +82,15 @@ Kihlstrom 和 Mirman 的回答依赖于统计学中的两个经典思想：
 - 在动态经济中，随着信息的累积，贝叶斯价格预期会收敛到**理性预期**，即使无法仅从价格中识别出深层结构。
 
 ```{note}
-{cite:t}`kihlstrom_mirman1975` 以细致的计量经济学家所采用的方式使用了"简约形式"和"结构"模型这两个术语。
+{cite:t}`kihlstrom_mirman1975` 以细致的计量经济学家所采用的方式使用了"结构"和"简约形式"这两个术语。
 
-简约形式模型和结构模型成对出现。
+结构是对经济基本面的完整描述，在这里即一个参数向量 $\lambda$。
 
-对于每一个结构或结构模型，都存在一个简约形式，或者一组对应于不同可能回归的简约形式。
+每一个结构都蕴含着可观测变量的一个概率分布，在这里即均衡价格的分布，而该分布就是简约形式。
+
+多个结构可以蕴含同一个简约形式。
+
+我们把蕴含同一简约形式的结构集合称为一个简约形式类；价格数据能识别出该类，但无法识别出其中的具体结构。
 ```
 
 本讲的组织结构如下。
@@ -106,8 +112,8 @@ from scipy.optimize import brentq
 from scipy.stats import norm
 ```
 
-
 ## 设定
+
 
 ### 偏好、禀赋与未知状态
 
@@ -148,7 +154,11 @@ $$
 
 **竞争均衡**是一个能同时出清两个市场的价格 $\hat{p}$。
 
-在所维持的凸性假设下，均衡存在，并且遵循 {cite:t}`kihlstrom_mirman1975`，我们假设均衡价格是唯一的，从而可以将 $\hat p = p(\mu)$ 写作知情代理人后验的一个良好定义的函数。
+在所维持的凸性假设下，均衡存在，并且遵循 {cite:t}`kihlstrom_mirman1975`，我们假设均衡价格是唯一的。
+
+我们将 $\hat p = p(\mu, P^2, \ldots, P^n)$ 记作当代理人 1 持有信念 $\mu$、其他代理人持有信念 $P^2, \ldots, P^n$ 时的均衡价格。
+
+在整个静态分析过程中，信念 $P^2, \ldots, P^n$ 保持不变，因此我们将价格函数简写为 $p(\mu)$。
 
 在接下来的大部分内容中，生产方面只通过所诱导的均衡价格映射发挥作用，因此当我们转向数值说明时，我们将略去生产，并使用纯交换/投资组合的解释，以保持计算的透明性。
 
@@ -185,6 +195,7 @@ $$
 (price_revelation_theorem)=
 ## 价格揭示
 
+
 ### Blackwell 充分性
 
 如果观察均衡价格与直接观察信号 $\tilde{y}$ 对 $\bar{a}$ 的信息量相同，那么价格变量 $p(\mu_{\tilde{y}})$ 就*准确地传递*了内部人的私有信息。
@@ -205,6 +216,8 @@ $$
 
 因此，一旦知道 $\tilde{y}$，$\tilde{y}'$ 就不再提供关于 $\bar{a}$ 的额外信息。
 ```
+
+这正是 {doc}`blackwell_kihlstrom` 中 {prf:ref}`def-sufficiency` 所描述的扰动（garbling）关系：似然 $\phi_a(y)$ 构成信息量更大的实验，似然 $\phi'_a(y')$ 构成其扰动结果，而 $P(y' \mid y)$ 即为马尔可夫矩阵 $Q$。
 
 {cite:t}`kihlstrom_mirman1975` 证明了
 
@@ -227,12 +240,14 @@ $$
 等价地，给定 $\mu_{\tilde y}$ 时 $\tilde y$ 的条件分布独立于 $\bar a$，因此 $\mu_{\tilde y}$ 在 Blackwell 意义下对 $\tilde y$ 是充分的。
 ```
 
+该引理正是 {doc}`blackwell_kihlstrom` 中"后验与标准实验"一节所述的 Kihlstrom 标准实验要点：用每个信号所诱导的后验来替代该信号，并不会损失关于 $\bar a$ 的任何信息。
+
 现在让我们考虑从信念到价格的映射。
 
 ```{prf:theorem} 价格揭示
 :label: ime_theorem_price_revelation
 
-在上述模型中，价格随机变量 $p(\mu_{\tilde{y}})$ 对随机变量 $\tilde{y}$ 是充分的，当且仅当函数 $p(P^1)$ 在价格集合
+在上述模型中，价格随机变量 $p(\mu_{\tilde{y}})$ 对随机变量 $\tilde{y}$ 是充分的，当且仅当函数 $p(\cdot)$ 在价格集合
 
 $$
 \mathcal{P} = \Bigl\{\, p(\mu_y) : y \in Y,\;
@@ -265,7 +280,13 @@ $$
 
 这个条件分布独立于状态，因此价格对后验是充分的；结合 {prf:ref}`ime_lemma_posterior_sufficiency`，价格因而对信号是充分的。
 
-反之，如果 $M$ 中两个不同的后验产生了相同的价格，那么价格的观察者就无法分辨发生的是哪个后验，而该论文正式表明，在这种情况下，给定价格时后验的条件分布将依赖于状态，因此价格不可能是充分的。
+反之，假设 $M$ 中两个不同的后验 $\mu_y \neq \mu_{y'}$ 产生了相同的价格 $p$。
+
+在该价格条件下，观察者关于 $\bar a$ 的后验是对那些满足 $p(\mu_z) = p$ 的后验 $\mu_z$ 的一个混合，权重均为正。
+
+一个权重均为正的混合不可能同时等于两个不同的后验，因此，在看到价格 $p$ 之后再得知 $\tilde y$，观察者关于 $\bar a$ 的信念至少会在 $y$ 和 $y'$ 其中一个情形下发生改变。
+
+因此价格对 $\tilde y$ 并不是充分的。
 
 在转向可逆性本身之前，记住该论文所强调的两种经济解释是有帮助的。
 
@@ -287,6 +308,26 @@ $$
 
 不知情的消费者只要可逆性成立，就可以从市场价格推断质量。
 
+### 从价格中学习的不知情交易者
+
+Kihlstrom 和 Mirman 模型中不知情的交易者持有固定的信念 $P^2, \ldots, P^n$，并不从价格中学习。
+
+{prf:ref}`ime_theorem_price_revelation` 所描述的是一个知道映射 $p(\cdot)$ 的外部观察者能够推断出什么。
+
+如果不知情的交易者自己也知道 $p(\cdot)$ 并以价格为条件，那么他们的信念和需求就会依赖于价格，均衡也就变成了理性预期均衡。
+
+{cite:t}`grossman1976` 构造了一个理性预期均衡，其中价格完全揭示了知情交易者的信息。
+
+{cite:t}`Radner1979` 证明，在状态有限的情形下，完全揭示信息的理性预期均衡一般是存在的。
+
+{cite:t}`GrossmanStiglitz1980` 增加了获取信息的成本。
+
+如果价格能揭示一切信息，就不会有交易者愿意为信息付费；而如果没有交易者为信息付费，价格也就没有什么可揭示的了。
+
+他们通过引入风险资产的噪声供给来化解这一悖论，使价格只能部分地揭示信息。
+
+{doc}`rational_learning_re` 研究了理性预期均衡中从价格学习的贝叶斯交易者。
+
 (invertibility_conditions)=
 ## 可逆性与替代弹性
 
@@ -299,16 +340,18 @@ $$
 ```{prf:lemma} 相同价格意味着相同配置
 :label: ime_lemma_same_price_same_allocation
 
-假设 $u^i$ 具有连续的一阶偏导数，且 $u^i$ 是拟凹的。
+假设 $u^i$ 具有连续的一阶偏导数，且 $u^i$ 是严格拟凹的。
 
 设 $p \in \mathcal{P}$。
 
-如果存在 $M$ 中的两个测度 $\mu^*$ 和 $\mu'$，使得 $p(\mu^*, P^2, \ldots, P^n) = p(\mu', P^2, \ldots, P^n) = p$，那么
+如果存在 $M$ 中的两个测度 $\mu^*$ 和 $\mu'$，使得 $p(\mu^*) = p(\mu') = p$，那么
 
 $$
-x^i(\mu^*, P^2, \ldots, P^n) = x^i(\mu', P^2, \ldots, P^n), \quad
-i = 1, \ldots, n.
+x^i(\mu^*) = x^i(\mu'), \quad
+i = 1, \ldots, n,
 $$
+
+其中 $x^i(\mu)$ 是当代理人 1 的信念为 $\mu$、其他代理人的信念为 $P^2, \ldots, P^n$ 时，交易者 $i$ 的均衡商品束。
 ```
 
 固定除代理人 1 之外所有代理人的信念。
@@ -316,6 +359,8 @@ $$
 该引理表明，如果代理人 1 的两个后验信念 $\mu^*$ 和 $\mu'$ 都支持相同的均衡价格 $p$，那么它们对每一位交易者都支持相同的均衡配置。
 
 其直觉是，当价格不变时，不知情交易者的需求也不变，因此市场出清迫使知情代理人的商品束也保持不变。
+
+严格拟凹性使得每位交易者的需求都是价格的单值函数，而不知情交易者的信念 $P^2, \ldots, P^n$ 不会随价格变化。
 
 该引理使我们能够将知情代理人的均衡商品束定义为价格的一个函数：
 
@@ -337,7 +382,7 @@ $$
 ```{prf:lemma} 给定价格下的唯一后验
 :label: ime_lemma_unique_posterior
 
-假设 $u^1$ 的一阶偏导数存在，且 $u^1$ 是拟凹的。
+假设 $u^1$ 的一阶偏导数存在，且 $u^1$ 是严格拟凹的。
 
 同时假设代理人 1 总是消费两种商品的正数量。
 
@@ -348,7 +393,7 @@ $$
      {\sum_{s=1}^S u^1_2(a_s x_1(p), x_2(p))\, \mu(a_s)} = p,
 $$
 
-那么 $p(P^1)$ 在 $\mathcal{P}$ 上是可逆的。
+那么 $p(\cdot)$ 在 $\mathcal{P}$ 上是可逆的。
 ```
 
 如果两个不同的后验给出相同的价格，那么根据 {prf:ref}`ime_lemma_same_price_same_allocation`，它们将共享相同的商品束 $x(p)$，这与在该价格下求解一阶条件的后验的唯一性相矛盾。
@@ -378,9 +423,9 @@ $$
 
 同时假设知情代理人在所有均衡配置中总是消费两种商品的正数量。
 
-如果 $S = 2$ 且 $u^1$ 的替代弹性始终小于一或始终大于一，那么 $p(P^1)$ 在 $\mathcal{P}$ 上是可逆的。
+如果 $S = 2$ 且 $u^1$ 的替代弹性始终小于一或始终大于一，那么 $p(\cdot)$ 在 $\mathcal{P}$ 上是可逆的。
 
-如果 $u^1$ 是科布-道格拉斯型的（替代弹性恒等于一），那么 $p(P^1)$ 在 $\mathcal{P}$ 上是常数。
+如果 $u^1$ 是科布-道格拉斯型的（替代弹性恒等于一），那么 $p(\cdot)$ 在 $M$ 上是常数。
 ```
 
 当 $\sigma = 1$ 时，收入效应和替代效应恰好相互抵消，因此代理人 1 对商品 1 的需求不会对关于 $\bar{a}$ 的信念变化做出反应。
@@ -392,22 +437,28 @@ $$
 为具体起见，我们使用一个采用**常替代弹性**（CES）效用函数的简化例子
 
 $$
-u(c_1, c_2) = \bigl(c_1^{\rho} + c_2^{\rho}\bigr)^{1/\rho}, \qquad \rho \in
-(-\infty,0) \cup (0,1),
+u(c_1, c_2) = \Bigl(\frac{c_1^{\rho} + c_2^{\rho}}{2}\Bigr)^{1/\rho}, \qquad
+\rho \in (-\infty,0) \cup (0,1),
 $$
 
 其替代弹性为 $\sigma = 1/(1-\rho)$。
 
-- $\rho \to 0$：科布-道格拉斯（$\sigma = 1$）。
+- $\rho \to 0$：科布-道格拉斯（$\sigma = 1$），$u \to \sqrt{c_1 c_2}$。
 - $\rho < 0$：$\sigma < 1$（互补品）。
 - $0 < \rho < 1$：$\sigma > 1$（替代品）。
+
+括号内的因子 $1/2$ 使得当 $\rho \to 0$ 时 $u$ 收敛到 $\sqrt{c_1 c_2}$；若没有该因子，则当 $\rho \downarrow 0$ 时 $u$ 会发散，而当 $\rho \uparrow 0$ 时 $u$ 会趋于零。
+
+该因子以一个公共常数对 $u_1$ 和 $u_2$ 进行重新缩放，因此不会影响边际替代率或价格。
 
 相关的偏导数为
 
 $$
-u_1(c_1,c_2) = \bigl(c_1^\rho + c_2^\rho\bigr)^{1/\rho - 1}\, c_1^{\rho-1},
+u_1(c_1,c_2) = \frac{1}{2}\Bigl(\frac{c_1^\rho + c_2^\rho}{2}\Bigr)^{1/\rho - 1}
+c_1^{\rho-1},
 \qquad
-u_2(c_1,c_2) = \bigl(c_1^\rho + c_2^\rho\bigr)^{1/\rho - 1}\, c_2^{\rho-1}.
+u_2(c_1,c_2) = \frac{1}{2}\Bigl(\frac{c_1^\rho + c_2^\rho}{2}\Bigr)^{1/\rho - 1}
+c_2^{\rho-1}.
 $$
 
 这个 CES 例子只是一个说明，因为定理本身涵盖任何弹性处处大于一或处处小于一的位似效用。
@@ -416,9 +467,11 @@ $$
 
 ### 均衡价格作为后验的函数
 
-我们将代理人 1 视为*唯一*的知情交易者，他在均衡时吸收一单位的商品 1（即 $x_1 = 1$）。
+我们不考虑生产。
 
-令 $W_1 = w^1 + \theta^1 \pi$ 表示代理人 1 的总财富（禀赋加利润份额）。
+不知情的交易者拥有一单位的商品 1，对其没有用处，并会以任何正价格出售它，因此在均衡时代理人 1 吸收这一单位，即 $x_1 = 1$。
+
+代理人 1 拥有 $W_1$ 单位的商品 2，而没有公司的股份（$\theta^1 = 0$），因此他的财富 $W_1 = w^1$ 不依赖于 $p$。
 
 代理人 1 的预算约束因而简化为 $x_2 = W_1 - p$，均衡价格是满足一阶条件的唯一的 $p \in (0, W_1)$
 
@@ -442,7 +495,7 @@ def ces_derivatives(c1, c2, ρ):
         u1 = 0.5 * np.sqrt(c2 / c1)
         u2 = 0.5 * np.sqrt(c1 / c2)
     else:
-        common = (c1**ρ + c2**ρ)**(1 / ρ - 1)
+        common = 0.5 * ((c1**ρ + c2**ρ) / 2)**(1 / ρ - 1)
         u1 = common * c1**(ρ - 1)
         u2 = common * c2**(ρ - 1)
     return u1, u2
@@ -505,6 +558,10 @@ plt.show()
 
 对于 $\sigma \neq 1$ 的 CES，均衡价格在 $q$ 上是严格单调的。
 
+当 $\sigma < 1$ 时，价格随 $q$ 下降；当 $\sigma > 1$ 时，价格随 $q$ 上升。
+
+当两种商品是互补品时，关于 $\bar a$ 的好消息会降低价格：更高的 $a_s$ 会降低边际替代率 $a_s u_1 / u_2$（参见 {ref}`price_monotonicity`），因此内部人对这一单位商品 1 的估值较低。
+
 因此，知道均衡映射 $p^*(\cdot)$ 的外部观察者可以唯一地反转价格以恢复 $q$，故内部信息被完全传递。
 
 对于科布-道格拉斯（$\sigma = 1$），价格在 $q$ 上是平坦的，因此信息永远不会通过市场传递。
@@ -518,7 +575,7 @@ print(f"Cobb-Douglas (rho=0): min p* = {min(p_cd):.6f}, "
 print(f"Analytical CD price  = W1/2 = {W1/2:.6f}")
 ```
 
-每一项都恰好等于 $W_1/2 = 2.0$，从解析上证实了科布-道格拉斯均衡价格与 $q$ 以及状态值 $a_1, a_2$ 无关。
+每一项都在舍入误差范围内等于 $W_1/2 = 2.0$，这从数值上证实了科布-道格拉斯均衡价格与 $q$ 以及状态值 $a_1, a_2$ 无关。
 
 数值图显示了单调性，下一小节将这个模式与 {prf:ref}`ime_theorem_invertibility_conditions` 的证明联系起来。
 
@@ -618,21 +675,27 @@ plt.show()
 2. 市场开放；竞争价格 $p^t = p(\omega^t)$ 出清所有市场。
 3. 消费者进行交易和消费。
 
-禀赋向量 $\{\tilde{\omega}^t\}$ 是**独立同分布**的，其密度为 $f(\omega^t \mid \lambda)$，其中 $\lambda = (\lambda_1, \ldots, \lambda_K)$ 是一个**结构参数向量**（维数为 $K$），它是*固定但未知的*。
+结构参数向量 $\lambda = (\lambda_1, \ldots, \lambda_K)$ 是*固定但未知的*；它取值于一个有限或可数集合 $\Lambda \subset \mathbb{R}^K$。
 
-$t$ 时刻的均衡价格是 $\omega^t$ 的确定性函数，因此 $\{p^t\}$ 也是独立同分布的。
+在给定 $\lambda$ 的条件下，禀赋向量 $\{\tilde{\omega}^t\}$ 是**独立同分布**的，其密度为 $f(\omega^t \mid \lambda)$。
 
-对于任何可测的价格集合 $P$，令
+$t$ 时刻的均衡价格是 $\omega^t$ 的确定性函数，因此在给定 $\lambda$ 的条件下，$\{p^t\}$ 也是独立同分布的。
+
+一位不知道 $\lambda$ 并在 $\Lambda$ 上设定先验的观察者，会将价格序列视为可交换的，即独立同分布序列的一个混合，如 {doc}`exchangeable` 中所述。
+
+设 $P_\lambda$ 表示在结构 $\lambda$ 下 $\{\omega^t, p^t\}_{t \geq 1}$ 的概率分布。
+
+对于任何可测的价格集合 $B$，令
 
 $$
-W(P) = \{\omega^t : p(\omega^t) \in P\}.
+W(B) = \{\omega^t : p(\omega^t) \in B\}.
 $$
 
 那么
 
 $$
-P_\lambda(p^t \in P) = P_\lambda(\omega^t \in W(P))
-= \int_{W(P)} f(\omega^t \mid \lambda)\, d\omega^t.
+P_\lambda(p^t \in B) = P_\lambda(\omega^t \in W(B))
+= \int_{W(B)} f(\omega^t \mid \lambda)\, d\omega^t.
 $$
 
 所诱导的价格密度记为 $g(p^t \mid \lambda)$。
@@ -647,11 +710,13 @@ $$
 
 特别地，即使有无限的价格数据，也可能无法从 $g(p \mid \lambda)$ 中恢复 $\lambda$。
 
-为了处理这一点，将 $\Lambda$ 划分为等价类 $\mu$，使得当对所有 $p$ 都有 $g(p \mid \lambda) = g(p \mid \lambda')$ 时，$\lambda \in \mu$ 且 $\lambda' \in \mu$。
+为了处理这一点，将 $\Lambda$ 划分为等价类 $\eta$，使得当对所有 $p$ 都有 $g(p \mid \lambda) = g(p \mid \lambda')$ 时，$\lambda \in \eta$ 且 $\lambda' \in \eta$。
 
-包含真实 $\lambda$ 的等价类 $\mu$ 是与价格数据相关的**简约形式**。
+我们用 $\eta$ 表示简约形式类，以便将 $\mu$ 保留用于静态模型中内部人的后验。
 
-知道无限价格历史的观察者学到了 $\mu$，但不一定学到 $\lambda$。
+包含真实 $\lambda$ 的等价类 $\eta$ 是与价格数据相关的**简约形式**。
+
+知道无限价格历史的观察者学到了 $\eta$，但不一定学到 $\lambda$。
 
 一旦这个区别清楚了，贝叶斯更新就可以直接写出来。
 
@@ -670,6 +735,8 @@ $$
 
 该论文诉诸于一个贝叶斯一致性结果，得出结论认为该后验集中于真实结构 $\bar \lambda$。
 
+这一结论需要 $h(\bar\lambda) > 0$，以及结构可由禀赋识别：即当 $\lambda \neq \lambda'$ 时 $f(\cdot \mid \lambda) \neq f(\cdot \mid \lambda')$。
+
 在观察价格序列 $(p^1, \ldots, p^t)$ 之后，观察者的贝叶斯后验为
 
 $$
@@ -681,7 +748,7 @@ $$
 
 价格数据无法区分同一简约形式类内的结构。
 
-事实上，如果 $\lambda$ 和 $\lambda'$ 属于同一类 $\mu$，那么 $g(\cdot \mid \lambda) = g(\cdot \mid \lambda')$，因此
+事实上，如果 $\lambda$ 和 $\lambda'$ 属于同一类 $\eta$，那么 $g(\cdot \mid \lambda) = g(\cdot \mid \lambda')$，因此
 
 $$
 \frac{h(\lambda \mid p^1, \ldots, p^t)}
@@ -704,78 +771,102 @@ $$
 ```{prf:theorem} 贝叶斯收敛
 :label: ime_theorem_bayesian_convergence
 
-设 $\bar\lambda$ 为真实结构参数，$\bar\mu$ 为包含 $\bar\lambda$ 的简约形式。
+设 $\bar\lambda$ 为真实结构参数，$\bar\eta$ 为包含 $\bar\lambda$ 的简约形式。
 
-假设先验对简约形式类 $\bar\mu$ 赋予正概率。
+假设先验对简约形式类 $\bar\eta$ 赋予正概率。
 
 将简约形式类上的后验质量定义为
 
 $$
-H_t(\mu) = \sum_{\lambda \in \mu} h(\lambda \mid p^1, \ldots, p^t).
+H_t(\eta) = \sum_{\lambda \in \eta} h(\lambda \mid p^1, \ldots, p^t).
 $$
 
 由于类内所有结构都隐含相同的 $g(\cdot \mid \lambda)$，预测密度可以等价地写为
 
 $$
 g(p^{t+1} \mid p^1, \ldots, p^t)
-  = \sum_{\mu} g(p^{t+1} \mid \mu)\, H_t(\mu).
+  = \sum_{\eta} g(p^{t+1} \mid \eta)\, H_t(\eta).
 $$
 
 那么
 
 $$
-\lim_{t \to \infty} H_t(\mu)
-  = \begin{cases} 1 & \text{如果 } \mu = \bar\mu, \\ 0 & \text{否则，}
+\lim_{t \to \infty} H_t(\eta)
+  = \begin{cases} 1 & \text{如果 } \eta = \bar\eta, \\ 0 & \text{否则，}
   \end{cases}
 $$
 
-以概率一成立。
+以 $P_{\bar\lambda}$ 概率一成立。
 
 因此，
 
 $$
-\lim_{t \to \infty} g(p^{t+1} \mid p^1, \ldots, p^t) = g(p \mid \bar\mu),
+\lim_{t \to \infty}
+\bigl\| g(\cdot \mid p^1, \ldots, p^t) - g(\cdot \mid \bar\eta) \bigr\|_{\mathrm{TV}}
+= 0 ,
 $$
 
-它等于一位完全知情观察者的理性预期价格分布。
+其中 $g(\cdot \mid \bar\eta)$ 是一位完全知情观察者的理性预期价格分布。
 ```
 
 ```{note}
-注意该定理仅要求先验对包含真实结构 $\bar\lambda$ 的简约形式类 $\bar\mu$ 赋予正概率。
+该定理仅要求先验对包含真实结构 $\bar\lambda$ 的简约形式类 $\bar\eta$ 赋予正概率。
+
+这就是 {doc}`merging_of_opinions` 中的绝对连续性条件，下文将对此进行说明。
 
 这一点由对真实结构参数 $\bar\lambda$ 本身赋予正概率所隐含，但比后者更弱。
 
-一个先验可以对 $\bar\lambda$ 赋予零质量，同时仍然对 $\bar\mu$ 内的其他结构赋予正质量。
+一个先验可以对 $\bar\lambda$ 赋予零质量，同时仍然对 $\bar\eta$ 内的其他结构赋予正质量。
 ```
 
 重要的区别在于价格观察者不必学到 $\bar \lambda$ 本身。
 
 他们只学到哪个简约形式类是正确的。
 
-这对于预测就足够了，因为每个 $\lambda \in \bar \mu$ 都产生相同的价格密度 $g(\cdot \mid \bar \mu)$。
+这对于预测就足够了，因为每个 $\lambda \in \bar \eta$ 都产生相同的价格密度 $g(\cdot \mid \bar \eta)$。
 
 理性价格预期源于学到简约形式，而非识别经济的每一个结构细节。
 
 这里"理性预期"意味着观察者对下一期价格的预测分布与真实简约形式所产生的客观价格分布相匹配。
+
+### 与观点融合的联系
+
+{prf:ref}`ime_theorem_bayesian_convergence` 是 {doc}`merging_of_opinions` 中所研究的 {cite:t}`blackwell1962` 融合定理的一个实例。
+
+设 $Q^*$ 表示在真实结构 $P_{\bar\lambda}$ 下价格序列的分布，设 $P$ 表示其在观察者主观混合分布 $\sum_{\lambda} h(\lambda) P_\lambda$ 下的分布。
+
+$\bar\eta$ 中的每个结构都诱导出相同的价格分布 $Q^*$，因此对每个事件 $A$ 都有 $P(A) \geq H_0(\bar\eta)\, Q^*(A)$，其中 $H_0(\bar\eta) = \sum_{\lambda \in \bar\eta} h(\lambda)$。
+
+因此 $Q^*(A) \leq P(A) / H_0(\bar\eta)$，并且只要 $H_0(\bar\eta) > 0$，就有 $Q^* \ll P$。
+
+于是 {prf:ref}`blackwell_dubins` 意味着，在 $Q^*$-几乎必然的意义上，观察者对整个未来价格序列的条件分布在全变差意义下与真实分布相融合。
+
+对于 $\eta \neq \bar\eta$ 的类，价格是独立同分布的，其密度 $g(\cdot \mid \eta)$ 与 $g(\cdot \mid \bar\eta)$ 不同。
+
+{prf:ref}`kakutani_dichotomy` 随后使得这两个价格序列的分布互为奇异，并且似然比 $\prod_{\tau=1}^t g(p^\tau \mid \eta) / g(p^\tau \mid \bar\eta)$ 在 $Q^*$-几乎必然的意义下收敛于零。
+
+在类的数目有限的情况下，这就给出了 $H_t(\bar\eta) \to 1$。
+
+{ref}`km_ex5` 表明，整个未来序列的融合距离等于 $1 - H_t(\bar\eta)$，因此布莱克威尔和达宾斯的定理也在类的数目可数的情况下给出了 $H_t(\bar\eta) \to 1$。
 
 现在让我们转向一个简单的模拟。
 
 (bayesian_simulation)=
 ## 从价格中模拟贝叶斯学习
 
-我们用一个两状态例子来说明该定理。
+我们用一个两模型例子来说明该定理。
 
-两个可能的简约形式 $\mu_1$ 和 $\mu_2$ 分别产生价格 $p^t \sim N(\bar{p}_i, \sigma_p^2)$，其中 $i = 1, 2$。
+两个可能的简约形式 $\eta_1$ 和 $\eta_2$ 分别产生价格 $p^t \sim N(\bar{p}_i, \sigma_p^2)$，其中 $i = 1, 2$。
 
 观察者知道这两个可能的价格分布（简约形式），但不知道哪一个支配着数据。
 
 这是一个我们在 {doc}`likelihood_bayes` 中见过的**贝叶斯模型选择**问题。
 
-给定 $\mu_1$ 上的先验 $h_0$ 和观测到的价格 $p^t$，在第 $t$ 期之后 $\mu_1$ 上的后验权重为
+给定 $\eta_1$ 上的先验 $h_0$ 和观测到的价格 $p^t$，在第 $t$ 期之后 $\eta_1$ 上的后验权重为
 
 $$
-h_t = \frac{h_{t-1}\, g(p^t \mid \mu_1)}{h_{t-1}\, g(p^t \mid \mu_1)
-      + (1-h_{t-1})\, g(p^t \mid \mu_2)}.
+h_t = \frac{h_{t-1}\, g(p^t \mid \eta_1)}{h_{t-1}\, g(p^t \mid \eta_1)
+      + (1-h_{t-1})\, g(p^t \mid \eta_2)}.
 $$
 
 我们考虑一个具有两个不同均值的正态分布的数值例子
@@ -830,7 +921,7 @@ def plot_bayesian_learning(h_paths, p_bar_true, p_bar_alt, ax):
 - *容易的情形*：真实模型 $N(2.0,\, 0.4^2)$，备择模型 $N(1.2,\, 0.4^2)$。
 - *困难的情形*：真实模型 $N(2.0,\, 0.4^2)$，备择模型 $N(1.8,\, 0.4^2)$。
 
-学习是容易还是困难取决于真实分布与备择假设相比"有多接近"。
+学习是容易还是困难取决于真实分布与备择假设相比"有多接近"，正如 {doc}`divergence_measures`（{ref}`km_ex2`）中的库尔贝克-莱布勒散度所度量的那样。
 
 ```{code-cell} ipython3
 ---
@@ -866,7 +957,7 @@ plt.show()
 
 ### 价格预期 vs. 理性预期
 
-我们现在验证观察者的价格预期收敛到理性预期分布 $g(p \mid \bar\mu)$。
+我们现在验证观察者的价格预期收敛到理性预期分布 $g(p \mid \bar\eta)$。
 
 我们使用上面"难以学习"例子的参数化（$\bar{p}_{\text{true}} = 2.0$，$\bar{p}_{\text{alt}} = 1.8$，$\sigma_p = 0.4$），扩展到 $T = 1{,}000$ 个时期，使用单条模拟路径和先验 $h_0 = 0.5$
 
@@ -913,7 +1004,7 @@ for t_snap, col in zip(snapshots, palette):
     )
 
 ax.plot(p_grid, re_density, "k--", lw=2,
-        label=r"理性预期 $g(p \mid \bar{\mu})$")
+        label=r"理性预期 $g(p \mid \bar{\eta})$")
 ax.set_xlabel("价格 $p$", fontsize=12)
 ax.set_ylabel("密度", fontsize=12)
 ax.legend(fontsize=9)
@@ -922,6 +1013,10 @@ plt.show()
 ```
 
 预测密度序列（蓝色的深浅）随着经验的累积收敛到理性预期密度（黑色虚线）。
+
+收敛未必是单调的。
+
+在这条路径上，$h_{25} = 0.183$，低于先验 $h_0 = 0.5$，随后 $h_t$ 才朝着一上升，这是因为对数后验比服从一个随机游走，其正向漂移只有在长样本中才会占主导。
 
 这说明了 {prf:ref}`ime_theorem_bayesian_convergence`。
 
@@ -932,7 +1027,7 @@ plt.show()
 
 这个收敛结果特别引人注目，因为即使底层**结构** $\lambda$ *无法*由价格*识别*，观察者也会收敛到*理性预期*。
 
-为了说明这一点，考虑一个有*三个*可能结构 $\lambda^{(1)}, \lambda^{(2)}, \lambda^{(3)}$ 但只有*两个*简约形式 $\mu_1 = \{\lambda^{(1)}, \lambda^{(2)}\}$ 和 $\mu_2 = \{\lambda^{(3)}\}$ 的情形（因为 $\lambda^{(1)}$ 和 $\lambda^{(2)}$ 产生相同的价格分布）。
+为了说明这一点，考虑一个有*三个*可能结构 $\lambda^{(1)}, \lambda^{(2)}, \lambda^{(3)}$ 但只有*两个*简约形式 $\eta_1 = \{\lambda^{(1)}, \lambda^{(2)}\}$ 和 $\eta_2 = \{\lambda^{(3)}\}$ 的情形（因为 $\lambda^{(1)}$ 和 $\lambda^{(2)}$ 产生相同的价格分布）。
 
 我们继续使用难以学习的参数化，因此三个结构的价格均值为 $\bar{p}_1 = \bar{p}_2 = 2.0$ 和 $\bar{p}_3 = 1.8$，共同标准差 $\sigma_p = 0.4$，均匀先验 $h_0 = (1/3, 1/3, 1/3)$，以及 $30$ 条路径上的 $T = 400$ 个时期。
 
@@ -999,8 +1094,42 @@ plt.show()
 
 观察者以概率一正确地排除了 $\lambda^{(3)}$（错误的简约形式），但无法区分 $\lambda^{(1)}$ 和 $\lambda^{(2)}$，因为它们产生相同的价格分布。
 
-尽管如此，观察者的**价格预期**收敛到理性预期，因为两个结构都隐含相同的简约形式 $\bar\mu$。
+尽管如此，观察者的**价格预期**收敛到理性预期，因为两个结构都隐含相同的简约形式 $\bar\eta$。
 
+下图绘制了真实类别上的后验质量 $H_t(\bar\eta) = h_t(\lambda^{(1)}) + h_t(\lambda^{(2)})$，以及该质量中分配给 $\lambda^{(1)}$ 的份额。
+
+```{code-cell} ipython3
+---
+mystnb:
+  figure:
+    caption: 真实简约形式类别上的后验质量
+    name: fig-nonidentification-class
+---
+H_true = h_paths_3[:, :, 0] + h_paths_3[:, :, 1]
+share_1 = h_paths_3[:, :, 0] / H_true
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+for path_H, path_s in zip(H_true, share_1):
+    axes[0].plot(t_grid, path_H, alpha=0.25, lw=0.8, color="steelblue")
+    axes[1].plot(t_grid, path_s, alpha=0.25, lw=0.8, color="steelblue")
+axes[0].plot(t_grid, np.median(H_true, axis=0), color="navy", lw=2,
+             label="中位数")
+axes[0].set_ylabel(r"$H_t(\bar\eta)$", fontsize=11)
+axes[1].set_ylabel(r"$h_t(\lambda^{(1)}) / H_t(\bar\eta)$", fontsize=11)
+axes[1].set_ylim(0, 1)
+for ax in axes:
+    ax.set_xlabel("时期 $t$", fontsize=11)
+axes[0].legend(fontsize=9)
+plt.tight_layout()
+plt.show()
+
+print(f"max over paths of 1 - H_T:         {(1 - H_true[:, -1]).max():.1e}")
+print(f"max deviation of share from 1/2:  {np.abs(share_1 - 0.5).max():.1e}")
+```
+
+$H_t(\bar\eta)$ 在每条路径上都收敛到 1。
+
+份额 $h_t(\lambda^{(1)}) / H_t(\bar\eta)$ 在每个 $t$ 都保持在其先验值 $1/2$，因为 $\lambda^{(1)}$ 和 $\lambda^{(2)}$ 对每一个价格赋予相同的似然。
 
 ## 练习
 
@@ -1052,7 +1181,7 @@ q\,(a_1 - p)\,\gamma\, e^{-\gamma W_1}
 = (1-q)\,(p - a_2)\,\gamma\, e^{-\gamma W_2},
 $$
 
-或等价地（除以 $\gamma$ 并重新排列）
+或等价地，在两边同除以 $\gamma e^{-\gamma w}$ 之后，
 
 $$
 q\,(a_1 - p)\, e^{-\gamma(a_1-p) x_1}
@@ -1067,8 +1196,6 @@ F(p;\,q,\gamma) \equiv
 $$
 
 ```{code-cell} ipython3
-from scipy.optimize import brentq
-
 def F_cara(p, q, a1, a2, γ, x1=1.0):
     """CARA 均衡条件的残差。"""
     return (q * (a1 - p) * np.exp(-γ * (a1 - p) * x1)
@@ -1097,7 +1224,7 @@ plt.show()
 
 对于每个 $\gamma > 0$，价格在 $q$ 上都是严格递增的。
 
-对于闭式解，从 $x_1 = 1$ 处的 FOC 出发，两边除以 $(a_1 - p)(p - a_2)$，并合并指数项：
+对于闭式解，从 $x_1 = 1$ 处的 FOC 出发，两边除以 $(1 - q)(p - a_2)e^{-\gamma(a_1 - p)}$，并合并指数项：
 
 $$
 \frac{q\,(a_1 - p)}{(1-q)\,(p - a_2)} = e^{\gamma(a_1 - a_2)}.
@@ -1118,6 +1245,31 @@ $$
 
 由于 $R(q,\gamma)$ 在 $q$ 上严格递增，且 $dp^*/dR = (a_1 - a_2)/(1 + R)^2 > 0$，因此均衡价格 $p^*(q)$ 在 $q$ 上严格递增。
 
+这个闭式解是一个指数倾斜的期望。
+
+当 $x_1 = 1$ 时，我们有 $e^{-\gamma W_s} = e^{-\gamma(w - p)} e^{-\gamma a_s}$，因此一阶条件对于后验 $\mu = (\mu_1, \ldots, \mu_S)$ 为 $\sum_s \mu_s (a_s - p) e^{-\gamma a_s} = 0$，且
+
+$$
+p^* = \frac{\sum_s \mu_s\, a_s\, e^{-\gamma a_s}}{\sum_s \mu_s\, e^{-\gamma a_s}} .
+$$
+
+该价格是 $\bar a$ 在概率 $\tilde\mu_s \propto \mu_s e^{-\gamma a_s}$ 下的期望值，这些概率将知情者的后验向低收益状态倾斜。
+
+当 $\mu = (q, 1 - q)$ 时，分子和分母同除以 $(1 - q) e^{-\gamma a_2}$，便得到上面 $p^*(q)$ 的公式。
+
+```{code-cell} ipython3
+def p_tilted(μ, a, γ):
+    """作为指数倾斜期望的均衡价格。"""
+    weights = np.asarray(μ) * np.exp(-γ * np.asarray(a))
+    return weights @ np.asarray(a) / weights.sum()
+
+
+gap = max(abs(brentq(F_cara, a2, a1, args=(q, a1, a2, γ))
+              - p_tilted([q, 1 - q], [a1, a2], γ))
+          for γ in γ_values for q in q_grid)
+print(f"largest gap between root-finding and closed form: {gap:.1e}")
+```
+
 这个练习使用了 {cite:t}`kihlstrom_mirman1975` 所强调的股票市场解释。
 
 投资组合财富为 $W = x_2 + \bar{a}\, x_1$，因此 $a x_1$ 和 $x_2$ 在每个状态中是完全替代品。
@@ -1132,72 +1284,145 @@ $$
 ```{exercise}
 :label: km_ex2
 
-在贝叶斯学习模拟中，收敛到理性预期的速度由两个简约形式之间的 **Kullback-Leibler 散度**决定。
+在贝叶斯学习模拟中，收敛到理性预期的速度由两个简约形式之间的 **Kullback-Leibler 散度**（{doc}`divergence_measures`）决定。
 
-对于两个均值为 $\bar{p}_1$ 和 $\bar{p}_2$ 且共同方差为 $\sigma_p^2$ 的正态分布，从 $g(\cdot \mid \mu_1)$ 到 $g(\cdot \mid \mu_2)$ 的 KL 散度 $D_{KL}(\mu_1 \| \mu_2)$ 为
+对于两个均值为 $\bar{p}_1$ 和 $\bar{p}_2$ 且共同方差为 $\sigma_p^2$ 的正态分布，从 $g(\cdot \mid \eta_1)$ 到 $g(\cdot \mid \eta_2)$ 的 KL 散度 $D_{KL}(\eta_1 \| \eta_2)$ 为
 
 $$
-D_{KL}(\mu_1 \| \mu_2) = \frac{(\bar{p}_1 - \bar{p}_2)^2}{2\sigma_p^2},
+D_{KL}(\eta_1 \| \eta_2) = \frac{(\bar{p}_1 - \bar{p}_2)^2}{2\sigma_p^2},
 $$
 
 在方差相等的情况下，它关于两个均值是对称的。
 
-1. 对于"容易的"情形（$\bar{p}_1 = 2.0$，$\bar{p}_2 = 1.2$）和"困难的"情形（$\bar{p}_1 = 2.0$，$\bar{p}_2 = 1.8$），计算 $\sigma_p = 0.4$ 时的 $D_{KL}$。
+设 $\eta_1$（其中 $\bar p_1 = 2.0$）为真实简约形式，并设 $\sigma_p = 0.4$，$h_0 = 1/2$。
 
-1. 用 $n=100$ 条路径重新运行本讲中两种情形的模拟。对每条路径计算 $h_t \geq 0.99$ 的第一个时期 $T_{0.99}$。绘制两种情形下 $T_{0.99}$ 的直方图。
+1. 计算"容易的"情形（$\bar{p}_2 = 1.2$）、"困难的"情形（$\bar{p}_2 = 1.8$）、中间情形 $\bar{p}_2 \in \{1.4, 1.6\}$ 以及更困难的情形 $\bar{p}_2 = 1.9$ 的 $D_{KL}$。
 
-1. 中位数 $T_{0.99}$ 如何随 $D_{KL}$ 缩放？数值验证对于某个常数 $C$，大致有 $T_{0.99} \approx C / D_{KL}$。
+1. 对每种情形模拟 $1{,}000$ 条路径，并计算 $h_t \geq 0.99$ 的第一个时期 $T_{0.99}$。
+
+   绘制容易情形和困难情形下 $T_{0.99}$ 的直方图。
+
+1. 证明在真实模型下，对数后验几率 $\ell_t = \log[h_t / (1 - h_t)]$ 遵循一个漂移为 $D_{KL}$、每期方差为 $2 D_{KL}$ 的随机游走。
+
+   运用瓦尔德恒等式论证
+
+   $$
+   \mathbb{E}[T_{0.99}] \approx
+   \frac{\log\bigl[(0.99/0.01) \big/ \bigl(h_0/(1 - h_0)\bigr)\bigr]}{D_{KL}}
+   $$
+
+   当 $D_{KL}$ 较小时成立，因此 $T_{0.99} \approx C / D_{KL}$，其中对于 $h_0 = 1/2$ 有 $C \approx \log 99 \approx 4.6$。
+
+1. 以对数-对数刻度绘制 $T_{0.99}$ 的均值和中位数相对于 $D_{KL}$ 的图，并画出直线 $\log 99 / D_{KL}$，解释其中的偏差。
 ```
 
 ```{solution-start} km_ex2
 :class: dropdown
 ```
 
-这是一个解法：
+这是一个解法。
+
+记 $\Delta = \bar p_1 - \bar p_2$。
+
+单个价格的对数似然比为
+
+$$
+\xi = \log \frac{g(p \mid \eta_1)}{g(p \mid \eta_2)}
+= \frac{\Delta\,(2p - \bar p_1 - \bar p_2)}{2\sigma_p^2} .
+$$
+
+在真实模型下 $p = \bar p_1 + \sigma_p \varepsilon$，其中 $\varepsilon \sim N(0, 1)$，因此
+$\xi = \Delta^2/(2\sigma_p^2) + (\Delta/\sigma_p)\varepsilon$，其均值为
+$D_{KL}$，方差为 $\Delta^2/\sigma_p^2 = 2 D_{KL}$。
+
+贝叶斯法则每期为 $\ell_t$ 添加一个这样的增量，因此 $\ell_t$ 是一个漂移为 $D_{KL}$、每期方差为 $2 D_{KL}$ 的随机游走。
+
+$T_{0.99}$ 是 $\ell_t$ 首次达到 $b = \log 99$ 的时刻。
+
+瓦尔德恒等式给出 $\mathbb{E}[\ell_{T}] = \ell_0 + D_{KL}\, \mathbb{E}[T]$，因此
+
+$$
+\mathbb{E}[T_{0.99}]\, D_{KL} = b - \ell_0 + \mathbb{E}[\ell_T - b] .
+$$
+
+最后一项是越过边界的超调量。
+
+它的量级是单步标准差 $\sqrt{2 D_{KL}}$，因此当 $D_{KL} \to 0$ 时，相对于 $b - \ell_0$ 它会消失。
 
 ```{code-cell} ipython3
-σ_p = 0.4
+def log_odds_paths(p_true, p_alt, σ, h0, n_paths, T, seed=42):
+    """真实模型上对数后验几率的路径，t = 1, ..., T。"""
+    rng = np.random.default_rng(seed)
+    p = rng.normal(p_true, σ, size=(n_paths, T))
+    ξ = norm.logpdf(p, p_true, σ) - norm.logpdf(p, p_alt, σ)
+    return np.log(h0 / (1 - h0)) + np.cumsum(ξ, axis=1)
 
-def kl_normal(p1, p2, σ):
-    """返回 N(p1, σ^2) 和 N(p2, σ^2) 的 KL 散度。"""
-    return (p1 - p2)**2 / (2 * σ**2)
 
-cases = [("Easy",  2.0, 1.2), ("Hard", 2.0, 1.8)]
-for name, p1, p2 in cases:
-    kl = kl_normal(p1, p2, σ_p)
-    print(f"{name} case: D_KL = {kl:.4f}")
+def first_passage(ell, b):
+    """ell_t >= b 的第一个时期，以及此时 ell_t 的值。"""
+    hit = ell >= b
+    assert hit.any(axis=1).all()            # 每条路径都在 T 内越过边界
+    T_hit = hit.argmax(axis=1)
+    return T_hit + 1, ell[np.arange(len(ell)), T_hit]
 
-n_paths = 100
 
-fig, axes = plt.subplots(1, 2, figsize=(11, 4))
-for ax, (name, p1, p2) in zip(axes, cases):
-    kl = kl_normal(p1, p2, σ_p)
-    paths = simulate_bayesian_learning(p1, p2, σ_p, T=2000,
-                                       h0=0.5, n_paths=n_paths, seed=42)
-    # 后验 >= 0.99 的第一个时期
-    T99 = []
-    for path in paths:
-        idx = np.where(path >= 0.99)[0]
-        T99.append(idx[0] if len(idx) > 0 else 2001)
+σ_p, h0, b = 0.4, 0.5, np.log(0.99 / 0.01)
+p_alts = [1.2, 1.4, 1.6, 1.8, 1.9]
+results = {}
 
-    median_T = np.median(T99)
-    ax.hist(T99, bins=20, color="steelblue", edgecolor="white", alpha=0.8)
-    ax.axvline(median_T, color="crimson", lw=2,
-               label=fr"中位数 $T_{{0.99}} = {median_T:.0f}$")
-    ax.set_title(
-        f"{name}: $D_{{KL}} = {kl:.4f}$,  "
-        fr"$\widehat C = T_{{0.99}} D_{{KL}} \approx {median_T * kl:.1f}$",
-        fontsize=11 
-    )
+print(f"{'p_alt':>6}{'D_KL':>8}{'mean T':>9}{'median T':>10}"
+      f"{'mean T*D':>10}{'log 99 + overshoot':>20}{'median T*D':>12}"
+      f"{'sqrt(2D)':>10}")
+for p_alt in p_alts:
+    D = (2.0 - p_alt)**2 / (2 * σ_p**2)
+    ell = log_odds_paths(2.0, p_alt, σ_p, h0, n_paths=1_000, T=3_000)
+    T99, ell_T = first_passage(ell, b)
+    results[p_alt] = (D, T99)
+    print(f"{p_alt:6.1f}{D:8.4f}{T99.mean():9.2f}{np.median(T99):10.1f}"
+          f"{T99.mean() * D:10.3f}{b + (ell_T - b).mean():20.3f}"
+          f"{np.median(T99) * D:12.3f}{np.sqrt(2 * D):10.3f}")
+
+# 布朗运动极限：T 是逆高斯分布，均值 b/D，形状参数 b^2/(2D)
+from scipy.stats import invgauss
+print(f"\nlog 99 = {b:.3f};  median/mean in the Brownian limit = "
+      f"{(b / 2) * invgauss(mu=2 / b).median():.3f}")
+```
+
+```{code-cell} ipython3
+fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+for ax, (name, p_alt) in zip(axes[:2], [("Easy", 1.2), ("Hard", 1.8)]):
+    D, T99 = results[p_alt]
+    ax.hist(T99, bins=30, color="steelblue", edgecolor="white", alpha=0.8)
+    ax.axvline(np.median(T99), color="crimson", lw=2,
+               label=fr"中位数 $T_{{0.99}} = {np.median(T99):.0f}$")
+    ax.set_title(f"{name}: $D_{{KL}} = {D:.4f}$", fontsize=11)
     ax.set_xlabel(r"$T_{0.99}$", fontsize=12)
     ax.set_ylabel("计数", fontsize=11)
     ax.legend(fontsize=10)
 
+D_vals = np.array([results[p][0] for p in p_alts])
+axes[2].loglog(D_vals, [results[p][1].mean() for p in p_alts], "o-",
+               label=r"均值 $T_{0.99}$")
+axes[2].loglog(D_vals, [np.median(results[p][1]) for p in p_alts], "s-",
+               label=r"中位数 $T_{0.99}$")
+axes[2].loglog(D_vals, b / D_vals, "k--", label=r"$\log 99 / D_{KL}$")
+axes[2].set_xlabel(r"$D_{KL}$", fontsize=12)
+axes[2].legend(fontsize=10)
 plt.tight_layout()
 plt.show()
 ```
 
-中位数 $T_{0.99}$ 大致按 $C/D_{KL}$ 缩放，证实了当两个简约形式更容易区分时（大的 $D_{KL}$）学习更快。
+$T_{0.99}$ 的均值和中位数都大致按 $1/D_{KL}$ 的比例下降，因此当两个简约形式更容易区分时学习更快。
+
+乘积 $\mathbb{E}[T_{0.99}] D_{KL}$ 随着 $D_{KL}$ 的缩小趋向于 $\log 99 = 4.6$。
+
+根据瓦尔德恒等式，该差距等于期望超调量，而"mean T*D"和"log 99 + overshoot"两列在抽样误差范围内一致。
+
+在容易的情形下，单个价格会使 $\ell_t$ 移动约两个单位，因此边界会被大幅超调，$\mathbb{E}[T_{0.99}] D_{KL}$ 会显著超过 $\log 99$。
+
+中位数低于均值，因为首达时间是右偏的。
+
+在 $D_{KL}$ 较小的极限情形下，$\ell_t$ 的表现类似带漂移的布朗运动，$T_{0.99}$ 服从逆高斯分布，均值为 $\log 99 / D_{KL}$，形状参数为 $(\log 99)^2 / (2 D_{KL})$，其中位数为 $0.825 \log 99 / D_{KL}$。
 
 ```{solution-end}
 ```
@@ -1205,7 +1430,7 @@ plt.show()
 ```{exercise}
 :label: km_ex3
 
-{prf:ref}`ime_theorem_bayesian_convergence` 要求先验对真实简约形式类 $\bar\mu$ 赋予正概率，等价地对某个产生真实价格分布 $g(\cdot \mid \bar\mu)$ 的结构赋予正概率。
+{prf:ref}`ime_theorem_bayesian_convergence` 要求先验对真实简约形式类 $\bar\eta$ 赋予正概率，等价地对某个产生真实价格分布 $g(\cdot \mid \bar\eta)$ 的结构赋予正概率。
 
 在这个练习中，真实简约形式本身被排除在先验支持之外，因此我们研究当先验中没有模型产生真实价格分布时会发生什么。
 
@@ -1325,13 +1550,269 @@ $$
 
 后验几率是累积的{doc}`似然比 <likelihood_bayes>`。
 
-如果我们比较两个错误的高斯模型 $f$ 和 $g$，那么在真实分布 $h$ 下，平均对数似然比满足
+记 $g_\star$ 为真实价格密度 $N(2.0, 0.4^2)$，记 $g_1$ 和 $g_2$ 为错误模型 $N(1.5, 0.4^2)$ 和 $N(2.3, 0.4^2)$，记 $h_t^{(1)}, h_t^{(2)}$ 为它们的后验权重。
+
+$g_2$ 相对于 $g_1$ 的对数后验几率为
 
 $$
-\frac{1}{t} E_h[\log L_t] = K(h,g) - K(h,f).
+\log \frac{h_t^{(2)}}{h_t^{(1)}}
+= \log \frac{h_0^{(2)}}{h_0^{(1)}}
++ \sum_{\tau=1}^{t} \log \frac{g_2(p^\tau)}{g_1(p^\tau)} .
 $$
 
-因此，如果 $f$ 在 KL 意义上比 $g$ 更接近 $h$，那么 $\log L_t$ 有正的漂移，后验几率会倾向于 $f$。
+在 $g_\star$ 下，求和中的每一项均值为
+$D_{KL}(g_\star \| g_1) - D_{KL}(g_\star \| g_2) = 0.78125 - 0.28125 = 0.5 > 0$，
+这由 {doc}`likelihood_ratio_process` 中 {ref}`KL_link` 的公式给出。
+
+因此几率朝 $g_2$ 漂移，即在 Kullback-Leibler 散度意义上更接近 $g_\star$ 的模型，且 $h_t^{(2)} \to 1$。
+
+预测密度收敛到 $g_2$ 而不是 $g_\star$：价格预期趋于稳定，但并非理性预期。
+
+先验对真实简约形式没有分配任何概率质量，因此 {prf:ref}`ime_theorem_bayesian_convergence` 背后的绝对连续性条件不成立。
+
+{doc}`mix_model` 研究了同样的机制，但针对的是真实分布为位于代理人模型集合之外的混合分布的情形。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: km_ex4
+
+{prf:ref}`ime_theorem_invertibility_conditions` 涵盖了两个状态的情形。
+
+本练习展示当状态数为三时会有何变化。
+
+使用本讲中 $\sigma = 2$（$\rho = 0.5$）、$W_1 = 4$ 的 CES 经济，以及三个状态 $(a_1, a_2, a_3) = (2, 1, 0.5)$。
+
+1. 证明在固定价格 $p$ 下，一阶条件在后验 $\mu$ 上是线性的，因此支持价格 $p$ 的后验集合是一条直线与单纯形的交集。
+
+1. 编写一个函数，用于计算任意后验 $\mu$ 对应的均衡价格，找出两个支持同一价格的不同后验，并对结果进行数值验证。
+
+1. 在单纯形上绘制 $p(\mu)$ 的水平集。
+
+1. 解释为什么尽管如此，$p(\cdot)$ 在由具有有限多个取值的信号所生成的后验有限集合 $M$ 上仍可以是一一对应的，以及为什么这不与两状态定理矛盾。
+
+   用随机抽取的信号似然度来验证这一主张。
+```
+
+```{solution-start} km_ex4
+:class: dropdown
+```
+
+这是一个解法。
+
+在固定价格下，组合 $x(p) = (1, W_1 - p)$ 是固定的，一阶条件为
+
+$$
+\sum_{s=1}^{3} \mu_s\, c_s(p) = 0,
+\qquad
+c_s(p) = a_s u_1(a_s, W_1 - p) - p\, u_2(a_s, W_1 - p) .
+$$
+
+数值 $c_s(p)$ 不依赖于 $\mu$。
+
+连同 $\sum_s \mu_s = 1$，这是关于三个未知数的两个线性方程。
+
+它们的解构成一条直线，该直线与单纯形相交于一段都支持价格 $p$ 的后验线段。
+
+在两个状态的情形下，单纯形本身就是一条线段，单一方程
+$q\, c_1(p) + (1 - q)\, c_2(p) = 0$ 最多只有一个解，除非 $c_1(p) = c_2(p) = 0$，
+而 $\alpha_1 \beta_2 - \alpha_2 \beta_1$ 的恒定符号排除了这种可能性。
+
+```{code-cell} ipython3
+def eq_price_S(μ, a, W1, ρ):
+    """代理人 1 持有状态 a 上的后验 μ 时的均衡价格。"""
+    μ, a = np.asarray(μ, dtype=float), np.asarray(a, dtype=float)
+
+    def residual(p):
+        u1, u2 = ces_derivatives(a, W1 - p, ρ)
+        return μ @ (a * u1 - p * u2)
+
+    return brentq(residual, 1e-6, W1 - 1e-6, xtol=1e-12)
+
+
+a3, W1_3, ρ_3 = np.array([2.0, 1.0, 0.5]), 4.0, 0.5
+μ_star = np.array([0.5, 0.2, 0.3])
+p_star = eq_price_S(μ_star, a3, W1_3, ρ_3)
+
+u1, u2 = ces_derivatives(a3, W1_3 - p_star, ρ_3)
+c = a3 * u1 - p_star * u2
+v = np.cross(c, np.ones(3))            # v @ c = 0 且 v.sum() = 0
+
+# t 的范围，使得 μ_star + t v 在单纯形内
+t_lo = max(-μ_star[i] / v[i] for i in range(3) if v[i] > 0)
+t_hi = min(-μ_star[i] / v[i] for i in range(3) if v[i] < 0)
+
+print(f"p(μ_star) = {p_star:.10f}\n")
+for t in [0.8 * t_lo, 0.4 * t_lo, 0.0, 0.4 * t_hi, 0.8 * t_hi]:
+    μ_t = μ_star + t * v
+    print(f"μ = {np.round(μ_t, 4)}   p(μ) = {eq_price_S(μ_t, a3, W1_3, ρ_3):.10f}")
+```
+
+五个不同的后验在十位小数精度下支持同一价格。
+
+```{code-cell} ipython3
+n = 81
+grid = np.linspace(0, 1, n)
+P = np.full((n, n), np.nan)
+for i, m1 in enumerate(grid):
+    for j, m3 in enumerate(grid):
+        if m1 + m3 <= 1:
+            P[j, i] = eq_price_S([m1, 1 - m1 - m3, m3], a3, W1_3, ρ_3)
+
+fig, ax = plt.subplots(figsize=(6, 5))
+cs = ax.contour(grid, grid, P, levels=15, cmap="viridis")
+ax.clabel(cs, fontsize=8, fmt="%.2f")
+ends = np.array([μ_star + t * v for t in [t_lo, t_hi]])
+ax.plot(ends[:, 0], ends[:, 2], "r--", lw=2, label=fr"$p(\mu) = {p_star:.3f}$")
+ax.plot(μ_star[0], μ_star[2], "ro")
+ax.plot([0, 1, 0, 0], [0, 0, 1, 0], color="black", lw=1)
+ax.set_xlabel(r"$\mu_1$", fontsize=12)
+ax.set_ylabel(r"$\mu_3$", fontsize=12)
+ax.legend(fontsize=10)
+plt.tight_layout()
+plt.show()
+```
+
+$p(\mu)$ 的水平集是穿过单纯形的直线，因此 $p(\cdot)$ 在整个单纯形上不是一一对应的。
+
+{prf:ref}`ime_theorem_price_revelation` 要求的条件较弱：$p(\cdot)$ 只需在信号能够生成的后验有限集合 $M$ 上是一一对应的。
+
+$M$ 中的两个后验仅当其中一个落在穿过另一个的水平线上时才会共享同一价格。
+
+这种巧合对信号似然度施加了一个方程约束，而似然度的微小扰动会破坏它。
+
+```{code-cell} ipython3
+rng = np.random.default_rng(1)
+μ0 = np.ones(3) / 3
+gaps = []
+for _ in range(500):
+    φ = rng.dirichlet(np.ones(4), size=3)       # P(signal | state)，4 个信号
+    joint = μ0[:, None] * φ
+    posteriors = (joint / joint.sum(axis=0)).T  # 每个信号对应一个后验
+    prices = np.sort([eq_price_S(m, a3, W1_3, ρ_3) for m in posteriors])
+    gaps.append(np.diff(prices).min())
+
+print(f"smallest price gap within a draw, over 500 draws: {min(gaps):.2e}")
+```
+
+在每次抽取中，四个后验支持四个不同的价格，因此价格对信号而言是充分的。
+
+当信号取值为有限个时，尽管在单纯形上可逆性不成立，但在 $M$ 上一般情形下可逆性是成立的。
+
+```{solution-end}
+```
+
+```{exercise}
+:label: km_ex5
+
+本练习衡量双模型示例中观点的融合。
+
+考虑困难的情形：真实简约形式 $\bar\eta = \eta_1$ 有 $\bar p_1 = 2.0$，替代模型
+$\eta_2$ 有 $\bar p_2 = 1.8$，$\sigma_p = 0.4$，$h_0 = 1/2$。
+
+记 $H_t = H_t(\bar\eta)$。
+
+1. 证明
+   $\| g(\cdot \mid p^1, \ldots, p^t) - g(\cdot \mid \bar\eta) \|_{\mathrm{TV}}
+   = (1 - H_t)\, \| g(\cdot \mid \eta_2) - g(\cdot \mid \bar\eta) \|_{\mathrm{TV}}$，
+   并对具有共同方差的两个正态密度求出最后一个因子的值。
+
+1. 证明对于未来 $k$ 个价格的联合分布，该距离为
+   $(1 - H_t)\bigl[2\Phi\bigl(\sqrt{k}\, |\bar p_1 - \bar p_2| / (2\sigma_p)\bigr)
+   - 1\bigr]$，其中 $\Phi$ 是标准正态分布函数。
+
+   得出结论：观察者与真实的整个未来价格序列条件分布之间的距离 $d_t$ 为
+   $1 - H_t$。
+
+1. 沿 40 条长度为 300 的模拟路径计算并绘制这两种距离。
+
+1. 将结果与 {doc}`merging_of_opinions` 中的 {prf:ref}`blackwell_dubins` 和
+   {prf:ref}`kakutani_dichotomy` 相联系。
+```
+
+```{solution-start} km_ex5
+:class: dropdown
+```
+
+这是一个解法。
+
+预测密度为 $H_t\, g(\cdot \mid \bar\eta) + (1 - H_t)\, g(\cdot \mid \eta_2)$，因此
+
+$$
+g(\cdot \mid p^1, \ldots, p^t) - g(\cdot \mid \bar\eta)
+= (1 - H_t) \bigl[ g(\cdot \mid \eta_2) - g(\cdot \mid \bar\eta) \bigr],
+$$
+
+全变差距离按 $1 - H_t$ 的比例缩放。
+
+两个具有共同方差的正态密度在其均值的中点处相交，因此
+
+$$
+\| N(\bar p_1, \sigma_p^2) - N(\bar p_2, \sigma_p^2) \|_{\mathrm{TV}}
+= 2\Phi\Bigl(\frac{|\bar p_1 - \bar p_2|}{2\sigma_p}\Bigr) - 1 .
+$$
+
+在给定简约形式的条件下，未来 $k$ 个价格是独立同分布的，因此同样的论证也适用于它们的联合密度。
+
+它们的和是均值的充分统计量，因此两个 $k$ 重乘积之间的距离等于
+$N(k \bar p_1, k\sigma_p^2)$ 和 $N(k \bar p_2, k\sigma_p^2)$ 之间的距离，即
+$2\Phi(\sqrt{k}\, |\bar p_1 - \bar p_2| / (2\sigma_p)) - 1$。
+
+当 $k \to \infty$ 时，该距离趋于一。
+
+正如 {prf:ref}`kakutani_dichotomy` 所断言的那样，两个独立同分布的价格律是互斥奇异的，因此 $d_t = 1 - H_t$。
+
+```{code-cell} ipython3
+from scipy.special import expit
+
+Δ = 2.0 - 1.8
+tv_one = 2 * norm.cdf(Δ / (2 * σ_p)) - 1
+print(f"one-period distance between the two models: {tv_one:.4f}")
+for k in [1, 10, 100, 1_000]:
+    print(f"  k = {k:5d}:  2Φ(√k Δ / 2σ) - 1 = "
+          f"{2 * norm.cdf(np.sqrt(k) * Δ / (2 * σ_p)) - 1:.4f}")
+
+ell = log_odds_paths(2.0, 1.8, σ_p, h0=0.5, n_paths=40, T=300)
+one_minus_H = expit(-ell)                      # 1 - H_t，以数值稳定方式计算
+t_vals = np.arange(1, 301)
+
+fig, ax = plt.subplots(figsize=(8, 4.5))
+for path in one_minus_H:
+    ax.semilogy(t_vals, path, color="steelblue", alpha=0.2, lw=0.8)
+ax.semilogy(t_vals, np.median(one_minus_H, axis=0), color="navy", lw=2,
+            label=r"中位数 $d_t = 1 - H_t$（整个未来）")
+ax.semilogy(t_vals, tv_one * np.median(one_minus_H, axis=0), color="crimson",
+            lw=2, label="单期距离的中位数")
+D_hard = Δ**2 / (2 * σ_p**2)
+ax.semilogy(t_vals, np.exp(-D_hard * t_vals), "k--", lw=1.5,
+            label=r"$e^{-D_{KL} t}$")
+ax.set_xlabel("时期 $t$", fontsize=12)
+ax.set_ylabel("全变差距离", fontsize=12)
+ax.legend(fontsize=10)
+plt.tight_layout()
+plt.show()
+```
+
+观察者对价格序列的主观分布为
+$P = h_0 Q^* + (1 - h_0) Q_2$，其中 $Q^*$ 和 $Q_2$ 分别使价格独立同分布，密度为
+$g(\cdot \mid \bar\eta)$ 和 $g(\cdot \mid \eta_2)$。
+
+由于 $h_0 > 0$，有 $Q^* \ll P$，且 {prf:ref}`blackwell_dubins` 断言在 $Q^*$ 下
+$d_t \to 0$ 几乎必然成立。
+
+由于 $Q^*$ 和 $Q_2$ 是互斥奇异的，因此 $d_t = 1 - H_t$，所以关于整个未来的观点融合与
+$H_t \to 1$ 是同一事件。
+
+对于可数多个类，论证是相同的。
+
+每个类 $\eta \neq \bar\eta$ 都对 $Q^*$ 概率为一的某个事件赋予零概率，而这可数多个事件的交集的
+$Q^*$ 概率仍为一，因此再次有 $d_t = 1 - H_t(\bar\eta)$。
+
+单期距离比 $d_t$ 小 $0.197$ 倍，因为单个价格对 $N(2.0, 0.4^2)$ 和
+$N(1.8, 0.4^2)$ 的区分能力较差。
+
+两种距离都以每期 $D_{KL} = 0.125$ 的指数速率下降，这正是对数后验几率的漂移率。
 
 ```{solution-end}
 ```
